@@ -221,7 +221,8 @@ export interface ClusterTerminalType {
     node?: string
     setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
     nodeGroups?: SelectGroupType[]
-    taints: Map<string, NodeTaintType[]>
+    taints: Map<string, NodeTaintType[]> | {}
+    showTerminal: boolean
 }
 
 export const TEXT_COLOR_CLASS = {

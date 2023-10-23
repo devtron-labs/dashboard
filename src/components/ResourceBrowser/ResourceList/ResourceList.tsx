@@ -120,6 +120,7 @@ export default function ResourceList() {
     const [terminalLoader, setTerminalLoader] = useState(false)
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
     const [toggleSync, setToggle] = useState(false)
+    const [showTerminal, setShowTerminal] = useState<boolean>(false)
     const isStaleDataRef = useRef<boolean>(false)
     const superAdminRef = useRef<boolean>(!!window._env_.K8S_CLIENT)
     const resourceListAbortController = new AbortController()
@@ -318,6 +319,7 @@ export default function ResourceList() {
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
+        toggleShowTerminal()
         if (!superAdminRef.current) {
             return
         }
@@ -357,7 +359,13 @@ export default function ResourceList() {
         }
     }, [selectedNamespace])
 
-   
+   const toggleShowTerminal = () => {
+        if(nodeType === AppDetailsTabs.terminal) {
+            setShowTerminal(true)
+        } else{
+            setShowTerminal(false)
+        }
+   }
 
     const getDetailsClusterList = async () => {
         setTerminalLoader(true)
@@ -870,6 +878,22 @@ export default function ResourceList() {
         }
     }
 
+    const renderClusterTerminal = (): JSX.Element => {
+        const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
+        const hideTerminal = nodeType !== AppDetailsTabs.terminal || !(selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]) || terminalLoader
+        return (selectedTerminal &&
+            <ClusterTerminal
+                showTerminal={showTerminal && !hideTerminal}
+                clusterId={+clusterId}
+                nodeGroups={createGroupSelectList(selectedTerminal.nodeDetails, 'nodeName')}
+                taints={createTaintsList(selectedTerminal.nodeDetails, 'nodeName')}
+                clusterImageList={_imageList}
+                namespaceList={namespaceDefaultList[selectedTerminal.name]}
+                isNodeDetailsPage={true}
+            />
+                )
+    }
+
     const renderResourceBrowser = (): JSX.Element => {
         if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() && node) {
             return (
@@ -884,7 +908,6 @@ export default function ResourceList() {
             )
         }
         if (nodeType === AppDetailsTabs.terminal) {
-            const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
             if (terminalLoader) {
                 return (
                     <div className="h-100 node-data-container bcn-0">
@@ -898,16 +921,7 @@ export default function ResourceList() {
                   </div>
               )
             }
-            return (
-                <ClusterTerminal
-                    clusterId={+clusterId}
-                    nodeGroups={createGroupSelectList(selectedTerminal?.nodeDetails, 'nodeName')}
-                    taints={createTaintsList(selectedTerminal?.nodeDetails, 'nodeName')}
-                    clusterImageList={_imageList}
-                    namespaceList={namespaceDefaultList[selectedTerminal.name]}
-                    isNodeDetailsPage={true}
-                />
-            )
+            return null
         } else if (node) {
             return (
                 <div className="resource-details-container">
@@ -1022,6 +1036,7 @@ export default function ResourceList() {
                     </div>
                 </div>
                 {renderResourceBrowser()}
+                {renderClusterTerminal()}
             </div>
         )
     }
