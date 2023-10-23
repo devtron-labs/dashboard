@@ -46,7 +46,7 @@ export function getClusterTerminalParamsData(
     clusterShellList: OptionType[],
     node: string,
 ): ClusterTerminalParamsType {
-    if(!nodeList) return emptyClusterTerminalParamsData
+    if (!nodeList) return emptyClusterTerminalParamsData
     const _selectedImage = imageList.find((image) => image.value === params.get('image'))
     const _selectedNamespace = namespaceList.find((namespace) => namespace.value === params.get('namespace'))
     let nodeOptionList: OptionType[] = []
