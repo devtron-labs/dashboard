@@ -146,7 +146,8 @@ export default function DeploymentTemplateEditorView({
                 ? !state.fetchedValues[state.selectedCompareOption.id]
                 : !state.fetchedValuesManifest[state.selectedCompareOption.id]) && // check if present in respective cache
             !state.chartConfigLoading &&
-            !fetchingValues
+            !fetchingValues &&
+            !convertVariables
         ) {
             setFetchingValues(true)
 
@@ -169,7 +170,7 @@ export default function DeploymentTemplateEditorView({
             _getDeploymentTemplate
                 .then(({ result }) => {
                     if (result) {
-                        if (isValues && !convertVariables) {
+                        if (isValues) {
                             const _fetchedValues = {
                                 ...state.fetchedValues,
                                 [state.selectedCompareOption.id]: YAML.stringify(
@@ -177,7 +178,7 @@ export default function DeploymentTemplateEditorView({
                                 ),
                             }
                             setFetchedValues(_fetchedValues)
-                        } else if (!isValues) {
+                        } else {
                             const _fetchedValuesManifest = {
                                 ...state.fetchedValuesManifest,
                                 [state.selectedCompareOption.id]: processFetchedValues(

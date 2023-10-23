@@ -603,11 +603,12 @@ export default function DeploymentConfig({
                     : index,
         })
 
+        setConvertVariables(false)
+
         switch (index) {
             case 1:
             case 3:
                 setIsValues(true)
-                setConvertVariables(false)
                 const _isBasicLocked =
                     state.publishedState && index === 1 ? state.publishedState.isBasicLocked : state.isBasicLocked
                 const defaultYamlMode =
