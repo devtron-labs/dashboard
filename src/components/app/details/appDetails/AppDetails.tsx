@@ -104,6 +104,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'function',
 )
 let deploymentStatusTimer = null
+let appDetailsIntervalID = null
 
 export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
     const params = useParams<{ appId: string; envId?: string }>()
@@ -240,7 +241,6 @@ export const Details: React.FC<DetailsType> = ({
     })
     const [appDetailsError, setAppDetailsError] = useState(undefined)
     const [appDetails, setAppDetails] = useState(undefined)
-    const [pollingIntervalID, setPollingIntervalID] = useState(null)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
@@ -328,6 +328,7 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(() => {
         return () => {
             clearDeploymentStatusTimer()
+            clearPollingInterval()
         }
     }, [])
 
@@ -473,8 +474,9 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     function clearPollingInterval() {
-        if (pollingIntervalID) {
-            clearInterval(pollingIntervalID)
+        if (appDetailsIntervalID) {
+            clearInterval(appDetailsIntervalID)
+            appDetailsIntervalID = null
         }
     }
 
@@ -496,20 +498,12 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetailsError])
 
     useEffect(() => {
-        if (isPollingRequired) {
-            callAppDetailsAPI(true)
-            const intervalID = setInterval(callAppDetailsAPI, interval)
-            setPollingIntervalID(intervalID)
-        } else {
-            clearPollingInterval()
-        }
+      clearPollingInterval()
+      if (isPollingRequired) {
+          appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
+          callAppDetailsAPI(true)
+      }
     }, [isPollingRequired])
-
-    useEffect(() => {
-        return () => {
-            clearPollingInterval()
-        }
-    }, [pollingIntervalID])
 
     async function handleHibernate(e) {
         try {
