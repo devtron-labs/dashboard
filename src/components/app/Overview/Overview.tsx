@@ -19,12 +19,11 @@ import {
     processDeployedTime,
     sortOptionsByValue,
 } from '../../common'
-import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
+import { AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
-import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'
 import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
 import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
@@ -41,7 +40,6 @@ import {
 } from '../../externalLinks/ExternalLinks.type'
 import { getExternalLinks } from '../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
-import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
 import { StatusConstants, DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
@@ -314,33 +312,6 @@ export default function AppOverview({
             )}
         </div>
     )
-
-    // Update once new API changes are introduced
-    const renderAppLevelExternalLinks = () => {
-        return (
-            <div className="flex column left">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-external-links">
-                    <LinkedIcon className="icon-dim-20 mr-8" />
-                    External Links
-                </div>
-                {externalLinksAndTools.fetchingExternalLinks ? (
-                    <div className="dc__loading-dots" data-testid="overview-external-links-not-present" />
-                ) : (
-                    <AppLevelExternalLinks
-                        isOverviewPage={true}
-                        appDetails={
-                            {
-                                appId: +appId,
-                                appName: appMetaInfo?.appName,
-                            } as AppDetails
-                        }
-                        externalLinks={externalLinksAndTools.externalLinks}
-                        monitoringTools={externalLinksAndTools.monitoringTools}
-                    />
-                )}
-            </div>
-        )
-    }
 
     const envIcon = (isVirtualCluster) => {
         if (isVirtualCluster) {
