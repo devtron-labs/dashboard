@@ -929,22 +929,7 @@ export default function ResourceList() {
                 />
             )
         }
-        if (nodeType === AppDetailsTabs.terminal) {
-            if (terminalLoader) {
-                return (
-                    <div className="h-100 node-data-container bcn-0">
-                        <Progressing pageLoader />
-                    </div>
-                )
-            } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
-              return (
-                  <div className="bcn-0 node-data-container flex">
-                      {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
-                  </div>
-              )
-            }
-            return null
-        } else if (node) {
+        if (node) {
             return (
                 <div className="resource-details-container">
                     <NodeDetailComponent
@@ -1057,8 +1042,7 @@ export default function ResourceList() {
                         <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal} refreshData={refreshData} lastDataSync={lastDataSync} loader={loader||rawGVKLoader||clusterLoader||resourceListLoader} isOverview={isOverview} isStaleDataRef={isStaleDataRef} setLastDataSyncTimeString={setLastDataSyncTimeString}/>
                     </div>
                 </div>
-                {renderResourceBrowser()}
-                {nodeType === AppDetailsTabs.terminal && renderTerminalLoader()}
+                {nodeType === AppDetailsTabs.terminal ? renderTerminalLoader() : renderResourceBrowser()}
                 {renderClusterTerminal()}
             </div>
         )
