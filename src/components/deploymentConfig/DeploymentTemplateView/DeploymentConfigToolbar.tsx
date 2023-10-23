@@ -96,10 +96,12 @@ export default function DeploymentConfigToolbar({
                 )}
                 {isValues && selectedTabIndex == 2 && (
                     <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
-                        <ViewVariablesIcon
-                            className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 scn-7 cursor`}
-                            onClick={handleViewVariablesClick}
-                        />
+                        <span>
+                            <ViewVariablesIcon
+                                className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 scn-7 cursor`}
+                                onClick={handleViewVariablesClick}
+                            />
+                        </span>
                     </Tippy>
                 )}
             </div>
