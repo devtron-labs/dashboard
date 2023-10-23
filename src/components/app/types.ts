@@ -477,6 +477,12 @@ export interface AppStatusType {
     isDeploymentStatus?: boolean
     isJobView?: boolean
     isVirtualEnv?: boolean
+    /**
+     * Hide the status message if true
+     *
+     * @default false
+     */
+    hideStatusMessage?: boolean
 }
 export interface JobPipeline {
     ciPipelineID: number
@@ -493,6 +499,10 @@ export interface TagChipsContainerType {
     labelTags: TagType[]
     onAddTagButtonClick: (e) => void
     resourceName: string;
+    /**
+     * Toggles the background to white when true
+     */
+    whiteBackground?: boolean;
 }
 export interface SourceInfoType {
   appDetails: AppDetails
