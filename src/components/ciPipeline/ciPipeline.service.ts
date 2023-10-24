@@ -312,7 +312,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         defaultTag: formData.defaultTag,
         customTag: {
             tagPattern: formData.customTag?.tagPattern || '',
-            counterX: formData.customTag?.counterX || 0,
+            counterX: +formData.customTag?.counterX || 0,
         },
     }
     return ci
@@ -499,7 +499,7 @@ function parseCIResponse(
                 defaultTag: ciPipeline.defaultTag,
                 customTag: {
                     tagPattern: ciPipeline.customTag?.tagPattern || '',
-                    counterX: ciPipeline.customTag?.counterX || 0,
+                    counterX: +ciPipeline.customTag?.counterX || 0,
                 }
             },
             loadingData: false,

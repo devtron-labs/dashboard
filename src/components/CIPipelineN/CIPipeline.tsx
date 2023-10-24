@@ -131,7 +131,7 @@ export default function CIPipeline({
         },
         customTag: {
             tagPattern: '',
-            counterX: 0,
+            counterX: '',
         },
         defaultTag: []
     })

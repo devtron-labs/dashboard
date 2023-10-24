@@ -8,7 +8,7 @@ export const ImageTagType = {
 
 export interface CustomTagType {
     tagPattern: string
-    counterX: number
+    counterX: string
 }
 
 export interface CustomImageTagsType{

@@ -129,7 +129,7 @@ export interface PipelineBuildStageType {
 
 export interface CustomTagType {
     tagPattern: string
-    counterX: number
+    counterX: string
 }
 export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType> {
     name: string
