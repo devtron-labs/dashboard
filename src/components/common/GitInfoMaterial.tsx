@@ -292,7 +292,7 @@ export default function GitInfoMaterial({
                         className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
-                        {renderBranchChangeHeader(selectedMaterial)}
+                        <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
                             <div className={`flex right ${excludeIncludeEnv && 'mr-20'}`}>
                                 {renderSearch()}
