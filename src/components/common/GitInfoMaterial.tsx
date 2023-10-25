@@ -285,13 +285,13 @@ export default function GitInfoMaterial({
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
         return (
-            <div className="select-material select-material--trigger-view">
+            <div className="select-material select-material--trigger-view ">
                 {!isWebhook && !hideSearchHeader && (
                     <div
                         className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
-                        {renderBranchChangeHeader(selectedMaterial)}
+                        <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
                             <div className={`flex right ${excludeIncludeEnv && 'mr-20'}`}>
                                 {renderSearch()}
