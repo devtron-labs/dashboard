@@ -37,6 +37,7 @@ export default function Artifacts({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
+    jobCIClass
 }: ArtifactType) {
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
     useEffect(() => {
@@ -136,7 +137,7 @@ export default function Artifacts({
         )
     } else {
         return (
-            <div className="flex left column p-16">
+            <div className={`flex left column p-16 ${jobCIClass??''}`}>
                 {!isJobView && type !== HistoryComponentType.CD && (
                     <CIListItem
                         type="artifact"

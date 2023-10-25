@@ -290,7 +290,12 @@ export default function ResourceList() {
                 setErrorStatusCode(err['code'])
             }
         } finally {
-          setResourceListLoader(false)
+            if (
+                nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() ||
+                nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+            ) {
+                setResourceListLoader(false)
+            }
         }
     }
 
@@ -360,9 +365,8 @@ export default function ResourceList() {
             .then((response) => {
                 if (response.result) {
                   response.result.sort((a, b) => a['name'].localeCompare(b['name']))
-                  const sortedResult = response.result.filter((item) => !item?.isVirtualCluster)
-                  setTerminalCluster(sortedResult)
-                  setClusterList(sortedResult)
+                  setTerminalCluster(response.result)
+                  setClusterList(response.result)
                 }
                 setTerminalLoader(false)
             })
@@ -385,7 +389,7 @@ export default function ResourceList() {
                 clusterNamespaceList(),
             ])
             if (clusterList.result) {
-                const _clusterList = clusterList.result.filter((resource) => !resource?.isVirtualCluster)
+                const _clusterList = clusterList.result
                 const _clusterOptions = convertToOptionsList(
                     sortObjectArrayAlphabetically(_clusterList, 'name'),
                     'name',
