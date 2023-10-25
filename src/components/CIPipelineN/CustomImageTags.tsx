@@ -65,6 +65,9 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
             counterX: event.target.value,
         }
         setFormData(_form)
+        const _formDataErrorObj = { ...formDataErrorObj }
+        _formDataErrorObj.counterX = validationRules.counterX(event.target.value)
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const renderCounterXTippy = (variableX: string) => {
@@ -82,6 +85,13 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                 <span className="pl-4 dc__underline">{variableX}</span>
             </Tippy>
         )
+    }
+
+    const handleCounterKeyPress = (event) => {
+        if (event.key === '-' || event.key === '+') {
+            event.preventDefault()
+            return false
+        }
     }
 
     const renderCustomImageDetails = () => {
@@ -140,8 +150,12 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                             value={formData.customTag?.counterX}
                             onChange={onChangeCustomImageCounter}
                             min="0"
+                            onKeyPress={handleCounterKeyPress}
                         />
                         <div></div>
+                        {formDataErrorObj.counterX?.message.length > 0
+                            ? renderInputErrorMessage(formDataErrorObj.counterX.message)
+                            : null}
                     </div>
                 </div>
             )

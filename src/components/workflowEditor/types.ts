@@ -161,6 +161,10 @@ export interface PipelineFormDataErrorType {
         message: string[]
         isValid: boolean
     }
+    counterX?: {
+        message: string
+        isValid: boolean
+    }
 }
 
 export interface PipelineContext {
