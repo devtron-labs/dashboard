@@ -13,6 +13,7 @@ import {
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
+    Catalog,
     RadioGroup,
     handleUTCTime,
     importComponentFromFELibrary,
@@ -540,7 +541,12 @@ export default function AppOverview({
             )
         } else {
             const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.ABOUT]: () => (
+                    <>
+                        <Catalog updatedBy="Utkarsh Arya" updatedOn="Aug 15, 2022" />
+                        {renderAppDescription()}
+                    </>
+                ),
                 [OVERVIEW_TABS.ENVIRONMENTS]: renderEnvironmentDeploymentsStatus,
             }
 
