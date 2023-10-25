@@ -26,7 +26,7 @@ export default function EditableTextArea({ placeholder, rows, updateContentFunct
                         placeholder={placeholder}
                         value={text}
                         className="dc__border br-2"
-                        // style={{ resize: 'none' }}
+                        style={{ resize: 'vertical' }}
                         onChange={(e) => {
                             setText(e.target.value)
                         }}
