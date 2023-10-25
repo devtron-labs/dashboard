@@ -13,6 +13,7 @@ import {
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
+    Catalog,
     RadioGroup,
     handleUTCTime,
     importComponentFromFELibrary,
@@ -50,6 +51,7 @@ import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
+
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 const OVERVIEW_TABS = {
@@ -539,7 +541,12 @@ export default function AppOverview({
             )
         } else {
             const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.ABOUT]: () => (
+                    <>
+                        <Catalog updatedBy="Utkarsh Arya" updatedOn="Aug 15, 2022" />
+                        {renderAppDescription()}
+                    </>
+                ),
                 [OVERVIEW_TABS.ENVIRONMENTS]: renderEnvironmentDeploymentsStatus,
             }
 
