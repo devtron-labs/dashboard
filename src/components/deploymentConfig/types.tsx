@@ -310,6 +310,7 @@ export interface DeploymentConfigToolbarProps {
     setIsValues?: (isValues: boolean) => void
     convertVariables?: boolean
     setConvertVariables?: (convertVariables: boolean) => void
+    componentType: string
 }
 
 export interface DeploymentConfigStateType {
@@ -438,5 +439,6 @@ export interface DropdownContainerProps {
 export interface DropdownItemProps {
     label: string
     isValues: boolean
+    index: number
     onClick: () => void
 }

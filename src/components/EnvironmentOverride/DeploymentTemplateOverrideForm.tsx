@@ -602,6 +602,7 @@ export default function DeploymentTemplateOverrideForm({
                 setIsValues={setIsValuesOverride}
                 convertVariables={convertVariablesOverride}
                 setConvertVariables={setConvertVariables}
+                componentType="deploymentTemplate"
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}
