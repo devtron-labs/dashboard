@@ -168,6 +168,7 @@ export const Routes = {
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API: 'application/update',
     UPDATE_APP_API: 'app-store/deployment/application/update',
+    HELM_APP_OVERVIEW: 'app-store/overview',
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',

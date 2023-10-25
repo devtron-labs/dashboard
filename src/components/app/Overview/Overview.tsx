@@ -13,7 +13,7 @@ import {
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Catalog, RadioGroup, handleUTCTime, importComponentFromFELibrary, processDeployedTime } from '../../common'
-import { AppOverviewProps, JobPipeline } from '../types'
+import { AppOverviewProps, JobPipeline, OverviewConfig } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
@@ -29,7 +29,7 @@ import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-fo
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
-import { StatusConstants, DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
+import { StatusConstants, DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import TagChipsContainer from './TagChipsContainer'
@@ -44,13 +44,32 @@ const {
     OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
 } = EMPTY_STATE_STATUS
 
-export default function AppOverview({
-    appMetaInfo,
-    getAppMetaInfoRes,
-    isJobOverview,
-    filteredEnvIds,
-}: AppOverviewProps) {
-    const { appId } = useParams<{ appId: string }>()
+const configMap: Record<AppOverviewProps['appType'], () => OverviewConfig> = {
+    app: () => ({
+        resourceName: 'application',
+        defaultDescription: DefaultAppNote,
+        icon: <AppIcon className="icon-dim-48" />,
+    }),
+    job: () => ({
+        resourceName: 'job',
+        defaultDescription: DefaultJobNote,
+        icon: <JobIcon className="icon-dim-48 dc__icon-bg-color br-4 p-8" />,
+    }),
+    'helm-chart': () => ({
+        resourceName: 'application',
+        defaultDescription: DefaultHelmChartNote,
+        // TODO: update for helm
+        icon: <AppIcon className="icon-dim-48" />,
+    }),
+}
+
+export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
+    const { appId: appIdFromParams } = useParams<{ appId: string }>()
+    const config = configMap[appType]()
+    const isJobOverview = appType === 'job'
+    const isHelmChart = appType === 'helm-chart'
+    // For helm the appId from the params is the installed appId and not the actual id of the app
+    const appId = isHelmChart ? `${appMetaInfo.appId}` : appIdFromParams
     const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
@@ -58,7 +77,7 @@ export default function AppOverview({
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [descriptionId, setDescriptionId] = useState<number>(0)
-    const [newDescription, setNewDescription] = useState<string>(isJobOverview ? DefaultJobNote : DefaultAppNote)
+    const [newDescription, setNewDescription] = useState<string>(config.defaultDescription)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
@@ -70,7 +89,7 @@ export default function AppOverview({
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
     const [activeTab, setActiveTab] = useState<typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]>(OVERVIEW_TABS.ABOUT)
-    const resourceName = isJobOverview ? 'job' : 'application'
+    const resourceName = config.resourceName
 
     let _moment: moment.Moment
     let _date: string
@@ -78,19 +97,17 @@ export default function AppOverview({
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
-            _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
+            _moment = moment(appMetaInfo?.note?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.note?.updatedOn
             const description =
-                appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id
-                    ? appMetaInfo.description.description
-                    : isJobOverview
-                    ? DefaultJobNote
-                    : DefaultAppNote
-            _date = appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id ? _date : ''
+                appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id
+                    ? appMetaInfo.note.description
+                    : config.defaultDescription
+            _date = appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id ? _date : ''
             setNewUpdatedOn(_date)
-            setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
+            setNewUpdatedBy(appMetaInfo?.note?.updatedBy)
             setNewDescription(description)
-            setDescriptionId(appMetaInfo?.description?.id)
+            setDescriptionId(appMetaInfo?.note?.id)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -146,8 +163,8 @@ export default function AppOverview({
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
-                description={appMetaInfo.description.description}
-                isJobOverview={isJobOverview}
+                description={appMetaInfo.note.description}
+                appType={appType}
             />
         )
     }
@@ -161,7 +178,8 @@ export default function AppOverview({
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 currentLabelTags={currentLabelTags}
-                description={appMetaInfo.description.description}
+                description={appMetaInfo.note.description}
+                appType={appType}
             />
         )
     }
@@ -180,28 +198,23 @@ export default function AppOverview({
     const renderSideInfoColumn = () => {
         const {
             appName,
-            shortDescription = `Write a short description for this ${resourceName}`,
+            description,
             // TODO: Update the placeholder text when integrating
             codeSource = 'devtron-labs/devtron',
             createdOn,
             createdBy,
             projectName,
+            chartUsed,
         } = appMetaInfo
 
         return (
             <aside className="flexbox-col dc__gap-16">
                 <div className="flexbox-col dc__gap-12">
-                    <div>
-                        {isJobOverview ? (
-                            <JobIcon className="icon-dim-48 dc__icon-bg-color br-4 p-8" />
-                        ) : (
-                            <AppIcon className="icon-dim-48" />
-                        )}
-                    </div>
+                    <div>{config.icon}</div>
                     <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break">{appName}</div>
                     {/* TODO: Uncomment and integrate */}
                     {/* <div className="flexbox flex-justify dc__gap-10">
-                        <div className="fs-13 fw-4 lh-20 cn-9">{shortDescription}</div>
+                        <div className="fs-13 fw-4 lh-20 cn-9">{description ?? `Write a short description for this ${resourceName}`}</div>
                         <EditIcon
                             className="icon-dim-16 cursor mw-16"
                             // TODO: Add onClick listener
@@ -218,6 +231,17 @@ export default function AppOverview({
                             <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleChangeProjectModal} />
                         </div>
                     </div>
+                    {isHelmChart && (
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Chart used</div>
+                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                                <span>{chartUsed.appStoreChartName}/</span>
+                                <a href={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartUsed.appStoreChartId}`}>
+                                    {chartUsed.appStoreAppName} ({chartUsed.appStoreAppVersion})
+                                </a>
+                            </div>
+                        </div>
+                    )}
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
@@ -237,7 +261,7 @@ export default function AppOverview({
                         </div>
                     </div>
                     {/* TODO: Uncomment, update and integrate. Also add the icon for the code source */}
-                    {/* {!isJobOverview && (
+                    {/* {type === 'app' && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
                             <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">{codeSource}</div>
@@ -450,6 +474,7 @@ export default function AppOverview({
     }
 
     function renderAppDescription() {
+        // TODO: Verify the classes for helm charts
         return (
             <div>
                 <GenericDescription
@@ -467,10 +492,17 @@ export default function AppOverview({
         )
     }
 
-    function renderOverviewContent(isJobOverview) {
+    const renderAboutSection = () => (
+        <>
+            <Catalog updatedBy="Utkarsh Arya" updatedOn="Aug 15, 2022" />
+            {renderAppDescription()}
+        </>
+    )
+
+    function renderOverviewContent() {
         if (isJobOverview) {
             const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.ABOUT]: renderAboutSection,
                 [OVERVIEW_TABS.JOB_PIPELINES]: renderWorkflowsStatus,
             }
 
@@ -491,14 +523,11 @@ export default function AppOverview({
                     <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
                 </div>
             )
+        } else if (isHelmChart) {
+            return <div className="app-overview-wrapper flexbox-col dc__gap-12">{renderAboutSection()}</div>
         } else {
             const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: () => (
-                    <>
-                        <Catalog updatedBy="Utkarsh Arya" updatedOn="Aug 15, 2022" />
-                        {renderAppDescription()}
-                    </>
-                ),
+                [OVERVIEW_TABS.ABOUT]: renderAboutSection,
                 [OVERVIEW_TABS.ENVIRONMENTS]: renderEnvironmentDeploymentsStatus,
             }
 
@@ -528,9 +557,9 @@ export default function AppOverview({
 
     return (
         // TODO: Fix the scroll for two column layout
-        <div className={`app-overview-container p-20 ${activeTab === OVERVIEW_TABS.ABOUT ? 'sidebar-open' : ''}`}>
+        <div className={`app-overview-container p-20 h-100 ${activeTab === OVERVIEW_TABS.ABOUT ? 'sidebar-open' : ''}`}>
             {activeTab === OVERVIEW_TABS.ABOUT && renderSideInfoColumn()}
-            {!isLoading && renderOverviewContent(isJobOverview)}
+            {!isLoading && renderOverviewContent()}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
         </div>

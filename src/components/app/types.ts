@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
@@ -82,24 +84,36 @@ export interface LabelTag {
     key: string
     value: string
 }
+
+export interface ChartUsed {
+    appStoreAppName: string
+    appStoreAppVersion: string
+    appStoreChartId: number
+    appStoreChartName: string
+}
+
 export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
-    description: Description
+    description: string
     createdOn: string
     projectId?: number
     projectName?: string
     labels?: TagType[]
-    shortDescription: string;
-    codeSource: string;
+    codeSource: string
+    /**
+     * Available only for helm apps
+     */
+    chartUsed?: ChartUsed
+    note?: Note
 }
 
 export interface ArtifactsCiJob {
     artifacts?: string[]
 }
 
-interface Description{
+interface Note {
     id: number
     description: string
     updatedBy: string
@@ -439,11 +453,22 @@ export interface LabelTagsType {
 export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
-    isJobOverview?: boolean
     filteredEnvIds?: string
+    /**
+     * Type of the application
+     *
+     * @default 'app'
+     */
+    appType: 'job' | 'app' | 'helm-chart'
 }
 
-export interface AboutAppInfoModalProps {
+export interface OverviewConfig {
+    resourceName: string
+    defaultDescription: string
+    icon: ReactNode
+}
+
+export interface AboutAppInfoModalProps extends Pick<AppOverviewProps, 'appType'> {
     isLoading: boolean
     appId: string
     description: string
@@ -453,7 +478,6 @@ export interface AboutAppInfoModalProps {
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     fetchingProjects?: boolean
     projectsList?: Teams[]
-    isJobOverview?: boolean
 }
 
 export interface DeleteComponentProps {

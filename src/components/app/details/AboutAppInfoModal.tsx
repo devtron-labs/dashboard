@@ -16,11 +16,12 @@ export default function AboutAppInfoModal({
     getAppMetaInfoRes,
     fetchingProjects,
     projectsList,
-    isJobOverview,
+    appType,
 }: AboutAppInfoModalProps) {
     const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
     const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
     const [submitting, setSubmitting] = useState(false)
+    const isJobOverview = appType === 'job'
 
     useEffect(() => {
         if (appMetaInfo && !fetchingProjects && Array.isArray(projectsList)) {
@@ -125,17 +126,20 @@ export default function AboutAppInfoModal({
                     <>
                         <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
                         {renderProjectSelect()}
-                        {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && !isJobOverview &&(
-                            <InfoColourBar
-                                classname="warn cn-9 lh-20"
-                                Icon={Error}
-                                message={projectChangeMessage()}
-                                iconClass="warning-icon"
-                                styles={{
-                                    padding: '8px 12px',
-                                }}
-                            />
-                        )}
+                        {selectedProject &&
+                            appMetaInfo &&
+                            selectedProject.label !== appMetaInfo.projectName &&
+                            !isJobOverview && (
+                                <InfoColourBar
+                                    classname="warn cn-9 lh-20"
+                                    Icon={Error}
+                                    message={projectChangeMessage()}
+                                    iconClass="warning-icon"
+                                    styles={{
+                                        padding: '8px 12px',
+                                    }}
+                                />
+                            )}
                     </>
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">

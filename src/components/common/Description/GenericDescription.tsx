@@ -149,7 +149,7 @@ export default function GenericDescription({
                     const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updatedOn
                     setDescriptionUpdatedOn(_date)
                     setModifiedDescriptionText(response.result.description)
-                    appMetaInfo.description = response.result
+                    appMetaInfo.note = response.result
                     toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
                     setEditDescriptionView(true)
                 }
@@ -314,13 +314,7 @@ export default function GenericDescription({
     }
 
     return (
-        <div
-            className={`cluster__body-details ${
-                initialEditDescriptionView
-                    ? 'pb-16 dc__overflow-scroll'
-                    : ''
-            }`}
-        >
+        <div className={`cluster__body-details ${initialEditDescriptionView ? 'pb-16 dc__overflow-scroll' : ''}`}>
             <div
                 data-testid="cluster-note-wrapper"
                 className={!isEditDescriptionView ? 'dc__overflow-auto' : 'dc__overflow-hidden'}

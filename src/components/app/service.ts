@@ -638,6 +638,10 @@ export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse> 
     return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 
+export function getHelmAppOverviewInfo(installedAppId: string): Promise<AppMetaInfoResponse> {
+    return get(`${Routes.HELM_APP_OVERVIEW}?installedAppId=${installedAppId}`)
+}
+
 export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {
     return post(Routes.APP_LABELS, request)
 }
