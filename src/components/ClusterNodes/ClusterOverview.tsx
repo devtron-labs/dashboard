@@ -419,11 +419,11 @@ function ClusterOverview({
 
     const renderCardDetails = () => {
         return (
-            <div className="flexbox dc__content-space p-20 dc__border br-4 mb-16 flexbox-col">
+            <div className="flexbox dc__content-space p-20 dc__border br-4 mb-16 flexbox-col bcn-0">
                 {/* Commented to be used in future*/}
                 {/* {cardDetailsInBar()} */}
                 <div className="flexbox dc__column-gap-24">
-                    <div className="flexbox w-50 bcn-0 dc__column-gap-32">
+                    <div className="flexbox w-50 dc__column-gap-32">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7">CPU Usage</div>
                             <div className="dc__align-left fs-20 fw-4 cn-9">
@@ -450,7 +450,7 @@ function ClusterOverview({
                         </div>
                     </div>
 
-                    <div className="flexbox dc__column-gap-24 w-50 bcn-0 br-4">
+                    <div className="flexbox dc__column-gap-24 w-50 br-4">
                         <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7">Memory Usage</div>
                             <div className="dc__align-left fs-20 fw-4 cn-9">
@@ -600,6 +600,7 @@ function ClusterOverview({
                 className={`dc__border-left resource-details-container flexbox bcn-0 pl-20 pt-20 dc__column-gap-32 ${
                     errorStatusCode || errorCode ? 'flex' : ''
                 }`}
+                style={{backgroundImage:'linear-gradient(249deg, #D4E6F7 0%, #FFF 50.58%)'}}
             >
                 {renderState()}
             </div>
