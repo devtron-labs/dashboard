@@ -114,7 +114,7 @@ export default function CIPipeline({
         name: '',
         args: [],
         materials: [],
-        triggerType: TriggerType.Auto,
+        triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
         gitHost: undefined,
         webhookEvents: [],
@@ -144,6 +144,7 @@ export default function CIPipeline({
             isValid: true,
         },
     })
+
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
         active: true,
         ciMaterial: [],

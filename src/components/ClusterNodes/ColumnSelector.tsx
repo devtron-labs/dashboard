@@ -129,6 +129,10 @@ export default function ColumnSelector() {
             }}
             styles={{
                 ...containerImageSelectStyles,
+                menu: (base, state) => ({
+                    ...base,
+                    zIndex: 6,
+                }),
                 menuList: (base, state) => ({
                     ...base,
                     borderRadius: '4px',

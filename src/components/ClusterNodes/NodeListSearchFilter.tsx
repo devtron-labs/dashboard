@@ -8,6 +8,9 @@ import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 import { ShortcutKeyBadge } from '../common/formFields/Widgets/Widgets'
+import { useLocation, useHistory} from 'react-router-dom'
+import * as queryString from 'query-string'
+
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -38,7 +41,8 @@ export default function NodeListSearchFliter({
     const [searchInputText, setSearchInputText] = useState('')
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [selectedColumns, setSelectedColumns] = useState<MultiValue<ColumnMetadataType>>([])
-
+    const location = useLocation()
+    const { push } = useHistory()
     useEffect(() => {
         if (searchInputText !== searchText) {
             setSearchInputText(searchText)
@@ -76,6 +80,7 @@ export default function NodeListSearchFliter({
     }
 
     const clearTextFilter = (): void => {
+        handleQueryParamsSeacrh('')
         setSearchInputText('')
         setSearchText('')
         setSelectedSearchTextType('')
@@ -85,6 +90,23 @@ export default function NodeListSearchFliter({
 
     const handleFilterInput = (event): void => {
         setSearchInputText(event.target.value)
+    }
+    const handleQueryParamsSeacrh=(searchString:string)=>{
+        const qs = queryString.parse(location.search)
+        const keys = Object.keys(qs)
+        const query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
+        if(searchString){
+            query[selectedSearchTextType] = searchInputText
+        }
+        else {
+            delete query[selectedSearchTextType]
+        }
+        const queryStr = queryString.stringify(query)
+        push(`?${queryStr}`)
+
     }
 
     const handleFilterTag = (event): void => {
@@ -109,12 +131,15 @@ export default function NodeListSearchFliter({
                     _searchedTextMap.set(currentItem, true)
                 }
             }
+            
+            handleQueryParamsSeacrh(searchInputText)
             setSearchText(searchInputText)
             setSearchedTextMap(_searchedTextMap)
             setSearchApplied(true)
             setOpenFilterPopup(false)
         } else if (theKeyCode === 'Backspace') {
             if (searchInputText.length === 0 && selectedSearchTextType) {
+                handleQueryParamsSeacrh('')
                 setSelectedSearchTextType('')
                 setSearchText('')
                 setOpenFilterPopup(false)
@@ -132,6 +157,21 @@ export default function NodeListSearchFliter({
         setSearchInputText('')
         setOpenFilterPopup(false)
     }
+    
+    const applyFilter=(selected)=>{
+        setSelectedVersion(selected)
+        const qs = queryString.parse(location.search)
+        const keys = Object.keys(qs)
+        const query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
+        if(selected.value===defaultVersion.value)delete query['k8sversion']
+        else query['k8sversion']=selected.value
+        let queryStr = queryString.stringify(query)
+        push(`?${queryStr}`)
+
+    }
     const renderTextFilter = (): JSX.Element => {
         let placeholderText = ''
         if (selectedSearchTextType === SEARCH_OPTION_LABEL.NAME) {
@@ -145,13 +185,13 @@ export default function NodeListSearchFliter({
         return (
             <div className="dc__position-rel" style={{ background: 'var(--N50)' }}>
                 <div
-                    className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox"
+                    className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start"
                     onClick={() => setOpenFilterPopup(true)}
                 >
                     <Search className="mr-5 ml-10 icon-dim-18" />
                     {selectedSearchTextType ? (
                         <>
-                            <span className="dc__position-rel bottom-2px">
+                            <span className="bottom-2px">
                                 {selectedSearchTextType === SEARCH_OPTION_LABEL.NODE_GROUP
                                     ? SEARCH_OPTION_LABEL.NODE_GROUP_TEXT
                                     : selectedSearchTextType}
@@ -217,7 +257,7 @@ export default function NodeListSearchFliter({
                         value: version,
                     })) || []),
                 ]}
-                onChange={setSelectedVersion}
+                onChange={applyFilter}
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
@@ -229,6 +269,14 @@ export default function NodeListSearchFliter({
                     singleValue: (base, state) => ({
                         ...base,
                         padding: '5px 0',
+                    }),
+                    menu: (base, state) => ({
+                        ...base,
+                        zIndex: 6,
+                    }),
+                    valueContainer: (base,state) => ({
+                        ...containerImageSelectStyles.valueContainer(base,state),
+                        display:'grid',
                     }),
                 }}
             />

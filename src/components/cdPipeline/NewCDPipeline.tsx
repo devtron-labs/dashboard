@@ -459,14 +459,14 @@ export default function NewCDPipeline({
             if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
                 form.preBuildStage = pipelineConfigFromRes.preDeployStage
             }else {
-                form.preBuildStage = {...pipelineConfigFromRes.preDeployStage, steps: []}
+                form.preBuildStage = {...pipelineConfigFromRes.preDeployStage, steps: [], triggerType: TriggerType.Auto}
             }
         }
         if (pipelineConfigFromRes?.postDeployStage) {
             if(pipelineConfigFromRes.postDeployStage.steps?.length > 0){
                 form.postBuildStage = pipelineConfigFromRes?.postDeployStage
             }else {
-                form.postDeployStage = {...pipelineConfigFromRes.postDeployStage, steps: []}
+                form.postDeployStage = {...pipelineConfigFromRes.postDeployStage, steps: [], triggerType: TriggerType.Auto}
             }
         }
         form.requiredApprovals = `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`
