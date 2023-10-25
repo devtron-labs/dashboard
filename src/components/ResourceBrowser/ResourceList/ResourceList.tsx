@@ -348,10 +348,6 @@ export default function ResourceList() {
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
-        toggleShowTerminal()
-    }, [location.search])
-
-    useEffect(() => {
         if (!superAdminRef.current) {
             return
         }
@@ -373,6 +369,10 @@ export default function ResourceList() {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         }
     }, [clusterCapacityData, location.search])
+
+    useEffect(() => {
+        toggleShowTerminal()
+    }, [location.search])
 
     useEffect(() => {
         if (
