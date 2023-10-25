@@ -53,6 +53,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             isClusterDetails: false,
             showEditCluster: false,
             isConnectedViaProxy: false,
+            isConnectedViaSSHTunnel: false,
         }
         this.initialise = this.initialise.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
@@ -128,16 +129,23 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             const { result } = await getClusterList()
             let clusters = result
                 ? result.map((c) => {
-                      return {
-                          ...c,
-                          environments: this.state.clusterEnvMap[c.id],
-                      }
-                  })
+                    return {
+                        ...c,
+                        environments: this.state.clusterEnvMap[c.id],
+                    }
+                })
                 : []
             clusters = clusters.concat({
                 id: null,
                 cluster_name: '',
                 server_url: '',
+                proxyUrl: '',
+                sshTunnelConfig: {
+                    user: '',
+                    password: '',
+                    authKey: '',
+                    sshServerAddress: ''
+                },
                 active: true,
                 config: {},
                 environments: [],
@@ -150,7 +158,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
             )
             if (!cluster) clearInterval(this.timerRef)
-        } catch (error) {}
+        } catch (error) { }
     }
 
     componentWillUnmount() {
@@ -246,6 +254,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                     setTlsConnectionFalse={this.setTlsConnectionFalse}
                                     isTlsConnection={this.state.isTlsConnection}
                                     prometheus_url={cluster.prometheus_url}
+
                                 />
                             ),
                     )}
@@ -257,7 +266,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 server_url={this.state.server_url}
                                 active={true}
                                 config={{}}
-                                toggleEditMode={() => { } }
+                                toggleEditMode={() => { }}
                                 reload={this.initialise}
                                 prometheus_url=""
                                 prometheusAuth={this.state.prometheus}
@@ -265,14 +274,19 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 isTlsConnection={this.state.isTlsConnection}
                                 isClusterDetails={this.state.isClusterDetails}
                                 proxyUrl={this.state.proxyUrl}
+                                sshTunnelUser={this.state.sshTunnelUser}
+                                sshTunnelPassword={this.state.sshTunnelPassword}
+                                sshTunnelPrivateKey={this.state.sshTunnelPrivateKey}
+                                sshTunnelUrl={this.state.sshTunnelUrl}
                                 isConnectedViaProxy={this.state.isConnectedViaProxy}
+                                isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                 setTlsConnectionFalse={this.setTlsConnectionFalse}
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
                                 isKubeConfigFile={this.state.isKubeConfigFile}
-                                toggleClusterDetails={this.toggleClusterDetails} 
-                                isVirtualCluster={false}                                
+                                toggleClusterDetails={this.toggleClusterDetails}
+                                isVirtualCluster={false}
                             />
                         </Drawer>
                     )}
@@ -296,6 +310,8 @@ function Cluster({
     reload,
     prometheus_url,
     proxyUrl,
+    toConnectWithSSHTunnel,
+    sshTunnelConfig,
     serverMode,
     isTlsConnection,
     toggleShowAddCluster,
@@ -312,7 +328,7 @@ function Cluster({
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(prometheus_url ? true : false)
-    
+
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
@@ -333,8 +349,13 @@ function Cluster({
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            proxyUrl: {value: proxyUrl, error: '' },
+            proxyUrl: { value: proxyUrl, error: '' },
+            sshTunnelUser: { value: sshTunnelConfig?.user, error: '' },
+            sshTunnelPassword: { value: sshTunnelConfig?.password, error: '' },
+            sshTunnelPrivateKey: { value: sshTunnelConfig?.authKey, error: '' },
+            sshTunnelUrl: { value: sshTunnelConfig?.sshServerAddress, error: '' },
             isConnectedViaProxy: proxyUrl?.length ? true : false,
+            isConnectedViaSSHTunnel: toConnectWithSSHTunnel,
             tlsClientKey: { value: config.tls_key, error: '' },
             tlsClientCert: { value: config.cert_data, error: '' },
             certificateAuthorityData: { value: config.cert_auth_data, error: '' },
@@ -359,6 +380,25 @@ function Cluster({
             proxyUrl: {
                 required: false,
                 validator: { error: 'Incorrect Url', regex: /^.*$/ },
+            },
+            toConnectWithSSHTunnel: {
+                required: false,
+            },
+            sshTunnelUser: {
+                required: false,
+                validator: { error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -', regex: /^[A-Za-z0-9_-]+$/ },
+            },
+            sshTunnelPassword: {
+                required: false,
+                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
+            },
+            sshTunnelPrivateKey: {
+                required: false,
+                validator: { error: 'ssh private key is required', regex: /^(?!\s*$).+/ },
+            },
+            sshTunnelUrl: {
+                required: false,
+                validator: { error: 'URL is required', regex: /^.*$/ },
             },
             isConnectedViaProxy: {
                 required: false,
@@ -403,9 +443,9 @@ function Cluster({
                 isDefaultCluster() || id
                     ? {}
                     : {
-                          required: true,
-                          validator: { error: 'token is required', regex: /[^]+/ },
-                      },
+                        required: true,
+                        validator: { error: 'token is required', regex: /[^]+/ },
+                    },
             endpoint: {
                 required: prometheusToggleEnabled ? true : false,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
@@ -418,7 +458,7 @@ function Cluster({
     const newEnvs = useMemo(() => {
         return clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
-    
+
     async function handleEdit(e) {
         try {
             const { result } = await getCluster(clusterId)
@@ -482,6 +522,10 @@ function Cluster({
         } else {
             payload['proxyUrl'] = proxyUrlValue
         }
+        payload.sshTunnelConfig['user'] = state.sshTunnelUser?.value
+        payload.sshTunnelConfig['password'] = state.sshTunnelPassword?.value
+        payload.sshTunnelConfig['authKey'] = state.sshTunnelPrivateKey?.value
+        payload.sshTunnelConfig['sshServerAddress'] = state.sshTunnelUrl?.value
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             let isValid = state.userName?.value && state.password?.value
             if (!isValid) {
@@ -511,6 +555,13 @@ function Cluster({
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
             proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
+            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
+            sshTunnelConfig: {
+                user: state.sshTunnelUser?.value,
+                password: state.sshTunnelPassword?.value,
+                authKey: state.sshTunnelPrivateKey?.value,
+                sshServerAddress: state.sshServerAddress?.value,
+            },
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
@@ -599,9 +650,8 @@ function Cluster({
     return (
         <>
             <article
-                className={`cluster-list ${
-                    clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
-                }`}
+                className={`cluster-list ${clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
+                    }`}
             >
                 <>
                     <List className="dc__border" key={clusterId} onClick={editModeToggle}>
@@ -657,9 +707,9 @@ function Cluster({
                         />
                     )}
                     {serverMode !== SERVER_MODE.EA_ONLY &&
-                    !window._env_.K8S_CLIENT &&
-                    Array.isArray(newEnvs) &&
-                    newEnvs.length > 1 ? (
+                        !window._env_.K8S_CLIENT &&
+                        Array.isArray(newEnvs) &&
+                        newEnvs.length > 1 ? (
                         <div className="pb-8">
                             <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                                 <div></div>
@@ -777,12 +827,17 @@ function Cluster({
                                 config={{}}
                                 reload={reload}
                                 prometheus_url={prometheus_url}
-                                prometheusAuth={state.prometheus} 
+                                prometheusAuth={state.prometheus}
                                 defaultClusterComponent={state.defaultClusterComponent}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
-                                proxyUrl={state.proxyUrl}
-                                isConnectedViaProxy={state.isConnectedViaProxy}
+                                proxyUrl={proxyUrl}
+                                sshTunnelUser={sshTunnelConfig.user}
+                                sshTunnelPassword={sshTunnelConfig.password}
+                                sshTunnelPrivateKey={sshTunnelConfig.authKey}
+                                sshTunnelUrl={sshTunnelConfig.sshServerAddress}
+                                isConnectedViaProxy={proxyUrl ? true : false}
+                                isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
                                 toggleShowAddCluster={toggleShowAddCluster}
@@ -804,7 +859,7 @@ function Cluster({
                             cluster_name={cluster_name}
                             {...environment}
                             hideClusterDrawer={hideClusterDrawer}
-                            isNamespaceMandatory={!isVirtualCluster && Array.isArray(environments) && environments.length > 0}
+                            isNamespaceMandatory={!isVirtualCluster}
                             isVirtual={isVirtualCluster}
                         />
                     </div>

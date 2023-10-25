@@ -15,7 +15,7 @@ import {
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, CreateAppLabelsRequest } from './types'
+import { AppDetails, ArtifactsCiJob, CreateAppLabelsRequest } from './types'
 import { DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
@@ -111,6 +111,10 @@ interface AppDetailsResponse extends ResponseType {
 
 interface AppMetaInfoResponse extends ResponseType {
     result?: AppMetaInfo
+}
+
+export interface ArtifactCiJobResponse extends ResponseType {
+    result?: ArtifactsCiJob
 }
 
 export function fetchAppDetails(appId: number | string, envId: number | string): Promise<AppDetailsResponse> {
@@ -602,6 +606,11 @@ export function getArtifact(pipelineId, workflowId) {
     return get(URL).then((response) => {
         return response
     })
+}
+
+export function getArtifactForJobCi(pipelineId, workflowId): Promise<ArtifactCiJobResponse> {
+    const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${workflowId}/ci-job/artifacts`
+    return get(URL)
 }
 
 export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {

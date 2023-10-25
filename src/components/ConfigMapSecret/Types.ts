@@ -33,7 +33,7 @@ export interface OptionsListType {
 export interface InputPluginSelectionType { 
     selectedOutputVariable: ExtendedOptionType
     variableOptions?: SuggestedTagOptionType[]
-    variableData?: OptionType
+    variableData?: ExtendedOptionType
     setVariableData?: (tagData:ExtendedOptionType ) => void
     refVar?: React.MutableRefObject<HTMLTextAreaElement>
     noBackDrop?: boolean
@@ -191,6 +191,7 @@ export interface ConfigMapState {
     showProtectedDeleteModal: boolean
     showProtectedDeleteOverrideModal: boolean
     draftPayload: any
+    isValidateFormError: boolean
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
 
@@ -224,6 +225,7 @@ export enum ConfigMapActionTypes {
     toggleProtectedDeleteModal = 'setShowProtectedDeleteModal',
     toggleProtectedDeleteOverrideModal = 'toggleProtectedDeleteOverrideModal',
     toggleDraftSaveModal = 'toggleDraftSaveModal',
+    setValidateFormError = 'setValidateFormError',
 }
 
 export interface ConfigMapAction {
