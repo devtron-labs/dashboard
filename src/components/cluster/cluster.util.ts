@@ -46,15 +46,15 @@ export function getClusterTerminalParamsData(
     clusterShellList: OptionType[],
     node: string,
 ): ClusterTerminalParamsType {
-    if (!nodeList) return emptyClusterTerminalParamsData
+    if (!nodeList || nodeList.length === 0) return emptyClusterTerminalParamsData
     const _selectedImage = imageList.find((image) => image.value === params.get('image'))
     const _selectedNamespace = namespaceList.find((namespace) => namespace.value === params.get('namespace'))
     let nodeOptionList: OptionType[] = []
     nodeList?.forEach((item) => nodeOptionList.push(...item.options))
 
     const _selectedNode: OptionType =
-        nodeOptionList?.find((data) => data.value === params.get('node')) ||
-        (node ? nodeOptionList?.find((item) => item.value === node) : nodeList[0]?.options[0])
+        nodeOptionList.find((data) => data.value === params.get('node')) ||
+        (node ? nodeOptionList.find((item) => item.value === node) : nodeList[0].options[0])
 
     const _selectedShell = clusterShellList.find((shell) => shell.value === params.get('shell'))
 
