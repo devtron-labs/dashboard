@@ -172,8 +172,8 @@ export class ValidationRules {
     }
 
     counterX = (value: string): { message: string; isValid: boolean } => {
-        if (!value?.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        if (value.includes('-')) {
+        if (!value.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        else if (value.includes('-')) {
             return { isValid: false, message: CustomErrorMessage.USE_ONLY_NON_NEGATIVE_INTERGER }
         } 
         return { isValid: true, message: '' }

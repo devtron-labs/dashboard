@@ -148,7 +148,7 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                         </span>
                         <input
                             tabIndex={2}
-                            type="number"
+                            type="text"
                             className="form__input form__input-pl-8 w-80px-imp ml-8 dc__bg-n50"
                             name="image_counter"
                             autoComplete="off"
