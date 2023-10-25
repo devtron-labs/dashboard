@@ -841,8 +841,8 @@ export default function CIPipeline({
                                             formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
                                                 CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
                                             (loadingState.loading || loadingState.failed)) ||
-                                            formDataErrorObj.customTag.message.length > 0 ||
-                                            formDataErrorObj.counterX?.message.length > 0
+                                        formDataErrorObj.customTag.message.length > 0 ||
+                                        formDataErrorObj.counterX?.message.length > 0
                                     }
                                     isLoading={apiInProgress}
                                 >

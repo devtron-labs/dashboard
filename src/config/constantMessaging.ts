@@ -69,7 +69,7 @@ export const CustomErrorMessage = {
     INVALID_IMAGE_PATTERN: 'Invalid image tag pattern',
     REQUIRED_IMAGE_PATTERN: 'Image tag pattern is required to generate container images',
     VARIABLE_X_ONLY_ONCE: 'Variable {x} can be used only once',
-    USE_ONLY_NON_NEGATIVE_INTERGER: 'Use only non-negative integer'
+    USE_ONLY_NON_NEGATIVE_INTERGER: 'Use only non-negative integer',
 }
 
 export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
