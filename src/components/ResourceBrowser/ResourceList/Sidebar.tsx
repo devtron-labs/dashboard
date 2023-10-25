@@ -358,23 +358,6 @@ function Sidebar({
             <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
             <div className="pb-8">
                     <div
-                        key={SIDEBAR_KEYS.overviewGVK.Kind}
-                        ref={updateRef}
-                        onClick={selectNode}
-                        data-kind={SIDEBAR_KEYS.overviewGVK.Kind}
-                        data-group={SIDEBAR_KEYS.overviewGVK.Group}
-                        data-version={SIDEBAR_KEYS.overviewGVK.Version}
-                        data-namespaced={false}
-                        className={`fs-13 pointer flexbox flex-justify dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                            nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
-                                ? 'bcb-1 cb-5'
-                                : 'cn-7 resource-tree-object'
-                        }`}
-                    >
-                        {SIDEBAR_KEYS.overview}
-                        {isClusterError && <Error className="mt-2 mb-2 icon-dim-16" />}
-                    </div>
-                    <div
                         key={SIDEBAR_KEYS.nodeGVK.Kind}
                         ref={updateRef}
                         onClick={selectNode}
