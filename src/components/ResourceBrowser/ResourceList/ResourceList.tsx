@@ -59,9 +59,9 @@ import {
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
-import { ClusterCapacityType, ClusterDetail, ClusterErrorType, ClusterImageList, ERROR_TYPE } from '../../ClusterNodes/types'
+import { ClusterCapacityType, ClusterDetail, ClusterImageList } from '../../ClusterNodes/types'
 import { getHostURLConfiguration } from '../../../services/service'
-import { clusterNamespaceList, getClusterCapacity, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
+import { clusterNamespaceList, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'

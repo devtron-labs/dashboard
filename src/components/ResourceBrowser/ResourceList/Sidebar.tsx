@@ -15,7 +15,6 @@ import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { withShortcut, IWithShortcut } from 'react-keybind'
-import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 
 function Sidebar({
     k8SObjectMap,
@@ -25,7 +24,6 @@ function Sidebar({
     updateResourceSelectionData,
     shortcut,
     isCreateModalOpen,
-    isClusterError,
 }: SidebarType & IWithShortcut) {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{

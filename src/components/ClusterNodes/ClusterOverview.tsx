@@ -11,7 +11,6 @@ import moment from 'moment'
 import { Moment12HourFormat,URLS } from '../../config'
 import {
     ErrorScreenManager,
-    Progressing,
     TippyCustomized,
     TippyTheme,
     showError,

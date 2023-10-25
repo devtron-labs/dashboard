@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {useState } from 'react'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 
 
