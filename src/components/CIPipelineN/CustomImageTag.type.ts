@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 
 export const ImageTagType = {
     Default: 'DEFAULT',
@@ -10,7 +10,7 @@ export interface CustomTagType {
     counterX: string
 }
 
-export interface CustomImageTagsType{
+export interface CustomImageTagsType {
     imageTagValue: string
     setImageTagValue: React.Dispatch<React.SetStateAction<string>>
 }

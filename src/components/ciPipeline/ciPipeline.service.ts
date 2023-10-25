@@ -500,7 +500,7 @@ function parseCIResponse(
                 customTag: {
                     tagPattern: ciPipeline.customTag?.tagPattern || '',
                     counterX: +ciPipeline.customTag?.counterX || 0,
-                }
+                },
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,

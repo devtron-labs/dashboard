@@ -240,7 +240,11 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                         showImageTagPatternDetails ? 'dc__border-bottom' : ''
                     }`}
                 >
-                     <div className={`flex left ${!showImageTagPatternDetails && formData.customTag?.tagPattern?.length > 0 ? 'top' : ''}`}>
+                    <div
+                        className={`flex left ${
+                            !showImageTagPatternDetails && formData.customTag?.tagPattern?.length > 0 ? 'top' : ''
+                        }`}
+                    >
                         <GeneratedImage className="mr-12 icon-dim-36" />
                         <div>
                             <span className="fw-6">Pattern for generated image tag</span>
