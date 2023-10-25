@@ -16,7 +16,7 @@ import { AddCveModal } from './AddCveModal';
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { getVulnerabilities, savePolicy, updatePolicy } from './security.service';
-import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { NavLink } from 'react-router-dom';
@@ -80,7 +80,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
 
     handleErrorResponse(error) {
         if (error.code === 403) {
-            toast.error("You don't have permission to add CVE policy")
+            return <ErrorScreenManager code={403} subtitle="You don't have permission to add CVE policy." />
         } else {
             showError(error)
             this.setState({ view: ViewType.ERROR })
