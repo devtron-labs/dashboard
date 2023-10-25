@@ -12,14 +12,7 @@ import {
     getRandomColor,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    Catalog,
-    RadioGroup,
-    handleUTCTime,
-    importComponentFromFELibrary,
-    processDeployedTime,
-    sortOptionsByValue,
-} from '../../common'
+import { Catalog, RadioGroup, handleUTCTime, importComponentFromFELibrary, processDeployedTime } from '../../common'
 import { AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
@@ -34,13 +27,6 @@ import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
 import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
-import {
-    ExternalLinkIdentifierType,
-    ExternalLinksAndToolsType,
-    ExternalLinkScopeType,
-} from '../../externalLinks/ExternalLinks.type'
-import { getExternalLinks } from '../../externalLinks/ExternalLinks.service'
-import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
 import { StatusConstants, DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
@@ -77,11 +63,6 @@ export default function AppOverview({
     const [newDescription, setNewDescription] = useState<string>(isJobOverview ? DefaultJobNote : DefaultAppNote)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
-    const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
-        fetchingExternalLinks: true,
-        externalLinks: [],
-        monitoringTools: [],
-    })
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
         () => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]),
         [appId],
@@ -119,8 +100,6 @@ export default function AppOverview({
     useEffect(() => {
         if (isJobOverview) {
             getCIPipelinesForJob()
-        } else {
-            getExternalLinksDetails()
         }
     }, [appId])
 
@@ -135,33 +114,6 @@ export default function AppOverview({
         }
         return []
     }, [filteredEnvIds, otherEnvsResult])
-
-    const getExternalLinksDetails = (): void => {
-        getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
-            .then((externalLinksRes) => {
-                setExternalLinksAndTools({
-                    fetchingExternalLinks: false,
-                    externalLinks:
-                        externalLinksRes.result?.ExternalLinks?.filter(
-                            (_link) => _link.type === ExternalLinkScopeType.AppLevel,
-                        ).sort(sortByUpdatedOn) || [],
-                    monitoringTools:
-                        externalLinksRes.result?.Tools?.map((tool) => ({
-                            label: tool.name,
-                            value: tool.id,
-                            icon: tool.icon,
-                        })).sort(sortOptionsByValue) || [],
-                })
-            })
-            .catch((e) => {
-                showError(e)
-                setExternalLinksAndTools({
-                    fetchingExternalLinks: false,
-                    externalLinks: [],
-                    monitoringTools: [],
-                })
-            })
-    }
 
     const getCIPipelinesForJob = (): void => {
         getJobCIPipeline(appId)
