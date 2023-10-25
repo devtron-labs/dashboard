@@ -51,7 +51,7 @@ export default function DeploymentConfigToolbar({
         >
             <div className="pt-4 pb-4 pl-0 pr-0">
                 <DropdownItem
-                    label="Compare Values niggggggg"
+                    label="Compare Values"
                     onClick={() => handleOptionClick(true)}
                     index={1}
                     isValues={isValues}

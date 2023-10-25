@@ -526,11 +526,15 @@ export function DropdownContainer({ isOpen, onClose, children }: DropdownContain
     )
 }
 
-export function DropdownItem({ label, isValues, onClick }: DropdownItemProps) {
+export function DropdownItem({ label, onClick, index, isValues }: DropdownItemProps) {
+    const isSelected = (index === 1 && isValues) || (index === 2 && !isValues)
     return (
         <div
-            className={`dc__content-start cursor pt-6 pb-6 pr-8 pl-8 fs-13 ${isValues ? 'fw-6 bcb-1' : 'fw-n cn-9'}`}
+            className={`dc__content-start cursor pt-6 pb-6 pr-8 pl-8 fs-13 ${
+                isSelected ? 'fw-6 bcb-1 cb-5' : 'fw-n cn-9'
+            }`}
             onClick={onClick}
+            data-testid="dropdown-item"
         >
             {label}
         </div>
