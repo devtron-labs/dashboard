@@ -278,7 +278,6 @@ export const CIListItem = ({
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                         hideHardDelete={hideImageTaggingHardDelete}
-                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>
