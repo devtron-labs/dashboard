@@ -771,7 +771,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 forceReInit={true}
                                 hideHardDelete={this.props.hideImageTaggingHardDelete}
                                 updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
-                                isSuperAdmin={this.props.isSuperAdmin}
+                                // isSuperAdmin={this.props.isSuperAdmin}
                             />
                         </div>
                     </div>
