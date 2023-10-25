@@ -1,4 +1,3 @@
-import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext, useState } from 'react'
 import { CustomImageTagsType, ImageTagType } from './CustomImageTag.type'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
@@ -11,6 +10,7 @@ import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import '../ciPipeline/ciPipeline.scss'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsType) {
     const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
@@ -22,8 +22,8 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
         setShowImageTagPatternDetails(!showImageTagPatternDetails)
     }
 
-    const handleImageTagTypeChange = (event) => {
-        setImageTagValue(event.target.value)
+    const handleImageTagTypeChange = () => {
+        setImageTagValue(ImageTagType.Custom)
     }
 
     const renderInputErrorMessage = (errorMessage: string) => {
@@ -37,22 +37,10 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
 
     const renderImageTagPatternPreview = () => {
         return (
-            <div className="custom-tag-radio pl-16 pr-16 pt-6 pb-12">
-                <RadioGroup
-                    value={imageTagValue}
-                    name="image-type"
-                    onChange={handleImageTagTypeChange}
-                    className="chartrepo-type__radio-group dc__block-imp"
-                >
-                    <RadioGroupItem dataTestId="ci-default-image-tag" value={ImageTagType.Default}>
-                        Use system generated image tag pattern
-                        {imageTagValue === ImageTagType.Default && getDefaultTagValue()}
-                    </RadioGroupItem>
-                    <br />
-                    <RadioGroupItem dataTestId="ci-custom-image-tag" value={ImageTagType.Custom}>
-                        Create custom image tag pattern
-                    </RadioGroupItem>
-                </RadioGroup>
+            <div className="pl-16 pr-16 pt-12 pb-12">
+                <div onClick={handleImageTagTypeChange} className="br-4 en-2 cb-5 bw-1 flex cursor p-8">
+                <Add className="icon-dim-18 fcb-5 mr-8" /> Create tag pattern
+                </div>
                 {renderCustomImageDetails()}
             </div>
         )
