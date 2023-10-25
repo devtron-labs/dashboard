@@ -77,6 +77,9 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
             counterX: event.target.value,
         }
         setFormData(_form)
+        const _formDataErrorObj = { ...formDataErrorObj }
+        _formDataErrorObj.counterX = validationRules.counterX(event.target.value)
+        setFormDataErrorObj(_formDataErrorObj)
     }
 
     const renderCounterXTippy = (variableX: string) => {
@@ -154,6 +157,7 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                             min="0"
                         />
                         <div></div>
+                        {formDataErrorObj.counterX?.message.length > 0 ? renderInputErrorMessage(formDataErrorObj.counterX.message) : null}
                     </div>
                 </div>
             )
