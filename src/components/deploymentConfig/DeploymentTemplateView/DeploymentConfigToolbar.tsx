@@ -94,7 +94,7 @@ export default function DeploymentConfigToolbar({
                 {!noReadme && !showReadme && (
                     <ReadmeIcon className="icon-dim-16 scn-7 cursor" onClick={handleReadMeClick} />
                 )}
-                {isValues && selectedTabIndex == 2 && (
+                {isValues && !noReadme && (
                     <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
                         <span>
                             <ViewVariablesIcon

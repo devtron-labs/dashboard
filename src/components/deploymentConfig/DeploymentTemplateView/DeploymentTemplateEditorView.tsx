@@ -72,8 +72,19 @@ export default function DeploymentTemplateEditorView({
         return response.result.data
     }
 
+    const resolveVariables = async (value: string) => {
+        const request = {
+            appId: +appId,
+            chartRefId: state.selectedChartRefId,
+            values: value,
+            valuesAndManifestFlag: 1,
+        }
+        const response = await getDeploymentManisfest(request)
+        return response.result.resolvedData
+    }
+
     useEffect(() => {
-        if (!showDraftData || isValues) return
+        if (!showDraftData || isValues) return // hit api only when manifest is selected, for values use local states.
         setDraftLoading(true)
         getLocalDaftManifest()
             .then((data) => {
@@ -258,17 +269,6 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
-    const resolveVariables = async (value: string) => {
-        const request = {
-            appId: +appId,
-            chartRefId: state.selectedChartRefId,
-            values: value,
-            valuesAndManifestFlag: 1,
-        }
-        const response = await getDeploymentManisfest(request)
-        return response.result.resolvedData
-    }
-
     useEffect(() => {
         if (!convertVariables) return
         setResolveLoading(true)
@@ -291,6 +291,7 @@ export default function DeploymentTemplateEditorView({
     const source = isValues ? state.fetchedValues : state.fetchedValuesManifest
     const valueLHS = isIdMatch ? defaultValue : source[selectedOptionId] // fetch LHS data from respective cache store
 
+    // final value for LHS
     const lhs = convertVariables ? resolvedValuesLHS : valueLHS
 
     // choose RHS value for comparison
@@ -298,6 +299,7 @@ export default function DeploymentTemplateEditorView({
     const selectedData = isValues ? state.tempFormData || state.draftValues : draftManifestData
     const valueRHS = shouldUseDraftData ? selectedData : value
 
+    // final value for RHS
     const rhs = convertVariables ? resolvedValuesRHS : valueRHS
 
     const renderCodeEditorHeading = () => (
