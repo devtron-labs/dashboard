@@ -99,6 +99,13 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
         )
     }
 
+    const handleCounterKeyPress = (event) => {
+        if (event.key === '-' || event.key === '+') {
+            event.preventDefault()
+            return false
+        }
+    }
+
     const renderCustomImageDetails = () => {
         return (
             imageTagValue === ImageTagType.Custom && (
@@ -148,16 +155,19 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                         </span>
                         <input
                             tabIndex={2}
-                            type="text"
+                            type="number"
                             className="form__input form__input-pl-8 w-80px-imp ml-8 dc__bg-n50"
                             name="image_counter"
                             autoComplete="off"
                             value={formData.customTag?.counterX}
                             onChange={onChangeCustomImageCounter}
                             min="0"
+                            onKeyPress={handleCounterKeyPress}
                         />
                         <div></div>
-                        {formDataErrorObj.counterX?.message.length > 0 ? renderInputErrorMessage(formDataErrorObj.counterX.message) : null}
+                        {formDataErrorObj.counterX?.message.length > 0
+                            ? renderInputErrorMessage(formDataErrorObj.counterX.message)
+                            : null}
                     </div>
                 </div>
             )
