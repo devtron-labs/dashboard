@@ -57,9 +57,8 @@ export default function TagChipsContainer({
             ) : (
                 <div className="fs-13 fw-4 lh-20 cn-7">
                     Add tags to this {resourceName}. Desired tags can also be propagated to Kubernetes resources as
-                    labels.
+                    labels.&nbsp;
                     <span className="cb-5 cursor" onClick={onAddTagButtonClick}>
-                        {' '}
                         Add Tags
                     </span>
                 </div>
