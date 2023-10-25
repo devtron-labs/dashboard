@@ -226,7 +226,7 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                         showImageTagPatternDetails ? 'dc__border-bottom' : ''
                     }`}
                 >
-                    <div className={`flex ${showImageTagPatternDetails ? 'left' : 'top'}`}>
+                     <div className={`flex left ${!showImageTagPatternDetails && formData.customTag?.tagPattern?.length > 0 ? 'top' : ''}`}>
                         <GeneratedImage className="mr-12 icon-dim-36" />
                         <div>
                             <span className="fw-6">Pattern for generated image tag</span>
@@ -238,7 +238,7 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                             {getGeneratedTagDescription()}
                         </div>
                     </div>
-                    <button type="button" className="dc__transparent flex top" data-testid="api-token-edit-button">
+                    <button type="button" className="dc__transparent flex" data-testid="api-token-edit-button">
                         {showImageTagPatternDetails ? (
                             <DownArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '90deg' }} />
                         ) : (

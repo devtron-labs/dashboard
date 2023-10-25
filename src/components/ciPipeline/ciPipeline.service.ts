@@ -311,8 +311,8 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         dockerConfigOverride: formData.isDockerConfigOverridden ? formData.dockerConfigOverride : {},
         defaultTag: formData.defaultTag,
         customTag: {
-            tagPattern: formData.customTag?.tagPattern || '',
-            counterX: +formData.customTag?.counterX || 0,
+            tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
+            counterX: formData.customTag ? +formData.customTag.counterX : 0,
         },
     }
     return ci

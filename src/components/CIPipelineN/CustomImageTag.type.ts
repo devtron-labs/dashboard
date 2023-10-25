@@ -1,5 +1,4 @@
 import React from "react"
-import { PipelineFormDataErrorType, PipelineFormType } from "../workflowEditor/types"
 
 export const ImageTagType = {
     Default: 'DEFAULT',
