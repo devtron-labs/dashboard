@@ -9,6 +9,8 @@ export interface DeploymentHistoryDetail {
     componentName?: string
     values: Record<string, DeploymentHistorySingleValue>
     codeEditorValue: DeploymentHistorySingleValue
+    resolvedTemplateData: string
+    variableSnapshot: object
 }
 export interface HistoryDiffSelectorList {
     id: number
