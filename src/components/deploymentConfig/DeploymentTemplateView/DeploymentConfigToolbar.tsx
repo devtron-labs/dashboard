@@ -9,6 +9,7 @@ import { DeploymentConfigToolbarProps } from '../types'
 import '../deploymentConfig.scss'
 import { DropdownContainer, DropdownItem } from './DeploymentTemplateView.component'
 import Tippy from '@tippyjs/react'
+import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentConfigToolbar({
     selectedTabIndex,
@@ -96,12 +97,16 @@ export default function DeploymentConfigToolbar({
                 )}
                 {isValues && !noReadme && (
                     <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
-                        <span>
-                            <ViewVariablesIcon
-                                className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 scn-7 cursor`}
-                                onClick={handleViewVariablesClick}
-                            />
-                        </span>
+                        <li className="flex left dc_width-max-content cursor">
+                            <div className="w-40 h-20">
+                                <Toggle
+                                    selected={convertVariables}
+                                    color="var(--B500)"
+                                    onSelect={handleViewVariablesClick}
+                                    Icon={ViewVariablesIcon}
+                                />
+                            </div>
+                        </li>
                     </Tippy>
                 )}
             </div>
