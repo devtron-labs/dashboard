@@ -12,9 +12,6 @@ export interface CustomTagType {
 }
 
 export interface CustomImageTagsType{
-    defaultTag: string[]
-    formDataErrorObj: PipelineFormDataErrorType
-    setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
-    formData: PipelineFormType,
-    setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
+    imageTagValue: string
+    setImageTagValue: React.Dispatch<React.SetStateAction<string>>
 }

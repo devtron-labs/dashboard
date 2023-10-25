@@ -1,6 +1,6 @@
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext, useState } from 'react'
-import { ImageTagType } from './CustomImageTag.type'
+import { CustomImageTagsType, ImageTagType } from './CustomImageTag.type'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-arrow-left.svg'
@@ -10,17 +10,10 @@ import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMes
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import '../ciPipeline/ciPipeline.scss'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import Tippy from '@tippyjs/react'
 
-function CustomImageTags({
-    imageTagValue,
-    setImageTagValue
-}) {
-    const {
-        formData,
-        setFormData,
-        formDataErrorObj,
-        setFormDataErrorObj,
-    } = useContext(pipelineContext)
+function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsType) {
+    const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [showImageTagPatternDetails, setShowImageTagPatternDetails] = useState<boolean>(false)
     const isCustomTagError = formDataErrorObj.customTag.message.length > 0 && !formDataErrorObj.customTag.isValid
@@ -44,7 +37,7 @@ function CustomImageTags({
 
     const renderImageTagPatternPreview = () => {
         return (
-            <div className="pl-16 pr-16 pt-12 pb-12">
+            <div className="custom-tag-radio pl-16 pr-16 pt-6 pb-12">
                 <RadioGroup
                     value={imageTagValue}
                     name="image-type"
@@ -86,11 +79,31 @@ function CustomImageTags({
         setFormData(_form)
     }
 
+    const renderCounterXTippy = (variableX: string) => {
+        return (
+            <Tippy
+                content={
+                    <div className="fs-12">
+                        {`{x}`} is an auto increasing number. It will increase by one on each build trigger.
+                    </div>
+                }
+                placement="top"
+                className="default-tt w-200"
+                arrow={false}
+            >
+                <span className="pl-4 dc__underline">{variableX}</span>
+            </Tippy>
+        )
+    }
+
     const renderCustomImageDetails = () => {
         return (
             imageTagValue === ImageTagType.Custom && (
                 <div className="pl-26">
-                    <span className="cn-7">Use mix of fixed pattern and variable {`{x}`}</span>
+                    <div>
+                        <span className="cn-7"> Use mix of fixed pattern and</span>
+                        {renderCounterXTippy(`variable {x}`)}
+                    </div>
                     <textarea
                         tabIndex={1}
                         className="form__input form__input-no-bottom-radius"
@@ -113,22 +126,27 @@ function CustomImageTags({
                                 Tag Preview:
                                 <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
                                     <div className={'dc__registry-icon mr-5 '}></div>
-                                    {formData.customTag?.tagPattern?.replace('{x}', formData.customTag?.counterX?.toString())}
+                                    {formData.customTag?.tagPattern?.replace(
+                                        '{x}',
+                                        formData.customTag?.counterX?.toString(),
+                                    )}
                                 </div>
                             </div>
                         )}
                     </div>
-                    <div className="mt-4 cn-7 fs-11 flex left">
+                    <div className="mt-4 cn-7 fs-12 flex left">
                         <Warning className="mr-4 icon-dim-16 image-tag-alert-icon" />
                         Build will fail if resulting image tag has already been built
                     </div>
-                    <hr />
+                    <hr className="mt-16 mb-16" />
                     <div className="flex left">
-                        <span className="cn-7">Value of variable {`{x}`} in the next build trigger will be</span>
+                        <span className="cn-7">
+                            Value of {renderCounterXTippy(`{x}`)} in the next build trigger will be
+                        </span>
                         <input
                             tabIndex={2}
                             type="number"
-                            className="form__input form__input-p-2 w-80px-imp ml-8 dc__bg-n50"
+                            className="form__input form__input-pl-8 w-80px-imp ml-8 dc__bg-n50"
                             name="image_counter"
                             autoComplete="off"
                             value={formData.customTag?.counterX}
@@ -148,7 +166,9 @@ function CustomImageTags({
                 {formData.defaultTag?.map((tag, index) => {
                     return (
                         <div key={`tag-${index}`} className="flex left">
-                            <div className="dc__bg-n50 br-6 pl-4 pr-4 flex left dc_width-max-content dc__lowercase">{tag}</div>
+                            <div className="dc__bg-n50 br-6 pl-4 pr-4 flex left dc_width-max-content dc__lowercase">
+                                {tag}
+                            </div>
                             {index < 2 && <span className="bcn-0 pl-2 pr-2">-</span>}
                         </div>
                     )
@@ -172,7 +192,9 @@ function CustomImageTags({
         let errorMessage = ''
         if (
             formDataErrorObj.customTag.message.find(
-                (errorMsg) => errorMsg === CustomErrorMessage.CUSTOM_TAG_ERROR_MSG || errorMsg === CustomErrorMessage.CUSTOM_TAG_MANDATORY_X,
+                (errorMsg) =>
+                    errorMsg === CustomErrorMessage.CUSTOM_TAG_ERROR_MSG ||
+                    errorMsg === CustomErrorMessage.CUSTOM_TAG_MANDATORY_X,
             )
         ) {
             errorMessage = CustomErrorMessage.INVALID_IMAGE_PATTERN
@@ -200,19 +222,23 @@ function CustomImageTags({
             <div className="white-card mb-16 p-0 fs-13">
                 <div
                     onClick={toggleEditAction}
-                    className={`flex dc__content-space w-100 pl-16 pr-16 pt-12 pb-12 cursor ${
+                    className={`flex dc__content-space w-100 pl-16 pr-16 pt-12 pb-12 cursor flex top ${
                         showImageTagPatternDetails ? 'dc__border-bottom' : ''
                     }`}
                 >
-                    <div className="flex left  ">
-                        <GeneratedImage className="mr-12" />
+                    <div className={`flex ${showImageTagPatternDetails ? 'left' : 'top'}`}>
+                        <GeneratedImage className="mr-12 icon-dim-36" />
                         <div>
                             <span className="fw-6">Pattern for generated image tag</span>
-                           { imageTagValue === ImageTagType.Default  ? <span className="dc__italic-font-style ml-4">(Using default)</span> : ''}
+                            {imageTagValue === ImageTagType.Default ? (
+                                <span className="dc__italic-font-style ml-4">(Using default)</span>
+                            ) : (
+                                ''
+                            )}
                             {getGeneratedTagDescription()}
                         </div>
                     </div>
-                    <button type="button" className="dc__transparent" data-testid="api-token-edit-button">
+                    <button type="button" className="dc__transparent flex top" data-testid="api-token-edit-button">
                         {showImageTagPatternDetails ? (
                             <DownArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '90deg' }} />
                         ) : (
