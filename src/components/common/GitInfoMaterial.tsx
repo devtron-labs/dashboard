@@ -134,11 +134,19 @@ export default function GitInfoMaterial({
                 style={{ background: 'var(--window-bg)' }}
                 onClick={onClickHeader}
             >
-                <BranchFixed className=" mr-8 icon-color-n9" />
+                <BranchFixed className=" mr-8 icon-color-n9 mw-14" />
                 {showWebhookModal ? (
                     'Select commit to build'
                 ) : (
-                    <div className="dc__ellipsis-right">{selectedMaterial.value}</div>
+                    <Tippy
+                        className="default-tt" 
+                        arrow={false}
+                        placement="top"
+                        content={selectedMaterial.value}
+                        interactive={true}
+                    >
+                        <div className="dc__ellipsis-right">{selectedMaterial.value}</div>
+                    </Tippy>
                 )}
                 {selectedMaterial.regex && (
                     <Tippy
