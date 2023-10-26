@@ -318,7 +318,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const renderDeploymentComponent = () => {
         if (envList.length > 0) {
             return (
-                <div className="env-deployments-info-wrapper w-100">
+                <div
+                    className={`env-deployments-info-wrapper ${
+                        isArgoInstalled ? 'env-deployments-info-wrapper--argo-installed' : ''
+                    } w-100`}
+                >
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom dc__uppercase fs-12 fw-6 cn-7 pr-16 pl-16">
                         <span />
                         {isArgoInstalled && <ActivityIcon className="icon-dim-16" />}
