@@ -150,10 +150,10 @@ export default function GitInfoMaterial({
                 )}
                 {selectedMaterial.regex && (
                     <Tippy
-                        className="default-tt dc__word-break-all"
+                        className="default-tt"
                         arrow={false}
                         placement="top"
-                        content={'Change branch'}
+                        content={"Change branch"}
                         interactive={true}
                     >
                         <button data-testid={dataTestId} type="button" className="dc__transparent flexbox">
