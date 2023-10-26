@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { ReactComponent as FileCode } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'

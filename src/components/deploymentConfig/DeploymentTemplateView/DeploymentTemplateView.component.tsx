@@ -15,7 +15,6 @@ import {
     DeploymentChartOptionType,
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
-    DropdownContainerProps,
     DropdownItemProps,
 } from '../types'
 import {
