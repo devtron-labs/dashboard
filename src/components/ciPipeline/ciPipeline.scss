@@ -168,6 +168,10 @@
     border-radius: 4px;
     background: var(--N50);
 
+    &.no-padding-script-container {
+        padding: 0px;
+    }
+
     .react-monaco-editor-container {
         min-height: 300px;
     }
