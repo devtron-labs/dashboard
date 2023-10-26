@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppChartRefForAppAndEnv } from '../../../services/service'
@@ -30,13 +30,20 @@ export default function ConfigMapList({
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [showComments, setShowComments] = useState(false)
     const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
+    const configMapListAbortRef = useRef(null)
 
     useEffect(() => {
-        setConfigMapLoading(true)
         setConfigMap(null)
-        init(true)
+        setTimeout(() => {
+            configMapListAbortRef.current = new AbortController()
+            setConfigMapLoading(true)
+            init(true)
+        }, 100);
         if (!isJobView) {
             reloadEnvironments()
+        }
+        return () => {
+            configMapListAbortRef.current?.abort()
         }
     }, [appId, envId])
 
@@ -54,8 +61,8 @@ export default function ConfigMapList({
         try {
             const [{ result: appChartRefRes }, { result: configMapRes }, { result: draftData }] = await Promise.all([
                 isInit ? getAppChartRefForAppAndEnv(appId, envId) : { result: null },
-                getConfigMapList(appId, envId),
-                isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 1) : { result: null },
+                getConfigMapList(appId, envId, configMapListAbortRef.current.signal),
+                isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 1, configMapListAbortRef.current.signal) : { result: null },
             ])
             const draftDataMap = {},
                 draftDataArr = []
@@ -93,8 +100,10 @@ export default function ConfigMapList({
             }
             setParentState?.(ComponentStates.loaded)
         } catch (error) {
-            setParentState?.(ComponentStates.failed)
-            showError(error)
+            if(!configMapListAbortRef.current.signal.aborted){
+                setParentState?.(ComponentStates.failed)
+                showError(error)
+            }
         } finally {
             setConfigMapLoading(false)
         }

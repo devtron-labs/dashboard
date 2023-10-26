@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.31",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.34",
         "@sentry/browser": "^7.3.1",
         "@sentry/integrations": "^7.3.1",
         "@sentry/tracing": "^7.3.1",
@@ -132,6 +132,7 @@
     },
     "resolutions": {
         "**/@typescript-eslint/eslint-plugin": "^5.15.0",
-        "**/@typescript-eslint/parser": "^5.15.0"
+        "**/@typescript-eslint/parser": "^5.15.0",
+        "react-error-overlay": "6.0.9"
     }
 }

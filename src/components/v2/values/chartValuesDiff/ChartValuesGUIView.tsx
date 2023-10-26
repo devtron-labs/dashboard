@@ -523,15 +523,14 @@ const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
                     )
                 })}
             </form>
-            {!props.openReadMe && (
-                <UpdateApplicationButton
-                    isUpdateInProgress={props.isUpdateInProgress}
-                    isDeleteInProgress={props.isDeleteInProgress}
-                    isDeployChartView={props.isDeployChartView}
-                    isCreateValueView={props.isCreateValueView}
-                    deployOrUpdateApplication={props.deployOrUpdateApplication}
-                />
-            )}
+            <UpdateApplicationButton
+                isUpdateInProgress={props.isUpdateInProgress}
+                isDeleteInProgress={props.isDeleteInProgress}
+                isDeployChartView={props.isDeployChartView}
+                isCreateValueView={props.isCreateValueView}
+                deployOrUpdateApplication={props.deployOrUpdateApplication}
+            />
+
         </div>
     )
 }
