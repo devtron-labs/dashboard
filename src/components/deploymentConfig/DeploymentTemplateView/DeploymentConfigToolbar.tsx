@@ -4,7 +4,7 @@ import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-l
 import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-view-variables.svg'
+import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-view-variable-toggle.svg'
 import { DeploymentConfigToolbarProps } from '../types'
 import '../deploymentConfig.scss'
 import { DropdownItem } from './DeploymentTemplateView.component'
