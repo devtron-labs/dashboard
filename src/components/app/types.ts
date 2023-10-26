@@ -440,9 +440,9 @@ export enum SortingOrder {
 
 export interface EditAppRequest {
     id: number
-    labels?: TagType[]
-    teamId?: number
-    description?: AppMetaInfo['description']
+    labels: TagType[]
+    teamId: number
+    description: AppMetaInfo['description']
 }
 
 export interface LabelTagsType {

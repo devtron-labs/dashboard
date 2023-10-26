@@ -79,6 +79,7 @@ export default function AboutTagEditModal({
             id: parseInt(appId),
             labels: _labelTags,
             teamId: appMetaInfo.projectId,
+            description: appMetaInfo.description,
         }
 
         try {

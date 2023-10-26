@@ -200,6 +200,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                 id: +appId,
                 teamId: appMetaInfo.projectId,
                 description: value?.trim(),
+                labels: appMetaInfo.labels,
             }
 
             try {

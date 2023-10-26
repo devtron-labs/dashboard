@@ -84,6 +84,7 @@ export default function AboutAppInfoModal({
             id: parseInt(appId),
             teamId: selectedProject.value,
             labels: appMetaInfo.labels,
+            description: appMetaInfo.description,
         }
 
         try {
