@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
@@ -11,10 +11,11 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
 
-function CustomImageTags({}: CustomImageTagsType) {
+function CustomImageTags({ selectedCIPipeline }: CustomImageTagsType) {
     const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const isCustomTagError = formDataErrorObj.customTag.message.length > 0 && !formDataErrorObj.customTag.isValid
+    const [showCreateImageTagView, setCreateImageTagView] = useState<boolean>(false)
 
     const renderInputErrorMessage = (errorMessage: string) => {
         return (
@@ -73,17 +74,17 @@ function CustomImageTags({}: CustomImageTagsType) {
         }
     }
 
-    const renderCustomImageDetails = () => {
+    const renderCreateCustomTagPattern = () => {
         return (
             <div className="white-card pl-12 pr-12 pt-8 pb-8 mt-12 ml-54">
-                <div className="fw-6 pb-12">Create tag pattern</div>
+                <div className="fw-6 pb-8">Create tag pattern</div>
                 <div>
                     <span className="cn-7"> Use mix of fixed pattern and</span>
                     {renderCounterXTippy(`variable {x}`)}
                 </div>
                 <textarea
                     tabIndex={1}
-                    className="form__input form__input-no-bottom-radius"
+                    className="form__input form__input-no-bottom-radius custom-tag__text-area"
                     placeholder="Example: v1.2.{x}"
                     name="image_tag"
                     autoComplete="off"
@@ -91,6 +92,7 @@ function CustomImageTags({}: CustomImageTagsType) {
                     data-testid="container-repository-textbox"
                     value={formData.customTag?.tagPattern}
                     onChange={onChangeCustomInput}
+                    draggable={false}
                 />
 
                 <div className="image-tag-preview en-2 bw-1 dc__bottom-radius-4 dc__no-border-top-imp pl-8 pr-8 pt-6 pb-6 cn-7">
@@ -140,13 +142,24 @@ function CustomImageTags({}: CustomImageTagsType) {
         )
     }
 
+    const renderCustomImageDetails = () => {
+        return selectedCIPipeline.customTag?.tagPattern && !showCreateImageTagView
+            ? getGeneratedTagDescription()
+            : renderCreateCustomTagPattern()
+    }
+
+    const toggleEditToShowCreateImageView = () => {
+        setCreateImageTagView(true)
+    }
+
     const renderCustomTagCollapsedValue = () => {
         return (
-            <div className="white-card pl-12 pr-12 pt-8 pb-8 dc__ff-monospace mt-12 mb-12">
-                <div className="dc__border-bottom dc__content-space">
+            <div className="white-card pl-12 pr-12 pt-8 pb-8 dc__ff-monospace mt-12 mb-12 ml-54">
+                <div className="flex dc__content-space">
                     <div>{formData.customTag?.tagPattern}</div>
-                    <Edit className="icon-dim-20" />
-                    </div>
+                    <Edit className="icon-dim-20" onClick={toggleEditToShowCreateImageView} />
+                </div>
+                <hr className="mt-8 mb-8" />
                 <div className="dc__italic-font-style cn-7">
                     {`{X}`} = {formData.customTag.counterX} in the next build trigger
                 </div>
@@ -171,13 +184,11 @@ function CustomImageTags({}: CustomImageTagsType) {
     }
 
     const getGeneratedTagDescription = (): JSX.Element => {
-        if (!formData.isCustomImageTagEnabled) {
-            if (isCustomTagError) {
-                return renderInputErrorMessage(getCustomTagCollapsedErrorText())
-            }
-            if (formData.customTag?.tagPattern?.length > 0) {
-                return renderCustomTagCollapsedValue()
-            } 
+        if (isCustomTagError) {
+            return renderInputErrorMessage(getCustomTagCollapsedErrorText())
+        }
+        if (formData.customTag?.tagPattern?.length > 0) {
+            return renderCustomTagCollapsedValue()
         }
     }
 
@@ -187,7 +198,7 @@ function CustomImageTags({}: CustomImageTagsType) {
         setFormData(_formData)
     }
 
-    const renderGeneratedImageTag = (): JSX.Element => {
+    const renderCustomImageTagBody = (): JSX.Element => {
         return (
             <div className="fs-13">
                 <hr />
@@ -207,7 +218,6 @@ function CustomImageTags({}: CustomImageTagsType) {
                             </div>
                         </div>
                     </div>
-                   
                     <div className="" style={{ width: '32px', height: '20px' }}>
                         <Toggle
                             disabled={window._env_.FORCE_SECURITY_SCANNING && formData.isCustomImageTagEnabled}
@@ -217,14 +227,13 @@ function CustomImageTags({}: CustomImageTagsType) {
                         />
                     </div>
                 </div>
-                {formData.isCustomImageTagEnabled &&
-                formData.customTag?.tagPattern ? getGeneratedTagDescription() : renderCustomImageDetails()}
+                {formData.isCustomImageTagEnabled && renderCustomImageDetails()}
                 <hr />
             </div>
         )
     }
 
-    return renderGeneratedImageTag()
+    return renderCustomImageTagBody()
 }
 
 export default CustomImageTags

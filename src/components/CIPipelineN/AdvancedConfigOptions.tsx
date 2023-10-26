@@ -274,7 +274,7 @@ export default function AdvancedConfigOptions({
                                     updateDockerConfigOverride={updateDockerConfigOverride}
                                 />
                             </div>
-                            <CustomImageTags />
+                            <CustomImageTags selectedCIPipeline={parentState.selectedCIPipeline}/>
 
                             {renderDockerArgs()}
                         </>

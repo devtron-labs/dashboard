@@ -1,4 +1,5 @@
 import React from 'react'
+import { CIPipelineDataType } from '../ciPipeline/types'
 
 export interface CustomTagType {
     tagPattern: string
@@ -6,4 +7,5 @@ export interface CustomTagType {
 }
 
 export interface CustomImageTagsType {
+    selectedCIPipeline: CIPipelineDataType
 }

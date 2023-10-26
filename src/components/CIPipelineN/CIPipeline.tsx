@@ -171,6 +171,10 @@ export default function CIPipeline({
         scanEnabled: false,
         environmentId: 0,
         pipelineType: "",
+        customTag: {
+            tagPattern: '',
+            counterX: '',
+        },
     })
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
