@@ -13,7 +13,6 @@ import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { PipelineBuildStageType } from '../workflowEditor/types'
-import { ImageTagType } from '../CIPipelineN/CustomImageTag.type'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -207,12 +206,8 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
-    imageTagValue?: string,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
-    if(imageTagValue === ImageTagType.Default){
-        delete(ci.customTag)
-    }
     const request = {
         appId: appId,
         appWorkflowId: workflowId,
@@ -314,6 +309,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
             counterX: formData.customTag ? +formData.customTag.counterX : 0,
         },
+        enableCustomTag: formData.isCustomImageTagEnabled,
     }
     return ci
 }
@@ -505,6 +501,7 @@ function parseCIResponse(
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
             showPostBuild: ciPipeline.afterDockerBuildScripts?.length > 0,
+            enableCustomTag: ciPipeline.enableCustomTag
         }
     }
 }
