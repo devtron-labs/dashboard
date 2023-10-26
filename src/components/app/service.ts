@@ -306,6 +306,7 @@ export function getCDMaterialList(
                 tagsEditable: false,
                 appReleaseTagNames: [],
                 hideImageTaggingHardDelete: false,
+                resourceFilters: [],
             }
         } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
             return {
@@ -321,6 +322,7 @@ export function getCDMaterialList(
                 appReleaseTagNames: response.result.appReleaseTagNames,
                 tagsEditable: response.result.tagsEditable,
                 hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
+                resourceFilters: response.result.resourceFilters ?? [],
             }
         } else {
             return {
@@ -336,6 +338,7 @@ export function getCDMaterialList(
                 appReleaseTagNames: response.result.appReleaseTagNames,
                 tagsEditable: response.result.tagsEditable,
                 hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
+                resourceFilters: response.result.resourceFilters ?? [],
             }
         }
     })
@@ -346,8 +349,9 @@ export function getRollbackMaterialList(
     offset: number,
     size: number,
     abortSignal: AbortSignal,
+    imageTag?: string,
 ): Promise<ResponseType> {
-    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
+    const URL = imageTag ? `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}&search=${imageTag}` : `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
     return get(URL, {
         signal: abortSignal,
     }).then((response) => {
@@ -357,6 +361,7 @@ export function getRollbackMaterialList(
             result: {
                 materials: cdMaterialListModal(response.result?.ci_artifacts, offset),
                 requestedUserId: response.result?.requestedUserId,
+                resourceFilters: response.result?.resourceFilters ?? [],
             },
         }
     })
@@ -376,12 +381,19 @@ function cdMaterialListModal(
 
     const markFirstSelected = offset===1
     const startIndex = offset-1
+    let isImageMarked = false
+
     const materials = artifacts.map((material, index) => {
         let artifactStatusValue = ''
         const filterState = material.filterState ?? FilterStates.ALLOWED
 
         if (artifactId && artifactStatus && material.id === artifactId) {
             artifactStatusValue = artifactStatus
+        }
+
+        const selectImage = !isImageMarked && markFirstSelected && (filterState === FilterStates.ALLOWED) ? !material.vulnerable : false
+        if (selectImage) {
+            isImageMarked = true
         }
 
         return {
@@ -397,7 +409,7 @@ function cdMaterialListModal(
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',
-            isSelected: markFirstSelected && (filterState === FilterStates.ALLOWED) ? !material.vulnerable && index === 0 : false,
+            isSelected: selectImage,
             showSourceInfo: false,
             deployed: material.deployed || false,
             latest: material.latest || false,
