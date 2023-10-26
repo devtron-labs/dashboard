@@ -7,7 +7,7 @@ import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-dow
 import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-view-variables.svg'
 import { DeploymentConfigToolbarProps } from '../types'
 import '../deploymentConfig.scss'
-import { DropdownContainer, DropdownItem } from './DeploymentTemplateView.component'
+import { DropdownItem } from './DeploymentTemplateView.component'
 import Tippy from '@tippyjs/react'
 import { PopupMenu, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -23,7 +23,6 @@ export default function DeploymentConfigToolbar({
     setConvertVariables,
     componentType,
 }: DeploymentConfigToolbarProps) {
-    const [openDropdown, setOpenDropdown] = useState(false)
 
     const getTabClassName = (index: number) =>
         `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
@@ -37,7 +36,6 @@ export default function DeploymentConfigToolbar({
     const handleOptionClick = (newValue) => {
         setIsValues(newValue)
         setConvertVariables(false)
-        setOpenDropdown(false)
     }
 
     const handleViewVariablesClick = () => {
