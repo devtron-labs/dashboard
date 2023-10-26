@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useParams } from 'react-router-dom'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { ModuleNameMap, Moment12HourFormat, OVERVIEW_TABS, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
@@ -50,13 +50,12 @@ import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
-const OVERVIEW_TABS = {
-    ABOUT: 'about',
-    ENVIRONMENTS: 'environments',
-    JOB_PIPELINES: 'job-pipelines',
-} as const
+const {
+    OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
+} = EMPTY_STATE_STATUS
 
 export default function AppOverview({
     appMetaInfo,
@@ -214,6 +213,17 @@ export default function AppOverview({
         )
     }
 
+    const renderEmptyStateButton = () => (
+        <button
+            className="flex cta dc__gap-4"
+            onClick={() => {
+                history.push(`${URLS.APP}/${appId}/${URLS.APP_CONFIG}`)
+            }}
+        >
+            Continue App Configuration <IconForward className="icon-dim-12" />
+        </button>
+    )
+
     const renderSideInfoColumn = () => {
         const {
             appName,
@@ -325,7 +335,7 @@ export default function AppOverview({
         if (envList.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
-                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n2 dc__uppercase fs-12 fw-6 cn-7 pr-16 pl-16">
+                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom dc__uppercase fs-12 fw-6 cn-7 pr-16 pl-16">
                         <span />
                         {isArgoInstalled && <ActivityIcon className="icon-dim-16" />}
                         <span>Environment</span>
@@ -374,19 +384,10 @@ export default function AppOverview({
                 <GenericEmptyState
                     // TODO: Add image once provided by the product
                     layout="row"
-                    title="Explore your application's deployment landscape"
-                    subTitle="Although there are no deployments to display just yet, it's the perfect time to start configuring and deploying your app to various environments. Let's go!"
+                    title={DEPLOYMENT_TITLE}
+                    subTitle={DEPLOYMENT_SUB_TITLE}
                     isButtonAvailable
-                    renderButton={() => (
-                        <button
-                            className="flex cta dc__gap-4"
-                            onClick={() => {
-                                history.push(`${URLS.APP}/${appId}/${URLS.APP_CONFIG}`)
-                            }}
-                        >
-                            Continue App Configuration <IconForward className="icon-dim-12" />
-                        </button>
-                    )}
+                    renderButton={renderEmptyStateButton}
                     contentClassName="empty-state-content"
                 />
             </div>
@@ -438,7 +439,7 @@ export default function AppOverview({
         return (
             <div className="env-deployments-info-wrapper w-100">
                 <div
-                    className="flex dc__border-bottom-n2 dc__uppercase fs-12 fw-6 cn-7 dc__content-start pr-16 pl-16"
+                    className="flex dc__border-bottom dc__uppercase fs-12 fw-6 cn-7 dc__content-start pr-16 pl-16"
                     data-testid="overview-configured-pipeline"
                 >
                     <div className="m-tb-8 w-300">Pipeline name</div>
