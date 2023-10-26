@@ -55,7 +55,6 @@ export interface AddNewAppState {
         cloneAppId: boolean
     }
     createAppLoader: boolean
-    showClusterDescription: boolean
 }
 
 export interface AppDetails {
@@ -90,6 +89,7 @@ export interface ChartUsed {
     appStoreAppVersion: string
     appStoreChartId: number
     appStoreChartName: string
+    chartAvatar?: string
 }
 
 export interface AppMetaInfo {
@@ -438,10 +438,11 @@ export enum SortingOrder {
     DESC = 'DESC',
 }
 
-export interface CreateAppLabelsRequest {
+export interface EditAppRequest {
     id: number
     labels?: TagType[]
     teamId?: number
+    description?: AppMetaInfo['description']
 }
 
 export interface LabelTagsType {
@@ -464,8 +465,9 @@ export interface AppOverviewProps {
 
 export interface OverviewConfig {
     resourceName: string
-    defaultDescription: string
+    defaultNote: string
     icon: ReactNode
+    defaultDescription: string
 }
 
 export interface AboutAppInfoModalProps extends Pick<AppOverviewProps, 'appType'> {

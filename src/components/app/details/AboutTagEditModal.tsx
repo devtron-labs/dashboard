@@ -9,7 +9,7 @@ import {
     DEFAULT_TAG_DATA,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AboutAppInfoModalProps } from '../types'
-import { createAppLabels } from '../service'
+import { editApp } from '../service'
 import { toast } from 'react-toastify'
 import { importComponentFromFELibrary } from '../../common'
 import '../create/createApp.scss'
@@ -78,11 +78,11 @@ export default function AboutTagEditModal({
         const payload = {
             id: parseInt(appId),
             labels: _labelTags,
-            teamId: appMetaInfo.projectId
+            teamId: appMetaInfo.projectId,
         }
 
         try {
-            await createAppLabels(payload)
+            await editApp(payload)
             toast.success('Successfully saved')
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()

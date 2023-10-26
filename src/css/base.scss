@@ -1585,6 +1585,10 @@ button.anchor {
     &:not(.form__input--error):focus {
         border: solid 1px var(--B500);
     }
+
+    &--vertical {
+        resize: vertical;
+    }
 }
 
 .dc__resizable-textarea__with-max-height {

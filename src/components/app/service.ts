@@ -15,7 +15,7 @@ import {
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, ArtifactsCiJob, CreateAppLabelsRequest } from './types'
+import { AppDetails, ArtifactsCiJob, EditAppRequest } from './types'
 import { DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
@@ -642,8 +642,8 @@ export function getHelmAppOverviewInfo(installedAppId: string): Promise<AppMetaI
     return get(`${Routes.HELM_APP_OVERVIEW}?installedAppId=${installedAppId}`)
 }
 
-export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {
-    return post(Routes.APP_LABELS, request)
+export const editApp = (request: EditAppRequest): Promise<ResponseType> => {
+    return post(Routes.APP_EDIT, request)
 }
 
 export const getIngressServiceUrls = (params: {

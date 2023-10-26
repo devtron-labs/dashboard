@@ -5,7 +5,7 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import ReactSelect from 'react-select'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
-import { createAppLabels } from '../service'
+import { editApp } from '../service'
 import { toast } from 'react-toastify'
 
 export default function AboutAppInfoModal({
@@ -87,7 +87,7 @@ export default function AboutAppInfoModal({
         }
 
         try {
-            await createAppLabels(payload)
+            await editApp(payload)
             toast.success(`Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`)
 
             // Fetch the latest project & labels details

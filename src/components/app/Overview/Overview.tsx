@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { ModuleNameMap, Moment12HourFormat, OVERVIEW_TABS, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
@@ -12,11 +13,15 @@ import {
     getRandomColor,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RadioGroup, handleUTCTime, importComponentFromFELibrary, processDeployedTime } from '../../common'
-import { AppOverviewProps, JobPipeline, OverviewConfig } from '../types'
+import {
+    EditableTextArea,
+    RadioGroup,
+    handleUTCTime,
+    importComponentFromFELibrary,
+    processDeployedTime,
+} from '../../common'
+import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
 import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
@@ -29,7 +34,7 @@ import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-fo
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
-import { StatusConstants, DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
+import { StatusConstants } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import TagChipsContainer from './TagChipsContainer'
@@ -38,34 +43,17 @@ import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { editApp } from '../service'
+import { getAppConfig } from './utils'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 const {
-    OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
+    OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE, APP_DESCRIPTION, JOB_DESCRIPTION },
 } = EMPTY_STATE_STATUS
-
-const configMap: Record<AppOverviewProps['appType'], () => OverviewConfig> = {
-    app: () => ({
-        resourceName: 'application',
-        defaultDescription: DefaultAppNote,
-        icon: <AppIcon className="icon-dim-48" />,
-    }),
-    job: () => ({
-        resourceName: 'job',
-        defaultDescription: DefaultJobNote,
-        icon: <JobIcon className="icon-dim-48 dc__icon-bg-color br-4 p-8" />,
-    }),
-    'helm-chart': () => ({
-        resourceName: 'application',
-        defaultDescription: DefaultHelmChartNote,
-        // TODO: update for helm
-        icon: <AppIcon className="icon-dim-48" />,
-    }),
-}
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
-    const config = configMap[appType]()
+    const config = getAppConfig(appType)
     const isJobOverview = appType === 'job'
     const isHelmChart = appType === 'helm-chart'
     // For helm the appId from the params is the installed appId and not the actual id of the app
@@ -77,7 +65,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [descriptionId, setDescriptionId] = useState<number>(0)
-    const [newDescription, setNewDescription] = useState<string>(config.defaultDescription)
+    const [newDescription, setNewDescription] = useState<string>(config.defaultNote)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
@@ -102,7 +90,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             const description =
                 appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id
                     ? appMetaInfo.note.description
-                    : config.defaultDescription
+                    : config.defaultNote
             _date = appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id ? _date : ''
             setNewUpdatedOn(_date)
             setNewUpdatedBy(appMetaInfo?.note?.updatedBy)
@@ -200,27 +188,43 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             appName,
             description,
             // TODO: Update the placeholder text when integrating
-            codeSource = 'devtron-labs/devtron',
+            // codeSource = 'devtron-labs/devtron',
             createdOn,
             createdBy,
             projectName,
             chartUsed,
         } = appMetaInfo
 
+        const handleSaveDescription = async (value: string) => {
+            const payload: EditAppRequest = {
+                id: +appId,
+                teamId: appMetaInfo.projectId,
+                description: value?.trim(),
+            }
+
+            try {
+                await editApp(payload)
+                toast.success('Successfully saved')
+                await getAppMetaInfoRes()
+            } catch (err) {
+                showError(err)
+            }
+        }
+
         return (
             <aside className="flexbox-col dc__gap-16">
                 <div className="flexbox-col dc__gap-12">
-                    <div>{config.icon}</div>
+                    {(config.icon || chartUsed.chartAvatar) && (
+                        <div>
+                            {config.icon ?? <img src={chartUsed.chartAvatar} alt="App icon" className="icon-dim-48" />}
+                        </div>
+                    )}
                     <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break">{appName}</div>
-                    {/* TODO: Uncomment and integrate */}
-                    {/* <div className="flexbox flex-justify dc__gap-10">
-                        <div className="fs-13 fw-4 lh-20 cn-9">{description ?? `Write a short description for this ${resourceName}`}</div>
-                        <EditIcon
-                            className="icon-dim-16 cursor mw-16"
-                            // TODO: Add onClick listener
-                            onClick={() => alert('Please integrate me 🥹!')}
-                        />
-                    </div> */}
+                    <EditableTextArea
+                        rows={4}
+                        initialText={description || config.defaultDescription}
+                        updateContent={handleSaveDescription}
+                    />
                 </div>
                 <div className="dc__border-top-n1" />
                 <div className="flexbox-col dc__gap-12">
@@ -231,14 +235,17 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleChangeProjectModal} />
                         </div>
                     </div>
-                    {isHelmChart && (
+                    {isHelmChart && !!chartUsed && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Chart used</div>
                             <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
                                 <span>{chartUsed.appStoreChartName}/</span>
-                                <a href={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartUsed.appStoreChartId}`}>
+                                <Link
+                                    className="dc__ellipsis-right"
+                                    to={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartUsed.appStoreChartId}`}
+                                >
                                     {chartUsed.appStoreAppName} ({chartUsed.appStoreAppVersion})
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     )}
