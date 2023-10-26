@@ -153,7 +153,7 @@ export default function GitInfoMaterial({
                         className="default-tt"
                         arrow={false}
                         placement="top"
-                        content=""
+                        content="Change branch"
                         interactive={true}
                     >
                         <button data-testid={dataTestId} type="button" className="dc__transparent flexbox">
