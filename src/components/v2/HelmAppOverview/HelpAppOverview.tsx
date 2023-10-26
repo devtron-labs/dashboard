@@ -18,7 +18,6 @@ export const HelmAppOverview = (props: { appId: string; setErrorResponseCode: (c
                 return result
             }
         } catch (err: any) {
-            console.log('🚀 ~ file: index.tsx:63 ~ getInstalledAppOverview ~ err:', err)
             if (err.code) {
                 setErrorResponseCode(err)
             }
