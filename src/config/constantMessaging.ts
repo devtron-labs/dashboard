@@ -393,6 +393,10 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'Trigger not found',
         SUBTITLE: 'The trigger you are looking for does not exist',
     },
+    OVERVIEW: {
+        DEPLOYMENT_TITLE: 'Explore your application\'s deployment landscape',
+        DEPLOYMENT_SUB_TITLE: 'Although there are no deployments to display just yet, it\'s the perfect time to start configuring and deploying your app to various environments. Let\'s go!'
+    }
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'

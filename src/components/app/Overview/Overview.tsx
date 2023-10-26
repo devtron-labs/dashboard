@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
-import { Link, useParams } from 'react-router-dom'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { Link, useHistory, useParams } from 'react-router-dom'
+import { ModuleNameMap, Moment12HourFormat, OVERVIEW_TABS, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
@@ -10,22 +10,28 @@ import {
     stopPropagation,
     useAsync,
     getRandomColor,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { handleUTCTime, importComponentFromFELibrary, processDeployedTime, sortOptionsByValue } from '../../common'
-import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
+import {
+    RadioGroup,
+    handleUTCTime,
+    importComponentFromFELibrary,
+    processDeployedTime,
+    sortOptionsByValue,
+} from '../../common'
+import { AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
-import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'
-import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
 import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CrossIcon } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
 import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
+import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
+import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
@@ -34,7 +40,6 @@ import {
 } from '../../externalLinks/ExternalLinks.type'
 import { getExternalLinks } from '../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
-import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
 import { StatusConstants, DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
@@ -45,7 +50,12 @@ import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
+
+const {
+    OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
+} = EMPTY_STATE_STATUS
 
 export default function AppOverview({
     appMetaInfo,
@@ -54,6 +64,7 @@ export default function AppOverview({
     filteredEnvIds,
 }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
+    const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
@@ -76,6 +87,7 @@ export default function AppOverview({
     const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
+    const [activeTab, setActiveTab] = useState<typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]>(OVERVIEW_TABS.ABOUT)
     const resourceName = isJobOverview ? 'job' : 'application'
 
     let _moment: moment.Moment
@@ -201,6 +213,17 @@ export default function AppOverview({
         )
     }
 
+    const renderEmptyStateButton = () => (
+        <button
+            className="flex cta dc__gap-4"
+            onClick={() => {
+                history.push(`${URLS.APP}/${appId}/${URLS.APP_CONFIG}`)
+            }}
+        >
+            Continue App Configuration <IconForward className="icon-dim-12" />
+        </button>
+    )
+
     const renderSideInfoColumn = () => {
         const {
             appName,
@@ -213,7 +236,7 @@ export default function AppOverview({
         } = appMetaInfo
 
         return (
-            <aside className="pt-20 pb-20 pl-20 pr-16 dc__border-right flexbox-col dc__gap-16">
+            <aside className="flexbox-col dc__gap-16">
                 <div className="flexbox-col dc__gap-12">
                     <div>
                         {isJobOverview ? (
@@ -287,6 +310,7 @@ export default function AppOverview({
                 labelTags={currentLabelTags}
                 onAddTagButtonClick={toggleTagsUpdateModal}
                 resourceName={resourceName}
+                whiteBackground
             />
             {MandatoryTagWarning && (
                 <MandatoryTagWarning
@@ -298,33 +322,6 @@ export default function AppOverview({
             )}
         </div>
     )
-
-    // Update once new API changes are introduced
-    const renderAppLevelExternalLinks = () => {
-        return (
-            <div className="flex column left p-16 dc__border-bottom-n1">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-external-links">
-                    <LinkedIcon className="icon-dim-20 mr-8" />
-                    External Links
-                </div>
-                {externalLinksAndTools.fetchingExternalLinks ? (
-                    <div className="dc__loading-dots" data-testid="overview-external-links-not-present" />
-                ) : (
-                    <AppLevelExternalLinks
-                        isOverviewPage={true}
-                        appDetails={
-                            {
-                                appId: +appId,
-                                appName: appMetaInfo?.appName,
-                            } as AppDetails
-                        }
-                        externalLinks={externalLinksAndTools.externalLinks}
-                        monitoringTools={externalLinksAndTools.monitoringTools}
-                    />
-                )}
-            </div>
-        )
-    }
 
     const envIcon = (isVirtualCluster) => {
         if (isVirtualCluster) {
@@ -338,13 +335,10 @@ export default function AppOverview({
         if (envList.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
-                    <div
-                        className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7"
-                        data-testid="overview-deployed-environment"
-                    >
+                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom dc__uppercase fs-12 fw-6 cn-7 pr-16 pl-16">
                         <span />
+                        {isArgoInstalled && <ActivityIcon className="icon-dim-16" />}
                         <span>Environment</span>
-                        {isArgoInstalled && <span>App status</span>}
                         <span>Last deployed</span>
                     </div>
 
@@ -354,16 +348,9 @@ export default function AppOverview({
                                 !_env.deploymentAppDeleteRequest && (
                                     <div
                                         key={`${_env.environmentName}-${_env.environmentId}`}
-                                        className="env-deployments-info-row display-grid dc__align-items-center"
+                                        className="env-deployments-info-row display-grid dc__align-items-center pr-16 pl-16"
                                     >
                                         {envIcon(_env.isVirtualEnvironment)}
-                                        <Link
-                                            to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
-                                            className="fs-13"
-                                            data-testid={`overview-link-environment${index}`}
-                                        >
-                                            {_env.environmentName}
-                                        </Link>
                                         {isArgoInstalled && (
                                             <AppStatus
                                                 appStatus={
@@ -372,9 +359,16 @@ export default function AppOverview({
                                                         : StatusConstants.NOT_DEPLOYED.noSpaceLower
                                                 }
                                                 isVirtualEnv={_env.isVirtualEnvironment}
+                                                hideStatusMessage
                                             />
                                         )}
-                                        <span className="fs-13 fw-4 cn-7" data-testid="overview-deployed-time">
+                                        <Link
+                                            to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
+                                            className="fs-13 dc__ellipsis-right"
+                                        >
+                                            {_env.environmentName}
+                                        </Link>
+                                        <span className="fs-13 fw-4 cn-7 dc__ellipsis-right">
                                             {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
                                         </span>
                                     </div>
@@ -386,19 +380,23 @@ export default function AppOverview({
         }
 
         return (
-            <div className="fs-13 fw-4 cn-7" data-testid="overview-no-deployment">
-                This application has not been deployed yet.
+            <div className="w-100 mh-500 bcn-0 flex en-2">
+                <GenericEmptyState
+                    // TODO: Add image once provided by the product
+                    layout="row"
+                    title={DEPLOYMENT_TITLE}
+                    subTitle={DEPLOYMENT_SUB_TITLE}
+                    isButtonAvailable
+                    renderButton={renderEmptyStateButton}
+                    contentClassName="empty-state-content"
+                />
             </div>
         )
     }
 
     const renderEnvironmentDeploymentsStatus = () => {
         return (
-            <div className="flex column left p-16">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-deployment">
-                    <RocketIcon className="icon-dim-20 scn-9 mr-8" />
-                    Deployments
-                </div>
+            <div className="flex column left">
                 {otherEnvsLoading ? <div className="dc__loading-dots" /> : renderDeploymentComponent()}
             </div>
         )
@@ -441,7 +439,7 @@ export default function AppOverview({
         return (
             <div className="env-deployments-info-wrapper w-100">
                 <div
-                    className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-start"
+                    className="flex dc__border-bottom dc__uppercase fs-12 fw-6 cn-7 dc__content-start pr-16 pl-16"
                     data-testid="overview-configured-pipeline"
                 >
                     <div className="m-tb-8 w-300">Pipeline name</div>
@@ -452,12 +450,11 @@ export default function AppOverview({
                     </div>
                 </div>
                 {jobPipelines.map((jobPipeline, index) => (
-                    <div key={jobPipeline.ciPipelineID} className="flex dc__content-start">
+                    <div key={jobPipeline.ciPipelineID} className="flex dc__content-start pr-16 pl-16">
                         <div className="h-20 m-tb-8 cb-5 fs-13 w-300">
                             <Link
                                 to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ciPipelineName}/`}
-                                className="fs-13"
-                                data-testid={`overview-link-pipeline${index}`}
+                                className="fs-13 dc__ellipsis-right"
                             >
                                 {jobPipeline.ciPipelineName}
                             </Link>
@@ -496,20 +493,12 @@ export default function AppOverview({
     }
 
     const renderWorkflowsStatus = () => {
-        return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="job-pipeline">
-                    <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
-                    Job pipelines
-                </div>
-                {renderWorkflowComponent()}
-            </div>
-        )
+        return <div className="flex column left">{renderWorkflowComponent()}</div>
     }
 
     function renderAppDescription() {
         return (
-            <div className="pl-16 pr-16 pt-16 dc__border-bottom-n1">
+            <div>
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin={true}
@@ -527,18 +516,49 @@ export default function AppOverview({
 
     function renderOverviewContent(isJobOverview) {
         if (isJobOverview) {
+            const contentToRender = {
+                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.JOB_PIPELINES]: renderWorkflowsStatus,
+            }
+
             return (
-                <div className="app-overview-wrapper dc__border-bottom-n1">
-                    {renderAppDescription()}
-                    {renderWorkflowsStatus()}
+                <div className="app-overview-wrapper flexbox-col dc__gap-12">
+                    <RadioGroup
+                        className="gui-yaml-switch gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        name="overview-tabs"
+                        initialTab={OVERVIEW_TABS.ABOUT}
+                        disabled={false}
+                        onChange={(e) => {
+                            setActiveTab(e.target.value)
+                        }}
+                    >
+                        <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
+                        <RadioGroup.Radio value={OVERVIEW_TABS.JOB_PIPELINES}>Job Pipelines</RadioGroup.Radio>
+                    </RadioGroup>
+                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
                 </div>
             )
         } else {
+            const contentToRender = {
+                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.ENVIRONMENTS]: renderEnvironmentDeploymentsStatus,
+            }
+
             return (
-                <div className="app-overview-wrapper dc__border-bottom-n1">
-                    {renderAppDescription()}
-                    {renderAppLevelExternalLinks()}
-                    {renderEnvironmentDeploymentsStatus()}
+                <div className="app-overview-wrapper flexbox-col dc__gap-12">
+                    <RadioGroup
+                        className="gui-yaml-switch gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        name="overview-tabs"
+                        initialTab={OVERVIEW_TABS.ABOUT}
+                        disabled={false}
+                        onChange={(e) => {
+                            setActiveTab(e.target.value)
+                        }}
+                    >
+                        <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
+                        <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
+                    </RadioGroup>
+                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
                 </div>
             )
         }
@@ -550,8 +570,8 @@ export default function AppOverview({
 
     return (
         // TODO: Fix the scroll for two column layout
-        <div className="app-overview-container display-grid bcn-0">
-            {renderSideInfoColumn()}
+        <div className={`app-overview-container p-20 ${activeTab === OVERVIEW_TABS.ABOUT ? 'sidebar-open' : ''}`}>
+            {activeTab === OVERVIEW_TABS.ABOUT && renderSideInfoColumn()}
             {!isLoading && renderOverviewContent(isJobOverview)}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}

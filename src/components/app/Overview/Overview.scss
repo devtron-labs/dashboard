@@ -1,20 +1,30 @@
 .app-overview-container {
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 0 1fr;
+    background: linear-gradient(249deg, #D4E6F7 0%, var(--N50) 50.58%);
+    overflow: auto;
+    transition: grid-template-columns 0.2s ease-out;
+
+    &.sidebar-open {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 32px;
+    }
 
     .app-overview-wrapper {
-        .app-level__external-links {
-            padding: 0;
-            margin-bottom: 0 !important;
-            min-height: 0;
-        }
-
         .env-deployments-info-wrapper {
+            border-radius: 4px;
+            border: 1px solid var(--N200);
+            background: var(--N0);
 
             .env-deployments-info-header,
             .env-deployments-info-row {
-                grid-template-columns: 20px 250px 110px 1fr;
+                grid-template-columns: 20px 20px 250px 1fr;
                 column-gap: 16px;
                 grid-auto-rows: 36px;
+            }
+
+            .env-deployments-info-row {
+                grid-auto-rows: 40px;
             }
         }
 
@@ -28,6 +38,10 @@
                     fill: var(--N900);
                 }
             }
+        }
+
+        .empty-state-content {
+            max-width: 368px;
         }
     }
 }

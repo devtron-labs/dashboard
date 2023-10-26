@@ -3109,6 +3109,10 @@ textarea,
     min-height: 400px;
 }
 
+.mh-500 {
+    min-height: 500px;
+}
+
 .mh-600 {
     min-height: 600px;
 }
@@ -3361,6 +3365,10 @@ textarea,
 
 .dc__no-background {
     background: none;
+}
+
+.dc__no-background-imp {
+    background: none !important;
 }
 
 //Overflow
