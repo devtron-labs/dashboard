@@ -12,7 +12,7 @@ import {
     getRandomColor,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Catalog, RadioGroup, handleUTCTime, importComponentFromFELibrary, processDeployedTime } from '../../common'
+import { RadioGroup, handleUTCTime, importComponentFromFELibrary, processDeployedTime } from '../../common'
 import { AppOverviewProps, JobPipeline, OverviewConfig } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
@@ -492,17 +492,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         )
     }
 
-    const renderAboutSection = () => (
-        <>
-            <Catalog updatedBy="Utkarsh Arya" updatedOn="Aug 15, 2022" />
-            {renderAppDescription()}
-        </>
-    )
-
     function renderOverviewContent() {
         if (isJobOverview) {
             const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: renderAboutSection,
+                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
                 [OVERVIEW_TABS.JOB_PIPELINES]: renderWorkflowsStatus,
             }
 
@@ -524,10 +517,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                 </div>
             )
         } else if (isHelmChart) {
-            return <div className="app-overview-wrapper flexbox-col dc__gap-12">{renderAboutSection()}</div>
+            return <div className="app-overview-wrapper flexbox-col dc__gap-12">{renderAppDescription()}</div>
         } else {
             const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: renderAboutSection,
+                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
                 [OVERVIEW_TABS.ENVIRONMENTS]: renderEnvironmentDeploymentsStatus,
             }
 
