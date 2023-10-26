@@ -13,6 +13,7 @@ import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { PipelineBuildStageType } from '../workflowEditor/types'
+import { ImageTagType } from '../CIPipelineN/CustomImageTag.type'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -206,8 +207,12 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
+    imageTagValue?: string,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
+    if(imageTagValue === ImageTagType.Default){
+        delete(ci.customTag)
+    }
     const request = {
         appId: appId,
         appWorkflowId: workflowId,
@@ -304,6 +309,11 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             }, {}),
         isDockerConfigOverridden: formData.isDockerConfigOverridden,
         dockerConfigOverride: formData.isDockerConfigOverridden ? formData.dockerConfigOverride : {},
+        defaultTag: formData.defaultTag,
+        customTag: {
+            tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
+            counterX: formData.customTag ? +formData.customTag.counterX : 0,
+        },
     }
     return ci
 }
@@ -485,7 +495,12 @@ function parseCIResponse(
                 isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,
                 dockerConfigOverride: ciPipeline.isDockerConfigOverridden ? ciPipeline.dockerConfigOverride : {},
                 isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
-                isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin
+                isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin,
+                defaultTag: ciPipeline.defaultTag,
+                customTag: {
+                    tagPattern: ciPipeline.customTag?.tagPattern || '',
+                    counterX: +ciPipeline.customTag?.counterX || 0,
+                },
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
