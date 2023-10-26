@@ -139,7 +139,7 @@ export default function GitInfoMaterial({
                     'Select commit to build'
                 ) : (
                     <Tippy
-                        className="default-tt" 
+                        className="default-tt dc__word-break-all"
                         arrow={false}
                         placement="top"
                         content={selectedMaterial.value}
@@ -150,7 +150,7 @@ export default function GitInfoMaterial({
                 )}
                 {selectedMaterial.regex && (
                     <Tippy
-                        className="default-tt"
+                        className="default-tt dc__word-break-all"
                         arrow={false}
                         placement="top"
                         content={'Change branch'}
