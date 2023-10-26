@@ -827,7 +827,7 @@ export default function DeploymentConfig({
                         setIsValues={setIsValues}
                         convertVariables={state.convertVariables}
                         setConvertVariables={setConvertVariables}
-                        componentType="deploymentTemplate"
+                        componentType={3}
                     />
                     {renderValuesView()}
                     {SaveChangesModal && state.showSaveChangsModal && (

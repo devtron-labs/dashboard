@@ -21,7 +21,6 @@ export default function DeploymentConfigToolbar({
     setIsValues,
     convertVariables,
     setConvertVariables,
-    componentType,
 }: DeploymentConfigToolbarProps) {
 
     const getTabClassName = (index: number) =>
@@ -87,8 +86,7 @@ export default function DeploymentConfigToolbar({
                             onClick={changeTab}
                         >
                             <CompareIcon className={getTabIconClass(2)} />
-                            Compare&nbsp;
-                            {componentType === 'deploymentTemplate' && (
+                            Compare&nbsp;  
                                 <PopupMenu autoClose>
                                     <PopupMenu.Button rootClassName="flexbox flex-align-center" isKebab>
                                         <span style={{ color: 'black' }}>
@@ -100,7 +98,6 @@ export default function DeploymentConfigToolbar({
                                     </PopupMenu.Button>
                                     <PopupMenu.Body autoWidth>{renderDropdownContainer()}</PopupMenu.Body>
                                 </PopupMenu>
-                            )}
                         </li>
                     </ol>
                 </div>

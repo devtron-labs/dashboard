@@ -274,7 +274,7 @@ export function ConfigMapSecretContainer({
                         isApprovalPending={draftData.draftState === 4}
                         approvalUsers={draftData.approvers}
                         reload={reload}
-                        componentType={componentType}
+                        componentType={componentType === 'secret' ? 2 : 1}
                     />
                     <ProtectedConfigMapSecretDetails
                         appChartRef={appChartRef}
