@@ -996,6 +996,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             className: 'devtron-toast unauthorized',
                         },
                     )
+                } else if( errors instanceof ServerErrors &&
+                    Array.isArray(errors.errors) && errors.code === 409){
+                        errors.errors.map((err) => toast.error(err.internalMessage))
                 } else {
                     errors.errors.map((error) => {
                         if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
