@@ -47,10 +47,9 @@ import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink } from 'react-router-dom'
-import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv } from '../../../../services/service'
+import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv, getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
-import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
@@ -115,6 +114,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             configs: false,
             isDefaultConfigPresent: false,
             searchImageTag: '',
+            resourceFilters: []
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -140,7 +140,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getEnvironments = () => {
         getEnvironmentListMinPublic()
             .then((response) => {
-                let list = []
+                const list = []
                 list.push({
                     id: 0,
                     clusterName: '',
@@ -169,6 +169,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
+    // FIXME: Seems like its missing a error state
     getConfigs() {
         getDefaultConfig().then((response) => {
             let isConfigPresent = response.result.isConfigured
@@ -706,6 +707,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     appReleaseTags: data.appReleaseTagNames,
                     tagsEditable: data.tagsEditable,
                     hideImageTaggingHardDelete: data.hideImageTaggingHardDelete,
+                    resourceFilters: data.resourceFilters,
                 })
                 preventBodyScroll(true)
             })
@@ -722,17 +724,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+        searchText?: string,
     ) => {
         if (!offset && !size) {
             ReactGA.event(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
             this.setState({ isLoading: true })
         }
-
         const _offset = offset || 1
         const _size = size || 20
         this.setState({ showCDModal: true })
         this.abortController = new AbortController()
-        getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal)
+        getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal, searchText)
             .then((response) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
@@ -754,11 +756,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState(
                     {
                         workflows: workflows,
+                        // FIXME: Pending enum
                         materialType: 'rollbackMaterialList',
                         cdNodeId: cdNodeId,
                         nodeType: 'CD',
                         showCDModal: true,
                         isLoading: false,
+                        resourceFilters: response.result.resourceFilters,
                     },
                     () => {
                         preventBodyScroll(true)
@@ -767,7 +771,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 )
 
                 if (callback && response.result) {
-                    callback(false, response.result.length < 20)
+                    callback(false, response.result.materials?.length < 20 || response.result.materials?.length ===0)
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -814,7 +818,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ isSaveLoading: true, isLoading: true })
         let node: NodeAttr
         for (let i = 0; i < this.state.workflows.length; i++) {
-            let workflow = this.state.workflows[i]
+            const workflow = this.state.workflows[i]
             node = workflow.nodes.find((nd) => +nd.id == this.state.cdNodeId && nd.type == nodeType)
             if (node) break
         }
@@ -1202,13 +1206,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCIModal: false, showMaterialRegexModal: false })
     }
 
-    closeCDModal = (e): void => {
+    closeCDModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         preventBodyScroll(false)
         this.abortController.abort()
         this.setState({ showCDModal: false, searchImageTag: '' })
     }
 
-    closeApprovalModal = (e): void => {
+    closeApprovalModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         preventBodyScroll(false)
         this.setState({ showApprovalModal: false })
         this.props.history.push({
@@ -1381,8 +1387,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         cdNodeId,
         nodeType: DeploymentNodeType,
         isApprovalNode: boolean = false,
+        fromRollback: boolean = false,
     ) => {
-        this.onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        if (!fromRollback) {
+            this.onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        } else {
+            // By default setting from 1 to 20
+            this.onClickRollbackMaterial(cdNodeId, null, null, null, searchText)
+        }
         this.setState({ searchImageTag: searchText })
     }
 
@@ -1445,6 +1457,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 isApplicationGroupTrigger={false}
                                 handleMaterialFilters={this.handleMaterialFilters}
                                 searchImageTag={this.state.searchImageTag}
+                                resourceFilters={this.state.resourceFilters}
                             />
                         )}
                     </div>
@@ -1480,6 +1493,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                     configs={this.state.configs}
                     isDefaultConfigPresent={this.state.isDefaultConfigPresent}
+                    resourceFilters={this.state.resourceFilters}
                 />
             )
         }

@@ -57,6 +57,8 @@ export default function BulkCDTrigger({
     const [currentAppTagsEditable, setCurrentAppTagsEditable] = useState<boolean>(selectedApp.tagsEditable)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [appSearchTextMap, setAppSearchTextMap] = useState<Record<number, string>>({})
+    const [cdMaterialResponse, setCdMaterialResponse] = useState<Record<string, CDMaterialResponseType>>({})
+
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch()
@@ -68,7 +70,8 @@ export default function BulkCDTrigger({
         setCurrentAppTagsEditable(tagsEditable)
     }
 
-    const closeBulkCDModal = (e): void => {
+    const closeBulkCDModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         abortControllerRef.current.abort()
         closePopup(e)
     }
@@ -107,6 +110,12 @@ export default function BulkCDTrigger({
         }
     }, [outsideClickHandler])
 
+    /**
+     * Gets triggered during the mount state of the component through useEffect
+     * Fetches the material data pushes them into promise list
+     * Promise list is resolved using Promise.allSettled
+     * If the promise is fulfilled, the data is pushed into cdMaterialResponse
+     */
     const getMaterialData = (): void => {
         const _unauthorizedAppList: Record<number, boolean> = {}
         const _CDMaterialPromiseList = []
@@ -130,7 +139,7 @@ export default function BulkCDTrigger({
         const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
         Promise.allSettled(_CDMaterialPromiseList)
             .then((responses) => {
-                responses.forEach((response, index) => {
+                responses.forEach((response) => {
                     if (response.status === 'fulfilled') {
                         _cdMaterialResponse[response.value['appId']] = {
                             approvalUsers: response.value['approvalUsers'],
@@ -139,7 +148,8 @@ export default function BulkCDTrigger({
                             requestedUserId: response.value['requestedUserId'],
                             tagsEditable: response.value['tagsEditable'],
                             appReleaseTagNames: response.value['appReleaseTagNames'],
-                            hideImageTaggingHardDelete: response.value['hideImageTaggingHardDelete']
+                            hideImageTaggingHardDelete: response.value['hideImageTaggingHardDelete'],
+                            resourceFilters: response.value['resourceFilters'],
                         }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
@@ -152,6 +162,7 @@ export default function BulkCDTrigger({
                 setCurrentAppTagsEditable(_cdMaterialResponse[selectedApp.appId].tagsEditable ?? false)
                 setCurrentAppReleaseTags(_cdMaterialResponse[selectedApp.appId].appReleaseTagNames ?? [])
                 setHideImageTaggingHardDelete(_cdMaterialResponse[selectedApp.appId].hideImageTaggingHardDelete ?? false)
+                setCdMaterialResponse(_cdMaterialResponse)
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
@@ -186,6 +197,8 @@ export default function BulkCDTrigger({
         setSelectedApp(_selectedApp)
         setCurrentAppReleaseTags(_selectedApp.appReleaseTags)
         setCurrentAppTagsEditable(_selectedApp.tagsEditable)
+        // We don't need to get the data from appList since we already have it in cdMaterialResponse and
+        // FIXME: The workflow for some reason is also getting data that is not even required there like tagsEditable
     }
 
     const renderEmptyView = (): JSX.Element => {
@@ -423,7 +436,7 @@ export default function BulkCDTrigger({
                             parentEnvironmentName={selectedApp.parentEnvironmentName}
                             userApprovalConfig={_currentApp.userApprovalConfig}
                             requestedUserId={_currentApp.requestedUserId}
-                            isFromBulkCD={true}
+                            isFromBulkCD
                             appReleaseTagNames={currentAppReleaseTags ? currentAppReleaseTags : []}
                             setAppReleaseTagNames={setCurrentAppReleaseTagsWrapper}
                             tagsEditable={currentAppTagsEditable ? currentAppTagsEditable : false}
@@ -434,9 +447,10 @@ export default function BulkCDTrigger({
                             history={history}
                             location={location}
                             match={match}
-                            isApplicationGroupTrigger={true}
+                            isApplicationGroupTrigger
                             handleMaterialFilters={handleMaterialFilters}
                             searchImageTag={appSearchTextMap[selectedApp.appId]}
+                            resourceFilters={cdMaterialResponse[selectedApp.appId]?.resourceFilters ?? []}
                         />
                     )}
                 </div>

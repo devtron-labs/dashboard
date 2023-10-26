@@ -18,6 +18,7 @@ import {
     VisibleModal,
     DeploymentAppTypes,
     useSearchString,
+    FilterConditionsListType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -145,6 +146,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
     const [searchImageTag, setSearchImageTag] = useState<string>('')
+    const [resourceFilters, setResourceFilters] = useState<FilterConditionsListType[]>([])
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -813,6 +815,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setShowCDModal(!isApprovalNode)
                 setShowApprovalModal(isApprovalNode)
                 setCDLoading(false)
+                setResourceFilters(data.resourceFilters)
                 preventBodyScroll(true)
             })
             .catch((errors: ServerErrors) => {
@@ -828,6 +831,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+        searchText?: string,
     ) => {
         if (!offset && !size) {
             ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
@@ -839,7 +843,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const _size = size || 20
 
         abortControllerRef.current = new AbortController()
-        getRollbackMaterialList(cdNodeId, _offset, _size, abortControllerRef.current.signal)
+        getRollbackMaterialList(cdNodeId, _offset, _size, abortControllerRef.current.signal, searchText)
             .then((response) => {
                 let _selectedNode
                 const _workflows = [...filteredWorkflows].map((workflow) => {
@@ -869,8 +873,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setCDLoading(false)
                 preventBodyScroll(true)
                 getWorkflowStatusData(_workflows)
+                setResourceFilters(response.result.resourceFilters)
                 if (callback && response.result) {
-                    callback(false, response.result.length < 20)
+                    callback(false, response.result.materials?.length < 20 || response.result.materials?.length ===0)
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -1280,7 +1285,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setShowMaterialRegexModal(false)
     }
 
-    const closeCDModal = (e): void => {
+    const closeCDModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         abortControllerRef.current.abort()
         preventBodyScroll(false)
         setCDLoading(false)
@@ -1288,7 +1294,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setSearchImageTag('')
     }
 
-    const closeApprovalModal = (e): void => {
+    const closeApprovalModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         preventBodyScroll(false)
         setShowApprovalModal(false)
         history.push({
@@ -1640,6 +1647,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         let uniqueReleaseTags: string[] = []
         let uniqueTagsSet = new Set<string>()
         const _selectedAppWorkflowList: BulkCDDetailType[] = []
+
         filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
                 //extract unique tags for this workflow
@@ -1962,8 +1970,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         cdNodeId,
         nodeType: DeploymentNodeType,
         isApprovalNode: boolean = false,
+        fromRollback: boolean = false,
     ) => {
-        onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        if (!fromRollback) {
+            onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        } else {
+            // By default setting from 1 to 20
+            onClickRollbackMaterial(cdNodeId, null, null, null, searchText)
+        }
         setSearchImageTag(searchText)
     }
     
@@ -2049,9 +2063,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 history={history}
                                 location={location}
                                 match={match}
-                                isApplicationGroupTrigger={true}
+                                isApplicationGroupTrigger
                                 handleMaterialFilters={handleMaterialFilters}
                                 searchImageTag={searchImageTag}
+                                resourceFilters={resourceFilters}
                             />
                         )}
                     </div>
@@ -2099,6 +2114,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}
+                    resourceFilters={resourceFilters}
                 />
             )
         }
