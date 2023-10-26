@@ -138,6 +138,7 @@ export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType>
     postBuildStage?: PipelineBuildStageType
     defaultTag?: string[]
     customTag?: CustomTagType
+    isCustomImageTagEnabled?: boolean;
 }
 
 export interface PipelineFormDataErrorType {
