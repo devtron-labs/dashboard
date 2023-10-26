@@ -33,7 +33,7 @@ export const EditableTextArea = ({ placeholder, rows, updateContent, initialText
                         rows={rows}
                         placeholder={placeholder}
                         value={text}
-                        className="dc__border br-2 pt-8 pb-8 pr-8 pl-8 fs-13 fw-400 lh-20 cn-9 dc__resizable-textarea--vertical"
+                        className="form__textarea bcn-0 fs-13 lh-20 cn-9 dc__resizable-textarea--vertical"
                         onChange={(e) => {
                             setText(e.target.value)
                         }}
