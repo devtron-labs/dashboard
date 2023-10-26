@@ -6,7 +6,7 @@ import {
     DeploymentTemplateEditorViewProps,
     CompareApprovalAndDraftSelectedOption,
 } from '../types'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getApprovalPendingOption } from '../constants'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
 import { versionComparator } from '../../common'
 import { SortingOrder } from '../../app/types'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
@@ -24,6 +24,7 @@ import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { useParams } from 'react-router-dom'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
+import { toast } from 'react-toastify'
 
 export default function DeploymentTemplateEditorView({
     isEnvOverride,
@@ -80,7 +81,8 @@ export default function DeploymentTemplateEditorView({
             valuesAndManifestFlag: 1,
         }
         const response = await getDeploymentManisfest(request)
-        return response.result.resolvedData
+
+        return { resolvedData: response.result.resolvedData, variableSnapshot: response.result.variableSnapshot }
     }
 
     useEffect(() => {
@@ -274,8 +276,16 @@ export default function DeploymentTemplateEditorView({
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {
-                setResolvedValuesLHS(lhs)
-                setResolvedValuesRHS(rhs)
+                console.log(lhs.variableSnapshot, rhs.variableSnapshot)
+                if (
+                    Object.keys(lhs.variableSnapshot || {}).length === 0 &&
+                    Object.keys(rhs.variableSnapshot || {}).length === 0
+                ) {
+                    setConvertVariables(false)
+                    toast.error(NO_SCOPED_VARIABLES_MESSAGE)
+                }
+                setResolvedValuesLHS(lhs.resolvedData)
+                setResolvedValuesRHS(rhs.resolvedData)
             })
             .catch((err) => {
                 showError(err)
