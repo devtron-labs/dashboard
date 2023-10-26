@@ -50,6 +50,11 @@
         .empty-state-content {
             max-width: 368px;
         }
+
+        // Increasing the specificity for the existing class
+        .deploy-chart__readme-markdown a.anchor {
+            color: var(--N900)
+        }
     }
 }
 
