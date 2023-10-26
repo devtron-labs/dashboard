@@ -13,6 +13,7 @@ import { ConditionalWrap } from '../../../../common'
 import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
+import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variables.svg'
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -27,6 +28,21 @@ export default function TriggerViewConfigDiff({
     const [activeSideNavOption, setActiveSideNavOption] = useState(
         DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
     )
+    const [convertVariables, setConvertVariables] = useState<boolean>(false)
+
+    // check if variable snapshot is {} or not
+    const isVariablesAvailable: boolean =
+        Object.keys(baseTemplateConfiguration?.[activeSideNavOption]?.variableSnapshot || {}).length !== 0 ||
+        Object.keys(currentConfiguration?.[activeSideNavOption]?.variableSnapshot || {}).length !== 0
+
+    const editorValuesRHS = convertVariables
+        ? baseTemplateConfiguration?.[activeSideNavOption]?.resolvedTemplateData
+        : baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue.value
+
+    const editorValuesLHS = convertVariables
+        ? currentConfiguration?.[activeSideNavOption]?.resolvedTemplateData
+        : currentConfiguration?.[activeSideNavOption]?.codeEditorValue.value
+
     const [editorValues, setEditorValues] = useState<{
         displayName: string
         value: string
@@ -35,11 +51,11 @@ export default function TriggerViewConfigDiff({
         displayName: baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue?.displayName,
         value:
             (baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue.value &&
-                YAML.stringify(JSON.parse(baseTemplateConfiguration[activeSideNavOption].codeEditorValue.value))) ||
+                YAML.stringify(JSON.parse(editorValuesRHS))) ||
             '',
         defaultValue:
             (currentConfiguration?.[activeSideNavOption]?.codeEditorValue?.value &&
-                YAML.stringify(JSON.parse(currentConfiguration[activeSideNavOption].codeEditorValue.value))) ||
+                YAML.stringify(JSON.parse(editorValuesLHS))) ||
             '',
     })
     const [configMapOptionCollapsed, setConfigMapOptionCollapsed] = useState<boolean>(false)
@@ -49,11 +65,20 @@ export default function TriggerViewConfigDiff({
         handleConfigToDeploySelection()
     }, [selectedConfigToDeploy])
 
+    useEffect(() => {
+        setEditorValues({
+            displayName: editorValues.displayName,
+            value: editorValuesRHS ? YAML.stringify(JSON.parse(editorValuesRHS)) : '',
+            defaultValue: editorValuesLHS ? YAML.stringify(JSON.parse(editorValuesLHS)) : '',
+        })
+    }, [convertVariables, selectedConfigToDeploy])
+
     const handleConfigToDeploySelection = () => {
         if (activeSideNavOption.includes('/')) {
             const navParentChildKeys = activeSideNavOption.split('/')
 
             if (!getNavOptions(navParentChildKeys[0]).includes(navParentChildKeys[1])) {
+                setConvertVariables(false)
                 setActiveSideNavOption(DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
                 handleNavOptionSelection(null, DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
                 return
@@ -89,6 +114,7 @@ export default function TriggerViewConfigDiff({
     const handleNavOptionSelection = (e, navConfigKey?: string) => {
         const dataValue = navConfigKey || e?.target?.dataset?.value
         if (dataValue) {
+            setConvertVariables(false)
             setActiveSideNavOption(dataValue)
 
             let _value, _defaultValue
@@ -140,6 +166,8 @@ export default function TriggerViewConfigDiff({
 
         return navOptions
     }
+
+    const tippyMsg = convertVariables ? 'Hide variables values' : 'Show variables values'
 
     const renderAvailableDiffColumn = () => {
         return (
@@ -337,6 +365,10 @@ export default function TriggerViewConfigDiff({
         )
     }
 
+    const handleShowVariablesClick = () => {
+        setConvertVariables(!convertVariables)
+    }
+
     const isOptionDisabled = (option) => {
         return !isConfigAvailable(option.value)
     }
@@ -400,8 +432,17 @@ export default function TriggerViewConfigDiff({
                 <div className="p-16 dc__overflow-scroll">
                     {renderConfigValuesDiff()}
                     <div className="en-2 bw-1 br-4">
-                        <div className="code-editor-header-value flex left pt-8 pb-8 pl-16 pr-16 fs-13 fw-6 lh-20 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom">
-                            {editorValues.displayName}
+                        <div className="code-editor-header-value left pt-8 pb-8 pl-16 pr-16 fs-13 fw-6 lh-20 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom">
+                            <span>{editorValues.displayName}</span>
+                            {isVariablesAvailable && (
+                                <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
+                                    <span className="icon-dim-16" onClick={handleShowVariablesClick}>
+                                        <ViewVariablesIcon
+                                            className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 cursor`}
+                                        />
+                                    </span>
+                                </Tippy>
+                            )}
                         </div>
                         {renderDeploymentDiffViaCodeEditor()}
                     </div>
