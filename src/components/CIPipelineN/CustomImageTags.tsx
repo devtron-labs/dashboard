@@ -1,10 +1,9 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import '../ciPipeline/ciPipeline.scss'
-import { pipelineContext } from '../workflowEditor/workflowEditor'
 import Tippy from '@tippyjs/react'
 import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
@@ -154,7 +153,7 @@ function CustomImageTags({
     }
 
     const toggleEditToShowCreateImageView = () => {
-        setCreateImageTagView(true)
+        setCreateImageTagView(!showCreateImageTagView)
     }
 
     const renderCustomTagCollapsedValue = () => {
