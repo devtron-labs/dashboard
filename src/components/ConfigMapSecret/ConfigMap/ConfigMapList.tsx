@@ -23,6 +23,7 @@ export default function ConfigMapList({
     parentState,
     setParentState,
     reloadEnvironments,
+    clusterId,
 }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [configMap, setConfigMap] = useState<{ id: number; configData: any[]; appId: number }>()
@@ -215,7 +216,7 @@ export default function ConfigMapList({
                 />
             )}
             <div className="variables-widget-position-cmcs">
-                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} />
+                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
             </div>
         </div>
     )

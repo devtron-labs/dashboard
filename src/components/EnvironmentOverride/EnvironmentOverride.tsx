@@ -122,6 +122,7 @@ export default function EnvironmentOverride({
                             setParentState={setViewState}
                             isJobView={isJobView}
                             reloadEnvironments={reloadEnvironments}
+                            clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
