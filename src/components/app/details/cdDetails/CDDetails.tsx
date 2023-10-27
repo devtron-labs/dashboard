@@ -9,13 +9,7 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
-import {
-    useInterval,
-    useScrollable,
-    mapByKey,
-    asyncWrap,
-    importComponentFromFELibrary,
-} from '../../../common'
+import { useInterval, useScrollable, mapByKey, asyncWrap, importComponentFromFELibrary } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
@@ -48,7 +42,7 @@ const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'f
 let statusSet = new Set(['starting', 'running', 'pending'])
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
-export default function CDDetails({filteredEnvIds}:{filteredEnvIds: string}) {
+export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }) {
     const location = useLocation()
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
@@ -153,15 +147,15 @@ export default function CDDetails({filteredEnvIds}:{filteredEnvIds: string}) {
                 )
             }
             if (result[0]) {
-              const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
-              let _selectedEnvironment = (result[0]['value']?.result || [])
-                  .filter((env) => {
-                      return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
-                  })
-                  .find((envData) => {
-                      return +envId === envData.environmentId
-                  })
-              setSelectedEnv(_selectedEnvironment)
+                const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
+                let _selectedEnvironment = (result[0]['value']?.result || [])
+                    .filter((env) => {
+                        return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
+                    })
+                    .find((envData) => {
+                        return +envId === envData.environmentId
+                    })
+                setSelectedEnv(_selectedEnvironment)
             }
         }
 
@@ -184,8 +178,9 @@ export default function CDDetails({filteredEnvIds}:{filteredEnvIds: string}) {
                 isEnvDeleted = false
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
             const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || [])
-            .filter((env) => {
-              return !filteredEnvMap || filteredEnvMap.get(env.environmentId)})
+                .filter((env) => {
+                    return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
+                })
                 .map((envData) => {
                     if (envData.environmentId === +envId) {
                         _selectedEnvironment = envData
@@ -201,8 +196,19 @@ export default function CDDetails({filteredEnvIds}:{filteredEnvIds: string}) {
                     }
                 })
 
-            if ((envOptions.length === 1 && !envId && !isEnvDeleted) || (envId && envOptions.length && !_selectedEnvironment)) {
+            if (
+                (envOptions.length === 1 && !envId && !isEnvDeleted) ||
+                (envId && envOptions.length && !_selectedEnvironment)
+            ) {
                 replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
+            } else if (envId && !pipelineId && _selectedEnvironment) {
+                replace(
+                    generatePath(path, {
+                        appId,
+                        envId: _selectedEnvironment.environmentId,
+                        pipelineId: cdPipelinesMap.get(_selectedEnvironment.environmentId)?.id,
+                    }),
+                )
             }
             setEnvOptions(envOptions)
             setSelectedEnv(_selectedEnvironment)
@@ -377,11 +383,7 @@ export const TriggerOutput: React.FC<{
         areTagDetailsRequired = false
     }
 
-    const [
-        tagDetailsLoading,
-        tagDetailsResult,
-        tagDetailsError,
-    ] = useAsync(
+    const [tagDetailsLoading, tagDetailsResult, tagDetailsError] = useAsync(
         () =>
             getTagDetails({
                 pipelineId,
@@ -535,7 +537,11 @@ export const TriggerOutput: React.FC<{
             <HistoryLogs
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
-                loading={(triggerDetailsLoading && !triggerDetailsResult) || !triggerDetails || (areTagDetailsRequired && !tagDetailsResult)}
+                loading={
+                    (triggerDetailsLoading && !triggerDetailsResult) ||
+                    !triggerDetails ||
+                    (areTagDetailsRequired && !tagDetailsResult)
+                }
                 userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
                 triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
                 setFullScreenView={setFullScreenView}

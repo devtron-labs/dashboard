@@ -574,6 +574,10 @@ a:focus {
     &.direction-left {
         text-align: left;
     }
+
+    &.text-overflow-clip {
+        text-overflow: clip;
+    }
 }
 
 .anchor {

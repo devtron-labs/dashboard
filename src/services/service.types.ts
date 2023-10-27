@@ -67,6 +67,8 @@ export interface AppEnvironment {
     prod: boolean;
     chartRefId?: number
     lastDeployed?: string
+    lastDeployedBy?: string
+    lastDeployedImage?: string
     appStatus?: string
     deploymentAppDeleteRequest?: boolean
     isVirtualEnvironment?: boolean
