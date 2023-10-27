@@ -209,6 +209,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                 await getAppMetaInfoRes()
             } catch (err) {
                 showError(err)
+                throw err
             }
         }
 
