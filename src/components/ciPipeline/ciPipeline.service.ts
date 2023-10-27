@@ -497,11 +497,11 @@ function parseCIResponse(
                     tagPattern: ciPipeline.customTag?.tagPattern || '',
                     counterX: +ciPipeline.customTag?.counterX || 0,
                 },
+                isCustomImageTagEnabled: ciPipeline.enableCustomTag
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
             showPostBuild: ciPipeline.afterDockerBuildScripts?.length > 0,
-            enableCustomTag: ciPipeline.enableCustomTag
         }
     }
 }

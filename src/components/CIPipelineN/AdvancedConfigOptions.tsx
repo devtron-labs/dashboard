@@ -25,6 +25,8 @@ export default function AdvancedConfigOptions({
         setFormData,
         loadingState,
         setLoadingState,
+        formDataErrorObj,
+        setFormDataErrorObj
     } = useContext(pipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
@@ -274,7 +276,13 @@ export default function AdvancedConfigOptions({
                                     updateDockerConfigOverride={updateDockerConfigOverride}
                                 />
                             </div>
-                            <CustomImageTags selectedCIPipeline={parentState.selectedCIPipeline}/>
+                            <CustomImageTags
+                                selectedCIPipeline={parentState.selectedCIPipeline}
+                                formData={formData}
+                                setFormData={setFormData}
+                                formDataErrorObj={formDataErrorObj}
+                                setFormDataErrorObj={setFormDataErrorObj}
+                            />
 
                             {renderDockerArgs()}
                         </>

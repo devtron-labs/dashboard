@@ -11,8 +11,13 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
 
-function CustomImageTags({ selectedCIPipeline }: CustomImageTagsType) {
-    const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
+function CustomImageTags({
+    selectedCIPipeline,
+    formData,
+    setFormData,
+    formDataErrorObj,
+    setFormDataErrorObj,
+}: CustomImageTagsType) {
     const validationRules = new ValidationRules()
     const isCustomTagError = formDataErrorObj.customTag.message.length > 0 && !formDataErrorObj.customTag.isValid
     const [showCreateImageTagView, setCreateImageTagView] = useState<boolean>(false)

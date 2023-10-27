@@ -1,5 +1,6 @@
 import React from 'react'
 import { CIPipelineDataType } from '../ciPipeline/types'
+import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 
 export interface CustomTagType {
     tagPattern: string
@@ -8,4 +9,8 @@ export interface CustomTagType {
 
 export interface CustomImageTagsType {
     selectedCIPipeline: CIPipelineDataType
+    formData: PipelineFormType
+    setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
+    formDataErrorObj: PipelineFormDataErrorType
+    setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
 }
