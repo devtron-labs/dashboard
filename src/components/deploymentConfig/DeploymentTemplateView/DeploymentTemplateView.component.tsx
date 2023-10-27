@@ -155,8 +155,9 @@ export const CompareWithDropdown = ({
     }
 
     useEffect(() => {
+        if (isEnvOverride && groupedData.length === 0) return
         _initOptions()
-    }, [environments, charts, isValues])
+    }, [environments, charts, isValues, groupedData])
 
     const _initOptions = () => {
         const _groupOptions = []
