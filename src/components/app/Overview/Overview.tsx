@@ -372,7 +372,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         return (
             <div className="w-100 mh-500 bcn-0 flex en-2">
                 <GenericEmptyState
-                    // TODO: Add image once provided by the product
                     layout="row"
                     title={DEPLOYMENT_TITLE}
                     subTitle={DEPLOYMENT_SUB_TITLE}
@@ -487,7 +486,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     }
 
     function renderAppDescription() {
-        // TODO: Verify the classes for helm charts
         return (
             <div>
                 <GenericDescription
