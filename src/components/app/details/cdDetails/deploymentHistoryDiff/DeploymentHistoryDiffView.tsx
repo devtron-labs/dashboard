@@ -4,10 +4,11 @@ import { DeploymentHistorySingleValue } from '../cd.type'
 import { DeploymentHistoryParamsType, DeploymentTemplateHistoryType } from './types'
 import YAML from 'yaml'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variables.svg'
+import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
 import { useParams } from 'react-router'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, MODES } from '../../../../../config'
 import Tippy from '@tippyjs/react'
+import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentHistoryDiffView({
     currentConfiguration,
@@ -43,15 +44,17 @@ export default function DeploymentHistoryDiffView({
 
     // check if variable snapshot is {} or not
     const isVariablesAvailable: boolean =
-        Object.keys(baseTemplateConfiguration?.variableSnapshot || {}).length !== 0 ||
-        Object.keys(currentConfiguration?.variableSnapshot || {}).length !== 0
+        Object.keys(baseTemplateConfiguration?.codeEditorValue?.variableSnapshot || {}).length !== 0 ||
+        Object.keys(currentConfiguration?.codeEditorValue?.variableSnapshot || {}).length !== 0
+
+    console.log('isVariablesAvailable', isVariablesAvailable)
 
     const editorValuesRHS = convertVariables
-        ? baseTemplateConfiguration?.resolvedTemplateData
+        ? baseTemplateConfiguration?.codeEditorValue?.resolvedValue
         : baseTemplateConfiguration?.codeEditorValue?.value
 
     const editorValuesLHS = convertVariables
-        ? currentConfiguration?.resolvedTemplateData
+        ? currentConfiguration?.codeEditorValue?.resolvedValue
         : currentConfiguration?.codeEditorValue?.value
 
     const renderDeploymentDiffViaCodeEditor = () => {
@@ -163,11 +166,16 @@ export default function DeploymentHistoryDiffView({
                         <span>{baseTemplateConfiguration?.codeEditorValue?.['displayName']}</span>
                         {isVariablesAvailable && (
                             <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
-                                <span className="icon-dim-16" onClick={handleShowVariablesClick}>
-                                    <ViewVariablesIcon
-                                        className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 cursor`}
-                                    />
-                                </span>
+                                <li className="flex left dc_width-max-content cursor">
+                                    <div className="w-40 h-20">
+                                        <Toggle
+                                            selected={convertVariables}
+                                            color="var(--B500)"
+                                            onSelect={handleShowVariablesClick}
+                                            Icon={ViewVariablesIcon}
+                                        />
+                                    </div>
+                                </li>
                             </Tippy>
                         )}
                     </div>
