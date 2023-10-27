@@ -23,7 +23,7 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { SOME_ERROR_MSG } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
-import EditableTextArea from '../ResourceBrowser/ResourceList/EditableTextArea'
+import { EditableTextArea } from '../common/EditableTextArea/EditableTextArea'
 
 
 function ClusterOverview({
@@ -78,7 +78,7 @@ function ClusterOverview({
         await getClusterNoteAndCapacity(clusterId)
     }
 
-    const handleUpdateClusterDescription = async (description: string) => {
+    const handleUpdateClusterDescription = async (description: string): Promise<void> => {
         const requestPayload = {
             id: Number(clusterId),
             description: description,
@@ -91,14 +91,13 @@ function ClusterOverview({
                     shortDescription: description,
                 })
             }
-            return Promise.resolve('success')
         } catch (error) {
             if (error['code'] === 403) {
                 setErrorCode(error['code'])
             } else {
                 showError(error)
             }
-            return Promise.reject('error')
+            throw error
         }
     }
 
@@ -482,7 +481,6 @@ function ClusterOverview({
         )
     }
     const renderSideInfoData=()=>{
-        
         return (
             <aside className="flexbox-col dc__gap-16 w-300 dc__no-shrink">
                 <div className="flexbox-col dc__gap-12">
@@ -490,13 +488,13 @@ function ClusterOverview({
                         <ClusterOverviewIcon className="icon-dim-48" />
                     </div>
                     <div className="fs-16 fw-7 lh-24 cn-9" data-testid="clusterOveviewName">
-                        {clusterDetails.clusterName}
+                        {clusterDetails?.clusterName}
                     </div>
                     <EditableTextArea
                         placeholder="Enter short description"
-                        rows="4"
-                        intialText={clusterDetails.shortDescription}
-                        updateContentFunction={handleUpdateClusterDescription}
+                        rows={4}
+                        updateContent={handleUpdateClusterDescription}
+                        initialText={clusterDetails.shortDescription}
                     />
                 </div>
                 <div className="dc__border-top-n1" />
@@ -516,10 +514,10 @@ function ClusterOverview({
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Server URL</div>
                         <div className="flexbox">
                             <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right mr-6">
-                                {clusterDetails.serverURL}
+                                {clusterDetails?.serverURL}
                             </div>
                             <ClipboardButton
-                                content={clusterDetails.serverURL}
+                                content={clusterDetails?.serverURL}
                                 copiedTippyText="Copied Server URL"
                                 duration={1000}
                                 trigger={triggerCopy}
@@ -529,18 +527,22 @@ function ClusterOverview({
                     </div>
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added on</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterDetails.addedOn}</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterDetails?.addedOn}</div>
                     </div>
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added by</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right flexbox">
-                            <div
-                                className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase mr-8"
-                                style={{ backgroundColor: getRandomColor(clusterDetails.addedBy) }}
-                            >
-                                {clusterDetails.addedBy[0]}
-                            </div>
-                            {clusterDetails.addedBy}
+                            {clusterDetails?.addedBy && (
+                                <>
+                                    <div
+                                        className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase mr-8"
+                                        style={{ backgroundColor: getRandomColor(clusterDetails?.addedBy) }}
+                                    >
+                                        {clusterDetails?.addedBy[0]}
+                                    </div>
+                                    <div>{clusterDetails?.addedBy}</div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

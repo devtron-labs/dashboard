@@ -324,7 +324,7 @@ export default function GenericDescription({
                         <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
                             <div className="flex left fw-6 lh-20 cn-9">
                                 <DescriptionIcon className="icon-dim-20 mr-8" />
-                                Description
+                                Readme
                             </div>
                             {descriptionUpdatedBy && descriptionUpdatedOn && (
                                 <div className="flex left fw-4 cn-7 ml-8">
