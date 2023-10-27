@@ -202,6 +202,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             ) {
                 replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
             } else if (envId && !pipelineId && _selectedEnvironment) {
+                // Update the pipeline id when the selected environment is available and pipeline id is not available
                 replace(
                     generatePath(path, {
                         appId,
