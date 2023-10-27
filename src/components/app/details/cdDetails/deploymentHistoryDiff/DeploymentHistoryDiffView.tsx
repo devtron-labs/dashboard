@@ -47,8 +47,6 @@ export default function DeploymentHistoryDiffView({
         Object.keys(baseTemplateConfiguration?.codeEditorValue?.variableSnapshot || {}).length !== 0 ||
         Object.keys(currentConfiguration?.codeEditorValue?.variableSnapshot || {}).length !== 0
 
-    console.log('isVariablesAvailable', isVariablesAvailable)
-
     const editorValuesRHS = convertVariables
         ? baseTemplateConfiguration?.codeEditorValue?.resolvedValue
         : baseTemplateConfiguration?.codeEditorValue?.value
