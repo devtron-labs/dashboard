@@ -170,8 +170,6 @@ export const CompareWithDropdown = ({
         let id = 0
         _groupOptions.length = 4
 
-        console.log('groupedData', groupedData)
-
         // place all options under corresponding groups
         groupedData.forEach((group) => {
             if (!isValues && group[0].type === 1) return
