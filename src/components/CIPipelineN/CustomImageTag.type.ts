@@ -8,9 +8,10 @@ export interface CustomTagType {
 }
 
 export interface CustomImageTagsType {
-    selectedCIPipeline: CIPipelineDataType
+    savedTagPattern?: string
     formData: PipelineFormType
     setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
     formDataErrorObj: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
+    isCDBuild?: boolean
 }

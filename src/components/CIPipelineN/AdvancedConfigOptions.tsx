@@ -277,7 +277,7 @@ export default function AdvancedConfigOptions({
                                 />
                             </div>
                             <CustomImageTags
-                                selectedCIPipeline={parentState.selectedCIPipeline}
+                                savedTagPattern={parentState.selectedCIPipeline.customTag?.tagPattern}
                                 formData={formData}
                                 setFormData={setFormData}
                                 formDataErrorObj={formDataErrorObj}

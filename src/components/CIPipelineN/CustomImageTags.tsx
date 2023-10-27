@@ -9,16 +9,19 @@ import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
+import { Select } from '../common'
+import { StageTypeEnums, StageTypeMap, customTagStageTypeOptions } from './ciPipeline.utils'
 
 function CustomImageTags({
-    selectedCIPipeline,
+    savedTagPattern,
     formData,
     setFormData,
     formDataErrorObj,
     setFormDataErrorObj,
+    isCDBuild,
 }: CustomImageTagsType) {
     const validationRules = new ValidationRules()
-    const isCustomTagError = formDataErrorObj.customTag.message.length > 0 && !formDataErrorObj.customTag.isValid
+    const isCustomTagError = formDataErrorObj.customTag?.message.length > 0 && !formDataErrorObj.customTag?.isValid
     const [showCreateImageTagView, setCreateImageTagView] = useState<boolean>(false)
 
     const renderInputErrorMessage = (errorMessage: string) => {
@@ -54,6 +57,43 @@ function CustomImageTags({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
+    const handleCustomTagStageOnCD = (event) => {
+        const _form = { ...formData }
+        _form.customTagStage = event.target.value
+        setFormData(_form)
+    }
+
+    const getCDStageTypeSelectorValue = (): string => {
+        let stageTypeSelectorValue = ''
+        if (formData.customTagStage === StageTypeEnums.POST_CD) {
+            stageTypeSelectorValue = StageTypeMap[StageTypeEnums.POST_CD]
+        } else {
+            stageTypeSelectorValue = StageTypeMap.PRE_CD
+        }
+        return stageTypeSelectorValue
+    }
+
+    const renderCustomTagStageOnCD = () => {
+        return (
+            <Select
+                tabIndex={4}
+                rootClassName="select-button--defaul w-200 ml-8 pl-8"
+                value={formData.customTagStage}
+                onChange={handleCustomTagStageOnCD}
+            >
+                <Select.Button dataTestIdDropdown="chart-version-of-preset">
+                    {formData.customTagStage ? getCDStageTypeSelectorValue() : 'Select stage'}
+                </Select.Button>
+
+                {Array.from(customTagStageTypeOptions).map((stageOption, idx) => (
+                    <Select.Option key={stageOption.value} value={stageOption.value}>
+                        {stageOption.label}
+                    </Select.Option>
+                ))}
+            </Select>
+        )
+    }
+
     const renderCounterXTippy = (variableX: string) => {
         return (
             <Tippy
@@ -66,7 +106,7 @@ function CustomImageTags({
                 className="default-tt w-200"
                 arrow={false}
             >
-                <span className="pl-4 dc__underline">{variableX}</span>
+                <span className="pl-4 dc__underline mr-4">{variableX}</span>
             </Tippy>
         )
     }
@@ -122,14 +162,12 @@ function CustomImageTags({
                     Build will fail if resulting image tag has already been built
                 </div>
                 <hr className="mt-12 mb-12" />
-                <div className="flex left">
-                    <span className="cn-7">
-                        Value of {renderCounterXTippy(`{x}`)} in the next build trigger will be
-                    </span>
+                <div className="flex left cn-7">
+                    Value of {renderCounterXTippy(`{x}`)} will be
                     <input
                         tabIndex={2}
                         type="number"
-                        className="form__input form__input-pl-8 w-80px-imp ml-8 dc__bg-n50"
+                        className="form__input form__input-pl-8 w-80px-imp ml-8 mr-8 dc__bg-n50"
                         name="image_counter"
                         autoComplete="off"
                         value={formData.customTag?.counterX}
@@ -137,7 +175,7 @@ function CustomImageTags({
                         min="0"
                         onKeyPress={handleCounterKeyPress}
                     />
-                    <div></div>
+                    in the next build trigger {isCDBuild ? renderCustomTagStageOnCD() : null}
                     {formDataErrorObj.counterX?.message.length > 0
                         ? renderInputErrorMessage(formDataErrorObj.counterX.message)
                         : null}
@@ -147,9 +185,7 @@ function CustomImageTags({
     }
 
     const renderCustomImageDetails = () => {
-        return selectedCIPipeline.customTag?.tagPattern && !showCreateImageTagView
-            ? getGeneratedTagDescription()
-            : renderCreateCustomTagPattern()
+        return savedTagPattern && !showCreateImageTagView ? getGeneratedTagDescription() : renderCreateCustomTagPattern()
     }
 
     const toggleEditToShowCreateImageView = () => {
@@ -198,7 +234,7 @@ function CustomImageTags({
 
     const handleCustomTagToggle = (): void => {
         const _formData = { ...formData }
-        _formData.isCustomImageTagEnabled = !_formData.isCustomImageTagEnabled
+        _formData.enableCustomTag = !_formData.enableCustomTag
         setFormData(_formData)
     }
 
@@ -209,7 +245,7 @@ function CustomImageTags({
                 <div className="flex dc__content-space w-100 cursor flex top">
                     <div
                         className={`flex ${
-                            !formData.isCustomImageTagEnabled && formData.customTag?.tagPattern?.length > 0 ? 'top' : ''
+                            !formData.enableCustomTag && formData.customTag?.tagPattern?.length > 0 ? 'top' : ''
                         }`}
                     >
                         <div className="pc-icon-container bcn-1 br-8 mr-16 flexbox">
@@ -224,14 +260,14 @@ function CustomImageTags({
                     </div>
                     <div className="" style={{ width: '32px', height: '20px' }}>
                         <Toggle
-                            disabled={window._env_.FORCE_SECURITY_SCANNING && formData.isCustomImageTagEnabled}
-                            selected={formData.isCustomImageTagEnabled}
+                            disabled={window._env_.FORCE_SECURITY_SCANNING && formData.enableCustomTag}
+                            selected={formData.enableCustomTag}
                             onSelect={handleCustomTagToggle}
                             dataTestId="create-build-pipeline-custom-tag-enabled-toggle"
                         />
                     </div>
                 </div>
-                {formData.isCustomImageTagEnabled && renderCustomImageDetails()}
+                {formData.enableCustomTag && renderCustomImageDetails()}
                 <hr />
             </div>
         )

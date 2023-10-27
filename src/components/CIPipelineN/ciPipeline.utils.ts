@@ -261,3 +261,25 @@ export const reactSelectStyles = {
         }
     },
 }
+
+export enum StageTypeEnums {
+    PRE_CD='PRE_CD',
+    POST_CD= 'POST_CD',
+}
+
+export const StageTypeMap = {
+    PRE_CD: 'Pre-deployment stage',
+    POST_CD: 'Post-deployment stage',
+}
+
+
+export const customTagStageTypeOptions = [
+    {
+        label: StageTypeMap.PRE_CD,
+        value: StageTypeEnums.PRE_CD,
+    },
+    {
+        label: StageTypeMap.POST_CD,
+        value: StageTypeEnums.POST_CD ,
+    },
+]

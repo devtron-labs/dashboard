@@ -441,6 +441,10 @@ export default function NewCDPipeline({
         form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
         form.userApprovalConfig = pipelineConfigFromRes.userApprovalConfig
         form.allowedDeploymentTypes = env.allowedDeploymentTypes || []
+        form.customTag = pipelineConfigFromRes.customTag
+        form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
+        form.customTagStage = pipelineConfigFromRes.customTagStage
+
         if (pipelineConfigFromRes?.preDeployStage) {
             if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
                 form.preBuildStage = pipelineConfigFromRes.preDeployStage
@@ -554,7 +558,13 @@ export default function NewCDPipeline({
             runPreStageInEnv: formData.runPreStageInEnv,
             runPostStageInEnv: formData.runPostStageInEnv,
             preDeployStage: {},
-            postDeployStage: {}
+            postDeployStage: {},
+            customTag: {
+                tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
+                counterX: formData.customTag ? +formData.customTag.counterX : 0,
+            },
+            enableCustomTag: formData.enableCustomTag,
+            customTagStage: formData?.customTagStage ? formData.customTagStage : '',
         }
 
         if (isVirtualEnvironment) {

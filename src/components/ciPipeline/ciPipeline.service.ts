@@ -309,7 +309,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
             counterX: formData.customTag ? +formData.customTag.counterX : 0,
         },
-        enableCustomTag: formData.isCustomImageTagEnabled,
+        enableCustomTag: formData.enableCustomTag,
     }
     return ci
 }
@@ -497,7 +497,7 @@ function parseCIResponse(
                     tagPattern: ciPipeline.customTag?.tagPattern || '',
                     counterX: +ciPipeline.customTag?.counterX || 0,
                 },
-                isCustomImageTagEnabled: ciPipeline.enableCustomTag
+                enableCustomTag: ciPipeline.enableCustomTag
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,

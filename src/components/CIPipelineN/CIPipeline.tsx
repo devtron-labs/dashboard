@@ -133,7 +133,7 @@ export default function CIPipeline({
             counterX: '',
         },
         defaultTag: [],
-        isCustomImageTagEnabled: false
+        enableCustomTag: false
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
