@@ -702,6 +702,7 @@ export default function BuildCD({
                     formDataErrorObj={formDataErrorObj}
                     setFormDataErrorObj={setFormDataErrorObj}
                     isCDBuild={true}
+                    savedTagPattern={formData?.customTag?.tagPattern}
                 />
             </>
         )
