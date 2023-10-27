@@ -388,6 +388,8 @@ export interface BuildType {
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
     getPluginData: (_formData?: PipelineFormType) => void
+    imageTagValue: string
+    setImageTagValue: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface PreBuildType {
