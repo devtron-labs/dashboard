@@ -7,7 +7,7 @@ import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
 import InfoIconWithTippy from '../InfoIconWithTippy'
 import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { getSecretList } from '../service'
-import { importComponentFromFELibrary } from '../../common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '../../common'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-arrow-left.svg'
 import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
 import '../ConfigMapSecret.scss'
@@ -195,6 +195,9 @@ export default function SecretList({
                     toggleDraftComments={toggleDraftComments}
                 />
             )}
+            <div className="variables-widget-position-cmcs">
+                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} />
+            </div>
         </div>
     )
 }
