@@ -950,10 +950,9 @@ export default function ResourceList() {
     }
 
     const renderClusterTerminal = (): JSX.Element => {
-        if (!startTerminal) return null
+        if (!startTerminal && nodeType !== AppDetailsTabs.terminal) return null
         const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
-        const _showTerminal =
-            nodeType === AppDetailsTabs.terminal && selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
+        const _showTerminal = selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
 
         return (
             selectedTerminal && (
