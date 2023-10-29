@@ -139,7 +139,7 @@ export default function ResourceList() {
     const [terminalLoader, setTerminalLoader] = useState(false)
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
     const [toggleSync, setToggle] = useState(false)
-    const [showTerminal, setShowTerminal] = useState<boolean>(false)
+    const [startTerminal, setStartTerminal] = useState<boolean>(false)
     const isStaleDataRef = useRef<boolean>(false)
     const superAdminRef = useRef<boolean>(!!window._env_.K8S_CLIENT)
     const resourceListAbortController = new AbortController()
@@ -372,7 +372,7 @@ export default function ResourceList() {
 
     useEffect(() => {
         toggleShowTerminal()
-    }, [location.search])
+    }, [location.search, nodeType])
 
     useEffect(() => {
         if (
@@ -400,11 +400,10 @@ export default function ResourceList() {
 
     const toggleShowTerminal = () => {
         if (nodeType === AppDetailsTabs.terminal) {
+            setStartTerminal(true)
             setTerminalLoader(false)
-            setShowTerminal(true)
         } else {
             setTerminalLoader(true)
-            setShowTerminal(false)
         }
     }
 
@@ -951,15 +950,15 @@ export default function ResourceList() {
     }
 
     const renderClusterTerminal = (): JSX.Element => {
+        if (!startTerminal) return null
         const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
-        const hideTerminal =
-            nodeType !== AppDetailsTabs.terminal ||
-            !(selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]) ||
-            terminalLoader
+        const _showTerminal =
+            nodeType === AppDetailsTabs.terminal && selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
+
         return (
             selectedTerminal && (
                 <ClusterTerminal
-                    showTerminal={showTerminal && !hideTerminal}
+                    showTerminal={_showTerminal}
                     clusterId={+clusterId}
                     nodeGroups={createGroupSelectList(selectedTerminal.nodeDetails, 'nodeName')}
                     taints={createTaintsList(selectedTerminal.nodeDetails, 'nodeName')}
