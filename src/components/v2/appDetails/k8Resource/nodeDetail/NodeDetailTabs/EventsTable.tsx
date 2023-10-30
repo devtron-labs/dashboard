@@ -7,7 +7,7 @@ import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
 
 export function EventsTable({ loading, eventsList, isResourceBrowserView, errorValue, reconnect }: EventTableType) {
     /* Sorting the EventList object on the basis of lastTimeStamp 
-            wth the below comparator sort function. */
+            with comparator function. */
     eventsList.sort((a, b) => {
         if (a.lastTimestamp < b.lastTimestamp) {
             return -1
