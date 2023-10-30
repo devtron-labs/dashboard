@@ -31,8 +31,8 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
-import GenericDescription from '../../common/Description/GenericDescription'
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
+
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
     _inputAppName: HTMLInputElement
@@ -61,7 +61,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 cloneAppId: true,
             },
             createAppLoader: false,
-            showClusterDescription: false,
         }
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
@@ -115,7 +114,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid, appNameErrors: true })
     }
 
-
     handleProject(item: number): void {
         let { form, isValid } = { ...this.state }
         form.projectId = item
@@ -166,15 +164,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             return
         }
 
-        const genericNoteResponseBean = {
-            description: this.state.form.description,
-        }
-
         const request = {
             appName: this.state.form.appName,
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
-            description: genericNoteResponseBean,
+            description: this.state.form.description?.trim(),
             labels: labelTags,
         }
 
@@ -252,10 +246,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         form.cloneId = value
         isValid.cloneAppId = !!value
         this.setState({ form, isValid })
-    }
-
-    setAppDescription = () => {
-        this.setState({ showClusterDescription: true })
     }
 
     setTags = (tags: TagType[]): void => {
@@ -346,33 +336,20 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     )}
                     <>
                         <span className="form__label mt-16">Description</span>
-                        {this.state.showClusterDescription ? (
-                            <div className="h-auto">
-                                <GenericDescription
-                                    isClusterTerminal={false}
-                                    isSuperAdmin={true}
-                                    appId={this.state.form.appId}
-                                    initialDescriptionText=""
-                                    initialEditDescriptionView={false}
-                                    updateCreateAppFormDescription={this.updateCreateAppFormDescription}
-                                    tabIndex={2}
-                                />
-                            </div>
-                        ) : (
-                            <textarea
-                                data-testid="description-textbox"
-                                className="form__textarea h-76-imp"
-                                name={this.props.isJobView ? 'job-description' : 'app-description'}
-                                value={this.state.form.description}
-                                placeholder={
-                                    this.props.isJobView
-                                        ? 'Describe this job'
-                                        : 'Write a description for this application'
-                                }
-                                tabIndex={2}
-                                onFocus={this.setAppDescription}
-                            />
-                        )}
+                        <textarea
+                            data-testid="description-textbox"
+                            className="form__textarea dc__resizable-textarea--vertical"
+                            name={this.props.isJobView ? 'job-description' : 'app-description'}
+                            value={this.state.form.description}
+                            placeholder={
+                                this.props.isJobView ? 'Describe this job' : 'Write a description for this application'
+                            }
+                            tabIndex={2}
+                            onChange={(e) => {
+                                this.updateCreateAppFormDescription(e.target.value)
+                            }}
+                            rows={4}
+                        />
                     </>
                 </div>
 

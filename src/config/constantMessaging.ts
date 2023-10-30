@@ -395,7 +395,9 @@ export const EMPTY_STATE_STATUS = {
     },
     OVERVIEW: {
         DEPLOYMENT_TITLE: 'Explore your application\'s deployment landscape',
-        DEPLOYMENT_SUB_TITLE: 'Although there are no deployments to display just yet, it\'s the perfect time to start configuring and deploying your app to various environments. Let\'s go!'
+        DEPLOYMENT_SUB_TITLE: 'Although there are no deployments to display just yet, it\'s the perfect time to start configuring and deploying your app to various environments. Let\'s go!',
+        APP_DESCRIPTION: 'Write a short description for this application',
+        JOB_DESCRIPTION: 'Write a short description for this job'
     }
 }
 

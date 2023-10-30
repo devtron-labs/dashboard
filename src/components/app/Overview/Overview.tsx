@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { ModuleNameMap, Moment12HourFormat, OVERVIEW_TABS, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
@@ -13,16 +14,14 @@ import {
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
+    EditableTextArea,
     RadioGroup,
     handleUTCTime,
     importComponentFromFELibrary,
     processDeployedTime,
-    sortOptionsByValue,
 } from '../../common'
-import { AppOverviewProps, JobPipeline } from '../types'
+import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
 import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
@@ -33,16 +32,9 @@ import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
 import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
-import {
-    ExternalLinkIdentifierType,
-    ExternalLinksAndToolsType,
-    ExternalLinkScopeType,
-} from '../../externalLinks/ExternalLinks.type'
-import { getExternalLinks } from '../../externalLinks/ExternalLinks.service'
-import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
-import { StatusConstants, DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
+import { StatusConstants } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import TagChipsContainer from './TagChipsContainer'
@@ -51,19 +43,21 @@ import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { editApp } from '../service'
+import { getAppConfig } from './utils'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 const {
-    OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
+    OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE, APP_DESCRIPTION, JOB_DESCRIPTION },
 } = EMPTY_STATE_STATUS
 
-export default function AppOverview({
-    appMetaInfo,
-    getAppMetaInfoRes,
-    isJobOverview,
-    filteredEnvIds,
-}: AppOverviewProps) {
-    const { appId } = useParams<{ appId: string }>()
+export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
+    const { appId: appIdFromParams } = useParams<{ appId: string }>()
+    const config = getAppConfig(appType)
+    const isJobOverview = appType === 'job'
+    const isHelmChart = appType === 'helm-chart'
+    // For helm the appId from the params is the installed appId and not the actual id of the app
+    const appId = isHelmChart ? `${appMetaInfo.appId}` : appIdFromParams
     const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
@@ -71,14 +65,9 @@ export default function AppOverview({
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [descriptionId, setDescriptionId] = useState<number>(0)
-    const [newDescription, setNewDescription] = useState<string>(isJobOverview ? DefaultJobNote : DefaultAppNote)
+    const [newDescription, setNewDescription] = useState<string>(config.defaultNote)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
-    const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
-        fetchingExternalLinks: true,
-        externalLinks: [],
-        monitoringTools: [],
-    })
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
         () => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]),
         [appId],
@@ -88,7 +77,7 @@ export default function AppOverview({
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
     const [activeTab, setActiveTab] = useState<typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]>(OVERVIEW_TABS.ABOUT)
-    const resourceName = isJobOverview ? 'job' : 'application'
+    const resourceName = config.resourceName
 
     let _moment: moment.Moment
     let _date: string
@@ -96,19 +85,17 @@ export default function AppOverview({
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
-            _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
+            _moment = moment(appMetaInfo?.note?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.note?.updatedOn
             const description =
-                appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id
-                    ? appMetaInfo.description.description
-                    : isJobOverview
-                    ? DefaultJobNote
-                    : DefaultAppNote
-            _date = appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id ? _date : ''
+                appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id
+                    ? appMetaInfo.note.description
+                    : config.defaultNote
+            _date = appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id ? _date : ''
             setNewUpdatedOn(_date)
-            setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
+            setNewUpdatedBy(appMetaInfo?.note?.updatedBy)
             setNewDescription(description)
-            setDescriptionId(appMetaInfo?.description?.id)
+            setDescriptionId(appMetaInfo?.note?.id)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -116,8 +103,6 @@ export default function AppOverview({
     useEffect(() => {
         if (isJobOverview) {
             getCIPipelinesForJob()
-        } else {
-            getExternalLinksDetails()
         }
     }, [appId])
 
@@ -132,33 +117,6 @@ export default function AppOverview({
         }
         return []
     }, [filteredEnvIds, otherEnvsResult])
-
-    const getExternalLinksDetails = (): void => {
-        getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
-            .then((externalLinksRes) => {
-                setExternalLinksAndTools({
-                    fetchingExternalLinks: false,
-                    externalLinks:
-                        externalLinksRes.result?.ExternalLinks?.filter(
-                            (_link) => _link.type === ExternalLinkScopeType.AppLevel,
-                        ).sort(sortByUpdatedOn) || [],
-                    monitoringTools:
-                        externalLinksRes.result?.Tools?.map((tool) => ({
-                            label: tool.name,
-                            value: tool.id,
-                            icon: tool.icon,
-                        })).sort(sortOptionsByValue) || [],
-                })
-            })
-            .catch((e) => {
-                showError(e)
-                setExternalLinksAndTools({
-                    fetchingExternalLinks: false,
-                    externalLinks: [],
-                    monitoringTools: [],
-                })
-            })
-    }
 
     const getCIPipelinesForJob = (): void => {
         getJobCIPipeline(appId)
@@ -193,8 +151,8 @@ export default function AppOverview({
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
-                description={appMetaInfo.description.description}
-                isJobOverview={isJobOverview}
+                description={appMetaInfo.note.description}
+                appType={appType}
             />
         )
     }
@@ -208,7 +166,8 @@ export default function AppOverview({
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 currentLabelTags={currentLabelTags}
-                description={appMetaInfo.description.description}
+                description={appMetaInfo.note.description}
+                appType={appType}
             />
         )
     }
@@ -227,34 +186,47 @@ export default function AppOverview({
     const renderSideInfoColumn = () => {
         const {
             appName,
-            shortDescription = `Write a short description for this ${resourceName}`,
+            description,
             // TODO: Update the placeholder text when integrating
-            codeSource = 'devtron-labs/devtron',
+            // codeSource = 'devtron-labs/devtron',
             createdOn,
             createdBy,
             projectName,
+            chartUsed,
         } = appMetaInfo
+
+        const handleSaveDescription = async (value: string) => {
+            const payload: EditAppRequest = {
+                id: +appId,
+                teamId: appMetaInfo.projectId,
+                description: value?.trim(),
+                labels: appMetaInfo.labels,
+            }
+
+            try {
+                await editApp(payload)
+                toast.success('Successfully saved')
+                await getAppMetaInfoRes()
+            } catch (err) {
+                showError(err)
+                throw err
+            }
+        }
 
         return (
             <aside className="flexbox-col dc__gap-16">
                 <div className="flexbox-col dc__gap-12">
-                    <div>
-                        {isJobOverview ? (
-                            <JobIcon className="icon-dim-48 dc__icon-bg-color br-4 p-8" />
-                        ) : (
-                            <AppIcon className="icon-dim-48" />
-                        )}
-                    </div>
+                    {(config.icon || chartUsed.chartAvatar) && (
+                        <div>
+                            {config.icon ?? <img src={chartUsed.chartAvatar} alt="App icon" className="icon-dim-48" />}
+                        </div>
+                    )}
                     <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break">{appName}</div>
-                    {/* TODO: Uncomment and integrate */}
-                    {/* <div className="flexbox flex-justify dc__gap-10">
-                        <div className="fs-13 fw-4 lh-20 cn-9">{shortDescription}</div>
-                        <EditIcon
-                            className="icon-dim-16 cursor mw-16"
-                            // TODO: Add onClick listener
-                            onClick={() => alert('Please integrate me 🥹!')}
-                        />
-                    </div> */}
+                    <EditableTextArea
+                        rows={4}
+                        initialText={description || config.defaultDescription}
+                        updateContent={handleSaveDescription}
+                    />
                 </div>
                 <div className="dc__border-top-n1" />
                 <div className="flexbox-col dc__gap-12">
@@ -265,6 +237,20 @@ export default function AppOverview({
                             <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleChangeProjectModal} />
                         </div>
                     </div>
+                    {isHelmChart && !!chartUsed && (
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Chart used</div>
+                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                                <span>{chartUsed.appStoreChartName}/</span>
+                                <Link
+                                    className="dc__ellipsis-right"
+                                    to={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartUsed.appStoreChartId}`}
+                                >
+                                    {chartUsed.appStoreAppName} ({chartUsed.appStoreAppVersion})
+                                </Link>
+                            </div>
+                        </div>
+                    )}
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
@@ -284,7 +270,7 @@ export default function AppOverview({
                         </div>
                     </div>
                     {/* TODO: Uncomment, update and integrate. Also add the icon for the code source */}
-                    {/* {!isJobOverview && (
+                    {/* {type === 'app' && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
                             <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">{codeSource}</div>
@@ -334,7 +320,11 @@ export default function AppOverview({
     const renderDeploymentComponent = () => {
         if (envList.length > 0) {
             return (
-                <div className="env-deployments-info-wrapper w-100">
+                <div
+                    className={`env-deployments-info-wrapper ${
+                        isArgoInstalled ? 'env-deployments-info-wrapper--argo-installed' : ''
+                    } w-100`}
+                >
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom dc__uppercase fs-12 fw-6 cn-7 pr-16 pl-16">
                         <span />
                         {isArgoInstalled && <ActivityIcon className="icon-dim-16" />}
@@ -382,7 +372,6 @@ export default function AppOverview({
         return (
             <div className="w-100 mh-500 bcn-0 flex en-2">
                 <GenericEmptyState
-                    // TODO: Add image once provided by the product
                     layout="row"
                     title={DEPLOYMENT_TITLE}
                     subTitle={DEPLOYMENT_SUB_TITLE}
@@ -514,7 +503,7 @@ export default function AppOverview({
         )
     }
 
-    function renderOverviewContent(isJobOverview) {
+    function renderOverviewContent() {
         if (isJobOverview) {
             const contentToRender = {
                 [OVERVIEW_TABS.ABOUT]: renderAppDescription,
@@ -538,6 +527,8 @@ export default function AppOverview({
                     <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
                 </div>
             )
+        } else if (isHelmChart) {
+            return <div className="app-overview-wrapper flexbox-col dc__gap-12">{renderAppDescription()}</div>
         } else {
             const contentToRender = {
                 [OVERVIEW_TABS.ABOUT]: renderAppDescription,
@@ -570,9 +561,9 @@ export default function AppOverview({
 
     return (
         // TODO: Fix the scroll for two column layout
-        <div className={`app-overview-container p-20 ${activeTab === OVERVIEW_TABS.ABOUT ? 'sidebar-open' : ''}`}>
+        <div className={`app-overview-container p-20 h-100 ${activeTab === OVERVIEW_TABS.ABOUT ? 'sidebar-open' : ''}`}>
             {activeTab === OVERVIEW_TABS.ABOUT && renderSideInfoColumn()}
-            {!isLoading && renderOverviewContent(isJobOverview)}
+            {!isLoading && renderOverviewContent()}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
         </div>
