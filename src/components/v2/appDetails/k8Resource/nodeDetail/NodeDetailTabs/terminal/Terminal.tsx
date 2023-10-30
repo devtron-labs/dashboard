@@ -33,11 +33,11 @@ export default function TerminalView({
 
     function resizeSocket() {
         if (terminalRef.current && fitAddon && isTerminalTab) {
-            const dim = fitAddon.proposeDimensions()
+            const dim = fitAddon?.proposeDimensions()
             if (dim && socket.current?.readyState === WebSocket.OPEN) {
                 socket.current?.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
-            fitAddon.fit()
+            fitAddon?.fit()
         }
     }
 
@@ -97,7 +97,7 @@ export default function TerminalView({
             registerLinkMatcher(terminalRef.current)
         }
         terminalRef.current.loadWebfontAndOpen(document.getElementById('terminal-id'))
-        fitAddon.fit()
+        fitAddon?.fit()
         terminalRef.current.reset()
         terminalRef.current.attachCustomKeyEventHandler((event) => {
             if ((event.metaKey && event.key === 'k') || event.key === 'K') {
@@ -192,7 +192,7 @@ export default function TerminalView({
     useEffect(() => {
         if (firstMessageReceived) {
             if (isTerminalTab) {
-                fitAddon.fit()
+                fitAddon?.fit()
             }
             terminalRef.current.setOption('cursorBlink', true)
             setSocketConnection(SocketConnectionType.CONNECTED)
