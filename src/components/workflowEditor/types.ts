@@ -1,4 +1,4 @@
-import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
@@ -213,4 +213,6 @@ export interface PipelineContext {
         stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string
 }[]
     savedCustomTagPattern?: string
+    selectedCDStageTypeValue?: OptionType
+    setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
 }

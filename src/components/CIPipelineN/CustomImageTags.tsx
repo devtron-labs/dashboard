@@ -3,14 +3,15 @@ import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
-import '../ciPipeline/ciPipeline.scss'
 import Tippy from '@tippyjs/react'
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
-import { Select } from '../common'
-import { StageTypeEnums, StageTypeMap, customTagStageTypeOptions } from './ciPipeline.utils'
+import { Option, DropdownIndicator, styles, getCustomOptionSelectionStyle, getCommonSelectStyle } from '../v2/common/ReactSelect.utils'
+import { getCDStageTypeSelectorValue, customTagStageTypeOptions } from './ciPipeline.utils'
+import ReactSelect from 'react-select'
+import '../ciPipeline/ciPipeline.scss'
 
 function CustomImageTags({
     savedTagPattern,
@@ -19,6 +20,8 @@ function CustomImageTags({
     formDataErrorObj,
     setFormDataErrorObj,
     isCDBuild,
+    selectedCDStageTypeValue,
+    setSelectedCDStageTypeValue,
 }: CustomImageTagsType) {
     const validationRules = new ValidationRules()
     const isCustomTagError = formDataErrorObj.customTag?.message.length > 0 && !formDataErrorObj.customTag?.isValid
@@ -57,40 +60,42 @@ function CustomImageTags({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const handleCustomTagStageOnCD = (event) => {
-        const _form = { ...formData }
-        _form.customTagStage = event.target.value
-        setFormData(_form)
-    }
+    const handleCustomTagStageOnCD = (selectedValue: OptionType) => {
+        setSelectedCDStageTypeValue(selectedValue)
 
-    const getCDStageTypeSelectorValue = (): string => {
-        let stageTypeSelectorValue = ''
-        if (formData.customTagStage === StageTypeEnums.POST_CD) {
-            stageTypeSelectorValue = StageTypeMap[StageTypeEnums.POST_CD]
-        } else {
-            stageTypeSelectorValue = StageTypeMap.PRE_CD
-        }
-        return stageTypeSelectorValue
+        const _form = { ...formData }
+        _form.customTagStage = selectedValue.value
+        setFormData(_form)
     }
 
     const renderCustomTagStageOnCD = () => {
         return (
-            <Select
-                tabIndex={4}
-                rootClassName="select-button--defaul w-200 ml-8 pl-8"
-                value={formData.customTagStage}
-                onChange={handleCustomTagStageOnCD}
-            >
-                <Select.Button dataTestIdDropdown="chart-version-of-preset">
-                    {formData.customTagStage ? getCDStageTypeSelectorValue() : 'Select stage'}
-                </Select.Button>
-
-                {Array.from(customTagStageTypeOptions).map((stageOption, idx) => (
-                    <Select.Option key={stageOption.value} value={stageOption.value}>
-                        {stageOption.label}
-                    </Select.Option>
-                ))}
-            </Select>
+            <div className="flex left">
+                <ReactSelect
+                    value={selectedCDStageTypeValue}
+                    options={customTagStageTypeOptions}
+                    className="select-width w-200 p-0"
+                    classNamePrefix="select-custom-image-tag-cd-stage-type"
+                    isSearchable={false}
+                    onChange={handleCustomTagStageOnCD}
+                    components={{
+                        IndicatorSeparator: null,
+                        DropdownIndicator,
+                        Option,
+                    }}
+                    styles={getCommonSelectStyle({
+                        control: (base, state) => ({
+                            ...base,
+                            boxShadow: 'none',
+                            backgroundColor: 'var(--N50)',
+                            border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                            cursor: 'pointer',
+                            minHeight: '28px',
+                            margin: '0px 8px',
+                        }),
+                    })}
+                />
+            </div>
         )
     }
 
@@ -204,7 +209,9 @@ function CustomImageTags({
                 <hr className="mt-8 mb-8" />
                 <div className="dc__italic-font-style cn-7">
                     {`{X}`} = {formData.customTag.counterX} in the next build trigger
-                    {isCDBuild && formData?.customTagStage ? ` of ${getCDStageTypeSelectorValue()}` : ''}
+                    {isCDBuild && formData?.customTagStage
+                        ? ` of ${getCDStageTypeSelectorValue(formData.customTagStage).label}`
+                        : ''}
                 </div>
             </div>
         )

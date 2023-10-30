@@ -1,3 +1,4 @@
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../config'
 
 export const baseSelectStyles = {
@@ -275,11 +276,21 @@ export const StageTypeMap = {
 
 export const customTagStageTypeOptions = [
     {
-        label: StageTypeMap.PRE_CD,
+        label: StageTypeMap[StageTypeEnums.PRE_CD],
         value: StageTypeEnums.PRE_CD,
     },
     {
-        label: StageTypeMap.POST_CD,
-        value: StageTypeEnums.POST_CD ,
+        label: StageTypeMap[StageTypeEnums.POST_CD],
+        value: StageTypeEnums.POST_CD,
     },
 ]
+
+export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType => {
+    let stageTypeSelectorValue = { label: '', value: '' }
+    if (customTagStage === StageTypeEnums.POST_CD) {
+        stageTypeSelectorValue = { label: StageTypeMap.POST_CD, value: StageTypeEnums.POST_CD }
+    } else {
+        stageTypeSelectorValue = { label: StageTypeMap.PRE_CD, value: StageTypeEnums.PRE_CD }
+    }
+    return stageTypeSelectorValue
+}

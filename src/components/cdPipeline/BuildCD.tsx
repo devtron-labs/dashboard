@@ -63,7 +63,9 @@ export default function BuildCD({
         pageState,
         isEnvUsedState,
         setIsEnvUsedState,
-        savedCustomTagPattern
+        savedCustomTagPattern,
+        selectedCDStageTypeValue,
+        setSelectedCDStageTypeValue
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     let { cdPipelineId } = useParams<{
@@ -704,6 +706,8 @@ export default function BuildCD({
                     setFormDataErrorObj={setFormDataErrorObj}
                     isCDBuild={true}
                     savedTagPattern={savedCustomTagPattern}
+                    selectedCDStageTypeValue={selectedCDStageTypeValue}
+                    setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
                 />
             </>
         )

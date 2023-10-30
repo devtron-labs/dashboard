@@ -1,6 +1,6 @@
 import React from 'react'
-import { CIPipelineDataType } from '../ciPipeline/types'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CustomTagType {
     tagPattern: string
@@ -14,4 +14,6 @@ export interface CustomImageTagsType {
     formDataErrorObj: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
     isCDBuild?: boolean
+    selectedCDStageTypeValue?: OptionType
+    setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
 }

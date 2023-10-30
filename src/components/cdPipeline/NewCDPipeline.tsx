@@ -6,6 +6,7 @@ import {
     Drawer,
     ErrorScreenManager,
     ForceDeleteDialog,
+    OptionType,
     PluginDetailType,
     RefVariableType,
     ServerErrors,
@@ -52,6 +53,7 @@ import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
+import { customTagStageTypeOptions, getCDStageTypeSelectorValue } from '../CIPipelineN/ciPipeline.utils'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -177,6 +179,7 @@ export default function NewCDPipeline({
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
+    const [selectedCDStageTypeValue, setSelectedCDStageTypeValue] = useState<OptionType>(customTagStageTypeOptions[0])
 
     useEffect(() => {
         getInit()
@@ -335,6 +338,7 @@ export default function NewCDPipeline({
                 })
                 setSavedCustomTagPattern(pipelineConfigFromRes.customTag?.tagPattern)
                 setPageState(ViewType.FORM)
+                setSelectedCDStageTypeValue(getCDStageTypeSelectorValue(form.customTagStage))
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -985,7 +989,9 @@ export default function NewCDPipeline({
             setInputVariablesListFromPrevStep,
             isEnvUsedState,
             setIsEnvUsedState,
-            savedCustomTagPattern
+            savedCustomTagPattern,
+            selectedCDStageTypeValue,
+            setSelectedCDStageTypeValue
         }
     }, [
         formData,
