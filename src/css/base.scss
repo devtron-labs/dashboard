@@ -3525,6 +3525,10 @@ textarea::placeholder {
     background-color: var(--B500);
 }
 
+.dc__hover-color-b500:hover {
+    color: var(--B500);
+}
+
 .dc__hover-n100:hover {
     background-color: var(--N100);
 }
