@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { ModuleNameMap, Moment12HourFormat, OVERVIEW_TABS, URLS } from '../../../config'
-import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
+import { Moment12HourFormat, OVERVIEW_TABS, URLS } from '../../../config'
+import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
     Progressing,
@@ -11,15 +11,8 @@ import {
     stopPropagation,
     useAsync,
     getRandomColor,
-    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    EditableTextArea,
-    RadioGroup,
-    handleUTCTime,
-    importComponentFromFELibrary,
-    processDeployedTime,
-} from '../../common'
+import { EditableTextArea, RadioGroup, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
@@ -27,29 +20,17 @@ import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-succes
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
 import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CrossIcon } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
-import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
-import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
-import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import AboutTagEditModal from '../details/AboutTagEditModal'
-import AppStatus from '../AppStatus'
-import { StatusConstants } from '../list-new/Constants'
-import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
-import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import { editApp } from '../service'
 import { getAppConfig } from './utils'
+import { EnvironmentList } from './EnvironmentList'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
-
-const {
-    OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE, APP_DESCRIPTION, JOB_DESCRIPTION },
-} = EMPTY_STATE_STATUS
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
@@ -58,7 +39,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const isHelmChart = appType === 'helm-chart'
     // For helm the appId from the params is the installed appId and not the actual id of the app
     const appId = isHelmChart ? `${appMetaInfo.appId}` : appIdFromParams
-    const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
@@ -68,12 +48,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const [newDescription, setNewDescription] = useState<string>(config.defaultNote)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(
-        () => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]),
-        [appId],
-        !isJobOverview,
-    )
-    const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
     const [activeTab, setActiveTab] = useState<typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]>(OVERVIEW_TABS.ABOUT)
@@ -105,18 +79,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             getCIPipelinesForJob()
         }
     }, [appId])
-
-    const envList = useMemo(() => {
-        if (otherEnvsResult?.[0]?.result?.length > 0) {
-            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-            return (
-                otherEnvsResult[0].result
-                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
-            )
-        }
-        return []
-    }, [filteredEnvIds, otherEnvsResult])
 
     const getCIPipelinesForJob = (): void => {
         getJobCIPipeline(appId)
@@ -171,17 +133,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             />
         )
     }
-
-    const renderEmptyStateButton = () => (
-        <button
-            className="flex cta dc__gap-4"
-            onClick={() => {
-                history.push(`${URLS.APP}/${appId}/${URLS.APP_CONFIG}`)
-            }}
-        >
-            Continue App Configuration <IconForward className="icon-dim-12" />
-        </button>
-    )
 
     const renderSideInfoColumn = () => {
         const {
@@ -308,88 +259,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             )}
         </div>
     )
-
-    const envIcon = (isVirtualCluster) => {
-        if (isVirtualCluster) {
-            return <VirtualEnvIcon className="fcb-5 icon-dim-20" />
-        } else {
-            return <Database className="icon-dim-20" />
-        }
-    }
-
-    const renderDeploymentComponent = () => {
-        if (envList.length > 0) {
-            return (
-                <div
-                    className={`env-deployments-info-wrapper ${
-                        isArgoInstalled ? 'env-deployments-info-wrapper--argo-installed' : ''
-                    } w-100`}
-                >
-                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom dc__uppercase fs-12 fw-6 cn-7 pr-16 pl-16">
-                        <span />
-                        {isArgoInstalled && <ActivityIcon className="icon-dim-16" />}
-                        <span>Environment</span>
-                        <span>Last deployed</span>
-                    </div>
-
-                    <div className="env-deployments-info-body">
-                        {envList.map(
-                            (_env, index) =>
-                                !_env.deploymentAppDeleteRequest && (
-                                    <div
-                                        key={`${_env.environmentName}-${_env.environmentId}`}
-                                        className="env-deployments-info-row display-grid dc__align-items-center pr-16 pl-16"
-                                    >
-                                        {envIcon(_env.isVirtualEnvironment)}
-                                        {isArgoInstalled && (
-                                            <AppStatus
-                                                appStatus={
-                                                    _env.lastDeployed
-                                                        ? _env.appStatus
-                                                        : StatusConstants.NOT_DEPLOYED.noSpaceLower
-                                                }
-                                                isVirtualEnv={_env.isVirtualEnvironment}
-                                                hideStatusMessage
-                                            />
-                                        )}
-                                        <Link
-                                            to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
-                                            className="fs-13 dc__ellipsis-right"
-                                        >
-                                            {_env.environmentName}
-                                        </Link>
-                                        <span className="fs-13 fw-4 cn-7 dc__ellipsis-right">
-                                            {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
-                                        </span>
-                                    </div>
-                                ),
-                        )}
-                    </div>
-                </div>
-            )
-        }
-
-        return (
-            <div className="w-100 mh-500 bcn-0 flex en-2">
-                <GenericEmptyState
-                    layout="row"
-                    title={DEPLOYMENT_TITLE}
-                    subTitle={DEPLOYMENT_SUB_TITLE}
-                    isButtonAvailable
-                    renderButton={renderEmptyStateButton}
-                    contentClassName="empty-state-content"
-                />
-            </div>
-        )
-    }
-
-    const renderEnvironmentDeploymentsStatus = () => {
-        return (
-            <div className="flex column left">
-                {otherEnvsLoading ? <div className="dc__loading-dots" /> : renderDeploymentComponent()}
-            </div>
-        )
-    }
 
     const getStatusIcon = (status: string): JSX.Element => {
         switch (status) {
@@ -532,7 +401,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         } else {
             const contentToRender = {
                 [OVERVIEW_TABS.ABOUT]: renderAppDescription,
-                [OVERVIEW_TABS.ENVIRONMENTS]: renderEnvironmentDeploymentsStatus,
+                [OVERVIEW_TABS.ENVIRONMENTS]: () => <EnvironmentList appId={+appId} filteredEnvIds={filteredEnvIds} />,
             }
 
             return (
