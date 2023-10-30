@@ -102,7 +102,7 @@ export default function ResourceList() {
         removeTabByIdentifier,
         updateTabUrl,
         stopTabByIdentifier,
-    } = useTabs(`${URLS.RESOURCE_BROWSER}`)
+    } = useTabs(URLS.RESOURCE_BROWSER)
     const [loader, setLoader] = useState(false)
     const [rawGVKLoader, setRawGVKLoader] = useState(false)
     const [clusterLoader, setClusterLoader] = useState(false)
@@ -370,8 +370,10 @@ export default function ResourceList() {
         }
     }, [clusterCapacityData, location.search])
 
+    // Trigger a terminal session, if the terminal tab is selected once
+    // and retain this terminal session until user exits the selected cluster
     useEffect(() => {
-        toggleShowTerminal()
+        triggerTerminal()
     }, [location.search, nodeType])
 
     useEffect(() => {
@@ -398,7 +400,7 @@ export default function ResourceList() {
         }
     }, [selectedNamespace])
 
-    const toggleShowTerminal = () => {
+    const triggerTerminal = () => {
         if (nodeType === AppDetailsTabs.terminal) {
             setStartTerminal(true)
             setTerminalLoader(false)
@@ -952,7 +954,8 @@ export default function ResourceList() {
     const renderClusterTerminal = (): JSX.Element => {
         if (!startTerminal && nodeType !== AppDetailsTabs.terminal) return null
         const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
-        const _showTerminal = selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
+        const _showTerminal =
+            nodeType === AppDetailsTabs.terminal && selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
 
         return (
             selectedTerminal && (
