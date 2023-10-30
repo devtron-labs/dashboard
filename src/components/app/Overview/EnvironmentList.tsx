@@ -24,11 +24,13 @@ const {
     OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
 } = EMPTY_STATE_STATUS
 
-export const EnvironmentList = (props: {
+export const EnvironmentList = ({
+    appId,
+    filteredEnvIds,
+}: {
     appId: AppMetaInfo['appId']
     filteredEnvIds?: AppOverviewProps['filteredEnvIds']
 }) => {
-    const { appId, filteredEnvIds } = props
     const history = useHistory()
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
