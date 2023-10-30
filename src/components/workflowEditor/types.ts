@@ -212,4 +212,5 @@ export interface PipelineContext {
     globalVariables: {
         stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string
 }[]
+    savedCustomTagPattern?: string
 }

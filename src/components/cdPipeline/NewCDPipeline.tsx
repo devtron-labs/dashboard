@@ -77,6 +77,7 @@ export default function NewCDPipeline({
     const noStrategyAvailable = useRef(false)
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
+    const [ savedCustomTagPattern, setSavedCustomTagPattern ] = React.useState<string>('')
 
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string
@@ -332,6 +333,7 @@ export default function NewCDPipeline({
                     ...form,
                     clusterId: result.form?.clusterId,
                 })
+                setSavedCustomTagPattern(pipelineConfigFromRes.customTag?.tagPattern)
                 setPageState(ViewType.FORM)
             })
             .catch((error: ServerErrors) => {
@@ -982,7 +984,8 @@ export default function NewCDPipeline({
             isVirtualEnvironment,
             setInputVariablesListFromPrevStep,
             isEnvUsedState,
-            setIsEnvUsedState
+            setIsEnvUsedState,
+            savedCustomTagPattern
         }
     }, [
         formData,

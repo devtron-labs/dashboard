@@ -185,7 +185,9 @@ function CustomImageTags({
     }
 
     const renderCustomImageDetails = () => {
-        return savedTagPattern && !showCreateImageTagView ? getGeneratedTagDescription() : renderCreateCustomTagPattern()
+        return savedTagPattern && !showCreateImageTagView
+            ? getGeneratedTagDescription()
+            : renderCreateCustomTagPattern()
     }
 
     const toggleEditToShowCreateImageView = () => {
@@ -202,6 +204,7 @@ function CustomImageTags({
                 <hr className="mt-8 mb-8" />
                 <div className="dc__italic-font-style cn-7">
                     {`{X}`} = {formData.customTag.counterX} in the next build trigger
+                    {isCDBuild && formData?.customTagStage ? ` of ${getCDStageTypeSelectorValue()}` : ''}
                 </div>
             </div>
         )
