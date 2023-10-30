@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
-import { getClusterCapacity, getClusterNote, updateClusterShortDescription } from './clusterNodes.service'
+import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import GenericDescription from '../common/Description/GenericDescription'
-import { defaultClusterNote } from './constants'
+import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import moment from 'moment'
 import { Moment12HourFormat,URLS } from '../../config'
 import {
@@ -56,7 +56,7 @@ function ClusterOverview({
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterDetails, setClusterDetails] = useState<ClusterDetailsType>({} as ClusterDetailsType)
-
+    const abortControllerRef = useRef(new AbortController())
 
     const metricsApiTippyContent = () => (
         <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
@@ -74,7 +74,8 @@ function ClusterOverview({
     )
 
     const handleRetry = async () => {
-        abortReqAndUpdateSideDataController(true)
+        abortControllerRef.current = new AbortController()
+        setErrorMsg('')
         await getClusterNoteAndCapacity(clusterId)
     }
 
@@ -101,38 +102,20 @@ function ClusterOverview({
         }
     }
 
-    const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
-        if (emptyPrev) {
-            sideDataAbortController.prev = null
-        } else {
-            sideDataAbortController.new.abort()
-            sideDataAbortController.prev = sideDataAbortController.new
-        }
-        setErrorMsg('')
-    }
-
-    const getClusterNoteAndCapacity = async (clusterId: string) => {
-        setErrorMsg('')
-        setIsLoading(true)
-
-        const [clusterNoteResponse, clusterCapacityResponse] = await Promise.allSettled([
-            getClusterNote(clusterId),
-            getClusterCapacity(clusterId),
-        ])
-
+    const setClusterNoteDetails = (clusterNoteResponse) => {
         if (clusterNoteResponse.status === 'fulfilled') {
             let _moment: moment.Moment
             const _clusterNote = clusterNoteResponse.value.result.clusterNote
             const clusterDetails = {} as ClusterDetailsType
             clusterDetails.clusterName = clusterNoteResponse.value.result.clusterName
-            clusterDetails.shortDescription = clusterNoteResponse.value.result.description
+            clusterDetails.shortDescription =
+                clusterNoteResponse.value.result.description || defaultClusterShortDescription
             clusterDetails.addedBy = clusterNoteResponse.value.result.clusterCreatedBy
             _moment = moment(clusterNoteResponse.value.result.clusterCreatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
             clusterDetails.addedOn = _moment.format(Moment12HourFormat)
             clusterDetails.serverURL = clusterNoteResponse.value.result.serverUrl
             setClusterDetails(clusterDetails)
 
-            let _date: string
             const data: DescriptionDataType = {
                 descriptionText: defaultClusterNote,
                 descriptionId: 0,
@@ -144,12 +127,17 @@ function ClusterOverview({
                 data.descriptionId = _clusterNote.id
                 data.descriptionUpdatedBy = _clusterNote.updatedBy
                 _moment = moment(_clusterNote.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-                _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : _clusterNote.updatedOn
-                data.descriptionUpdatedOn = _date
+                data.descriptionUpdatedOn = _moment.isValid() ? _moment.format(Moment12HourFormat) : _clusterNote.updatedOn
             }
             setDescriptionData(data)
+        } else {
+            if (clusterNoteResponse.reason['code'] === 403) {
+                setErrorCode(clusterNoteResponse.reason['code'])
+            } else showError(clusterNoteResponse.reason)
         }
+    }
 
+    const setClusterCapacityDetails = (clusterCapacityResponse) => {
         if (clusterCapacityResponse.status === 'fulfilled') {
             setClusterCapacityData(clusterCapacityResponse.value.result)
             let _errorTitle = '',
@@ -200,14 +188,7 @@ function ClusterOverview({
                     setClusterErrorList(_errorList)
                 }
             }
-        }
-
-        if (clusterNoteResponse.status === 'rejected') {
-            if (clusterNoteResponse.reason['code'] === 403) {
-                setErrorCode(clusterNoteResponse.reason['code'])
-            } else showError(clusterNoteResponse.reason)
-        }
-        if (clusterCapacityResponse.status === 'rejected') {
+        } else {
             if (clusterCapacityResponse.reason['code'] === 403) {
                 setErrorCode(clusterCapacityResponse.reason['code'])
             } else {
@@ -219,14 +200,28 @@ function ClusterOverview({
                 )
             }
         }
+    }
+
+    const getClusterNoteAndCapacity = async (clusterId: string): Promise<void> => {
+        setErrorMsg('')
+        setIsLoading(true)
+
+        const [clusterNoteResponse, clusterCapacityResponse] = await Promise.allSettled([
+            getClusterDetails(clusterId, abortControllerRef.current.signal),
+            getClusterCapacity(clusterId, abortControllerRef.current.signal),
+        ])
+        setClusterNoteDetails(clusterNoteResponse)
+        setClusterCapacityDetails(clusterCapacityResponse)
         setIsLoading(false)
     }
+
     useEffect(() => {
         if (errorStatusCode > 0) return
         setErrorStatusCode(0)
-        ;(async () => {
-            await getClusterNoteAndCapacity(clusterId)
-        })()
+        getClusterNoteAndCapacity(clusterId)
+        return () => {
+            abortControllerRef.current.abort()
+        }
     }, [selectedCluster])
 
 
@@ -514,10 +509,10 @@ function ClusterOverview({
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Server URL</div>
                         <div className="flexbox">
                             <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right mr-6">
-                                {clusterDetails?.serverURL}
+                                {clusterDetails.serverURL}
                             </div>
                             <ClipboardButton
-                                content={clusterDetails?.serverURL}
+                                content={clusterDetails.serverURL}
                                 copiedTippyText="Copied Server URL"
                                 duration={1000}
                                 trigger={triggerCopy}
@@ -527,20 +522,20 @@ function ClusterOverview({
                     </div>
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added on</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterDetails?.addedOn}</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterDetails.addedOn}</div>
                     </div>
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added by</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right flexbox">
-                            {clusterDetails?.addedBy && (
+                            {clusterDetails.addedBy && (
                                 <>
                                     <div
                                         className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase mr-8"
-                                        style={{ backgroundColor: getRandomColor(clusterDetails?.addedBy) }}
+                                        style={{ backgroundColor: getRandomColor(clusterDetails.addedBy) }}
                                     >
-                                        {clusterDetails?.addedBy[0]}
+                                        {clusterDetails.addedBy[0]}
                                     </div>
-                                    <div>{clusterDetails?.addedBy}</div>
+                                    <div>{clusterDetails.addedBy}</div>
                                 </>
                             )}
                         </div>
@@ -601,7 +596,7 @@ function ClusterOverview({
                 className={`dc__border-left resource-details-container flexbox bcn-0 pl-20 pt-20 dc__column-gap-32 ${
                     errorStatusCode || errorCode ? 'flex' : ''
                 }`}
-                style={{backgroundImage:'linear-gradient(249deg, #D4E6F7 0%, #FFF 50.58%)'}}
+                style={{backgroundImage:'linear-gradient(249deg, #D4E6F7 0%,  var(--N50)50.58%)'}}
             >
                 {renderState()}
             </div>
