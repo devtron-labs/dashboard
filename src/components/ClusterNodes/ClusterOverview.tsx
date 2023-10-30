@@ -212,7 +212,7 @@ function ClusterOverview({
     const getClusterNoteAndCapacity = async (clusterId: string): Promise<void> => {
         setErrorMsg('')
         setIsLoading(true)
-
+        sideDataAbortController.new = new AbortController()
         const [clusterNoteResponse, clusterCapacityResponse] = await Promise.allSettled([
             getClusterDetails(clusterId, sideDataAbortController.new.signal),
             getClusterCapacity(clusterId, sideDataAbortController.new.signal),
@@ -509,21 +509,23 @@ function ClusterOverview({
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Region</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterInfo.Region}</div>
                     </div> */}
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Server URL</div>
-                        <div className="flexbox">
-                            <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right mr-6">
-                                {clusterDetails.serverURL}
+                    {clusterDetails.serverURL && (
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Server URL</div>
+                            <div className="flexbox">
+                                <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right mr-6">
+                                    {clusterDetails.serverURL}
+                                </div>
+                                <ClipboardButton
+                                    content={clusterDetails.serverURL}
+                                    copiedTippyText="Copied Server URL"
+                                    duration={1000}
+                                    trigger={triggerCopy}
+                                    setTrigger={setTriggerCopy}
+                                />
                             </div>
-                            <ClipboardButton
-                                content={clusterDetails.serverURL}
-                                copiedTippyText="Copied Server URL"
-                                duration={1000}
-                                trigger={triggerCopy}
-                                setTrigger={setTriggerCopy}
-                            />
                         </div>
-                    </div>
+                    )}
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added on</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterDetails.addedOn}</div>
