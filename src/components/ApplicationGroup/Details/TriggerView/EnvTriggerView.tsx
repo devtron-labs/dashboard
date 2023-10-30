@@ -1025,9 +1025,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     getWorkflowStatusData(workflows)
                 }
             })
-            .catch((errors: ServerErrors) => {
+            .catch((errors: ServerErrors) => { 
                 showError(errors)
-
+                
                 setCDLoading(false)
 
                 setErrorCode(errors.code)
@@ -1511,7 +1511,21 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         })
                     } else {
                         const errorReason = response.reason
-                        if (errorReason.code === 403) {
+                        if (errorReason.code === 409) {
+                            const statusType = filterStatusType(
+                                type,
+                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.FAIL],
+                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                            )
+                            _responseList.push({
+                                appId: triggeredAppList[index].appId,
+                                appName: triggeredAppList[index].appName,
+                                statusText: statusType,
+                                status: BulkResponseStatus.FAIL,
+                                message: errorReason.errors[0].internalMessage,
+                            })
+                        } else if (errorReason.code === 403) {
                             const statusType = filterStatusType(
                                 type,
                                 BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
@@ -2167,7 +2181,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         Change branch
                     </span>
                 </button>
-                <span className="filter-divider"></span>
+                <span className="filter-divider-env"></span>
                 <button
                     className="cta flex h-36 mr-12"
                     data-testid="bulk-build-image-button"
