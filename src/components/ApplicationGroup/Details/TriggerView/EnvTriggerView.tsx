@@ -2181,7 +2181,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         Change branch
                     </span>
                 </button>
-                <span className="filter-divider"></span>
+                <span className="filter-divider-env"></span>
                 <button
                     className="cta flex h-36 mr-12"
                     data-testid="bulk-build-image-button"
