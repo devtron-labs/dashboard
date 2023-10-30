@@ -422,6 +422,7 @@ export interface TerminalComponentProps {
     selectedContainerName: string
     setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
     switchSelectedContainer: (string) => void
+    showTerminal: boolean
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
