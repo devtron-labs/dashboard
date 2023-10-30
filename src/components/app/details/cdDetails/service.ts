@@ -137,20 +137,19 @@ export const prepareConfigMapAndSecretData = (
         } else {
             secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type][''] }
             if (type === 'Secret' && historyData.codeEditorValue.value) {
-                const secretData_value = JSON.parse(historyData.codeEditorValue.value)
-                const secretData_resolved = JSON.parse(historyData.codeEditorValue.resolvedValue)
+                const secretData = JSON.parse(historyData.codeEditorValue.value)
+                const resolvedSecretData = JSON.parse(historyData.codeEditorValue.resolvedValue)
                 let decodeNotRequired =
-                    skipDecode || Object.keys(secretData_value).some((data) => secretData_value[data] === '*****') // Don't decode in case of non admin user
+                    skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
                 historyData.codeEditorValue.value = decodeNotRequired
                     ? historyData.codeEditorValue.value
-                    : JSON.stringify(decode(secretData_value))
+                    : JSON.stringify(decode(secretData))
 
                 decodeNotRequired =
-                    skipDecode || Object.keys(secretData_resolved).some((data) => secretData_resolved[data] === '*****') // Don't decode in case of non admin user
+                    skipDecode || Object.keys(resolvedSecretData).some((data) => resolvedSecretData[data] === '*****') // Don't decode in case of non admin user
                 historyData.codeEditorValue.resolvedValue = decodeNotRequired
                     ? historyData.codeEditorValue.resolvedValue
-                    : JSON.stringify(decode(secretData_resolved))    
-                    
+                    : JSON.stringify(decode(resolvedSecretData))    
             }
         }
     }
