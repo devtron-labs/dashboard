@@ -19,7 +19,7 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
             const response = await getClusterEvents(terminalAccessId)
             setErrorValue(response.result)
             /* Sorting the EventList object on the basis of Last TimeStamp. */
-            const eventResult = response.result?.eventsResponse?.events.items
+            const eventResult = response.result?.eventsResponse?.events.items || []
             eventResult.sort((a, b) => {
                 if (a.lastTimestamp > b.lastTimestamp) {
                     return -1
@@ -29,7 +29,7 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
                 }
                 return 0
             })
-            setEvents(eventResult || [])
+            setEvents(eventResult)
         } catch (error) {
             showError(error)
             setEvents([])
