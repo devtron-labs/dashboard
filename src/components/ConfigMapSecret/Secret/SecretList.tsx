@@ -21,6 +21,7 @@ export default function SecretList({
     isProtected,
     parentName,
     parentState,
+    clusterId,
     setParentState,
     reloadEnvironments,
 }: ConfigMapListProps) {
@@ -196,7 +197,7 @@ export default function SecretList({
                 />
             )}
             <div className="variables-widget-position-cmcs">
-                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} />
+                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
             </div>
         </div>
     )
