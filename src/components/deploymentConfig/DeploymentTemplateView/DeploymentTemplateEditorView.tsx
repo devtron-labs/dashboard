@@ -276,7 +276,6 @@ export default function DeploymentTemplateEditorView({
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {
-                console.log(lhs.variableSnapshot, rhs.variableSnapshot)
                 if (
                     Object.keys(lhs.variableSnapshot || {}).length === 0 &&
                     Object.keys(rhs.variableSnapshot || {}).length === 0
