@@ -37,6 +37,7 @@ import { K8SResourceList } from './K8SResourceList'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import K8ResourceIcon from '../../../assets/icons/ic-object.svg'
+import ClusterIcon from '../../../assets/icons/ic-world-black.svg'
 import { CreateResource } from './CreateResource'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
@@ -58,9 +59,9 @@ import {
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
-import { ClusterCapacityType, ClusterDetail, ClusterErrorType, ClusterImageList, ERROR_TYPE } from '../../ClusterNodes/types'
+import { ClusterCapacityType, ClusterDetail, ClusterImageList } from '../../ClusterNodes/types'
 import { getHostURLConfiguration } from '../../../services/service'
-import { clusterNamespaceList, getClusterCapacity, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
+import { clusterNamespaceList, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -107,7 +108,6 @@ export default function ResourceList() {
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
-    const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [accessDeniedCode, setAccessDeniedCode] = useState(0)
     const [errorMsg, setErrorMsg] = useState('')
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
@@ -115,7 +115,6 @@ export default function ResourceList() {
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
     const [terminalClusterData, setTerminalCluster] = useState<ClusterDetail[]>()
     const [selectedTerminal, setSelectedTerminal] = useState<ClusterDetail>()
-    const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
     const [terminalLoader, setTerminalLoader] = useState(false)
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
@@ -135,7 +134,6 @@ export default function ResourceList() {
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
     const hideSyncWarning: boolean = loader || rawGVKLoader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader)
-
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -182,7 +180,15 @@ export default function ResourceList() {
     useEffect(() => {
         if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
+        } else if (nodeType == AppDetailsTabs.cluster_overview.toLocaleLowerCase()) {
+            const url = `${
+                URLS.RESOURCE_BROWSER
+            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+
+            updateTabUrl(`${AppDetailsTabsIdPrefix.cluster_overview}-${AppDetailsTabs.cluster_overview}`, url)
+            markTabActiveByIdentifier(AppDetailsTabsIdPrefix.cluster_overview, AppDetailsTabs.cluster_overview)
         } else if (selectedResource && !node) {
+            if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) getSidebarData(clusterId)
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.k8s_Resources, AppDetailsTabs.k8s_Resources)
         }
 
@@ -229,87 +235,21 @@ export default function ResourceList() {
       }
   }
 
-    const updateOnClusterChange = async (clusterId) => {
-        try {
-            setErrorStatusCode(0)
-            setResourceListLoader(true)
-            setClusterCapacityData(null)
-            const { result } = await getClusterCapacity(clusterId)
-            if (result) {
-                setClusterCapacityData(result)
-                let _errorTitle = '',
-                    _errorList = [],
-                    _nodeErrors = Object.keys(result.nodeErrors || {})
-                const _nodeK8sVersions = result.nodeK8sVersions || []
-                if (_nodeK8sVersions.length > 1) {
-                    let diffType = '',
-                        majorVersion,
-                        minorVersion
-                    for (const _nodeK8sVersion of _nodeK8sVersions) {
-                        const elementArr = _nodeK8sVersion.split('.')
-                        if (!majorVersion) {
-                            majorVersion = elementArr[0]
-                        }
-                        if (!minorVersion) {
-                            minorVersion = elementArr[1]
-                        }
-                        if (majorVersion !== elementArr[0]) {
-                            diffType = 'Major'
-                            break
-                        } else if (diffType !== 'Minor' && minorVersion !== elementArr[1]) {
-                            diffType = 'Minor'
-                        }
-                    }
-                    if (diffType !== '') {
-                        _errorTitle = 'Version diff'
-                        _errorList.push({
-                            errorText: `${diffType} version diff identified among nodes. Current versions `,
-                            errorType: ERROR_TYPE.VERSION_ERROR,
-                            filterText: _nodeK8sVersions,
-                        })
-                    }
-                }
-
-                if (_nodeErrors.length > 0) {
-                    _errorTitle += (_errorTitle ? ', ' : '') + _nodeErrors.join(', ')
-                    for (const _nodeError of _nodeErrors) {
-                        const _errorLength = result.nodeErrors[_nodeError].length
-                        _errorList.push({
-                            errorText: `${_nodeError} on ${_errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
-                                }`,
-                            errorType: _nodeError,
-                            filterText: result.nodeErrors[_nodeError],
-                        })
-                    }
-                }
-                setClusterErrorTitle(_errorTitle)
-                setClusterErrorList(_errorList)
-            }
-        } catch (err) {
-            if (err['code'] === 403) {
-                setErrorStatusCode(err['code'])
-            }
-        } finally {
-            if (
-                nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() ||
-                nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
-            ) {
-                setResourceListLoader(false)
-            }
-        }
-    }
-
     // Update K8sResources tab url on cluster/namespace/kind changes
 
     useEffect(() => {
         if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
-            const updateData = [{
-                id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-                url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                    }/${selectedResource.gvk.Kind.toLowerCase()}/${selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+            const updateData = [
+                {
+                    id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
+                    url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                        selectedNamespace.value
+                    }/${selectedResource.gvk.Kind.toLowerCase()}/${
+                        selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
                     }`,
-                dynamicTitle: selectedResource.gvk.Kind
-            }]
+                    dynamicTitle: selectedResource.gvk.Kind,
+                },
+            ]
             updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
         }
         return (): void => {
@@ -339,7 +279,6 @@ export default function ResourceList() {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         }
     }, [clusterCapacityData, location.search])
-
     useEffect(() => {
         if (clusterId && selectedResource && selectedResource.gvk.Kind!==SIDEBAR_KEYS.overviewGVK.Kind && !isOverview && !isTerminal && !isNodes) {
             getResourceListData()
@@ -402,6 +341,9 @@ export default function ResourceList() {
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
                 }
+                if (nodeType !== SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
+                    getSidebarData(clusterId)
+                }
             }
 
             if (hostUrlConfig.result) {
@@ -427,40 +369,56 @@ export default function ResourceList() {
         }
     }
 
-    const initTabsBasedOnRole = (reInit:boolean, _isSuperAdmin?: boolean)=>{
-      const _nodeType = nodeType ? `/${nodeType}` : ''
-      const _tabs = [
-          {
-              idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
-              name: AppDetailsTabs.k8s_Resources,
-              url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${_nodeType}`,
-              isSelected: true,
-              positionFixed: true,
-              iconPath: K8ResourceIcon,
-              showNameOnSelect: false,
-          },
-      ]
-      if (superAdminRef.current) {
-          _tabs.push({
-              idPrefix: AppDetailsTabsIdPrefix.terminal,
-              name: AppDetailsTabs.terminal,
-              url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
-              isSelected: false,
-              positionFixed: true,
-              iconPath: TerminalIcon,
-              showNameOnSelect: true,
-          })
-      }
+    const initTabsBasedOnRole = (reInit: boolean, _isSuperAdmin?: boolean) => {
+        const _tabs = [
+            {
+                idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
+                name: AppDetailsTabs.cluster_overview,
+                url: `${
+                    URLS.RESOURCE_BROWSER
+                }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                isSelected: true,
+                positionFixed: true,
+                iconPath: ClusterIcon,
+                showNameOnSelect: false,
+            },
+            {
+                idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+                name: AppDetailsTabs.k8s_Resources,
+                url: `${
+                    URLS.RESOURCE_BROWSER
+                }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                isSelected: false,
+                positionFixed: true,
+                iconPath: K8ResourceIcon,
+                showNameOnSelect: false,
+            },
+        ]
+        if (superAdminRef.current) {
+            _tabs.push({
+                idPrefix: AppDetailsTabsIdPrefix.terminal,
+                name: AppDetailsTabs.terminal,
+                url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
+                isSelected: false,
+                positionFixed: true,
+                iconPath: TerminalIcon,
+                showNameOnSelect: true,
+            })
+        }
 
-      if (reInit) {
-          initTabs(_tabs, true)
-      } else {
-          initTabs(
-              _tabs,
-              false,
-              !superAdminRef.current ? [`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`] : null,
-          )
-      }
+        if (reInit) {
+            initTabs(_tabs, true)
+        } else {
+            initTabs(
+                _tabs,
+                false,
+                !superAdminRef.current ? [`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`] : null,
+            )
+        }
+        setSelectedResource({
+            namespaced: false,
+            gvk: SIDEBAR_KEYS.nodeGVK,
+        })
     }
 
     const getNamespaceList = async (_clusterId: string) => {
@@ -515,7 +473,7 @@ export default function ResourceList() {
                 const defaultSelected = groupedChild ??
                     processedData.selectedResource ?? {
                         namespaced: false,
-                        gvk: SIDEBAR_KEYS.overviewGVK,
+                        gvk: SIDEBAR_KEYS.nodeGVK,
                     }
 
                 setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
@@ -543,7 +501,7 @@ export default function ResourceList() {
                     }
                     setSelectedResource({
                         namespaced: false,
-                        gvk: SIDEBAR_KEYS.overviewGVK,
+                        gvk: SIDEBAR_KEYS.nodeGVK,
                     })
                 } else {
                     setErrorMsg(
@@ -677,10 +635,8 @@ export default function ResourceList() {
         if (sideDataAbortController.current.prev?.signal.aborted) {
             sideDataAbortController.current.prev = null
         }
-        updateOnClusterChange(selected.value)
         abortReqAndUpdateSideDataController()
         setSelectedCluster(selected)
-        getSidebarData(selected.value)
         getNamespaceList(selected.value)
 
         if (!skipRedirection) {
@@ -816,18 +772,7 @@ export default function ResourceList() {
     }
 
     const renderListBar = () => {
-        if (isOverview) {
-            return (
-                <ClusterOverview
-                    isSuperAdmin={superAdminRef.current}
-                    clusterCapacityData={clusterCapacityData}
-                    clusterErrorList={clusterErrorList}
-                    clusterErrorTitle={clusterErrorTitle}
-                    errorStatusCode={errorStatusCode}
-                    setSelectedResource={setSelectedResource}
-                />
-            )
-        } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
+        if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
             return (
                 <NodeDetailsList
                     clusterId={clusterId}
@@ -892,11 +837,11 @@ export default function ResourceList() {
                     </div>
                 )
             } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
-              return (
-                  <div className="bcn-0 node-data-container flex">
-                      {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
-                  </div>
-              )
+                return (
+                    <div className="bcn-0 node-data-container flex">
+                        {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
+                    </div>
+                )
             }
             return (
                 <ClusterTerminal
@@ -923,8 +868,19 @@ export default function ResourceList() {
                     />
                 </div>
             )
-        }
-
+        } else if (nodeType === AppDetailsTabs.cluster_overview.toLocaleLowerCase())
+            return (
+                <ClusterOverview
+                    isSuperAdmin={superAdminRef.current}
+                    clusterCapacityData={clusterCapacityData}
+                    setClusterErrorTitle={setClusterErrorTitle}
+                    setSelectedResource={setSelectedResource}
+                    setClusterCapacityData={setClusterCapacityData}
+                    selectedCluster={selectedCluster}
+                    setSelectedCluster={setSelectedCluster}
+                    sideDataAbortController={sideDataAbortController.current}
+                />
+            )
         return loader || rawGVKLoader || errorMsg ? (
             <ConnectingToClusterState
                 loader={loader}
@@ -1008,9 +964,8 @@ export default function ResourceList() {
                 />
             )
         }
-
         return (
-            <div>
+            <>
                 <div
                     className="h-36 flexbox dc__content-space"
                     style={{
@@ -1022,10 +977,9 @@ export default function ResourceList() {
                     </div>
                 </div>
                 {renderResourceBrowser()}
-            </div>
+                </>
         )
     }
-
     return (
         <ShortcutProvider>
             <div className="resource-browser-container">

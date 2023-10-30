@@ -15,7 +15,7 @@ import { ReactComponent as ImageIcon } from '../../../assets/icons/mdeditor/ic-i
 import { ReactComponent as OrderedListIcon } from '../../../assets/icons/mdeditor/ic-ordered-list.svg'
 import { ReactComponent as UnorderedListIcon } from '../../../assets/icons/mdeditor/ic-unordered-list.svg'
 import { ReactComponent as CheckedListIcon } from '../../../assets/icons/mdeditor/ic-checked-list.svg'
-import { ReactComponent as DescriptionIcon } from '../../../assets/icons/ic-note.svg'
+import { ReactComponent as DescriptionIcon } from '../../../assets/icons/mdeditor/ic-unordered-list.svg'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import Tippy from '@tippyjs/react'
@@ -324,7 +324,7 @@ export default function GenericDescription({
                         <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
                             <div className="flex left fw-6 lh-20 cn-9">
                                 <DescriptionIcon className="icon-dim-20 mr-8" />
-                                Description
+                                Readme
                             </div>
                             {descriptionUpdatedBy && descriptionUpdatedOn && (
                                 <div className="flex left fw-4 cn-7 ml-8">

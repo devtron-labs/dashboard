@@ -180,12 +180,11 @@ export const SIDEBAR_KEYS = {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: Nodes.ClusterOverview,
+        Kind: Nodes.Overview,
     }
 }
 
 export const FIXED_GVK_Keys = {
-    'cluster overview': 'overviewGVK',
     node: 'nodeGVK',
     event: 'eventGVK',
     namespace: 'namespaceGVK',

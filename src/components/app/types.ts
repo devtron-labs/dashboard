@@ -381,7 +381,7 @@ export enum Nodes {
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
     Namespace = 'Namespace',
-    ClusterOverview = 'ClusterOverview'
+    Overview = 'Overview'
 }
 export type NodeType = keyof typeof Nodes
 

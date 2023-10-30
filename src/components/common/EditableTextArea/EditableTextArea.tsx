@@ -69,7 +69,7 @@ export const EditableTextArea = (props: EditableTextAreaProps) => {
                 <TextArea {...props} initialText={initialText} setIsEditable={setIsEditable} />
             ) : (
                 <div className="flexbox flex-justify dc__gap-10">
-                    <div className="fs-13 fw-4 lh-20 cn-9">{initialText}</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9 dc__word-break">{initialText}</div>
                     <EditIcon className="icon-dim-16 cursor mw-16" onClick={() => setIsEditable(!isEditable)} />
                 </div>
             )}
