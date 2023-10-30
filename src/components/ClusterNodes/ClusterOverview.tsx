@@ -214,8 +214,8 @@ function ClusterOverview({
         setIsLoading(true)
 
         const [clusterNoteResponse, clusterCapacityResponse] = await Promise.allSettled([
-            getClusterDetails(clusterId),
-            getClusterCapacity(clusterId),
+            getClusterDetails(clusterId, sideDataAbortController.new.signal),
+            getClusterCapacity(clusterId, sideDataAbortController.new.signal),
         ])
         setClusterNoteDetails(clusterNoteResponse)
         setClusterCapacityDetails(clusterCapacityResponse)
