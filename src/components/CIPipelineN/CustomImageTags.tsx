@@ -156,7 +156,7 @@ function CustomImageTags({
                                 <div className={'dc__registry-icon mr-5 '}></div>
                                 {formData.customTag?.tagPattern?.replace(
                                     '{x}',
-                                    formData.customTag?.counterX?.toString(),
+                                    formData.customTag?.counterX?.toString() ?? '0',
                                 )}
                             </div>
                         </div>
@@ -177,8 +177,8 @@ function CustomImageTags({
                         autoComplete="off"
                         value={formData.customTag?.counterX}
                         onChange={onChangeCustomImageCounter}
-                        min="0"
                         onKeyPress={handleCounterKeyPress}
+                        defaultValue={'0'}
                     />
                     in the next build trigger {isCDBuild ? renderCustomTagStageOnCD() : null}
                     {formDataErrorObj.counterX?.message.length > 0
