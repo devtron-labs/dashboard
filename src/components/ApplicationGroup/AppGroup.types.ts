@@ -43,6 +43,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     stageType?: DeploymentNodeType
     triggerType?: string
     envName: string
+    envId: number
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
@@ -88,14 +89,14 @@ export interface BulkCDTriggerType {
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any>) => void
     onClickTriggerBulkCD: (appsToRetry?: Record<string, boolean>) => void
-    changeTab: (
+    changeTab?: (
         materrialId: string | number,
         artifactId: number,
         tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ) => void
-    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    selectImage: (
+    toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
+    selectImage?: (
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },

@@ -4,7 +4,7 @@ import { ReactComponent as Clair } from '../../../assets/icons/ic-clair.svg'
 import { ReactComponent as Trivy } from '../../../assets/icons/ic-trivy.svg'
 import React from 'react'
 
-export function ScannedByToolModal({ scanToolId }: { scanToolId: number }) {
+export function ScannedByToolModal({ scanToolId }: { scanToolId?: number }) {
     const isTrivy = scanToolId === SCAN_TOOL_ID_TRIVY
     return (
         <>

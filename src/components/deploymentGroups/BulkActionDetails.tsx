@@ -18,7 +18,7 @@ import moment from 'moment'
 import BulkActionEdit from './BulkActionEdit'
 import { toast } from 'react-toastify'
 import { getCDMaterialList, triggerGroupDeploy, getDeploymentGroupDetail, pauseResumeDeploymentGroup } from './service';
-import { CDMaterial } from '../app/details/triggerView/cdMaterial';
+import CDMaterial from '../app/details/triggerView/cdMaterial';
 import { Routes, URLS, getAppTriggerURL } from '../../config';
 import Trash2 from '../../assets/img/warning-medium.svg'
 import warningIcon from '../../assets/icons/ic-warning.svg';
