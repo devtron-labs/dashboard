@@ -1,3 +1,4 @@
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../config'
 
 export const baseSelectStyles = {
@@ -260,4 +261,36 @@ export const reactSelectStyles = {
             backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
         }
     },
+}
+
+export enum StageTypeEnums {
+    PRE_CD='PRE_CD',
+    POST_CD= 'POST_CD',
+}
+
+export const StageTypeMap = {
+    PRE_CD: 'Pre-deployment stage',
+    POST_CD: 'Post-deployment stage',
+}
+
+
+export const customTagStageTypeOptions = [
+    {
+        label: StageTypeMap[StageTypeEnums.PRE_CD],
+        value: StageTypeEnums.PRE_CD,
+    },
+    {
+        label: StageTypeMap[StageTypeEnums.POST_CD],
+        value: StageTypeEnums.POST_CD,
+    },
+]
+
+export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType => {
+    let stageTypeSelectorValue = { label: '', value: '' }
+    if (customTagStage === StageTypeEnums.POST_CD) {
+        stageTypeSelectorValue = { label: StageTypeMap.POST_CD, value: StageTypeEnums.POST_CD }
+    } else {
+        stageTypeSelectorValue = { label: StageTypeMap.PRE_CD, value: StageTypeEnums.PRE_CD }
+    }
+    return stageTypeSelectorValue
 }

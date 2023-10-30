@@ -58,7 +58,6 @@ import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/t
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
-import { ImageTagType } from './CustomImageTag.type'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
@@ -131,9 +130,10 @@ export default function CIPipeline({
         },
         customTag: {
             tagPattern: '',
-            counterX: '',
+            counterX: '0',
         },
-        defaultTag: []
+        defaultTag: [],
+        enableCustomTag: false
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
@@ -171,12 +171,15 @@ export default function CIPipeline({
         scanEnabled: false,
         environmentId: 0,
         pipelineType: "",
+        customTag: {
+            tagPattern: '',
+            counterX: '',
+        },
     })
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
     const selectedBranchRef = useRef(null)
-    const [imageTagValue, setImageTagValue] = useState<string>(ImageTagType.Default)
 
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
@@ -300,7 +303,6 @@ export default function CIPipeline({
                     validateStage(BuildStageVariable.Build, ciResponse.form)
                     validateStage(BuildStageVariable.PostBuild, ciResponse.form)
                     setFormData(ciResponse.form)
-                    setImageTagValue(ciResponse.form.customTag.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default)
                     setCIPipeline(ciResponse.ciPipeline)
                     setIsAdvanced(true)
                     setPageState(ViewType.FORM)
@@ -574,7 +576,6 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
-            imageTagValue
         )
             .then((response) => {
                 if (response) {
@@ -812,8 +813,6 @@ export default function CIPipeline({
                                     setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobCard}
                                     getPluginData={getPluginData}
-                                    setImageTagValue={setImageTagValue}
-                                    imageTagValue={imageTagValue}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

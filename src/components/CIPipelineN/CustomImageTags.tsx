@@ -1,30 +1,31 @@
-import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useContext, useState } from 'react'
-import { CustomImageTagsType, ImageTagType } from './CustomImageTag.type'
-import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as DownArrow } from '../../assets/icons/ic-arrow-left.svg'
+import React, { useState } from 'react'
+import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
-import '../ciPipeline/ciPipeline.scss'
-import { pipelineContext } from '../workflowEditor/workflowEditor'
 import Tippy from '@tippyjs/react'
+import { OptionType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
+import { Option, DropdownIndicator, styles, getCustomOptionSelectionStyle, getCommonSelectStyle } from '../v2/common/ReactSelect.utils'
+import { getCDStageTypeSelectorValue, customTagStageTypeOptions } from './ciPipeline.utils'
+import ReactSelect from 'react-select'
+import '../ciPipeline/ciPipeline.scss'
 
-function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsType) {
-    const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
+function CustomImageTags({
+    savedTagPattern,
+    formData,
+    setFormData,
+    formDataErrorObj,
+    setFormDataErrorObj,
+    isCDBuild,
+    selectedCDStageTypeValue,
+    setSelectedCDStageTypeValue,
+}: CustomImageTagsType) {
     const validationRules = new ValidationRules()
-    const [showImageTagPatternDetails, setShowImageTagPatternDetails] = useState<boolean>(false)
-    const isCustomTagError = formDataErrorObj.customTag.message.length > 0 && !formDataErrorObj.customTag.isValid
-
-    const toggleEditAction = () => {
-        setShowImageTagPatternDetails(!showImageTagPatternDetails)
-    }
-
-    const handleImageTagTypeChange = (event) => {
-        setImageTagValue(event.target.value)
-    }
+    const isCustomTagError = formDataErrorObj.customTag?.message.length > 0 && !formDataErrorObj.customTag?.isValid
+    const [showCreateImageTagView, setCreateImageTagView] = useState<boolean>(false)
 
     const renderInputErrorMessage = (errorMessage: string) => {
         return (
@@ -32,29 +33,6 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                 <span>{errorMessage}</span>
             </span>
-        )
-    }
-
-    const renderImageTagPatternPreview = () => {
-        return (
-            <div className="custom-tag-radio pl-16 pr-16 pt-6 pb-12">
-                <RadioGroup
-                    value={imageTagValue}
-                    name="image-type"
-                    onChange={handleImageTagTypeChange}
-                    className="chartrepo-type__radio-group dc__block-imp"
-                >
-                    <RadioGroupItem dataTestId="ci-default-image-tag" value={ImageTagType.Default}>
-                        Use system generated image tag pattern
-                        {imageTagValue === ImageTagType.Default && getDefaultTagValue()}
-                    </RadioGroupItem>
-                    <br />
-                    <RadioGroupItem dataTestId="ci-custom-image-tag" value={ImageTagType.Custom}>
-                        Create custom image tag pattern
-                    </RadioGroupItem>
-                </RadioGroup>
-                {renderCustomImageDetails()}
-            </div>
         )
     }
 
@@ -82,6 +60,45 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
         setFormDataErrorObj(_formDataErrorObj)
     }
 
+    const handleCustomTagStageOnCD = (selectedValue: OptionType) => {
+        setSelectedCDStageTypeValue(selectedValue)
+
+        const _form = { ...formData }
+        _form.customTagStage = selectedValue.value
+        setFormData(_form)
+    }
+
+    const renderCustomTagStageOnCD = () => {
+        return (
+            <div className="flex left">
+                <ReactSelect
+                    value={selectedCDStageTypeValue}
+                    options={customTagStageTypeOptions}
+                    className="select-width w-200 p-0"
+                    classNamePrefix="select-custom-image-tag-cd-stage-type"
+                    isSearchable={false}
+                    onChange={handleCustomTagStageOnCD}
+                    components={{
+                        IndicatorSeparator: null,
+                        DropdownIndicator,
+                        Option,
+                    }}
+                    styles={getCommonSelectStyle({
+                        control: (base, state) => ({
+                            ...base,
+                            boxShadow: 'none',
+                            backgroundColor: 'var(--N50)',
+                            border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                            cursor: 'pointer',
+                            minHeight: '28px',
+                            margin: '0px 8px',
+                        }),
+                    })}
+                />
+            </div>
+        )
+    }
+
     const renderCounterXTippy = (variableX: string) => {
         return (
             <Tippy
@@ -94,7 +111,7 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
                 className="default-tt w-200"
                 arrow={false}
             >
-                <span className="pl-4 dc__underline">{variableX}</span>
+                <span className="pl-4 dc__underline mr-4">{variableX}</span>
             </Tippy>
         )
     }
@@ -106,97 +123,95 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
         }
     }
 
-    const renderCustomImageDetails = () => {
+    const renderCreateCustomTagPattern = () => {
         return (
-            imageTagValue === ImageTagType.Custom && (
-                <div className="pl-26">
-                    <div>
-                        <span className="cn-7"> Use mix of fixed pattern and</span>
-                        {renderCounterXTippy(`variable {x}`)}
-                    </div>
-                    <textarea
-                        tabIndex={1}
-                        className="form__input form__input-no-bottom-radius"
-                        placeholder="Example: v1.2.{x}"
-                        name="image_tag"
-                        autoComplete="off"
-                        autoFocus={true}
-                        data-testid="container-repository-textbox"
-                        value={formData.customTag?.tagPattern}
-                        onChange={onChangeCustomInput}
-                    />
-
-                    <div className="image-tag-preview en-2 bw-1 dc__bottom-radius-4 dc__no-border-top-imp pl-8 pr-8 pt-6 pb-6 cn-7">
-                        {isCustomTagError ? (
-                            formDataErrorObj.customTag.message.map((_msg: string) => {
-                                return renderInputErrorMessage(_msg)
-                            })
-                        ) : (
-                            <div className="flexbox">
-                                Tag Preview:
-                                <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
-                                    <div className={'dc__registry-icon mr-5 '}></div>
-                                    {formData.customTag?.tagPattern?.replace(
-                                        '{x}',
-                                        formData.customTag?.counterX?.toString(),
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="mt-4 cn-7 fs-12 flex left">
-                        <Warning className="mr-4 icon-dim-16 image-tag-alert-icon" />
-                        Build will fail if resulting image tag has already been built
-                    </div>
-                    <hr className="mt-16 mb-16" />
-                    <div className="flex left">
-                        <span className="cn-7">
-                            Value of {renderCounterXTippy(`{x}`)} in the next build trigger will be
-                        </span>
-                        <input
-                            tabIndex={2}
-                            type="number"
-                            className="form__input form__input-pl-8 w-80px-imp ml-8 dc__bg-n50"
-                            name="image_counter"
-                            autoComplete="off"
-                            value={formData.customTag?.counterX}
-                            onChange={onChangeCustomImageCounter}
-                            min="0"
-                            onKeyPress={handleCounterKeyPress}
-                        />
-                        <div></div>
-                        {formDataErrorObj.counterX?.message.length > 0
-                            ? renderInputErrorMessage(formDataErrorObj.counterX.message)
-                            : null}
-                    </div>
+            <div className="white-card pl-12 pr-12 pt-8 pb-8 mt-12 ml-54">
+                <div className="fw-6 pb-8">Create tag pattern</div>
+                <div>
+                    <span className="cn-7"> Use mix of fixed pattern and</span>
+                    {renderCounterXTippy(`variable {x}`)}
                 </div>
-            )
-        )
-    }
+                <textarea
+                    tabIndex={1}
+                    className="form__input form__input-no-bottom-radius custom-tag__text-area"
+                    placeholder="Example: v1.2.{x}"
+                    name="image_tag"
+                    autoComplete="off"
+                    autoFocus={true}
+                    data-testid="container-repository-textbox"
+                    value={formData.customTag?.tagPattern}
+                    onChange={onChangeCustomInput}
+                    draggable={false}
+                />
 
-    const getDefaultTagValue = () => {
-        return (
-            <div className="flex left cn-7">
-                {formData.defaultTag?.map((tag, index) => {
-                    return (
-                        <div key={`tag-${index}`} className="flex left">
-                            <div className="dc__bg-n50 br-6 pl-4 pr-4 flex left dc_width-max-content dc__lowercase">
-                                {tag}
+                <div className="image-tag-preview en-2 bw-1 dc__bottom-radius-4 dc__no-border-top-imp pl-8 pr-8 pt-6 pb-6 cn-7">
+                    {isCustomTagError ? (
+                        formDataErrorObj.customTag.message.map((_msg: string) => {
+                            return renderInputErrorMessage(_msg)
+                        })
+                    ) : (
+                        <div className="flexbox">
+                            Tag Preview:
+                            <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
+                                <div className={'dc__registry-icon mr-5 '}></div>
+                                {formData.customTag?.tagPattern?.replace(
+                                    '{x}',
+                                    formData.customTag?.counterX?.toString() ?? '0',
+                                )}
                             </div>
-                            {index < 2 && <span className="bcn-0 pl-2 pr-2">-</span>}
                         </div>
-                    )
-                })}
+                    )}
+                </div>
+                <div className="mt-4 cn-7 fs-12 flex left">
+                    <Warning className="mr-4 icon-dim-16 image-tag-alert-icon" />
+                    Build will fail if resulting image tag has already been built
+                </div>
+                <hr className="mt-12 mb-12" />
+                <div className="flex left cn-7">
+                    Value of {renderCounterXTippy(`{x}`)} will be
+                    <input
+                        tabIndex={2}
+                        type="number"
+                        className="form__input form__input-pl-8 w-80px-imp ml-8 mr-8 dc__bg-n50"
+                        name="image_counter"
+                        autoComplete="off"
+                        value={formData.customTag?.counterX}
+                        onChange={onChangeCustomImageCounter}
+                        onKeyPress={handleCounterKeyPress}
+                        defaultValue={'0'}
+                    />
+                    in the next build trigger {isCDBuild ? renderCustomTagStageOnCD() : null}
+                    {formDataErrorObj.counterX?.message.length > 0
+                        ? renderInputErrorMessage(formDataErrorObj.counterX.message)
+                        : null}
+                </div>
             </div>
         )
     }
 
+    const renderCustomImageDetails = () => {
+        return savedTagPattern && !showCreateImageTagView
+            ? getGeneratedTagDescription()
+            : renderCreateCustomTagPattern()
+    }
+
+    const toggleEditToShowCreateImageView = () => {
+        setCreateImageTagView(!showCreateImageTagView)
+    }
+
     const renderCustomTagCollapsedValue = () => {
         return (
-            <div className="dc__ff-monospace  mt-4">
-                <div>{formData.customTag?.tagPattern}</div>
+            <div className="white-card pl-12 pr-12 pt-8 pb-8 dc__ff-monospace mt-12 mb-12 ml-54">
+                <div className="flex dc__content-space">
+                    <div>{formData.customTag?.tagPattern}</div>
+                    <Edit className="icon-dim-20" onClick={toggleEditToShowCreateImageView} />
+                </div>
+                <hr className="mt-8 mb-8" />
                 <div className="dc__italic-font-style cn-7">
                     {`{X}`} = {formData.customTag.counterX} in the next build trigger
+                    {isCDBuild && formData?.customTagStage
+                        ? ` of ${getCDStageTypeSelectorValue(formData.customTagStage).label}`
+                        : ''}
                 </div>
             </div>
         )
@@ -219,57 +234,56 @@ function CustomImageTags({ imageTagValue, setImageTagValue }: CustomImageTagsTyp
     }
 
     const getGeneratedTagDescription = (): JSX.Element => {
-        if (!showImageTagPatternDetails) {
-            if (isCustomTagError) {
-                return renderInputErrorMessage(getCustomTagCollapsedErrorText())
-            }
-            if (formData.customTag?.tagPattern?.length > 0) {
-                return renderCustomTagCollapsedValue()
-            } else {
-                return getDefaultTagValue()
-            }
+        if (isCustomTagError) {
+            return renderInputErrorMessage(getCustomTagCollapsedErrorText())
+        }
+        if (formData.customTag?.tagPattern?.length > 0) {
+            return renderCustomTagCollapsedValue()
         }
     }
 
-    const renderGeneratedImageTag = (): JSX.Element => {
+    const handleCustomTagToggle = (): void => {
+        const _formData = { ...formData }
+        _formData.enableCustomTag = !_formData.enableCustomTag
+        setFormData(_formData)
+    }
+
+    const renderCustomImageTagBody = (): JSX.Element => {
         return (
-            <div className="white-card mb-16 p-0 fs-13">
-                <div
-                    onClick={toggleEditAction}
-                    className={`flex dc__content-space w-100 pl-16 pr-16 pt-12 pb-12 cursor flex top ${
-                        showImageTagPatternDetails ? 'dc__border-bottom' : ''
-                    }`}
-                >
+            <div className="fs-13">
+                <hr />
+                <div className="flex dc__content-space w-100 cursor flex top">
                     <div
-                        className={`flex left ${
-                            !showImageTagPatternDetails && formData.customTag?.tagPattern?.length > 0 ? 'top' : ''
+                        className={`flex ${
+                            !formData.enableCustomTag && formData.customTag?.tagPattern?.length > 0 ? 'top' : ''
                         }`}
                     >
-                        <GeneratedImage className="mr-12 icon-dim-36" />
+                        <div className="pc-icon-container bcn-1 br-8 mr-16 flexbox">
+                            <GeneratedImage className="icon-dim-24" />
+                        </div>
                         <div>
-                            <span className="fw-6">Pattern for generated image tag</span>
-                            {imageTagValue === ImageTagType.Default ? (
-                                <span className="dc__italic-font-style ml-4">(Using default)</span>
-                            ) : (
-                                ''
-                            )}
-                            {getGeneratedTagDescription()}
+                            <span className="fw-6">Custom image tag pattern</span>
+                            <div className="cn-7 ">
+                                When enabled, generated image will use the custom defined tag pattern
+                            </div>
                         </div>
                     </div>
-                    <button type="button" className="dc__transparent flex" data-testid="api-token-edit-button">
-                        {showImageTagPatternDetails ? (
-                            <DownArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '90deg' }} />
-                        ) : (
-                            <Edit className="icon-dim-16" />
-                        )}
-                    </button>
+                    <div className="" style={{ width: '32px', height: '20px' }}>
+                        <Toggle
+                            disabled={window._env_.FORCE_SECURITY_SCANNING && formData.enableCustomTag}
+                            selected={formData.enableCustomTag}
+                            onSelect={handleCustomTagToggle}
+                            dataTestId="create-build-pipeline-custom-tag-enabled-toggle"
+                        />
+                    </div>
                 </div>
-                {showImageTagPatternDetails && renderImageTagPatternPreview()}
+                {formData.enableCustomTag && renderCustomImageDetails()}
+                <hr />
             </div>
         )
     }
 
-    return renderGeneratedImageTag()
+    return renderCustomImageTagBody()
 }
 
 export default CustomImageTags
