@@ -4,7 +4,6 @@ import {
     DeploymentNodeType,
     Drawer,
     multiSelectStyles,
-    noop,
     Progressing,
     ReleaseTag,
     ImageComment,
@@ -12,6 +11,7 @@ import {
     stopPropagation,
     genericCDMaterialsService,
     CDMaterialServiceEnum,
+    CDMaterialType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -21,7 +21,7 @@ import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-lock
 import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
-import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
+import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
@@ -31,15 +31,15 @@ import ReactSelect, { components } from 'react-select'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
+// TODO: Fix release tags selection
 export default function BulkCDTrigger({
     stage,
     appList,
     closePopup,
+    // NOTE: Using this to update the appList in the parent component, should remove this later
     updateBulkInputMaterial,
+    // NOTE: Should trigger the bulk cd here only but since its also calling another parent function not refactoring right now
     onClickTriggerBulkCD,
-    changeTab,
-    toggleSourceInfo,
-    selectImage,
     responseList,
     isLoading,
     setLoading,
@@ -54,32 +54,41 @@ export default function BulkCDTrigger({
     const [tagNotFoundWarningsMap, setTagNotFoundWarningsMap] = useState<Map<number, string>>(new Map())
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const [currentAppReleaseTags, setCurrentAppReleaseTags] = useState<string[]>(selectedApp.appReleaseTags)
-    const [currentAppTagsEditable, setCurrentAppTagsEditable] = useState<boolean>(selectedApp.tagsEditable)
-    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [appSearchTextMap, setAppSearchTextMap] = useState<Record<number, string>>({})
-    const [cdMaterialResponse, setCdMaterialResponse] = useState<Record<string, CDMaterialResponseType>>({})
+    const [selectedImages, setSelectedImages] = useState<Record<number, string>>({})
+    const [selectedImageFromBulk, setSelectedImageFromBulk] = useState<string>(null)
 
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch()
 
-    const setCurrentAppReleaseTagsWrapper = (appReleaseTags: string[]) => {
-        setCurrentAppReleaseTags(appReleaseTags)
-    }
-    const setCurrentAppTagsEditableWrapper = (tagsEditable: boolean) => {
-        setCurrentAppTagsEditable(tagsEditable)
-    }
+    useEffect(()=>{
+        const searchParams = new URLSearchParams(location.search)
+        const search = searchParams.get('search')
+
+        if (search) {
+            const _appSearchTextMap={...appSearchTextMap}
+            _appSearchTextMap[selectedApp.appId]=search
+            setAppSearchTextMap(_appSearchTextMap)
+        }
+        else {
+            const _appSearchTextMap={...appSearchTextMap}
+            delete _appSearchTextMap[selectedApp.appId]
+            setAppSearchTextMap(_appSearchTextMap)
+        }
+    },[location])
 
     const closeBulkCDModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
         abortControllerRef.current.abort()
         closePopup(e)
     }
+
     const [selectedTagName, setSelectedTagName] = useState<{ label: string; value: string }>({
         label: 'latest',
         value: 'latest',
     })
+
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
@@ -121,6 +130,7 @@ export default function BulkCDTrigger({
         const _unauthorizedAppList: Record<number, boolean> = {}
         const _CDMaterialPromiseList = []
         abortControllerRef.current = new AbortController()
+
         for (const appDetails of appList) {
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
@@ -130,11 +140,13 @@ export default function BulkCDTrigger({
                         CDMaterialServiceEnum.CD_MATERIALS,
                         Number(appDetails.cdPipelineId),
                         appDetails.stageType,
-                        abortControllerRef.current.signal
+                        abortControllerRef.current.signal,
+                        {
+                            offset: 0,
+                            size: 20,
+                        },
                     )
-                        .then((data) => {
-                            return { appId: appDetails.appId, ...data }
-                        })
+                        .then((data) => ({ appId: appDetails.appId, ...data }))
                         .catch((e) => {
                             if (!abortControllerRef.current.signal.aborted) {
                                 throw { response: e?.response, appId: appDetails.appId }
@@ -143,21 +155,13 @@ export default function BulkCDTrigger({
                 )
             }
         }
+        
         const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
         Promise.allSettled(_CDMaterialPromiseList)
             .then((responses) => {
                 responses.forEach((response) => {
                     if (response.status === 'fulfilled') {
-                        _cdMaterialResponse[response.value['appId']] = {
-                            approvalUsers: response.value['approvalUsers'],
-                            materials: response.value['materials'],
-                            userApprovalConfig: response.value['userApprovalConfig'],
-                            requestedUserId: response.value['requestedUserId'],
-                            tagsEditable: response.value['tagsEditable'],
-                            appReleaseTagNames: response.value['appReleaseTagNames'],
-                            hideImageTaggingHardDelete: response.value['hideImageTaggingHardDelete'],
-                            resourceFilters: response.value['resourceFilters'],
-                        }
+                        _cdMaterialResponse[response.value['appId']] = response.value
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
                         const errorReason = response.reason
@@ -166,10 +170,6 @@ export default function BulkCDTrigger({
                         }
                     }
                 })
-                setCurrentAppTagsEditable(_cdMaterialResponse[selectedApp.appId].tagsEditable ?? false)
-                setCurrentAppReleaseTags(_cdMaterialResponse[selectedApp.appId].appReleaseTagNames ?? [])
-                setHideImageTaggingHardDelete(_cdMaterialResponse[selectedApp.appId].hideImageTaggingHardDelete ?? false)
-                setCdMaterialResponse(_cdMaterialResponse)
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
@@ -202,10 +202,21 @@ export default function BulkCDTrigger({
     const changeApp = (e): void => {
         const _selectedApp = appList[e.currentTarget.dataset.index]
         setSelectedApp(_selectedApp)
-        setCurrentAppReleaseTags(_selectedApp.appReleaseTags)
-        setCurrentAppTagsEditable(_selectedApp.tagsEditable)
-        // We don't need to get the data from appList since we already have it in cdMaterialResponse and
-        // FIXME: The workflow for some reason is also getting data that is not even required there like tagsEditable
+        setSelectedImageFromBulk(selectedImages[_selectedApp.appId])
+
+        if (appSearchTextMap[_selectedApp.appId]) {
+            const newSearchParams = new URLSearchParams(location.search)
+            newSearchParams.set('search', appSearchTextMap[_selectedApp.appId])
+            
+            history.push({
+                search: newSearchParams.toString(),
+            })
+        }
+        else {
+            history.push({
+                search: '',
+            })
+        }
     }
 
     const renderEmptyView = (): JSX.Element => {
@@ -233,11 +244,15 @@ export default function BulkCDTrigger({
         }
 
         const updateCurrentAppMaterial = (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => {
-            let updatedCurrentApp = selectedApp
+            const updatedCurrentApp = selectedApp
             updatedCurrentApp?.material.forEach((mat)=>{
-                if(mat.id === matId){
-                    if(releaseTags)mat.imageReleaseTags = releaseTags
-                    if(imageComment)mat.imageComment = imageComment
+                if (mat.id === matId){
+                    if (releaseTags) {
+                        mat.imageReleaseTags = releaseTags
+                    }
+                    if (imageComment) {
+                        mat.imageComment = imageComment
+                    }
                 }
             })
             updatedCurrentApp && setSelectedApp(updatedCurrentApp)
@@ -245,15 +260,15 @@ export default function BulkCDTrigger({
 
         const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
         uniqueReleaseTags.sort((a, b) => a.localeCompare(b))
-        let tagsList = ['latest']
+        const tagsList = ['latest']
         tagsList.push(...uniqueReleaseTags)
         const options = tagsList.map((tag) => {
             return { label: tag, value: tag }
         })
 
-        let appWiseTagsToArtifactIdMapMappings = {}
+        const appWiseTagsToArtifactIdMapMappings = {}
         appList.forEach((app) => {
-            let tagsToArtifactIdMap = { latest: 0 }
+            const tagsToArtifactIdMap = { latest: 0 }
             for (let i = 0; i < app.material?.length; i++) {
                 const mat = app.material?.[i]
                 mat.imageReleaseTags?.forEach((imageTag) => {
@@ -263,15 +278,16 @@ export default function BulkCDTrigger({
             appWiseTagsToArtifactIdMapMappings[app.appId] = tagsToArtifactIdMap
         })
 
+        // Don't use it as single, use it through update function
         const selectImageLocal = (
             index: number,
-            materialType: string,
-            selectedCDDetail?: { id: number; type: DeploymentNodeType },
-            appId?: number,
+            appId: number,
+            selectedImageTag: string,
         ) => {
-            selectImage(index, materialType, selectedCDDetail)
+            setSelectedImages({ ...selectedImages, [appId]: selectedImageTag })
+
             if (appWiseTagsToArtifactIdMapMappings[appId][selectedTagName.value] !== index) {
-                let _tagNotFoundWarningsMap = tagNotFoundWarningsMap
+                const _tagNotFoundWarningsMap = tagNotFoundWarningsMap
                 _tagNotFoundWarningsMap.delete(appId)
                 setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
                 setSelectedTagName({ value: 'Multiple tags', label: 'Multiple tags' })
@@ -281,6 +297,8 @@ export default function BulkCDTrigger({
         const handleTagChange = (selectedTag) => {
             setSelectedTagName(selectedTag)
             const _tagNotFoundWarningsMap = new Map()
+            const _cdMaterialResponse: Record<string, any> = {}
+
             for (let i = 0; i < appList?.length ?? 0; i++) {
                 const app = appList[i]
                 const tagsToArtifactIdMap = appWiseTagsToArtifactIdMapMappings[app.appId]
@@ -302,11 +320,54 @@ export default function BulkCDTrigger({
                     }
                 }
 
-                selectImage(artifactIndex, MATERIAL_TYPE.inputMaterialList, {
-                    id: +app.cdPipelineId,
-                    type: selectedApp.stageType,
-                })
+                // selectImage(artifactIndex, MATERIAL_TYPE.inputMaterialList, {
+                //     id: +app.cdPipelineId,
+                //     type: selectedApp.stageType,
+                // })
+                if (artifactIndex !== -1) {
+                    const selectedImageName = app.material?.[artifactIndex]?.image
+                    const updatedMaterials = app.material?.map((mat, index) => {
+                        return {
+                            ...mat,
+                            isSelected: index === artifactIndex,
+                        }
+                    })
+
+                    _cdMaterialResponse[app.appId] = {
+                        ...app,
+                        materials: updatedMaterials
+                    }
+                    setSelectedImages({ ...selectedImages, [app.appId]: selectedImageName })
+                }
+                else {
+                    const updatedMaterials = app.material?.map((mat) => {
+                        return {
+                            ...mat,
+                            isSelected: false,
+                        }
+                    })
+
+                    _cdMaterialResponse[app.appId] = {
+                        ...app,
+                        materials: updatedMaterials
+                    }
+
+                    setSelectedImages({ ...selectedImages, [app.appId]: null })
+                }
             }
+
+            updateBulkInputMaterial(_cdMaterialResponse)
+
+            const selectedImageName = _cdMaterialResponse[selectedApp.appId]?.materials?.find(
+                (mat: CDMaterialType) => mat.isSelected === true,
+            )?.image
+            if (selectedImageName) {
+                setSelectedImageFromBulk(selectedImageName)
+            }
+            else {
+                setSelectedImageFromBulk(null)
+            }
+
             setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
         }
 
@@ -323,47 +384,22 @@ export default function BulkCDTrigger({
             },
         }
 
-        const handleMaterialFilters = (
-            searchText: string,
-            cdNodeId,
-            nodeType: DeploymentNodeType,
-            isApprovalNode: boolean = false,
-        ): void => {
-            setLoading(true)
-            abortControllerRef.current = new AbortController()
+        const updateBulkCDMaterialsItem = (singleCDMaterialResponse) => {
             const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
-            const queryParams = { search: searchText }
-            genericCDMaterialsService(
-                CDMaterialServiceEnum.CD_MATERIALS,
-                cdNodeId,
-                isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
-                abortControllerRef.current.signal,
-                queryParams,
+            _cdMaterialResponse[selectedApp.appId] = singleCDMaterialResponse
+            
+            updateBulkInputMaterial(_cdMaterialResponse)
+
+            const selectedArtifact = singleCDMaterialResponse?.materials?.find(
+                (mat: CDMaterialType) => mat.isSelected === true,
             )
-                .then((response) => {
-                    if (response) {
-                        _cdMaterialResponse[selectedApp.appId] = {
-                            approvalUsers: response.approvalUsers,
-                            materials: response.materials,
-                            userApprovalConfig: response.userApprovalConfig,
-                            requestedUserId: response.requestedUserId,
-                            tagsEditable: response.tagsEditable,
-                            appReleaseTagNames: response.appReleaseTagNames,
-                            hideImageTaggingHardDelete: response.hideImageTaggingHardDelete,
-                        }
-                        setCurrentAppTagsEditable(response.tagsEditable ?? false)
-                        setCurrentAppReleaseTags(response.appReleaseTagNames ?? [])
-                        setHideImageTaggingHardDelete(response.hideImageTaggingHardDelete ?? false)
-                        updateBulkInputMaterial(_cdMaterialResponse)
-                        const _appSearchTextMap={...appSearchTextMap}
-                        _appSearchTextMap[selectedApp.appId]=searchText
-                        setAppSearchTextMap(_appSearchTextMap)
-                    }
-                    setLoading(false)
-                })
-                .catch((error) => {
-                    showError(error)
-                })
+
+            if (selectedArtifact) {
+                selectImageLocal(selectedArtifact.index, selectedApp.appId, selectedArtifact.image)
+            }
+
+            // Setting it to null since since only wants to trigger change inside if user changes app or tag
+            setSelectedImageFromBulk(null)
         }
 
         return (
@@ -374,7 +410,7 @@ export default function BulkCDTrigger({
                         <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
                             <ReactSelect
                                 tabIndex={1}
-                                isSearchable={true}
+                                isSearchable
                                 options={options}
                                 value={selectedTagName}
                                 styles={multiSelectStyles}
@@ -431,40 +467,30 @@ export default function BulkCDTrigger({
                         renderEmptyView()
                     ) : (
                         <CDMaterial
+                            // TODO: Handle this
+                            triggerDeploy={onClickStartDeploy}
+                            key={selectedApp.appId}
+                            materialType={MATERIAL_TYPE.inputMaterialList}
+                            location={location}
+                            match={match}
                             appId={selectedApp.appId}
+                            envId={selectedApp.envId}
                             pipelineId={+selectedApp.cdPipelineId}
                             stageType={selectedApp.stageType}
-                            triggerType={selectedApp.triggerType}
-                            material={_currentApp.material ?? []}
-                            materialType={MATERIAL_TYPE.inputMaterialList}
+                            isFromBulkCD
                             envName={selectedApp.envName}
-                            isLoading={isLoading}
-                            changeTab={changeTab}
-                            triggerDeploy={onClickStartDeploy}
-                            onClickRollbackMaterial={noop}
                             closeCDModal={closeBulkCDModal}
-                            selectImage={selectImageLocal}
-                            toggleSourceInfo={toggleSourceInfo}
+                            triggerType={selectedApp.triggerType}
+                            isApplicationGroupTrigger
+                            history={history}
+                            isLoading={isLoading}
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}
                             parentEnvironmentName={selectedApp.parentEnvironmentName}
-                            userApprovalConfig={_currentApp.userApprovalConfig}
-                            requestedUserId={_currentApp.requestedUserId}
-                            isFromBulkCD
-                            appReleaseTagNames={currentAppReleaseTags ? currentAppReleaseTags : []}
-                            setAppReleaseTagNames={setCurrentAppReleaseTagsWrapper}
-                            tagsEditable={currentAppTagsEditable ? currentAppTagsEditable : false}
-                            setTagsEditable={setCurrentAppTagsEditableWrapper}
                             ciPipelineId={_currentApp.ciPipelineId}
                             updateCurrentAppMaterial={updateCurrentAppMaterial}
-                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                            history={history}
-                            location={location}
-                            match={match}
-                            isApplicationGroupTrigger
-                            handleMaterialFilters={handleMaterialFilters}
-                            searchImageTag={appSearchTextMap[selectedApp.appId]}
-                            resourceFilters={cdMaterialResponse[selectedApp.appId]?.resourceFilters ?? []}
+                            updateBulkCDMaterialsItem={updateBulkCDMaterialsItem}
+                            selectedImageFromBulk={selectedImageFromBulk}
                         />
                     )}
                 </div>
@@ -491,6 +517,7 @@ export default function BulkCDTrigger({
                     data-testid="deploy-button"
                     onClick={onClickStartDeploy}
                     disabled={isDeployDisabled()}
+                    type='button'
                 >
                     {isLoading ? (
                         <Progressing />

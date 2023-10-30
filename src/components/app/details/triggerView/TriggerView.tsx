@@ -11,8 +11,6 @@ import {
     DeploymentAppTypes,
     ToastBodyWithButton,
     ToastBody,
-    genericCDMaterialsService,
-    CDMaterialServiceEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     triggerCDNode,
@@ -33,7 +31,7 @@ import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
-import { CDMaterial } from './cdMaterial'
+import CDMaterial from './cdMaterial'
 import {
     URLS,
     ViewType,
@@ -208,15 +206,53 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 }
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
-                    if (isFromOnMount && ApprovalMaterialModal) {
+                    if (isFromOnMount) {
                         this.getConfigs()
-                        if (this.props.location.search.includes('approval-node')) {
-                            this.setState({
-                                showApprovalModal: true,
-                            })
+
+                        if (ApprovalMaterialModal) {
+                            if (this.props.location.search.includes('approval-node')) {
+                                this.setState({
+                                    showApprovalModal: true,
+                                })
+                                const searchParams = new URLSearchParams(this.props.location.search)
+                                const nodeId = searchParams.get('approval-node')
+                                this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+                            }
+                        }
+                        
+                        if (this.props.location.search.includes('rollback-node')) {
                             const searchParams = new URLSearchParams(this.props.location.search)
-                            const nodeId = searchParams.get('approval-node')
-                            this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+                            const nodeId = Number(searchParams.get('rollback-node'))
+                            if (!isNaN(nodeId)) {
+                                this.onClickRollbackMaterial(nodeId)
+                            }
+                            else {
+                                toast.error('Invalid node id')
+                                this.props.history.push({
+                                    search: '',
+                                })
+                            }
+                        }
+                        else if (this.props.location.search.includes('cd-node')) {
+                            const searchParams = new URLSearchParams(this.props.location.search)
+                            const nodeId = Number(searchParams.get('cd-node'))
+                            const nodeType = searchParams.get('node-type') ?? DeploymentNodeType.CD
+
+                            if (nodeType !== DeploymentNodeType.CD && nodeType !== DeploymentNodeType.PRECD && nodeType !== DeploymentNodeType.POSTCD) {
+                                toast.error('Invalid node type')
+                                this.props.history.push({
+                                    search: '',
+                                })
+                            }
+                            else if (!isNaN(nodeId)) {
+                                this.onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
+                            }
+                            else {
+                                toast.error('Invalid node id')
+                                this.props.history.push({
+                                    search: '',
+                                })
+                            }
                         }
                     }
                     this.timerRef && clearInterval(this.timerRef)
@@ -656,152 +692,95 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false, searchText?: string) {
+    // TODO: Can also combine rollback and onClickCDMaterial
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-        this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
-        this.abortController = new AbortController()
+        this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode })
+        
 
-        const queryParams = { search: searchText }
-
-        genericCDMaterialsService(
-            CDMaterialServiceEnum.CD_MATERIALS,
-            cdNodeId,
-            isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
-            this.abortController.signal,
-            queryParams,
-        )
-            .then((data) => {
-                const workflows = [...this.state.workflows].map((workflow) => {
-                    let cipipId = 0
-                    workflow.nodes.map((node) => {
-                        if (node.type == 'CI') {
-                            cipipId = +node.id
-                        }
-                        return node
-                    })
-                    const nodes = workflow.nodes.map((node) => {
-                        if (cdNodeId == node.id && node.type === nodeType) {
-                            node.inputMaterialList = data.materials
-                            node.appReleaseTagNames = data.appReleaseTagNames
-                            node.tagsEditable = data.tagsEditable
-                            if (node.type === 'CD') {
-                                node.approvalUsers = data.approvalUsers
-                                node.userApprovalConfig =
-                                    data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
-                                node.requestedUserId = data.requestedUserId
-                            }
-                        }
-                        node.connectingCiPipelineId = cipipId
-                        return node
-                    })
-                    workflow.appReleaseTags = data.appReleaseTagNames
-                    workflow.nodes = nodes
-                    return workflow
-                })
-                this.setState({
-                    workflows,
-                    materialType: 'inputMaterialList',
-                    cdNodeId: cdNodeId,
-                    nodeType,
-                    showApprovalModal: isApprovalNode,
-                    showCDModal: !isApprovalNode,
-                    isLoading: false,
-                    appReleaseTags: data.appReleaseTagNames,
-                    tagsEditable: data.tagsEditable,
-                    hideImageTaggingHardDelete: data.hideImageTaggingHardDelete,
-                    resourceFilters: data.resourceFilters,
-                })
-                preventBodyScroll(true)
-            })
-            .catch((errors: ServerErrors) => {
-                if (!this.abortController.signal.aborted) {
-                    showError(errors)
-                    this.setState({ code: errors.code })
+        const workflows = [...this.state.workflows].map((workflow) => {
+            let cipipId = 0
+            workflow.nodes.map((node) => {
+                if (node.type == 'CI') {
+                    cipipId = +node.id
                 }
+                return node
             })
+            const nodes = workflow.nodes.map((node) => {
+                if (cdNodeId == node.id && node.type === nodeType) {
+                    if (node.type === 'CD') {
+                        // TODO: Potential bug since removed data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
+                        node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    }
+                }
+                node.connectingCiPipelineId = cipipId
+                return node
+            })
+
+            workflow.nodes = nodes
+            return workflow
+        })
+        this.setState({
+            workflows,
+            materialType: 'inputMaterialList',
+            cdNodeId,
+            nodeType,
+            showApprovalModal: isApprovalNode,
+            showCDModal: !isApprovalNode,
+        })
+        preventBodyScroll(true)
+
+        const newParams = new URLSearchParams(this.props.location.search)
+        newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
+        if (!isApprovalNode) {
+            newParams.set('node-type', nodeType)
+        }
+        this.props.history.push({
+            search: newParams.toString(),
+        })
     }
 
+    // Assuming that rollback has only CD as nodeType
     onClickRollbackMaterial = (
         cdNodeId: number,
         offset?: number,
         size?: number,
-        callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
-        searchText?: string,
     ) => {
         if (!offset && !size) {
             ReactGA.event(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
-            this.setState({ isLoading: true })
         }
-        const _offset = offset || 1
-        const _size = size || 20
+
         this.setState({ showCDModal: true })
-        this.abortController = new AbortController()
-
-        const queryParams = {
-            offset: _offset,
-            size: _size,
-            searchText: searchText,
-        }
-
-        genericCDMaterialsService(
-            CDMaterialServiceEnum.ROLLBACK,
-            cdNodeId,
-            DeploymentNodeType.CD,
-            this.abortController.signal,
-            queryParams,
+        
+        const workflows = [...this.state.workflows].map((workflow) => {
+            const nodes = workflow.nodes.map((node) => {
+                if (node.type === 'CD' && +node.id == cdNodeId) {
+                    node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                }
+                return node
+            })
+            workflow.nodes = nodes
+            return workflow
+        })
+        this.setState(
+            {
+                workflows: workflows,
+                materialType: 'rollbackMaterialList',
+                cdNodeId: cdNodeId,
+                nodeType: 'CD',
+                showCDModal: true,
+            },
+            () => {
+                preventBodyScroll(true)
+                this.getWorkflowStatus()
+            },
         )
-            .then((response) => {
-                const workflows = [...this.state.workflows].map((workflow) => {
-                    const nodes = workflow.nodes.map((node) => {
-                        if (response && node.type === 'CD' && +node.id == cdNodeId) {
-                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
-                            node.requestedUserId = response.requestedUserId
 
-                            if (!offset && !size) {
-                                node.rollbackMaterialList = response.materials
-                            } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.materials)
-                            }
-                        }
-                        return node
-                    })
-                    workflow.nodes = nodes
-                    return workflow
-                })
-                this.setState(
-                    {
-                        workflows: workflows,
-                        materialType: 'rollbackMaterialList',
-                        cdNodeId: cdNodeId,
-                        nodeType: 'CD',
-                        showCDModal: true,
-                        isLoading: false,
-                        
-                        appReleaseTags: response.appReleaseTagNames,
-                        tagsEditable: response.tagsEditable,
-                        hideImageTaggingHardDelete: response.hideImageTaggingHardDelete,
-                        resourceFilters: response.resourceFilters,
-                    },
-                    () => {
-                        preventBodyScroll(true)
-                        this.getWorkflowStatus()
-                    },
-                )
-
-                if (callback && response) {
-                    callback(false, response.materials?.length < 20 || response.materials?.length === 0)
-                }
-            })
-            .catch((errors: ServerErrors) => {
-                if (!this.abortController.signal.aborted) {
-                    showError(errors)
-                    this.setState({ code: errors.code })
-
-                    if (callback) {
-                        callback(false)
-                    }
-                }
-            })
+        const newParams = new URLSearchParams(this.props.location.search)
+        newParams.set('rollback-node', cdNodeId.toString())
+        this.props.history.push({
+            search: newParams.toString(),
+        })
     }
 
     getHelmPackageName = (helmPackageName: string, cdWorkflowType: string) => {
@@ -829,6 +808,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     onClickTriggerCDNode = (
         nodeType: DeploymentNodeType,
         _appId: number,
+        ciArtifactId: number,
         deploymentWithConfig?: string,
         wfrId?: number,
     ): void => {
@@ -838,13 +818,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         for (let i = 0; i < this.state.workflows.length; i++) {
             const workflow = this.state.workflows[i]
             node = workflow.nodes.find((nd) => +nd.id == this.state.cdNodeId && nd.type == nodeType)
-            if (node) break
+            if (node) {
+                break
+            }
         }
 
         const pipelineId = node.id
-        const ciArtifact = node[this.state.materialType].find((artifact) => artifact.isSelected == true)
-        if (_appId && pipelineId && ciArtifact.id) {
-            triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
+        if (_appId && pipelineId && ciArtifactId) {
+            triggerCDNode(pipelineId, ciArtifactId, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
                         node.isVirtualEnvironment &&
@@ -884,8 +865,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         } else {
             let message = _appId ? '' : 'app id missing '
             message += pipelineId ? '' : 'pipeline id missing '
-            message += ciArtifact.id ? '' : 'Artifact id missing '
+            message += ciArtifactId ? '' : 'Artifact id missing '
             toast.error(message)
+            this.setState({ isLoading: false, isSaveLoading: false })
         }
     }
 
@@ -940,7 +922,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 node.inputMaterialList[i].value,
             ]
             if (node.inputMaterialList[i]) {
-                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
+                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) {
+                    continue
+                }
+
                 const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
                 if (!history.length) {
                     history.push(node.inputMaterialList[i].history[0])
@@ -1076,7 +1061,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (node.type === 'CI' && +node.id == this.state.ciNodeId) {
-                    node.inputMaterialList = node.inputMaterialList.map((material) => {
+                    node.inputMaterialList = node.inputMaterialList?.map((material) => {
                         return {
                             ...material,
                             searchText: material.searchText || '',
@@ -1173,7 +1158,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             targetNode = this.state.workflows[i].nodes.find(
                 (node) => +node.id == this.state.cdNodeId && node.type === this.state.nodeType,
             )
-            if (targetNode) break
+
+            if (targetNode) {
+                break
+            }
         }
 
         if (targetNode || targetNode.scanned || targetNode.scanEnabled) {
@@ -1224,8 +1212,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     closeCDModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
         preventBodyScroll(false)
-        this.abortController.abort()
         this.setState({ showCDModal: false, searchImageTag: '' })
+        this.props.history.push({
+            search: '',
+        })
     }
 
     closeApprovalModal = (e: React.MouseEvent): void => {
@@ -1390,27 +1380,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 node = _workflow.nodes.find((el) => {
                     return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
                 })
-                if (node) break
+                
+                if (node) {
+                    break
+                }
             }
         }
 
         return node ?? ({} as NodeAttr)
-    }
-
-    handleMaterialFilters = (
-        searchText: string,
-        cdNodeId,
-        nodeType: DeploymentNodeType,
-        isApprovalNode: boolean = false,
-        fromRollback: boolean = false,
-    ) => {
-        if (!fromRollback) {
-            this.onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
-        } else {
-            // By default setting from 1 to 20
-            this.onClickRollbackMaterial(cdNodeId, null, null, null, searchText)
-        }
-        this.setState({ searchImageTag: searchText })
     }
 
     renderCDMaterial() {
@@ -1439,40 +1416,24 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             </>
                         ) : (
                             <CDMaterial
+                                materialType={this.state.materialType}
                                 appId={Number(this.props.match.params.appId)}
                                 pipelineId={this.state.cdNodeId}
                                 stageType={DeploymentNodeType[this.state.nodeType]}
-                                triggerType={node.triggerType}
-                                material={material}
-                                materialType={this.state.materialType}
                                 envName={node?.environmentName}
-                                isLoading={this.state.isLoading}
-                                changeTab={this.changeTab}
-                                triggerDeploy={this.onClickTriggerCDNode}
-                                onClickRollbackMaterial={this.onClickRollbackMaterial}
+                                envId={node?.environmentId}
                                 closeCDModal={this.closeCDModal}
-                                selectImage={this.selectImage}
-                                toggleSourceInfo={this.toggleSourceInfo}
-                                parentPipelineId={node.parentPipelineId}
-                                parentPipelineType={node.parentPipelineType}
-                                parentEnvironmentName={node.parentEnvironmentName}
-                                userApprovalConfig={node.userApprovalConfig}
-                                requestedUserId={node.requestedUserId}
-                                isVirtualEnvironment={node.isVirtualEnvironment}
-                                isSaveLoading={this.state.isSaveLoading}
-                                ciPipelineId={node.connectingCiPipelineId}
-                                appReleaseTagNames={this.state.appReleaseTags}
-                                setAppReleaseTagNames={this.setAppReleaseTags}
-                                tagsEditable={this.state.tagsEditable}
-                                setTagsEditable={this.setTagsEditable}
-                                hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
+                                triggerType={node.triggerType}
+                                isApplicationGroupTrigger={false}
                                 history={this.props.history}
+                                isVirtualEnvironment={node.isVirtualEnvironment}
+                                parentEnvironmentName={node.parentEnvironmentName}
+                                isLoading={this.state.isLoading}
+                                ciPipelineId={node.connectingCiPipelineId}
+                                isSaveLoading={this.state.isSaveLoading}
                                 location={this.props.location}
                                 match={this.props.match}
-                                isApplicationGroupTrigger={false}
-                                handleMaterialFilters={this.handleMaterialFilters}
-                                searchImageTag={this.state.searchImageTag}
-                                resourceFilters={this.state.resourceFilters}
+                                deploymentAppType={node?.deploymentAppType}
                             />
                         )}
                     </div>
@@ -1509,6 +1470,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     configs={this.state.configs}
                     isDefaultConfigPresent={this.state.isDefaultConfigPresent}
                     resourceFilters={this.state.resourceFilters}
+                    history={this.props.history}
                 />
             )
         }
@@ -1567,7 +1529,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return (
             <>
                 {APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.subTitle}&nbsp;
-                <a href={DOCUMENTATION.APP_CREATE} target="_blank">
+                <a href={DOCUMENTATION.APP_CREATE} target="_blank noopener noreferrer">
                     {APP_DETAILS.NEED_HELP}
                 </a>
             </>
