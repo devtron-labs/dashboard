@@ -145,9 +145,6 @@ export default function ConfigMapList({
         } catch (err) {}
     }
 
-    console.log(appId, 'appId')
-    console.log(envId, 'envId')
-
     if (parentState === ComponentStates.loading || !configMap || configMapLoading)
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
