@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-import { UserApprovalMetadataType, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
+import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType } from '@devtron-labs/devtron-fe-common-lib'
 export interface WebHookData {
     Id: number
     EventActionType: string
@@ -36,6 +36,8 @@ export interface History {
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
 }
 
 export interface CiMaterial {
@@ -104,6 +106,8 @@ export interface CIListItemType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
 }
 
 export interface ImageComment {
@@ -141,7 +145,9 @@ export interface GitChangesType {
     ciPipelineId?: number
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
+    hideImageTaggingHardDelete?: boolean,
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
 }
 export interface EmptyViewType {
     imgSrc?: string
