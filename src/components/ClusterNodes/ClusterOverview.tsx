@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
@@ -56,7 +56,6 @@ function ClusterOverview({
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterDetails, setClusterDetails] = useState<ClusterDetailsType>({} as ClusterDetailsType)
-    const abortControllerRef = useRef(new AbortController())
 
     const metricsApiTippyContent = () => (
         <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
@@ -74,8 +73,7 @@ function ClusterOverview({
     )
 
     const handleRetry = async () => {
-        abortControllerRef.current = new AbortController()
-        setErrorMsg('')
+        abortReqAndUpdateSideDataController(true)
         await getClusterNoteAndCapacity(clusterId)
     }
 
@@ -201,14 +199,23 @@ function ClusterOverview({
             }
         }
     }
+    const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
+        if (emptyPrev) {
+            sideDataAbortController.prev = null
+        } else {
+            sideDataAbortController.new.abort()
+            sideDataAbortController.prev = sideDataAbortController.new
+        }
+        setErrorMsg('')
+    }
 
     const getClusterNoteAndCapacity = async (clusterId: string): Promise<void> => {
         setErrorMsg('')
         setIsLoading(true)
 
         const [clusterNoteResponse, clusterCapacityResponse] = await Promise.allSettled([
-            getClusterDetails(clusterId, abortControllerRef.current.signal),
-            getClusterCapacity(clusterId, abortControllerRef.current.signal),
+            getClusterDetails(clusterId),
+            getClusterCapacity(clusterId),
         ])
         setClusterNoteDetails(clusterNoteResponse)
         setClusterCapacityDetails(clusterCapacityResponse)
@@ -219,9 +226,6 @@ function ClusterOverview({
         if (errorStatusCode > 0) return
         setErrorStatusCode(0)
         getClusterNoteAndCapacity(clusterId)
-        return () => {
-            abortControllerRef.current.abort()
-        }
     }, [selectedCluster])
 
 
