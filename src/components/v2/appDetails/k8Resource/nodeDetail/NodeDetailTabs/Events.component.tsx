@@ -38,10 +38,10 @@ function EventsComponent({
                 .then((response) => {
                     const eventResult = response.result.items || response.result.events && response.result.events.items
                     eventResult.sort(((a, b) => {
-                        if (a.lastTimestamp < b.lastTimestamp) {
+                        if (a.lastTimestamp > b.lastTimestamp) {
                             return -1
                         }
-                        if (a.lastTimestamp > b.lastTimestamp) {
+                        if (a.lastTimestamp < b.lastTimestamp) {
                             return 1
                         }
                         return 0
