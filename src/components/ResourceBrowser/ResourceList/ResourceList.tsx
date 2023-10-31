@@ -354,19 +354,17 @@ export default function ResourceList() {
         if (!superAdminRef.current) {
             return
         }
-        if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
+        if (selectedCluster?.value && nodeType) {
             const _searchParam = tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : ''
             updateTabUrl(
                 `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
                 `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
-                    selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
+                    selectedNamespace?.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
                 }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${
                     nodeType === AppDetailsTabs.terminal ? location.search : _searchParam
                 }`,
                 `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
             )
-        } else {
-            removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
         }
         if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
@@ -1094,6 +1092,7 @@ export default function ResourceList() {
                     isSuperAdmin={superAdminRef.current}
                     clusterListLoader={terminalLoader}
                     refreshData={refreshSync}
+                    initTabsBasedOnRole={initTabsBasedOnRole}
                 />
             )
         }
