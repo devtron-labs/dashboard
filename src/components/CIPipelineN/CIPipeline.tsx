@@ -58,11 +58,11 @@ import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/t
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { ImageTagType } from './CustomImageTag.type'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
-
 export default function CIPipeline({
     appName,
     connectCDPipelines,
@@ -86,7 +86,7 @@ export default function CIPipeline({
     const { path } = useRouteMatch()
     const history = useHistory()
     const [pageState, setPageState] = useState(ViewType.LOADING)
-    const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
+    const saveOrUpdateButtonTitle = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const isJobCard = isJobCI || isJobView // constant for common elements of both Job and CI_JOB
     const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobCard ? 'job' : 'build'} pipeline`
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
@@ -115,7 +115,7 @@ export default function CIPipeline({
         name: '',
         args: [],
         materials: [],
-        triggerType: TriggerType.Auto,
+        triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
         gitHost: undefined,
         webhookEvents: [],
@@ -130,6 +130,11 @@ export default function CIPipeline({
             id: 0,
             steps: [],
         },
+        customTag: {
+            tagPattern: '',
+            counterX: '',
+        },
+        defaultTag: []
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
@@ -144,7 +149,16 @@ export default function CIPipeline({
             steps: [],
             isValid: true,
         },
+        customTag:{
+            message: [], 
+            isValid: true
+        },
+        counterX:{
+            message: '', 
+            isValid: true
+        }
     })
+
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
         active: true,
         ciMaterial: [],
@@ -163,6 +177,7 @@ export default function CIPipeline({
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
     const selectedBranchRef = useRef(null)
+    const [imageTagValue, setImageTagValue] = useState<string>(ImageTagType.Default)
 
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
@@ -286,6 +301,7 @@ export default function CIPipeline({
                     validateStage(BuildStageVariable.Build, ciResponse.form)
                     validateStage(BuildStageVariable.PostBuild, ciResponse.form)
                     setFormData(ciResponse.form)
+                    setImageTagValue(ciResponse.form.customTag.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default)
                     setCIPipeline(ciResponse.ciPipeline)
                     setIsAdvanced(true)
                     setPageState(ViewType.FORM)
@@ -559,6 +575,7 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
+            imageTagValue
         )
             .then((response) => {
                 if (response) {
@@ -796,6 +813,8 @@ export default function CIPipeline({
                                     setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobCard}
                                     getPluginData={getPluginData}
+                                    setImageTagValue={setImageTagValue}
+                                    imageTagValue={imageTagValue}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -822,11 +841,13 @@ export default function CIPipeline({
                                             formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
                                             formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
                                                 CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
-                                            (loadingState.loading || loadingState.failed))
+                                            (loadingState.loading || loadingState.failed)) ||
+                                        formDataErrorObj.customTag.message.length > 0 ||
+                                        formDataErrorObj.counterX?.message.length > 0
                                     }
                                     isLoading={apiInProgress}
                                 >
-                                    {text}
+                                    {saveOrUpdateButtonTitle}
                                 </ButtonWithLoader>
                             )}
                         </div>

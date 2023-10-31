@@ -410,6 +410,10 @@ a:focus {
     display: block;
 }
 
+.dc__block-imp {
+    display: block !important;
+}
+
 .dc__inline-block {
     display: inline-block;
 }
@@ -1324,6 +1328,62 @@ button.anchor {
     }
 }
 
+.gui-yaml-switch-window-bg {
+    &.radio-group {
+        padding: 0;
+        height: 24px;
+        overflow: hidden;
+        border-radius: 4px;
+
+        input + .radio__item-label {
+            border-radius: 0;
+            border: 1px solid var(--N200);
+        }
+
+        input[type='checkbox']:checked + .radio__item-label {
+            border-radius: 0;
+            color: var(--N900);
+            background-color: var(--N0);
+
+            svg path {
+                stroke: var(--N900);
+            }
+        }
+
+        .radio {
+            background: var(--window-bg);
+            color: var(--N500);
+
+            svg path {
+                stroke: var(--N500);
+            }
+
+            &:hover:not(.disabled) {
+                color: var(--N900);
+
+                svg path {
+                    stroke: var(--N900);
+                }
+            }
+
+            .radio__item-label {
+                border-right: unset;
+            }
+
+            &:first-child input + .radio__item-label {
+                border-top-left-radius: 4px !important;
+                border-bottom-left-radius: 4px !important;
+            }
+
+            &:last-child input + .radio__item-label {
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+                border: 1px solid var(--N200);
+            }
+        }
+    }
+}
+
 .gui-yaml-switch {
     &.radio-group {
         input[type='checkbox']:checked + .radio__item-label {
@@ -2055,6 +2115,10 @@ button.anchor {
     border: none !important;
 }
 
+.dc__no-border-top-imp {
+    border-top: none !important;
+}
+
 .dc__box-shadow {
     box-shadow: inset 0 -1px 0 0 #d6dbdf;
 }
@@ -2615,6 +2679,10 @@ textarea,
     min-width: 385px;
 }
 
+.w-24 {
+    width: 24px;
+}
+
 .w-28 {
     width: 28px;
 }
@@ -2637,6 +2705,10 @@ textarea,
 
 .w-80px {
     width: 80px;
+}
+
+.w-80px-imp {
+    width: 80px !important;
 }
 
 .w-100px {
@@ -3077,6 +3149,10 @@ textarea,
     max-height: 390px !important;
 }
 
+.min-h-100 {
+    min-height: 100%
+}
+
 // Height in percentage
 .h-100 {
     height: 100%;
@@ -3366,6 +3442,10 @@ textarea,
 
 .dc__gap-12 {
     gap: 12px;
+}
+
+.dc__gap-14 {
+    gap: 14px;
 }
 
 .dc__gap-16 {
