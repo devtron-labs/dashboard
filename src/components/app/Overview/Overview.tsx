@@ -29,7 +29,7 @@ import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 import { editApp } from '../service'
-import { getAppConfig } from './utils'
+import { getAppConfig, getGitProviderIcon } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
@@ -81,6 +81,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             getCIPipelinesForJob()
         }
     }, [appId])
+
+    useEffect(() => {
+        // Reload the app meta info in case it has changed
+        getAppMetaInfoRes()
+    }, [])
 
     const getCIPipelinesForJob = (): void => {
         getJobCIPipeline(appId)
@@ -137,16 +142,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     }
 
     const renderSideInfoColumn = () => {
-        const {
-            appName,
-            description,
-            // TODO: Update the placeholder text when integrating
-            // codeSource = 'devtron-labs/devtron',
-            createdOn,
-            createdBy,
-            projectName,
-            chartUsed,
-        } = appMetaInfo
+        const { appName, description, gitMaterials = [], createdOn, createdBy, projectName, chartUsed } = appMetaInfo
 
         const handleSaveDescription = async (value: string) => {
             const payload: EditAppRequest = {
@@ -187,8 +183,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     )}
                     <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">{appName}</div>
                     <EditableTextArea
+                        emptyState={config.defaultDescription}
+                        placeholder={config.defaultDescription}
                         rows={4}
-                        initialText={description || config.defaultDescription}
+                        initialText={description}
                         updateContent={handleSaveDescription}
                         validations={{
                             maxLength: {
@@ -239,13 +237,27 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             {createdBy}
                         </div>
                     </div>
-                    {/* TODO: Uncomment, update and integrate. Also add the icon for the code source */}
-                    {/* {type === 'app' && (
+                    {appType === 'app' && gitMaterials.length > 0 && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
-                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">{codeSource}</div>
+                            <div className="flexbox-col dc__gap-4">
+                                {gitMaterials.map((codeSource, index) => (
+                                    <a
+                                        className="flexbox dc__gap-8"
+                                        href={codeSource.redirectionUrl}
+                                        target="_blank"
+                                        rel="external no-referrer"
+                                        key={`${codeSource.displayName}-${index}`}
+                                    >
+                                        {getGitProviderIcon(codeSource.redirectionUrl)}
+                                        <span className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right dc__word-break">
+                                            {codeSource.displayName}
+                                        </span>
+                                    </a>
+                                ))}
+                            </div>
                         </div>
-                    )} */}
+                    )}
                 </div>
                 <div className="dc__border-top-n1" />
                 {renderLabelTags()}

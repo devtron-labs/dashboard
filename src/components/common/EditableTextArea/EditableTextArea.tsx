@@ -5,7 +5,7 @@ import { EditableTextAreaProps, Error } from './types'
 import { ButtonWithLoader } from '../formFields/ButtonWithLoader'
 
 const TextArea = (
-    props: EditableTextAreaProps & {
+    props: Omit<EditableTextAreaProps, 'emptyState'> & {
         setIsEditable: (boolean) => void
     },
 ) => {
@@ -92,16 +92,16 @@ const TextArea = (
 }
 
 export const EditableTextArea = (props: EditableTextAreaProps) => {
-    const { initialText = '' } = props
+    const { initialText = '', emptyState, ...rest } = props
     const [isEditable, setIsEditable] = useState<boolean>(false)
 
     return (
         <>
             {isEditable ? (
-                <TextArea {...props} initialText={initialText} setIsEditable={setIsEditable} />
+                <TextArea {...rest} initialText={initialText} setIsEditable={setIsEditable} />
             ) : (
                 <div className="flexbox flex-justify dc__gap-10">
-                    <div className="fs-13 fw-4 lh-20 cn-9 dc__word-break">{initialText}</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9 dc__word-break">{initialText || emptyState}</div>
                     <EditIcon className="icon-dim-16 cursor mw-16" onClick={() => setIsEditable(!isEditable)} />
                 </div>
             )}
