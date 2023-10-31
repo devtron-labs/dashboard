@@ -53,7 +53,7 @@ import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
-import { customTagStageTypeOptions, getCDStageTypeSelectorValue } from '../CIPipelineN/ciPipeline.utils'
+import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -570,7 +570,7 @@ export default function NewCDPipeline({
                 counterX: formData.customTag ? +formData.customTag.counterX : 0,
             },
             enableCustomTag: formData.enableCustomTag,
-            customTagStage: formData?.customTagStage ? formData.customTagStage : '',
+            customTagStage: formData?.customTagStage ? formData.customTagStage : StageTypeEnums.PRE_CD,
         }
 
         if (isVirtualEnvironment) {
