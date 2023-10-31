@@ -736,9 +736,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }`}
                 >
                     <ConditionalWrap
-                        condition={mat.imagePath?.length > 0}
+                        condition={mat.image?.length > 0}
                         wrap={(children) => (
-                            <Tippy className="default-tt w-200" arrow={false} placement="top-start" content={mat.imagePath}>
+                            <Tippy className="default-tt w-200" arrow={false} placement="top-start" content={mat.image}>
                                 {children}
                             </Tippy>
                         )}
