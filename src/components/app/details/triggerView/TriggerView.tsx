@@ -53,7 +53,6 @@ import {
     APP_DETAILS,
     CI_CONFIGURED_GIT_MATERIAL_ERROR,
     NO_TASKS_CONFIGURED_ERROR,
-    TOAST_BUTTON_TEXT_VIEW_DETAILS,
 } from '../../../../config/constantMessaging'
 import {
     getBranchValues,
@@ -68,7 +67,6 @@ import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
@@ -686,6 +684,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode })
 
         const workflows = [...this.state.workflows].map((workflow) => {
+            // FIXME: Remove this hack
             let cipipId = 0
             workflow.nodes.map((node) => {
                 if (node.type == 'CI') {
@@ -768,57 +767,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.props.history.push({
             search: newParams.toString(),
         })
-    }
-
-    getHelmPackageName = (helmPackageName: string, cdWorkflowType: string) => {
-        if (cdWorkflowType === WorkflowNodeType.PRE_CD) {
-            return `${helmPackageName} (Pre)`
-        } else if (cdWorkflowType === WorkflowNodeType.POST_CD) {
-            return `${helmPackageName} (Post)`
-        } else {
-            return helmPackageName
-        }
-    }
-
-    onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
-        const downloadManifetsDownload = {
-            appId: appId,
-            envId: envId,
-            appName: this.getHelmPackageName(helmPackageName, cdWorkflowType),
-            cdWorkflowType: cdWorkflowType,
-        }
-        if (getDeployManifestDownload) {
-            getDeployManifestDownload(downloadManifetsDownload)
-        }
-    }
-
-    handleTriggerErrorMessageForHelmManifestPush = (serverError: any, cdPipelineId: string, environmentId: number) => {
-        if (
-            serverError instanceof ServerErrors &&
-            Array.isArray(serverError.errors) &&
-            serverError.code !== 403 &&
-            serverError.code !== 408
-        ) {
-            serverError.errors.map(({ userMessage, internalMessage }) => {
-                const toastBody = (
-                    <ToastBodyWithButton
-                        onClick={() => this.redirectToDeploymentStepsPage(cdPipelineId, environmentId)}
-                        title=""
-                        subtitle={userMessage || internalMessage}
-                        buttonText={TOAST_BUTTON_TEXT_VIEW_DETAILS}
-                    />
-                )
-                toast.error(toastBody, { autoClose: false })
-            })
-        } else {
-            showError(serverError)
-        }
-    }
-
-    redirectToDeploymentStepsPage = (cdPipelineId: string, environmentId: number) => {
-        const { appId } = this.props.match.params
-        const { history } = this.props
-        history.push(`/app/${appId}/cd-details/${environmentId}/${cdPipelineId}`)
     }
 
     onClickTriggerCINode = () => {
