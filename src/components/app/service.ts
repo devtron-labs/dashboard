@@ -7,9 +7,6 @@ import {
     ResponseType,
     sortCallback,
     DeploymentNodeType,
-    CDModalTab,
-    CDMaterialResponseType,
-    FilterStates,
     put,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'

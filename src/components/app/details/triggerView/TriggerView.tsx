@@ -7,7 +7,6 @@ import {
     stopPropagation,
     VisibleModal,
     DeploymentNodeType,
-    CDModalTab,
     ToastBodyWithButton,
     ToastBody,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -43,7 +42,7 @@ import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink } from 'react-router-dom'
-import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv, getHostURLConfiguration } from '../../../../services/service'
+import { getEnvironmentListMinPublic, getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { getCIWebhookRes } from './ciWebhook.service'
