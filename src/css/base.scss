@@ -325,7 +325,7 @@ a:focus {
     top: 22px;
 }
 
-.dc__top-119{
+.dc__top-119 {
     top: 119px;
 }
 
@@ -348,6 +348,10 @@ a:focus {
     left: 0;
 }
 
+.dc__left-6 {
+    left: 6px;
+}
+
 .dc__left-30 {
     left: 30px;
 }
@@ -360,7 +364,7 @@ a:focus {
     left: 150px;
 }
 
-.dc__left-405{
+.dc__left-405 {
     left: 405px;
 }
 
@@ -404,6 +408,10 @@ a:focus {
 // block
 .dc__block {
     display: block;
+}
+
+.dc__block-imp {
+    display: block !important;
 }
 
 .dc__inline-block {
@@ -1320,6 +1328,62 @@ button.anchor {
     }
 }
 
+.gui-yaml-switch-window-bg {
+    &.radio-group {
+        padding: 0;
+        height: 24px;
+        overflow: hidden;
+        border-radius: 4px;
+
+        input + .radio__item-label {
+            border-radius: 0;
+            border: 1px solid var(--N200);
+        }
+
+        input[type='checkbox']:checked + .radio__item-label {
+            border-radius: 0;
+            color: var(--N900);
+            background-color: var(--N0);
+
+            svg path {
+                stroke: var(--N900);
+            }
+        }
+
+        .radio {
+            background: var(--window-bg);
+            color: var(--N500);
+
+            svg path {
+                stroke: var(--N500);
+            }
+
+            &:hover:not(.disabled) {
+                color: var(--N900);
+
+                svg path {
+                    stroke: var(--N900);
+                }
+            }
+
+            .radio__item-label {
+                border-right: unset;
+            }
+
+            &:first-child input + .radio__item-label {
+                border-top-left-radius: 4px !important;
+                border-bottom-left-radius: 4px !important;
+            }
+
+            &:last-child input + .radio__item-label {
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+                border: 1px solid var(--N200);
+            }
+        }
+    }
+}
+
 .gui-yaml-switch {
     &.radio-group {
         input[type='checkbox']:checked + .radio__item-label {
@@ -1855,7 +1919,7 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
-    &.dc__link_over{
+    &.dc__link_over {
         color: var(--N600);
     }
     &:hover {
@@ -2049,6 +2113,10 @@ button.anchor {
 
 .dc__no-border-imp {
     border: none !important;
+}
+
+.dc__no-border-top-imp {
+    border-top: none !important;
 }
 
 .dc__box-shadow {
@@ -2320,7 +2388,7 @@ textarea,
     background-color: var(--N50);
 }
 
-.c-n50{
+.c-n50 {
     color: var(--N50);
 }
 
@@ -2611,6 +2679,10 @@ textarea,
     min-width: 385px;
 }
 
+.w-24 {
+    width: 24px;
+}
+
 .w-28 {
     width: 28px;
 }
@@ -2633,6 +2705,10 @@ textarea,
 
 .w-80px {
     width: 80px;
+}
+
+.w-80px-imp {
+    width: 80px !important;
 }
 
 .w-100px {
@@ -2707,7 +2783,7 @@ textarea,
     width: 300px !important;
 }
 
-.w-320{
+.w-320 {
     width: 320px;
 }
 
@@ -2984,7 +3060,7 @@ textarea,
     height: 112px !important;
 }
 
-.h-128{
+.h-128 {
     height: 128px !important;
 }
 
@@ -3070,7 +3146,11 @@ textarea,
 }
 
 .mxh-390-imp {
-    max-height: 390px!important;
+    max-height: 390px !important;
+}
+
+.min-h-100 {
+    min-height: 100%
 }
 
 // Height in percentage
@@ -3158,6 +3238,10 @@ textarea,
 
 .pl-16 {
     padding-left: 16px !important;
+}
+
+.pl-28 {
+    padding-left: 28px !important;
 }
 
 .pt-40 {
@@ -3324,7 +3408,7 @@ textarea,
     }
 }
 
-.dc__column-gap-8{
+.dc__column-gap-8 {
     column-gap: 8px;
 }
 
@@ -3358,6 +3442,10 @@ textarea,
 
 .dc__gap-12 {
     gap: 12px;
+}
+
+.dc__gap-14 {
+    gap: 14px;
 }
 
 .dc__gap-16 {

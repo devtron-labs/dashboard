@@ -196,7 +196,7 @@ export const containerImageSelectStyles = {
         color: 'var(--N900)',
         background: 'var(--N50) !important',
         padding: '0px 10px',
-        display: 'grid',
+        display: 'flex',
         height: '30px',
         borderTopLeftRadius: '4px',
         borderBottomLeftRadius: '4px',
