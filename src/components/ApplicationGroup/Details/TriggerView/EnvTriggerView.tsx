@@ -4,7 +4,6 @@ import ReactGA from 'react-ga4'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, SourceTypeMap, ViewType } from '../../../../config'
 import {
     CDMaterialResponseType,
-    CDModalTab,
     DeploymentNodeType,
     ServerErrors,
     ErrorScreenManager,
@@ -16,9 +15,6 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     VisibleModal,
-    DeploymentAppTypes,
-    useSearchString,
-    FilterConditionsListType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -52,7 +48,6 @@ import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
-import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import {
@@ -94,7 +89,6 @@ import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
@@ -104,6 +98,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch<CIMaterialRouterProps>()
+
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
     const [isCILoading, setCILoading] = useState(false)
     const [isCDLoading, setCDLoading] = useState(false)
@@ -137,18 +132,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [responseList, setResponseList] = useState<ResponseRowType[]>([])
     const [isSelectAll, setSelectAll] = useState(false)
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
-    const abortControllerRef = useRef(new AbortController())
-    const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
-    const [tagsEditableVal, setTagsEditable] = useState<boolean>(false)
-    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
-    const { queryParams } = useSearchString()
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
-    const [searchImageTag, setSearchImageTag] = useState<string>('')
-    const [resourceFilters, setResourceFilters] = useState<FilterConditionsListType[]>([])
-
+    
     // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
     const handledLocation = useRef(false)
+    const abortControllerRef = useRef(new AbortController())
 
     useEffect(
         () => () => {
@@ -156,14 +145,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         },
         [],
     )
-
-    const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
-        setAppReleaseTags(appReleaseTags)
-    }
-
-    const setTagsEditableVal = (tagsEditable: boolean) => {
-        setTagsEditable(tagsEditable)
-    }
 
     useEffect(() => {
         if (envId) {
@@ -232,15 +213,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         }
     },[filteredWorkflows])
-
-    useEffect(() => {
-        // FIXME: Approval node not opening on refresh
-        if (location.search.includes('approval-node') && filteredWorkflows?.length) {
-            setShowBulkCDModal(false)
-            onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
-            getConfigs()
-        }
-    }, [location.search])
 
     const getConfigs = () => {
         getDefaultConfig().then((response) => {
@@ -833,7 +805,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         let _workflowId, _appID
         let _selectedNode
 
-        // TODO: Why are'nt we setting connectingCIPipelineId here?
+        // FIXME: This needs to be replicated in rollback, env group since we need cipipelineid as 0 in external case
         const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
@@ -913,68 +885,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         history.push({
             search: newParams.toString(),
         })
-    }
-    
-    const onClickTriggerCDNode = (
-        nodeType: DeploymentNodeType,
-        _appId: number,
-        ciArtifactId: number,
-        deploymentWithConfig?: string,
-        wfrId?: number,
-    ): void => {
-        let node
-        for (const _wf of filteredWorkflows) {
-            node = _wf.nodes.find((nd) => +nd.id == selectedCDNode.id && nd.type == selectedCDNode.type)
-            if (node) {
-                break
-            }
-        }
-
-        const onClickManifestDownload = (appId: number, envId: number, envName: string) => {
-            const downloadManifetsDownload = {
-                appId: appId,
-                envId: envId,
-                appName: envName,
-            }
-            if (getDeployManifestDownload) {
-                getDeployManifestDownload(downloadManifetsDownload, null)
-            }
-        }
-
-        const pipelineId = node.id
-        if (_appId && pipelineId && ciArtifactId) {
-            ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-            setCILoading(true)
-            triggerCDNode(pipelineId, ciArtifactId, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
-                .then((response: any) => {
-                    if (response.result) {
-                        node.isVirtualEnvironment &&
-                            node.deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD &&
-                            onClickManifestDownload(_appId, node.environmentId, node.environmentName)
-                        const msg =
-                            materialType == MATERIAL_TYPE.rollbackMaterialList
-                                ? 'Rollback Initiated'
-                                : 'Deployment Initiated'
-                        toast.success(msg)
-                        setShowCDModal(false)
-                        setCILoading(false)
-                        setErrorCode(response.code)
-                        preventBodyScroll(false)
-                        getWorkflowStatusData(workflows)
-                        setSearchImageTag('')
-                    }
-                })
-                .catch((errors: ServerErrors) => {
-                    showError(errors)
-                    setCILoading(false)
-                    setErrorCode(errors.code)
-                })
-        } else {
-            let message = _appId ? '' : 'app id missing '
-            message += pipelineId ? '' : 'pipeline id missing '
-            message += ciArtifactId ? '' : 'Artifact id missing '
-            toast.error(message)
-        }
     }
 
     const onClickTriggerCINode = () => {
@@ -1148,36 +1058,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
-    const selectImage = (
-        index: number,
-        materialType: string,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-    ): void => {
-        const _workflows = [...filteredWorkflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (
-                    (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
-                    (!showBulkCDModal &&
-                        selectedCDNode &&
-                        selectedCDNode.id == +node.id &&
-                        node.type === selectedCDNode.type)
-                ) {
-                    const artifacts = node[materialType].map((artifact, i) => {
-                        return {
-                            ...artifact,
-                            isSelected: i === index,
-                        }
-                    })
-                    node[materialType] = artifacts
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-        setFilteredWorkflows(_workflows)
-    }
-
     const toggleChanges = (materialId: string, hash: string): void => {
         const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
@@ -1199,110 +1079,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
-    const toggleSourceInfo = (
-        materialIndex: number,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-    ): void => {
-        const _workflows = [...filteredWorkflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (
-                    (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
-                    (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
-                ) {
-                    node[materialType][materialIndex].showSourceInfo = !node[materialType][materialIndex].showSourceInfo
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-        setFilteredWorkflows(_workflows)
-    }
-
     const toggleInvalidateCache = (): void => {
         setInvalidateCache(!invalidateCache)
-    }
-
-    //TODO: refactor
-    const changeTab = (
-        materialIndex,
-        artifactId: number,
-        tab,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-        appId?: number,
-    ): void => {
-        if (tab === CDModalTab.Changes) {
-            const _workflows = [...filteredWorkflows].map((workflow) => {
-                const nodes = workflow.nodes.map((node) => {
-                    if (
-                        (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
-                        (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
-                    ) {
-                        node[materialType][materialIndex].tab = tab
-                    }
-                    return node
-                })
-                workflow.nodes = nodes
-                return workflow
-            })
-            setFilteredWorkflows(_workflows)
-            return
-        }
-
-        let targetNode
-        for (const _wf of filteredWorkflows) {
-            targetNode = _wf.nodes.find(
-                (node) =>
-                    (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
-                    (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type),
-            )
-            if (targetNode) break
-        }
-
-        if (targetNode || targetNode.scanned || targetNode.scanEnabled) {
-            getLastExecutionByArtifactAppEnv(artifactId, appId || selectedAppID, targetNode.environmentId)
-                .then((response) => {
-                    const _workflows = [...filteredWorkflows].map((workflow) => {
-                        const nodes = workflow.nodes.map((node) => {
-                            if (
-                                (selectedCDDetail &&
-                                    selectedCDDetail.id === +node.id &&
-                                    selectedCDDetail.type === node.type) ||
-                                (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
-                            ) {
-                                node[materialType][materialIndex].tab = tab
-                                node[materialType][materialIndex]['vulnerabilities'] = response.result.vulnerabilities
-                                node[materialType][materialIndex]['lastExecution'] = response.result.lastExecution
-                                node[materialType][materialIndex]['vulnerabilitiesLoading'] = false
-                            }
-                            return node
-                        })
-                        workflow.nodes = nodes
-                        return workflow
-                    })
-                    setFilteredWorkflows(_workflows)
-                })
-                .catch((error) => {
-                    showError(error)
-                    const _workflows = [...filteredWorkflows].map((workflow) => {
-                        const nodes = workflow.nodes.map((node) => {
-                            if (
-                                (selectedCDDetail &&
-                                    selectedCDDetail.id === +node.id &&
-                                    selectedCDDetail.type === node.type) ||
-                                (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
-                            ) {
-                                node[materialType][materialIndex].tab = tab
-                                node[materialType][materialIndex]['vulnerabilitiesLoading'] = false
-                            }
-                            return node
-                        })
-                        workflow.nodes = nodes
-                        return workflow
-                    })
-                    setFilteredWorkflows(_workflows)
-                })
-        }
     }
 
     const closeCIModal = (): void => {
@@ -1318,7 +1096,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         preventBodyScroll(false)
         setCDLoading(false)
         setShowCDModal(false)
-        setSearchImageTag('')
         history.push({
             search: '',
         })
@@ -1963,8 +1740,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 closePopup={hideBulkCDModal}
                 updateBulkInputMaterial={updateBulkCDInputMaterial}
                 onClickTriggerBulkCD={onClickTriggerBulkCD}
-                // FIXME: Not Required
-                selectImage={selectImage}
                 responseList={responseList}
                 isLoading={isCDLoading}
                 setLoading={setCDLoading}
@@ -2097,27 +1872,19 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
             return (
                 <ApprovalMaterialModal
-                    appId={_appID}
-                    pipelineId={selectedCDNode?.id}
-                    stageType={DeploymentNodeType[selectedCDNode?.type]}
+                    isLoading={isCDLoading}
                     node={node ?? ({} as NodeAttr)}
                     materialType={materialType}
-                    isLoading={isCDLoading}
-                    changeTab={changeTab}
+                    stageType={DeploymentNodeType[selectedCDNode?.type]}
                     closeApprovalModal={closeApprovalModal}
-                    toggleSourceInfo={toggleSourceInfo}
+                    appId={_appID}
+                    pipelineId={selectedCDNode?.id}
                     onClickCDMaterial={onClickCDMaterial}
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node?.connectingCiPipelineId}
-                    appReleaseTagNames={appReleaseTags}
-                    setAppReleaseTagNames={setAppReleaseTagsNames}
-                    tagsEditable={tagsEditableVal}
-                    setTagsEditable={setTagsEditableVal}
-                    hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}
-                    resourceFilters={resourceFilters}
                     history={history}
                 />
             )
@@ -2294,7 +2061,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     invalidateCache: invalidateCache,
                     refreshMaterial: refreshMaterial,
                     onClickTriggerCINode: onClickTriggerCINode,
-                    onClickTriggerCDNode: onClickTriggerCDNode,
                     onClickCIMaterial: onClickCIMaterial,
                     onClickCDMaterial: onClickCDMaterial,
                     onClickRollbackMaterial: onClickRollbackMaterial,

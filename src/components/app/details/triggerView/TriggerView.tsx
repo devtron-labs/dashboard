@@ -8,12 +8,10 @@ import {
     VisibleModal,
     DeploymentNodeType,
     CDModalTab,
-    DeploymentAppTypes,
     ToastBodyWithButton,
     ToastBody,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
-    triggerCDNode,
     getCIMaterialList,
     triggerCINode,
     getWorkflowStatus,
@@ -29,7 +27,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
+import { NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import CDMaterial from './cdMaterial'
 import {
@@ -696,7 +694,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode })
-        
 
         const workflows = [...this.state.workflows].map((workflow) => {
             let cipipId = 0
@@ -802,72 +799,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
         if (getDeployManifestDownload) {
             getDeployManifestDownload(downloadManifetsDownload)
-        }
-    }
-
-    onClickTriggerCDNode = (
-        nodeType: DeploymentNodeType,
-        _appId: number,
-        ciArtifactId: number,
-        deploymentWithConfig?: string,
-        wfrId?: number,
-    ): void => {
-        ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-        this.setState({ isSaveLoading: true, isLoading: true })
-        let node: NodeAttr
-        for (let i = 0; i < this.state.workflows.length; i++) {
-            const workflow = this.state.workflows[i]
-            node = workflow.nodes.find((nd) => +nd.id == this.state.cdNodeId && nd.type == nodeType)
-            if (node) {
-                break
-            }
-        }
-
-        const pipelineId = node.id
-        if (_appId && pipelineId && ciArtifactId) {
-            triggerCDNode(pipelineId, ciArtifactId, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
-                .then((response: any) => {
-                    if (response.result) {
-                        node.isVirtualEnvironment &&
-                            node.deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD &&
-                            this.onClickManifestDownload(
-                                _appId,
-                                node.environmentId,
-                                response.result.helmPackageName,
-                                nodeType,
-                            )
-                        const msg =
-                            this.state.materialType == MATERIAL_TYPE.rollbackMaterialList
-                                ? 'Rollback Initiated'
-                                : 'Deployment Initiated'
-                        toast.success(msg)
-                        this.setState(
-                            {
-                                code: response.code,
-                                showCDModal: false,
-                                isSaveLoading: false,
-                                isLoading: false,
-                                searchImageTag: '',
-                            },
-                            () => {
-                                preventBodyScroll(false)
-                                this.getWorkflowStatus()
-                            },
-                        )
-                    }
-                })
-                .catch((errors: ServerErrors) => {
-                    node.isVirtualEnvironment && node.deploymentAppType == DeploymentAppTypes.MANIFEST_PUSH
-                        ? this.handleTriggerErrorMessageForHelmManifestPush(errors, node.id, node.environmentId)
-                        : showError(errors)
-                    this.setState({ code: errors.code, isLoading: false, isSaveLoading: false })
-                })
-        } else {
-            let message = _appId ? '' : 'app id missing '
-            message += pipelineId ? '' : 'pipeline id missing '
-            message += ciArtifactId ? '' : 'Artifact id missing '
-            toast.error(message)
-            this.setState({ isLoading: false, isSaveLoading: false })
         }
     }
 
@@ -1564,7 +1495,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         invalidateCache: this.state.invalidateCache,
                         refreshMaterial: this.refreshMaterial,
                         onClickTriggerCINode: this.onClickTriggerCINode,
-                        onClickTriggerCDNode: this.onClickTriggerCDNode,
                         onClickCIMaterial: this.onClickCIMaterial,
                         onClickCDMaterial: this.onClickCDMaterial,
                         onClickRollbackMaterial: this.onClickRollbackMaterial,

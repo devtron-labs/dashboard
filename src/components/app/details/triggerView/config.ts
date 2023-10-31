@@ -6,7 +6,6 @@ export const TriggerViewContext = createContext<TriggerViewContextType>({
     invalidateCache: false,
     refreshMaterial: (ciNodeId: number, materialId: number) => {},
     onClickTriggerCINode: () => {},
-    onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => {},
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => {},
     onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag? : string) => {},
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},

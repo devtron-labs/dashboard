@@ -113,6 +113,7 @@ export default function CDMaterial({
     parentEnvironmentName,
     isLoading,
     triggerDeploy,
+    // Handle the case of external pipeline, it might be undefined or zero in that case
     ciPipelineId,
     updateCurrentAppMaterial,
     hideInfoTabsContainer,
