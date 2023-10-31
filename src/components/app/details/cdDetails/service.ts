@@ -139,14 +139,12 @@ export const prepareConfigMapAndSecretData = (
             if (type === 'Secret' && historyData.codeEditorValue.value) {
                 const secretData = JSON.parse(historyData.codeEditorValue.value)
                 const resolvedSecretData = JSON.parse(historyData.codeEditorValue.resolvedValue)
-                let decodeNotRequired =
+                const decodeNotRequired =
                     skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
+                    
                 historyData.codeEditorValue.value = decodeNotRequired
                     ? historyData.codeEditorValue.value
                     : JSON.stringify(decode(secretData))
-
-                decodeNotRequired =
-                    skipDecode || Object.keys(resolvedSecretData).some((data) => resolvedSecretData[data] === '*****') // Don't decode in case of non admin user
                 historyData.codeEditorValue.resolvedValue = decodeNotRequired
                     ? historyData.codeEditorValue.resolvedValue
                     : JSON.stringify(decode(resolvedSecretData))    
