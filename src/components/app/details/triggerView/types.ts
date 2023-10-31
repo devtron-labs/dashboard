@@ -298,6 +298,10 @@ export interface TriggerViewContextType {
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
 }
 
+export enum BulkSelectionEvents {
+    SELECT_NONE = 'SELECT_NONE',
+}
+
 export interface TriggerViewRouterProps {
     appId: string
     envId: string

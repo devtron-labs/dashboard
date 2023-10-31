@@ -12,6 +12,7 @@ import {
     genericCDMaterialsService,
     CDMaterialServiceEnum,
     CDMaterialType,
+    FilterStates,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -22,7 +23,7 @@ import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
-import { MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { BulkSelectionEvents, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
@@ -56,6 +57,7 @@ export default function BulkCDTrigger({
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const [appSearchTextMap, setAppSearchTextMap] = useState<Record<number, string>>({})
     const [selectedImages, setSelectedImages] = useState<Record<number, string>>({})
+    // This signifies any action that needs to be propagated to the child
     const [selectedImageFromBulk, setSelectedImageFromBulk] = useState<string>(null)
 
     const location = useLocation()
@@ -294,6 +296,17 @@ export default function BulkCDTrigger({
             }
         }
 
+        const parseApplistIntoCDMaterialResponse = (appListData: BulkCDDetailType, updatedMaterials?: CDMaterialType) => {
+            return {
+                materials: updatedMaterials ?? appListData.material,
+                approvalUsers: appListData.approvalUsers,
+                requestedUserId: appListData.requestedUserId,
+                userApprovalConfig: appListData.userApprovalConfig,
+                appReleaseTagNames: appListData.appReleaseTags,
+                tagsEditable: appListData.tagsEditable,
+            }
+        }
+
         const handleTagChange = (selectedTag) => {
             setSelectedTagName(selectedTag)
             const _tagNotFoundWarningsMap = new Map()
@@ -306,7 +319,16 @@ export default function BulkCDTrigger({
                 if (typeof tagsToArtifactIdMap[selectedTag.value] !== 'undefined') {
                     artifactIndex = tagsToArtifactIdMap[selectedTag.value]
                 }
-                if (artifactIndex === -1) {
+
+                // Handling the behavior for excluded filter state
+                if (artifactIndex !== -1) {
+                    const selectedImageFilterState = app.material?.[artifactIndex]?.filterState
+                    if (selectedImageFilterState !== FilterStates.ALLOWED) {
+                        artifactIndex = -1
+                        _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' is excluded")
+                    }
+                }
+                else {
                     _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' not found")
                 }
 
@@ -320,52 +342,55 @@ export default function BulkCDTrigger({
                     }
                 }
 
-                // selectImage(artifactIndex, MATERIAL_TYPE.inputMaterialList, {
-                //     id: +app.cdPipelineId,
-                //     type: selectedApp.stageType,
-                // })
                 if (artifactIndex !== -1) {
                     const selectedImageName = app.material?.[artifactIndex]?.image
-                    const updatedMaterials = app.material?.map((mat, index) => {
+                    const updatedMaterials: any = app.material?.map((mat, index) => {
                         return {
                             ...mat,
                             isSelected: index === artifactIndex,
                         }
                     })
 
-                    _cdMaterialResponse[app.appId] = {
-                        ...app,
-                        materials: updatedMaterials
-                    }
-                    setSelectedImages({ ...selectedImages, [app.appId]: selectedImageName })
+                    _cdMaterialResponse[app.appId] = parseApplistIntoCDMaterialResponse(app, updatedMaterials)
+
+                    setSelectedImages((prevSelectedImages)=>(
+                        {
+                            ...prevSelectedImages,
+                            [app.appId]: selectedImageName
+                        }
+                    ))
                 }
                 else {
-                    const updatedMaterials = app.material?.map((mat) => {
+                    const updatedMaterials: any = app.material?.map((mat) => {
                         return {
                             ...mat,
                             isSelected: false,
                         }
                     })
 
-                    _cdMaterialResponse[app.appId] = {
-                        ...app,
-                        materials: updatedMaterials
-                    }
+                    _cdMaterialResponse[app.appId] = parseApplistIntoCDMaterialResponse(app, updatedMaterials)
 
-                    setSelectedImages({ ...selectedImages, [app.appId]: null })
+                    setSelectedImages((prevSelectedImages)=>(
+                        {
+                            ...prevSelectedImages,
+                            [app.appId]: BulkSelectionEvents.SELECT_NONE
+                        }
+                    ))
                 }
             }
 
             updateBulkInputMaterial(_cdMaterialResponse)
 
+            // Handling to behviour of current app to send a trigger to child
             const selectedImageName = _cdMaterialResponse[selectedApp.appId]?.materials?.find(
                 (mat: CDMaterialType) => mat.isSelected === true,
             )?.image
+
             if (selectedImageName) {
                 setSelectedImageFromBulk(selectedImageName)
             }
             else {
-                setSelectedImageFromBulk(null)
+                setSelectedImageFromBulk(BulkSelectionEvents.SELECT_NONE)
             }
 
             setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)

@@ -1412,6 +1412,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 )
                 let _selectedNode: NodeAttr
                 const _materialData = cdMaterialResponse[_appId]
+
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
                     _selectedNode = _cdNode.preNode
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {

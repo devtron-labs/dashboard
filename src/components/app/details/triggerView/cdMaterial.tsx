@@ -10,6 +10,7 @@ import {
     MATERIAL_TYPE,
     STAGE_TYPE,
     TriggerViewContextType,
+    BulkSelectionEvents,
 } from './types'
 import { GitTriggers } from '../cicdHistory/types'
 import close from '../../../../assets/icons/ic-close.svg'
@@ -96,9 +97,6 @@ const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
-// TODO: Handle Consumed images
-// TODO: Handle Selected image from bulk
-// TODO: Test error states from API
 export default function CDMaterial({
     materialType,
     appId,
@@ -119,6 +117,7 @@ export default function CDMaterial({
     updateCurrentAppMaterial,
     hideInfoTabsContainer,
     isSaveLoading,
+    // WARNING: Be mindful that we need to send materials instead of material since its expecting response
     updateBulkCDMaterialsItem,
     // Have'nt sent this from Bulk since not required
     deploymentAppType,
@@ -257,21 +256,27 @@ export default function CDMaterial({
     /* ------------ UseEffects  ------------*/
     useEffect(() => {
         if (!loadingMaterials && materialsResult) {
-            // TODO: Wont work in case already searched something
             if (selectedImageFromBulk) {
                 const selectedImageIndex = materialsResult.materials.findIndex(
                     (materialItem) => materialItem.image === selectedImageFromBulk,
                 )
-                if (selectedImageIndex === -1) {
+                if (selectedImageIndex === -1 && selectedImageFromBulk !== BulkSelectionEvents.SELECT_NONE) {
                     setSearchValue(selectedImageFromBulk)
                 } else {
                     const _newMaterials = [...materialsResult.materials]
-                    _newMaterials[selectedImageIndex].isSelected = true
-                    _newMaterials.forEach((mat, index) => {
-                        if (index !== selectedImageIndex) {
+                    if (selectedImageIndex !== -1) {
+                        _newMaterials[selectedImageIndex].isSelected = true
+                        _newMaterials.forEach((mat, index) => {
+                            if (index !== selectedImageIndex) {
+                                mat.isSelected = false
+                            }
+                        })
+                    } else {
+                        _newMaterials.forEach((mat) => {
                             mat.isSelected = false
-                        }
-                    })
+                        })
+                    }
+
                     setTagsEditable(materialsResult.tagsEditable)
                     setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                     setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
@@ -318,7 +323,17 @@ export default function CDMaterial({
                 (materialItem) => materialItem.image === selectedImageFromBulk,
             )
 
-            if (selectedImageIndex === -1) {
+            if (selectedImageFromBulk === BulkSelectionEvents.SELECT_NONE) {
+                const _newMaterials = [...material]
+                _newMaterials.forEach((mat) => {
+                    mat.isSelected = false
+                })
+                setMaterial([..._newMaterials])
+                updateBulkCDMaterialsItem?.({
+                    ...materialsResult,
+                    materials: _newMaterials,
+                })
+            } else if (selectedImageIndex === -1) {
                 setSearchValue(selectedImageFromBulk)
             } else if (!material[selectedImageIndex].isSelected) {
                 const _newMaterials = [...material]
@@ -329,6 +344,10 @@ export default function CDMaterial({
                     }
                 })
                 setMaterial([..._newMaterials])
+                updateBulkCDMaterialsItem?.({
+                    ...materialsResult,
+                    materials: _newMaterials,
+                })
             }
         }
     }, [material, selectedImageFromBulk])
@@ -443,6 +462,7 @@ export default function CDMaterial({
     const handleImageSelection = (index: number, selectedMaterial: CDMaterialType) => {
         const _updatedMaterial = [...material]
         _updatedMaterial[index].isSelected = true
+
         _updatedMaterial.forEach((mat, _index) => {
             if (_index !== index) {
                 mat.isSelected = false
@@ -902,9 +922,15 @@ export default function CDMaterial({
                     if (materialsResponse) {
                         // NOTE: Looping through _newResponse and removing elements that are already deployed and latest
                         // NOTE: This is done to avoid duplicate images
-                        const _newMaterialsResponse = [...materialsResponse.materials].filter(
-                            (material) => !(material.deployed && material.latest),
+                        const filteredNewMaterialResponse = [...materialsResponse.materials].filter(
+                            (materialItem) => !(materialItem.deployed && materialItem.latest),
                         )
+
+                        // updating the index of materials to maintain consistency
+                        const _newMaterialsResponse = filteredNewMaterialResponse.map((materialItem, index) => ({
+                            ...materialItem,
+                            index: material.length + index,
+                        }))
 
                         const _newMaterials = material.concat(_newMaterialsResponse)
                         setMaterial(_newMaterials)
