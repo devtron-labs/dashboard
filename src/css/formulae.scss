@@ -171,6 +171,10 @@ $color-suffix: 00;
     font-family: Inconsolata, monospace;
 }
 
+.font-merriweather {
+    font-family: 'Merriweather';
+}
+
 @mixin cta($bg, $color, $border, $cursor:pointer) {
     background: $bg;
     color: $color;

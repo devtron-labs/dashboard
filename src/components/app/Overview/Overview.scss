@@ -1,12 +1,14 @@
 .app-overview-container {
-    grid-template-columns: 0 1fr;
+    $column-width: minmax(auto, 1400px);
+
+    grid-template-columns: 0 $column-width;
     background: linear-gradient(249deg, #D4E6F7 0%, var(--N50) 50.58%);
     overflow: auto;
     transition: grid-template-columns 0.2s ease-out;
 
     &.sidebar-open {
         display: grid;
-        grid-template-columns: 300px 1fr;
+        grid-template-columns: 300px $column-width;
         gap: 32px;
     }
 
