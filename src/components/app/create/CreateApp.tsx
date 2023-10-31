@@ -349,9 +349,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 this.props.isJobView ? 'Describe this job' : 'Write a description for this application'
                             }
                             tabIndex={2}
-                            onChange={(e) => {
-                                this.updateCreateAppFormDescription(e)
-                            }}
+                            onChange={this.updateCreateAppFormDescription}
                             rows={4}
                         />
                         <span className="form__error">

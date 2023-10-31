@@ -43,15 +43,10 @@ const TextArea = (
                     message: maxLength.message,
                 }
             }
-            return {
-                isValid: true,
-                message: '',
-            }
-        } else {
-            return {
-                isValid: true,
-                message: '',
-            }
+        }
+        return {
+            isValid: true,
+            message: '',
         }
     }
 
