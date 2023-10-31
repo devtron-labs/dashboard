@@ -1126,21 +1126,20 @@ export default function CDMaterial({
 
                 if (materialData.appliedFilters?.length > 0 && CDMaterialInfo) {
                     return (
-                        (_gitCommit.WebhookData?.Data ||
-                            _gitCommit.Author ||
-                            _gitCommit.Message ||
-                            _gitCommit.Date ||
-                            _gitCommit.Commit) && (
-                            <CDMaterialInfo
-                                commitTimestamp={handleUTCTime(materialData.createdTime)}
-                                appliedFiltersTimestamp={handleUTCTime(materialData.appliedFiltersTimestamp)}
-                                envName={envName}
-                                // Should not use Arrow function here but seems like no choice
-                                showConfiguredFilters={(e: React.MouseEvent) =>
-                                    handleShowAppliedFilters(e, materialData)
-                                }
-                                filterState={materialData.appliedFiltersState}
-                            >
+                        <CDMaterialInfo
+                            commitTimestamp={handleUTCTime(materialData.createdTime)}
+                            appliedFiltersTimestamp={handleUTCTime(materialData.appliedFiltersTimestamp)}
+                            envName={envName}
+                            // Should not use Arrow function here but seems like no choice
+                            showConfiguredFilters={(e: React.MouseEvent) => handleShowAppliedFilters(e, materialData)}
+                            filterState={materialData.appliedFiltersState}
+                            dataSource={materialData.dataSource}
+                        >
+                            {(_gitCommit.WebhookData?.Data ||
+                                _gitCommit.Author ||
+                                _gitCommit.Message ||
+                                _gitCommit.Date ||
+                                _gitCommit.Commit) && (
                                 <GitCommitInfoGeneric
                                     index={index}
                                     materialUrl={mat.url}
@@ -1150,8 +1149,8 @@ export default function CDMaterial({
                                     selectedCommitInfo={''}
                                     materialSourceValue={mat.branch}
                                 />
-                            </CDMaterialInfo>
-                        )
+                            )}
+                        </CDMaterialInfo>
                     )
                 }
 
@@ -1163,7 +1162,7 @@ export default function CDMaterial({
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
                         <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
-                            {/* TODO: Move into common */}
+                            {/* TODO: Move into fe-common */}
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
@@ -1571,99 +1570,103 @@ export default function CDMaterial({
                             />
                         </div>
                     </div>
-                    {mat.materialInfo.length > 0 && isMaterialInfoAvailable && hideSourceInfo && (
-                        <>
-                            <ul
-                                className={`tab-list tab-list--vulnerability ${
-                                    mat.showSourceInfo ? '' : 'tab-bottom-radius'
-                                }`}
-                            >
+                    {mat.materialInfo.length > 0 &&
+                        (isMaterialInfoAvailable || mat.appliedFilters?.length) &&
+                        hideSourceInfo && (
+                            <>
+                                <ul
+                                    className={`tab-list tab-list--vulnerability ${
+                                        mat.showSourceInfo ? '' : 'tab-bottom-radius'
+                                    }`}
+                                >
+                                    {mat.showSourceInfo &&
+                                        (state.isSecurityModuleInstalled && !hideInfoTabsContainer ? (
+                                            <>
+                                                <li className="tab-list__tab">
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            changeTab(
+                                                                mat.index,
+                                                                Number(mat.id),
+                                                                CDModalTab.Changes,
+                                                                {
+                                                                    id: pipelineId,
+                                                                    type: stageType,
+                                                                },
+                                                                appId,
+                                                            )
+                                                        }}
+                                                        className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                            mat.tab === CDModalTab.Changes ? 'active' : ''
+                                                        }`}
+                                                    >
+                                                        Changes
+                                                    </button>
+                                                </li>
+                                                <li className="tab-list__tab">
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            changeTab(
+                                                                mat.index,
+                                                                Number(mat.id),
+                                                                CDModalTab.Security,
+                                                                isFromBulkCD
+                                                                    ? {
+                                                                          id: pipelineId,
+                                                                          type: stageType,
+                                                                      }
+                                                                    : null,
+                                                                appId,
+                                                            )
+                                                        }}
+                                                        className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                            mat.tab === CDModalTab.Security ? 'active' : ''
+                                                        }`}
+                                                    >
+                                                        Security
+                                                        {mat.vulnerabilitiesLoading
+                                                            ? ''
+                                                            : ` (${mat.vulnerabilities.length})`}
+                                                    </button>
+                                                </li>
+                                            </>
+                                        ) : (
+                                            <div className="fs-13 fw-6 flex">Source</div>
+                                        ))}
+                                    <li className="flex dc__align-right">
+                                        <button
+                                            type="button"
+                                            className="material-history__changes-btn"
+                                            data-testid={
+                                                mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'
+                                            }
+                                            onClick={(event) => {
+                                                event.stopPropagation()
+                                                toggleSourceInfo(
+                                                    mat.index,
+                                                    isFromBulkCD ? { id: pipelineId, type: stageType } : null,
+                                                )
+                                            }}
+                                        >
+                                            {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
+                                            <img
+                                                src={arrow}
+                                                alt=""
+                                                style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
+                                            />
+                                        </button>
+                                    </li>
+                                </ul>
                                 {mat.showSourceInfo &&
-                                    (state.isSecurityModuleInstalled && !hideInfoTabsContainer ? (
-                                        <>
-                                            <li className="tab-list__tab">
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        changeTab(
-                                                            mat.index,
-                                                            Number(mat.id),
-                                                            CDModalTab.Changes,
-                                                            {
-                                                                id: pipelineId,
-                                                                type: stageType,
-                                                            },
-                                                            appId,
-                                                        )
-                                                    }}
-                                                    className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                        mat.tab === CDModalTab.Changes ? 'active' : ''
-                                                    }`}
-                                                >
-                                                    Changes
-                                                </button>
-                                            </li>
-                                            <li className="tab-list__tab">
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        changeTab(
-                                                            mat.index,
-                                                            Number(mat.id),
-                                                            CDModalTab.Security,
-                                                            isFromBulkCD
-                                                                ? {
-                                                                      id: pipelineId,
-                                                                      type: stageType,
-                                                                  }
-                                                                : null,
-                                                            appId,
-                                                        )
-                                                    }}
-                                                    className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                        mat.tab === CDModalTab.Security ? 'active' : ''
-                                                    }`}
-                                                >
-                                                    Security
-                                                    {mat.vulnerabilitiesLoading
-                                                        ? ''
-                                                        : ` (${mat.vulnerabilities.length})`}
-                                                </button>
-                                            </li>
-                                        </>
-                                    ) : (
-                                        <div className="fs-13 fw-6 flex">Source</div>
-                                    ))}
-                                <li className="flex dc__align-right">
-                                    <button
-                                        type="button"
-                                        className="material-history__changes-btn"
-                                        data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
-                                        onClick={(event) => {
-                                            event.stopPropagation()
-                                            toggleSourceInfo(
-                                                mat.index,
-                                                isFromBulkCD ? { id: pipelineId, type: stageType } : null,
-                                            )
-                                        }}
-                                    >
-                                        {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
-                                        <img
-                                            src={arrow}
-                                            alt=""
-                                            style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
-                                        />
-                                    </button>
-                                </li>
-                            </ul>
-                            {mat.showSourceInfo &&
-                                (mat.tab === CDModalTab.Changes
-                                    ? renderGitMaterialInfo(mat)
-                                    : renderVulnerabilities(mat))}
-                        </>
-                    )}
+                                    (mat.tab === CDModalTab.Changes
+                                        ? renderGitMaterialInfo(mat)
+                                        : renderVulnerabilities(mat))}
+                            </>
+                        )}
                 </div>
             )
         })

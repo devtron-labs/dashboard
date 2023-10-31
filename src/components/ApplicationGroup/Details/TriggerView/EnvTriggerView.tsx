@@ -848,6 +848,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return workflow
         })
 
+        if (!_selectedNode) {
+            toast.error('Invalid node id')
+            history.push({
+                search: '',
+            })
+            return
+        }
+
         setWorkflowID(_workflowId)
         setSelectedAppID(_appID)
         setFilteredWorkflows(_workflows)
@@ -884,6 +892,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             workflow.nodes = nodes
             return workflow
         })
+
+        if (!_selectedNode) {
+            toast.error('Invalid node id')
+            history.push({
+                search: '',
+            })
+            return
+        }
 
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
