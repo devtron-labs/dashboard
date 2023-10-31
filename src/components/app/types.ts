@@ -53,6 +53,7 @@ export interface AddNewAppState {
         projectId: boolean
         appName: boolean
         cloneAppId: boolean
+        description: boolean
     }
     createAppLoader: boolean
 }

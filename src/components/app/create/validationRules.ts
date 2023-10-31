@@ -1,5 +1,5 @@
 import { PATTERNS } from '../../../config'
-import { MAX_LENGTH_30 } from '../../../config/constantMessaging'
+import { MAX_LENGTH_30, MAX_LENGTH_350 } from '../../../config/constantMessaging'
 
 const validateTagValue = (value: string): string[] => {
     const errorList = []
@@ -43,6 +43,14 @@ export class ValidationRules {
         let found = !!cloneAppId
         if (found) return { isValid: true, message: '' }
         else return { isValid: false, message: 'Please select an application to clone' }
+    }
+
+    description = (description: string = ''): { isValid: boolean; message: string } => {
+        const trimmedDescription = description.trim()
+        if (trimmedDescription && trimmedDescription.length > 350) {
+            return { isValid: false, message: MAX_LENGTH_350 }
+        }
+        return { isValid: true, message: '' }
     }
 
     propagateTagKey = (key: string): { isValid: boolean; messages: string[] } => {

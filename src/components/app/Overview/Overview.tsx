@@ -20,6 +20,7 @@ import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-succes
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
 import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CrossIcon } from '../../../assets/icons/ic-close.svg'
+import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import TagChipsContainer from './TagChipsContainer'
@@ -30,6 +31,7 @@ import GenericDescription from '../../common/Description/GenericDescription'
 import { editApp } from '../service'
 import { getAppConfig } from './utils'
 import { EnvironmentList } from './EnvironmentList'
+import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
@@ -167,16 +169,33 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         return (
             <aside className="flexbox-col dc__gap-16">
                 <div className="flexbox-col dc__gap-12">
-                    {(config.icon || chartUsed.chartAvatar) && (
+                    {(config.icon || (isHelmChart && !!chartUsed)) && (
                         <div>
-                            {config.icon ?? <img src={chartUsed.chartAvatar} alt="App icon" className="icon-dim-48" />}
+                            {config.icon ?? (
+                                // For Helm Charts
+                                <div className="mxh-64 dc__mxw-120 w-100 h-100">
+                                    <img
+                                        src={chartUsed.chartAvatar || defaultChartImage}
+                                        alt="App icon"
+                                        className={`dc__chart-grid-item__icon ${
+                                            chartUsed.chartAvatar ? '' : 'icon-dim-48'
+                                        }`}
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
-                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break">{appName}</div>
+                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">{appName}</div>
                     <EditableTextArea
                         rows={4}
                         initialText={description || config.defaultDescription}
                         updateContent={handleSaveDescription}
+                        validations={{
+                            maxLength: {
+                                value: 350,
+                                message: MAX_LENGTH_350,
+                            },
+                        }}
                     />
                 </div>
                 <div className="dc__border-top-n1" />
@@ -212,7 +231,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
                             <div
-                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase"
+                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
                                 style={{ backgroundColor: getRandomColor(createdBy) }}
                             >
                                 {createdBy[0]}

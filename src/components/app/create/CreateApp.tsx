@@ -59,6 +59,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 projectId: false,
                 appName: false,
                 cloneAppId: true,
+                description: true,
             },
             createAppLoader: false,
         }
@@ -235,10 +236,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid })
     }
 
-    updateCreateAppFormDescription = (description: string): void => {
-        const { form } = { ...this.state }
+    updateCreateAppFormDescription = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+        const description: string = event.target.value
+        const { form, isValid } = { ...this.state }
         form.description = description
-        this.setState({ form })
+        isValid.description = this.rules.description(description).isValid
+        this.setState({ form, isValid })
     }
 
     handleCloneAppChange = ({ value }): void => {
@@ -295,6 +298,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.rules.appName(this.state.form.appName),
             this.rules.team(this.state.form.projectId),
             this.rules.cloneApp(this.state.form.cloneId),
+            this.rules.description(this.state.form.description),
         ]
         const showError = this.state.showErrors
         const appNameErrors = this.state.appNameErrors
@@ -346,10 +350,18 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             }
                             tabIndex={2}
                             onChange={(e) => {
-                                this.updateCreateAppFormDescription(e.target.value)
+                                this.updateCreateAppFormDescription(e)
                             }}
                             rows={4}
                         />
+                        <span className="form__error">
+                            {showError && !this.state.isValid.description ? (
+                                <>
+                                    <Error className="form__icon form__icon--error" />
+                                    {errorObject[3].message} <br />
+                                </>
+                            ) : null}
+                        </span>
                     </>
                 </div>
 

@@ -15,8 +15,6 @@ import { ReactComponent as ImageIcon } from '../../../assets/icons/mdeditor/ic-i
 import { ReactComponent as OrderedListIcon } from '../../../assets/icons/mdeditor/ic-ordered-list.svg'
 import { ReactComponent as UnorderedListIcon } from '../../../assets/icons/mdeditor/ic-unordered-list.svg'
 import { ReactComponent as CheckedListIcon } from '../../../assets/icons/mdeditor/ic-checked-list.svg'
-import { ReactComponent as DescriptionIcon } from '../../../assets/icons/mdeditor/ic-unordered-list.svg'
-import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import Tippy from '@tippyjs/react'
 import { deepEqual } from '..'
@@ -69,8 +67,6 @@ export default function GenericDescription({
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(initialDescriptionUpdatedBy)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>(initialDescriptionUpdatedOn)
     const [modifiedDescriptionText, setModifiedDescriptionText] = useState<string>(initialDescriptionText)
-    const [showExpandableIcon, setExpandableIcon] = useState<boolean>(false)
-    const [showAllText, setShowAllText] = useState(false)
     const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
     const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
     const mdeRef = useRef(null)
@@ -116,10 +112,6 @@ export default function GenericDescription({
         } else {
             updateApplicationAbout()
         }
-    }
-
-    const toggleShowText = () => {
-        setShowAllText(!showAllText)
     }
 
     const isAuthorized = (): boolean => {
@@ -322,10 +314,7 @@ export default function GenericDescription({
                 {isEditDescriptionView ? (
                     <div className="min-w-500 bcn-0 br-4 dc__border-top dc__border-left dc__border-right w-100 dc__border-bottom">
                         <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
-                            <div className="flex left fw-6 lh-20 cn-9">
-                                <DescriptionIcon className="icon-dim-20 mr-8" />
-                                Readme
-                            </div>
+                            <div className="fw-6 lh-20 cn-9">Readme</div>
                             {descriptionUpdatedBy && descriptionUpdatedOn && (
                                 <div className="flex left fw-4 cn-7 ml-8">
                                     Last updated by {descriptionUpdatedBy} on {descriptionUpdatedOn}
@@ -343,38 +332,16 @@ export default function GenericDescription({
                             classes={{
                                 reactMde: 'mark-down-editor-container pb-16 pt-8 mark-down-editor__no-border',
                                 toolbar: 'mark-down-editor__hidden',
-                                preview: `mark-down-editor-preview dc__bottom-radius-4 ${
-                                    appId && !showAllText && showExpandableIcon ? 'mxh-300-imp' : ''
-                                }`,
+                                preview: 'mark-down-editor-preview dc__bottom-radius-4',
                                 textArea: 'mark-down-editor__hidden',
                             }}
                             value={descriptionText}
                             selectedTab="preview"
                             minPreviewHeight={150}
                             generateMarkdownPreview={(markdown) =>
-                                Promise.resolve(
-                                    <MarkDown
-                                        markdown={markdown}
-                                        breaks
-                                        disableEscapedText
-                                        setExpandableIcon={setExpandableIcon}
-                                    />,
-                                )
+                                Promise.resolve(<MarkDown markdown={markdown} breaks disableEscapedText />)
                             }
                         />
-                        {!isClusterTerminal && (
-                            <div className="bcn-0 pl-16 pt-8 pb-12 dc__position-rel dc__zi-4 flex left br-4">
-                                {showExpandableIcon && (
-                                    <div className="cursor cb-5 fs-13 fw-6 h-20 flex left" onClick={toggleShowText}>
-                                        {`${showAllText ? 'Show less' : 'Show more'}`}
-                                        <DropDownIcon
-                                            style={{ ['--rotateBy' as any]: `${180 * Number(showAllText)}deg` }}
-                                            className="fcb-5 ml-4 icon-dim-20 rotate pointer"
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
                 ) : (
                     <div className="min-w-500">

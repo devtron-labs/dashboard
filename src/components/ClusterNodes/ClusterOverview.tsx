@@ -8,7 +8,7 @@ import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import moment from 'moment'
-import { Moment12HourFormat,URLS } from '../../config'
+import { Moment12HourFormat, URLS } from '../../config'
 import {
     ErrorScreenManager,
     TippyCustomized,
@@ -21,10 +21,9 @@ import {
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
-import { SOME_ERROR_MSG } from '../../config/constantMessaging'
+import { MAX_LENGTH_350, SOME_ERROR_MSG } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { EditableTextArea } from '../common/EditableTextArea/EditableTextArea'
-
 
 function ClusterOverview({
     isSuperAdmin,
@@ -125,7 +124,9 @@ function ClusterOverview({
                 data.descriptionId = _clusterNote.id
                 data.descriptionUpdatedBy = _clusterNote.updatedBy
                 _moment = moment(_clusterNote.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-                data.descriptionUpdatedOn = _moment.isValid() ? _moment.format(Moment12HourFormat) : _clusterNote.updatedOn
+                data.descriptionUpdatedOn = _moment.isValid()
+                    ? _moment.format(Moment12HourFormat)
+                    : _clusterNote.updatedOn
             }
             setDescriptionData(data)
         } else {
@@ -228,7 +229,6 @@ function ClusterOverview({
         getClusterNoteAndCapacity(clusterId)
     }, [selectedCluster])
 
-
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
         const newUrl =
@@ -237,7 +237,7 @@ function ClusterOverview({
                 namespace,
                 nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
                 group: K8S_EMPTY_GROUP,
-            }) + 
+            }) +
             '?' +
             `${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)
@@ -247,7 +247,7 @@ function ClusterOverview({
             gvk: SIDEBAR_KEYS.nodeGVK,
         })
     }
-    
+
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
         return (
@@ -310,7 +310,7 @@ function ClusterOverview({
                     className="w-300 h-100 fcv-5 dc__align-left"
                     placement="bottom"
                     Icon={QuestionFilled}
-                    heading='Metrics API is not available'
+                    heading="Metrics API is not available"
                     showCloseButton={true}
                     trigger="click"
                     additionalContent={metricsApiTippyContent()}
@@ -479,21 +479,27 @@ function ClusterOverview({
             </div>
         )
     }
-    const renderSideInfoData=()=>{
+    const renderSideInfoData = () => {
         return (
             <aside className="flexbox-col dc__gap-16 w-300 dc__no-shrink">
                 <div className="flexbox-col dc__gap-12">
                     <div>
                         <ClusterOverviewIcon className="icon-dim-48" />
                     </div>
-                    <div className="fs-16 fw-7 lh-24 cn-9" data-testid="clusterOveviewName">
+                    <div className="fs-16 fw-7 lh-24 cn-9 font-merriweather" data-testid="clusterOveviewName">
                         {clusterDetails?.clusterName}
                     </div>
                     <EditableTextArea
                         placeholder="Enter short description"
                         rows={4}
                         updateContent={handleUpdateClusterDescription}
-                        initialText={clusterDetails.shortDescription}
+                        initialText={clusterDetails.shortDescription || defaultClusterShortDescription}
+                        validations={{
+                            maxLength: {
+                                value: 350,
+                                message: MAX_LENGTH_350,
+                            },
+                        }}
                     />
                 </div>
                 <div className="dc__border-top-n1" />
@@ -536,7 +542,7 @@ function ClusterOverview({
                             {clusterDetails.addedBy && (
                                 <>
                                     <div
-                                        className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase mr-8"
+                                        className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase mr-8 cn-0 fw-4"
                                         style={{ backgroundColor: getRandomColor(clusterDetails.addedBy) }}
                                     >
                                         {clusterDetails.addedBy[0]}
@@ -577,7 +583,7 @@ function ClusterOverview({
             return (
                 <>
                     {renderSideInfoData()}
-                    <div className="dc__overflow-scroll pr-20">
+                    <div className="dc__overflow-scroll pr-20 dc__mxw-1400">
                         {renderCardDetails()}
                         {renderClusterError()}
                         <GenericDescription
@@ -602,7 +608,7 @@ function ClusterOverview({
                 className={`dc__border-left resource-details-container flexbox bcn-0 pl-20 pt-20 dc__column-gap-32 ${
                     errorStatusCode || errorCode ? 'flex' : ''
                 }`}
-                style={{backgroundImage:'linear-gradient(249deg, #D4E6F7 0%,  var(--N50)50.58%)'}}
+                style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%,  var(--N50)50.58%)' }}
             >
                 {renderState()}
             </div>
