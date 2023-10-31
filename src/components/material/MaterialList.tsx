@@ -28,20 +28,30 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     mapMaterialToProvidersList = async (materials, providers) => {
-        const mappedMaterails = Promise.all(materials.map(async mat => {
-            const presentInProviders = providers.some(p => p.id === mat.gitProviderId)
-            const disabledProvider = ((!presentInProviders) ? await getDisabledGitProvider(this.props.match.params.appId, mat.gitProviderId) : null)?.result
-            const allProvidersForMaterial = (disabledProvider) ? [...providers, disabledProvider] : [...providers]
-            return {
-                materials: mat,
-                providers: allProvidersForMaterial,
-            }
-        }))
-        .catch((error) => {
+        try {
+            const mappedMaterials = await Promise.all(materials.map(async mat => {
+                try {
+                    const presentInProviders = providers.some(p => p.id === mat.gitProviderId)
+                    const disabledProvider = presentInProviders ? null : await getDisabledGitProvider(this.props.match.params.appId, mat.gitProviderId)
+                    const allProvidersForMaterial = disabledProvider ? [...providers, disabledProvider.result] : [...providers]
+                    return {
+                        materials: mat,
+                        providers: allProvidersForMaterial,
+                    }
+                } catch (error) {
+                    showError(error)
+                    this.setState({ view: ViewType.ERROR })
+                    return null
+                }
+            }))
+
+            const filteredMaterials = mappedMaterials.filter(material => material !== null)
+            return filteredMaterials
+        } catch (error) {
             showError(error)
             this.setState({ view: ViewType.ERROR })
-        })
-        return mappedMaterails
+            return []
+        }
     }
 
     mapMaterialToProvider = (materialProvider) => {
@@ -72,7 +82,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             getGitProviderListAuth(this.props.match.params.appId),
         ])
             .then(async ([sourceConfigRes, providersRes]) => {
-                const {materials, initialProvidersList, materialProviderMap} = await this.buildMaterialProviderMap(sourceConfigRes, providersRes)
+                const { materials, initialProvidersList, materialProviderMap } = await this.buildMaterialProviderMap(sourceConfigRes, providersRes)
                 this.setState({
                     materials: materials.sort((a, b) => sortCallback('id', a, b)),
                     providers: initialProvidersList,
@@ -108,7 +118,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             getSourceConfig(this.props.match.params.appId),
             getGitProviderListAuth(this.props.match.params.appId),
         ]).then(async ([sourceConfigRes, providersRes]) => {
-            const {materials, initialProvidersList, materialProviderMap} = await this.buildMaterialProviderMap(sourceConfigRes, providersRes)
+            const { materials, initialProvidersList, materialProviderMap } = await this.buildMaterialProviderMap(sourceConfigRes, providersRes)
 
             this.setState({
                 materials: materials.sort((a, b) => sortCallback('id', a, b)),
