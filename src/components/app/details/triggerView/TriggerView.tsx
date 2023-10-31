@@ -115,7 +115,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
         this.onClickCDMaterial = this.onClickCDMaterial.bind(this)
-        this.changeTab = this.changeTab.bind(this)
         this.toggleInvalidateCache = this.toggleInvalidateCache.bind(this)
         this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
         this.getFilteredMaterial = this.getFilteredMaterial.bind(this)
@@ -172,14 +171,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let _isDefaultConfig = response.result.is_default_configured
             this.setState({ configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig })
         })
-    }
-
-    setAppReleaseTags = (appReleaseTags: string[]) => {
-        this.setState({ appReleaseTags: appReleaseTags })
-    }
-
-    setTagsEditable = (tagsEditable: boolean) => {
-        this.setState({ tagsEditable: tagsEditable })
     }
 
     getWorkflows = (isFromOnMount?: boolean) => {
@@ -706,7 +697,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
                     if (node.type === 'CD') {
-                        // TODO: Potential bug since removed data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
+                        // TODO: Potential bug since removed, data was from api which is now in cdmaterials data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
                         node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
                     }
                 }
@@ -1008,26 +999,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ workflows })
     }
 
-    selectImage = (index: number, materialType: string): void => {
-        const workflows = [...this.state.workflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (this.state.cdNodeId == +node.id && node.type === this.state.nodeType) {
-                    const artifacts = node[materialType].map((artifact, i) => {
-                        return {
-                            ...artifact,
-                            isSelected: i === index,
-                        }
-                    })
-                    node[materialType] = artifacts
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-        this.setState({ workflows })
-    }
-
     toggleChanges = (materialId: string, hash: string): void => {
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
@@ -1048,90 +1019,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ workflows })
     }
 
-    toggleSourceInfo = (materialIndex: number): void => {
-        const workflows = [...this.state.workflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (+node.id == this.state.cdNodeId && node.type === this.state.nodeType) {
-                    node[this.state.materialType][materialIndex].showSourceInfo =
-                        !node[this.state.materialType][materialIndex].showSourceInfo
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-        this.setState({ workflows })
-    }
-
     toggleInvalidateCache() {
         this.setState({ invalidateCache: !this.state.invalidateCache })
-    }
-
-    //TODO: refactor
-    changeTab(materialIndex, artifactId: number, tab): void {
-        if (tab === CDModalTab.Changes) {
-            const workflows = [...this.state.workflows].map((workflow) => {
-                const nodes = workflow.nodes.map((node) => {
-                    if (+node.id == this.state.cdNodeId && node.type === this.state.nodeType) {
-                        node[this.state.materialType][materialIndex].tab = tab
-                    }
-                    return node
-                })
-                workflow.nodes = nodes
-                return workflow
-            })
-            this.setState({ workflows })
-            return
-        }
-
-        let targetNode
-        for (let i = 0; i < this.state.workflows.length; i++) {
-            targetNode = this.state.workflows[i].nodes.find(
-                (node) => +node.id == this.state.cdNodeId && node.type === this.state.nodeType,
-            )
-
-            if (targetNode) {
-                break
-            }
-        }
-
-        if (targetNode || targetNode.scanned || targetNode.scanEnabled) {
-            getLastExecutionByArtifactAppEnv(artifactId, this.props.match.params.appId, targetNode.environmentId)
-                .then((response) => {
-                    const workflows = [...this.state.workflows].map((workflow) => {
-                        const nodes = workflow.nodes.map((node) => {
-                            if (+node.id == this.state.cdNodeId && node.type === this.state.nodeType) {
-                                node[this.state.materialType][materialIndex].tab = tab
-                                node[this.state.materialType][materialIndex]['vulnerabilities'] =
-                                    response.result.vulnerabilities
-                                node[this.state.materialType][materialIndex]['lastExecution'] =
-                                    response.result.lastExecution
-                                node[this.state.materialType][materialIndex]['vulnerabilitiesLoading'] = false
-                                node[this.state.materialType][materialIndex]['scanToolId'] = response.result.scanToolId
-                            }
-                            return node
-                        })
-                        workflow.nodes = nodes
-                        return workflow
-                    })
-                    this.setState({ workflows })
-                })
-                .catch((error) => {
-                    showError(error)
-                    const workflows = [...this.state.workflows].map((workflow) => {
-                        const nodes = workflow.nodes.map((node) => {
-                            if (+node.id == this.state.cdNodeId && node.type === this.state.nodeType) {
-                                node[this.state.materialType][materialIndex].tab = tab
-                                node[this.state.materialType][materialIndex]['vulnerabilitiesLoading'] = false
-                            }
-                            return node
-                        })
-                        workflow.nodes = nodes
-                        return workflow
-                    })
-                    this.setState({ workflows })
-                })
-        }
     }
 
     closeCIModal = (): void => {
@@ -1380,27 +1269,19 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const node: NodeAttr = this.getCDNode()
             return (
                 <ApprovalMaterialModal
-                    appId={Number(this.props.match.params.appId)}
-                    pipelineId={this.state.cdNodeId}
-                    stageType={DeploymentNodeType[this.state.nodeType]}
+                    isLoading={this.state.isLoading}
                     node={node}
                     materialType={this.state.materialType}
-                    isLoading={this.state.isLoading}
-                    changeTab={this.changeTab}
+                    stageType={DeploymentNodeType[this.state.nodeType]}
                     closeApprovalModal={this.closeApprovalModal}
-                    toggleSourceInfo={this.toggleSourceInfo}
+                    appId={Number(this.props.match.params.appId)}
+                    pipelineId={this.state.cdNodeId}
                     onClickCDMaterial={this.onClickCDMaterial}
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node.connectingCiPipelineId}
-                    appReleaseTagNames={this.state.appReleaseTags}
-                    setAppReleaseTagNames={this.setAppReleaseTags}
-                    tagsEditable={this.state.tagsEditable}
-                    setTagsEditable={this.setTagsEditable}
-                    hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                     configs={this.state.configs}
                     isDefaultConfigPresent={this.state.isDefaultConfigPresent}
-                    resourceFilters={this.state.resourceFilters}
                     history={this.props.history}
                 />
             )
@@ -1411,7 +1292,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     renderWorkflow() {
         return (
-            <React.Fragment>
+            <>
                 {this.state.workflows.map((workflow, index) => {
                     return (
                         <Workflow
@@ -1433,7 +1314,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         />
                     )
                 })}
-            </React.Fragment>
+            </>
         )
     }
 
