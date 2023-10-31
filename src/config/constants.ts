@@ -294,6 +294,11 @@ export const TriggerType = {
     Manual: 'MANUAL',
 }
 
+export const repoType = {
+    DEFAULT: 'DEFAULT',
+    CONFIGURE: 'CONFIGURE',
+}
+
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',

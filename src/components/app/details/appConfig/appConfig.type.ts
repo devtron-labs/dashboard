@@ -9,6 +9,7 @@ export enum STAGE_NAME {
     CI_CONFIG = 'TEMPLATE',
     CI_PIPELINE = 'CI_PIPELINE',
     DEPLOYMENT_TEMPLATE = 'CHART',
+    GIT_OPS_CONFIG = 'GIT_OPS_CONFIG',
     CD_PIPELINE = 'CD_PIPELINE',
     CHART_ENV_CONFIG = 'CHART_ENV_CONFIG',
 }
@@ -44,6 +45,7 @@ export interface AppStageUnlockedType {
     deploymentTemplate: boolean
     workflowEditor: boolean
     configmap: boolean
+    gitOpsConfig: boolean
     secret: boolean
     envOverride: boolean
 }
