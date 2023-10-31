@@ -195,13 +195,16 @@ export default function ResourceList() {
     }, [toggleSync])
 
     useEffect(() => {
+        if(clusterList && clusterList.length > 0 && !clusterList[0]?.nodeCount && terminalClusterData) {
+            setClusterList(terminalClusterData)
+        }
         if (clusterId && terminalClusterData?.length > 0) {
             const _selectedCluster = terminalClusterData.find((list) => list.id == +clusterId)
             if (_selectedCluster) {
                 setSelectedTerminal(_selectedCluster)
             }
         }
-    }, [clusterId, terminalClusterData])
+    }, [clusterId, terminalClusterData, clusterList])
 
     // Mark tab active on path change
     useEffect(() => {
@@ -370,8 +373,8 @@ export default function ResourceList() {
         }
     }, [clusterCapacityData, location.search])
 
-    // Trigger a terminal session, if the terminal tab is selected once
-    // and retain this terminal session until user exits the selected cluster
+    // Scrolls the view to top on the path change in the url
+    // Starts the cluster terminal when the cluster tab is opened for the first time
     useEffect(() => {
         triggerTerminal()
     }, [location.search, nodeType])
@@ -400,12 +403,10 @@ export default function ResourceList() {
         }
     }, [selectedNamespace])
 
+    // Triggers the cluster terminal when the cluster tab is opened for the first time
     const triggerTerminal = () => {
         if (nodeType === AppDetailsTabs.terminal) {
             setStartTerminal(true)
-            setTerminalLoader(false)
-        } else {
-            setTerminalLoader(true)
         }
     }
 
