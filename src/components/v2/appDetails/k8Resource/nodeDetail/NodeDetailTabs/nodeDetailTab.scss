@@ -216,3 +216,7 @@
     visibility: hidden;
     height: 0;
 }
+
+.pod-terminal-hidden * {
+    height: 0 !important;
+}
