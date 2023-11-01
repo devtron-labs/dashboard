@@ -578,7 +578,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 <div className="flex left column">
                     {mat.filterState === FilterStates.ALLOWED ? (
                         <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                            <div className={`dc__registry-icon ${mat.registryType} pr-8`}></div>
+                            <img src={docker} alt="" className="commit-hash__icon" />
                             {mat.image}
                         </div>
                     ) : (
@@ -735,80 +735,66 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             : ''
                     }`}
                 >
-                    <ConditionalWrap
-                        condition={mat.imagePath?.length > 0}
-                        wrap={(children) => (
-                            <Tippy className="default-tt w-200" arrow={false} placement="top-start" content={mat.imagePath}>
-                                {children}
-                            </Tippy>
-                        )}
-                    >
-                        <div className="p-12 bcn-0 br-4">
-                            <div className="dc__content-space flexbox dc__align-start">
-                                <div>
-                                    {this.renderSequentialCDCardTitle(mat)}
-                                    <div
-                                        data-testid={`cd-material-history-image-${mat.index}`}
-                                        className={`material-history__top cursor-default ${approvedImageClass}`}
-                                    >
-                                        {this.renderMaterialInfo(
-                                            mat,
-                                            isApprovalConfigured,
-                                            true,
-                                            disableSelection,
-                                            latestTagAdded,
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="material-history__select-text fs-13 w-auto dc__no-text-transform flex right cursor-default">
-                                    {this.props.materialType !== 'none' &&
-                                        isApprovalRequester &&
-                                        !isImageApprover &&
-                                        !disableSelection &&
-                                        ExpireApproval && (
-                                            <>
-                                                <ExpireApproval
-                                                    matId={mat.id}
-                                                    appId={this.props.appId}
-                                                    pipelineId={this.props.pipelineId}
-                                                    stageType={this.props.stageType}
-                                                    userApprovalMetadata={mat.userApprovalMetadata}
-                                                    onClickCDMaterial={this.context.onClickCDMaterial}
-                                                />
-
-                                                {mat.filterState !== FilterStates.ALLOWED && (
-                                                    <div className="flex dc__gap-12 mr-12">
-                                                        <div className="h-12 dc__border-left" />
-                                                    </div>
-                                                )}
-                                            </>
-                                        )}
-                                    {this.renderMaterialCTA(
+                    <div className="p-12 bcn-0 br-4">
+                        <div className="dc__content-space flexbox dc__align-start">
+                            <div>
+                                {this.renderSequentialCDCardTitle(mat)}
+                                <div
+                                    data-testid={`cd-material-history-image-${mat.index}`}
+                                    className={`material-history__top cursor-default ${approvedImageClass}`}
+                                >
+                                    {this.renderMaterialInfo(
                                         mat,
-                                        isApprovalRequester,
-                                        isImageApprover,
+                                        isApprovalConfigured,
+                                        true,
                                         disableSelection,
+                                        latestTagAdded,
                                     )}
                                 </div>
                             </div>
-                            <div data-testid={`image-tags-container-${mat.index}`}>
-                                <ImageTagsContainer
-                                    ciPipelineId={this.props.ciPipelineId}
-                                    artifactId={+mat.id}
-                                    imageComment={mat.imageComment}
-                                    imageReleaseTags={mat.imageReleaseTags}
-                                    appReleaseTagNames={this.props.appReleaseTagNames}
-                                    setAppReleaseTagNames={this.props.setAppReleaseTagNames}
-                                    tagsEditable={this.props.tagsEditable}
-                                    toggleCardMode={this.toggleCardMode}
-                                    setTagsEditable={this.props.setTagsEditable}
-                                    forceReInit
-                                    hideHardDelete={this.props.hideImageTaggingHardDelete}
-                                    updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
-                                />
+                            <div className="material-history__select-text fs-13 w-auto dc__no-text-transform flex right cursor-default">
+                                {this.props.materialType !== 'none' &&
+                                    isApprovalRequester &&
+                                    !isImageApprover &&
+                                    !disableSelection &&
+                                    ExpireApproval && (
+                                        <>
+                                            <ExpireApproval
+                                                matId={mat.id}
+                                                appId={this.props.appId}
+                                                pipelineId={this.props.pipelineId}
+                                                stageType={this.props.stageType}
+                                                userApprovalMetadata={mat.userApprovalMetadata}
+                                                onClickCDMaterial={this.context.onClickCDMaterial}
+                                            />
+
+                                            {mat.filterState !== FilterStates.ALLOWED && (
+                                                <div className="flex dc__gap-12 mr-12">
+                                                    <div className="h-12 dc__border-left" />
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                {this.renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
                             </div>
                         </div>
-                    </ConditionalWrap>
+                        <div data-testid={`image-tags-container-${mat.index}`}>
+                            <ImageTagsContainer
+                                ciPipelineId={this.props.ciPipelineId}
+                                artifactId={+mat.id}
+                                imageComment={mat.imageComment}
+                                imageReleaseTags={mat.imageReleaseTags}
+                                appReleaseTagNames={this.props.appReleaseTagNames}
+                                setAppReleaseTagNames={this.props.setAppReleaseTagNames}
+                                tagsEditable={this.props.tagsEditable}
+                                toggleCardMode={this.toggleCardMode}
+                                setTagsEditable={this.props.setTagsEditable}
+                                forceReInit
+                                hideHardDelete={this.props.hideImageTaggingHardDelete}
+                                updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
+                            />
+                        </div>
+                    </div>
                     {mat.materialInfo.length > 0 && isMaterialInfoAvailable && hideSourceInfo && (
                         <>
                             <ul
