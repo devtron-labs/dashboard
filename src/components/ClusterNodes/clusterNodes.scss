@@ -477,3 +477,7 @@
     visibility: hidden;
     height: 0;
 }
+
+.cluster-terminal-hidden * {
+    height: 0 !important;
+}
