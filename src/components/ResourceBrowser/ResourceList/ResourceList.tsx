@@ -445,13 +445,11 @@ export default function ResourceList() {
                 // Otherwise  keep the previous data as it will be the detail data updated by getDetailsClusterList
                 setClusterList((prev) => {
                     if (prev && prev.length === 0) {
-                        console.log('setClusterList 0 going inside')
                         return _clusterList
                     } else {
                         return prev
                     }
                 })
-                console.log('setClusterList 0')
 
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
                 if (_selectedCluster) {
