@@ -123,7 +123,7 @@ export default function CDMaterial({
     // Have'nt sent this from Bulk since not required
     deploymentAppType,
     selectedImageFromBulk,
-}: CDMaterialProps) {
+}: Readonly<CDMaterialProps>) {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
     const { searchParams } = useSearchString()
@@ -893,7 +893,6 @@ export default function CDMaterial({
         }
 
         handleDeployment(stageType, appId, Number(getCDArtifactId()), e)
-        return
     }
 
     const loadOlderImages = () => {

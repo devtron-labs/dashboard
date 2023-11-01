@@ -120,7 +120,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [webhookTimeStampOrder, setWebhookTimeStampOrder] = useState('')
     const [showMaterialRegexModal, setShowMaterialRegexModal] = useState(false)
     const [workflowID, setWorkflowID] = useState<number>()
-    const [selectedAppID, setSelectedAppID] = useState<number>()
     const [selectedAppList, setSelectedAppList] = useState<WorkflowAppSelectionType[]>([])
     const [workflows, setWorkflows] = useState<WorkflowType[]>([])
     const [filteredWorkflows, setFilteredWorkflows] = useState<WorkflowType[]>([])
@@ -716,7 +715,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setShowMaterialRegexModal(showRegexModal)
             }
             setWorkflowID(_workflowId)
-            setSelectedAppID(_appID)
             getWorkflowStatusData(_workflows)
             preventBodyScroll(true)
         })
@@ -829,7 +827,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
 
         setWorkflowID(_workflowId)
-        setSelectedAppID(_appID)
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.inputMaterialList)

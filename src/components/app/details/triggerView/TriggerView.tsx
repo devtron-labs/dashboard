@@ -26,7 +26,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
+import { NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import CDMaterial from './cdMaterial'
 import {
@@ -679,19 +679,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     // TODO: Can also combine rollback and onClickCDMaterial
+    // Till then make sure that they are consistent
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode })
 
         const workflows = [...this.state.workflows].map((workflow) => {
-            // FIXME: Remove this hack
-            let cipipId = 0
-            workflow.nodes.map((node) => {
-                if (node.type == 'CI') {
-                    cipipId = +node.id
-                }
-                return node
-            })
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
                     if (node.type === 'CD') {
@@ -699,7 +692,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
                     }
                 }
-                node.connectingCiPipelineId = cipipId
                 return node
             })
 
