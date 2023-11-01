@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { ViewType, DOCUMENTATION } from '../../config'
+import React, { Component, useState } from 'react'
+import { ViewType, DOCUMENTATION, repoType } from '../../config'
 import {
     GitOpsState,
     GitOpsProps,
@@ -12,7 +12,7 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
 import { CustomInput, handleOnBlur, handleOnFocus, parsePassword } from '../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
@@ -120,6 +120,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             statusCode: 0,
             gitList: [],
             saveLoading: false,
+            selectedRepoType: repoType.DEFAULT,
             validateLoading: false,
             providerTab: GitProvider.GITHUB,
             lastActiveGitOp: undefined,
@@ -141,6 +142,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             deleteRepoError: false,
             isUrlValidationError: false,
         }
+        this.repoTypeChange = this.repoTypeChange.bind(this)
         this.handleGitopsTab = this.handleGitopsTab.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this)
@@ -445,6 +447,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         })
     }
 
+    repoTypeChange() {
+        if(this.state.selectedRepoType === 'DEFAULT') {
+            this.setState({selectedRepoType: 'CONFIGURE'})
+        } else {
+            this.setState({selectedRepoType: 'DEFAULT'})
+        }
+    }
+
     render() {
         const suggestedURL = this.suggestedValidGitOpsUrl()
         let key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
@@ -726,7 +736,30 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         </div>
                     </div>
-                    <GitManagment/>
+                    <hr />
+                    <div>
+                        <div className="form__row flex left">
+                            <div className="fw-6 cn-9 fs-14 mb-16">Directory Managment in Git</div>
+                            <RadioGroup
+                                className="radio-group-no-border"
+                                name="trigger-type"
+                                value={this.state.selectedRepoType}
+                                onChange={this.repoTypeChange}
+                            >
+                                <div className="">
+                                    <RadioGroupItem value={repoType.DEFAULT}>Use default git repository git structure.</RadioGroupItem>
+                                    <div className="ml-26">Repository will be created automatically with application name. Users can't change default repository</div>
+                                </div>
+                                <div className="mt-10">
+                                    <RadioGroupItem value={repoType.CONFIGURE}>
+                                        Allow changing git repository for application.
+                                    </RadioGroupItem>
+                                    <div className="ml-26">Application admins can provide desired git repository</div>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <hr />
+                    </div>
                     <div className="form__buttons">
                         <button
                             type="submit"

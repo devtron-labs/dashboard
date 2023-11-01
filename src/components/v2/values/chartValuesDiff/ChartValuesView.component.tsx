@@ -12,6 +12,7 @@ import {
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import {
     Progressing,
     DeleteDialog,
@@ -20,6 +21,7 @@ import {
     ConditionalWrap,
     DeploymentAppTypes,
     Drawer,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -155,6 +157,13 @@ export const DeploymentAppSelector = ({
     isDeployChartView,
     allowedDeploymentTypes
 }: DeploymentAppSelectorType): JSX.Element => {
+    const [isOpenDrawer, setIsOpenDrawer] = useState<boolean>(commonState.deploymentAppType === 'helm')
+    const handleCloseButton = () => {
+        if(isOpenDrawer) {
+            setIsOpenDrawer(false)
+        }
+    }
+
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
             <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
@@ -190,6 +199,50 @@ export const DeploymentAppSelector = ({
                     handleOnChange={handleDeploymentAppTypeSelection}
                     allowedDeploymentTypes={allowedDeploymentTypes}
                 />
+                {isOpenDrawer && (
+                    <div>
+                        <Drawer position="right" width="600px">
+                            <div className="cluster-form dc__position-rel h-100 bcn-0">
+                                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                                    <h2
+                                        data-testid="add_cluster_header"
+                                        className="fs-16 fw-6 lh-1-43 m-0 title-padding"
+                                    >
+                                        <span className="fw-6 fs-16 cn-9">Git Repository</span>
+                                    </h2>
+                                    <button
+                                        data-testid="header_close_icon"
+                                        type="button"
+                                        className="dc__transparent flex icon-dim-24"
+                                        onClick={handleCloseButton}
+                                    >
+                                        <Close className="icon-dim-24" />
+                                    </button>
+                                </div>
+                                <div className="ml-20 mt-10">
+                                    <GitManagment />
+                                </div>
+                            </div>
+                            <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
+                                <button
+                                    data-testid="cancel_button"
+                                    className="cta cancel h-36 lh-36"
+                                    type="button"
+                                    onClick={handleCloseButton}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    data-testid="save_cluster_list_button_after_selection"
+                                    className="cta h-36 lh-36"
+                                    type="button"
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </Drawer>
+                    </div>
+                )}
             </div>
         </div>
     )
@@ -212,9 +265,7 @@ export const DeploymentAppRadioGroup = ({
     allowedDeploymentTypes,
     rootClassName,
     isFromCDPipeline,
-}: DeploymentAppRadioGroupType): JSX.Element => {
-    const [drawerState, setDrawerState] = useState(false)
-    
+}: DeploymentAppRadioGroupType): JSX.Element => {    
     return (
         <>
             <RadioGroup
@@ -261,17 +312,15 @@ export const DeploymentAppRadioGroup = ({
                     </RadioGroupItem>
                 </ConditionalWrap>
             </RadioGroup>
-            {/* {(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1) && 
-            <div>
-                <Drawer position='right' width='600px'>
-                    <div>
-                        <GitManagment/>
-                    </div>
-                </Drawer>
-            </div>} */}
         </>
     )
 }
+
+// export const GitOpsDrawer = () => {
+//     return (
+
+//     )
+// }
 
 export const ChartProjectSelector = ({
     selectedProject,

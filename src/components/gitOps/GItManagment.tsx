@@ -11,8 +11,8 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 
 function GitManagment() {
-    const [defaultRepoState, setDefaultRepoState] = useState(true)
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
+    const [repoText, setRepoText] = useState("")
 
     const repoTypeChange = () => {
         if (selectedRepoType === 'DEFAULT') {
@@ -22,22 +22,26 @@ function GitManagment() {
         }
     }
 
-    const handleOnChange = () => {}
-
-    const handleOnBlur = () => {}
-
-    const handleOnFocus = () => {}
+    const onChange = (event) => {
+        if(event.target.value === "") {
+            setRepoText("")
+        } else {
+            setRepoText(event.target.value)   
+        }
+    }
 
     const inputUrlBox = () => {
         return (
-            <div className="bearer-token mr-10">
+            <div className="mr-10 ml-26">
+                <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Git Repo URL</div>
                 <input
                     type="text"
-                    placeholder="Search Token"
-                    data-testid="search-token-input"
-                    value=""
-                    className="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
-                    onChange={handleOnChange}
+                    autoComplete="off"
+                    name="name"
+                    value={repoText}
+                    placeholder="Enter repository URL"
+                    className="form__input"
+                    onChange={(event) => onChange(event)}
                 />
             </div>
         )
@@ -66,7 +70,7 @@ function GitManagment() {
                 >
                     <div className="">
                         <RadioGroupItem value={repoType.DEFAULT}>Auto-create repository</RadioGroupItem>
-                        <div className="ml-24">Repository will be created automatically</div>
+                        <div className="ml-26">Repository will be created automatically</div>
                     </div>
                     <div>
                         <RadioGroupItem value={repoType.CONFIGURE}>
