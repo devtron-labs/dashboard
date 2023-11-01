@@ -62,9 +62,20 @@ import {
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
-import { ClusterCapacityType, ClusterDetail, ClusterImageList } from '../../ClusterNodes/types'
+import {
+    ClusterCapacityType,
+    ClusterDetail,
+    ClusterErrorType,
+    ClusterImageList,
+    ERROR_TYPE,
+} from '../../ClusterNodes/types'
 import { getHostURLConfiguration } from '../../../services/service'
-import { clusterNamespaceList, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
+import {
+    clusterNamespaceList,
+    getClusterCapacity,
+    getClusterList,
+    getClusterListMin,
+} from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -92,7 +103,7 @@ export default function ResourceList() {
         removeTabByIdentifier,
         updateTabUrl,
         stopTabByIdentifier,
-    } = useTabs(`${URLS.RESOURCE_BROWSER}`)
+    } = useTabs(URLS.RESOURCE_BROWSER)
     const [loader, setLoader] = useState(false)
     const [rawGVKLoader, setRawGVKLoader] = useState(false)
     const [clusterLoader, setClusterLoader] = useState(false)
@@ -121,12 +132,12 @@ export default function ResourceList() {
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
-    const [terminalClusterData, setTerminalCluster] = useState<ClusterDetail[]>()
     const [selectedTerminal, setSelectedTerminal] = useState<ClusterDetail>()
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
     const [terminalLoader, setTerminalLoader] = useState(false)
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
     const [toggleSync, setToggle] = useState(false)
+    const [startTerminal, setStartTerminal] = useState<boolean>(false)
     const isStaleDataRef = useRef<boolean>(false)
     const superAdminRef = useRef<boolean>(!!window._env_.K8S_CLIENT)
     const resourceListAbortController = new AbortController()
@@ -147,6 +158,7 @@ export default function ResourceList() {
         showErrorState ||
         !isStaleDataRef.current ||
         !(!node && lastDataSyncTimeString && !resourceListLoader)
+
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -181,13 +193,13 @@ export default function ResourceList() {
     }, [toggleSync])
 
     useEffect(() => {
-        if (clusterId && terminalClusterData?.length > 0) {
-            const _selectedCluster = terminalClusterData.find((list) => list.id == +clusterId)
-            if (_selectedCluster) {
+        if (clusterId && clusterList && clusterList.length > 0) {
+            const _selectedCluster = clusterList.find((list) => list.id == +clusterId)
+            if (_selectedCluster?.nodeCount) {
                 setSelectedTerminal(_selectedCluster)
             }
         }
-    }, [clusterId, terminalClusterData])
+    }, [clusterId, clusterList])
 
     // Mark tab active on path change
     useEffect(() => {
@@ -275,12 +287,12 @@ export default function ResourceList() {
         if (!superAdminRef.current) {
             return
         }
-        if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
+        if (selectedCluster?.value && nodeType) {
             const _searchParam = tabs[2]?.url.split('?')[1] ? `?${tabs[2].url.split('?')[1]}` : ''
             updateTabUrl(
                 `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
                 `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
-                    selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
+                    selectedNamespace?.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
                 }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${
                     nodeType === AppDetailsTabs.terminal ? location.search : _searchParam
                 }`,
@@ -291,6 +303,12 @@ export default function ResourceList() {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         }
     }, [selectedCluster, superAdminRef.current, location.search])
+
+    // Scrolls the view to top on the path change in the url
+    // Starts the cluster terminal when the cluster tab is opened for the first time
+    useEffect(() => {
+        triggerTerminal()
+    }, [location.search, nodeType])
 
     useEffect(() => {
         if (
@@ -316,13 +334,19 @@ export default function ResourceList() {
         }
     }, [selectedNamespace])
 
+    // Triggers the cluster terminal when the cluster tab is opened for the first time
+    const triggerTerminal = () => {
+        if (nodeType === AppDetailsTabs.terminal) {
+            setStartTerminal(true)
+        }
+    }
+
     const getDetailsClusterList = async () => {
         setTerminalLoader(true)
         getClusterList()
             .then((response) => {
                 if (response.result) {
                     response.result.sort((a, b) => a['name'].localeCompare(b['name']))
-                    setTerminalCluster(response.result)
                     setClusterList(response.result)
                 }
                 setTerminalLoader(false)
@@ -339,14 +363,14 @@ export default function ResourceList() {
         try {
             setClusterLoader(true)
             setAccessDeniedCode(0)
-            const [clusterList, hostUrlConfig, userRole, namespaceList] = await Promise.all([
+            const [clusterListData, hostUrlConfig, userRole, namespaceList] = await Promise.all([
                 getClusterListMin(),
                 getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
                 window._env_.K8S_CLIENT ? null : getUserRole(),
                 clusterNamespaceList(),
             ])
-            if (clusterList.result) {
-                const _clusterList = clusterList.result
+            if (clusterListData.result) {
+                const _clusterList = clusterListData.result
                 const _clusterOptions = convertToOptionsList(
                     sortObjectArrayAlphabetically(_clusterList, 'name'),
                     'name',
@@ -354,7 +378,16 @@ export default function ResourceList() {
                     'nodeErrors',
                 )
                 setClusterOptions(_clusterOptions as ClusterOptionType[])
-                setClusterList(_clusterList)
+                // Race condition: Update this clusterList data with this raw data, only if the clusterList is empty
+                // Otherwise  keep the previous data as it will be the detail data updated by getDetailsClusterList
+                setClusterList((prev) => {
+                    if (prev && prev.length === 0) {
+                        return _clusterList
+                    } else {
+                        return prev
+                    }
+                })
+
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
@@ -847,6 +880,44 @@ export default function ResourceList() {
         }
     }
 
+    const renderTerminalLoader = () => {
+        if (terminalLoader) {
+            return (
+                <div className="h-100 node-data-container bcn-0">
+                    <Progressing pageLoader />
+                </div>
+            )
+        } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
+            return (
+                <div className="bcn-0 node-data-container flex">
+                    {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
+                </div>
+            )
+        }
+        return null
+    }
+
+    const renderClusterTerminal = (): JSX.Element => {
+        if (!startTerminal && nodeType !== AppDetailsTabs.terminal) return null
+        const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
+        const _showTerminal =
+            nodeType === AppDetailsTabs.terminal && selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
+
+        return (
+            selectedTerminal && (
+                <ClusterTerminal
+                    showTerminal={_showTerminal}
+                    clusterId={+clusterId}
+                    nodeGroups={createGroupSelectList(selectedTerminal.nodeDetails, 'nodeName')}
+                    taints={createTaintsList(selectedTerminal.nodeDetails, 'nodeName')}
+                    clusterImageList={_imageList}
+                    namespaceList={namespaceDefaultList[selectedTerminal.name]}
+                    isNodeDetailsPage={true}
+                />
+            )
+        )
+    }
+
     const renderResourceBrowser = (): JSX.Element => {
         if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() && node) {
             return (
@@ -860,32 +931,7 @@ export default function ResourceList() {
                 />
             )
         }
-        if (nodeType === AppDetailsTabs.terminal) {
-            const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
-            if (terminalLoader) {
-                return (
-                    <div className="h-100 node-data-container bcn-0">
-                        <Progressing pageLoader />
-                    </div>
-                )
-            } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
-                return (
-                    <div className="bcn-0 node-data-container flex">
-                        {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
-                    </div>
-                )
-            }
-            return (
-                <ClusterTerminal
-                    clusterId={+clusterId}
-                    nodeGroups={createGroupSelectList(selectedTerminal?.nodeDetails, 'nodeName')}
-                    taints={createTaintsList(selectedTerminal?.nodeDetails, 'nodeName')}
-                    clusterImageList={_imageList}
-                    namespaceList={namespaceDefaultList[selectedTerminal.name]}
-                    isNodeDetailsPage={true}
-                />
-            )
-        } else if (node) {
+        if (node) {
             return (
                 <div className="resource-details-container">
                     <NodeDetailComponent
@@ -1004,6 +1050,7 @@ export default function ResourceList() {
                     isSuperAdmin={superAdminRef.current}
                     clusterListLoader={terminalLoader}
                     refreshData={refreshSync}
+                    initTabsBasedOnRole={initTabsBasedOnRole}
                 />
             )
         }
@@ -1030,7 +1077,8 @@ export default function ResourceList() {
                         />
                     </div>
                 </div>
-                {renderResourceBrowser()}
+                {nodeType === AppDetailsTabs.terminal ? renderTerminalLoader() : renderResourceBrowser()}
+                {renderClusterTerminal()}
             </>
         )
     }

@@ -185,7 +185,7 @@ export interface ClusterListType {
     ) => boolean
     updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
     k8SObjectMapRaw: Map<string, K8SObjectMapType>
-    lastDataSync:boolean
+    lastDataSync: boolean
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
@@ -224,6 +224,7 @@ export interface ClusterTerminalType {
     setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
     nodeGroups?: SelectGroupType[]
     taints: Map<string, NodeTaintType[]>
+    showTerminal: boolean
 }
 
 export const TEXT_COLOR_CLASS = {
