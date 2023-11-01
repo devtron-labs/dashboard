@@ -584,7 +584,7 @@ function ClusterOverview({
             return (
                 <>
                     {renderSideInfoData()}
-                    <div className="dc__overflow-scroll pr-20 dc__mxw-1400">
+                    <div className="dc__overflow-scroll dc__mxw-1068">
                         {renderCardDetails()}
                         {renderClusterError()}
                         <GenericDescription
@@ -606,7 +606,7 @@ function ClusterOverview({
     const renderClusterSummary = (): JSX.Element => {
         return (
             <div
-                className={`dc__border-left resource-details-container flexbox bcn-0 pl-20 pt-20 dc__column-gap-32 ${
+                className={`dc__border-left resource-details-container flexbox flex-justify-center bcn-0 pl-20 pt-20 pr-20 dc__column-gap-32 ${
                     errorStatusCode || errorCode ? 'flex' : ''
                 }`}
                 style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%,  var(--N50)50.58%)' }}
