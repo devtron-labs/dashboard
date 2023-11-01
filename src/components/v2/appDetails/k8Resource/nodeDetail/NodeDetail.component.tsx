@@ -5,7 +5,7 @@ import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
-import { useParams, useRouteMatch } from 'react-router'
+import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
@@ -35,6 +35,7 @@ function NodeDetailComponent({
     setLogSearchTerms,
     removeTabByIdentifier,
 }: NodeDetailPropsType) {
+    const location = useLocation()
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
@@ -68,11 +69,16 @@ function NodeDetailComponent({
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
+    const [startTerminal, setStartTerminal] = useState<boolean>(false)
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
+    useEffect(() => {
+        if (location.pathname.includes('/terminal')) setStartTerminal(true)
+    }, [location])
+
     useEffect(() => {
         if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType, true)
@@ -178,10 +184,11 @@ function NodeDetailComponent({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const _idPrefix =
-            `${(selectedResource?.kind === SIDEBAR_KEYS.eventGVK.Kind
+        const _idPrefix = `${
+            selectedResource?.kind === SIDEBAR_KEYS.eventGVK.Kind
                 ? K8S_EMPTY_GROUP
-                : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP)}_${params.namespace}`
+                : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP
+        }_${params.namespace}`
         const isTabFound = isResourceBrowserView
             ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
             : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
@@ -247,6 +254,26 @@ function NodeDetailComponent({
 
     const toggleDeleteDialog = () => {
         setShowDeleteDialog((prevState) => !prevState)
+    }
+
+    const renderPodTerminal = (): JSX.Element => {
+        if (!startTerminal) return null
+        return (
+            <TerminalComponent
+                showTerminal={location.pathname.includes('/terminal')}
+                selectedTab={handleSelectedTab}
+                isDeleted={isDeleted}
+                isResourceBrowserView={isResourceBrowserView}
+                selectedResource={selectedResource}
+                selectedContainer={selectedContainer}
+                setSelectedContainer={setSelectedContainer}
+                containers={containers}
+                setContainers={setContainers}
+                selectedContainerName={selectedContainerName}
+                setSelectedContainerName={setSelectedContainerName}
+                switchSelectedContainer={switchSelectedContainer}
+            />
+        )
     }
 
     return (
@@ -316,6 +343,7 @@ function NodeDetailComponent({
                     </span>
                 )}
             </div>
+            {renderPodTerminal()}
 
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
                 <MessageUI
@@ -369,22 +397,9 @@ function NodeDetailComponent({
                             <SummaryComponent selectedTab={handleSelectedTab} />
                         </Route>
                     )}
-                    <Route path={`${path}/${NodeDetailTab.TERMINAL}`}>
-                        <TerminalComponent
-                            selectedTab={handleSelectedTab}
-                            isDeleted={isDeleted}
-                            isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResource}
-                            selectedContainer={selectedContainer}
-                            setSelectedContainer={setSelectedContainer}
-                            containers={containers}
-                            setContainers={setContainers}
-                            selectedContainerName={selectedContainerName}
-                            setSelectedContainerName={setSelectedContainerName}
-                            switchSelectedContainer={switchSelectedContainer}
-                        />
-                    </Route>
-                    <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
+                    {!location.pathname.includes('/terminal') && (
+                        <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
+                    )}
                 </Switch>
             )}
             {showEphemeralContainerDrawer && (
