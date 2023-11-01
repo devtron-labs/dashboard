@@ -1,15 +1,26 @@
-import { RadioGroup, RadioGroupItem, ResizableTextarea } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CustomInput,
+    InfoColourBar,
+    RadioGroup,
+    RadioGroupItem,
+    ResizableTextarea,
+} from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { AppCreationType, repoType } from '../../config/constants'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 
 function GitManagment() {
     const [defaultRepoState, setDefaultRepoState] = useState(true)
-    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
+    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
 
-    const repoTypeChange = (value) => {
-        setSelectedRepoType(value);
-    };
+    const repoTypeChange = () => {
+        if (selectedRepoType === 'DEFAULT') {
+            setSelectedRepoType('CONFIGURE')
+        } else {
+            setSelectedRepoType('DEFAULT')
+        }
+    }
 
     const handleOnChange = () => {}
 
@@ -19,48 +30,54 @@ function GitManagment() {
 
     const inputUrlBox = () => {
         return (
-            <div className="bearer-token">
-                <ResizableTextarea
-                    className="dc__resizable-textarea__with-max-height dc__required-field"
-                    name="token"
+            <div className="bearer-token mr-10">
+                <input
+                    type="text"
+                    placeholder="Search Token"
+                    data-testid="search-token-input"
+                    value=""
+                    className="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
                     onChange={handleOnChange}
-                    onBlur={handleOnBlur}
-                    onFocus={handleOnFocus}
-                    placeholder="Enter bearer token"
-                    dataTestId="enter_bearer_token_input"
                 />
             </div>
         )
     }
 
+    const renderInfoColorBar = () => {
+        return (
+            <InfoColourBar
+                message="GitOps repository cannot be changed for this application once saved."
+                classname="warn"
+                Icon={Warn}
+                iconClass="warning-icon"
+            />
+        )
+    }
+
     return (
-        
         <div>
-            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
-                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                    <span className="fw-6 fs-16 cn-9">GitOps Configurations</span>
-                </h2>
-                <button
-                    data-testid="header_close_icon"
-                    type="button"
-                    className="dc__transparent flex icon-dim-24"
-                    // onClick={handleCloseButton}
-                >
-                    <Close className="icon-dim-24" />
-                </button>
-            </div>
             <div className="form__row flex left">
                 <div className="fw-6 cn-9 fs-14 mb-16">GitOps Configuration</div>
                 <RadioGroup
                     className="radio-group-no-border"
                     name="trigger-type"
-                    onChange={(e) => repoTypeChange(e)}
-                    value=""
+                    value={selectedRepoType}
+                    onChange={repoTypeChange}
                 >
-                    <RadioGroupItem value={repoType.DEFAULT}>Auto-create repository.</RadioGroupItem>
-                    <RadioGroupItem value={repoType.CONFIGURE}>Commit manifest to a desired repository.</RadioGroupItem>
+                    <div className="">
+                        <RadioGroupItem value={repoType.DEFAULT}>Auto-create repository</RadioGroupItem>
+                        <div className="ml-24">Repository will be created automatically</div>
+                    </div>
+                    <div>
+                        <RadioGroupItem value={repoType.CONFIGURE}>
+                            Commit manifest to a desired repository.
+                        </RadioGroupItem>
+                    </div>
                 </RadioGroup>
+                {selectedRepoType === 'CONFIGURE' && inputUrlBox()}
             </div>
+            {renderInfoColorBar()}
+            <hr />
         </div>
     )
 }

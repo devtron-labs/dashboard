@@ -190,7 +190,6 @@ export const DeploymentAppSelector = ({
                     handleOnChange={handleDeploymentAppTypeSelection}
                     allowedDeploymentTypes={allowedDeploymentTypes}
                 />
-
             </div>
         </div>
     )
@@ -215,6 +214,7 @@ export const DeploymentAppRadioGroup = ({
     isFromCDPipeline,
 }: DeploymentAppRadioGroupType): JSX.Element => {
     const [drawerState, setDrawerState] = useState(false)
+    
     return (
         <>
             <RadioGroup
@@ -261,13 +261,14 @@ export const DeploymentAppRadioGroup = ({
                     </RadioGroupItem>
                 </ConditionalWrap>
             </RadioGroup>
-            {/* {allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1 ? (
-                <Drawer position="right" width="600px">
-                    <div className="h-100 bcn-0">
-                        <GitManagment />
+            {/* {(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1) && 
+            <div>
+                <Drawer position='right' width='600px'>
+                    <div>
+                        <GitManagment/>
                     </div>
                 </Drawer>
-            ) : null} */}
+            </div>} */}
         </>
     )
 }

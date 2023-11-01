@@ -32,6 +32,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
+import GitManagment from './GItManagment'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
@@ -601,7 +602,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ) : (
                         <></>
                     )}
-
                     <div className="mt-16 ">
                         {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
                             <CustomInput
@@ -726,7 +726,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         </div>
                     </div>
-
+                    <GitManagment/>
                     <div className="form__buttons">
                         <button
                             type="submit"
