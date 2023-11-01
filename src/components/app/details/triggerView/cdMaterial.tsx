@@ -573,14 +573,37 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         const isApprovalRequester = this.isApprovalRequester(mat.userApprovalMetadata)
         const isImageApprover = this.isImageApprover(mat.userApprovalMetadata)
 
+        const renderImagePathTippyContent = (imagePath: string, registryName: string) => {
+            return (
+                <div>
+                    <div className="fw-6">{registryName}</div>
+                    <div>{imagePath}</div>
+                </div>
+            )
+        }
+
         return (
             <>
                 <div className="flex left column">
                     {mat.filterState === FilterStates.ALLOWED ? (
-                        <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                            <img src={docker} alt="" className="commit-hash__icon" />
-                            {mat.image}
-                        </div>
+                        <ConditionalWrap
+                            condition={mat?.imagePath?.length > 0}
+                            wrap={(children) => (
+                                <Tippy
+                                    className="default-tt tippy--docker-image"
+                                    arrow={false}
+                                    placement="top-start"
+                                    content={renderImagePathTippyContent(mat.imagePath, mat.registryName)}
+                                >
+                                    {children}
+                                </Tippy>
+                            )}
+                        >
+                            <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
+                                <img src={docker} alt="" className="commit-hash__icon" />
+                                {mat.image}
+                            </div>
+                        </ConditionalWrap>
                     ) : (
                         <Tippy
                             className="default-tt w-200"

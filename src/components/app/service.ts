@@ -443,6 +443,9 @@ function cdMaterialListModal(
                       }
                   })
                 : [],
+            imagePath: material.image,
+            registryType: material.registryType,
+            registryName: material.registryName,
             filterState,
         }
     })
