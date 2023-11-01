@@ -93,6 +93,11 @@ export interface ChartUsed {
     chartAvatar?: string
 }
 
+interface GitMaterial {
+  displayName: string,
+  redirectionUrl: string,
+}
+
 export interface AppMetaInfo {
     appId: number
     appName: string
@@ -102,12 +107,12 @@ export interface AppMetaInfo {
     projectId?: number
     projectName?: string
     labels?: TagType[]
-    codeSource: string
     /**
      * Available only for helm apps
      */
     chartUsed?: ChartUsed
     note?: Note
+    gitMaterials?: GitMaterial[]
 }
 
 export interface ArtifactsCiJob {

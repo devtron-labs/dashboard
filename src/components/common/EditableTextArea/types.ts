@@ -17,6 +17,7 @@ export interface EditableTextAreaProps {
     validations?: {
         maxLength?: ValidationRule<number>
     }
+    emptyState: string
 }
 
 export interface Error {

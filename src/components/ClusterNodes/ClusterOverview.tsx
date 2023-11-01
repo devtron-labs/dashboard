@@ -490,10 +490,11 @@ function ClusterOverview({
                         {clusterDetails?.clusterName}
                     </div>
                     <EditableTextArea
-                        placeholder="Enter short description"
+                        emptyState={defaultClusterShortDescription}
+                        placeholder={defaultClusterShortDescription}
                         rows={4}
                         updateContent={handleUpdateClusterDescription}
-                        initialText={clusterDetails.shortDescription || defaultClusterShortDescription}
+                        initialText={clusterDetails.shortDescription}
                         validations={{
                             maxLength: {
                                 value: 350,
