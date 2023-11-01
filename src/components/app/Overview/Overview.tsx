@@ -462,7 +462,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     return (
         // TODO: Fix the scroll for two column layout
         <div className={`app-overview-container p-20 h-100 ${activeTab === OVERVIEW_TABS.ABOUT ? 'sidebar-open' : ''}`}>
-            {activeTab === OVERVIEW_TABS.ABOUT && renderSideInfoColumn()}
+            {activeTab === OVERVIEW_TABS.ABOUT ? renderSideInfoColumn() : <span />}
             {!isLoading && renderOverviewContent()}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
