@@ -353,7 +353,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             rows={4}
                         />
                         <span className="form__error">
-                            {showError && !this.state.isValid.description ? (
+                            {!this.state.isValid.description ? (
                                 <>
                                     <Error className="form__icon form__icon--error" />
                                     {errorObject[3].message} <br />

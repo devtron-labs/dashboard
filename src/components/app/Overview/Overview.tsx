@@ -169,7 +169,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <div>
                             {config.icon ?? (
                                 // For Helm Charts
-                                <div className="mxh-64 dc__mxw-120 w-100 h-100">
+                                <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
                                     <img
                                         src={chartUsed.chartAvatar || defaultChartImage}
                                         alt="App icon"
