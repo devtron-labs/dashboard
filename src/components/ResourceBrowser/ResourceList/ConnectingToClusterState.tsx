@@ -130,7 +130,7 @@ export default function ConnectingToClusterState({
 
     return (
         <div
-            className="flex column "
+            className="flex column bcn-0"
             style={{
                 height: 'calc(100vh - 84px)',
             }}

@@ -194,11 +194,6 @@ export default function ResourceList() {
         if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         } else if (nodeType == AppDetailsTabs.cluster_overview.toLocaleLowerCase()) {
-            const url = `${
-                URLS.RESOURCE_BROWSER
-            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
-
-            updateTabUrl(`${AppDetailsTabsIdPrefix.cluster_overview}-${AppDetailsTabs.cluster_overview}`, url)
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.cluster_overview, AppDetailsTabs.cluster_overview)
         } else if (selectedResource && !node) {
             if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) getSidebarData(clusterId)
@@ -281,7 +276,7 @@ export default function ResourceList() {
             return
         }
         if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
-            const _searchParam = tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : ''
+            const _searchParam = tabs[2]?.url.split('?')[1] ? `?${tabs[2].url.split('?')[1]}` : ''
             updateTabUrl(
                 `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
                 `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
@@ -291,13 +286,12 @@ export default function ResourceList() {
                 }`,
                 `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
             )
-        } else {
-            removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
         }
         if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         }
-    }, [clusterCapacityData, location.search])
+    }, [selectedCluster, superAdminRef.current, location.search])
+
     useEffect(() => {
         if (
             clusterId &&
@@ -1042,7 +1036,7 @@ export default function ResourceList() {
     }
     return (
         <ShortcutProvider>
-            <div className="resource-browser-container">
+            <div className="resource-browser-container h-100">
                 <PageHeader
                     isBreadcrumbs={!!clusterId}
                     breadCrumbs={renderBreadcrumbs}
