@@ -147,7 +147,7 @@ export default function ResourceList() {
         showErrorState ||
         !isStaleDataRef.current ||
         !(!node && lastDataSyncTimeString && !resourceListLoader)
-            useEffect(() => {
+    useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
         }
@@ -286,13 +286,12 @@ export default function ResourceList() {
                 }`,
                 `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
             )
-        } else {
-            removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
         }
         if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         }
-    }, [clusterCapacityData, location.search])
+    }, [selectedCluster, superAdminRef.current, location.search])
+
     useEffect(() => {
         if (
             clusterId &&
