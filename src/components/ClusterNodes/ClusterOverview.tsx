@@ -583,11 +583,11 @@ function ClusterOverview({
         } else {
             return (
                 <div
-                    className="flexbox pl-20 pt-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
+                    className="pl-20 pt-20 pr-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
                     style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%,  var(--N50)50.58%)' }}
                 >
                     {renderSideInfoData()}
-                    <div className="pr-20 dc__mxw-1068 flex-grow-1">
+                    <div className="dc__mxw-1068 flex-grow-1">
                         {renderCardDetails()}
                         {renderClusterError()}
                         <GenericDescription
