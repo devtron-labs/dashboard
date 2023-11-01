@@ -590,7 +590,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             condition={mat?.imagePath?.length > 0}
                             wrap={(children) => (
                                 <Tippy
-                                    className="default-tt tippy--docker-image"
+                                    className="default-tt dc__mxw-500"
                                     arrow={false}
                                     placement="top-start"
                                     content={renderImagePathTippyContent(mat.imagePath, mat.registryName)}

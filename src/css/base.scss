@@ -2174,6 +2174,10 @@ button.anchor {
     max-width: 400px;
 }
 
+.dc__mxw-500 {
+    max-width: 500px;
+}
+
 .dc__mxw-800 {
     max-width: 800px;
 }
@@ -3866,8 +3870,4 @@ textarea::placeholder {
 
 .br-48 {
     border-radius: 48px;
-}
-
-.tippy--docker-image{
-    max-width: 500px;
 }
