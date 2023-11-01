@@ -52,6 +52,7 @@ export const URLS = {
     DEPLOYMENT_GROUPS: '/deployment-groups',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
+    GIT_OPS_CONFIG: '/gitops/config',
     GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_HOST_URL: '/global-config/host-url',
     GLOBAL_CONFIG_GIT: '/global-config/git',

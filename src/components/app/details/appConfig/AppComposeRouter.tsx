@@ -10,6 +10,7 @@ import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import SecretList from '../../../ConfigMapSecret/Secret/SecretList'
 import ConfigMapList from '../../../ConfigMapSecret/ConfigMap/ConfigMapList'
 import './appConfig.scss'
+import GitManagment from '../../../gitOps/GItManagment'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -96,6 +97,13 @@ export default function AppComposeRouter({
                                 envList={environments}
                             />
                         )}
+                    />,
+                    <Route
+                        key={`${path}/${URLS.GIT_OPS_CONFIG}`}
+                        path={`${path}/${URLS.GIT_OPS_CONFIG}`}
+                        render={()=>(
+                            <GitManagment />
+                        )}        
                     />,
                     <Route
                         key={`${path}/${URLS.APP_CM_CONFIG}`}

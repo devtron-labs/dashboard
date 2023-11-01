@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
 import {
@@ -19,6 +19,7 @@ import {
     RadioGroupItem,
     ConditionalWrap,
     DeploymentAppTypes,
+    Drawer,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -49,6 +50,7 @@ import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
+import GitManagment from '../../../gitOps/GItManagment'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -188,6 +190,7 @@ export const DeploymentAppSelector = ({
                     handleOnChange={handleDeploymentAppTypeSelection}
                     allowedDeploymentTypes={allowedDeploymentTypes}
                 />
+
             </div>
         </div>
     )
@@ -204,51 +207,69 @@ const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: strin
 }
 
 export const DeploymentAppRadioGroup = ({
-  isDisabled,
-  deploymentAppType,
-  handleOnChange,
-  allowedDeploymentTypes,
-  rootClassName,
-  isFromCDPipeline
+    isDisabled,
+    deploymentAppType,
+    handleOnChange,
+    allowedDeploymentTypes,
+    rootClassName,
+    isFromCDPipeline,
 }: DeploymentAppRadioGroupType): JSX.Element => {
-  return (
-      <RadioGroup
-          value={deploymentAppType}
-          name="DeploymentAppTypeGroup"
-          onChange={handleOnChange}
-          disabled={isDisabled}
-          className={rootClassName ?? ''}
-      >
-          <ConditionalWrap
-              condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-              wrap={(children) =>
-                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
-              }
-          >
-              <RadioGroupItem
-                  dataTestId="helm-deployment"
-                  value={DeploymentAppTypes.HELM}
-                  disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-              >
-                  Helm
-              </RadioGroupItem>
-          </ConditionalWrap>
-          <ConditionalWrap
-              condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-              wrap={(children) =>
-                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via GitOps')
-              }
-          >
-              <RadioGroupItem
-                  dataTestId="gitops-deployment"
-                  value={DeploymentAppTypes.GITOPS}
-                  disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-              >
-                  GitOps
-              </RadioGroupItem>
-          </ConditionalWrap>
-      </RadioGroup>
-  )
+    const [drawerState, setDrawerState] = useState(false)
+    return (
+        <>
+            <RadioGroup
+                value={deploymentAppType}
+                name="DeploymentAppTypeGroup"
+                onChange={handleOnChange}
+                disabled={isDisabled}
+                className={rootClassName ?? ''}
+            >
+                <ConditionalWrap
+                    condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                    wrap={(children) =>
+                        RadioWithTippy(
+                            children,
+                            isFromCDPipeline,
+                            'Deployment to this environment is not allowed via Helm',
+                        )
+                    }
+                >
+                    <RadioGroupItem
+                        dataTestId="helm-deployment"
+                        value={DeploymentAppTypes.HELM}
+                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                    >
+                        Helm
+                    </RadioGroupItem>
+                </ConditionalWrap>
+                <ConditionalWrap
+                    condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                    wrap={(children) =>
+                        RadioWithTippy(
+                            children,
+                            isFromCDPipeline,
+                            'Deployment to this environment is not allowed via GitOps',
+                        )
+                    }
+                >
+                    <RadioGroupItem
+                        dataTestId="gitops-deployment"
+                        value={DeploymentAppTypes.GITOPS}
+                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                    >
+                        GitOps
+                    </RadioGroupItem>
+                </ConditionalWrap>
+            </RadioGroup>
+            {/* {allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1 ? (
+                <Drawer position="right" width="600px">
+                    <div className="h-100 bcn-0">
+                        <GitManagment />
+                    </div>
+                </Drawer>
+            ) : null} */}
+        </>
+    )
 }
 
 export const ChartProjectSelector = ({
