@@ -11,6 +11,7 @@ import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
 import { ReactComponent as ArrowLineDown } from '../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as DockerIcon } from '../../../assets/icons/git/docker.svg'
 import AppStatus from '../AppStatus'
 import { StatusConstants } from '../list-new/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
@@ -19,6 +20,7 @@ import { getAppOtherEnvironment } from '../../../services/service'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { loadingEnvironmentList } from './constants'
+import { AppEnvironment } from '../../../services/service.types'
 
 const {
     OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
@@ -69,6 +71,11 @@ export const EnvironmentList = ({
             Continue App Configuration <IconForward className="icon-dim-12" />
         </button>
     )
+
+    const getDeploymentHistoryLink = (environment: AppEnvironment) =>
+        `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${environment.environmentId}/${environment.pipelineId}/${
+            environment.latestCdWorkflowRunnerId ?? ''
+        }`
 
     return (
         <div className="flex column left">
@@ -136,28 +143,27 @@ export const EnvironmentList = ({
                                                     {_env.environmentName}
                                                 </Link>
                                                 {_env.lastDeployedImage ? (
-                                                    <div className="cn-7 flexbox">
+                                                    <div className="cn-7 fs-13 flexbox">
                                                         <Tippy
                                                             content={_env.lastDeployedImage}
                                                             className="default-tt"
                                                             placement="auto"
                                                         >
                                                             <div
-                                                                className={`bcn-1 br-6 pl-6 pr-6 ${
-                                                                    isLastDeployedExpanded
-                                                                        ? 'dc__ellipsis-left direction-left'
-                                                                        : ''
-                                                                }`}
+                                                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 ${lastDeployedClassName}`}
                                                             >
+                                                                <DockerIcon className="icon-dim-14" />
                                                                 {isLastDeployedExpanded ? (
-                                                                    _env.lastDeployedImage
+                                                                    <div className="mono dc__ellipsis-left direction-left">
+                                                                        {_env.lastDeployedImage}
+                                                                    </div>
                                                                 ) : (
-                                                                    <div className="env-deployments-info-row__last-deployed-cell">
+                                                                    <>
                                                                         <div>...</div>
-                                                                        <div className="dc__ellipsis-left direction-left text-overflow-clip">
+                                                                        <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
                                                                             {_env.lastDeployedImage.split(':').at(-1)}
                                                                         </div>
-                                                                    </div>
+                                                                    </>
                                                                 )}
                                                             </div>
                                                         </Tippy>
@@ -172,7 +178,7 @@ export const EnvironmentList = ({
                                                     <span className="fs-13 fw-4 cn-9 dc__ellipsis-right dc__word-break flex left dc__gap-6">
                                                         <span className="flex left dc__gap-8">
                                                             <span
-                                                                className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase"
+                                                                className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
                                                                 style={{
                                                                     backgroundColor: getRandomColor(
                                                                         _env.lastDeployedBy,
@@ -183,9 +189,7 @@ export const EnvironmentList = ({
                                                             </span>
                                                             <span>{_env.lastDeployedBy}</span>
                                                         </span>
-                                                        <Link
-                                                            to={`${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${_env.environmentId}`}
-                                                        >
+                                                        <Link to={getDeploymentHistoryLink(_env)} className="cursor">
                                                             {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
                                                         </Link>
                                                     </span>
@@ -198,7 +202,7 @@ export const EnvironmentList = ({
                     </div>
                 </div>
             ) : (
-                <div className="w-100 mh-500 bcn-0 flex en-2">
+                <div className="w-100 mh-500 bcn-0 flex en-2 bw-1 br-4">
                     <GenericEmptyState
                         layout="row"
                         title={DEPLOYMENT_TITLE}

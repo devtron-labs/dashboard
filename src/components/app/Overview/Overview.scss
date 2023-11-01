@@ -1,6 +1,6 @@
 .app-overview-container {
     display: grid;
-    grid-template-columns: minmax(auto, 1400px);
+    grid-template-columns: 0 minmax(auto, 1400px);
     justify-content: center;
     background: linear-gradient(249deg, #D4E6F7 0%, var(--N50) 50.58%);
     overflow: auto;
@@ -37,7 +37,12 @@
 
                 &__last-deployed-cell {
                     display: grid;
-                    grid-template-columns: 10px 1fr;
+                    grid-template-columns: 18px 10px 1fr;
+                    align-items: center;
+
+                    &.last-deployed-expanded {
+                        grid-template-columns: 18px 1fr;
+                    }
                 }
             }
 

@@ -73,6 +73,8 @@ export interface AppEnvironment {
     deploymentAppDeleteRequest?: boolean
     isVirtualEnvironment?: boolean
     isProtected?: boolean
+    pipelineId?: number
+    latestCdWorkflowRunnerId?: number
 }
 
 export interface AppOtherEnvironment extends ResponseType {
