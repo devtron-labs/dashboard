@@ -609,7 +609,7 @@ export function useEventSource(
     return eventSourceRef.current
 }
 
-export function useDebouncedEffect(callback, delay, deps: unknown[] = [] ) {
+export function useDebouncedEffect(callback, delay, deps: unknown[] = []) {
     // function will be executed only after the specified time once the user stops firing the event.
     const firstUpdate = useRef(true)
     useEffect(() => {
@@ -823,6 +823,7 @@ export const convertToOptionsList = (
     customValue?: string,
     customFieldKey?: string,
 ): OptionType[] => {
+    if (!Array.isArray(arr) || !arr) return []
     return arr.map((ele) => {
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
@@ -1024,8 +1025,9 @@ export const trackByGAEvent = (category: string, action: string): void => {
 }
 
 export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
+    if (!list) return []
     let emptyHeadingCount = 0
-    const objList: Record<string, OptionType[]> = list.reduce((acc, obj) => {
+    const objList: Record<string, OptionType[]> = list?.reduce((acc, obj) => {
         if (obj.nodeGroup) {
             emptyHeadingCount++
         }
@@ -1126,5 +1128,5 @@ export const hasApproverAccess = (approverList: string[]): boolean => {
 }
 
 export const getNonEditableChartRepoText = (name: string): string => {
-   return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
+    return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
 }
