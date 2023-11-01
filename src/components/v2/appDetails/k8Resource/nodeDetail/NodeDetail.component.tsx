@@ -76,7 +76,9 @@ function NodeDetailComponent({
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
     useEffect(() => {
-        if (location.pathname.includes('/terminal')) setStartTerminal(true)
+        if (location.pathname.includes('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
+            setStartTerminal(true)
+        }
     }, [location])
 
     useEffect(() => {
