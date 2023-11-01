@@ -132,7 +132,6 @@ export default function ResourceList() {
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
-    const [terminalClusterData, setTerminalCluster] = useState<ClusterDetail[]>()
     const [selectedTerminal, setSelectedTerminal] = useState<ClusterDetail>()
     const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
@@ -195,16 +194,13 @@ export default function ResourceList() {
     }, [toggleSync])
 
     useEffect(() => {
-        if(clusterList && clusterList.length > 0 && !clusterList[0]?.nodeCount && terminalClusterData) {
-            setClusterList(terminalClusterData)
-        }
-        if (clusterId && terminalClusterData?.length > 0) {
-            const _selectedCluster = terminalClusterData.find((list) => list.id == +clusterId)
-            if (_selectedCluster) {
+        if (clusterId && clusterList && clusterList.length > 0) {
+            const _selectedCluster = clusterList.find((list) => list.id == +clusterId)
+            if (_selectedCluster?.nodeCount) {
                 setSelectedTerminal(_selectedCluster)
             }
         }
-    }, [clusterId, terminalClusterData, clusterList])
+    }, [clusterId, clusterList])
 
     // Mark tab active on path change
     useEffect(() => {
@@ -414,7 +410,6 @@ export default function ResourceList() {
             .then((response) => {
                 if (response.result) {
                     response.result.sort((a, b) => a['name'].localeCompare(b['name']))
-                    setTerminalCluster(response.result)
                     setClusterList(response.result)
                 }
                 setTerminalLoader(false)
@@ -431,14 +426,14 @@ export default function ResourceList() {
         try {
             setClusterLoader(true)
             setAccessDeniedCode(0)
-            const [clusterList, hostUrlConfig, userRole, namespaceList] = await Promise.all([
+            const [clusterListData, hostUrlConfig, userRole, namespaceList] = await Promise.all([
                 getClusterListMin(),
                 getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
                 window._env_.K8S_CLIENT ? null : getUserRole(),
                 clusterNamespaceList(),
             ])
-            if (clusterList.result) {
-                const _clusterList = clusterList.result
+            if (clusterListData.result) {
+                const _clusterList = clusterListData.result
                 const _clusterOptions = convertToOptionsList(
                     sortObjectArrayAlphabetically(_clusterList, 'name'),
                     'name',
@@ -446,7 +441,18 @@ export default function ResourceList() {
                     'nodeErrors',
                 )
                 setClusterOptions(_clusterOptions as ClusterOptionType[])
-                setClusterList(_clusterList)
+                // Race condition: Update this clusterList data with this raw data, only if the clusterList is empty
+                // Otherwise  keep the previous data as it will be the detail data updated by getDetailsClusterList
+                setClusterList((prev) => {
+                    if (prev && prev.length === 0) {
+                        console.log('setClusterList 0 going inside')
+                        return _clusterList
+                    } else {
+                        return prev
+                    }
+                })
+                console.log('setClusterList 0')
+
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
