@@ -28,7 +28,7 @@ import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
 import { getCMSecret, getConfigMapList, getSecretList } from './service'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 
@@ -114,7 +114,9 @@ export function ConfigMapSecretContainer({
     parentName,
     reloadEnvironments,
 }: ConfigMapSecretProps) {
-    const { appId, envId } = useParams<{ appId; envId }>()
+    const { appId, envId, name } = useParams<{ appId; envId; name }>()
+    const history = useHistory()
+    const match = useRouteMatch()
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
     const [draftData, setDraftData] = useState(null)
@@ -214,18 +216,33 @@ export function ConfigMapSecretContainer({
     }
 
     const updateCollapsed = (_collapsed?: boolean): void => {
-        if (_collapsed !== undefined) {
-            toggleCollapse(_collapsed)
+        console.log(title)
+        redirectConfigMapSecret(data?.name)
+        getData()
+
+        //Later remove
+        // if (_collapsed !== undefined) {
+        //     toggleCollapse(_collapsed)
+        // } else {
+        //     if (collapsed && data?.name) {
+        //         getData()
+        //     } else {
+        //         toggleCollapse(!collapsed)
+        //         if (!collapsed) {
+        //             toggleDraftComments(null)
+        //             setDraftData(null)
+        //         }
+        //     }
+        // }
+    }
+
+    const redirectConfigMapSecret = (dataName: string): void => {
+        if (!title && !name) {
+            return history.push(`${match.path.replace('/:name?', 'create')}`)
+        } else if (dataName) {
+            return history.push(`${match.path.replace('/:name?', dataName)}`)
         } else {
-            if (collapsed && data?.name) {
-                getData()
-            } else {
-                toggleCollapse(!collapsed)
-                if (!collapsed) {
-                    toggleDraftComments(null)
-                    setDraftData(null)
-                }
-            }
+            return history.push(`${match.path.replace('/:name?', '')}`)
         }
     }
 
@@ -255,7 +272,8 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
-        if (title && isProtected && draftData?.draftId) {
+        if (title && isProtected && draftData?.draftId)
+             {
             return (
                 <>
                     <ConfigToolbar
@@ -294,7 +312,7 @@ export function ConfigMapSecretContainer({
                 </>
             )
         }
-        return (
+        return name === data?.name || (!data?.name && name === 'create') ? (
             <ConfigMapSecretForm
                 appChartRef={appChartRef}
                 updateCollapsed={updateCollapsed}
@@ -319,7 +337,7 @@ export function ConfigMapSecretContainer({
                 }
                 reloadEnvironments={reloadEnvironments}
             />
-        )
+        ) : null
     }
 
     const renderDraftState = (): JSX.Element => {
@@ -379,7 +397,7 @@ export function ConfigMapSecretContainer({
                         </div>
                     )}
                 </article>
-                {!collapsed && renderDetails()}
+                {renderDetails()}
             </section>
         </>
     )

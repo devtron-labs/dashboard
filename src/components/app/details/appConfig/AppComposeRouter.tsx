@@ -99,7 +99,7 @@ export default function AppComposeRouter({
                     />,
                     <Route
                         key={`${path}/${URLS.APP_CM_CONFIG}`}
-                        path={`${path}/${URLS.APP_CM_CONFIG}`}
+                        path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}
                         render={(props) => <ConfigMapList isJobView={isJobView} isProtected={false} />}
                     />,
                     <Route
@@ -195,7 +195,7 @@ export default function AppComposeRouter({
                             />
                         )}
                     />,
-                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}`}>
+                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}`}>
