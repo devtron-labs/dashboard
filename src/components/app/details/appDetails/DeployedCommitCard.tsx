@@ -6,10 +6,10 @@ import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-c
 
 export const DeployedCommitCard = () => {
     return (
-        <div data-testid="deployed-commit-card" className="card-deployed-commit flex left bcn-0 br-8">
-            <div className="card-deployed-commit__top-container flex">
-                <div className="card-deployed-commit__top-container__content">
-                    <div className="card-deployed-commit__top-container__content__title-wrapper">
+        <div data-testid="deployed-commit-card" className="app-details-info-card flex left bcn-0 br-8 mr-12">
+            <div className="app-details-info-card__top-container flex">
+                <div className="app-details-info-card__top-container__content">
+                    <div className="app-details-info-card__top-container__content__title-wrapper">
                         <div className="fs-12 fw-4 cn-7 mr-5">Deployed commit</div>
                         <Tippy
                             className="default-tt"
@@ -20,20 +20,21 @@ export const DeployedCommitCard = () => {
                             <Question className="icon-dim-16 mt-2" />
                         </Tippy>
                     </div>
-                    <div className="card-deployed-commit__top-container__content__commit-text-wrapper flex fs-12 fw-4">
-                        <CommitIcon className="card-deployed-commit__top-container__content__commit-text-wrapper__commit-icon" />
-                        <div className="card-deployed-commit__top-container__content__commit-text-wrapper__commit-sha">
+                    <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
+                        <CommitIcon className="app-details-info-card__top-container__content__commit-text-wrapper__commit-icon" />
+                        <div className="app-details-info-card__top-container__content__commit-text-wrapper__commit-sha">
                             574588a3
                         </div>
                     </div>
                 </div>
                 <GitHub className="github-icon" />
             </div>
-            <div className="card-deployed-commit__bottom-container flex">
-                <p className="card-deployed-commit__bottom-container__message fs-12 fw-4">
+            <div className="app-details-info-card__bottom-container flex">
+                {/* @TODO: Get this commit message from the api response */}
+                <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
                     Update Dockerfile Resetting Docker file
-                </p>
-                <div className="card-deployed-commit__bottom-container__details fs-12 fw-6">Details</div>
+                </span>
+                <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
             </div>
         </div>
     )
