@@ -19,8 +19,9 @@ import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { DeployedCommitCard } from './DeployedCommitCard'
+import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
+import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -320,6 +321,7 @@ export function SourceInfo({
                             />
                             <IssuesCard />
                             <DeployedCommitCard />
+                            <SecurityVulnerabilityCard />
                             <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (
                                     <>
