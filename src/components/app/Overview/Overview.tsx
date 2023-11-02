@@ -33,6 +33,7 @@ import { getAppConfig, getGitProviderIcon } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
+const Catalog = importComponentFromFELibrary('Catalog')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
@@ -431,7 +432,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             return <div className="app-overview-wrapper flexbox-col dc__gap-12">{renderAppDescription()}</div>
         } else {
             const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.ABOUT]: () => (
+                    <>
+                        {Catalog && <Catalog updatedBy="Utkarsh Arya" updatedOn="Aug 15, 2022" />}
+                        {renderAppDescription()}
+                    </>
+                ),
                 [OVERVIEW_TABS.ENVIRONMENTS]: () => <EnvironmentList appId={+appId} filteredEnvIds={filteredEnvIds} />,
             }
 

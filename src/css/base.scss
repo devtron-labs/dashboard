@@ -3174,7 +3174,7 @@ textarea,
 }
 
 .min-h-100 {
-    min-height: 100%
+    min-height: 100%;
 }
 
 // Height in percentage
@@ -3892,4 +3892,8 @@ textarea::placeholder {
 
 .br-48 {
     border-radius: 48px;
+}
+
+.dc__nowrap {
+    white-space: nowrap;
 }
