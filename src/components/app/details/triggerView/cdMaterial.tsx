@@ -499,12 +499,7 @@ export default function CDMaterial({
         const _material = [...material]
         _material[materialIndex].tab = tab
 
-        if (tab === CDModalTab.Changes) {
-            setMaterial(_material)
-            return
-        }
-
-        if (material[materialIndex].scanned || material[materialIndex].scanEnabled) {
+        if (tab !== CDModalTab.Changes && (material[materialIndex].scanned || material[materialIndex].scanEnabled)) {
             _material[materialIndex].vulnerabilitiesLoading = true
             setMaterial([..._material])
             getLastExecutionByArtifactAppEnv(artifactId, appId, envId)
@@ -950,7 +945,7 @@ export default function CDMaterial({
                         setNoMoreImages(_newMaterials.length >= materialsResponse.totalCount)
 
                         const baseSuccessMessage = `Fetched ${_newMaterialsResponse.length} images.`
-                        if (materialsResponse.resourceFilters?.length && !state.searchApplied) {
+                        if (resourceFilters?.length && !state.searchApplied) {
                             const eligibleImages = _newMaterialsResponse.filter(
                                 (mat) => mat.filterState === FilterStates.ALLOWED,
                             ).length
@@ -1059,25 +1054,15 @@ export default function CDMaterial({
             !state.searchApplied &&
             material.length - Number(consumedImagePresent) > 0
         ) {
-            if (noMoreImages) {
-                return (
-                    <GenericEmptyState
+            return (
+                <GenericEmptyState
                         image={noartifact}
                         title="No eligible image found"
                         subTitle={renderFilterEmptyStateSubtitle()}
-                    />
-                )
-            } else {
-                return (
-                    <GenericEmptyState
-                        image={noartifact}
-                        title="No eligible image found"
-                        subTitle={renderFilterEmptyStateSubtitle()}
-                        isButtonAvailable
+                        isButtonAvailable={noMoreImages}
                         renderButton={renderLoadMoreButton}
                     />
-                )
-            }
+            )
         }
 
         if (searchImageTag) {
