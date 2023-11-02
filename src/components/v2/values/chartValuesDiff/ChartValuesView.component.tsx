@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
 import {
@@ -38,6 +38,7 @@ import {
     DeploymentAppSelectorType,
     UpdateApplicationButtonProps,
     ValueNameInputType,
+    gitOpsDrawerType,
 } from './ChartValuesView.type'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import {
@@ -157,13 +158,6 @@ export const DeploymentAppSelector = ({
     isDeployChartView,
     allowedDeploymentTypes
 }: DeploymentAppSelectorType): JSX.Element => {
-    const [isOpenDrawer, setIsOpenDrawer] = useState<boolean>(commonState.deploymentAppType === 'helm')
-    const handleCloseButton = () => {
-        if(isOpenDrawer) {
-            setIsOpenDrawer(false)
-        }
-    }
-
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
             <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
@@ -199,50 +193,10 @@ export const DeploymentAppSelector = ({
                     handleOnChange={handleDeploymentAppTypeSelection}
                     allowedDeploymentTypes={allowedDeploymentTypes}
                 />
-                {isOpenDrawer && (
-                    <div>
-                        <Drawer position="right" width="600px">
-                            <div className="cluster-form dc__position-rel h-100 bcn-0">
-                                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
-                                    <h2
-                                        data-testid="add_cluster_header"
-                                        className="fs-16 fw-6 lh-1-43 m-0 title-padding"
-                                    >
-                                        <span className="fw-6 fs-16 cn-9">Git Repository</span>
-                                    </h2>
-                                    <button
-                                        data-testid="header_close_icon"
-                                        type="button"
-                                        className="dc__transparent flex icon-dim-24"
-                                        onClick={handleCloseButton}
-                                    >
-                                        <Close className="icon-dim-24" />
-                                    </button>
-                                </div>
-                                <div className="ml-20 mt-10">
-                                    <GitManagment />
-                                </div>
-                            </div>
-                            <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
-                                <button
-                                    data-testid="cancel_button"
-                                    className="cta cancel h-36 lh-36"
-                                    type="button"
-                                    onClick={handleCloseButton}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    data-testid="save_cluster_list_button_after_selection"
-                                    className="cta h-36 lh-36"
-                                    type="button"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </Drawer>
-                    </div>
-                )}
+                <GitOpsDrawer
+                    deploymentAppType={commonState.deploymentAppType}
+                    allowedDeploymentTypes={allowedDeploymentTypes}
+                />
             </div>
         </div>
     )
@@ -265,7 +219,8 @@ export const DeploymentAppRadioGroup = ({
     allowedDeploymentTypes,
     rootClassName,
     isFromCDPipeline,
-}: DeploymentAppRadioGroupType): JSX.Element => {    
+}: DeploymentAppRadioGroupType): JSX.Element => {
+
     return (
         <>
             <RadioGroup
@@ -316,11 +271,67 @@ export const DeploymentAppRadioGroup = ({
     )
 }
 
-// export const GitOpsDrawer = () => {
-//     return (
+const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes}: gitOpsDrawerType): JSX.Element => {
+    const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
+    useEffect(() => {
+        if (deploymentAppType === DeploymentAppTypes.GITOPS) {
+            setIsDeploymentAllowed(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1)
+        }
+    }, [deploymentAppType, allowedDeploymentTypes])
 
-//     )
-// }
+    const handleCloseButton = () => {
+        setIsDeploymentAllowed(false)
+    }
+
+    const handleSaveButton = () => {
+        setIsDeploymentAllowed(false)
+    }
+
+    return (
+        isDeploymentAllowed && (
+            <div>
+                <Drawer position="right" width="600px">
+                    <div className="cluster-form dc__position-rel h-100 bcn-0">
+                        <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                            <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                                <span className="fw-6 fs-16 cn-9">Git Repository</span>
+                            </h2>
+                            <button
+                                data-testid="header_close_icon"
+                                type="button"
+                                className="dc__transparent flex icon-dim-24"
+                                onClick={handleCloseButton}
+                            >
+                                <Close className="icon-dim-24" />
+                            </button>
+                        </div>
+                        <div className="ml-20 mt-10">
+                            <GitManagment />
+                        </div>
+                    </div>
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
+                        <button
+                            data-testid="cancel_button"
+                            className="cta cancel h-36 lh-36 mr-10"
+                            type="button"
+                            onClick={handleCloseButton}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            data-testid="save_cluster_list_button_after_selection"
+                            className="cta h-36 lh-36"
+                            type="button"
+                            onClick={handleSaveButton}
+                        >
+                            Save
+                        </button>
+                    </div>
+                </Drawer>
+            </div>
+        )
+    )
+}
 
 export const ChartProjectSelector = ({
     selectedProject,
@@ -640,4 +651,3 @@ export const UpdateApplicationButton = ({
         </button>
     )
 }
-

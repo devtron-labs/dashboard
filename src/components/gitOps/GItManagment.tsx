@@ -9,10 +9,12 @@ import React, { useState } from 'react'
 import { AppCreationType, repoType } from '../../config/constants'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 
 function GitManagment() {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
-    const [repoText, setRepoText] = useState("")
+    const [repoText, setRepoText] = useState('')
 
     const repoTypeChange = () => {
         if (selectedRepoType === 'DEFAULT') {
@@ -23,10 +25,10 @@ function GitManagment() {
     }
 
     const onChange = (event) => {
-        if(event.target.value === "") {
-            setRepoText("")
+        if (event.target.value === '') {
+            setRepoText('')
         } else {
-            setRepoText(event.target.value)   
+            setRepoText(event.target.value)
         }
     }
 
@@ -59,30 +61,32 @@ function GitManagment() {
     }
 
     return (
-        <div>
-            <div className="form__row flex left">
-                <div className="fw-6 cn-9 fs-14 mb-16">GitOps Configuration</div>
-                <RadioGroup
-                    className="radio-group-no-border"
-                    name="trigger-type"
-                    value={selectedRepoType}
-                    onChange={repoTypeChange}
-                >
-                    <div className="">
-                        <RadioGroupItem value={repoType.DEFAULT}>Auto-create repository</RadioGroupItem>
-                        <div className="ml-26">Repository will be created automatically</div>
-                    </div>
-                    <div>
-                        <RadioGroupItem value={repoType.CONFIGURE}>
-                            Commit manifest to a desired repository.
-                        </RadioGroupItem>
-                    </div>
-                </RadioGroup>
-                {selectedRepoType === 'CONFIGURE' && inputUrlBox()}
+        <>
+            <div>
+                <div className="form__row flex left">
+                    <div className="fw-6 cn-9 fs-14 mb-16">GitOps Configuration</div>
+                    <RadioGroup
+                        className="radio-group-no-border"
+                        name="trigger-type"
+                        value={selectedRepoType}
+                        onChange={repoTypeChange}
+                    >
+                        <div className="">
+                            <RadioGroupItem value={repoType.DEFAULT}>Auto-create repository</RadioGroupItem>
+                            <div className="ml-26">Repository will be created automatically</div>
+                        </div>
+                        <div>
+                            <RadioGroupItem value={repoType.CONFIGURE}>
+                                Commit manifest to a desired repository.
+                            </RadioGroupItem>
+                        </div>
+                    </RadioGroup>
+                    {selectedRepoType === 'CONFIGURE' && inputUrlBox()}
+                </div>
+                {renderInfoColorBar()}
+                <hr />
             </div>
-            {renderInfoColorBar()}
-            <hr />
-        </div>
+        </>
     )
 }
 

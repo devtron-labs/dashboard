@@ -760,7 +760,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         </div>
                         <hr />
                     </div>
-                    <div className="form__buttons">
+                    <div className="form__buttons flex left">
                         <button
                             type="submit"
                             disabled={this.state.saveLoading}

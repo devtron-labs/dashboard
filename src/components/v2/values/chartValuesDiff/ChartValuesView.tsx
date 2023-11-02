@@ -1540,7 +1540,8 @@ function ChartValuesView({
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
                             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig?.isOCICompliantChart &&(
+                            !appDetails?.isVirtualEnvironment &&
+                            !commonState.installedConfig?.isOCICompliantChart && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}
@@ -1549,7 +1550,6 @@ function ChartValuesView({
                                     allowedDeploymentTypes={allowedDeploymentTypes}
                                 />
                             )}
-                        <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {/**
                          * ChartRepoSelector will be displayed only when,
                          * - It's not a deploy chart view

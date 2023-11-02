@@ -101,6 +101,11 @@ export interface DeploymentAppRadioGroupType {
     isFromCDPipeline?: boolean
 }
 
+export interface gitOpsDrawerType{
+    deploymentAppType: string
+    allowedDeploymentTypes?: DeploymentAppTypes[]
+}
+
 export interface ChartProjectSelectorType {
     selectedProject: ChartValuesOptionType
     handleProjectSelection: (selected: ChartValuesOptionType) => void
