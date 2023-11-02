@@ -407,7 +407,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderOverviewContent() {
         if (isJobOverview) {
             const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.ABOUT]: () => (
+                    <>
+                        {Catalog && <Catalog updatedBy="Utkarsh Arya" updatedOn="Aug 15, 2022" />}
+                        {renderAppDescription()}
+                    </>
+                ),
                 [OVERVIEW_TABS.JOB_PIPELINES]: renderWorkflowsStatus,
             }
 

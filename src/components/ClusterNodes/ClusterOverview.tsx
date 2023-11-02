@@ -24,6 +24,9 @@ import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluste
 import { MAX_LENGTH_350, SOME_ERROR_MSG } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { EditableTextArea } from '../common/EditableTextArea/EditableTextArea'
+import { importComponentFromFELibrary } from '../common'
+
+const Catalog = importComponentFromFELibrary('Catalog')
 
 function ClusterOverview({
     isSuperAdmin,
@@ -587,6 +590,7 @@ function ClusterOverview({
                     <div className="dc__overflow-scroll pr-20 dc__mxw-1400">
                         {renderCardDetails()}
                         {renderClusterError()}
+                        {Catalog && <Catalog updatedBy="Utkarsh Arya" updatedOn="Aug 15, 2022" />}
                         <GenericDescription
                             isClusterTerminal={true}
                             clusterId={clusterId}
