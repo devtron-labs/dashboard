@@ -6,7 +6,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
+import { ButtonWithLoader, getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
@@ -130,7 +130,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     redirectToCIPipeline = () => {
         this.props.history.push(
-            `/app/${this.props.appId}/edit/workflow/${this.props.workflowId}/ci-pipeline/${this.props.pipelineId}/build`,
+            getCIPipelineURL(this.props.appId, this.props.workflowId.toString(), true, this.props.pipelineId, false, this.props.isJobCI),
         )
     }
 
@@ -224,6 +224,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isJobView={this.props.isJobView}
                         isCITriggerBlocked={this.props.isCITriggerBlocked}
                         ciBlockState={this.props.ciBlockState}
+                        isJobCI={this.props.isJobCI}
                     />
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null

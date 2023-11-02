@@ -8,6 +8,7 @@ import {
     OptionType,
     ToastBody,
     DeleteDialog,
+    ErrorScreenManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import AppConfig from './appConfig/AppConfig'
@@ -56,6 +57,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [deleting, setDeleting] = useState<boolean>(false)
+    const [errorStatusCode, setErrorStatusCode] = useState(0)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -137,7 +139,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
-            showError(err)
+            if (err['code'] === 403) {
+                setErrorStatusCode(403)
+            }
+            else {
+                showError(err)
+            }
         }
     }
 
@@ -283,9 +290,21 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
+    if (errorStatusCode) {
+        return (
+            <div className="dc__loading-wrapper">
+                <ErrorScreenManager
+                    code={errorStatusCode}
+                    subtitle="You do not have access to view information on this page."
+                />
+            </div>
+        )
+    }
+
     if (appListLoading) {
         return <Progressing pageLoader />
     }
+
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
         <div className="app-details-page">
