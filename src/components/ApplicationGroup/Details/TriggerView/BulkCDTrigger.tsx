@@ -51,7 +51,7 @@ export default function BulkCDTrigger({
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
-    const [isDownloadPopupOpen, setDownloadPopupOpen] = useState(false);
+    const [isDownloadPopupOpen, setDownloadPopupOpen] = useState(false)
     const [tagNotFoundWarningsMap, setTagNotFoundWarningsMap] = useState<Map<number, string>>(new Map())
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -64,21 +64,20 @@ export default function BulkCDTrigger({
     const history = useHistory()
     const match = useRouteMatch()
 
-    useEffect(()=>{
+    useEffect(() => {
         const searchParams = new URLSearchParams(location.search)
         const search = searchParams.get('search')
 
         if (search) {
-            const _appSearchTextMap={...appSearchTextMap}
-            _appSearchTextMap[selectedApp.appId]=search
+            const _appSearchTextMap = { ...appSearchTextMap }
+            _appSearchTextMap[selectedApp.appId] = search
             setAppSearchTextMap(_appSearchTextMap)
-        }
-        else {
-            const _appSearchTextMap={...appSearchTextMap}
+        } else {
+            const _appSearchTextMap = { ...appSearchTextMap }
             delete _appSearchTextMap[selectedApp.appId]
             setAppSearchTextMap(_appSearchTextMap)
         }
-    },[location])
+    }, [location])
 
     const closeBulkCDModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
@@ -157,13 +156,46 @@ export default function BulkCDTrigger({
                 )
             }
         }
-        
+
         const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
         Promise.allSettled(_CDMaterialPromiseList)
             .then((responses) => {
                 responses.forEach((response) => {
                     if (response.status === 'fulfilled') {
                         _cdMaterialResponse[response.value['appId']] = response.value
+                        // if first image does not have filerState.ALLOWED then unselect all images and set SELECT_NONE for selectedImage and for first app send the trigger of SELECT_NONE from selectedImageFromBulk
+                        if (
+                            response.value.materials?.length > 0 &&
+                            response.value.materials[0].filterState !== FilterStates.ALLOWED
+                        ) {
+                            const updatedMaterials = response.value.materials.map((mat) => ({
+                                ...mat,
+                                isSelected: false,
+                            }))
+                            _cdMaterialResponse[response.value['appId']] = {
+                                ...response.value,
+                                materials: updatedMaterials,
+                            }
+                            setSelectedImages((prevSelectedImages) => ({
+                                ...prevSelectedImages,
+                                [response.value['appId']]: BulkSelectionEvents.SELECT_NONE,
+                            }))
+                            setTagNotFoundWarningsMap((prevTagNotFoundWarningsMap) => {
+                                const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
+                                _tagNotFoundWarningsMap.set(
+                                    response.value['appId'],
+                                    "Tag '" +
+                                        (selectedTagName.value?.length > 15
+                                            ? selectedTagName.value.substring(0, 10) + '...'
+                                            : selectedTagName.value) +
+                                        "' is not eligible",
+                                )
+                                return _tagNotFoundWarningsMap
+                            })
+                            if (response.value['appId'] === selectedApp.appId) {
+                                setSelectedImageFromBulk(BulkSelectionEvents.SELECT_NONE)
+                            }
+                        }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
                         const errorReason = response.reason
@@ -209,12 +241,11 @@ export default function BulkCDTrigger({
         if (appSearchTextMap[_selectedApp.appId]) {
             const newSearchParams = new URLSearchParams(location.search)
             newSearchParams.set('search', appSearchTextMap[_selectedApp.appId])
-            
+
             history.push({
                 search: newSearchParams.toString(),
             })
-        }
-        else {
+        } else {
             history.push({
                 search: '',
             })
@@ -245,10 +276,10 @@ export default function BulkCDTrigger({
             return <Progressing pageLoader />
         }
 
-        const updateCurrentAppMaterial = (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => {
+        const updateCurrentAppMaterial = (matId: number, releaseTags?: ReleaseTag[], imageComment?: ImageComment) => {
             const updatedCurrentApp = selectedApp
-            updatedCurrentApp?.material.forEach((mat)=>{
-                if (mat.id === matId){
+            updatedCurrentApp?.material.forEach((mat) => {
+                if (mat.id === matId) {
                     if (releaseTags) {
                         mat.imageReleaseTags = releaseTags
                     }
@@ -262,7 +293,9 @@ export default function BulkCDTrigger({
 
         const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
         uniqueReleaseTags.sort((a, b) => a.localeCompare(b))
-        const tagsList = ['latest']
+
+        const tagsList = ['latest', 'active']
+
         tagsList.push(...uniqueReleaseTags)
         const options = tagsList.map((tag) => {
             return { label: tag, value: tag }
@@ -276,16 +309,16 @@ export default function BulkCDTrigger({
                 mat.imageReleaseTags?.forEach((imageTag) => {
                     tagsToArtifactIdMap[imageTag.tagName] = i
                 })
+
+                if (mat.deployed && mat.latest) {
+                    tagsToArtifactIdMap['active'] = i
+                }
             }
             appWiseTagsToArtifactIdMapMappings[app.appId] = tagsToArtifactIdMap
         })
 
         // Don't use it as single, use it through update function
-        const selectImageLocal = (
-            index: number,
-            appId: number,
-            selectedImageTag: string,
-        ) => {
+        const selectImageLocal = (index: number, appId: number, selectedImageTag: string) => {
             setSelectedImages({ ...selectedImages, [appId]: selectedImageTag })
 
             if (appWiseTagsToArtifactIdMapMappings[appId][selectedTagName.value] !== index) {
@@ -296,16 +329,17 @@ export default function BulkCDTrigger({
             }
         }
 
-        const parseApplistIntoCDMaterialResponse = (appListData: BulkCDDetailType, updatedMaterials?: CDMaterialType) => {
-            return {
+        const parseApplistIntoCDMaterialResponse = (
+            appListData: BulkCDDetailType,
+            updatedMaterials?: CDMaterialType,
+        ) => ({
                 materials: updatedMaterials ?? appListData.material,
                 approvalUsers: appListData.approvalUsers,
                 requestedUserId: appListData.requestedUserId,
                 userApprovalConfig: appListData.userApprovalConfig,
                 appReleaseTagNames: appListData.appReleaseTags,
                 tagsEditable: appListData.tagsEditable,
-            }
-        }
+            })
 
         const handleTagChange = (selectedTag) => {
             setSelectedTagName(selectedTag)
@@ -325,20 +359,40 @@ export default function BulkCDTrigger({
                     const selectedImageFilterState = app.material?.[artifactIndex]?.filterState
                     if (selectedImageFilterState !== FilterStates.ALLOWED) {
                         artifactIndex = -1
-                        _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' is excluded")
+                        _tagNotFoundWarningsMap.set(
+                            app.appId,
+                            "Tag '" +
+                                (selectedTag.value?.length > 15
+                                    ? selectedTag.value.substring(0, 10) + '...'
+                                    : selectedTag.value) +
+                                "' is not eligible",
+                        )
                     }
-                }
-                else {
-                    _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' not found")
+                } else {
+                    _tagNotFoundWarningsMap.set(
+                        app.appId,
+                        "Tag '" +
+                            (selectedTag.value?.length > 15
+                                ? selectedTag.value.substring(0, 10) + '...'
+                                : selectedTag.value) +
+                            "' not found",
+                    )
                 }
 
-                if (artifactIndex !== -1 && selectedTag.value !== 'latest') {
+                if (artifactIndex !== -1 && selectedTag.value !== 'latest' && selectedTag.value !== 'active') {
                     const releaseTag = app.material[artifactIndex]?.imageReleaseTags.find(
                         (releaseTag) => releaseTag.tagName === selectedTag.value,
                     )
                     if (releaseTag?.deleted) {
                         artifactIndex = -1
-                        _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' is soft-deleted")
+                        _tagNotFoundWarningsMap.set(
+                            app.appId,
+                            "Tag '" +
+                                (selectedTag.value?.length > 15
+                                    ? selectedTag.value.substring(0, 10) + '...'
+                                    : selectedTag.value) +
+                                "' is soft-deleted",
+                        )
                     }
                 }
 
@@ -353,14 +407,11 @@ export default function BulkCDTrigger({
 
                     _cdMaterialResponse[app.appId] = parseApplistIntoCDMaterialResponse(app, updatedMaterials)
 
-                    setSelectedImages((prevSelectedImages)=>(
-                        {
-                            ...prevSelectedImages,
-                            [app.appId]: selectedImageName
-                        }
-                    ))
-                }
-                else {
+                    setSelectedImages((prevSelectedImages) => ({
+                        ...prevSelectedImages,
+                        [app.appId]: selectedImageName,
+                    }))
+                } else {
                     const updatedMaterials: any = app.material?.map((mat) => {
                         return {
                             ...mat,
@@ -370,12 +421,10 @@ export default function BulkCDTrigger({
 
                     _cdMaterialResponse[app.appId] = parseApplistIntoCDMaterialResponse(app, updatedMaterials)
 
-                    setSelectedImages((prevSelectedImages)=>(
-                        {
-                            ...prevSelectedImages,
-                            [app.appId]: BulkSelectionEvents.SELECT_NONE
-                        }
-                    ))
+                    setSelectedImages((prevSelectedImages) => ({
+                        ...prevSelectedImages,
+                        [app.appId]: BulkSelectionEvents.SELECT_NONE,
+                    }))
                 }
             }
 
@@ -388,8 +437,7 @@ export default function BulkCDTrigger({
 
             if (selectedImageName) {
                 setSelectedImageFromBulk(selectedImageName)
-            }
-            else {
+            } else {
                 setSelectedImageFromBulk(BulkSelectionEvents.SELECT_NONE)
             }
 
@@ -412,7 +460,7 @@ export default function BulkCDTrigger({
         const updateBulkCDMaterialsItem = (singleCDMaterialResponse) => {
             const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
             _cdMaterialResponse[selectedApp.appId] = singleCDMaterialResponse
-            
+
             updateBulkInputMaterial(_cdMaterialResponse)
 
             const selectedArtifact = singleCDMaterialResponse?.materials?.find(
@@ -434,7 +482,6 @@ export default function BulkCDTrigger({
                         <span className="pl-16 pr-16">Select image by release tag</span>
                         <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
                             <ReactSelect
-                                tabIndex={1}
                                 isSearchable
                                 options={options}
                                 value={selectedTagName}
@@ -443,6 +490,7 @@ export default function BulkCDTrigger({
                                 onChange={handleTagChange}
                                 isDisabled={false}
                                 classNamePrefix="build-config__select-repository-containing-code"
+                                autoFocus
                             />
                         </div>
                         <div
@@ -542,7 +590,7 @@ export default function BulkCDTrigger({
                     data-testid="deploy-button"
                     onClick={onClickStartDeploy}
                     disabled={isDeployDisabled()}
-                    type='button'
+                    type="button"
                 >
                     {isLoading ? (
                         <Progressing />

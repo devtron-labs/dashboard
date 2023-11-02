@@ -30,7 +30,6 @@ import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import noResults from '../../../../assets/img/empty-noresult@2x.png'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
 import {
     CDMaterialType,
@@ -691,6 +690,14 @@ export default function CDMaterial({
         }))
     }
 
+    const handleAllImagesView = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
+        setState((prevState) => ({
+            ...prevState,
+            filterView: FilterConditionViews.ALL,
+        }))
+    }
+
     const getFilterActionBarTabs = (filteredImagesCount: number, consumedImageCount: number) => [
         {
             label: `Eligible images ${filteredImagesCount}/${material.length - consumedImageCount}`,
@@ -954,9 +961,9 @@ export default function CDMaterial({
                                     : `${eligibleImages} new eligible images found.`
 
                             if (state.filterView === FilterConditionViews.ELIGIBLE) {
-                                toast.success(`${baseSuccessMessage} ${infoMessage}`)
-                            } else {
                                 toast.info(`${baseSuccessMessage} ${infoMessage}`)
+                            } else {
+                                toast.success(`${baseSuccessMessage} ${infoMessage}`)
                             }
                         } else {
                             toast.success(baseSuccessMessage)
@@ -1011,14 +1018,34 @@ export default function CDMaterial({
 
     const renderLoadMoreButton = () => (
         <ButtonWithLoader
-            rootClassName="flex cta h-36"
+            rootClassName="cn-7 flex fs-12 fw-6 lh-18 br-4 dc__border mw-56 fetch-more-loading-button cta cancel"
             onClick={loadOlderImages}
             disabled={state.loadingMore}
             isLoading={state.loadingMore}
-            loaderColor="white"
+            loaderColor="blue"
         >
             Fetch More Images
         </ButtonWithLoader>
+    )
+
+    const renderFilterEmptyStateSubtitle = (): JSX.Element => (
+        <p className="m-0 flex cn-8 fs-13 fw-4 lh-20">
+            <button
+                className="dc__no-background p-0 dc__outline-none-imp dc__no-border dc__border-bottom-imp mr-4"
+                type="button"
+                onClick={handleEnableFiltersView}
+            >
+                Filter
+            </button>
+            is applied on
+            <button
+                className="dc__no-background p-0 dc__outline-none-imp dc__no-border dc__border-bottom-imp ml-4 mb-neg-1"
+                type="button"
+                onClick={handleAllImagesView}
+            >
+                {` latest ${material.length} images`}
+            </button>
+        </p>
     )
 
     const renderEmptyState = (
@@ -1035,17 +1062,17 @@ export default function CDMaterial({
             if (noMoreImages) {
                 return (
                     <GenericEmptyState
-                        image={noResults}
+                        image={noartifact}
                         title="No eligible image found"
-                        subTitle={`Latest ${material.length} images are not passing the filter conditions`}
+                        subTitle={renderFilterEmptyStateSubtitle()}
                     />
                 )
             } else {
                 return (
                     <GenericEmptyState
-                        image={noResults}
+                        image={noartifact}
                         title="No eligible image found"
-                        subTitle={`Latest ${material.length} images are not passing the filter conditions`}
+                        subTitle={renderFilterEmptyStateSubtitle()}
                         isButtonAvailable
                         renderButton={renderLoadMoreButton}
                     />
@@ -1201,11 +1228,11 @@ export default function CDMaterial({
             )
         } else if (!mat.vulnerabilitiesLoading && mat.vulnerabilities.length === 0) {
             return (
-                <div className="security-tab-empty summary-view__card">
+                <div className="security-tab-empty">
                     <p className="security-tab-empty__title">{NO_VULNERABILITY_TEXT.Secured}</p>
                     <p>{NO_VULNERABILITY_TEXT.NoVulnerabilityFound}</p>
                     <p className="security-tab-empty__subtitle">{mat.lastExecution}</p>
-                    <p className="workflow__header dc__border-radius-24 bcn-0">
+                    <p className="pt-8 pb-8 pl-16 pr-16 flexbox dc__align-items-center">
                         <ScannedByToolModal scanToolId={mat.scanToolId} />
                     </p>
                 </div>
@@ -1735,23 +1762,13 @@ export default function CDMaterial({
                     ? renderEmptyState(isApprovalConfigured, consumedImage.length > 0, !eligibleImagesCount)
                     : renderMaterial(materialList, false, isApprovalConfigured)}
 
-                {!!resourceFilters?.length &&
-                    !state.searchApplied &&
-                    state.filterView === FilterConditionViews.ELIGIBLE &&
-                    !!materialList?.length && (
-                        <div className="flex cn-7 fs-13 fw-4 lh-24 dc__gap-4 pb-12">
-                            <WarningIcon className="icon-dim-12" />
-                            No more eligible images found
-                        </div>
-                    )}
-
                 {!noMoreImages && !!materialList?.length && (
                     <button
                         className="show-older-images-cta cta ghosted flex h-32"
                         onClick={loadOlderImages}
                         type="button"
                     >
-                        {state.loadingMore ? <Progressing styles={{ height: '32px' }} /> : 'Show older images'}
+                        {state.loadingMore ? <Progressing styles={{ height: '32px' }} /> : 'Fetch more images'}
                     </button>
                 )}
             </>

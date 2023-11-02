@@ -782,7 +782,7 @@ button.anchor {
 .Toastify__toast--default {
     &.devtron-toast {
         &:before {
-            background-image: url('../assets/icons/ic-info-filled.svg');
+            background-image: url('../assets/icons/ic-info-filled-lg.svg');
         }
     }
 }
@@ -3295,6 +3295,10 @@ textarea,
     margin: auto;
 }
 
+.mb-neg-1 {
+    margin-bottom: -1px;
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
@@ -3850,4 +3854,9 @@ textarea::placeholder {
 
 .br-48 {
     border-radius: 48px;
+}
+
+.fetch-more-loading-button svg {
+    width: 100% !important;
+    height: 100% !important;
 }
