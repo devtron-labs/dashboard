@@ -333,13 +333,13 @@ export default function BulkCDTrigger({
             appListData: BulkCDDetailType,
             updatedMaterials?: CDMaterialType,
         ) => ({
-                materials: updatedMaterials ?? appListData.material,
-                approvalUsers: appListData.approvalUsers,
-                requestedUserId: appListData.requestedUserId,
-                userApprovalConfig: appListData.userApprovalConfig,
-                appReleaseTagNames: appListData.appReleaseTags,
-                tagsEditable: appListData.tagsEditable,
-            })
+            materials: updatedMaterials ?? appListData.material,
+            approvalUsers: appListData.approvalUsers,
+            requestedUserId: appListData.requestedUserId,
+            userApprovalConfig: appListData.userApprovalConfig,
+            appReleaseTagNames: appListData.appReleaseTags,
+            tagsEditable: appListData.tagsEditable,
+        })
 
         const handleTagChange = (selectedTag) => {
             setSelectedTagName(selectedTag)
