@@ -209,3 +209,7 @@ export interface DeploymentStatusCardType {
   isVirtualEnvironment?: boolean
   refetchDeploymentStatus: (showTimeline?: boolean)=> void
 }
+
+export interface IssuesCardType {
+    hideDetails?: boolean
+}
