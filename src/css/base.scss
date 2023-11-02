@@ -578,6 +578,10 @@ a:focus {
     &.direction-left {
         text-align: left;
     }
+
+    &.text-overflow-clip {
+        text-overflow: clip;
+    }
 }
 
 .anchor {
@@ -1589,6 +1593,10 @@ button.anchor {
     &:not(.form__input--error):focus {
         border: solid 1px var(--B500);
     }
+
+    &--vertical {
+        resize: vertical;
+    }
 }
 
 .dc__resizable-textarea__with-max-height {
@@ -2154,6 +2162,10 @@ button.anchor {
     max-width: none !important;
 }
 
+.dc__mxw-120 {
+    max-width: 120px;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2180,6 +2192,10 @@ button.anchor {
 
 .dc__mxw-1000 {
     max-width: 1000px;
+}
+
+.dc__mxw-1068 {
+    max-width: 1068px;
 }
 
 .dc__mxw-180 {
@@ -3089,6 +3105,10 @@ textarea,
     min-height: 30px;
 }
 
+.mh-40 {
+    min-height: 40px;
+}
+
 .mh-48 {
     min-height: 48px;
 }
@@ -3121,8 +3141,16 @@ textarea,
     min-height: 400px;
 }
 
+.mh-500 {
+    min-height: 500px;
+}
+
 .mh-600 {
     min-height: 600px;
+}
+
+.mxh-64 {
+    max-height: 64px;
 }
 
 .mxh-140 {
@@ -3379,6 +3407,10 @@ textarea,
     background: none;
 }
 
+.dc__no-background-imp {
+    background: none !important;
+}
+
 //Overflow
 .dc__overflow-hidden {
     overflow: hidden !important;
@@ -3419,7 +3451,9 @@ textarea,
 .dc__column-gap-24 {
     column-gap: 24px;
 }
-
+.dc__column-gap-32 {
+    column-gap: 32px;
+}
 .dc__gap-2 {
     gap: 2px;
 }

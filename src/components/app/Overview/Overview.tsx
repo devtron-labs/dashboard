@@ -1,86 +1,77 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
-import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
-import { showError, Progressing, TagType, stopPropagation, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { Moment12HourFormat, OVERVIEW_TABS, URLS } from '../../../config'
+import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
-    handleUTCTime,
-    importComponentFromFELibrary,
-    processDeployedTime,
-    sortOptionsByValue,
-} from '../../common'
-import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
+    showError,
+    Progressing,
+    TagType,
+    stopPropagation,
+    useAsync,
+    getRandomColor,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { EditableTextArea, RadioGroup, handleUTCTime, importComponentFromFELibrary } from '../../common'
+import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
-import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'
-import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
 import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CrossIcon } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
-import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
+import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
-import {
-    ExternalLinkIdentifierType,
-    ExternalLinksAndToolsType,
-    ExternalLinkScopeType,
-} from '../../externalLinks/ExternalLinks.type'
-import { getExternalLinks } from '../../externalLinks/ExternalLinks.service'
-import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
-import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
-import AppStatus from '../AppStatus'
-import { StatusConstants , DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
-import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
+import { editApp } from '../service'
+import { getAppConfig, getGitProviderIcon } from './utils'
+import { EnvironmentList } from './EnvironmentList'
+import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
-export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview, filteredEnvIds }: AppOverviewProps) {
-    const { appId } = useParams<{ appId: string }>()
+export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
+    const { appId: appIdFromParams } = useParams<{ appId: string }>()
+    const config = getAppConfig(appType)
+    const isJobOverview = appType === 'job'
+    const isHelmChart = appType === 'helm-chart'
+    // For helm the appId from the params is the installed appId and not the actual id of the app
+    const appId = isHelmChart ? `${appMetaInfo.appId}` : appIdFromParams
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
-    const [descriptionId,setDescriptionId] = useState<number>(0)
-    const [newDescription, setNewDescription] = useState<string>(isJobOverview ? DefaultJobNote : DefaultAppNote)
+    const [descriptionId, setDescriptionId] = useState<number>(0)
+    const [newDescription, setNewDescription] = useState<string>(config.defaultNote)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
-    const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
-        fetchingExternalLinks: true,
-        externalLinks: [],
-        monitoringTools: [],
-    })
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(
-        () => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]),
-        [appId],
-        !isJobOverview,
-    )
-    const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
+    const [activeTab, setActiveTab] = useState<typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]>(OVERVIEW_TABS.ABOUT)
+    const resourceName = config.resourceName
+
     let _moment: moment.Moment
     let _date: string
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
-            _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
-            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
-            const description = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? appMetaInfo.description.description : (isJobOverview ? DefaultJobNote : DefaultAppNote)
-            _date = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? _date : ''
+            _moment = moment(appMetaInfo?.note?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.note?.updatedOn
+            const description =
+                appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id
+                    ? appMetaInfo.note.description
+                    : config.defaultNote
+            _date = appMetaInfo?.note?.description !== '' && appMetaInfo?.note?.id ? _date : ''
             setNewUpdatedOn(_date)
-            setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
+            setNewUpdatedBy(appMetaInfo?.note?.updatedBy)
             setNewDescription(description)
-            setDescriptionId(appMetaInfo?.description?.id)
+            setDescriptionId(appMetaInfo?.note?.id)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -88,49 +79,13 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     useEffect(() => {
         if (isJobOverview) {
             getCIPipelinesForJob()
-        } else {
-            getExternalLinksDetails()
         }
     }, [appId])
 
-    const envList = useMemo(() => {
-        if (otherEnvsResult?.[0]?.result?.length > 0) {
-            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-            return (
-                otherEnvsResult[0].result
-                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
-            )
-        }
-        return []
-    }, [filteredEnvIds, otherEnvsResult])
-
-    const getExternalLinksDetails = (): void => {
-        getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
-            .then((externalLinksRes) => {
-                setExternalLinksAndTools({
-                    fetchingExternalLinks: false,
-                    externalLinks:
-                        externalLinksRes.result?.ExternalLinks?.filter(
-                            (_link) => _link.type === ExternalLinkScopeType.AppLevel,
-                        ).sort(sortByUpdatedOn) || [],
-                    monitoringTools:
-                        externalLinksRes.result?.Tools?.map((tool) => ({
-                            label: tool.name,
-                            value: tool.id,
-                            icon: tool.icon,
-                        })).sort(sortOptionsByValue) || [],
-                })
-            })
-            .catch((e) => {
-                showError(e)
-                setExternalLinksAndTools({
-                    fetchingExternalLinks: false,
-                    externalLinks: [],
-                    monitoringTools: [],
-                })
-            })
-    }
+    useEffect(() => {
+        // Reload the app meta info in case it has changed
+        getAppMetaInfoRes()
+    }, [])
 
     const getCIPipelinesForJob = (): void => {
         getJobCIPipeline(appId)
@@ -165,8 +120,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
-                description={appMetaInfo.description.description}
-                isJobOverview={isJobOverview}
+                description={appMetaInfo.note.description}
+                appType={appType}
             />
         )
     }
@@ -180,194 +135,161 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 currentLabelTags={currentLabelTags}
-                description={appMetaInfo.description.description}
+                description={appMetaInfo.note.description}
+                appType={appType}
             />
         )
     }
 
     const renderSideInfoColumn = () => {
-        return (
-            <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
-                <div className="mb-16" data-testid={`overview-${isJobOverview ? 'job' : 'app'}`}>
-                    {isJobOverview ? 'Job name' : 'App name'}
-                    <div
-                        className="fs-13 fw-4 lh-20 cn-9"
-                        data-testid={`overview-${isJobOverview ? 'job' : 'app'}Name`}
-                    >
-                        {appMetaInfo?.appName}
-                    </div>
-                </div>
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdon">
-                        Created on
-                    </div>
-                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdonName">
-                        {appMetaInfo?.createdOn ? moment(appMetaInfo.createdOn).format(Moment12HourFormat) : '-'}
-                    </div>
-                </div>
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdby">
-                        Created by
-                    </div>
-                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdbyName">
-                        {appMetaInfo?.createdBy}
-                    </div>
-                </div>
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-project">
-                        Project
-                    </div>
-                    <div
-                        className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9"
-                        data-testid="overview-projectName"
-                    >
-                        {appMetaInfo?.projectName}
-                        <EditIcon
-                            data-testid="overview-project-edit"
-                            className="icon-dim-20 cursor"
-                            onClick={toggleChangeProjectModal}
-                        />
-                    </div>
-                </div>
-            </div>
-        )
-    }
+        const { appName, description, gitMaterials = [], createdOn, createdBy, projectName, chartUsed } = appMetaInfo
 
-    const renderLabelTags = () => {
-        return (
-            <div className="p-16 dc__border-bottom-n1">
-                <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="overview-tags">
-                        <TagIcon className="tags-icon icon-dim-20 mr-8" />
-                        Tags
-                    </div>
-                    <div
-                        className="flex fs-14 fw-4 lh-16 cn-7 cursor"
-                        onClick={toggleTagsUpdateModal}
-                        data-testid="overview-tag-edit"
-                    >
-                        <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                        Edit
-                    </div>
-                </div>
-                <TagChipsContainer labelTags={currentLabelTags} />
-                {MandatoryTagWarning && (
-                    <MandatoryTagWarning
-                        labelTags={currentLabelTags}
-                        handleAddTag={toggleTagsUpdateModal}
-                        selectedProjectId={appMetaInfo.projectId}
-                        reloadProjectTags={reloadMandatoryProjects}
-                    />
-                )}
-            </div>
-        )
-    }
+        const handleSaveDescription = async (value: string) => {
+            const payload: EditAppRequest = {
+                id: +appId,
+                teamId: appMetaInfo.projectId,
+                description: value?.trim(),
+                labels: appMetaInfo.labels,
+            }
 
-    // Update once new API changes are introduced
-    const renderAppLevelExternalLinks = () => {
-        return (
-            <div className="flex column left p-16 dc__border-bottom-n1">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-external-links">
-                    <LinkedIcon className="icon-dim-20 mr-8" />
-                    External Links
-                </div>
-                {externalLinksAndTools.fetchingExternalLinks ? (
-                    <div className="dc__loading-dots" data-testid="overview-external-links-not-present" />
-                ) : (
-                    <AppLevelExternalLinks
-                        isOverviewPage={true}
-                        appDetails={
-                            {
-                                appId: +appId,
-                                appName: appMetaInfo?.appName,
-                            } as AppDetails
-                        }
-                        externalLinks={externalLinksAndTools.externalLinks}
-                        monitoringTools={externalLinksAndTools.monitoringTools}
-                    />
-                )}
-            </div>
-        )
-    }
-
-    const envIcon = (isVirtualCluster) => {
-        if (isVirtualCluster) {
-            return <VirtualEnvIcon className="fcb-5 icon-dim-20" />
-        } else {
-            return <Database className="icon-dim-20" />
+            try {
+                await editApp(payload)
+                toast.success('Successfully saved')
+                await getAppMetaInfoRes()
+            } catch (err) {
+                showError(err)
+                throw err
+            }
         }
-    }
 
-    const renderDeploymentComponent = () => {
-
-        if (envList.length > 0) {
-            return (
-                <div className="env-deployments-info-wrapper w-100">
-                    <div
-                        className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7"
-                        data-testid="overview-deployed-environment"
-                    >
-                        <span />
-                        <span>Environment</span>
-                        {isArgoInstalled && <span>App status</span>}
-                        <span>Last deployed</span>
+        return (
+            <aside className="flexbox-col dc__gap-16">
+                <div className="flexbox-col dc__gap-12">
+                    {(config.icon || (isHelmChart && !!chartUsed)) && (
+                        <div>
+                            {config.icon ?? (
+                                // For Helm Charts
+                                <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
+                                    <img
+                                        src={chartUsed.chartAvatar || defaultChartImage}
+                                        alt="App icon"
+                                        className={`dc__chart-grid-item__icon ${
+                                            chartUsed.chartAvatar ? '' : 'icon-dim-48'
+                                        }`}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">{appName}</div>
+                    <EditableTextArea
+                        emptyState={config.defaultDescription}
+                        placeholder={config.defaultDescription}
+                        rows={4}
+                        initialText={description}
+                        updateContent={handleSaveDescription}
+                        validations={{
+                            maxLength: {
+                                value: 350,
+                                message: MAX_LENGTH_350,
+                            },
+                        }}
+                    />
+                </div>
+                <div className="dc__border-top-n1" />
+                <div className="flexbox-col dc__gap-12">
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Project</div>
+                        <div className="flexbox flex-justify flex-align-center dc__gap-10 fs-13 fw-6 lh-20 cn-9">
+                            {projectName}
+                            <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleChangeProjectModal} />
+                        </div>
                     </div>
-
-                    <div className="env-deployments-info-body">
-                        {envList.map(
-                            (_env, index) =>
-                                !_env.deploymentAppDeleteRequest && (
-                                    <div
-                                        key={`${_env.environmentName}-${_env.environmentId}`}
-                                        className="env-deployments-info-row display-grid dc__align-items-center"
+                    {isHelmChart && !!chartUsed && (
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Chart used</div>
+                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                                <span>{chartUsed.appStoreChartName}/</span>
+                                <Link
+                                    className="dc__ellipsis-right"
+                                    to={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartUsed.appStoreChartId}`}
+                                >
+                                    {chartUsed.appStoreAppName} ({chartUsed.appStoreAppVersion})
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                            {createdOn ? moment(createdOn).format(Moment12HourFormat) : '-'}
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
+                            <div
+                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
+                                style={{ backgroundColor: getRandomColor(createdBy) }}
+                            >
+                                {createdBy[0]}
+                            </div>
+                            {createdBy}
+                        </div>
+                    </div>
+                    {appType === 'app' && gitMaterials.length > 0 && (
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
+                            <div className="flexbox-col dc__gap-4">
+                                {gitMaterials.map((codeSource, index) => (
+                                    <a
+                                        className="flexbox dc__gap-8"
+                                        href={codeSource.redirectionUrl}
+                                        target="_blank"
+                                        rel="external no-referrer"
+                                        key={`${codeSource.displayName}-${index}`}
                                     >
-                                        {envIcon(_env.isVirtualEnvironment)}
-                                        <Link
-                                            to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
-                                            className="fs-13"
-                                            data-testid={`overview-link-environment${index}`}
-                                        >
-                                            {_env.environmentName}
-                                        </Link>
-                                        {isArgoInstalled && (
-                                            <AppStatus
-                                                appStatus={
-                                                    _env.lastDeployed
-                                                        ? _env.appStatus
-                                                        : StatusConstants.NOT_DEPLOYED.noSpaceLower
-                                                }
-                                                isVirtualEnv={_env.isVirtualEnvironment}
-                                            />
-                                        )}
-                                        <span className="fs-13 fw-4 cn-7" data-testid="overview-deployed-time">
-                                            {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
+                                        {getGitProviderIcon(codeSource.redirectionUrl)}
+                                        <span className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right dc__word-break">
+                                            {codeSource.displayName}
                                         </span>
-                                    </div>
-                                ),
-                        )}
-                    </div>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
-            )
-        }
-
-        return (
-            <div className="fs-13 fw-4 cn-7" data-testid="overview-no-deployment">
-                This application has not been deployed yet.
-            </div>
+                <div className="dc__border-top-n1" />
+                {renderLabelTags()}
+            </aside>
         )
     }
 
-    const renderEnvironmentDeploymentsStatus = () => {
-        return (
-            <div className="flex column left p-16">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-deployment">
-                    <RocketIcon className="icon-dim-20 scn-9 mr-8" />
-                    Deployments
+    const renderLabelTags = () => (
+        <div className="flexbox-col dc__gap-12">
+            <div className="flexbox flex-justify dc__gap-10">
+                <div className="flexbox flex-align-center dc__gap-8 fs-13 fw-6 lh-20 cn-9">
+                    <TagIcon className="tags-icon icon-dim-20" />
+                    Tags
                 </div>
-                {otherEnvsLoading ? <div className="dc__loading-dots" /> : renderDeploymentComponent()}
+                <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleTagsUpdateModal} />
             </div>
-        )
-    }
+            <TagChipsContainer
+                labelTags={currentLabelTags}
+                onAddTagButtonClick={toggleTagsUpdateModal}
+                resourceName={resourceName}
+                whiteBackground
+            />
+            {MandatoryTagWarning && (
+                <MandatoryTagWarning
+                    labelTags={currentLabelTags}
+                    handleAddTag={toggleTagsUpdateModal}
+                    selectedProjectId={appMetaInfo.projectId}
+                    reloadProjectTags={reloadMandatoryProjects}
+                />
+            )}
+        </div>
+    )
 
     const getStatusIcon = (status: string): JSX.Element => {
         switch (status) {
@@ -406,7 +328,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         return (
             <div className="env-deployments-info-wrapper w-100">
                 <div
-                    className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-start"
+                    className="flex dc__border-bottom dc__uppercase fs-12 fw-6 cn-7 dc__content-start pr-16 pl-16"
                     data-testid="overview-configured-pipeline"
                 >
                     <div className="m-tb-8 w-300">Pipeline name</div>
@@ -417,12 +339,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
                 </div>
                 {jobPipelines.map((jobPipeline, index) => (
-                    <div key={jobPipeline.ciPipelineID} className="flex dc__content-start">
+                    <div key={jobPipeline.ciPipelineID} className="flex dc__content-start pr-16 pl-16">
                         <div className="h-20 m-tb-8 cb-5 fs-13 w-300">
                             <Link
                                 to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ciPipelineName}/`}
-                                className="fs-13"
-                                data-testid={`overview-link-pipeline${index}`}
+                                className="fs-13 dc__ellipsis-right"
                             >
                                 {jobPipeline.ciPipelineName}
                             </Link>
@@ -444,7 +365,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                 className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
                             >
                                 {environmentName(jobPipeline)}
-                                {environmentName(jobPipeline) === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
+                                {environmentName(jobPipeline) === DEFAULT_ENV && (
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>
+                                )}
                             </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
                                 {jobPipeline.startedOn !== '0001-01-01T00:00:00Z'
@@ -459,20 +382,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const renderWorkflowsStatus = () => {
-        return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="job-pipeline">
-                    <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
-                    Job pipelines
-                </div>
-                {renderWorkflowComponent()}
-            </div>
-        )
+        return <div className="flex column left">{renderWorkflowComponent()}</div>
     }
 
     function renderAppDescription() {
         return (
-            <div className='pl-16 pr-16 pt-16 dc__border-bottom-n1' >
+            <div>
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin={true}
@@ -488,22 +403,53 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
-    function renderOverviewContent(isJobOverview) {
+    function renderOverviewContent() {
         if (isJobOverview) {
+            const contentToRender = {
+                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.JOB_PIPELINES]: renderWorkflowsStatus,
+            }
+
             return (
-                <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
-                    {renderAppDescription()}
-                    {renderLabelTags()}
-                    {renderWorkflowsStatus()}
+                <div className="app-overview-wrapper flexbox-col dc__gap-12">
+                    <RadioGroup
+                        className="gui-yaml-switch gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        name="overview-tabs"
+                        initialTab={OVERVIEW_TABS.ABOUT}
+                        disabled={false}
+                        onChange={(e) => {
+                            setActiveTab(e.target.value)
+                        }}
+                    >
+                        <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
+                        <RadioGroup.Radio value={OVERVIEW_TABS.JOB_PIPELINES}>Job Pipelines</RadioGroup.Radio>
+                    </RadioGroup>
+                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
                 </div>
             )
+        } else if (isHelmChart) {
+            return <div className="app-overview-wrapper flexbox-col dc__gap-12">{renderAppDescription()}</div>
         } else {
+            const contentToRender = {
+                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+                [OVERVIEW_TABS.ENVIRONMENTS]: () => <EnvironmentList appId={+appId} filteredEnvIds={filteredEnvIds} />,
+            }
+
             return (
-                <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
-                    {renderAppDescription()}
-                    {renderLabelTags()}
-                    {renderAppLevelExternalLinks()}
-                    {renderEnvironmentDeploymentsStatus()}
+                <div className="app-overview-wrapper flexbox-col dc__gap-12">
+                    <RadioGroup
+                        className="gui-yaml-switch gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        name="overview-tabs"
+                        initialTab={OVERVIEW_TABS.ABOUT}
+                        disabled={false}
+                        onChange={(e) => {
+                            setActiveTab(e.target.value)
+                        }}
+                    >
+                        <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
+                        <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
+                    </RadioGroup>
+                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
                 </div>
             )
         }
@@ -514,9 +460,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     return (
-        <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
-            {renderSideInfoColumn()}
-            {!isLoading && renderOverviewContent(isJobOverview)}
+        // TODO: Fix the scroll for two column layout
+        <div className={`app-overview-container p-20 h-100 ${activeTab === OVERVIEW_TABS.ABOUT ? 'sidebar-open' : ''}`}>
+            {activeTab === OVERVIEW_TABS.ABOUT ? renderSideInfoColumn() : <span />}
+            {!isLoading && renderOverviewContent()}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
         </div>

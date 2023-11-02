@@ -54,6 +54,14 @@
     flex-grow: 1 !important;
 }
 
+.flex-justify-start {
+    justify-content: flex-start !important;
+}
+
+.flex-justify-center {
+    justify-content: center;
+}
+
 .flex-justify {
     justify-content: space-between !important;
 }
@@ -72,6 +80,10 @@
 
 .display-grid {
     display: grid;
+}
+
+.grid-auto-flow-column {
+    grid-auto-flow: column;
 }
 
 // margins and paddings from 0-40
@@ -157,6 +169,10 @@ $color-suffix: 00;
 
 .mono {
     font-family: Inconsolata, monospace;
+}
+
+.font-merriweather {
+    font-family: 'Merriweather';
 }
 
 @mixin cta($bg, $color, $border, $cursor:pointer) {

@@ -55,11 +55,7 @@ export default function JobDetails() {
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview
-                                appMetaInfo={appMetaInfo}
-                                getAppMetaInfoRes={getAppMetaInfoRes}
-                                isJobOverview={true}
-                            />
+                            <Overview appType="job" appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <TriggerView isJobView={true} />

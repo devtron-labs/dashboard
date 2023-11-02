@@ -15,11 +15,13 @@ import {
     ClusterDescriptionResponse,
     ClusterNoteResponse,
     ClusterEditManifestType,
+    ClusterShortDescriptionPatchRequest,
 } from './types'
 
-export const getClusterNote = (clusterId: string): Promise<ClusterDescriptionResponse> => {
-    return get(`${Routes.CLUSTER_DESCRIPTION}?id=${clusterId}`)
+export const getClusterDetails = (clusterId: string, signal?): Promise<ClusterDescriptionResponse> => {
+    return get(`${Routes.CLUSTER_DESCRIPTION}?id=${clusterId}`, { signal })
 }
+
 export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
     return put(Routes.CLUSTER_NOTE, requestPayload)
 }
@@ -36,8 +38,14 @@ export const getClusterListMin = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST_MIN)
 }
 
-export const getClusterCapacity = (clusterId: string): Promise<ClusterCapacityResponse> => {
-    return get(`${Routes.CLUSTER_CAPACITY}/${clusterId}`)
+export const getClusterCapacity = (clusterId: string, signal?): Promise<ClusterCapacityResponse> => {
+    return get(`${Routes.CLUSTER_CAPACITY}/${clusterId}`, { signal })
+}
+
+export const updateClusterShortDescription = (
+    requestPayload: ClusterShortDescriptionPatchRequest,
+): Promise<ResponseType> => {
+    return put(`${Routes.CLUSTER_DESCRIPTION}`, requestPayload)
 }
 
 export const getNodeList = (clusterId: string): Promise<NodeListResponse> => {

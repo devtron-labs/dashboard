@@ -4,7 +4,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ApiResourceGroupType, K8SObjectMapType } from '../ResourceBrowser/Types'
+import { ApiResourceGroupType, ClusterOptionType, K8SObjectMapType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'K8s Version diff',
@@ -70,6 +70,8 @@ export interface ClusterDetail {
 export interface ClusterDescriptionType {
     clusterId: number
     clusterName: string
+    serverUrl:string,
+    description:string,
     clusterCreatedBy: string
     clusterCreatedOn: string
     clusterNote?: ClusterNoteType
@@ -294,6 +296,11 @@ export interface ClusteNotePatchRequest {
     description: string
 }
 
+export interface ClusterShortDescriptionPatchRequest {
+    id: number
+    description: string
+}
+
 interface NodeDrainOptions {
     gracePeriodSeconds: number
     deleteEmptyDirData: boolean
@@ -376,6 +383,14 @@ export interface DescriptionDataType {
     descriptionUpdatedOn: string
 }
 
+export interface ClusterDetailsType {
+    clusterName: string
+    shortDescription: string
+    serverURL: string
+    addedOn: string
+    addedBy: string
+}
+
 export interface ClusterErrorType {
     errorText: string
     errorType: ERROR_TYPE
@@ -384,8 +399,13 @@ export interface ClusterErrorType {
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
     clusterCapacityData: ClusterCapacityType
-    clusterErrorList: ClusterErrorType[]
-    clusterErrorTitle: string
-    errorStatusCode: number
+    setClusterErrorTitle: React.Dispatch<React.SetStateAction<string>>
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
+    setClusterCapacityData: React.Dispatch<React.SetStateAction<ClusterCapacityType>>
+    selectedCluster: ClusterOptionType
+    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
+    sideDataAbortController: {
+        prev: AbortController
+        new: AbortController
+    }
 }
