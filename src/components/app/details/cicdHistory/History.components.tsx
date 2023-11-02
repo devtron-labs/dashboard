@@ -11,10 +11,11 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
-import { not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { not, GenericEmptyState, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { CIListItem, CopyTippyWithText } from './Artifacts'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { getUserRole } from '../../../userGroups/userGroup.service'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()
@@ -88,6 +89,22 @@ export const GitChanges = ({
     appliedFilters,
     appliedFiltersTimestamp,
 }: GitChangesType) => {
+    const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
+    useEffect(() => {
+        if(artifactId){
+            initialise()
+        }    
+    }, [artifactId])
+    async function initialise() {
+        try {
+            const userRole = await getUserRole()
+
+            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+            setSuperAdmin(superAdmin)
+        } catch (err) {
+            showError(err)
+        }
+    }
     const [copied, setCopied] = useState(false)
 
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
@@ -143,6 +160,7 @@ export const GitChanges = ({
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         appliedFilters={appliedFilters}
                         appliedFiltersTimestamp={appliedFiltersTimestamp}
+                        isSuperAdmin={isSuperAdmin}
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left">

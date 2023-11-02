@@ -13,7 +13,8 @@ import { ConditionalWrap } from '../../../../common'
 import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
-import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variables.svg'
+import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
+import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -28,21 +29,8 @@ export default function TriggerViewConfigDiff({
     const [activeSideNavOption, setActiveSideNavOption] = useState(
         DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
     )
-    const [convertVariables, setConvertVariables] = useState<boolean>(false)
-
-    // check if variable snapshot is {} or not
-    const isVariablesAvailable: boolean =
-        Object.keys(baseTemplateConfiguration?.[activeSideNavOption]?.variableSnapshot || {}).length !== 0 ||
-        Object.keys(currentConfiguration?.[activeSideNavOption]?.variableSnapshot || {}).length !== 0
-
-    const editorValuesRHS = convertVariables
-        ? baseTemplateConfiguration?.[activeSideNavOption]?.resolvedTemplateData
-        : baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue.value
-
-    const editorValuesLHS = convertVariables
-        ? currentConfiguration?.[activeSideNavOption]?.resolvedTemplateData
-        : currentConfiguration?.[activeSideNavOption]?.codeEditorValue.value
-
+    const [convertVariables, setConvertVariables] = useState<boolean>(false) // toggle to show/hide variable values
+    const [isVariableAvailable, setIsVariableAvailable] = useState<boolean>(false) // check if variable snapshot is {} or not
     const [editorValues, setEditorValues] = useState<{
         displayName: string
         value: string
@@ -51,27 +39,32 @@ export default function TriggerViewConfigDiff({
         displayName: baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue?.displayName,
         value:
             (baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue.value &&
-                YAML.stringify(JSON.parse(editorValuesRHS))) ||
+                YAML.stringify(JSON.parse(baseTemplateConfiguration[activeSideNavOption].codeEditorValue.value))) ||
             '',
         defaultValue:
             (currentConfiguration?.[activeSideNavOption]?.codeEditorValue?.value &&
-                YAML.stringify(JSON.parse(editorValuesLHS))) ||
+                YAML.stringify(JSON.parse(currentConfiguration[activeSideNavOption].codeEditorValue.value))) ||
             '',
     })
     const [configMapOptionCollapsed, setConfigMapOptionCollapsed] = useState<boolean>(false)
     const [secretOptionCollapsed, setSecretOptionCollapsed] = useState<boolean>(false)
+    const [currentData, setCurrentData] = useState<any>({}) // store codeEditorValue of current(lhs) and base(rhs) config
 
     useEffect(() => {
         handleConfigToDeploySelection()
     }, [selectedConfigToDeploy])
 
     useEffect(() => {
+        if (Object.keys(currentData).length === 0) return
+        const { rhsData, lhsData } = currentData
+        const editorValuesRHS = convertVariables ? rhsData?.resolvedValue : rhsData?.value
+        const editorValuesLHS = convertVariables ? lhsData?.resolvedValue : lhsData?.value
         setEditorValues({
             displayName: editorValues.displayName,
             value: editorValuesRHS ? YAML.stringify(JSON.parse(editorValuesRHS)) : '',
             defaultValue: editorValuesLHS ? YAML.stringify(JSON.parse(editorValuesLHS)) : '',
         })
-    }, [convertVariables, selectedConfigToDeploy])
+    }, [convertVariables])
 
     const handleConfigToDeploySelection = () => {
         if (activeSideNavOption.includes('/')) {
@@ -111,30 +104,61 @@ export default function TriggerViewConfigDiff({
         )
     }
 
+    /*
+        returns the current(lhs) and base(rhs) config value for the selected nav option
+    */
+    const getCurrentConfiguration = (
+        dataValue: string,
+    ): {
+        rhsData: DeploymentHistorySingleValue
+        lhsData: DeploymentHistorySingleValue
+    } => {
+        let _value: DeploymentHistorySingleValue, _defaultValue: DeploymentHistorySingleValue
+        if (dataValue.includes('/')) {
+            const navParentChildKeys = dataValue.split('/')
+            _value = baseTemplateConfiguration?.[navParentChildKeys[0]]?.find(
+                (_config) => _config.componentName === navParentChildKeys[1],
+            )?.codeEditorValue
+            _defaultValue = currentConfiguration?.[navParentChildKeys[0]]?.find(
+                (_config) => _config.componentName === navParentChildKeys[1],
+            )?.codeEditorValue
+        } else {
+            _value = baseTemplateConfiguration?.[dataValue]?.codeEditorValue
+            _defaultValue = currentConfiguration?.[dataValue]?.codeEditorValue
+        }
+
+        return {
+            rhsData: _value,
+            lhsData: _defaultValue,
+        }
+    }
+
+    /*
+        set the current(lhs) and base(rhs) config value in code editor for the selected nav option, runs every on nav option selection
+    */
     const handleNavOptionSelection = (e, navConfigKey?: string) => {
         const dataValue = navConfigKey || e?.target?.dataset?.value
         if (dataValue) {
             setConvertVariables(false)
             setActiveSideNavOption(dataValue)
 
-            let _value, _defaultValue
-            if (dataValue.includes('/')) {
-                const navParentChildKeys = dataValue.split('/')
-                _value = baseTemplateConfiguration?.[navParentChildKeys[0]]?.find(
-                    (_config) => _config.componentName === navParentChildKeys[1],
-                )?.codeEditorValue
-                _defaultValue = currentConfiguration?.[navParentChildKeys[0]]?.find(
-                    (_config) => _config.componentName === navParentChildKeys[1],
-                )?.codeEditorValue
-            } else {
-                _value = baseTemplateConfiguration?.[dataValue]?.codeEditorValue
-                _defaultValue = currentConfiguration?.[dataValue]?.codeEditorValue
-            }
+            const { rhsData, lhsData } = getCurrentConfiguration(dataValue)
+            setCurrentData({
+                rhsData,
+                lhsData,
+            })
 
+            const _isVariableAvailable =
+                Object.keys(rhsData?.variableSnapshot || {}).length !== 0 ||
+                Object.keys(lhsData?.variableSnapshot || {}).length !== 0
+            setIsVariableAvailable(_isVariableAvailable)
+
+            const editorValuesRHS = convertVariables ? rhsData?.resolvedValue : rhsData?.value
+            const editorValuesLHS = convertVariables ? lhsData?.resolvedValue : lhsData?.value
             setEditorValues({
-                displayName: _value?.displayName || _defaultValue?.displayName,
-                value: _value?.value ? YAML.stringify(JSON.parse(_value?.value)) : '',
-                defaultValue: _defaultValue?.value ? YAML.stringify(JSON.parse(_defaultValue?.value)) : '',
+                displayName: rhsData?.displayName || lhsData?.displayName,
+                value: editorValuesRHS ? YAML.stringify(JSON.parse(editorValuesRHS)) : '',
+                defaultValue: editorValuesLHS ? YAML.stringify(JSON.parse(editorValuesLHS)) : '',
             })
         }
     }
@@ -434,13 +458,18 @@ export default function TriggerViewConfigDiff({
                     <div className="en-2 bw-1 br-4">
                         <div className="code-editor-header-value left pt-8 pb-8 pl-16 pr-16 fs-13 fw-6 lh-20 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom">
                             <span>{editorValues.displayName}</span>
-                            {isVariablesAvailable && (
+                            {isVariableAvailable && (
                                 <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
-                                    <span className="icon-dim-16" onClick={handleShowVariablesClick}>
-                                        <ViewVariablesIcon
-                                            className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 cursor`}
-                                        />
-                                    </span>
+                                    <li className="flex left dc_width-max-content cursor">
+                                        <div className="w-40 h-20">
+                                            <Toggle
+                                                selected={convertVariables}
+                                                color="var(--B500)"
+                                                onSelect={handleShowVariablesClick}
+                                                Icon={ViewVariablesIcon}
+                                            />
+                                        </div>
+                                    </li>
                                 </Tippy>
                             )}
                         </div>

@@ -396,16 +396,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
-                <Route path={`${this.props.match.path}/ci-job/:ciPipelineId`}>
-                    <CIPipeline
-                        appName={this.state.appName}
-                        connectCDPipelines={this.getLen()}
-                        close={this.closePipeline}
-                        getWorkflows={this.getWorkflows}
-                        deleteWorkflow={this.deleteWorkflow}
-                        isJobView={this.props.isJobView}
-                    />
-                </Route>
                 <Route path={`${this.props.match.path}/deprecated-warning`}>
                     <DeprecatedWarningModal closePopup={this.closePipeline} />
                 </Route>

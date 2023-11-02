@@ -108,6 +108,7 @@ export interface CIListItemType {
     hideImageTaggingHardDelete?: boolean
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
+    isSuperAdmin?:boolean
 }
 
 export interface ImageComment {

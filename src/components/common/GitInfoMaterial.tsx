@@ -44,6 +44,7 @@ export default function GitInfoMaterial({
     fromBulkCITrigger,
     hideSearchHeader,
     isJobView = false,
+    isJobCI = false,
     isCITriggerBlocked = false,
     ciBlockState = null,
 }) {
@@ -134,18 +135,26 @@ export default function GitInfoMaterial({
                 style={{ background: 'var(--window-bg)' }}
                 onClick={onClickHeader}
             >
-                <BranchFixed className=" mr-8 icon-color-n9" />
+                <BranchFixed className=" mr-8 icon-color-n9 mw-14" />
                 {showWebhookModal ? (
                     'Select commit to build'
                 ) : (
-                    <div className="dc__ellipsis-right">{selectedMaterial.value}</div>
+                    <Tippy
+                        className="default-tt dc__word-break-all"
+                        arrow={false}
+                        placement="top"
+                        content={selectedMaterial.value}
+                        interactive={true}
+                    >
+                        <div className="dc__ellipsis-right">{selectedMaterial.value}</div>
+                    </Tippy>
                 )}
                 {selectedMaterial.regex && (
                     <Tippy
                         className="default-tt"
                         arrow={false}
                         placement="top"
-                        content={'Change branch'}
+                        content="Change branch"
                         interactive={true}
                     >
                         <button data-testid={dataTestId} type="button" className="dc__transparent flexbox">
@@ -194,7 +203,7 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView, false)
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView, isJobCI)
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {
@@ -292,7 +301,7 @@ export default function GitInfoMaterial({
                         className="flex dc__content-space dc__position-sticky "
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
-                        {renderBranchChangeHeader(selectedMaterial)}
+                        <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
                             <div className={`flex right ${excludeIncludeEnv && 'mr-20'}`}>
                                 {renderSearch()}
@@ -383,7 +392,7 @@ export default function GitInfoMaterial({
     }
 
     const redirectToCIPipeline = () => {
-        const ciPipelineURL = `/app/${appId}/edit/workflow/${workflowId}/ci-pipeline/${pipelineId}/build`
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, false, isJobCI)
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {

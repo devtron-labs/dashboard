@@ -200,6 +200,15 @@ export default function CDMaterial({
         }
         return state.selectedMaterial ? state.selectedMaterial.wfrId : material?.find((_mat) => _mat.isSelected)?.wfrId
     }
+    async initialise() {
+        try {
+            const userRole =  await getUserRole()
+            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+            this.setState({isSuperAdmin:superAdmin})
+        } catch (err) {
+            showError(err)
+        }
+    }
 
     // Ask whether this id is true or not
     const getCDArtifactId = () =>

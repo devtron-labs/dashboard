@@ -38,6 +38,7 @@ function TerminalComponent({
     setSelectedContainerName,
     switchSelectedContainer,
     setContainers,
+    showTerminal
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string, clusterId?: string; namespace: string }>()
     const { url } = useRouteMatch()
@@ -193,6 +194,10 @@ function TerminalComponent({
     }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
+        selectedTab(NodeDetailTab.TERMINAL, url)
+    }, [showTerminal])
+
+    useEffect(() => {
         setSelectedContainerName(_selectedContainer)
     }, [containers])
     useEffect(() => {
@@ -300,13 +305,15 @@ function TerminalComponent({
     }
 
     return (
-        <TerminalWrapper
+        <div className={`${showTerminal ? '' : 'pod-terminal-hidden'}`}>
+            <TerminalWrapper
             dataTestId="terminal-editor-header"
             selectionListData={selectionListData}
             socketConnection={socketConnection}
             setSocketConnection={setSocketConnection}
             className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
         />
+        </div>
     )
 }
 
