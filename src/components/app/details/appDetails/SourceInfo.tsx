@@ -312,6 +312,7 @@ export function SourceInfo({
                                 </div>
                             )}
                             {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                            <IssuesCard />
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}
@@ -319,7 +320,6 @@ export function SourceInfo({
                                 isVirtualEnvironment={isVirtualEnvironment}
                                 refetchDeploymentStatus={refetchDeploymentStatus}
                             />
-                            <IssuesCard />
                             <DeployedCommitCard />
                             <SecurityVulnerabilityCard />
                             <div className="flex right ml-auto">
