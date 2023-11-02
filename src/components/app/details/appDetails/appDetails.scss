@@ -1906,7 +1906,7 @@ table.resource-tree {
     margin-left: 8px !important;
 }
 
-.card-deployed-commit {
+.app-details-info-card {
     align-items: flex-start;
     flex-direction: column;
     overflow: hidden;
@@ -1933,6 +1933,7 @@ table.resource-tree {
                 }
             }
 
+            // @TODO: this can be re-named to a more generic name
             &__commit-text-wrapper {
                 &__commit-icon {
                     height: 20px;
@@ -1944,6 +1945,10 @@ table.resource-tree {
                 }
             }
         }
+
+        &__error-icon {
+            height: 24px;
+        }
     }
 
     &__bottom-container {
@@ -1952,6 +1957,7 @@ table.resource-tree {
         border-top-width: 1px;
         padding: 8px 12px;
 
+        // @TODO: this can be re-named to a more generic name
         &__message {
             // @TODO: figure out the alternative of -webkit-box-orient
             -webkit-box-orient: vertical;
@@ -1961,9 +1967,9 @@ table.resource-tree {
             line-height: 18px;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 0;
         }
 
+        // @TODO: this can be re-named to a more generic name
         &__details {
             color: var(--B500);
             line-height: 18px;
