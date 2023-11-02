@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Progressing, ResizableTextarea, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
@@ -215,16 +215,24 @@ export function ConfigMapSecretContainer({
         }
     }
 
-    const updateCollapsed = (_collapsed?: boolean): void => {
-        console.log(title)
-        redirectConfigMapSecret(data?.name)
-        getData()
+    const getURL = (urlTo?: string): string => {
+        const componentTypeName = componentType === 'secret' ? 'secrets' : 'configmap'
+        const urlPrefix = match.url.split(componentTypeName)[0]
+        return `${urlPrefix}${componentTypeName}/${urlTo}`
+    }
 
-        //Later remove
+
+    const updateCollapsed = (_collapsed?: boolean): void => {
+        redirectConfigMapSecret(data?.name)
+        if(data?.name){
+            getData()
+        }
+
+        // Later remove
         // if (_collapsed !== undefined) {
         //     toggleCollapse(_collapsed)
         // } else {
-        //     if (collapsed && data?.name) {
+        //     if (data?.name) {
         //         getData()
         //     } else {
         //         toggleCollapse(!collapsed)
@@ -237,13 +245,13 @@ export function ConfigMapSecretContainer({
     }
 
     const redirectConfigMapSecret = (dataName: string): void => {
-        if (!title && !name) {
-            return history.push(`${match.path.replace('/:name?', 'create')}`)
-        } else if (dataName) {
-            return history.push(`${match.path.replace('/:name?', dataName)}`)
-        } else {
-            return history.push(`${match.path.replace('/:name?', '')}`)
-        }
+            if (!title) {
+                return history.push(getURL('create'))
+            } else if (dataName) {
+                return history.push(getURL(dataName))
+            }
+            return history.push(getURL())
+        
     }
 
     const handleTabSelection = (index: number): void => {
@@ -312,32 +320,34 @@ export function ConfigMapSecretContainer({
                 </>
             )
         }
-        return name === data?.name || (!data?.name && name === 'create') ? (
-            <ConfigMapSecretForm
-                appChartRef={appChartRef}
-                updateCollapsed={updateCollapsed}
-                configMapSecretData={data}
-                id={id}
-                componentType={componentType}
-                update={update}
-                index={index}
-                cmSecretStateLabel={cmSecretStateLabel}
-                isJobView={isJobView}
-                readonlyView={false}
-                isProtectedView={isProtected}
-                draftMode={false}
-                latestDraftData={
-                    draftData?.draftId
-                        ? {
-                              draftId: draftData?.draftId,
-                              draftState: draftData?.draftState,
-                              draftVersionId: draftData?.draftVersionId,
-                          }
-                        : null
-                }
-                reloadEnvironments={reloadEnvironments}
-            />
-        ) : null
+        return (
+            ((data && name === data?.name) || name === 'create') && (
+                <ConfigMapSecretForm
+                    appChartRef={appChartRef}
+                    updateCollapsed={updateCollapsed}
+                    configMapSecretData={data}
+                    id={id}
+                    componentType={componentType}
+                    update={update}
+                    index={index}
+                    cmSecretStateLabel={cmSecretStateLabel}
+                    isJobView={isJobView}
+                    readonlyView={false}
+                    isProtectedView={isProtected}
+                    draftMode={false}
+                    latestDraftData={
+                        draftData?.draftId
+                            ? {
+                                  draftId: draftData?.draftId,
+                                  draftState: draftData?.draftState,
+                                  draftVersionId: draftData?.draftVersionId,
+                              }
+                            : null
+                    }
+                    reloadEnvironments={reloadEnvironments}
+                />
+            )
+        ) 
     }
 
     const renderDraftState = (): JSX.Element => {
@@ -352,7 +362,7 @@ export function ConfigMapSecretContainer({
         return null
     }
 
-    const handleCMSecretClick = () => {
+    const handleCMSecretClick = (event) => {
         if (title && isProtected && draftData?.draftId) {
             setSelectedTab(draftData.draftState === 4 ? 2 : 3)
         }
@@ -397,7 +407,7 @@ export function ConfigMapSecretContainer({
                         </div>
                     )}
                 </article>
-                {renderDetails()}
+                { renderDetails()}
             </section>
         </>
     )
@@ -418,7 +428,7 @@ export function ProtectedConfigMapSecretDetails({
     parentName,
     reloadEnvironments,
 }: ProtectedConfigMapSecretDetailsProps) {
-    const { appId, envId } = useParams<{ appId; envId }>()
+    const { appId, envId, name} = useParams<{ appId; envId; name }>()
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
     const [abortController, setAbortController] = useState(new AbortController());
@@ -657,7 +667,7 @@ export function ProtectedConfigMapSecretDetails({
             return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
         }
         return (
-            <ConfigMapSecretForm
+            ((data && name === data?.name) || name === 'create') && <ConfigMapSecretForm
                 appChartRef={appChartRef}
                 updateCollapsed={updateCollapsed}
                 configMapSecretData={getData()}
