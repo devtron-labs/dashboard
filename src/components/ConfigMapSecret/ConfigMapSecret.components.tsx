@@ -223,35 +223,35 @@ export function ConfigMapSecretContainer({
 
 
     const updateCollapsed = (_collapsed?: boolean): void => {
+        if (_collapsed !== undefined) {
+            toggleCollapse(_collapsed)
+        } else {
+            if (collapsed && data?.name) {
+                getData()
+            } else {
+                toggleCollapse(!collapsed)
+                if (!collapsed) {
+                    toggleDraftComments(null)
+                    setDraftData(null)
+                }
+            }
+        }
+
         if (!title) {
-            if(name === 'create'){
+            //Redirect to Add config map & secret
+            if (name === 'create') {
                 return history.push(getURL())
             }
             return history.push(getURL('create'))
-           
         } else {
-            if(name === title){
+              //Redirect to open config map & secret
+            if (name === title) {
                 return history.push(getURL())
-            } else{
+            } else {
                 getData()
                 return history.push(getURL(title))
             }
         }
-
-        // Later remove
-        // if (_collapsed !== undefined) {
-        //     toggleCollapse(_collapsed)
-        // } else {
-        //     if (data?.name) {
-        //         getData()
-        //     } else {
-        //         toggleCollapse(!collapsed)
-        //         if (!collapsed) {
-        //             toggleDraftComments(null)
-        //             setDraftData(null)
-        //         }
-        //     }
-        // }
     }
 
     const handleTabSelection = (index: number): void => {
@@ -280,6 +280,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
+        if (name && ((!data?.name && name !== 'create') || (data?.name && name !== data?.name))) return null
         if (title && isProtected && draftData?.draftId)
              {
             return (
@@ -373,7 +374,9 @@ export function ConfigMapSecretContainer({
         <>
             <section
                 className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
-                    reduceOpacity ? 'dc__disable-click dc__blur-1_5' : ''
+                    reduceOpacity || (name && ((!title && name !== 'create') || (title && name !== title)))
+                        ? 'dc__disable-click dc__blur-1_5'
+                        : ''
                 }`}
             >
                 <article
@@ -407,7 +410,7 @@ export function ConfigMapSecretContainer({
                         </div>
                     )}
                 </article>
-                { renderDetails()}
+                {renderDetails()}
             </section>
         </>
     )
