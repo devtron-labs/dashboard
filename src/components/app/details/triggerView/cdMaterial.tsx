@@ -59,6 +59,7 @@ import {
     DeploymentAppTypes,
     ToastBodyWithButton,
     FilterConditionsListType,
+    useSuperAdmin,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
@@ -127,6 +128,9 @@ export default function CDMaterial({
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
     const { searchParams } = useSearchString()
+    // Add dep here
+    const { isSuperAdmin } = useSuperAdmin()
+
     const searchImageTag = searchParams.search
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
@@ -1057,12 +1061,12 @@ export default function CDMaterial({
         ) {
             return (
                 <GenericEmptyState
-                        image={noartifact}
-                        title="No eligible image found"
-                        subTitle={renderFilterEmptyStateSubtitle()}
-                        isButtonAvailable={noMoreImages}
-                        renderButton={renderLoadMoreButton}
-                    />
+                    image={noartifact}
+                    title="No eligible image found"
+                    subTitle={renderFilterEmptyStateSubtitle()}
+                    isButtonAvailable={noMoreImages}
+                    renderButton={renderLoadMoreButton}
+                />
             )
         }
 
@@ -1580,6 +1584,7 @@ export default function CDMaterial({
                                 forceReInit
                                 hideHardDelete={hideImageTaggingHardDelete}
                                 updateCurrentAppMaterial={updateCurrentAppMaterial}
+                                isSuperAdmin={isSuperAdmin}
                             />
                         </div>
                     </div>
