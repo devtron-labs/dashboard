@@ -44,6 +44,7 @@ export default function GitInfoMaterial({
     fromBulkCITrigger,
     hideSearchHeader,
     isJobView = false,
+    isJobCI = false,
     isCITriggerBlocked = false,
     ciBlockState = null,
 }) {
@@ -202,7 +203,7 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView, false)
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView, isJobCI)
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {
@@ -391,7 +392,7 @@ export default function GitInfoMaterial({
     }
 
     const redirectToCIPipeline = () => {
-        const ciPipelineURL = `/app/${appId}/edit/workflow/${workflowId}/ci-pipeline/${pipelineId}/build`
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, false, isJobCI)
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {

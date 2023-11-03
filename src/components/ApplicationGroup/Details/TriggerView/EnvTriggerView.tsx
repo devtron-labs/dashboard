@@ -1805,6 +1805,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         errorMessage: getErrorMessage(wf.appId, _ciNode),
                         hideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
                         filteredCIPipelines: filteredCIPipelines.get(wf.appId),
+                        isJobCI: !!_ciNode.isJobCI,
                     })
                 }
             }
@@ -1904,6 +1905,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 appId={_appID?.toString()}
                                 isCITriggerBlocked={nd?.isCITriggerBlocked}
                                 ciBlockState={nd?.ciBlockState}
+                                isJobCI={!!nd?.isJobCI}    
                             />
                         )}
                     </div>

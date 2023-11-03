@@ -8,7 +8,7 @@ import InfoIconWithTippy from '../InfoIconWithTippy'
 import { getConfigMapList } from '../service'
 import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
-import { importComponentFromFELibrary } from '../../common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '../../common'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-arrow-left.svg'
 import '../ConfigMapSecret.scss'
 
@@ -23,6 +23,7 @@ export default function ConfigMapList({
     parentState,
     setParentState,
     reloadEnvironments,
+    clusterId,
 }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [configMap, setConfigMap] = useState<{ id: number; configData: any[]; appId: number }>()
@@ -38,7 +39,7 @@ export default function ConfigMapList({
             configMapListAbortRef.current = new AbortController()
             setConfigMapLoading(true)
             init(true)
-        }, 100);
+        }, 100)
         if (!isJobView) {
             reloadEnvironments()
         }
@@ -62,7 +63,9 @@ export default function ConfigMapList({
             const [{ result: appChartRefRes }, { result: configMapRes }, { result: draftData }] = await Promise.all([
                 isInit ? getAppChartRefForAppAndEnv(appId, envId) : { result: null },
                 getConfigMapList(appId, envId, configMapListAbortRef.current.signal),
-                isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 1, configMapListAbortRef.current.signal) : { result: null },
+                isProtected && getAllDrafts
+                    ? getAllDrafts(appId, envId ?? -1, 1, configMapListAbortRef.current.signal)
+                    : { result: null },
             ])
             const draftDataMap = {},
                 draftDataArr = []
@@ -100,7 +103,7 @@ export default function ConfigMapList({
             }
             setParentState?.(ComponentStates.loaded)
         } catch (error) {
-            if(!configMapListAbortRef.current.signal.aborted){
+            if (!configMapListAbortRef.current.signal.aborted) {
                 setParentState?.(ComponentStates.failed)
                 showError(error)
             }
@@ -209,6 +212,9 @@ export default function ConfigMapList({
                     toggleDraftComments={toggleDraftComments}
                 />
             )}
+            <div className="variables-widget-position-cmcs">
+                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
+            </div>
         </div>
     )
 }

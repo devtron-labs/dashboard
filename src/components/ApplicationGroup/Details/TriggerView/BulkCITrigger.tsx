@@ -383,6 +383,7 @@ export default function BulkCITrigger({
                     hideSearchHeader={selectedApp.hideSearchHeader}
                     isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
                     ciBlockState={appPolicy[selectedApp.appId]}
+                    isJobCI={selectedApp.isJobCI}
                 />
             )
         }
