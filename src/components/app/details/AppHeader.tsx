@@ -234,6 +234,7 @@ export function AppHeader({
             isBreadcrumbs={true}
             showTabs={true}
             renderHeaderTabs={renderAppDetailsTabs}
+            showAnnouncementHeader={true}
         />
     )
 }

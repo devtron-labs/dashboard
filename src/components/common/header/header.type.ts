@@ -16,6 +16,7 @@ export interface PageHeaderType {
     showCloseButton?: boolean
     onClose?: () => void
     markAsBeta?: boolean
+    showAnnouncementHeader?: boolean
 }
 
 export interface HelpNavType {

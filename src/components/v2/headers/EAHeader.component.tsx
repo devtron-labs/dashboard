@@ -86,6 +86,7 @@ function EAHeaderComponent() {
                 showTabs={true}
                 renderHeaderTabs={renderExternalHelmApp}
                 breadCrumbs={renderBreadcrumbs}
+                showAnnouncementHeader={true}
             />
         </div>
     )

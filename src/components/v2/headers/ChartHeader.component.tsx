@@ -98,6 +98,7 @@ function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
                 showTabs={true}
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
+                showAnnouncementHeader={true}
             />
         </div>
     )
