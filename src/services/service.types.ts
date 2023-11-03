@@ -67,10 +67,14 @@ export interface AppEnvironment {
     prod: boolean;
     chartRefId?: number
     lastDeployed?: string
+    lastDeployedBy?: string
+    lastDeployedImage?: string
     appStatus?: string
     deploymentAppDeleteRequest?: boolean
     isVirtualEnvironment?: boolean
     isProtected?: boolean
+    pipelineId?: number
+    latestCdWorkflowRunnerId?: number
 }
 
 export interface AppOtherEnvironment extends ResponseType {

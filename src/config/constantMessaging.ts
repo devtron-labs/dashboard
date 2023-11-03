@@ -50,6 +50,7 @@ export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
 export const INVALID_VOLUME_MOUNT_PATH_IN_CM_CS = 'Use only alphanumeric, (/), (-), (_); Do not use "spaces"'
 export const MAX_LENGTH_30 = 'Max 30 characters allowed'
+export const MAX_LENGTH_350 = 'Max 350 characters allowed'
 export const REPO_NAME_VALIDATION = 'Repository name is not valid; Invalid character(s) "_"'
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
@@ -404,6 +405,12 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'Trigger not found',
         SUBTITLE: 'The trigger you are looking for does not exist',
     },
+    OVERVIEW: {
+        DEPLOYMENT_TITLE: 'Explore your application\'s deployment landscape',
+        DEPLOYMENT_SUB_TITLE: 'Although there are no deployments to display just yet, it\'s the perfect time to start configuring and deploying your app to various environments. Let\'s go!',
+        APP_DESCRIPTION: 'Write a short description for this application',
+        JOB_DESCRIPTION: 'Write a short description for this job'
+    }
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'
