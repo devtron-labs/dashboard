@@ -974,11 +974,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     closeCDModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
-        preventBodyScroll(false)
         this.setState({ showCDModal: false, searchImageTag: '' })
         this.props.history.push({
             search: '',
         })
+        preventBodyScroll(false)
+        this.getWorkflowStatus()
     }
 
     closeApprovalModal = (e: React.MouseEvent): void => {
@@ -988,6 +989,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.props.history.push({
             search: '',
         })
+        preventBodyScroll(false)
+        this.getWorkflowStatus()
     }
 
     hideWebhookModal = () => {

@@ -1090,21 +1090,23 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const closeCDModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
         abortControllerRef.current.abort()
-        preventBodyScroll(false)
         setCDLoading(false)
         setShowCDModal(false)
         history.push({
             search: '',
         })
+        getWorkflowStatusData(workflows)
+        preventBodyScroll(false)
     }
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
-        preventBodyScroll(false)
         setShowApprovalModal(false)
         history.push({
             search: '',
         })
+        getWorkflowStatusData(workflows)
+        preventBodyScroll(false)
     }
 
     const hideWebhookModal = (e?) => {
