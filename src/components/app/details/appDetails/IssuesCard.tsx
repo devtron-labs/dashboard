@@ -7,7 +7,7 @@ import { IssuesCardType } from './appDetails.type'
 
 export const IssuesCard = ({ hideDetails }: IssuesCardType) => {
     return (
-        <div data-testid="issues-card" className="app-details-info-card flex left bcn-0 br-8 mr-12">
+        <div data-testid="issues-card" className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20">
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
