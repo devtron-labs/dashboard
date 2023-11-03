@@ -1,0 +1,181 @@
+{
+    "title": "Application Catalogue",
+    "references": {
+        "user": {
+            "type": "string",
+            "enum": ["User 1", "User 2"],
+            "default": "User 1"
+        }
+    },
+    "type": "object",
+    "properties": {
+        "overview": {
+            "type": "object",
+            "properties": {
+                "metadata": {
+                    "type": "object",
+                    "properties": {
+                        "ownerAndOnPagerDuty": {
+                            "title": "Owners & Pager Duty",
+                            "type": "object",
+                            "properties": {
+                                "onPagerDuty": {
+                                    "title": "On Pager Duty",
+                                    "$ref": "#/references/user"
+                                },
+                                "owner": {
+                                    "$ref": "#/references/user"
+                                }
+                            },
+                            "required": ["owner"]
+                        },
+                        "serviceDetails": {
+                            "type": "object",
+                            "title": "Service Details",
+                            "properties": {
+                                "framework": {
+                                    "type": "string"
+                                },
+                                "language": {
+                                    "type": "string"
+                                },
+                                "map": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        ".{1,}": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "additionalProperties": {
+                                        ".{1,}": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "communicationMethod": {
+                                    "type": "string"
+                                },
+                                "internetFacing": {
+                                    "type": "boolean",
+                                    "default": true
+                                },
+                                "select": {
+                                    "type": "string",
+                                    "anyOf": [
+                                        {
+                                            "type": "number",
+                                            "title": "one",
+                                            "enum": [1]
+                                        },
+                                        {
+                                            "type": "number",
+                                            "icon": "hello",
+                                            "title": "two",
+                                            "enum": [2]
+                                        },
+                                        {
+                                            "type": "number",
+                                            "title": "three",
+                                            "enum": [3]
+                                        }
+                                    ]
+                                },
+                                "cities": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "testOneOf": {
+                                    "title": "One Of",
+                                    "type": "object",
+                                    "oneOf": [
+                                        {
+                                            "properties": {
+                                                "lorem": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": ["lorem"]
+                                        },
+                                        {
+                                            "properties": {
+                                                "ipsum": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": ["ipsum"]
+                                        }
+                                    ]
+                                },
+                                "testAnyOf": {
+                                    "title": "Any Of",
+                                    "type": "object",
+                                    "anyOf": [
+                                        {
+                                            "properties": {
+                                                "lorem": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": ["lorem"]
+                                        },
+                                        {
+                                            "properties": {
+                                                "lorem": {
+                                                    "type": "string"
+                                                },
+                                                "ipsum": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "testAllOf": {
+                                    "title": "All Of",
+                                    "allOf": [
+                                        {
+                                            "type": ["string", "boolean"]
+                                        },
+                                        {
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                },
+                                "multiSelect": {
+                                    "type": "array",
+                                    "title": "A multiple-choice list",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": ["foo", "bar", "fuzz", "qux"]
+                                    },
+                                    "uniqueItems": true
+                                }
+                            }
+                        },
+                        "documentation": {
+                            "title": "Documentation",
+                            "type": "object",
+                            "properties": {
+                                "serviceDoc": {
+                                    "type": "string",
+                                    "format": "uri"
+                                },
+                                "apiContract": {
+                                    "type": "string",
+                                    "format": "uri"
+                                },
+                                "runbook": {
+                                    "type": "string",
+                                    "format": "uri"
+                                }
+                            }
+                        }
+                    },
+                    "required": ["ownerAndOnPagerDuty"]
+                }
+            }
+        }
+    }
+}
