@@ -100,8 +100,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
 
     renderWithBackDrop(headerDescription: string, body) {
         return (
-            <Drawer position="right" width="800px">
-                <div data-testid="visible-modal-commit-info" className={''}>
+            <Drawer position="right" width="800px" onEscape={this.props.close}>
+                <div data-testid="visible-modal-commit-info" className="h-100vh">
                     <div className="trigger-modal__header bcn-0">
                         <div className="">
                             <h1 className="modal__title">{this.state.appName}</h1>
@@ -127,8 +127,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
         if (this.state.view === ViewType.LOADING) {
             headerDescription = null
             body = (
-                <div className="m-lr-0 flexbox">
-                    <div className="select-material" style={{ height: '100vh' }}>
+                <div className="m-lr-0 flexbox trigger-modal-body-height">
+                    <div className="select-material">
                         <Progressing pageLoader />
                     </div>
                 </div>
@@ -137,8 +137,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             const selectedMaterial = this.state.materials.find((mat) => mat.isSelected)
             headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`
             body = (
-                <div className="m-lr-0 flexbox">
-                    <div className="select-material" style={{ height: '100vh' }}>
+                <div className="m-lr-0 flexbox trigger-modal-body-height dc__overflow-scroll">
+                    <div className="select-material">
                         <MaterialHistory
                             material={selectedMaterial}
                             pipelineName=""

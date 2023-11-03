@@ -325,6 +325,10 @@
     }
 }
 
+.trigger-modal-body-height {
+    height: calc(100vh - 50px);
+}
+
 .trigger-modal__content {
     background-color: var(--white);
     right: 0px;
