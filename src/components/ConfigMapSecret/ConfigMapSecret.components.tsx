@@ -215,7 +215,7 @@ export function ConfigMapSecretContainer({
         }
     }
 
-    const getURL = (urlTo?: string): string => {
+    const getURL = (urlTo: string = ""): string => {
         const componentTypeName = componentType === 'secret' ? 'secrets' : 'configmap'
         const urlPrefix = match.url.split(componentTypeName)[0]
         return `${urlPrefix}${componentTypeName}/${urlTo}`
@@ -223,9 +223,19 @@ export function ConfigMapSecretContainer({
 
 
     const updateCollapsed = (_collapsed?: boolean): void => {
-        redirectConfigMapSecret(data?.name)
-        if(data?.name){
-            getData()
+        if (!title) {
+            if(name === 'create'){
+                return history.push(getURL())
+            }
+            return history.push(getURL('create'))
+           
+        } else {
+            if(name === title){
+                return history.push(getURL())
+            } else{
+                getData()
+                return history.push(getURL(title))
+            }
         }
 
         // Later remove
@@ -242,16 +252,6 @@ export function ConfigMapSecretContainer({
         //         }
         //     }
         // }
-    }
-
-    const redirectConfigMapSecret = (dataName: string): void => {
-            if (!title) {
-                return history.push(getURL('create'))
-            } else if (dataName) {
-                return history.push(getURL(dataName))
-            }
-            return history.push(getURL())
-        
     }
 
     const handleTabSelection = (index: number): void => {
@@ -321,7 +321,7 @@ export function ConfigMapSecretContainer({
             )
         }
         return (
-            ((data && name === data?.name) || name === 'create') && (
+            ((data && name === data?.name) ||  name === 'create') && (
                 <ConfigMapSecretForm
                     appChartRef={appChartRef}
                     updateCollapsed={updateCollapsed}
