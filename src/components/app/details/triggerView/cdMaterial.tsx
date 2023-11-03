@@ -97,7 +97,6 @@ const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
-// TODO: Integrate changes from stable-dt-v3
 export default function CDMaterial({
     materialType,
     appId,
