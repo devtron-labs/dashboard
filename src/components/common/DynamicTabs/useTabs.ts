@@ -205,8 +205,8 @@ export function useTabs(persistanceKey: string) {
             })
 
             if (selectedRemoved) {
-                _tabs[0].isSelected = true
-                pushURL = _tabs[0].url
+                _tabs[1].isSelected = true
+                pushURL = _tabs[1].url
             }
 
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
