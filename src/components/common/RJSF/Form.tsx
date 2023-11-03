@@ -3,12 +3,14 @@ import RJSFForm from '@rjsf/core'
 import validator from '@rjsf/validator-ajv8'
 
 import { templates, widgets } from './config'
+import { FormProps } from './types'
 import './rjsfForm.scss'
 
-export const Form = (props: Omit<ComponentProps<typeof RJSFForm>, 'validator'>) => (
+export const Form = (props: FormProps) => (
     <RJSFForm
         noHtml5Validate
         showErrorList={false}
+        autoComplete="off"
         {...props}
         validator={validator}
         templates={{

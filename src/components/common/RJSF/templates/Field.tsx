@@ -16,7 +16,7 @@ export const Field = (props: FieldTemplateProps) => {
     return hidden ? (
         <div className="hidden">{children}</div>
     ) : (
-        <WrapIfAdditionalTemplate {...props} classNames={`${classNames} mb-12`}>
+        <div className={`${classNames} mb-12`}>
             <div className={showLabel ? 'display-grid dc__gap-12 flex-align-center rjsf-form-template__field' : ''}>
                 {showLabel && (
                     <label className="cn-7 fs-13 lh-32 fw-4 flexbox mb-0" htmlFor={id}>
@@ -24,10 +24,10 @@ export const Field = (props: FieldTemplateProps) => {
                         {required && <span className="cr-5">&nbsp;*</span>}
                     </label>
                 )}
-                {children}
+                <WrapIfAdditionalTemplate {...props}>{children}</WrapIfAdditionalTemplate>
             </div>
             {/* TODO: Handle errors UI */}
             {errors}
-        </WrapIfAdditionalTemplate>
+        </div>
     )
 }

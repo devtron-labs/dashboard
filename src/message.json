@@ -25,9 +25,20 @@
                                 },
                                 "owner": {
                                     "$ref": "#/references/user"
+                                },
+                                "age": {
+                                    "type": "number",
+                                    "default": 0
+                                },
+                                "rangeField": {
+                                    "type": "range",
+                                    "title": "Range Field",
+                                    "minimum": 0,
+                                    "maximum": 100,
+                                    "multipleOf": 1
                                 }
                             },
-                            "required": ["owner"]
+                            "required": ["owner", "name"]
                         },
                         "serviceDetails": {
                             "type": "object",
@@ -41,6 +52,7 @@
                                 },
                                 "map": {
                                     "type": "object",
+                                    "title": "Map",
                                     "patternProperties": {
                                         ".{1,}": {
                                             "type": "string"
@@ -50,6 +62,13 @@
                                         ".{1,}": {
                                             "type": "string"
                                         }
+                                    }
+                                },
+                                "map1": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string",
+                                        "enum": ["User 1", "User 2"]
                                     }
                                 },
                                 "communicationMethod": {

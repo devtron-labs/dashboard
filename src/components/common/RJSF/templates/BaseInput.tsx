@@ -7,6 +7,10 @@ const {
     templates: { BaseInputTemplate },
 } = getDefaultRegistry()
 
-export const BaseInput = ({ placeholder = PLACEHOLDERS.INPUT, ...props }: BaseInputTemplateProps) => (
-    <BaseInputTemplate {...props} className="form__input cn-9 fs-13 lh-20 fw-4" />
+export const BaseInput = ({ placeholder, ...props }: BaseInputTemplateProps) => (
+    <BaseInputTemplate
+        placeholder={placeholder || PLACEHOLDERS.INPUT}
+        {...props}
+        className="form__input cn-9 fs-13 lh-20 fw-4"
+    />
 )
