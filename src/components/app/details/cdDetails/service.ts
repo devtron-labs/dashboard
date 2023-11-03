@@ -138,11 +138,19 @@ export const prepareConfigMapAndSecretData = (
             secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type][''] }
             if (type === 'Secret' && historyData.codeEditorValue.value) {
                 const secretData = JSON.parse(historyData.codeEditorValue.value)
+                let resolvedSecretData = {}
+                if (historyData.codeEditorValue?.resolvedValue) {
+                    resolvedSecretData = JSON.parse(historyData.codeEditorValue.resolvedValue)
+                }
                 const decodeNotRequired =
                     skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
+                    
                 historyData.codeEditorValue.value = decodeNotRequired
                     ? historyData.codeEditorValue.value
                     : JSON.stringify(decode(secretData))
+                historyData.codeEditorValue.resolvedValue = decodeNotRequired
+                    ? historyData.codeEditorValue.resolvedValue
+                    : JSON.stringify(decode(resolvedSecretData))    
             }
         }
     }
@@ -182,10 +190,8 @@ export const prepareHistoryData = (
     skipDecode?: boolean,
 ): DeploymentHistoryDetail => {
     let values
-    const historyData = { codeEditorValue: rawData.codeEditorValue, variableSnapshot: rawData.variableSnapshot,  resolvedTemplateData: rawData.resolvedTemplateData, values: {} }
+    const historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
     delete rawData.codeEditorValue
-    delete rawData.resolvedTemplate
-    delete rawData.variableSnapshot
     if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.DEPLOYMENT_TEMPLATE.VALUE) {
         values = prepareDeploymentTemplateData(rawData)
     } else if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.PIPELINE_STRATEGY.VALUE) {

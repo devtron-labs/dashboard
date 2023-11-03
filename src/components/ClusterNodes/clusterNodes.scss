@@ -15,7 +15,6 @@
 }
 
 .node-list {
-
     .list-min-height {
         min-height: calc(100vh - 120px);
         &.no-result-container {
@@ -472,4 +471,13 @@
 
 .node-code-editor-header {
     background: var(--terminal-bg);
+}
+
+.cluster-terminal-hidden {
+    visibility: hidden;
+    height: 0;
+}
+
+.cluster-terminal-hidden * {
+    height: 0 !important;
 }
