@@ -1414,6 +1414,16 @@ button.anchor {
             }
         }
     }
+
+    &--lg {
+        &.radio-group {
+            height: 30px;
+
+            input + .radio__item-label {
+                padding-inline: 8px;
+            }
+        }
+    }
 }
 
 .manual-approvals-switch {

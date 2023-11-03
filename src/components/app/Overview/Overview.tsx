@@ -413,7 +413,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             return (
                 <div className="app-overview-wrapper flexbox-col dc__gap-12">
                     <RadioGroup
-                        className="gui-yaml-switch gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
                         name="overview-tabs"
                         initialTab={OVERVIEW_TABS.ABOUT}
                         disabled={false}
@@ -438,7 +438,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             return (
                 <div className="app-overview-wrapper flexbox-col dc__gap-12">
                     <RadioGroup
-                        className="gui-yaml-switch gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
                         name="overview-tabs"
                         initialTab={OVERVIEW_TABS.ABOUT}
                         disabled={false}
