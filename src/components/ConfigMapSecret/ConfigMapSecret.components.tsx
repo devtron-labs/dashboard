@@ -280,7 +280,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
-        if (name && ((!data?.name && name !== 'create') || (data?.name && name !== data?.name))) return null
+        if( name && ((!title && name !== 'create') || (title && name !== data?.name) ) || !name)  return null
         if (title && isProtected && draftData?.draftId)
              {
             return (
@@ -668,7 +668,7 @@ export function ProtectedConfigMapSecretDetails({
             return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
         }
         return (
-            <ConfigMapSecretForm
+            ((data && name === data?.name) || name === 'create') && <ConfigMapSecretForm
                 appChartRef={appChartRef}
                 updateCollapsed={updateCollapsed}
                 configMapSecretData={getData()}
