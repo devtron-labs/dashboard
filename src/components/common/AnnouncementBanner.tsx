@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as MegaphoneIcon } from '../../assets/icons/ic-megaphone.svg'
 import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { getDateInMilliseconds } from '../apiTokens/authorization.utils'
 import { setActionWithExpiry } from './helpers/Helpers'
 
-export default function AnnouncementBanner({ parentClassName = '' }) {
+export default function AnnouncementBanner({ parentClassName = '', hideCloseIcon = false }) {
     const isAnouncementBanner = (): boolean => {
         if (!localStorage.getItem('expiryDateOfHidingAnnouncementBanner')) {
             return true
@@ -16,9 +16,10 @@ export default function AnnouncementBanner({ parentClassName = '' }) {
             getDateInMilliseconds(localStorage.getItem('expiryDateOfHidingAnnouncementBanner'))
         )
     }
+
     const message = window?._env_?.ANNOUNCEMENT_BANNER_MSG
     const [showAnouncementBanner, setshowAnouncementBanner] = useState(message ? isAnouncementBanner() : false)
-   
+
     if (!message) {
         return null
     }
@@ -34,7 +35,11 @@ export default function AnnouncementBanner({ parentClassName = '' }) {
         return (
             <div className="flex">
                 <div>{message}</div>
-                <Close className="icon-dim-20 ml-8 fcn-9" onClick={onClickCloseAnnouncememtBanner} />
+                {hideCloseIcon ? (
+                    ''
+                ) : (
+                    <Close className="icon-dim-20 ml-8 fcn-9" onClick={onClickCloseAnnouncememtBanner} />
+                )}
             </div>
         )
     }

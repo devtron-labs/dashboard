@@ -1624,7 +1624,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img alt="close" src={close} />
                     </button>
                 </div>
-                {!this.state.showConfigDiffView && <AnnouncementBanner parentClassName="cd-trigger-announcement" />}
+                {!this.state.showConfigDiffView && <AnnouncementBanner parentClassName="cd-trigger-announcement" hideCloseIcon={true} />}
                 {isApprovalConfigured &&
                     ApprovedImagesMessage &&
                     (this.state.isRollbackTrigger || this.props.material.length > 1) && (
