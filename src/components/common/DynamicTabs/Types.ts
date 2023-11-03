@@ -9,6 +9,8 @@ interface CommonTabArgsType {
     isDeleted?: boolean
     positionFixed: boolean
     iconPath?: string
+    dynamicTitle?: string
+    showNameOnSelect?: boolean
 }
 
 export interface InitTabType extends CommonTabArgsType {
@@ -21,7 +23,15 @@ export interface DynamicTabType extends CommonTabArgsType {
 
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
-    removeTabByIdentifier: (title: string) => string
+    removeTabByIdentifier: (id: string) => string
+    stopTabByIdentifier: (title: string) => string
+    enableShortCut?: boolean
+    loader: boolean
+    refreshData: () => void
+    isOverview: boolean,
+    lastDataSync:boolean,
+    setLastDataSyncTimeString: (time: string) => void,
+    isStaleDataRef: any,
 }
 
 export interface TabsDataType {
@@ -34,4 +44,5 @@ export interface MoreButtonWrapperProps {
     readonly isMenuOpen: boolean
     readonly onClose: () => void
     readonly toggleMenu: () => void
+    tabPopupMenuRef: React.MutableRefObject<HTMLButtonElement>
 }

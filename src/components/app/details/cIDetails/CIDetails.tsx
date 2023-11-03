@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails } from '../../service'
-import { useScrollable, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
+import { showError, Progressing, Reload, GenericEmptyState, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails, getArtifactForJobCi } from '../../service'
+import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
@@ -22,11 +22,12 @@ import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
-export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
+export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: boolean, filteredEnvIds?: string }) {
     const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string
@@ -45,11 +46,11 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const [initDataLoading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
-                getCIPipelines(+appId),
+                getCIPipelines(+appId, filteredEnvIds),
                 getModuleInfo(ModuleNameMap.SECURITY),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
-        [appId],
+        [appId, filteredEnvIds],
     )
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
@@ -152,11 +153,12 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
     ) // external pipelines not visible in dropdown
-    if (pipelines.length === 1 && !pipelineId) {
+    const selectedPipelineExist = !pipelineId || pipelines.find((pipeline) => pipeline.id === +pipelineId)
+    if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist)) {
         replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
-        return { value: `${item.id}`, label: item.name, pipelineId: item.id }
+        return { value: `${item.id}`, label: item.name, pipelineId: item.id, pipelineType: item.pipelineType}
     })
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
@@ -221,6 +223,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                             appReleaseTags={appReleaseTags}
                                             hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                             fetchIdData={fetchBuildIdData}
+                                            isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -259,12 +262,14 @@ export const Details = ({
     isSecurityModuleInstalled,
     isBlobStorageConfigured,
     isJobView,
+    isJobCI,
     appIdFromParent,
     tagsEditable,
     appReleaseTags,
     hideImageTaggingHardDelete,
     fetchIdData,
 }: BuildDetails) => {
+    const isJobCard: boolean = isJobView || isJobCI
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
     const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
@@ -403,7 +408,7 @@ export const Details = ({
                                     Artifacts
                                 </NavLink>
                             </li>
-                            {!isJobView && isSecurityModuleInstalled && (
+                            {!isJobCard && isSecurityModuleInstalled && (
                                 <li className="tab-list__tab">
                                     <NavLink
                                         replace
@@ -425,6 +430,7 @@ export const Details = ({
                 triggerDetails={triggerDetails}
                 isBlobStorageConfigured={isBlobStorageConfigured}
                 isJobView={isJobView}
+                isJobCI={isJobCI}
                 appIdFromParent={appIdFromParent}
                 appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
@@ -438,18 +444,62 @@ const HistoryLogs = ({
     triggerDetails,
     isBlobStorageConfigured,
     isJobView,
+    isJobCI,
     appIdFromParent,
     appReleaseTags,
     tagsEditable,
     hideImageTaggingHardDelete,
 }: HistoryLogsType) => {
     let { path } = useRouteMatch()
+    const isJobCard: boolean = isJobCI || isJobView
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
     const _getArtifactPromise = () => getArtifact(pipelineId, buildId)
+    const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
+    useEffect(() => {
+        if (isJobCI) {
+            setLoading(true)
+            getArtifactsForCiJobRes()
+        }
+    }, [triggerDetails])
+    const getArtifactsForCiJobRes = async () => {
+        try {
+            const { result } = await getArtifactForJobCi(pipelineId, buildId)
+            if (result) {
+                setciJobArtifact(result.artifacts)
+            }
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoading(false)
+        }
+    }
 
+    const CiArtifactsArrayCards = Array.from({ length: ciJobArtifact?.length }, (_, index) => {
+        return (
+            <Artifacts
+                status={triggerDetails.status}
+                artifact={ciJobArtifact[index]}
+                blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                getArtifactPromise={_getArtifactPromise}
+                isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                isJobView={isJobView}
+                isJobCI={isJobCI}
+                imageComment={triggerDetails.imageComment}
+                imageReleaseTags={triggerDetails.imageReleaseTags}
+                ciPipelineId={triggerDetails.ciPipelineId}
+                artifactId={triggerDetails.artifactId}
+                tagsEditable={tagsEditable}
+                appReleaseTagNames={appReleaseTags}
+                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                type={HistoryComponentType.CI}
+                jobCIClass="pb-0-imp"
+            />
+        )
+    })
     return (
         <div className="trigger-outputs-container">
             <Switch>
@@ -472,24 +522,29 @@ const HistoryLogs = ({
                     <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
                 </Route>
                 <Route path={`${path}/artifacts`}>
-                    <Artifacts
-                        status={triggerDetails.status}
-                        artifact={triggerDetails.artifact}
-                        blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                        getArtifactPromise={_getArtifactPromise}
-                        isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                        isJobView={isJobView}
-                        imageComment={triggerDetails.imageComment}
-                        imageReleaseTags={triggerDetails.imageReleaseTags}
-                        ciPipelineId={triggerDetails.ciPipelineId}
-                        artifactId={triggerDetails.artifactId}
-                        tagsEditable={tagsEditable}
-                        appReleaseTagNames={appReleaseTags}
-                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                        type={HistoryComponentType.CI}
-                    />
+                    {loading && <Progressing pageLoader />}
+                    {isJobCI && !loading && CiArtifactsArrayCards}
+                    {!loading && (
+                        <Artifacts
+                            status={triggerDetails.status}
+                            artifact={triggerDetails.artifact}
+                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                            getArtifactPromise={_getArtifactPromise}
+                            isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                            isJobView={isJobView}
+                            isJobCI={isJobCI}
+                            imageComment={triggerDetails.imageComment}
+                            imageReleaseTags={triggerDetails.imageReleaseTags}
+                            ciPipelineId={triggerDetails.ciPipelineId}
+                            artifactId={triggerDetails.artifactId}
+                            tagsEditable={tagsEditable}
+                            appReleaseTagNames={appReleaseTags}
+                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                            type={HistoryComponentType.CI}
+                        />
+                    )}
                 </Route>
-                {!isJobView && (
+                {!isJobCard && (
                     <Route path={`${path}/security`}>
                         <SecurityTab
                             ciPipelineId={triggerDetails.ciPipelineId}

@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Switch, Route } from 'react-router-dom'
-import { Filter, FilterOption, handleUTCTime, useAsync } from '../../common'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
     stopPropagation,
     ServerErrors,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Filter, FilterOption, handleUTCTime } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
@@ -407,7 +408,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         filterType: string,
         query: Record<string, string>,
     ): string => {
-        
+
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
@@ -658,7 +659,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                     clusterName: _env.clusterName || '-',
                                     namespaceId: _env.namespace && _clusterId ? `${_clusterId}_${_env.namespace}` : '-',
                                     namespace: _env.namespace || '-',
-                                    status: _env.status || '-',
+                                    status: _env.appStatus || '-',
                                     lastDeployedTime: _env.lastDeployedTime
                                         ? moment(_env.lastDeployedTime).format(Moment12HourFormat)
                                         : '-',
@@ -693,6 +694,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     function renderMasterFilters() {
         let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
+        const appStatusFilters = (params.appType === AppListConstants.AppType.HELM_APPS) ? masterFilters.appStatus.slice(0,masterFilters.appStatus.length - 1) : masterFilters.appStatus
         const showExportCsvButton =
             userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
             currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
@@ -747,7 +749,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 </>
                             )}
                             <Filter
-                                list={masterFilters.projects}
+                                list={appStatusFilters}
                                 labelKey="label"
                                 buttonText="Projects"
                                 placeholder="Search Project"
@@ -999,7 +1001,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div className="h-100">
+        <div>
             {dataStateType === AppListViewType.ERROR ? (
                 <div className="h-100 flex">
                     <ErrorScreenManager code={errorResponseCode} />

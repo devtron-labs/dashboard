@@ -4,6 +4,8 @@ import { ImageComment } from "../cicdHistory/types"
 export interface DeploymentHistorySingleValue {
     displayName: string
     value: string
+    variableSnapshot?:object
+    resolvedValue?: string
 }
 export interface DeploymentHistoryDetail {
     componentName?: string

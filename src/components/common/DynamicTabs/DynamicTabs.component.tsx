@@ -14,20 +14,27 @@ export const TabsMenu = (props: MenuProps<any, false, any>) => {
     )
 }
 
-export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu }: MoreButtonWrapperProps) => (
-    <div className="more-tabs-wrapper dc__position-rel ml-auto">
+export const MoreButtonWrapper = ({
+    children,
+    isMenuOpen,
+    onClose,
+    toggleMenu,
+    tabPopupMenuRef,
+}: MoreButtonWrapperProps) => (
+    <div className="more-tabs-wrapper dc__position-rel flex">
         <button
-            className="more-tabs-option icon-dim-24 p-2 flexbox flex-align-center ml-8 bcn-0 dc__border br-4"
+            className="more-tabs-option p-0 flexbox dc__overflow-hidden flex-align-center ml-8 bcn-0 dc__border br-4"
             onClick={toggleMenu}
+            ref={tabPopupMenuRef}
         >
             <DropDown
-                className={`rotate icon-dim-20 pointer ${isMenuOpen ? 'fcn-9' : 'fcn-5'}`}
+                className={`rotate icon-dim-20 p-2 pointer ${isMenuOpen ? 'fcn-9' : 'fcn-7'}`}
                 style={{ ['--rotateBy' as any]: isMenuOpen ? '90deg' : '-90deg' }}
             />
         </button>
         {isMenuOpen && (
             <>
-                <div className="more-tabs__menu-wrapper bcn-0 mt-8 dc__position-abs w-300">{children}</div>
+                <div className="more-tabs__menu-wrapper bcn-0 mt-12 dc__position-abs w-300 dc__top-26">{children}</div>
                 <div className="more-tabs__blanket dc__position-fixed" onClick={onClose} />
             </>
         )}

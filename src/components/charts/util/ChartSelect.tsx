@@ -153,7 +153,8 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
             )}
             <div>
                 <div className="chart-grid-item__title dc__ellipsis-right mb-4">
-                    <span className="chart-grid-item__title-repo">{chart.chart_name}</span>
+                    <span className="chart-grid-item__title-repo">{chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id
+}</span>
                     <span>/{chart.name}</span>
                 </div>
                 <div className="flex left">

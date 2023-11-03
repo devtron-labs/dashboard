@@ -15,7 +15,7 @@ import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { withShortcut, IWithShortcut } from 'react-keybind'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 
 function Sidebar({
     k8SObjectMap,
@@ -25,6 +25,7 @@ function Sidebar({
     updateResourceSelectionData,
     shortcut,
     isCreateModalOpen,
+    isClusterError,
 }: SidebarType & IWithShortcut) {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
@@ -73,6 +74,7 @@ function Sidebar({
     }
 
     const covertK8sMapToOptionsList = () => {
+      let isNamespacesAvailable, isEventsAvailable
         const _k8sObjectOptionsList = [...k8SObjectMap.values()].flatMap((k8sObject) => {
             return [...k8sObject.child.entries()].flatMap(([key, value]) => {
                 const keyLowerCased = key.toLowerCase()
@@ -81,6 +83,8 @@ function Sidebar({
                     keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
                     keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
                 ) {
+                  isNamespacesAvailable= isNamespacesAvailable || keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
+                  isEventsAvailable= isEventsAvailable || keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
                     return []
                 }
 
@@ -100,25 +104,54 @@ function Sidebar({
                 })
             })
         })
+        if (isEventsAvailable) {
+            _k8sObjectOptionsList.push({
+                label: SIDEBAR_KEYS.events as Nodes,
+                value: K8S_EMPTY_GROUP,
+                dataset: {
+                    group: SIDEBAR_KEYS.eventGVK.Group,
+                    version: SIDEBAR_KEYS.eventGVK.Version,
+                    kind: SIDEBAR_KEYS.eventGVK.Kind as Nodes,
+                    namespaced: 'true',
+                    grouped: 'false',
+                },
+                groupName: '',
+            })
+        }
+        if (isNamespacesAvailable) {
+            _k8sObjectOptionsList.push({
+                label: SIDEBAR_KEYS.namespaces as Nodes,
+                value: K8S_EMPTY_GROUP,
+                dataset: {
+                    group: SIDEBAR_KEYS.namespaceGVK.Group,
+                    version: SIDEBAR_KEYS.namespaceGVK.Version,
+                    kind: SIDEBAR_KEYS.namespaceGVK.Kind as Nodes,
+                    namespaced: 'false',
+                    grouped: 'false',
+                },
+                groupName: '',
+            })
+        }
+
         _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.events as Nodes,
+            label: SIDEBAR_KEYS.overview as Nodes,
             value: K8S_EMPTY_GROUP,
             dataset: {
-                group: SIDEBAR_KEYS.eventGVK.Group,
-                version: SIDEBAR_KEYS.eventGVK.Version,
-                kind: SIDEBAR_KEYS.eventGVK.Kind as Nodes,
-                namespaced: 'true',
+                group: SIDEBAR_KEYS.overviewGVK.Group,
+                version: SIDEBAR_KEYS.overviewGVK.Version,
+                kind: SIDEBAR_KEYS.overviewGVK.Kind as Nodes,
+                namespaced: 'false',
                 grouped: 'false',
             },
             groupName: '',
         })
         _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.namespaces as Nodes,
+            label: SIDEBAR_KEYS.nodes as Nodes,
             value: K8S_EMPTY_GROUP,
             dataset: {
-                group: SIDEBAR_KEYS.namespaceGVK.Group,
-                version: SIDEBAR_KEYS.namespaceGVK.Version,
-                kind: SIDEBAR_KEYS.namespaceGVK.Kind as Nodes,
+                group: SIDEBAR_KEYS.nodeGVK.Group,
+                version: SIDEBAR_KEYS.nodeGVK.Version,
+                kind: SIDEBAR_KEYS.nodeGVK.Kind,
                 namespaced: 'false',
                 grouped: 'false',
             },
@@ -261,7 +294,7 @@ function Sidebar({
                 },
             },
             option.groupName,
-            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) && option.label !== (SIDEBAR_KEYS.events as Nodes),
+            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) && option.label !== (SIDEBAR_KEYS.events as Nodes) && option.label !== (SIDEBAR_KEYS.nodes as Nodes) && option.label !== (SIDEBAR_KEYS.overview as Nodes),
         )
     }
 
@@ -291,9 +324,7 @@ function Sidebar({
 
     const noOptionsMessage = () => 'No matching kind'
 
-    return !k8SObjectMap?.size ? (
-        <Progressing pageLoader />
-    ) : (
+    return (
         <div className="k8s-object-container">
             <div className="k8s-object-kind-search bcn-0 pt-16 pb-8 w-200 dc__m-auto cursor">
                 <ReactSelect
@@ -324,9 +355,82 @@ function Sidebar({
                     }}
                 />
             </div>
-            <div className="k8s-object-wrapper p-8 dc__user-select-none">
-                {[...k8SObjectMap.values()].map((k8sObject) =>
-                    k8sObject.name === AggregationKeys.Events ? null : (
+            <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
+            <div className="pb-8">
+                    <div
+                        key={SIDEBAR_KEYS.overviewGVK.Kind}
+                        ref={updateRef}
+                        onClick={selectNode}
+                        data-kind={SIDEBAR_KEYS.overviewGVK.Kind}
+                        data-group={SIDEBAR_KEYS.overviewGVK.Group}
+                        data-version={SIDEBAR_KEYS.overviewGVK.Version}
+                        data-namespaced={false}
+                        className={`fs-13 pointer flexbox flex-justify dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                            nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+                                ? 'bcb-1 cb-5'
+                                : 'cn-7 resource-tree-object'
+                        }`}
+                    >
+                        {SIDEBAR_KEYS.overview}
+                        {isClusterError && <Error className="mt-2 mb-2 icon-dim-16" />}
+                    </div>
+                    <div
+                        key={SIDEBAR_KEYS.nodeGVK.Kind}
+                        ref={updateRef}
+                        onClick={selectNode}
+                        data-namespaced={false}
+                        data-kind={SIDEBAR_KEYS.nodeGVK.Kind}
+                        data-group={SIDEBAR_KEYS.nodeGVK.Group}
+                        data-version={SIDEBAR_KEYS.nodeGVK.Version}
+                        className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                            nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+                                ? 'bcb-1 cb-5'
+                                : 'cn-7 resource-tree-object'
+                        }`}
+                    >
+                        {SIDEBAR_KEYS.nodes}
+                    </div>
+                    {k8SObjectMap?.size && k8SObjectMap.get(AggregationKeys.Events) && (
+                        <div
+                            key={SIDEBAR_KEYS.eventGVK.Kind}
+                            ref={updateRef}
+                            className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                                nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+                                    ? 'bcb-1 cb-5'
+                                    : 'cn-7 resource-tree-object'
+                            }`}
+                            data-group={SIDEBAR_KEYS.eventGVK.Group}
+                            data-version={SIDEBAR_KEYS.eventGVK.Version}
+                            data-kind={SIDEBAR_KEYS.eventGVK.Kind}
+                            data-namespaced={true}
+                            data-selected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
+                            onClick={selectNode}
+                        >
+                            {SIDEBAR_KEYS.events}
+                        </div>
+                    )}
+                    {k8SObjectMap?.size && k8SObjectMap.get(AggregationKeys.Namespaces) && (
+                        <div
+                            key={SIDEBAR_KEYS.namespaceGVK.Kind}
+                            ref={updateRef}
+                            className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                                nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
+                                    ? 'bcb-1 cb-5'
+                                    : 'cn-7 resource-tree-object'
+                            }`}
+                            data-group={SIDEBAR_KEYS.namespaceGVK.Group}
+                            data-version={SIDEBAR_KEYS.namespaceGVK.Version}
+                            data-kind={SIDEBAR_KEYS.namespaceGVK.Kind}
+                            data-namespaced={false}
+                            data-selected={nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()}
+                            onClick={selectNode}
+                        >
+                            {SIDEBAR_KEYS.namespaces}
+                        </div>
+                    )}
+            </div>
+                {k8SObjectMap?.size && [...k8SObjectMap.values()].map((k8sObject) =>
+                    k8sObject.name === AggregationKeys.Events || k8sObject.name === AggregationKeys.Namespaces ? null : (
                         <Fragment key={`${k8sObject.name}-parent`}>
                             <div
                                 className="flex pointer"
@@ -354,46 +458,6 @@ function Sidebar({
                         </Fragment>
                     ),
                 )}
-                <div className="dc__border-top-n1 pt-8 mt-8">
-                    {SIDEBAR_KEYS.eventGVK.Version && (
-                        <div
-                            key={SIDEBAR_KEYS.eventGVK.Kind}
-                            ref={updateRef}
-                            className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                                nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-                                    ? 'bcb-1 cb-5'
-                                    : 'cn-7 resource-tree-object'
-                            }`}
-                            data-group={SIDEBAR_KEYS.eventGVK.Group}
-                            data-version={SIDEBAR_KEYS.eventGVK.Version}
-                            data-kind={SIDEBAR_KEYS.eventGVK.Kind}
-                            data-namespaced={true}
-                            data-selected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
-                            onClick={selectNode}
-                        >
-                            {SIDEBAR_KEYS.events}
-                        </div>
-                    )}
-                    {SIDEBAR_KEYS.namespaceGVK.Version && (
-                        <div
-                            key={SIDEBAR_KEYS.namespaceGVK.Kind}
-                            ref={updateRef}
-                            className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                                nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
-                                    ? 'bcb-1 cb-5'
-                                    : 'cn-7 resource-tree-object'
-                            }`}
-                            data-group={SIDEBAR_KEYS.namespaceGVK.Group}
-                            data-version={SIDEBAR_KEYS.namespaceGVK.Version}
-                            data-kind={SIDEBAR_KEYS.namespaceGVK.Kind}
-                            data-namespaced={false}
-                            data-selected={nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()}
-                            onClick={selectNode}
-                        >
-                            {SIDEBAR_KEYS.namespaces}
-                        </div>
-                    )}
-                </div>
             </div>
         </div>
     )

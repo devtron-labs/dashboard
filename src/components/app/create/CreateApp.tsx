@@ -236,6 +236,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     changeTemplate = (appCreationType: string): void => {
         let { form, isValid } = { ...this.state }
         form.appCreationType = appCreationType
+        form.cloneId = appCreationType === AppCreationType.Blank ? 0 : form.cloneId
         isValid.cloneAppId = appCreationType === AppCreationType.Blank
         this.setState({ form, isValid })
     }

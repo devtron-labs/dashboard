@@ -80,7 +80,7 @@ progress.styled-progress-bar {
     appearance: none;
     border: none;
     width: 200px;
-    height: 12px;
+    height: 6px;
     border-radius: 6px;
     background-color: var(--N100);
     color: var(--B500);
@@ -101,6 +101,18 @@ progress.styled-progress-bar {
         border-radius: 6px;
         background-color: var(--B500);
         transition: width 500ms linear;
+    }
+}
+
+progress.styled-progress-bar-error {
+    color: var(--R500);
+
+    &::-webkit-progress-value {
+        background-color: var(--R500);
+    }
+
+    &::-moz-progress-bar {
+        background-color: var(--R500);
     }
 }
 

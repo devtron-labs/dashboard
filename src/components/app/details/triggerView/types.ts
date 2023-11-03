@@ -14,6 +14,7 @@ import {
     ImageComment,
     DeploymentAppTypes,
     TaskErrorObj,
+    FilterConditionsListType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
@@ -44,12 +45,13 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
         appId?:number,
     ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    closeCDModal: (e) => void
+    closeCDModal: (e: React.MouseEvent) => void
     onClickRollbackMaterial?: (
         cdNodeId: number,
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+        searchText?: string,
     ) => void
     parentPipelineId?: string
     parentPipelineType?: string
@@ -71,6 +73,10 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     isApplicationGroupTrigger?: boolean
+    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, fromRollback?: boolean) => void
+    searchImageTag?: string
+    resourceFilters?: FilterConditionsListType[]
+    isSuperAdmin?:boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -85,9 +91,15 @@ export interface ConfigToDeployOptionType {
     infoText: string
 }
 
+export enum FilterConditionViews {
+    ELIGIBLE = 'ELIGIBLE',
+    ALL = 'ALL',
+}
+
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
+    showSearch:boolean
     diffFound: boolean
     diffOptions: Record<string, boolean>
     showConfigDiffView: boolean
@@ -102,6 +114,12 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
+    areMaterialsPassingFilters: boolean
+    searchApplied: boolean
+    searchText: string
+    showConfiguredFilters: boolean
+    filterView: FilterConditionViews
+    isSuperAdmin?:boolean
 }
 
 export interface MaterialInfo {
@@ -159,6 +177,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     selectedEnv?: Environment
     setSelectedEnv?: (selectedEnv: Environment) => void;
     environmentLists?: any[]
+    isJobCI?: boolean
 }
 
 export interface RegexValueType {
@@ -287,6 +306,7 @@ export interface TriggerViewProps extends RouteComponentProps<{
     envId: string
 }> {
     isJobView?: boolean
+    filteredEnvIds?: string
 }
 
 export interface WorkflowType {
@@ -356,6 +376,8 @@ export interface TriggerViewState {
     hideImageTaggingHardDelete?: boolean
     configs?: boolean
     isDefaultConfigPresent?: boolean
+    searchImageTag?: string
+    resourceFilters?: FilterConditionsListType[]
 }
 
 //-- begining of response type objects for trigger view
@@ -390,6 +412,7 @@ export enum CIPipelineNodeType {
     EXTERNAL_CI = 'EXTERNAL-CI',
     CI = 'CI',
     LINKED_CI = 'LINKED-CI',
+    JOB_CI = 'JOB-CI',
 }
 
 export enum WorkflowNodeType {
@@ -416,6 +439,7 @@ export interface Tree {
     componentId: number
     parentId: number
     parentType: PipelineType
+    isLast?: boolean
 }
 
 export interface Workflow {
@@ -500,6 +524,7 @@ export interface CiPipeline {
         metadataField: string
     }
     isOffendingMandatoryPlugin?: boolean
+    pipelineType?: string
 }
 
 export interface Material {
@@ -544,7 +569,7 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
-export interface PrePostDeployStageType {  
+export interface PrePostDeployStageType {
     isValid: boolean;
     steps: TaskErrorObj[];
     triggerType: string

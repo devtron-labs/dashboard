@@ -17,20 +17,23 @@ import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { TriggerTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 export const getTriggerWorkflows = (
     appId,
     useAppWfViewAPI: boolean,
     isJobView: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView)
+    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView, filteredEnvIds)
 }
 
 export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[], filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView)
+    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
 const getInitialWorkflows = (
@@ -39,9 +42,10 @@ const getInitialWorkflows = (
     workflowOffset: Offset,
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
     if (useAppWfViewAPI) {
-        return getWorkflowViewList(id).then((response) => {
+        return getWorkflowViewList(id, filteredEnvIds).then((response) => {
             const workflows = {
                 appId: id,
                 workflows: response.result?.workflows as Workflow[],
@@ -74,7 +78,7 @@ const getInitialWorkflows = (
             )
         })
     } else {
-        return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
+        return Promise.all([getWorkflowList(id, filteredEnvIds), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
             ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
                 return processWorkflow(
                     workflow.result as WorkflowResult,
@@ -190,7 +194,7 @@ export function processWorkflow(
                             cdPipeline.parentPipelineType = branch.parentType
                         }
 
-                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
+                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
                         if (cdPipeline.userApprovalConfig?.requiredCount > 0) {
@@ -438,7 +442,8 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             regex: ciMaterial?.source?.regex,
             isRegex: ciMaterial?.isRegex,
             primaryBranchAfterRegex: ciMaterial?.source?.value,
-            cipipelineId: ciMaterial?.id
+            cipipelineId: ciMaterial?.id,
+            isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB
         } as NodeAttr
     })
     let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
@@ -462,6 +467,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         downstreams: [],
         isExternalCI: ciPipeline.isExternal,
         isLinkedCI: !!ciPipeline.parentCiPipeline,
+        isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes: sourceNodes,
         downstreamNodes: new Array<NodeAttr>(),
@@ -495,7 +501,7 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
     } as NodeAttr
 }
 
-function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number): NodeAttr {
+function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number, isLast: boolean): NodeAttr {
     let trigger = cdPipeline.triggerType?.toLowerCase() ?? ''
     let preCD: NodeAttr | undefined = undefined,
         postCD: NodeAttr | undefined = undefined
@@ -572,6 +578,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
+        isLast: isLast
     } as NodeAttr
     stageIndex++
 

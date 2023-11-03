@@ -48,7 +48,7 @@ export const initTabsData = (
         const tabOption = {
             ...tab,
             label: tab.name,
-            value: tab.title,
+            value: tab.id,
         }
         if (tab.positionFixed) {
             fixedTabs.push(tabOption)

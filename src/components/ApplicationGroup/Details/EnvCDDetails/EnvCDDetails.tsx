@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, showError, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
-import { useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
+import { Progressing, showError, sortCallback, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { useInterval, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { TriggerOutput } from '../../../app/details/cdDetails/CDDetails'

@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
-import { useJsonYaml, Select, RadioGroup, useWindowSize, copyToClipboard } from '../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useJsonYaml, Select, RadioGroup, useWindowSize } from '../common'
+import { Progressing, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
@@ -66,6 +66,7 @@ interface CodeEditorInterface {
     validatorSchema?: any;
     isKubernetes?: boolean;
     cleanData?: boolean;
+    chartVersion?: any; 
 }
 
 interface CodeEditorHeaderInterface {
@@ -115,7 +116,7 @@ interface CodeEditorState {
     code: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false, onBlur, onFocus}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema, chartVersion ,isKubernetes = true, cleanData = false, onBlur, onFocus}) {
     if (cleanData) {
         value = cleanKubeManifest(value);
         defaultValue = cleanKubeManifest(defaultValue);
@@ -220,14 +221,13 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                 format: true,
                 schemas:[
                     {
-                        uri: 'https://devtron.ai/schema.json', // id of the first schema
+                        uri: `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/reference-chart_${chartVersion}/schema.json`, // id of the first schema
                         fileMatch: ['*'], // associate with our model
                         schema: validatorSchema,
                     }]
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [validatorSchema]);
-
+    }, [validatorSchema, chartVersion]);
     useEffect(() => {
         if (!editorRef.current) return
         editorRef.current.updateOptions({ readOnly })

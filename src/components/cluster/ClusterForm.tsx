@@ -11,11 +11,12 @@ import {
     Toggle,
     GenericEmptyState,
     ResizableTextarea,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
-import { useForm, CustomPassword, useAsync, importComponentFromFELibrary } from '../common'
+import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
@@ -25,7 +26,7 @@ import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-right.svg'
-import { ReactComponent as MechanicalOperation} from '../../assets/img/ic-mechanical-operation.svg'
+import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
     AuthenticationType,
     DEFAULT_SECRET_PLACEHOLDER,
@@ -33,6 +34,7 @@ import {
     UserDetails,
     SaveClusterPayloadType,
     DEFAULT_CLUSTER_ID,
+    SSHAuthenticationType,
 } from './cluster.type'
 import { toast } from 'react-toastify'
 
@@ -50,7 +52,7 @@ import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
-const KubectlProxyCheckBox = importComponentFromFELibrary('KubectlProxyCheckBox')
+const KubectlConnectionRadio = importComponentFromFELibrary('KubectlConnectionRadio')
 
 const PrometheusWarningInfo = () => {
     return (
@@ -91,7 +93,12 @@ export default function ClusterForm({
     prometheusAuth,
     defaultClusterComponent,
     proxyUrl,
+    sshTunnelUser,
+    sshTunnelPassword,
+    sshTunnelPrivateKey,
+    sshTunnelUrl,
     isConnectedViaProxy,
+    isConnectedViaSSHTunnel,
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
@@ -128,7 +135,14 @@ export default function ClusterForm({
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
-    const [isConnectedViaProxyTemp, setisConnectedViaProxyTemp] = useState(isConnectedViaProxy)
+    const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
+    const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
+    const initialSSHAuthenticationType = (sshTunnelPassword && sshTunnelPrivateKey)
+        ? SSHAuthenticationType.Password_And_SSH_Private_Key
+        : sshTunnelPrivateKey
+            ? SSHAuthenticationType.SSH_Private_Key
+            : SSHAuthenticationType.Password
+    const [SSHConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -142,7 +156,12 @@ export default function ClusterForm({
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            proxyUrl: { value: proxyUrl?.value ? proxyUrl.value : '', error: ''},
+            proxyUrl: { value: proxyUrl, error: '' },
+            isConnectedViaSSHTunnel: isConnectedViaSSHTunnel ? isConnectedViaSSHTunnel : false,
+            sshTunnelUser: { value: sshTunnelUser, error: '' },
+            sshTunnelPassword: { value: sshTunnelPassword, error: '' },
+            sshTunnelPrivateKey: { value: sshTunnelPrivateKey, error: '' },
+            sshTunnelUrl: { value: sshTunnelUrl, error: '' },
             tlsClientKey: { value: config?.tls_key, error: '' },
             tlsClientCert: { value: config?.cert_data, error: '' },
             certificateAuthorityData: { value: config?.cert_auth_data, error: '' },
@@ -189,8 +208,24 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: (id && KubectlProxyCheckBox) && isConnectedViaProxyTemp,
+                required: (id && KubectlConnectionRadio) && isConnectedViaProxyTemp,
                 validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
+            },
+            sshTunnelUser: {
+                required: isConnectedViaSSHTunnelTemp,
+                validator: { error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -', regex: /^[A-Za-z0-9_-]+$/ },
+            },
+            sshTunnelPassword: {
+                required: isConnectedViaSSHTunnelTemp && (SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
+                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
+            },
+            sshTunnelPrivateKey: {
+                required: isConnectedViaSSHTunnelTemp && (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
+                validator: { error: 'private key is required', regex: /^(?!\s*$).+/ },
+            },
+            sshTunnelUrl: {
+                required: isConnectedViaSSHTunnelTemp,
+                validator: (isConnectedViaSSHTunnelTemp) ? { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ } : {error: '', regex: /^(?!\s*$).+/ },
             },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
@@ -205,9 +240,9 @@ export default function ClusterForm({
                 isDefaultCluster() || id
                     ? {}
                     : {
-                          required: true,
-                          validator: { error: 'token is required', regex: /[^]+/ },
-                      },
+                        required: true,
+                        validator: { error: 'token is required', regex: /[^]+/ },
+                    },
             endpoint: {
                 required: prometheusToggleEnabled ? true : false,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
@@ -245,6 +280,8 @@ export default function ClusterForm({
                         tlsClientKey: '',
                         tlsClientCert: '',
                     },
+                    isConnectedViaSSHTunnel: _dataList.isConnectedViaSSHTunnel,
+                    sshTunnelConfig: _dataList.sshTunnelConfig,
                     server_url: _dataList.server_url,
                 }
                 saveClusterPayload.push(_clusterDetails)
@@ -295,7 +332,7 @@ export default function ClusterForm({
             let obj = YAML.parse(saveYamlData)
             let jsonStr = JSON.stringify(obj)
             return jsonStr
-        } catch (error) {}
+        } catch (error) { }
     }
 
     function isCheckboxDisabled() {
@@ -336,6 +373,8 @@ export default function ClusterForm({
                             insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
                             id: _cluster['id'],
                             proxyUrl: _cluster['proxyUrl'],
+                            isConnectedViaSSHTunnel: _cluster['toConnectWithSSHTunnel'],
+                            sshTunnelConfig: _cluster['sshTunnelConfig']
                         }
                     }),
                 ])
@@ -379,6 +418,13 @@ export default function ClusterForm({
             },
             active,
             proxyUrl: state.proxyUrl?.value,
+            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
+            sshTunnelConfig: {
+                user: state.sshTunnelUser,
+                password: state.sshTunnelPassword,
+                authKey: state.sshTunnelPrivateKey,
+                sshServerAddress: state.sshTunnelUrl
+            },
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
                 userName: prometheusToggleEnabled ? state.userName.value : '',
@@ -404,8 +450,21 @@ export default function ClusterForm({
             } else {
                 payload['proxyUrl'] = proxyUrlValue
             }
-        } else{
+        } else {
             payload['proxyUrl'] = ''
+        }
+        if (isConnectedViaSSHTunnelTemp) {
+            payload['toConnectWithSSHTunnel'] = true
+            payload.sshTunnelConfig['user'] = state.sshTunnelUser?.value
+            payload.sshTunnelConfig['password'] = (SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPassword?.value : ''
+            payload.sshTunnelConfig['authKey'] = (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPrivateKey?.value : '' 
+            payload.sshTunnelConfig['sshServerAddress'] = state.sshTunnelUrl?.value
+        } else {
+            payload['toConnectWithSSHTunnel'] = false
+            payload.sshTunnelConfig['user'] = ''
+            payload.sshTunnelConfig['password'] = ''
+            payload.sshTunnelConfig['authKey'] = ''
+            payload.sshTunnelConfig['sshServerAddress'] = ''
         }
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
@@ -439,7 +498,7 @@ export default function ClusterForm({
                 />,
             )
             toggleShowAddCluster()
-            setProxyUrlConnectionFalse()
+            setKubectlConnectionFalse()
             setTlsConnectionFalse()
             reload()
             toggleEditMode((e) => !e)
@@ -476,6 +535,13 @@ export default function ClusterForm({
             tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
         },
         proxyUrl: state.proxyUrl.value,
+        toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
+        sshTunnelConfig: {
+            user: state.sshTunnelUser.value,
+            password: state.sshTunnelPassword.value,
+            authKey: state.sshTunnelPrivateKey.value,
+            sshServerAddress: state.sshTunnelUrl.value
+        },
         server_url,
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
@@ -532,7 +598,7 @@ export default function ClusterForm({
         reader.onload = () => {
             try {
                 setSaveYamlData(reader.result.toString())
-            } catch (e) {}
+            } catch (e) { }
         }
         reader.readAsText(file)
         setUploadState(UPLOAD_STATE.SUCCESS)
@@ -544,7 +610,7 @@ export default function ClusterForm({
 
     const handleCloseButton = () => {
         if (id) {
-            setProxyUrlConnectionFalse()
+            setKubectlConnectionFalse()
             setTlsConnectionFalse()
             toggleEditMode((e) => !e)
             return
@@ -558,7 +624,7 @@ export default function ClusterForm({
         if (isClusterDetails) {
             toggleClusterDetails(!isClusterDetails)
         }
-        setProxyUrlConnectionFalse()
+        setKubectlConnectionFalse()
         setTlsConnectionFalse()
         toggleShowAddCluster()
 
@@ -566,13 +632,18 @@ export default function ClusterForm({
         reload()
     }
 
-
-    const toggleCheckProxyUrlConnection = () => {
-        setisConnectedViaProxyTemp(!isConnectedViaProxyTemp)
+    const changeKubectlConnectionType = (viaProxy, viaSSHTunnel) => {
+        setIsConnectedViaProxyTemp(viaProxy)
+        setIsConnectedViaSSHTunnelTemp(viaSSHTunnel)
     }
 
-   const setProxyUrlConnectionFalse = () => {
-       setisConnectedViaProxyTemp(false)
+    const changeSSHAuthenticationType = (authType) => {
+        setSSHConnectionType(authType)
+    }
+
+    const setKubectlConnectionFalse = () => {
+        setIsConnectedViaProxyTemp(false)
+        setIsConnectedViaSSHTunnelTemp(false)
     }
 
     const renderUrlAndBearerToken = () => {
@@ -616,8 +687,8 @@ export default function ClusterForm({
                                         ? id !== 1
                                             ? DEFAULT_SECRET_PLACEHOLDER
                                             : config?.bearer_token
-                                            ? config.bearer_token
-                                            : ''
+                                                ? config.bearer_token
+                                                : ''
                                         : state.token.value
                                 }
                                 onChange={handleOnChange}
@@ -635,13 +706,27 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
-                {id !== DEFAULT_CLUSTER_ID && KubectlProxyCheckBox && (
-                    <KubectlProxyCheckBox
-                        toConnectViaProxyTemp={isConnectedViaProxyTemp}
-                        toggleCheckProxyUrlConnection={toggleCheckProxyUrlConnection}
-                        proxyUrl={state.proxyUrl}
-                        handleOnChange={handleOnChange}
-                    />
+                {id !== DEFAULT_CLUSTER_ID && KubectlConnectionRadio && (
+                    <>
+                        <hr />
+                        <div className="dc__position-rel dc__hover mb-20">
+                            <span className="form__input-header pb-20">How do you want Devtron to connect with this cluster?</span>
+                            <span className="pb-20">
+                                <KubectlConnectionRadio
+                                    toConnectViaProxy={isConnectedViaProxyTemp}
+                                    toConnectWithSSHTunnel={isConnectedViaSSHTunnelTemp}
+                                    changeClusterConnectionType={changeKubectlConnectionType}
+                                    changeSSHAuthenticationType={changeSSHAuthenticationType}
+                                    proxyUrl={state.proxyUrl}
+                                    sshTunnelUser={state.sshTunnelUser}
+                                    sshTunnelPassword={(SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPassword : {value: '', error: ''}}
+                                    sshTunnelPrivateKey={(SSHConnectionType === SSHAuthenticationType.SSH_Private_Key || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPrivateKey : {value: '', error: ''}}
+                                    sshTunnelUrl={state.sshTunnelUrl}
+                                    handleOnChange={handleOnChange}
+                                />
+                            </span>
+                        </div>
+                    </>
                 )}
                 {id !== DEFAULT_CLUSTER_ID && (
                     <>
@@ -963,9 +1048,8 @@ export default function ClusterForm({
                                         <div className="flexbox dc__align-items-center">
                                             <div
                                                 data-testid="status_icon_visibility"
-                                                className={`dc__app-summary__icon icon-dim-16 mr-2 ${
-                                                    clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
-                                                }`}
+                                                className={`dc__app-summary__icon icon-dim-16 mr-2 ${clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
+                                                    }`}
                                             ></div>
                                             <div
                                                 data-testid={`validate-cluster-${clusterListDetail.status}`}
@@ -1117,9 +1201,8 @@ export default function ClusterForm({
                                 <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-16 pr-16 dc__border-top dc__border-bottom">
                                     <div data-testid="select_all_cluster_checkbox">
                                         <Checkbox
-                                            rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
-                                                isCheckboxDisabled() ? ' dc__opacity-0_5' : ''
-                                            }`}
+                                            rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${isCheckboxDisabled() ? ' dc__opacity-0_5' : ''
+                                                }`}
                                             onChange={toggleSelectAll}
                                             isChecked={selectAll}
                                             value={getAllClustersCheckBoxValue()}
@@ -1147,14 +1230,13 @@ export default function ClusterForm({
                                                 <Checkbox
                                                     key={`app-$${index}`}
                                                     dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
-                                                    rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
-                                                        selectedUserNameOptions[clusterDetail.cluster_name]
-                                                            .errorInConnecting === 'cluster-already-exists' ||
+                                                    rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting === 'cluster-already-exists' ||
                                                         !selectedUserNameOptions[clusterDetail.cluster_name]
                                                             .errorInConnecting
-                                                            ? ''
-                                                            : ' dc__opacity-0_5'
-                                                    }`}
+                                                        ? ''
+                                                        : ' dc__opacity-0_5'
+                                                        }`}
                                                     onChange={() => toggleIsSelected(clusterDetail.cluster_name)}
                                                     isChecked={isClusterSelected[clusterDetail.cluster_name]}
                                                     value={CHECKBOX_VALUE.CHECKED}
@@ -1163,7 +1245,7 @@ export default function ClusterForm({
                                                             .errorInConnecting === 'cluster-already-exists'
                                                             ? false
                                                             : selectedUserNameOptions[clusterDetail.cluster_name]
-                                                                  .errorInConnecting.length > 0
+                                                                .errorInConnecting.length > 0
                                                     }
                                                 />
                                                 <div
@@ -1216,13 +1298,12 @@ export default function ClusterForm({
                                                                 }}
                                                             >
                                                                 <div
-                                                                    className={`dc__app-summary__icon icon-dim-16 m-2 ${
-                                                                        selectedUserNameOptions[
-                                                                            clusterDetail.cluster_name
-                                                                        ].errorInConnecting.length !== 0
-                                                                            ? 'failed'
-                                                                            : ''
-                                                                    }`}
+                                                                    className={`dc__app-summary__icon icon-dim-16 m-2 ${selectedUserNameOptions[
+                                                                        clusterDetail.cluster_name
+                                                                    ].errorInConnecting.length !== 0
+                                                                        ? 'failed'
+                                                                        : ''
+                                                                        }`}
                                                                 />
                                                                 <span>
                                                                     {selectedUserNameOptions[clusterDetail.cluster_name]

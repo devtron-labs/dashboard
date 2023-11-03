@@ -3,6 +3,7 @@ import { PipelineSelectProps } from './types'
 import ci from '../../assets/img/ic-pipeline-ci@2x.png'
 import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
 import webhook from '../../assets/img/webhook.svg'
+import ciJobIcon from '../../assets/icons/ic-job-node.svg'
 import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
 import { Modal } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -66,6 +67,27 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                         </p>
                     </div>
                 </div>
+                {window._env_.ENABLE_CI_JOB && (
+                    <>
+                        <div className="dc__window-bg pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">Create job pipeline</div>
+                        <div
+                            className="pipeline-select-item flexbox p-12 pointer"
+                            data-testid="job-ci-pipeline-button"
+                            data-pipeline-type={CIPipelineNodeType.JOB_CI}
+                            onClick={this.handleMenuClick}
+                        >
+                            <div className="h-40 bcb-1 flex br-8 mr-12">
+                                <img src={ciJobIcon} className="icon-dim-20 ml-10 mr-10" alt="job-ci" />
+                            </div>
+                            <div>
+                                <h4 className="fs-13 fw-6 cn-9 mt-0 mb-4">Create a Job</h4>
+                                <p className="lh-16 fs-12 fw-4 cn-7 m-0">
+                                    Create and trigger a job. Such as trigger Jenkins build trigger
+                                </p>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         )
     }

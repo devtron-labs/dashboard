@@ -3,7 +3,6 @@ import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import * as jsonpatch from 'fast-json-patch'
 
 export interface DeploymentObject {
     id: number | null
@@ -73,12 +72,17 @@ export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps
     isCiPipeline: boolean
     environments: AppEnvironment[]
     isProtected: boolean
-    reloadEnvironments: ()=> void
+    reloadEnvironments: () => void
 }
 
 export interface DeploymentChartVersionType {
     id: number | string
     version: string
+    chartRefId: number
+    type: number
+    deploymentTemplateHistoryId: number
+    pipelineId: number
+    environmentId: number
     name: string
     description?: string
     isAppMetricsSupported: boolean
@@ -108,6 +112,8 @@ export interface DeploymentConfigFormCTAProps {
     toggleAppMetrics: () => void
     isPublishedMode: boolean
     reload: () => void
+    isValues?: boolean
+    convertVariables?: boolean
 }
 
 export interface CompareWithDropdownProps {
@@ -117,7 +123,31 @@ export interface CompareWithDropdownProps {
     charts: DeploymentChartOptionType[]
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
-    setSelectedOption: (selectedOption: DeploymentChartOptionType) => void | React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
+    setSelectedOption: any
+    isValues: boolean
+    groupedData: any
+    setConvertVariables: (convertVariables: boolean) => void
+}
+
+export interface CompareWithApprovalPendingAndDraftProps {
+    isEnvOverride: boolean
+    overridden: boolean
+    readOnly: boolean
+    environmentName: string
+    selectedChart: DeploymentChartVersionType
+    handleOverride: (e: any) => Promise<void>
+    latestDraft: any
+    isPublishedOverriden: boolean
+    isDeleteDraftState: boolean
+    setShowDraftData: (show: boolean) => void
+    isValues: boolean
+    selectedOptionDraft: any
+    setSelectedOptionDraft: any
+}
+
+export interface CompareApprovalAndDraftSelectedOption {
+    id: number
+    label: string
 }
 
 export interface ChartTypeVersionOptionsProps {
@@ -175,6 +205,10 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
+    isValues?: boolean
+    convertVariables?: boolean
+    setConvertVariables?: (convertVariables: boolean) => void
+    groupedData?: any
 }
 
 export interface DeploymentConfigContextType {
@@ -272,6 +306,11 @@ export interface DeploymentConfigToolbarProps {
     noReadme?: boolean
     showReadme: boolean
     handleReadMeClick: () => void
+    isValues?: boolean
+    setIsValues?: (isValues: boolean) => void
+    convertVariables?: boolean
+    setConvertVariables?: (convertVariables: boolean) => void
+    componentType: string
 }
 
 export interface DeploymentConfigStateType {
@@ -292,6 +331,7 @@ export interface DeploymentConfigStateType {
     selectedTabIndex: number
     readme: string
     fetchedValues: Record<number | string, string>
+    fetchedValuesManifest: Record<number | string, string>
     yamlMode: boolean
     isBasicLocked: boolean
     isBasicLockedInBase: boolean
@@ -304,11 +344,23 @@ export interface DeploymentConfigStateType {
     latestAppChartRef: any
     latestChartRef: any
     isOverride: boolean
+    isValues: boolean
+    loadingManifest: boolean
+    manifestDataRHS: string
+    manifestDataLHS: string
+    groupedOptionsData: Array<Object>
+    isValuesOverride: boolean
+    manifestDataRHSOverride: string
+    manifestDataLHSOverride: string
+    groupedOptionsDataOverride: Array<Object>
+    loadingManifestOverride: boolean
+    convertVariables: boolean
+    convertVariablesOverride: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
     publishedState: DeploymentConfigStateType
-    draftValues: string,
+    draftValues: string
     showSaveChangsModal: boolean
     allDrafts: any[]
     latestDraft: any
@@ -339,6 +391,7 @@ export enum DeploymentConfigStateActionTypes {
     selectedTabIndex = 'selectedTabIndex',
     readme = 'readme',
     fetchedValues = 'fetchedValues',
+    fetchedValuesManifest = 'fetchedValuesManifest',
     yamlMode = 'yamlMode',
     isBasicLocked = 'isBasicLocked',
     isBasicLockedInBase = 'isBasicLockedInBase',
@@ -359,9 +412,33 @@ export enum DeploymentConfigStateActionTypes {
     unableToParseYaml = 'unableToParseYaml',
     selectedCompareOption = 'selectedCompareOption',
     multipleOptions = 'multipleOptions',
+    groupedOptionsData = 'groupedOptionsData',
+    loadingManifest = 'loadingManifest',
+    manifestDataRHS = 'manifestDataRHS',
+    manifestDataLHS = 'manifestDataLHS',
+    isValues = 'isValues',
+    isValuesOverride = 'isValuesOverride',
+    groupedOptionsDataOverride = 'groupedOptionsDataOverride',
+    loadingManifestOverride = 'loadingManifestOverride',
+    manifestDataRHSOverride = 'manifestDataRHSOverride',
+    manifestDataLHSOverride = 'manifestDataLHSOverride',
+    convertVariables = 'convertVariables',
+    convertVariablesOverride = 'convertVariablesOverride',
 }
 
 export interface DeploymentConfigStateAction {
     type: DeploymentConfigStateActionTypes
     payload?: any
+}
+
+export interface DropdownContainerProps {
+    isOpen: boolean
+    onClose: () => void
+    children: React.ReactNode
+}
+export interface DropdownItemProps {
+    label: string
+    isValues: boolean
+    index: number
+    onClick: () => void
 }

@@ -11,7 +11,6 @@ import { URLS } from '../../config'
 
 function ChartHeaderFilter({
     selectedChartRepo,
-    handleCloseFilter,
     includeDeprecated,
     chartRepoList,
     setSelectedChartRepo,
@@ -25,13 +24,15 @@ function ChartHeaderFilter({
     const history = useHistory()
     const location = useLocation()
     const { url } = match
-
+  
     const handleSelection = (event): void => {
-        const chartRepoList = selectedChartRepo.filter((e) => e != event)
+        const chartRepoList = selectedChartRepo.filter((e) => e.value != event.value)
         setSelectedChartRepo(chartRepoList)
-        selectedChartRepo.length === chartRepoList.length
-            ? handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
-            : handleFilterChanges(chartRepoList, 'chart-repo')
+        if (selectedChartRepo.length === chartRepoList.length) {
+            handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
+        } else {
+            handleFilterChanges(chartRepoList, 'chart-repo')
+        } 
     }
 
     const handleViewAllCharts = (): void => {
@@ -43,23 +44,44 @@ function ChartHeaderFilter({
         const app = searchParams.get(QueryParams.AppStoreName)
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
-
+        const registryId = searchParams.get(QueryParams.RegistryId)
+        let isOCIRegistry
         if (key == 'chart-repo') {
-            let chartRepoId = selected
-                ?.map((e) => {
-                    return e.value
+            let paramsChartRepoIds = selected
+                .filter((selectedRepo) => !selectedRepo.isOCIRegistry)
+                ?.map((selectedRepo) => {
+                    return selectedRepo.value
                 })
                 .join(',')
-            let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
-            history.push(`${url}?${qs}`)
+
+            let paramsRegistryIds = selected
+                .filter((selectedRepo) => selectedRepo.isOCIRegistry)
+                ?.map((selectedRepo) => {
+                    isOCIRegistry = true
+                    return selectedRepo.value
+                })
+                .join(',')
+            if (isOCIRegistry) {
+                let qsr = `${QueryParams.RegistryId}=${paramsRegistryIds}`
+                if (paramsChartRepoIds) qsr = `${qsr}&${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
+                if (app) qsr = `${qsr}&${QueryParams.AppStoreName}=${app}`
+                if (deprecate) qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                history.push(`${url}?${qsr}`)
+            } else {
+                let qs = `${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
+                if (paramsRegistryIds) qs = `${qs}&${QueryParams.RegistryId}=${paramsRegistryIds}`
+                if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
+                if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                history.push(`${url}?${qs}`)
+            }
         }
+
 
         if (key == 'deprecated') {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
             history.push(`${url}?${qs}`)
         }
 
@@ -68,6 +90,7 @@ function ChartHeaderFilter({
             let qs = `${QueryParams.AppStoreName}=${appStoreName}`
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
             history.push(`${url}?${qs}`)
         }
 
@@ -75,6 +98,7 @@ function ChartHeaderFilter({
             let qs: string = ''
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
             history.push(`${url}?${qs}`)
         }
     }
@@ -164,7 +188,7 @@ function ChartHeaderFilter({
                 </Checkbox>
                 <hr className="mt-8 mb-8" />
                 <Accordian
-                    header={'REPOSITORY'}
+                    header="CHART SOURCE"
                     options={chartRepoList}
                     value={selectedChartRepo}
                     onChange={handleSelection}

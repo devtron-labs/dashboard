@@ -2,8 +2,9 @@ import moment from 'moment'
 import { LAST_SEEN } from '../../config'
 import { Nodes } from '../app/types'
 import { eventAgeComparator } from '../common'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
-import { K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
+import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
 import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType } from './Types'
 
 const updatePersistedTabsData = (key: string, value: any) => {
@@ -55,13 +56,14 @@ export const getUpdatedNodeSelectionData = (
 
 export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType>, nodeType: string) => {
     const _resourceGroupType = getAggregator(nodeType as NodeType)
-    const _selectedGroup = k8SObjectMap.get(_resourceGroupType)
-    for (const [key, value] of _selectedGroup.child) {
-        if (key.toLowerCase() === nodeType) {
-            return value.data[0].gvk
+    const _selectedGroup = k8SObjectMap?.get(_resourceGroupType)
+    if (_selectedGroup) {
+        for (const [key, value] of _selectedGroup.child) {
+            if (key.toLowerCase() === nodeType) {
+                return value.data[0].gvk
+            }
         }
     }
-
     return null
 }
 
@@ -139,12 +141,29 @@ export const sortEventListData = (eventList: Record<string, any>[]): Record<stri
     ]
 }
 
+export const removeDefaultForStorageClass = (storageList: Record<string, any>[]): Record<string, any>[] => {
+    for (let iterator of storageList) {
+        if (iterator.name.includes("(default)")) {
+            iterator.name = iterator.name.split(" (default)")[0]
+        }
+    }
+    return storageList
+}
+
 export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType: string, group: string) => {
-    const parentNode = _k8SObjectList[0]
-    const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
+    const parentNode = _k8SObjectList?.[0]
+    const childNode = parentNode?.child?.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode?.child?.[0]
     let isResourceGroupPresent = false
     let groupedChild = null
-    if (nodeType) {
+
+    if (nodeType === AppDetailsTabs.terminal || FIXED_GVK_Keys[nodeType]) {
+        isResourceGroupPresent = SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() !== nodeType
+        groupedChild = {
+            namespaced: SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() === nodeType,
+            gvk: nodeType === AppDetailsTabs.terminal? SIDEBAR_KEYS.overviewGVK: SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
+            isGrouped: false,
+        }
+    } else if (nodeType) {
         for (const _parentNode of _k8SObjectList) {
             for (const _childNode of _parentNode.child) {
                 if (
@@ -181,4 +200,16 @@ export const checkIfDataIsStale = (
     if (!isStaleDataRef.current && moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS) {
         isStaleDataRef.current = true
     }
+}
+
+export const getScrollableResourceClass = (className: string, showPaginatedView: boolean, syncError: boolean):string=>{
+  let _className = className
+  if (showPaginatedView && syncError) {
+      _className += ' paginated-list-view-with-sync-error'
+  } else if (showPaginatedView) {
+      _className += ' paginated-list-view'
+  } else if (syncError) {
+      _className += ' sync-error'
+  }
+  return _className
 }

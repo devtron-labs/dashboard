@@ -57,6 +57,7 @@ import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorC
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 import '../EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
+import { ValidationRules } from '../cdPipeline/validationRules'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
@@ -85,7 +86,6 @@ export const ConfigMapSecretForm = React.memo(
             memoizedReducer,
             initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode || latestDraftData?.draftId),
         )
-
         const { appId, envId } = useParams<{ appId; envId }>()
 
         const isChartVersion309OrBelow =
@@ -96,6 +96,7 @@ export const ConfigMapSecretForm = React.memo(
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
+        const configMapSecretAbortRef = useRef(null)
 
         useEffect(() => {
             if (isESO && !state.yamlMode) {
@@ -116,6 +117,14 @@ export const ConfigMapSecretForm = React.memo(
                 ),
             })
         }, [configMapSecretData])
+
+        useEffect(() => {
+            configMapSecretAbortRef.current = new AbortController()
+
+            return () => {
+                configMapSecretAbortRef.current.abort()
+            }
+        }, [envId])
 
         async function handleOverride(e) {
             e.preventDefault()
@@ -197,6 +206,7 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const validateForm = (): KeyValueValidated => {
+            const rules = new ValidationRules()
             const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
             let isFormValid = true
             if (componentType === 'secret' && state.unAuthorized) {
@@ -232,7 +242,18 @@ export const ConfigMapSecretForm = React.memo(
                         payload: { value: state.volumeMountPath.value, error: 'This is a required field' },
                     })
                     isFormValid = false
+                } else if (!rules.cmVolumeMountPath(state.volumeMountPath.value).isValid) {
+                    dispatch({
+                        type: ConfigMapActionTypes.setVolumeMountPath,
+                        payload: {
+                            value: state.volumeMountPath.value,
+                            error: rules.cmVolumeMountPath(state.volumeMountPath.value).message,
+                        },
+                    })
+                    isFormValid = false
                 }
+            
+
                 if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
                     const isFilePermissionValid = validateFilePermission()
                     if (!isFilePermissionValid) {
@@ -431,13 +452,13 @@ export const ConfigMapSecretForm = React.memo(
                     let toastTitle = ''
                     if (!envId) {
                         componentType === 'secret'
-                            ? await updateSecret(id, +appId, payloadData)
-                            : await updateConfig(id, +appId, payloadData)
+                            ? await updateSecret(id, +appId, payloadData, configMapSecretAbortRef.current.signal)
+                            : await updateConfig(id, +appId, payloadData, configMapSecretAbortRef.current.signal)
                         toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
                     } else {
                         componentType === 'secret'
-                            ? await overRideSecret(id, +appId, +envId, [payloadData])
-                            : await overRideConfigMap(id, +appId, +envId, [payloadData])
+                            ? await overRideSecret(id, +appId, +envId, [payloadData], configMapSecretAbortRef.current.signal)
+                            : await overRideConfigMap(id, +appId, +envId, [payloadData], configMapSecretAbortRef.current.signal)
                         toastTitle = 'Overridden'
                     }
                     toast.success(
@@ -446,12 +467,16 @@ export const ConfigMapSecretForm = React.memo(
                             <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                         </div>,
                     )
-                    update()
+                    if(!configMapSecretAbortRef.current.signal.aborted) {
+                        update()
+                    }
                     updateCollapsed()
                     dispatch({ type: ConfigMapActionTypes.success })
                 }
             } catch (err) {
-                handleError(2, err, payloadData)
+                if(!configMapSecretAbortRef.current.signal.aborted) {
+                    handleError(2, err, payloadData)
+                }
             }
         }
 
@@ -651,7 +676,12 @@ export const ConfigMapSecretForm = React.memo(
             }
             return null
         }
-
+        const trimConfigMapName = (): void => {
+            dispatch({
+                type: ConfigMapActionTypes.setConfigName,
+                payload: { value: state.configName.value.trim() },
+            })
+        }
         const renderRollARN = (): JSX.Element => {
             if (isHashiOrAWS || isESO) {
                 return (
@@ -890,6 +920,7 @@ export const ConfigMapSecretForm = React.memo(
                         autoComplete="off"
                         autoFocus
                         onChange={onConfigNameChange}
+                        onBlur={trimConfigMapName}
                         type="text"
                         className={`form__input`}
                         placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
@@ -1041,7 +1072,8 @@ export const ConfigMapSecretForm = React.memo(
                             <button
                                 disabled={
                                     (!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED) ||
-                                    (draftMode && !isAppAdmin)
+                                    (draftMode && !isAppAdmin) || 
+                                    state.isValidateFormError
                                 }
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"

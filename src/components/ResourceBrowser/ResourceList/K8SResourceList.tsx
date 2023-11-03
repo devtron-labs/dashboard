@@ -5,6 +5,7 @@ import { highlightSearchedText } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
+  ALL_NAMESPACE_OPTION,
     K8S_EMPTY_GROUP,
     K8S_RESOURCE_LIST,
     RESOURCE_EMPTY_PAGE_STATE,
@@ -18,15 +19,15 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
+import { URLS } from '../../../config'
 
 export function K8SResourceList({
     selectedResource,
     resourceList,
     filteredResourceList,
     noResults,
-    clusterOptions,
     selectedCluster,
-    onChangeCluster,
     namespaceOptions,
     selectedNamespace,
     setSelectedNamespace,
@@ -41,6 +42,9 @@ export function K8SResourceList({
     clearSearch,
     isCreateModalOpen,
     addTab,
+    renderCallBackSync,
+    syncError,
+    k8SObjectMapRaw,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -82,13 +86,13 @@ export function K8SResourceList({
 
     const handleResourceClick = (e) => {
         const { name, tab, namespace, origin } = e.currentTarget.dataset
-        let resourceParam, kind, resourceName, _nodeSelectionData
-
+        let resourceParam, kind, resourceName, _nodeSelectionData, _group
+        const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            resourceParam = `${_kind}/${
-                selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
-            }/${_resourceName}`
+            const _selectedResource = getEventObjectTypeGVK(k8SObjectMapRaw, _kind)
+            _group = _selectedResource?.Group.toLowerCase() || K8S_EMPTY_GROUP
+            resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
             _nodeSelectionData = { name: kind + '_' + resourceName, namespace, isFromEvent: true }
@@ -96,18 +100,22 @@ export function K8SResourceList({
             resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
             kind = nodeType
             resourceName = name
-            _nodeSelectionData = resourceList.data.find((resource) => resource.name === name || resource.name === node)
+            _nodeSelectionData = resourceList.data.find(
+                (resource) =>
+                    (resource.name === name || resource.name === node) &&
+                    (!resource.namespace || resource.namespace === namespace),
+            )
+            _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
 
-        const _url = `${url
-            .split('/')
-            .slice(0, group ? -2 : -1)
-            .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
-
-        const isAdded = addTab(selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP, kind, resourceName, _url)
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
+        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
+        const isAdded = addTab(idPrefix, kind, resourceName, _url)
 
         if (isAdded) {
-            updateNodeSelectionData(_nodeSelectionData)
+            updateNodeSelectionData(_nodeSelectionData, _group)
             push(_url)
         } else {
             toast.error(
@@ -120,10 +128,12 @@ export function K8SResourceList({
     }
 
     const handleNodeClick = (e) => {
-        const {name} = e.currentTarget.dataset
-        const beginpart = window.location.href.split('/resource-browser')[0]
-        const _url = `${beginpart}/clusters/${clusterId}/${name}`
-        window.open(_url, 'blank')
+        const { name } = e.currentTarget.dataset
+        const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
+        const isAdded = addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+        if (isAdded) {
+            push(_url)
+        }
     }
 
     const getStatusClass = (status: string) => {
@@ -140,14 +150,14 @@ export function K8SResourceList({
         return (
             <div
                 key={`row--${index}-${resourceData.name}`}
-                className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover"
+                className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover dc__hover-n50"
             >
                 {resourceList.headers.map((columnName, idx) =>
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.name}-${idx}`}
                             className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
-                                fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
+                                fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
                             }`}
                         >
                             <div className="w-100 flex left" data-testid="created-resource-name">
@@ -162,6 +172,7 @@ export function K8SResourceList({
                                             <a
                                                 className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                                 data-name={resourceData.name}
+                                                data-namespace={resourceData.namespace}
                                                 onClick={handleResourceClick}
                                             >
                                                 <span
@@ -203,7 +214,7 @@ export function K8SResourceList({
                             >
                                 <span
                                     dangerouslySetInnerHTML={{
-                                        __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
+                                        __html: highlightSearchedText(searchText, resourceData[columnName]?.toString()),
                                     }}
                                 ></span>
                             </ConditionalWrap>
@@ -254,17 +265,17 @@ export function K8SResourceList({
         return (
             <div
                 ref={resourceListRef}
-                className={`scrollable-resource-list ${showPaginatedView ? 'paginated-list-view' : ''}`}
+                className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, syncError)}
             >
-                <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
                             key={columnName}
-                            className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
+                            className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
                                 columnName === 'name'
                                     ? `${
                                           fixedNodeNameColumn
-                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
+                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
                                               : ''
                                       } w-350 pl-20`
                                     : 'w-150'
@@ -293,6 +304,8 @@ export function K8SResourceList({
                             filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
                             handleResourceClick={handleResourceClick}
                             paginatedView={showPaginatedView}
+                            syncError={syncError}
+                            searchText={searchText}
                         />
                     ) : (
                         renderResourceList()
@@ -315,15 +328,13 @@ export function K8SResourceList({
 
     return (
         <div
-            className={`resource-list-container dc__border-left dc__postion-rel ${
+            className={`resource-list-container dc__border-left dc__position-rel ${
                 filteredResourceList.length === 0 ? 'no-result-container' : ''
             }`}
         >
             <ResourceFilterOptions
                 selectedResource={selectedResource}
-                clusterOptions={clusterOptions}
                 selectedCluster={selectedCluster}
-                onChangeCluster={onChangeCluster}
                 namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
                 setSelectedNamespace={setSelectedNamespace}
@@ -336,6 +347,7 @@ export function K8SResourceList({
                 clearSearch={clearSearch}
                 isSearchInputDisabled={resourceListLoader}
                 isCreateModalOpen={isCreateModalOpen}
+                renderCallBackSync={renderCallBackSync}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>

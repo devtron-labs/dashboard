@@ -11,8 +11,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
+import DataNotFound from '../../../assets/img/app-not-deployed.png';
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
+import { DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -72,6 +73,7 @@ function ChartDeploymentHistory({
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
     const [deploying, setDeploying] = useState(false)
     const [showDockerInfo, setShowDockerInfo] = useState(false)
+    const [showReleaseNotFound, setReleaseNotFound] = useState<boolean>(false)
     const history = useHistory()
     const { url } = useRouteMatch()
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>()
@@ -108,6 +110,7 @@ function ChartDeploymentHistory({
     const getDeploymentHistoryData = () => {
         getDeploymentHistory(appId, isExternal)
             .then((deploymentHistoryResponse: ChartDeploymentHistoryResponse) => {
+                setReleaseNotFound(false)
                 const _deploymentHistoryArr =
                     deploymentHistoryResponse.result?.deploymentHistory?.sort(
                         (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
@@ -164,8 +167,12 @@ function ChartDeploymentHistory({
                 }
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorResponseCode(errors.code)
+                if (Array.isArray(errors.errors) && String(errors.errors[0].code) === SERVER_ERROR_CODES.RELEASE_NOT_FOUND) {
+                    setReleaseNotFound(true)
+                } else {
+                    showError(errors)
+                    setErrorResponseCode(errors.code)
+                }
                 setIsLoading(false)
             })
     }
@@ -265,6 +272,7 @@ function ChartDeploymentHistory({
         return (
             <>
                 {deploymentHistoryArr.map((deployment, index) => {
+                    const helmDeploymentStatus: string = deployment?.status ? deployment.status.toLowerCase() : 'succeeded'
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
@@ -278,24 +286,25 @@ function ChartDeploymentHistory({
                                     className="w-100"
                                     style={{
                                         height: '64px',
-                                        display: 'grid',
+                                        display: installedAppInfo ? 'grid' : 'flex',
                                         gridTemplateColumns: '20px 1fr',
                                         padding: '12px 16px',
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div
-                                        className={`dc__app-summary__icon icon-dim-22 ${
-                                            deployment?.status &&
-                                            installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS || installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
-                                                ? deployment?.status.toLowerCase()
-                                                : ''
-                                        } ${
-                                            installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
-                                                ? 'succeeded'
-                                                : ''
-                                        }`}
-                                    ></div>
+                                    {installedAppInfo ? 
+                                        <div
+                                            className={`dc__app-summary__icon icon-dim-22 ${
+                                                deployment?.status &&
+                                                installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS || installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+                                                    ? deployment?.status.toLowerCase()
+                                                    : ''
+                                            } ${
+                                                installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
+                                                    ? helmDeploymentStatus
+                                                    : ''
+                                            }`}
+                                        ></div> : ''}
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14" data-testid = "chart-deployment-time">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
@@ -724,7 +733,15 @@ function ChartDeploymentHistory({
     if(isLoadingDetails){
         return <DetailsProgressing loadingText="Please wait…" size={24} />
     }
-
+    if (showReleaseNotFound) {
+        return (
+            <GenericEmptyState
+                image={DataNotFound}
+                title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                subTitle="We could not find any deployment history for this application."
+            />
+        )
+    }
     return (
         <>
             {isLoading ? (

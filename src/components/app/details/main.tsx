@@ -1,22 +1,36 @@
-import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
-import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary } from '../../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, noop } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
+import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
+import { ErrorBoundary, sortOptionsByLabel } from '../../common'
+import {
+    showError,
+    Progressing,
+    stopPropagation,
+    OptionType,
+    ToastBody,
+    DeleteDialog,
+    ErrorScreenManager,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
-import { AppSelector } from '../../AppSelector'
-import ReactGA from 'react-ga4'
 import AppConfig from './appConfig/AppConfig'
-import './appDetails/appDetails.scss'
-import './app.scss'
 import { getAppMetaInfo } from '../service'
-import { AppHeaderType, AppMetaInfo } from '../types'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
+import { AppMetaInfo } from '../types'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
-import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
 import Overview from '../Overview/Overview'
-import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
+import { AppHeader } from './AppHeader'
+import './appDetails/appDetails.scss'
+import './app.scss'
+import { MultiValue } from 'react-select'
+import { AppFilterTabs } from '../../ApplicationGroup/Constants'
+import {
+    CreateGroupAppListType,
+    FilterParentType,
+    GroupOptionType,
+} from '../../ApplicationGroup/AppGroup.types'
+import { getAppOtherEnvironmentMin } from '../../../services/service'
+import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
+import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
+import { toast } from 'react-toastify'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -27,18 +41,97 @@ const IndexComponent = lazy(() => import('../../v2/index'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
-const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
-
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
-    const { appId } = useParams<{ appId }>()
+    const { appId } = useParams<{ appId; }>()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
+    const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
+    const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
+    const [appListLoading, setAppListLoading] = useState<boolean>(false)
+    const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
+    const [groupFilterOptions, setGroupFilterOptions] = useState<GroupOptionType[]>([])
+    const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<GroupOptionType>>([])
+    const [showCreateGroup, setShowCreateGroup] = useState<boolean>(false)
+    const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map())
+    const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
+    const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
+    const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
+    const [isPopupBox, setIsPopupBox] = useState(false)
+    const [deleting, setDeleting] = useState<boolean>(false)
+    const [errorStatusCode, setErrorStatusCode] = useState(0)
+
     useEffect(() => {
         getAppMetaInfoRes()
+
+        getSavedFilterData()
+        getAppListData()
+        return () => {
+            setSelectedAppList([])
+            setSelectedGroupFilter([])
+            setAppListOptions([])
+        }
     }, [appId])
+
+    const getSavedFilterData = async (groupId?: number): Promise<void> => {
+        setSelectedAppList([])
+        setAppListLoading(true)
+        setGroupFilterOptions([])
+        const { result } = await getEnvGroupList(+appId, FilterParentType.app)
+        if (result) {
+            const _groupFilterOption = []
+            let _selectedGroup
+            for (const group of result) {
+                const processedGroupData = {
+                    value: group.id.toString(),
+                    label: group.name,
+                    //@ts-ignore
+                    appIds: group.resourceIds,
+                    description: group.description,
+                }
+                _groupFilterOption.push(processedGroupData)
+                if (groupId && groupId === group.id) {
+                    _selectedGroup = processedGroupData
+                }
+            }
+            if (_selectedGroup) {
+                const selectedAppsMap: Record<string, boolean> = {}
+                const groupAppIds = _selectedGroup?.appIds || []
+                for (const appId of groupAppIds) {
+                    selectedAppsMap[appId] = true
+                }
+                setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]))
+                setSelectedGroupFilter([_selectedGroup])
+            } else {
+                setSelectedAppList([])
+                setSelectedGroupFilter([])
+            }
+            _groupFilterOption.sort(sortOptionsByLabel)
+            setGroupFilterOptions(_groupFilterOption)
+        }
+        setAppListLoading(false)
+    }
+
+    const getAppListData = async (): Promise<void> => {
+        setSelectedAppList([])
+        setAppListLoading(true)
+        const { result } = await getAppOtherEnvironmentMin(appId)
+        if (result?.length) {
+            setAppListOptions(
+                result
+                    .map((app): OptionType => {
+                        return {
+                            value: `${app.environmentId}`,
+                            label: app.environmentName,
+                        }
+                    })
+                    .sort(sortOptionsByLabel),
+            )
+        }
+        setAppListLoading(false)
+    }
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
@@ -50,13 +143,210 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
+            if (err['code'] === 403) {
+                setErrorStatusCode(403)
+            }
+            else {
+                showError(err)
+            }
+        }
+    }
+
+    const handleToast = (action: string) => {
+        return toast.info(
+            <ToastBody
+                title={`Cannot ${action} filter`}
+                subtitle={`You can ${action} a filter with only those environments for which you have admin/manager permission.`}
+            />,
+            {
+                className: 'devtron-toast unauthorized',
+            },
+        )
+    }
+
+    async function getPermissionCheck(payload, _edit?: boolean, _delete?: boolean): Promise<void> {
+        try {
+            const { result } = await appGroupPermission(appId, payload)
+            if (result && !_delete) {
+                setShowCreateGroup(true)
+            } else if (result && _delete) {
+                setIsPopupBox(true)
+                setShowDeleteGroup(true)
+            }
+        } catch (err) {
+            let _map = new Map<string, boolean>()
+            if (err['code'] === 403) {
+                let arrUnauthorized = []
+                let unauthorizedCount = 0
+                err['errors'].map((errors) => {
+                    arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
+                    errors['userMessage']['unauthorizedApps'].forEach((element) => {
+                        if (!_map.get(element)) {
+                            _map.set(element, true)
+                        }
+                        for (let idx in selectedAppList) {
+                            if (element === selectedAppList[idx].label) {
+                                unauthorizedCount++
+                            }
+                        }
+                    })
+                    setMapUnauthorizedApp(_map)
+                })
+                if (_edit && arrUnauthorized.length > 0) {
+                    handleToast('edit')
+                } else if (_delete && arrUnauthorized.length > 0) {
+                    handleToast('delete')
+                } else if (unauthorizedCount && unauthorizedCount === selectedAppList.length) {
+                    setIsPopupBox(false)
+                    handleToast('create')
+                } else {
+                    setShowCreateGroup(true)
+                }
+                arrUnauthorized = []
+                unauthorizedCount = 0
+                return
+            } else {
+                setShowCreateGroup(true)
+                setShowDeleteGroup(false)
+                if (_delete) setIsPopupBox(true)
+            }
             showError(err)
         }
     }
 
+    const openCreateGroup = (e, groupId?: string, _edit?: boolean) => {
+        stopPropagation(e)
+        const selectedAppsMap: Record<string, boolean> = {}
+        const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
+        let _selectedGroup
+        const _allAppIds: number[] = []
+        if (groupId) {
+            _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)
+            const groupAppIds = _selectedGroup?.appIds || []
+            for (const appId of groupAppIds) {
+                _allAppIds.push(appId)
+                selectedAppsMap[appId] = true
+            }
+        } else {
+            for (const selectedApp of selectedAppList) {
+                selectedAppsMap[selectedApp.value] = true
+            }
+        }
+        for (const app of appListOptions) {
+            _allAppList.push({ id: app.value, appName: app.label, isSelected: selectedAppsMap[app.value] })
+        }
+        setClickedGroup(_selectedGroup)
+        setAllAppsList(_allAppList)
+        const _allAppLists: number[] = []
+        for (let app of _allAppList) {
+            _allAppLists.push(+app.id)
+        }
+        let _permissionData = {
+            id: +appId,
+            resourceIds: _allAppLists,
+            parentResourceId: +appId,
+            groupType: FilterParentType.app,
+        }
+        if (_edit) {
+            getPermissionCheck({ resourceIds: _allAppIds, groupType: FilterParentType.app }, _edit)
+        } else {
+            getPermissionCheck(_permissionData)
+        }
+    }
+
+    const closeCreateGroup = (e, groupId?: number) => {
+        stopPropagation(e)
+        setShowCreateGroup(false)
+        if (groupId) {
+            getSavedFilterData(groupId)
+        }
+    }
+
+    async function handleDelete() {
+        if (deleting) {
+            return
+        }
+        setDeleting(true)
+        try {
+            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
+            toast.success('Successfully deleted')
+            setShowDeleteGroup(false)
+            getSavedFilterData(
+                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                    ? +selectedGroupFilter[0].value
+                    : null,
+            )
+        } catch (serverError) {
+            showError(serverError)
+        } finally {
+            setDeleting(false)
+        }
+    }
+
+    const closeDeleteGroup = () => {
+        setShowDeleteGroup(false)
+    }
+
+    const openDeleteGroup = (e, groupId: string) => {
+        stopPropagation(e)
+        const selectedGroupId = groupFilterOptions.find((group) => group.value === groupId)
+        setClickedGroup(selectedGroupId)
+        getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
+    }
+
+    if (errorStatusCode) {
+        return (
+            <div className="dc__loading-wrapper">
+                <ErrorScreenManager
+                    code={errorStatusCode}
+                    subtitle="You do not have access to view information on this page."
+                />
+            </div>
+        )
+    }
+
+    if (appListLoading) {
+        return <Progressing pageLoader />
+    }
+
+    const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
         <div className="app-details-page">
-            {!isV2 && <AppHeader appName={appName} appMetaInfo={appMetaInfo} reloadMandatoryProjects={reloadMandatoryProjects}/>}
+            {!isV2 && (
+                <AppHeader
+                    appName={appName}
+                    appMetaInfo={appMetaInfo}
+                    reloadMandatoryProjects={reloadMandatoryProjects}
+                    appListOptions={appListOptions}
+                    selectedAppList={selectedAppList}
+                    setSelectedAppList={setSelectedAppList}
+                    selectedFilterTab={selectedFilterTab}
+                    setSelectedFilterTab={setSelectedFilterTab}
+                    groupFilterOptions={groupFilterOptions}
+                    selectedGroupFilter={selectedGroupFilter}
+                    setSelectedGroupFilter={setSelectedGroupFilter}
+                    openCreateGroup={openCreateGroup}
+                    openDeleteGroup={openDeleteGroup}
+                    isSuperAdmin={true}
+                />
+            )}
+            {showCreateGroup && (
+                <CreateAppGroup
+                    unAuthorizedApps={mapUnauthorizedApp}
+                    appList={allAppsList}
+                    selectedAppGroup={clickedGroup}
+                    closePopup={closeCreateGroup}
+                    filterParentType={FilterParentType.app}
+                />
+            )}
+            {showDeleteGroup && isPopupBox && (
+                <DeleteDialog
+                    title={`Delete filter '${clickedGroup?.label}' ?`}
+                    description="Are you sure you want to delete this filter?"
+                    delete={handleDelete}
+                    closeDelete={closeDeleteGroup}
+                />
+            )}
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
@@ -68,27 +358,36 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         ) : (
                             <Route
                                 path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <AppDetails />}
+                                render={(props) => <AppDetails filteredEnvIds={_filteredEnvIds} />}
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview
+                                appMetaInfo={appMetaInfo}
+                                getAppMetaInfoRes={getAppMetaInfoRes}
+                                filteredEnvIds={_filteredEnvIds}
+                            />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
+                        <Route
+                            path={`${path}/${URLS.APP_TRIGGER}`}
+                            render={(props) => <TriggerView filteredEnvIds={_filteredEnvIds} />}
+                        />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} />
+                            <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}
-                            component={DeploymentMetrics}
+                            render={(props) => {
+                                return <DeploymentMetrics {...props} filteredEnvIds={_filteredEnvIds} />
+                            }}
                         />
                         <Route
                             path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                         >
-                            <CDDetails key={appId} />
+                            <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={appName} />
+                            <AppConfig appName={appName} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
@@ -99,174 +398,5 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 </Suspense>
             </ErrorBoundary>
         </div>
-    )
-}
-
-export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: AppHeaderType) {
-    const { appId } = useParams<{ appId }>()
-    const match = useRouteMatch()
-    const history = useHistory()
-    const location = useLocation()
-    const currentPathname = useRef('')
-
-    function onClickTabPreventDefault(event: React.MouseEvent<Element, MouseEvent>, className: string) {
-        const linkDisabled = (event.target as Element)?.classList.contains(className)
-        if (linkDisabled) {
-            event.preventDefault()
-        }
-    }
-
-    function handleEventClick(event) {
-        trackByGAEvent('App', event.currentTarget.dataset.action)
-        onClickTabPreventDefault(event, 'active')
-    }
-
-    useEffect(() => {
-        currentPathname.current = location.pathname
-    }, [location.pathname])
-
-    const handleAppChange = useCallback(
-        ({ label, value }) => {
-            const tab = currentPathname.current.replace(match.url, '').split('/')[1]
-            const newUrl = generatePath(match.path, { appId: value })
-            history.push(`${newUrl}/${tab}`)
-            ReactGA.event({
-                category: 'App Selector',
-                action: 'App Selection Changed',
-                label: tab,
-            })
-        },
-        [location.pathname],
-    )
-
-    const { breadcrumbs } = useBreadcrumb(
-        {
-            alias: {
-                ':appId(\\d+)': {
-                    component: <AppSelector onChange={handleAppChange} appId={appId} appName={appName} />,
-                    linked: false,
-                },
-                app: {
-                    component: <span className="cb-5 fs-16 dc__capitalize">devtron apps</span>,
-                    linked: true,
-                },
-            },
-        },
-        [appId, appName],
-    )
-
-    const renderAppDetailsTabs = () => {
-        return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab dc__ellipsis-right">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_OVERVIEW}`}
-                        className="tab-list__tab-link flex"
-                        data-action="Overview Clicked"
-                        data-testid="overview-click"
-                        onClick={handleEventClick}
-                    >
-                        Overview
-                        {MandatoryTagWarning && (
-                            <MandatoryTagWarning
-                                labelTags={appMetaInfo?.labels}
-                                handleAddTag={noop}
-                                selectedProjectId={appMetaInfo?.projectId}
-                                showOnlyIcon={true}
-                                reloadProjectTags={reloadMandatoryProjects}
-                            />
-                        )}
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab dc__ellipsis-right">
-                    <NavLink
-                        data-testid="app-details-tab"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-action="App Details Clicked"
-                        onClick={handleEventClick}
-                    >
-                        App Details
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_TRIGGER}`}
-                        className="tab-list__tab-link"
-                        data-action="Build & Deploy Clicked"
-                        onClick={handleEventClick}
-                        data-testid="build-deploy-click"
-                        id="build-deploy"
-                    >
-                        Build & Deploy
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-action="Build History Clicked"
-                        data-testid="build-history-clicked"
-                        onClick={handleEventClick}
-                    >
-                        Build History
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CD_DETAILS}`}
-                        className="tab-list__tab-link"
-                        data-action="Deployment History Clicked"
-                        data-testid="deployment-history-link"
-                        onClick={handleEventClick}
-                    >
-                        Deployment History
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
-                        className="tab-list__tab-link"
-                        data-testid="deployment-matrix"
-                        data-action="Deployment Metrics Clicked"
-                        onClick={handleEventClick}
-                    >
-                        Deployment Metrics
-                    </NavLink>
-                </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        data-testid="app-config-link"
-                        activeClassName="active"
-                        to={`${match.url}/${URLS.APP_CONFIG}`}
-                        className="tab-list__tab-link flex"
-                        data-action="App Configuration Clicked"
-                        onClick={handleEventClick}
-                    >
-                        <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
-                        App Configuration
-                    </NavLink>
-                </li>
-            </ul>
-        )
-    }
-
-    const renderBreadcrumbs = () => {
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
-    }
-
-    return (
-        <PageHeader
-            breadCrumbs={renderBreadcrumbs}
-            isBreadcrumbs={true}
-            showTabs={true}
-            renderHeaderTabs={renderAppDetailsTabs}
-        />
     )
 }
