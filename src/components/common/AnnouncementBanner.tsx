@@ -7,7 +7,7 @@ import { setActionWithExpiry } from './helpers/Helpers'
 
 export default function AnnouncementBanner({ parentClassName = '', hideCloseIcon = false }) {
     const isAnouncementBanner = (): boolean => {
-        if (!localStorage.getItem('expiryDateOfHidingAnnouncementBanner')) {
+        if (!localStorage.getItem('expiryDateOfHidingAnnouncementBanner' && localStorage.getItem('isDashboardLoggedIn'))) {
             return true
         }
 
