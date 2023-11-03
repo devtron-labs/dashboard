@@ -1219,7 +1219,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     closeApprovalModal={this.closeApprovalModal}
                     appId={Number(this.props.match.params.appId)}
                     pipelineId={this.state.cdNodeId}
-                    onClickCDMaterial={this.onClickCDMaterial}
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node.connectingCiPipelineId}

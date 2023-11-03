@@ -1891,7 +1891,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     closeApprovalModal={closeApprovalModal}
                     appId={_appID}
                     pipelineId={selectedCDNode?.id}
-                    onClickCDMaterial={onClickCDMaterial}
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node?.connectingCiPipelineId}
