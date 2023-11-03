@@ -238,13 +238,13 @@ export function ConfigMapSecretContainer({
         }
 
         if (!title) {
-            //Redirect to Add config map & secret
+            //Redirect and Add config map & secret
             if (name === 'create') {
                 return history.push(getURL())
             }
             return history.push(getURL('create'))
         } else {
-              //Redirect to open config map & secret
+            //Redirect and Open existing config map & secret
             if (name === title) {
                 return history.push(getURL())
             } else {
@@ -280,7 +280,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
-        if( name && ((!title && name !== 'create') || (title && name !== data?.name) ) || !name)  return null
+        if( name && ((!title && name !== 'create') || (title && name !== title) ) || !name)  return null
         if (title && isProtected && draftData?.draftId)
              {
             return (
