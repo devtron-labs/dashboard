@@ -540,6 +540,7 @@ export default function CDMaterial({
 
     const viewAllImages = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
+        closeCDModal(e)
         onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
     }
 
