@@ -342,7 +342,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <div key={jobPipeline.ciPipelineID} className="flex dc__content-start pr-16 pl-16">
                         <div className="h-20 m-tb-8 cb-5 fs-13 w-300">
                             <Link
-                                to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ciPipelineName}/`}
+                                to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ciPipelineID}/`}
                                 className="fs-13 dc__ellipsis-right"
                             >
                                 {jobPipeline.ciPipelineName}
