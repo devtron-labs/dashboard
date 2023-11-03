@@ -13,6 +13,8 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
+
 import {
     Progressing,
     DeleteDialog,
@@ -50,7 +52,7 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
-import { DELETE_ACTION } from '../../../../config'
+import { DELETE_ACTION, repoType } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import GitManagment from '../../../gitOps/GItManagment'
@@ -273,6 +275,9 @@ export const DeploymentAppRadioGroup = ({
 
 const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes}: gitOpsDrawerType): JSX.Element => {
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
+    const [gitOpsState, setGitOpsState] = useState(false)
+    const [repoRadio, setRepoRadio] = useState(false)
+
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
             setIsDeploymentAllowed(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1)
@@ -281,55 +286,77 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes}: gitOpsDrawerT
 
     const handleCloseButton = () => {
         setIsDeploymentAllowed(false)
+        setGitOpsState(true)
     }
 
     const handleSaveButton = () => {
         setIsDeploymentAllowed(false)
+        setRepoRadio(true)
+    }
+
+    const toggleChangeProjectModal = () => {
+        setIsDeploymentAllowed(true)
     }
 
     return (
-        isDeploymentAllowed && (
-            <div>
-                <Drawer position="right" width="600px">
-                    <div className="cluster-form dc__position-rel h-100 bcn-0">
-                        <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
-                            <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                                <span className="fw-6 fs-16 cn-9">Git Repository</span>
-                            </h2>
+        <>
+            {isDeploymentAllowed && (
+                <div>
+                    <Drawer position="right" width="600px">
+                        <div className="cluster-form dc__position-rel h-100 bcn-0">
+                            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                                    <span className="fw-6 fs-16 cn-9">Git Repository</span>
+                                </h2>
+                                <button
+                                    data-testid="header_close_icon"
+                                    type="button"
+                                    className="dc__transparent flex icon-dim-24"
+                                    onClick={handleCloseButton}
+                                >
+                                    <Close className="icon-dim-24" />
+                                </button>
+                            </div>
+                            <div className="ml-20 mt-10">
+                                <GitManagment />
+                            </div>
+                        </div>
+                        <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
                             <button
-                                data-testid="header_close_icon"
+                                data-testid="cancel_button"
+                                className="cta cancel h-36 lh-36 mr-10"
                                 type="button"
-                                className="dc__transparent flex icon-dim-24"
                                 onClick={handleCloseButton}
                             >
-                                <Close className="icon-dim-24" />
+                                Cancel
+                            </button>
+                            <button
+                                data-testid="save_cluster_list_button_after_selection"
+                                className="cta h-36 lh-36"
+                                type="button"
+                                onClick={handleSaveButton}
+                            >
+                                Save
                             </button>
                         </div>
-                        <div className="ml-20 mt-10">
-                            <GitManagment />
-                        </div>
+                    </Drawer>
+                </div>
+            )}
+            {gitOpsState ? (
+                <div
+                    className="form__input dashed mt-10 flex dc__postion-abs"
+                    style={{ height: '50px' }}
+                >
+                    <div className='mb-10'>
+                        <span className="">
+                            Commit deployment manifests to
+                            <EditIcon className="icon-dim-16 cursor ml-28 pt-4 dc__position-rel" onClick={toggleChangeProjectModal} />
+                        </span>
+                        <a className="flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleChangeProjectModal}>{`${repoRadio ? 'Auto-create repository' :  'Set GitOps repository'}`}</a>
                     </div>
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
-                        <button
-                            data-testid="cancel_button"
-                            className="cta cancel h-36 lh-36 mr-10"
-                            type="button"
-                            onClick={handleCloseButton}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            data-testid="save_cluster_list_button_after_selection"
-                            className="cta h-36 lh-36"
-                            type="button"
-                            onClick={handleSaveButton}
-                        >
-                            Save
-                        </button>
-                    </div>
-                </Drawer>
-            </div>
-        )
+                </div>
+            ) : null}
+        </>
     )
 }
 
