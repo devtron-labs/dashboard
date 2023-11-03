@@ -221,10 +221,9 @@ export function ConfigMapSecretContainer({
         return `${urlPrefix}${componentTypeName}/${urlTo}`
     }
 
-
     const updateCollapsed = (_collapsed?: boolean): void => {
         if (_collapsed !== undefined) {
-            toggleCollapse(_collapsed)
+            return
         } else {
             toggleCollapse(!collapsed)
             if (!collapsed) {
@@ -274,6 +273,7 @@ export function ConfigMapSecretContainer({
         updateCollapsed()
         update()
     }
+    console.log(name, title)
 
     const renderDetails = (): JSX.Element => {
         if( name && ((!title && name !== 'create') || (title && name !== title) ) || !name)  return null
@@ -664,7 +664,7 @@ export function ProtectedConfigMapSecretDetails({
             return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
         }
         return (
-            ((data && name === data?.name) || name === 'create') && <ConfigMapSecretForm
+             <ConfigMapSecretForm
                 appChartRef={appChartRef}
                 updateCollapsed={updateCollapsed}
                 configMapSecretData={getData()}
