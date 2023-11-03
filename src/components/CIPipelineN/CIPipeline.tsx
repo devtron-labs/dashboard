@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
-import { ButtonWithLoader, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
+import {
+    ButtonWithLoader,
+    FloatingVariablesSuggestions,
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import {
     ServerErrors,
     showError,
@@ -36,8 +41,8 @@ import {
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CIBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
+import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
@@ -53,11 +58,11 @@ import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/t
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { ImageTagType } from './CustomImageTag.type'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
-
 export default function CIPipeline({
     appName,
     connectCDPipelines,
@@ -65,6 +70,7 @@ export default function CIPipeline({
     close,
     deleteWorkflow,
     isJobView,
+    isJobCI,
 }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
@@ -78,11 +84,13 @@ export default function CIPipeline({
         activeStageName = BuildStageVariable.PostBuild
     }
     const { path } = useRouteMatch()
+    const history = useHistory()
     const [pageState, setPageState] = useState(ViewType.LOADING)
-    const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
-    const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobView ? 'job' : 'build'} pipeline`
+    const saveOrUpdateButtonTitle = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
+    const isJobCard = isJobCI || isJobView // constant for common elements of both Job and CI_JOB
+    const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobCard ? 'job' : 'build'} pipeline`
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
-        isJobView || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
+        isJobCard || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
     )
     const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingState, setLoadingState] = useState<LoadingState>({
@@ -107,7 +115,7 @@ export default function CIPipeline({
         name: '',
         args: [],
         materials: [],
-        triggerType: TriggerType.Auto,
+        triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
         gitHost: undefined,
         webhookEvents: [],
@@ -122,6 +130,11 @@ export default function CIPipeline({
             id: 0,
             steps: [],
         },
+        customTag: {
+            tagPattern: '',
+            counterX: '',
+        },
+        defaultTag: []
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
@@ -136,7 +149,16 @@ export default function CIPipeline({
             steps: [],
             isValid: true,
         },
+        customTag:{
+            message: [], 
+            isValid: true
+        },
+        counterX:{
+            message: '', 
+            isValid: true
+        }
     })
+
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
         active: true,
         ciMaterial: [],
@@ -149,11 +171,13 @@ export default function CIPipeline({
         linkedCount: 0,
         scanEnabled: false,
         environmentId: 0,
+        pipelineType: "",
     })
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
     const selectedBranchRef = useRef(null)
+    const [imageTagValue, setImageTagValue] = useState<string>(ImageTagType.Default)
 
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
@@ -179,7 +203,16 @@ export default function CIPipeline({
         ) {
             localStorage.removeItem('takeMeThereClicked')
         }
-    }, [location.pathname])
+        // redirect to ci-job based on pipeline type
+        if (
+            location.pathname.includes(`/${URLS.APP_CI_CONFIG}/`) &&
+            ciPipelineId &&
+            ciPipeline.pipelineType === CIPipelineBuildType.CI_JOB 
+        ) {
+            const editCIPipelineURL: string = location.pathname.replace(`/${URLS.APP_CI_CONFIG}/`, `/${URLS.APP_JOB_CI_CONFIG}/`)
+            history.push(editCIPipelineURL)
+        }
+    }, [location.pathname, ciPipeline.pipelineType])
 
     const getEnvironments = (envId) => {
         envId = envId || 0
@@ -189,6 +222,7 @@ export default function CIPipeline({
                 list.push({
                     id: 0,
                     clusterName: '',
+                    clusterId: null,
                     name: DEFAULT_ENV,
                     active: false,
                     isClusterActive: false,
@@ -199,6 +233,7 @@ export default function CIPipeline({
                         list.push({
                             id: env.id,
                             clusterName: env.cluster_name,
+                            clusterId: env.cluster_id,
                             name: env.environment_name,
                             active: false,
                             isClusterActive: env.isClusterActive,
@@ -266,6 +301,7 @@ export default function CIPipeline({
                     validateStage(BuildStageVariable.Build, ciResponse.form)
                     validateStage(BuildStageVariable.PostBuild, ciResponse.form)
                     setFormData(ciResponse.form)
+                    setImageTagValue(ciResponse.form.customTag.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default)
                     setCIPipeline(ciResponse.ciPipeline)
                     setIsAdvanced(true)
                     setPageState(ViewType.FORM)
@@ -277,7 +313,7 @@ export default function CIPipeline({
                     showError(error)
                 })
         } else {
-            getInitData(appId, true, !isJobView)
+            getInitData(appId, true, !isJobCard)
                 .then((ciResponse) => {
                     setFormData(ciResponse.result.form)
                     setPageState(ViewType.FORM)
@@ -345,7 +381,7 @@ export default function CIPipeline({
     }
 
     const getMandatoryPluginData = (_formData: PipelineFormType, pluginList: PluginDetailType[]): void => {
-        if (!isJobView && processPluginData && prepareFormData && pluginList.length) {
+        if (!isJobCard && processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
@@ -512,12 +548,20 @@ export default function CIPipeline({
         }
 
         let _ciPipeline = ciPipeline
-        if(selectedEnv && selectedEnv.id !== 0) {
+        if (selectedEnv && selectedEnv.id !== 0) {
             _ciPipeline.environmentId = selectedEnv.id
         } else {
             _ciPipeline.environmentId = undefined
         }
-
+        if (!isJobView) {
+            let ciPipelineType: CIPipelineBuildType = CIPipelineBuildType.CI_BUILD
+            if (ciPipeline.isExternal) {
+                ciPipelineType = CIPipelineBuildType.CI_EXTERNAL
+            } else if (isJobCI) {
+                ciPipelineType = CIPipelineBuildType.CI_JOB
+            }
+            _ciPipeline.pipelineType = ciPipeline.id ? ciPipeline.pipelineType : ciPipelineType
+        }
         saveCIPipeline(
             {
                 ...formData,
@@ -531,6 +575,7 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
+            imageTagValue
         )
             .then((response) => {
                 if (response) {
@@ -635,7 +680,7 @@ export default function CIPipeline({
                         validateStage(activeStageName, formData)
                     }}
                 >
-                    {isJobView ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
+                    {isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
                     {(showAlert || showWarning) && (
                         <WarningTriangle
                             className={`icon-dim-16 mr-5 ml-5 mt-3 ${
@@ -692,6 +737,7 @@ export default function CIPipeline({
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
+
                     <button
                         type="button"
                         className="dc__transparent flex icon-dim-24"
@@ -702,9 +748,10 @@ export default function CIPipeline({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
+
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
-                        {isJobView ? (
+                        {isJobCard ? (
                             <>
                                 {getNavLink(`build`, BuildStageVariable.Build)}
                                 {getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
@@ -719,14 +766,13 @@ export default function CIPipeline({
                     </ul>
                 )}
                 <hr className="divider m-0" />
-                <pipelineContext.Provider
-                    value={contextValue}
-                >
+                <pipelineContext.Provider value={contextValue}>
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
                                 <Sidebar
                                     isJobView={isJobView}
+                                    isJobCI={isJobCI}
                                     mandatoryPluginData={mandatoryPluginData}
                                     pluginList={[...presetPlugins, ...sharedPlugins]}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
@@ -743,7 +789,7 @@ export default function CIPipeline({
                                     <PreBuild
                                         presetPlugins={presetPlugins}
                                         sharedPlugins={sharedPlugins}
-                                        isJobView={isJobView}
+                                        isJobView={isJobCard}
                                         mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
                                 </Route>
@@ -765,8 +811,10 @@ export default function CIPipeline({
                                     ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     setDockerConfigOverridden={setDockerConfigOverridden}
-                                    isJobView={isJobView}
+                                    isJobView={isJobCard}
                                     getPluginData={getPluginData}
+                                    setImageTagValue={setImageTagValue}
+                                    imageTagValue={imageTagValue}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -793,11 +841,13 @@ export default function CIPipeline({
                                             formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
                                             formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
                                                 CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
-                                            (loadingState.loading || loadingState.failed))
+                                            (loadingState.loading || loadingState.failed)) ||
+                                        formDataErrorObj.customTag.message.length > 0 ||
+                                        formDataErrorObj.counterX?.message.length > 0
                                     }
                                     isLoading={apiInProgress}
                                 >
-                                    {text}
+                                    {saveOrUpdateButtonTitle}
                                 </ButtonWithLoader>
                             )}
                         </div>
@@ -808,10 +858,31 @@ export default function CIPipeline({
         )
     }
 
+    const renderFloatingVariablesWidget = () => {
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
+
+        return (
+            <div className="flexbox">
+                <div className="floating-scoped-variables-widget">
+                    <FloatingVariablesSuggestions
+                        zIndex={21}
+                        appId={appId}
+                        envId={selectedEnv?.id ? String(selectedEnv.id) : null}
+                        clusterId={selectedEnv?.clusterId}
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return ciPipelineId || isAdvanced ? (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            {renderCIPipelineModal()}
-        </Drawer>
+        <>
+            {renderFloatingVariablesWidget()}
+
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+                {renderCIPipelineModal()}
+            </Drawer>
+        </>
     ) : (
         <VisibleModal className="">{renderCIPipelineModal()}</VisibleModal>
     )

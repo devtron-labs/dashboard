@@ -10,16 +10,20 @@ function PodHeaderComponent({ callBack }) {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new');
     const podMetaData = IndexStore.getPodMetaData()
     const pods: Array<iNode> = IndexStore.getiNodesByKind('pod')
-    const newPodStats = { running: 0, all: 0 }
-    const oldPodStats = { running: 0, all: 0 }
-    const [newPods, setNewPods] = useState(newPodStats)
-    const [oldPods, setOldPods] = useState(oldPodStats)
+    const [newPods, setNewPods] = useState({ running: 0, all: 0})
+    const [oldPods, setOldPods] = useState({ running: 0, all: 0})
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
     );
 
     useEffect(() => {
+        callBack(podTab === 'new')
+        // initialize new pods and old pods
+        const newPodStats = { running: 0, all: 0 }
+        const oldPodStats = { running: 0, all: 0 }
+
+        // calculate new pods and old pods
         if (pods && podMetaData?.length > 0) {
             pods.forEach((pod) => {
                 const podStatusLower = getNodeStatus(pod)?.toLowerCase()
@@ -31,16 +35,12 @@ function PodHeaderComponent({ callBack }) {
                     oldPodStats['all'] += 1
                 }
             })
-            setNewPods({...newPodStats});
-            setOldPods({...oldPodStats});
         }
-    }, [filteredNodes]);
 
-    useEffect(() => {
-        callBack(podTab === 'new');
-        setNewPods(newPodStats);
-        setOldPods(oldPodStats);
-    }, [podTab]);
+        // update new pods and old pods state
+        setNewPods({ ...newPodStats })
+        setOldPods({ ...oldPodStats })
+    }, [filteredNodes, podTab]);
 
     return (
         <div className="pod-node-tab__wrapper flex left">

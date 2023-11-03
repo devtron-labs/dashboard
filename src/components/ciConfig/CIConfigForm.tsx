@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
 import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
-import { DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { useForm } from '../common'
 import {
     CIBuildConfigType,
@@ -111,7 +111,7 @@ export default function CIConfigForm({
         processing: false,
         workflows: [],
     })
-    const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
+    const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden && _ci?.pipelineType !== CIPipelineBuildType.CI_JOB)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
         initCurrentCIBuildConfig(
             allowOverride,

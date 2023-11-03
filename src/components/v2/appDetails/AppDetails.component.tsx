@@ -21,6 +21,7 @@ import {
 } from '../../app/details/appDetails/appDetails.type'
 import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
 import { useSharedState } from '../utils/useSharedState'
+import ReleaseStatusEmptyState from './ReleaseStatusEmptyState'
 
 let deploymentStatusTimer = null
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
@@ -153,6 +154,27 @@ const AppDetailsComponent = ({
         if (isVirtualEnv.current && VirtualAppDetailsEmptyState) {
             return <VirtualAppDetailsEmptyState environmentName={appDetails.environmentName} />
         }
+        if (
+            appDetails &&
+            !appDetails.resourceTree?.nodes?.length &&
+            appDetails.deploymentAppType === DeploymentAppTypes.HELM &&
+            appDetails.helmReleaseStatus &&
+            appDetails.helmReleaseStatus.status &&
+            (appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.FAILED ||
+                appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING ||
+                appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN)
+        ) {
+            return (
+                <ReleaseStatusEmptyState
+                    message={appDetails.helmReleaseStatus.message}
+                    description={
+                        appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN
+                            ? ''
+                            : appDetails.helmReleaseStatus.description
+                    }
+                />
+            )
+        }
         return (
             <NodeTreeDetailTab
                 appDetails={appDetails}
@@ -168,7 +190,7 @@ const AppDetailsComponent = ({
                 <EnvironmentSelectorComponent
                     isExternalApp={isExternalApp}
                     _init={_init}
-                    loadingResourceTree={loadingResourceTree}
+                    loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                     isVirtualEnvironment={isVirtualEnv.current}
                     appType={appDetails?.appType}
                     
@@ -176,8 +198,8 @@ const AppDetailsComponent = ({
                 {!appDetails.deploymentAppDeleteRequest  && (
                     <EnvironmentStatusComponent
                         appStreamData={streamData}
-                        loadingDetails={loadingDetails}
-                        loadingResourceTree={loadingResourceTree}
+                        loadingDetails={loadingDetails || !appDetails?.appType}
+                        loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
                         isHelmApp={true}

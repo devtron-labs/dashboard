@@ -8,9 +8,9 @@ import {
     stopPropagation,
     multiSelectStyles,
     useEffectAfterMount,
-    Drawer,
     DeploymentAppTypes,
     useSearchString,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -29,7 +29,6 @@ import {
     useAppContext,
     useEventSource,
     FragmentHOC,
-    useAsync,
     ScanDetailsModal,
 } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
@@ -105,8 +104,9 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'function',
 )
 let deploymentStatusTimer = null
+let appDetailsIntervalID = null
 
-export default function AppDetail() {
+export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
@@ -116,25 +116,42 @@ export default function AppDetail() {
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const isVirtualEnvRef = useRef(false)
 
-    useEffect(() => {
-        if (otherEnvsLoading) return
-        // If there is only one environment, redirect to that environment
-        if (!params.envId && otherEnvsResult?.result?.length === 1) {
-            const newUrl = getAppDetailsURL(params.appId, otherEnvsResult?.result[0].environmentId)
-            push(newUrl)
-        }
-        if (
-            !params.envId &&
-            environmentId &&
-            otherEnvsResult?.result?.map((env) => env.environmentId).includes(environmentId)
-        ) {
-            const newUrl = getAppDetailsURL(params.appId, environmentId)
-            push(newUrl)
-        } else if (!otherEnvsResult?.result?.map((env) => env.environmentId).includes(+params.envId)) {
-            setEnvironmentId(null)
-            return
-        }
-    }, [otherEnvsLoading])
+    const envList = useMemo(() => {
+      if (otherEnvsResult?.result?.length > 0) {
+          const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+          const _envList =
+              otherEnvsResult.result
+                  .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                  ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+
+          if (_envList.length > 0) {
+              let _envId
+              if (!params.envId && _envList.length === 1) {
+                  _envId = _envList[0].environmentId
+              } else if (
+                  !params.envId &&
+                  environmentId &&
+                  _envList.map((env) => env.environmentId).includes(environmentId)
+              ) {
+                  _envId = environmentId
+              } else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
+                  _envId = _envList[0].environmentId
+              }
+              if (_envId) {
+                  const newUrl = getAppDetailsURL(params.appId, _envId)
+                  push(newUrl)
+              } else{
+                setEnvironmentId(null)
+              }
+          } else {
+              setEnvironmentId(null)
+          }
+          return _envList
+      } else {
+          setEnvironmentId(null)
+      }
+      return []
+  }, [filteredEnvIds, otherEnvsResult])
 
     useEffect(() => {
         if (!params.envId) return
@@ -147,26 +164,28 @@ export default function AppDetail() {
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) &&
+                    {(envList.length === 0) &&
                         !isAppDeleted &&
                         !isVirtualEnvRef.current && <AppNotConfigured />}
-                    {!params.envId && otherEnvsResult?.result?.length > 0 && !isVirtualEnvRef.current && (
-                        <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
+                    {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
+                        <EnvironmentNotConfigured environments={envList} />
                     )}
                 </>
             )
         )
     }
 
-    const environment = otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)
+    const environment = useMemo(() => {
+        return envList.find((env) => env.environmentId === +params.envId)
+    }, [envList, params.envId])
 
     return (
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
-            {!params.envId && otherEnvsResult?.result?.length > 0 && (
+            {!params.envId && envList.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo
                         appDetails={null}
-                        environments={otherEnvsResult?.result}
+                        environments={envList}
                         environment={environment}
                         refetchDeploymentStatus={noop}
                     />
@@ -179,7 +198,7 @@ export default function AppDetail() {
                     appDetailsAPI={fetchAppDetailsInTime}
                     isAppDeployment
                     environment={environment}
-                    environments={otherEnvsResult?.result}
+                    environments={envList}
                     setIsAppDeleted={setIsAppDeleted}
                     commitInfo={commitInfo}
                     showCommitInfo={showCommitInfo}
@@ -222,7 +241,6 @@ export const Details: React.FC<DetailsType> = ({
     })
     const [appDetailsError, setAppDetailsError] = useState(undefined)
     const [appDetails, setAppDetails] = useState(undefined)
-    const [pollingIntervalID, setPollingIntervalID] = useState(null)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
@@ -234,6 +252,7 @@ export const Details: React.FC<DetailsType> = ({
     const deploymentModalShownRef = useRef(false)
     const { envId } = useParams<{ appId: string; envId?: string }>()
     const pollResourceTreeRef = useRef(true)
+    const appDetailsAbortRef = useRef(null)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -310,8 +329,16 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(() => {
         return () => {
             clearDeploymentStatusTimer()
+            clearPollingInterval()
         }
     }, [])
+
+    useEffect(() => {
+        appDetailsAbortRef.current = new AbortController()
+        return () => {
+            appDetailsAbortRef.current.abort()
+        }
+    }, [params.envId])
 
     const handleAppDetailsCallError = (error) => {
         if (error['code'] === 404 || appDetailsRequestRef.current) {
@@ -331,7 +358,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
-        appDetailsAPI(params.appId, params.envId, 25000)
+        appDetailsAPI(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (!response.result.appName && !response.result.environmentName) {
                     setResourceTreeFetchTimeOut(false)
@@ -364,7 +391,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const fetchResourceTree = () => {
-        fetchResourceTreeInTime(params.appId, params.envId, 25000)
+        fetchResourceTreeInTime(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (
                     response.errors &&
@@ -455,8 +482,9 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     function clearPollingInterval() {
-        if (pollingIntervalID) {
-            clearInterval(pollingIntervalID)
+        if (appDetailsIntervalID) {
+            clearInterval(appDetailsIntervalID)
+            appDetailsIntervalID = null
         }
     }
 
@@ -478,20 +506,12 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetailsError])
 
     useEffect(() => {
-        if (isPollingRequired) {
-            callAppDetailsAPI(true)
-            const intervalID = setInterval(callAppDetailsAPI, interval)
-            setPollingIntervalID(intervalID)
-        } else {
-            clearPollingInterval()
-        }
+      clearPollingInterval()
+      if (isPollingRequired) {
+          appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
+          callAppDetailsAPI(true)
+      }
     }, [isPollingRequired])
-
-    useEffect(() => {
-        return () => {
-            clearPollingInterval()
-        }
-    }, [pollingIntervalID])
 
     async function handleHibernate(e) {
         try {
@@ -518,14 +538,10 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    if (
-        !loadingResourceTree &&
-        (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
-        !isVirtualEnvRef.current
-    ) {
+    if (!loadingResourceTree && (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) && !isVirtualEnvRef.current) {
         return (
             <>
-                {environments?.length > 0 && (
+            {environments?.length > 0 && (
                     <div className="flex left ml-20 mt-16">
                         <EnvSelector
                             environments={environments}
@@ -534,7 +550,6 @@ export const Details: React.FC<DetailsType> = ({
                         />
                     </div>
                 )}
-
                 {isAppDeleted ? (
                     <DeletedAppComponent
                         resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
@@ -869,11 +884,10 @@ export function EnvSelector({
                         IndicatorSeparator: null,
                         Option,
                         GroupHeading: (props) => <GroupHeading {...props} hideClusterName={true} />,
-                        DropdownIndicator: disabled ? null : components.DropdownIndicator,
+                        DropdownIndicator: components.DropdownIndicator,
                         ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
                     }}
                     styles={envSelectorStyle}
-                    isDisabled={disabled}
                     isSearchable={true}
                     classNamePrefix="app-environment-select"
                     formatOptionLabel={formatOptionLabel}

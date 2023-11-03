@@ -22,7 +22,14 @@ import {
     refreshGitMaterial,
     getGitMaterialByCommitHash,
 } from '../../service'
-import { createGitCommitUrl, importComponentFromFELibrary, ISTTimeModal, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
+import {
+    createGitCommitUrl,
+    getCIPipelineURL,
+    importComponentFromFELibrary,
+    ISTTimeModal,
+    preventBodyScroll,
+    sortObjectArrayAlphabetically,
+} from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
@@ -41,15 +48,19 @@ import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink } from 'react-router-dom'
-import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv } from '../../../../services/service'
+import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv, getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
-import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { DEFAULT_ENV, HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR, NO_TASKS_CONFIGURED_ERROR, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
+import {
+    APP_DETAILS,
+    CI_CONFIGURED_GIT_MATERIAL_ERROR,
+    NO_TASKS_CONFIGURED_ERROR,
+    TOAST_BUTTON_TEXT_VIEW_DETAILS,
+} from '../../../../config/constantMessaging'
 import {
     getBranchValues,
     handleSourceNotConfigured,
@@ -60,6 +71,7 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { getDefaultConfig } from '../../../notifications/notifications.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -98,10 +110,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             loader: false,
             isSaveLoading: false,
             environmentLists: [],
-            appReleaseTags:[],
-            tagsEditable:false,
+            appReleaseTags: [],
+            tagsEditable: false,
             configs: false,
             isDefaultConfigPresent: false,
+            searchImageTag: '',
+            resourceFilters: []
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -122,17 +136,30 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getHostURLConfig()
         this.getWorkflows(true)
         this.getEnvironments()
-
     }
 
     getEnvironments = () => {
         getEnvironmentListMinPublic()
             .then((response) => {
-                let list = []
-                list.push({ id: 0, clusterName: '', name: DEFAULT_ENV, active: false, isClusterActive: false, description: "System default" })
+                const list = []
+                list.push({
+                    id: 0,
+                    clusterName: '',
+                    name: DEFAULT_ENV,
+                    active: false,
+                    isClusterActive: false,
+                    description: 'System default',
+                })
                 response.result?.forEach((env) => {
-                    if (env.cluster_name !== "default_cluster" && env.isClusterCdActive) {
-                        list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name, active: false, isClusterActive: env.isClusterActive, description: env.description })
+                    if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
+                        list.push({
+                            id: env.id,
+                            clusterName: env.cluster_name,
+                            name: env.environment_name,
+                            active: false,
+                            isClusterActive: env.isClusterActive,
+                            description: env.description,
+                        })
                     }
                 })
                 sortObjectArrayAlphabetically(list, 'name')
@@ -143,13 +170,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
+    // FIXME: Seems like its missing a error state
     getConfigs() {
-        getDefaultConfig()
-            .then((response) => {
-                let isConfigPresent = response.result.isConfigured
-                let _isDefaultConfig = response.result.is_default_configured
-                this.setState({configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig})
-            })
+        getDefaultConfig().then((response) => {
+            let isConfigPresent = response.result.isConfigured
+            let _isDefaultConfig = response.result.is_default_configured
+            this.setState({ configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig })
+        })
     }
 
     setAppReleaseTags = (appReleaseTags: string[]) => {
@@ -161,7 +188,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getWorkflows = (isFromOnMount?: boolean) => {
-        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView)
+        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView, this.props.filteredEnvIds)
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
                 const wf = result.workflows || []
@@ -184,12 +211,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     this.getWorkflowStatus()
                     if (isFromOnMount && ApprovalMaterialModal) {
                         this.getConfigs()
-                        if (this.props.location.search.includes("approval-node")) {
+                        if (this.props.location.search.includes('approval-node')) {
                             this.setState({
-                                showApprovalModal: true
+                                showApprovalModal: true,
                             })
-                            const searchParams = new URLSearchParams(this.props.location.search);
-                            const nodeId = searchParams.get('approval-node');
+                            const searchParams = new URLSearchParams(this.props.location.search)
+                            const nodeId = searchParams.get('approval-node')
                             this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
                         }
                     }
@@ -214,7 +241,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.match.params.appId !== prevProps.match.params.appId) {
+        if (
+            this.props.match.params.appId !== prevProps.match.params.appId ||
+            prevProps.filteredEnvIds !== this.props.filteredEnvIds
+        ) {
             this.setState({
                 showCIModal: false,
                 showMaterialRegexModal: false,
@@ -289,7 +319,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             workflow.nodes.map((node) => {
                 if (node.type === 'CI' && +node.id == this.state.ciNodeId) {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        if (material.isSelected && material.searchText !== commitHash) {
+                        if (material.isSelected){
                             material.isMaterialLoading = true
                             material.searchText = commitHash
                             material.showAllCommits = false
@@ -627,7 +657,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag: string = '') {
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false, searchText?: string) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
@@ -637,6 +667,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
             isApprovalNode,
+            searchText,
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -677,6 +708,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     appReleaseTags: data.appReleaseTagNames,
                     tagsEditable: data.tagsEditable,
                     hideImageTaggingHardDelete: data.hideImageTaggingHardDelete,
+                    resourceFilters: data.resourceFilters,
                 })
                 preventBodyScroll(true)
             })
@@ -693,17 +725,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+        searchText?: string,
     ) => {
         if (!offset && !size) {
             ReactGA.event(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
             this.setState({ isLoading: true })
         }
-
         const _offset = offset || 1
         const _size = size || 20
         this.setState({ showCDModal: true })
         this.abortController = new AbortController()
-        getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal)
+        getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal, searchText)
             .then((response) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
@@ -725,11 +757,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState(
                     {
                         workflows: workflows,
+                        // FIXME: Pending enum
                         materialType: 'rollbackMaterialList',
                         cdNodeId: cdNodeId,
                         nodeType: 'CD',
                         showCDModal: true,
                         isLoading: false,
+                        resourceFilters: response.result.resourceFilters,
                     },
                     () => {
                         preventBodyScroll(true)
@@ -738,7 +772,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 )
 
                 if (callback && response.result) {
-                    callback(false, response.result.length < 20)
+                    callback(false, response.result.materials?.length < 20 || response.result.materials?.length ===0)
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -785,7 +819,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ isSaveLoading: true, isLoading: true })
         let node: NodeAttr
         for (let i = 0; i < this.state.workflows.length; i++) {
-            let workflow = this.state.workflows[i]
+            const workflow = this.state.workflows[i]
             node = workflow.nodes.find((nd) => +nd.id == this.state.cdNodeId && nd.type == nodeType)
             if (node) break
         }
@@ -815,6 +849,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 showCDModal: false,
                                 isSaveLoading: false,
                                 isLoading: false,
+                                searchImageTag: '',
                             },
                             () => {
                                 preventBodyScroll(false)
@@ -838,7 +873,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     handleTriggerErrorMessageForHelmManifestPush = (serverError: any, cdPipelineId: string, environmentId: number) => {
-        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors) && serverError.code !== 403 && serverError.code !== 408) {
+        if (
+            serverError instanceof ServerErrors &&
+            Array.isArray(serverError.errors) &&
+            serverError.code !== 403 &&
+            serverError.code !== 408
+        ) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 const toastBody = (
                     <ToastBodyWithButton
@@ -919,11 +959,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (this.state.selectedEnv && this.state.selectedEnv.id !== 0) {
             envId = this.state.selectedEnv.id
         }
+
         const payload = {
             pipelineId: +this.state.ciNodeId,
             ciPipelineMaterials: ciPipelineMaterials,
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
+            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
         }
 
         triggerCINode(payload)
@@ -940,13 +982,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         () => {
                             preventBodyScroll(false)
                             this.getWorkflowStatus()
-                            if(this.props.isJobView) {
+                            if (this.props.isJobView) {
                                 this.getWorkflows()
                             }
                         },
                     )
                 }
-
             })
             .catch((errors: ServerErrors) => {
                 if (errors.code === 403) {
@@ -956,6 +997,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             className: 'devtron-toast unauthorized',
                         },
                     )
+                } else if( errors instanceof ServerErrors &&
+                    Array.isArray(errors.errors) && errors.code === 409){
+                        errors.errors.map((err) => toast.error(err.internalMessage))
                 } else {
                     errors.errors.map((error) => {
                         if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
@@ -978,7 +1022,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
     redirectToCIPipeline = () => {
         this.props.history.push(
-            `/job/${this.props.match.params.appId}/edit/workflow/${this.state.workflowId}/ci-pipeline/${this.state.ciNodeId}/build`,
+            getCIPipelineURL(this.props.match.params.appId, this.state.workflowId.toString(), true, this.state.ciNodeId, true, false),
         )
     }
     selectCommit = (materialId: string, hash: string): void => {
@@ -1163,17 +1207,19 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCIModal: false, showMaterialRegexModal: false })
     }
 
-    closeCDModal = (e): void => {
+    closeCDModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         preventBodyScroll(false)
         this.abortController.abort()
-        this.setState({ showCDModal: false })
+        this.setState({ showCDModal: false, searchImageTag: '' })
     }
 
-    closeApprovalModal = (e): void => {
+    closeApprovalModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         preventBodyScroll(false)
         this.setState({ showApprovalModal: false })
         this.props.history.push({
-            search: ''
+            search: '',
         })
     }
 
@@ -1226,8 +1272,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    setSelectedEnv = ( _selectedEnv: Environment ) => {
-        this.setState({selectedEnv: _selectedEnv})
+    setSelectedEnv = (_selectedEnv: Environment) => {
+        this.setState({ selectedEnv: _selectedEnv })
     }
 
     getCINode = (): NodeAttr => {
@@ -1313,6 +1359,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 selectedEnv={this.state.selectedEnv}
                                 setSelectedEnv={this.setSelectedEnv}
                                 environmentLists={this.state.environmentLists}
+                                isJobCI={!!nd.isJobCI}
                             />
                         )}
                     </div>
@@ -1335,6 +1382,22 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
 
         return node ?? ({} as NodeAttr)
+    }
+
+    handleMaterialFilters = (
+        searchText: string,
+        cdNodeId,
+        nodeType: DeploymentNodeType,
+        isApprovalNode: boolean = false,
+        fromRollback: boolean = false,
+    ) => {
+        if (!fromRollback) {
+            this.onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        } else {
+            // By default setting from 1 to 20
+            this.onClickRollbackMaterial(cdNodeId, null, null, null, searchText)
+        }
+        this.setState({ searchImageTag: searchText })
     }
 
     renderCDMaterial() {
@@ -1394,6 +1457,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 location={this.props.location}
                                 match={this.props.match}
                                 isApplicationGroupTrigger={false}
+                                handleMaterialFilters={this.handleMaterialFilters}
+                                searchImageTag={this.state.searchImageTag}
+                                resourceFilters={this.state.resourceFilters}
                             />
                         )}
                     </div>
@@ -1409,27 +1475,28 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const node: NodeAttr = this.getCDNode()
             return (
                 <ApprovalMaterialModal
-                appId={Number(this.props.match.params.appId)}
-                pipelineId={this.state.cdNodeId}
-                stageType={DeploymentNodeType[this.state.nodeType]}
-                node={node}
-                materialType={this.state.materialType}
-                isLoading={this.state.isLoading}
-                changeTab={this.changeTab}
-                closeApprovalModal={this.closeApprovalModal}
-                toggleSourceInfo={this.toggleSourceInfo}
-                onClickCDMaterial={this.onClickCDMaterial}
-                getModuleInfo={getModuleInfo}
-                GitCommitInfoGeneric={GitCommitInfoGeneric}
-                ciPipelineId={node.connectingCiPipelineId}
-                appReleaseTagNames={this.state.appReleaseTags}
-                setAppReleaseTagNames={this.setAppReleaseTags}
-                tagsEditable={this.state.tagsEditable}
-                setTagsEditable={this.setTagsEditable}
-                hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
-                configs={this.state.configs}
-                isDefaultConfigPresent={this.state.isDefaultConfigPresent}
-            />
+                    appId={Number(this.props.match.params.appId)}
+                    pipelineId={this.state.cdNodeId}
+                    stageType={DeploymentNodeType[this.state.nodeType]}
+                    node={node}
+                    materialType={this.state.materialType}
+                    isLoading={this.state.isLoading}
+                    changeTab={this.changeTab}
+                    closeApprovalModal={this.closeApprovalModal}
+                    toggleSourceInfo={this.toggleSourceInfo}
+                    onClickCDMaterial={this.onClickCDMaterial}
+                    getModuleInfo={getModuleInfo}
+                    GitCommitInfoGeneric={GitCommitInfoGeneric}
+                    ciPipelineId={node.connectingCiPipelineId}
+                    appReleaseTagNames={this.state.appReleaseTags}
+                    setAppReleaseTagNames={this.setAppReleaseTags}
+                    tagsEditable={this.state.tagsEditable}
+                    setTagsEditable={this.setTagsEditable}
+                    hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
+                    configs={this.state.configs}
+                    isDefaultConfigPresent={this.state.isDefaultConfigPresent}
+                    resourceFilters={this.state.resourceFilters}
+                />
             )
         }
 

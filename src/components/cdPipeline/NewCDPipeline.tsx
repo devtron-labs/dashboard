@@ -17,7 +17,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { ButtonWithLoader, sortObjectArrayAlphabetically } from '../common'
+import { ButtonWithLoader, FloatingVariablesSuggestions, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
@@ -64,9 +64,10 @@ export default function NewCDPipeline({
     location,
     appName,
     close,
-    downstreamNodeSize,
     getWorkflows,
     refreshParentWorkflows,
+    envIds,
+    isLastNode
 }) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -121,6 +122,7 @@ export default function NewCDPipeline({
         isClusterCdActive: false,
         deploymentAppCreated: false,
         clusterName: '',
+        clusterId: null,
         runPreStageInEnv: false,
         runPostStageInEnv: false,
         allowedDeploymentTypes: [],
@@ -141,6 +143,7 @@ export default function NewCDPipeline({
     const [forceDeleteData, setForceDeleteData] = useState({ forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' })
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
+    const [isEnvUsedState, setIsEnvUsedState] = useState<boolean>(false)
     const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
     const [isAdvanced, setIsAdvanced] = useState<boolean>(!!cdPipelineId)
     const [errorCode, setErrorCode] = useState<number>()
@@ -196,7 +199,8 @@ export default function NewCDPipeline({
             getDeploymentStrategyList(appId),
             getGlobalVariable(Number(appId), true),
             getDockerRegistryMinAuth(appId, true),
-        ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
+        ])
+            .then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
                 let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
                 let dockerRegistries = dockerResponse.result || []
                 const _allStrategies = {}
@@ -234,7 +238,8 @@ export default function NewCDPipeline({
 
                 setGlobalVariables(_globalVariableOptions || [])
                 setDockerRegistries(dockerRegistries)
-            }).catch((error: ServerErrors) => {
+            })
+            .catch((error: ServerErrors) => {
                 showError(error)
                 setErrorCode(error.code)
                 setPageState(ViewType.ERROR)
@@ -249,6 +254,7 @@ export default function NewCDPipeline({
                 list = list.map((env) => {
                     return {
                         id: env.id,
+                        clusterId: env.cluster_id,
                         clusterName: env.cluster_name,
                         name: env.environment_name,
                         namespace: env.namespace || '',
@@ -322,7 +328,10 @@ export default function NewCDPipeline({
                 validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
                 setIsVirtualEnvironment(pipelineConfigFromRes.isVirtualEnvironment)
-                setFormData(form)
+                setFormData({
+                    ...form,
+                    clusterId: result.form?.clusterId,
+                })
                 setPageState(ViewType.FORM)
             })
             .catch((error: ServerErrors) => {
@@ -370,6 +379,18 @@ export default function NewCDPipeline({
         } else {
             return isRunPrePostStageInEnv ?? false
         }
+    }
+
+    const getSecret = (secret: any) => {
+        return {
+            label: secret,
+            value: `${secret}-cs`,
+            type: 'secrets',
+        }
+    }
+
+    const filterOutEmptySecret = (secret: any) => {
+        return secret['label'].length
     }
 
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
@@ -424,14 +445,14 @@ export default function NewCDPipeline({
             if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
                 form.preBuildStage = pipelineConfigFromRes.preDeployStage
             }else {
-                form.preBuildStage = {...pipelineConfigFromRes.preDeployStage, steps: []}
+                form.preBuildStage = {...pipelineConfigFromRes.preDeployStage, steps: [], triggerType: TriggerType.Auto}
             }
         }
         if (pipelineConfigFromRes?.postDeployStage) {
             if(pipelineConfigFromRes.postDeployStage.steps?.length > 0){
                 form.postBuildStage = pipelineConfigFromRes?.postDeployStage
             }else {
-                form.postDeployStage = {...pipelineConfigFromRes.postDeployStage, steps: []}
+                form.postDeployStage = {...pipelineConfigFromRes.postDeployStage, steps: [], triggerType: TriggerType.Auto}
             }
         }
         form.requiredApprovals = `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`
@@ -440,7 +461,7 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
                       return {
                           label: configmap,
-                          value: configmap,
+                          value: `${configmap}-cm`,
                           type: 'configmaps',
                       }
                   })
@@ -449,7 +470,7 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.secrets.map((secret) => {
                       return {
                           label: secret,
-                          value: secret,
+                          value: `${secret}-cs`,
                           type: 'secrets',
                       }
                   })
@@ -460,19 +481,15 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.postStageConfigMapSecretNames.configMaps.map((configmap) => {
                       return {
                           label: configmap,
-                          value: configmap,
+                          value: `${configmap}-cm`,
                           type: 'configmaps',
                       }
                   })
                 : [],
             secrets: pipelineConfigFromRes.postStageConfigMapSecretNames.secrets
-                ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets.map((secret) => {
-                      return {
-                          label: secret,
-                          value: secret,
-                          type: 'secrets',
-                      }
-                  })
+                ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets
+                      .map(getSecret)
+                      .filter(filterOutEmptySecret)
                 : [],
         }
         form.runPreStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, pipelineConfigFromRes.runPreStageInEnv)
@@ -489,19 +506,19 @@ export default function NewCDPipeline({
     const responseCode = () => {
         const _preStageConfigMapSecretNames = {
             configMaps: formData.preStageConfigMapSecretNames.configMaps.map((config) => {
-                return config['value']
+                return config['label']
             }),
             secrets: formData.preStageConfigMapSecretNames.secrets.map((secret) => {
-                return secret['value']
+                return secret['label']
             }),
         }
 
         const _postStageConfigMapSecretNames = {
             configMaps: formData.postStageConfigMapSecretNames.configMaps.map((config) => {
-                return config['value']
+                return config['label']
             }),
             secrets: formData.postStageConfigMapSecretNames.secrets.map((secret) => {
-                return secret['value']
+                return secret['label']
             }),
         }
 
@@ -694,7 +711,7 @@ export default function NewCDPipeline({
         const request = responseCode()
 
         const _form = { ...formData }
-        
+
         let promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
         promise
             .then((response) => {
@@ -885,9 +902,9 @@ export default function NewCDPipeline({
 
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
-            let canDeletePipeline = downstreamNodeSize === 0
-            let message =
-                downstreamNodeSize > 0 ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
+            const canDeletePipeline = isLastNode
+            const message =
+                !canDeletePipeline ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
             return (
                 <ConditionalWrap
                     condition={!canDeletePipeline}
@@ -954,6 +971,8 @@ export default function NewCDPipeline({
             getPrePostStageInEnv,
             isVirtualEnvironment,
             setInputVariablesListFromPrevStep,
+            isEnvUsedState,
+            setIsEnvUsedState
         }
     }, [
         formData,
@@ -1026,6 +1045,7 @@ export default function NewCDPipeline({
                                     parentPipelineId={parentPipelineId}
                                     isWebhookCD={isWebhookCD}
                                     dockerRegistries={dockerRegistries}
+                                    envIds={envIds}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -1045,7 +1065,7 @@ export default function NewCDPipeline({
         } else {
             title = CREATE_DEPLOYMENT_PIPELINE;
         }
-        
+
         return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
@@ -1090,10 +1110,31 @@ export default function NewCDPipeline({
         )
     }
 
+    const renderFloatingVariablesWidget = () => {
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
+
+        return (
+            <div className="flexbox">
+                <div className="floating-scoped-variables-widget">
+                    <FloatingVariablesSuggestions
+                        zIndex={21}
+                        appId={appId}
+                        envId={formData?.environmentId ? String(formData.environmentId) : null}
+                        clusterId={formData?.clusterId}
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return cdPipelineId || isAdvanced ? (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            {renderCDPipelineModal()}
-        </Drawer>
+        <>
+            {renderFloatingVariablesWidget()}
+
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+                {renderCDPipelineModal()}
+            </Drawer>
+        </>
     ) : (
         <VisibleModal className="">{renderCDPipelineModal()}</VisibleModal>
     )

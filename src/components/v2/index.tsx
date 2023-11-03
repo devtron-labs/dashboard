@@ -94,6 +94,7 @@ function RouterComponent({ envType }) {
         appDetailsRef.current = {
             ...appDetailsRef.current,
             ...response.result,
+            helmReleaseStatus: response.result?.releaseStatus || appDetailsRef.current?.helmReleaseStatus
         }
         IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
         setErrorResponseCode(undefined)

@@ -6,11 +6,14 @@ import { ClusrerNotReachableDialogType } from './ClusterNotReachableDialog.type'
 
 
 function ClusterNotReachableDailog({ clusterName, onClickCancel, onClickDelete }: ClusrerNotReachableDialogType) {
-    const clusterNameString:string = clusterName ? ` '${clusterName}'` : ''
+    if (!clusterName) {
+        return null
+    }
+
     return (
         <ConfirmationDialog>
             <ConfirmationDialog.Icon src={warningIconSrc} />
-            <ConfirmationDialog.Body title={`The cluster${clusterNameString} is not reachable`} />
+            <ConfirmationDialog.Body title={`The cluster ${clusterName} is not reachable`} />
             {NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE.map((message, index) => (
                 <p key={`dailog-msg-${index}`} className="fs-14 cn-7 lh-20 mt-12">
                     {message}

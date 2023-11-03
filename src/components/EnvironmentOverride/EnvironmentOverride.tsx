@@ -19,7 +19,7 @@ export default function EnvironmentOverride({
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
-    const { path } = useRouteMatch()
+    const { path, url } = useRouteMatch()
     const { push } = useHistory()
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
@@ -69,11 +69,19 @@ export default function EnvironmentOverride({
         )
     }
 
+    if (params.envId && !environmentsMap.has(+params.envId) && environments.length) {
+        const newUrl = url.replace(
+            `${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}`,
+            `${URLS.APP_ENV_OVERRIDE_CONFIG}/${environments[0].environmentId}`,
+        )
+        push(newUrl)
+    }
+
     const getParentName = (): string => {
         if (appList?.length) {
             return appMap.get(+params.appId).name
         } else if (environments?.length) {
-            return environmentsMap.get(+params.envId).environmentName
+            return environmentsMap.get(+params.envId)?.environmentName || ''
         } else {
             return ''
         }
@@ -95,6 +103,7 @@ export default function EnvironmentOverride({
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplateOverride
+                            key={`deployment-${params.appId}-${params.envId}`}
                             parentState={viewState}
                             setParentState={setViewState}
                             environments={environments}
@@ -105,6 +114,7 @@ export default function EnvironmentOverride({
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
                         <ConfigMapList
+                            key={`config-map-${params.appId}-${params.envId}`}
                             isOverrideView={true}
                             isProtected={isProtected}
                             parentState={viewState}
@@ -112,10 +122,12 @@ export default function EnvironmentOverride({
                             setParentState={setViewState}
                             isJobView={isJobView}
                             reloadEnvironments={reloadEnvironments}
+                            clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
                         <SecretList
+                            key={`secret-${params.appId}-${params.envId}`}
                             isOverrideView={true}
                             parentState={viewState}
                             isProtected={isProtected}
@@ -123,6 +135,7 @@ export default function EnvironmentOverride({
                             setParentState={setViewState}
                             isJobView={isJobView}
                             reloadEnvironments={reloadEnvironments}
+                            clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
                         />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />

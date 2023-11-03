@@ -36,8 +36,10 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
+const FilterConditions = importComponentFromFELibrary('FilterConditions')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -381,6 +383,17 @@ function NavItem({ serverMode }) {
                     >
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
+
+                    {window._env_.ENABLE_SCOPED_VARIABLES && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Scoped Variables</div>
+                        </NavLink>
+                    )}
+
                     {PluginsPolicy && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_PLUGINS}
@@ -397,6 +410,15 @@ function NavItem({ serverMode }) {
                             activeClassName="active-route"
                         >
                             <div className="flexbox flex-justify">Tags</div>
+                        </NavLink>
+                    )}
+                    {FilterConditions && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
+                            key={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Filter condition</div>
                         </NavLink>
                     )}
                 </>
@@ -541,6 +563,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                    <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
@@ -549,6 +576,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             {TagListContainer && (
                 <Route path={URLS.GLOBAL_CONFIG_TAGS}>
                     <TagListContainer />
+                </Route>
+            )}
+            {FilterConditions && (
+                <Route path={URLS.GLOBAL_CONFIG_FILTER_CONDITION}>
+                    <FilterConditions isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />

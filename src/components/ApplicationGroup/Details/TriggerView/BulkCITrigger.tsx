@@ -8,8 +8,9 @@ import {
     noop,
     ConsequenceType,
     ConsequenceAction,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary, useAsync } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
@@ -382,6 +383,7 @@ export default function BulkCITrigger({
                     hideSearchHeader={selectedApp.hideSearchHeader}
                     isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
                     ciBlockState={appPolicy[selectedApp.appId]}
+                    isJobCI={selectedApp.isJobCI}
                 />
             )
         }

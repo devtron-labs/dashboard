@@ -74,6 +74,7 @@ export interface ArtifactType {
     isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
+    isJobCI?: boolean
     type: HistoryComponentType
     ciPipelineId?: number
     artifactId?: number
@@ -82,6 +83,7 @@ export interface ArtifactType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    jobCIClass?: string
 }
 
 export interface CopyTippyWithTextType {
@@ -102,6 +104,7 @@ export interface CIListItemType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    isSuperAdmin?:boolean
 }
 
 export interface ImageComment {
@@ -247,6 +250,7 @@ export interface StartDetailsType {
 
 export interface CICDSidebarFilterOptionType extends OptionType {
     pipelineId: number
+    pipelineType?: string
     deploymentAppDeleteRequest?: boolean
 }
 

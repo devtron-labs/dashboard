@@ -1,4 +1,4 @@
-import { AggregationKeys, AggregationKeysType } from '../app/types'
+import { AggregationKeys, AggregationKeysType, Nodes } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
 export const FILTER_SELECT_COMMON_STYLES = {
@@ -95,6 +95,8 @@ export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for th
 export const CLUSTER_NOT_REACHABLE = 'Cluster is not reachable'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
+    AggregationKeys.Events,
+    AggregationKeys.Namespaces,
     AggregationKeys.Workloads,
     AggregationKeys['Config & Storage'],
     AggregationKeys.Networking,
@@ -156,6 +158,8 @@ export const DELETE_MODAL_MESSAGING = {
 }
 
 export const SIDEBAR_KEYS = {
+    overview: 'Cluster Overview',
+    nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
     eventGVK: {
@@ -168,6 +172,23 @@ export const SIDEBAR_KEYS = {
         Version: '',
         Kind: 'Namespace',
     },
+    nodeGVK: {
+        Group: '',
+        Version: '',
+        Kind: 'Node' as Nodes,
+    },
+    overviewGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.ClusterOverview,
+    }
+}
+
+export const FIXED_GVK_Keys = {
+    'cluster overview': 'overviewGVK',
+    node: 'nodeGVK',
+    event: 'eventGVK',
+    namespace: 'namespaceGVK',
 }
 
 export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
@@ -175,6 +196,8 @@ export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You ca
 export const ERROR_SCREEN_SUBTITLE =
     'You don’t have permission for any Kubernetes resources. You can request permission from a super admin user.'
 export const ERROR_SCREEN_LEARN_MORE = 'Learn about Kubernetes resource permissions.'
+export const clusterOverviewNodeText = (isOverview) => `To view ${isOverview ? 'Cluster overview' : 'Nodes'}, you must have view permission to at least one environment for this cluster. This access can be granted through Devtron Apps or Helm Apps permissions`
+export const LEARN_MORE = 'Learn more.'
 
 export const RESOURCE_LIST_ERROR_STATE = {
     title: 'Some error occured',
@@ -199,6 +222,11 @@ export const RESOURCE_PAGE_SIZE_OPTIONS = [
     { value: 100, selected: true },
     { value: 150, selected: false },
     { value: 200, selected: false },
+]
+export const NODE_DETAILS_PAGE_SIZE_OPTIONS = [
+    { value: 20, selected: true },
+    { value: 40, selected: false },
+    { value: 50, selected: false },
 ]
 
 export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'

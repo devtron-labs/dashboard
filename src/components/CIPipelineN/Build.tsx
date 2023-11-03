@@ -18,18 +18,17 @@ export function Build({
     isSecurityModuleInstalled,
     setDockerConfigOverridden,
     isJobView,
-    getPluginData
+    getPluginData,
+    imageTagValue,
+    setImageTagValue,
 }: BuildType) {
     const {
         formData,
         setFormData,
         formDataErrorObj,
-        loadingState,
-        setLoadingState,
         setFormDataErrorObj,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
-
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
         const _formData = { ...formData }
         const allMaterials = _formData.materials.map((mat) => {
@@ -255,6 +254,7 @@ export function Build({
             </>
         )
     }
+
     return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">
             <Progressing pageLoader />
@@ -267,11 +267,9 @@ export function Build({
                     {isSecurityModuleInstalled && renderScanner()}
                     <AdvancedConfigOptions
                         ciPipeline={ciPipeline}
-                        formData={formData}
-                        setFormData={setFormData}
                         setDockerConfigOverridden={setDockerConfigOverridden}
-                        loadingState={loadingState}
-                        setLoadingState={setLoadingState}
+                        imageTagValue={imageTagValue}
+                        setImageTagValue={setImageTagValue}
                     />
                 </>
             )}

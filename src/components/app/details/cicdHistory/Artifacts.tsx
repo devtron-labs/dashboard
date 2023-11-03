@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { showError, GenericEmptyState, ImageTagsContainer } from '@devtron-labs/devtron-fe-common-lib'
-import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
+import { showError, GenericEmptyState, ImageTagsContainer, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
@@ -17,6 +17,7 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { getUserRole } from '../../../userGroups/userGroup.service'
 
 let ApprovalInfoTippy = null
 
@@ -29,13 +30,30 @@ export default function Artifacts({
     ciPipelineId,
     artifactId,
     isJobView,
+    isJobCI,
     imageComment,
     imageReleaseTags,
     type,
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
+    jobCIClass
 }: ArtifactType) {
+    const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
+    useEffect(() => {
+        initialise()
+    }, [])
+    async function initialise() {
+        try {
+            const userRole = await getUserRole()
+
+            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+            setSuperAdmin(superAdmin)
+        } catch (err) {
+            showError(err)
+        }
+    }
+
     const { triggerId, buildId } = useParams<{
         triggerId: string
         buildId: string
@@ -94,15 +112,32 @@ export default function Artifacts({
         status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED ||
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
+        if (isJobCI) {
+            return (
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifacts}
+                    subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifactsError}
+                />
+            ) 
+        }
+
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
+    } else if (!artifactId && status.toLowerCase() === TERMINAL_STATUS_MAP.SUCCEEDED) {
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsFound}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsFoundError}
+                image={noartifact}
+            />
+        )
     } else {
         return (
-            <div className="flex left column p-16">
+            <div className={`flex left column p-16 ${jobCIClass??''}`}>
                 {!isJobView && type !== HistoryComponentType.CD && (
                     <CIListItem
                         type="artifact"
@@ -113,6 +148,9 @@ export default function Artifacts({
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                        isSuperAdmin={isSuperAdmin}
+                        
+
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
@@ -129,8 +167,9 @@ export default function Artifacts({
                     </CIListItem>
                 )}
                 {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
-                    <CIListItem type="report" hideImageTaggingHardDelete={hideImageTaggingHardDelete}>
+                    <CIListItem isSuperAdmin={isSuperAdmin} type="report" hideImageTaggingHardDelete={hideImageTaggingHardDelete}>
                         <div className="flex column left">
+                    
                             <div className="cn-9 fs-14">Reports.zip</div>
                             <button
                                 type="button"
@@ -195,6 +234,7 @@ export const CIListItem = ({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
+    isSuperAdmin,
 }: CIListItemType) => {
     if(!ApprovalInfoTippy) ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
     return (
@@ -238,6 +278,7 @@ export const CIListItem = ({
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                         hideHardDelete={hideImageTaggingHardDelete}
+                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>

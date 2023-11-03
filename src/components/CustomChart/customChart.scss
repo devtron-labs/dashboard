@@ -5,7 +5,18 @@
     }
     .chart-list-row {
         display: grid;
-        grid-template-columns: 220px 120px auto;
+        gap: 16px;
+        grid-template-columns: 250px 150px auto 16px;
+        .devtron-tag {
+            white-space: nowrap;
+        }
+        .chart-version-row:hover {
+            background-color: var(--N50);
+        }
+    }
+
+    .custom-chart-info-bar {
+        border-radius: 8px 8px 0px 0px;
     }
 }
 .upload-modal {

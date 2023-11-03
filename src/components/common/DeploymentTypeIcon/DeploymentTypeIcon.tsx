@@ -8,7 +8,11 @@ const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
 
 function DeploymentTypeIcon({ deploymentAppType, isExternalArgoApp }: { deploymentAppType: string, isExternalArgoApp?: boolean }): JSX.Element {
     const renderDeploymentTypeIcon = () => {
-        if (deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD || deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH && VirtualEnvHelpTippy) {
+        if (
+            (deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD ||
+                deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH) &&
+            VirtualEnvHelpTippy
+        ) {
             return <VirtualEnvHelpTippy isVirtualIcon={true} />
         } else if (deploymentAppType === DeploymentAppTypes.GITOPS || isExternalArgoApp) {
             return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />

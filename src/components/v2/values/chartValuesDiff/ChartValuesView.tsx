@@ -105,11 +105,15 @@ import {
     COMPARISON_OPTION_LABELS,
     COMPARISON_OPTION_TIPPY_CONTENT,
     CONNECT_TO_HELM_CHART_TEXTS,
-    DATA_VALIDATION_ERROR_MSG,
     MANIFEST_TAB_VALIDATION_ERROR,
     MANIFEST_INFO,
+    UPDATE_DATA_VALIDATION_ERROR_MSG,
+    EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
+import IndexStore from '../../appDetails/index.store'
+import { AppDetails } from '../../appDetails/appDetails.type'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -578,21 +582,36 @@ function ChartValuesView({
         if (commonState.isDeleteInProgress) {
             return
         }
+        // updating the delete state to progressing
         dispatch({
             type: ChartValuesViewActionTypes.isDeleteInProgress,
             payload: true,
         })
+
+        // initiating deletion (External Helm App/ Helm App/ Preset Value)
         getDeleteApplicationApi(deleteAction)
             .then((response: ResponseType) => {
-                if (response.result.deleteResponse?.deleteInitiated) {
+                //preset value deleted successfully
+                if (isCreateValueView) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                     init && init()
                     history.push(
-                        isCreateValueView
-                            ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                            : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`,
+                        getSavedValuesListURL(installedConfigFromParent.appStoreId)
                     )
-                } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                    return
+                }
+                // ends
+
+                // helm app OR external helm app delete initiated
+                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedAppInfo)) {
+                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    init && init()
+                    history.push( `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
+                    return
+                } 
+
+                // helm app delete failed due to cluster not reachable (ArgoCD installed)
+                if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
                         payload: {
@@ -614,6 +633,13 @@ function ChartValuesView({
                 }
             })
             .catch((error) => {
+                /*
+                helm app delete failed due to:
+                1. cluster not reachable (Helm installed) 
+                2. ArgoCD dashboard not reachable
+                3. any other event loss
+                */
+                // updating state for force delete dialog box
                 if (deleteAction !== DELETE_ACTION.FORCE_DELETE && error.code !== 403) {
                     let forceDeleteTitle = '',
                         forceDeleteMessage = ''
@@ -657,11 +683,16 @@ function ChartValuesView({
     }
 
     const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
+        // Delete: external helm app
         if (isExternalApp && !commonState.installedAppInfo) {
             return deleteApplicationRelease(appId)
-        } else if (isCreateValueView) {
+        }
+        // Delete: helm chart preset values
+        else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
-        } else {
+        } 
+        // Delete: helm app
+        else {
             return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, deleteAction)
         }
     }
@@ -750,9 +781,13 @@ function ChartValuesView({
 
         // validate data
         try {
+            if (!commonState.modifiedValuesYaml) {
+                toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                return false
+            }
             JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
-            toast.error(`${DATA_VALIDATION_ERROR_MSG} “${err}”`)
+            toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`)
             return false
         }
 
@@ -766,6 +801,15 @@ function ChartValuesView({
 
         const validatedName = validationRules.appName(isCreateValueView ? valueName : appName)
         if (!isRequestDataValid(validatedName)) {
+            // If some validation error occurred, close the readme column or comparision column
+            // to show the validations errors
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    openReadMe: false,
+                    openComparison: false,
+                },
+            })
             return
         }
 
@@ -885,6 +929,7 @@ function ChartValuesView({
             } else if (res?.result && (res.result.success || res.result.appName)) {
               appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName, res.result?.helmPackageName)
                 toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
+                IndexStore.publishAppDetails({} as AppDetails, null)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 toast.error(SOME_ERROR_MSG)
@@ -1126,15 +1171,23 @@ function ChartValuesView({
                         }
                         wrap={() => renderComparisonOption(isDeployChartView)}
                     >
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="bottom"
-                            content={getComparisonTippyContent()}
-                        >
-                            {renderComparisonOption(commonState.activeTab === 'manifest' ? !commonState.isComparisonAvailable ||  !commonState.deploymentHistoryArr || (commonState.deploymentHistoryArr.length === 0): !commonState.isComparisonAvailable)}
-                        </Tippy>
-                        {commonState.activeTab !== 'manifest' && renderReadMeOption()}
+                        {commonState.activeTab !== VIEW_MODE.GUI && (
+                            <Tippy
+                                className="default-tt w-200"
+                                arrow={false}
+                                placement="bottom"
+                                content={getComparisonTippyContent()}
+                            >
+                                {renderComparisonOption(
+                                    commonState.activeTab === VIEW_MODE.MANIFEST
+                                        ? !commonState.isComparisonAvailable ||
+                                              !commonState.deploymentHistoryArr ||
+                                              commonState.deploymentHistoryArr.length === 0
+                                        : !commonState.isComparisonAvailable,
+                                )}
+                            </Tippy>
+                        )}
+                        {commonState.activeTab !== VIEW_MODE.MANIFEST && renderReadMeOption()}
                     </ConditionalWrap>
                 </div>
             </div>
@@ -1263,11 +1316,7 @@ function ChartValuesView({
 
     const renderChartValuesEditor = () => {
         return (
-            <div
-                className={`chart-values-view__editor dc__position-rel ${
-                    commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
-                }`}
-            >
+            <div className="chart-values-view__editor">
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
                     <GenericEmptyState SvgImage={ErrorExclamation} classname="dc__align-reload-center" title="" subTitle={commonState.valuesEditorError} />
 
@@ -1305,15 +1354,13 @@ function ChartValuesView({
                         selectedChartValues={commonState.chartValues}
                     />
                 )}
-                {!commonState.openComparison && !commonState.openReadMe && (
-                    <UpdateApplicationButton
-                        isUpdateInProgress={commonState.isUpdateInProgress}
-                        isDeleteInProgress={commonState.isDeleteInProgress}
-                        isDeployChartView={isDeployChartView}
-                        isCreateValueView={isCreateValueView}
-                        deployOrUpdateApplication={deployOrUpdateApplication}
-                    />
-                )}
+                <UpdateApplicationButton
+                    isUpdateInProgress={commonState.isUpdateInProgress}
+                    isDeleteInProgress={commonState.isDeleteInProgress}
+                    isDeployChartView={isDeployChartView}
+                    isCreateValueView={isCreateValueView}
+                    deployOrUpdateApplication={deployOrUpdateApplication}
+                />
             </div>
         )
     }
@@ -1392,8 +1439,16 @@ function ChartValuesView({
         )
     }
 
+    const getDynamicWrapperClassName = (): string => {
+        if (isDeployChartView) {
+            return 'sub162-vh'
+        }
+        return 'sub189-vh'
+    }
+
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
+        const wrapperClassName = getDynamicWrapperClassName();
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
@@ -1404,7 +1459,7 @@ function ChartValuesView({
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__hr-divider bcn-2" />
-                <div className="chart-values-view__wrapper">
+                <div className={`chart-values-view__wrapper ${wrapperClassName}`}>
                     <div className="chart-values-view__details">
                         {isCreateValueView && (
                             <ValueNameInput
@@ -1480,6 +1535,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
+                                isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
@@ -1487,7 +1543,7 @@ function ChartValuesView({
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
                             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment && (
+                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig?.isOCICompliantChart &&(
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}
@@ -1606,7 +1662,7 @@ function ChartValuesView({
                             (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
                             commonState.installedConfig?.appName
                         }
-                        handleDelete={deleteApplication}
+                        handleDelete={() => deleteApplication(DELETE_ACTION.DELETE)}
                         toggleConfirmation={() => {
                             dispatch({
                                 type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
@@ -1614,7 +1670,7 @@ function ChartValuesView({
                             })
                         }}
                         disableButton={commonState.isDeleteInProgress}
-                        isCreateValueView
+                        isCreateValueView={isCreateValueView}
                     />
                 )}
                 {commonState.forceDeleteData.forceDelete && (

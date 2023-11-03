@@ -4,8 +4,11 @@ import { DeploymentHistorySingleValue } from '../cd.type'
 import { DeploymentHistoryParamsType, DeploymentTemplateHistoryType } from './types'
 import YAML from 'yaml'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
 import { useParams } from 'react-router'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, MODES } from '../../../../../config'
+import Tippy from '@tippyjs/react'
+import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentHistoryDiffView({
     currentConfiguration,
@@ -19,6 +22,8 @@ export default function DeploymentHistoryDiffView({
     const ref = useRef(null)
     const [codeEditorHeight, setCodeEditorHeight] = useState('')
     const { innerHeight } = window
+
+    const [convertVariables, setConvertVariables] = useState(false)
 
     useEffect(() => {
         if (ref.current) {
@@ -37,18 +42,31 @@ export default function DeploymentHistoryDiffView({
         }
     }
 
+    // check if variable snapshot is {} or not
+    const isVariablesAvailable: boolean =
+        Object.keys(baseTemplateConfiguration?.codeEditorValue?.variableSnapshot || {}).length !== 0 ||
+        Object.keys(currentConfiguration?.codeEditorValue?.variableSnapshot || {}).length !== 0
+
+    const editorValuesRHS = convertVariables
+        ? baseTemplateConfiguration?.codeEditorValue?.resolvedValue
+        : baseTemplateConfiguration?.codeEditorValue?.value
+
+    const editorValuesLHS = convertVariables
+        ? currentConfiguration?.codeEditorValue?.resolvedValue
+        : currentConfiguration?.codeEditorValue?.value
+
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
             <CodeEditor
                 value={
                     !baseTemplateConfiguration?.codeEditorValue?.value || isDeleteDraft
                         ? ''
-                        : YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))
+                        : YAML.stringify(JSON.parse(editorValuesRHS))
                 }
                 defaultValue={
                     !currentConfiguration?.codeEditorValue?.value || isUnpublished
                         ? ''
-                        : YAML.stringify(JSON.parse(currentConfiguration.codeEditorValue.value))
+                        : YAML.stringify(JSON.parse(editorValuesLHS))
                 }
                 height={codeEditorHeight}
                 diffView={previousConfigAvailable && true}
@@ -59,6 +77,12 @@ export default function DeploymentHistoryDiffView({
             />
         )
     }
+
+    const handleShowVariablesClick = () => {
+        setConvertVariables(!convertVariables)
+    }
+
+    const tippyMsg = convertVariables ? 'Hide variables values' : 'Show variables values'
 
     const renderDetailedValue = (
         parentClassName: string,
@@ -137,8 +161,23 @@ export default function DeploymentHistoryDiffView({
                         className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom"
                         data-testid="configuration-link-comparison-body-heading"
                     >
-                        {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
+                        <span>{baseTemplateConfiguration?.codeEditorValue?.['displayName']}</span>
+                        {isVariablesAvailable && (
+                            <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
+                                <li className="flex left dc_width-max-content cursor">
+                                    <div className="w-40 h-20">
+                                        <Toggle
+                                            selected={convertVariables}
+                                            color="var(--B500)"
+                                            onSelect={handleShowVariablesClick}
+                                            Icon={ViewVariablesIcon}
+                                        />
+                                    </div>
+                                </li>
+                            </Tippy>
+                        )}
                     </div>
+
                     {renderDeploymentDiffViaCodeEditor()}
                 </div>
             )}
