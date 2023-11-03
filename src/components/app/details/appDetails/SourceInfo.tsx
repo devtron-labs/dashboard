@@ -7,14 +7,12 @@ import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { useParams } from 'react-router'
 import { Nodes, SourceInfoType } from '../../types'
 import Tippy from '@tippyjs/react'
-import ReactGA from 'react-ga4'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { ConditionalWrap, DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
@@ -22,6 +20,7 @@ import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows
 import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
+import AppStatusCard from './AppStatusCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -38,7 +37,7 @@ export function SourceInfo({
     loadingResourceTree = false,
     isVirtualEnvironment,
     setRotateModal = null,
-    refetchDeploymentStatus
+    refetchDeploymentStatus,
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -56,13 +55,6 @@ export function SourceInfo({
         message = conditions[0].message
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message
-    }
-    const showApplicationDetailedModal = (): void => {
-        setDetailed && setDetailed(true)
-        ReactGA.event({
-            category: 'App Details',
-            action: 'App Status clicked',
-        })
     }
 
     const onClickShowCommitInfo = (): void => {
@@ -218,6 +210,7 @@ export function SourceInfo({
     }
 
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
         const paramsId = {
             appId: +params.appId,
@@ -239,77 +232,13 @@ export function SourceInfo({
                     {!isdeploymentAppDeleting && environment && (
                         <div className="flex left w-100">
                             {!isVirtualEnvironment && (
-                                <div
-                                    data-testid="app-status-card"
-                                    onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
-                                    className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 lh-20"
-                                >
-                                    <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                                        {loadingResourceTree ? (
-                                            <div className="icon-dim-32 shimmer-loading" />
-                                        ) : (
-                                            <figure
-                                                className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
-                                                style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
-                                            ></figure>
-                                        )}
-                                    </div>
-                                    <div className="flex left column">
-                                        <div className="flexbox">
-                                            <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
-
-                                            <Tippy
-                                                className="default-tt"
-                                                arrow={false}
-                                                placement="top"
-                                                content="The health status of your app"
-                                            >
-                                                <Question className="icon-dim-16 mt-2" />
-                                            </Tippy>
-                                        </div>
-                                        {loadingResourceTree ? (
-                                            <div className="flex left column mt-6">
-                                                <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
-                                                <div className="shimmer-loading w-54 h-12 br-2" />
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <div
-                                                    data-testid="app-status-name"
-                                                    className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
-                                                >
-                                                    {isHibernated ? 'Hibernating' : status}
-                                                </div>
-                                                <div className="flex left">
-                                                    {appDetails?.deploymentAppType === DeploymentAppTypes.HELM ? (
-                                                        <span
-                                                            data-testid="app-status-card-details"
-                                                            className="cb-5 fw-6"
-                                                        >
-                                                            Details
-                                                        </span>
-                                                    ) : (
-                                                        <>
-                                                            {message && (
-                                                                <span className="select-material-message">
-                                                                    {message.slice(0, 30)}
-                                                                </span>
-                                                            )}
-                                                            <span
-                                                                data-testid="app-status-card-details"
-                                                                className={`${
-                                                                    message?.length > 30 ? 'more-message' : ''
-                                                                } cb-5 fw-6`}
-                                                            >
-                                                                Details
-                                                            </span>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
+                                <AppStatusCard
+                                    appDetails={appDetails}
+                                    status={status}
+                                    loadingResourceTree={loadingResourceTree}
+                                    setDetailed={setDetailed}
+                                    message={message}
+                                />
                             )}
                             {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                             <IssuesCard />

@@ -1,5 +1,5 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
+import { AggregatedNodes, AppDetails, AppStreamData, OptionType } from '../../types'
 import { SyncErrorType } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
@@ -84,9 +84,9 @@ interface DeploymentStatusDetailRow {
     displayText: string
     displaySubText: string
     time: string
-    resourceDetails?: any,
-    isCollapsed?: boolean,
-    kubeList?: {icon: any, message: string}[],
+    resourceDetails?: any
+    isCollapsed?: boolean
+    kubeList?: { icon: any; message: string }[]
     timelineStatus?: string
 }
 export interface DeploymentStatusDetailsBreakdownDataType {
@@ -112,31 +112,31 @@ export interface DeploymentStatusDetailBreakdownType {
     isVirtualEnvironment?: boolean
 }
 
-export interface DeploymentStatusDetailModalType{
-  appName: string
-  environmentName: string
-  deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-  streamData: AppStreamData
-  isVirtualEnvironment: boolean
+export interface DeploymentStatusDetailModalType {
+    appName: string
+    environmentName: string
+    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+    streamData: AppStreamData
+    isVirtualEnvironment: boolean
 }
 
 export interface ModuleConfigResponse extends ResponseType {
-  result?: {
-    enabled: boolean
-  }
+    result?: {
+        enabled: boolean
+    }
 }
 
 export interface ClusterConnectionResponse extends ResponseType {
-  result?: {
-    clusterReachable: boolean
-    clusterName: string,
-  }
+    result?: {
+        clusterReachable: boolean
+        clusterName: string
+    }
 }
 
 export type DeleteResponseType = {
-    clusterName: string,
-    clusterReachable: boolean,
-    deleteInitiated: boolean,
+    clusterName: string
+    clusterReachable: boolean
+    deleteInitiated: boolean
 }
 
 export interface DeploymentStatusDetailRowType {
@@ -157,28 +157,28 @@ export interface ErrorInfoStatusBarType {
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
 
 export interface NodeSelectorsType {
-  logsPaused: boolean
-  logsCleared: boolean
-  socketConnection: SocketConnectionType
-  nodeName?: string
-  selectedNodes?: string
-  isAppDeployment?: boolean
-  containerName?: string
-  selectedContainer?: string
-  nodes: AggregatedNodes
-  shell: { label: string; value: string }
-  isReconnection: boolean
-  nodeItems: OptionType[]
-  setSelectNode: (flag) => void
-  setIsReconnection: (flag) => void
-  selectShell: (shell: { label: string; value: string }) => void
-  setTerminalCleared: (flag: boolean) => void
-  handleLogsPause: (e: any) => void
-  selectNode: (nodeName: string) => void
-  selectContainer: (containerName: string) => void
-  setSocketConnection: (value: SocketConnectionType) => void
-  setLogsCleared: (e: any) => void
-  children?: any
+    logsPaused: boolean
+    logsCleared: boolean
+    socketConnection: SocketConnectionType
+    nodeName?: string
+    selectedNodes?: string
+    isAppDeployment?: boolean
+    containerName?: string
+    selectedContainer?: string
+    nodes: AggregatedNodes
+    shell: { label: string; value: string }
+    isReconnection: boolean
+    nodeItems: OptionType[]
+    setSelectNode: (flag) => void
+    setIsReconnection: (flag) => void
+    selectShell: (shell: { label: string; value: string }) => void
+    setTerminalCleared: (flag: boolean) => void
+    handleLogsPause: (e: any) => void
+    selectNode: (nodeName: string) => void
+    selectContainer: (containerName: string) => void
+    setSocketConnection: (value: SocketConnectionType) => void
+    setLogsCleared: (e: any) => void
+    children?: any
 }
 
 export interface DetailsType {
@@ -196,18 +196,26 @@ export interface DetailsType {
 }
 
 export interface DeletedAppComponentType extends SyncErrorType {
-    resourceTreeFetchTimeOut: boolean,
+    resourceTreeFetchTimeOut: boolean
+}
+
+export interface AppStatusCardType {
+    appDetails: AppDetails
+    status: string
+    loadingResourceTree?: boolean
+    setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+    message: string
 }
 
 export interface DeploymentStatusCardType {
-  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
-  loadingResourceTree?: boolean
-  hideDeploymentStatusLeftInfo?: boolean
-  hideDetails?: boolean
-  deploymentTriggerTime?: string
-  triggeredBy?: string
-  isVirtualEnvironment?: boolean
-  refetchDeploymentStatus: (showTimeline?: boolean)=> void
+    deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+    loadingResourceTree?: boolean
+    hideDeploymentStatusLeftInfo?: boolean
+    hideDetails?: boolean
+    deploymentTriggerTime?: string
+    triggeredBy?: string
+    isVirtualEnvironment?: boolean
+    refetchDeploymentStatus: (showTimeline?: boolean) => void
 }
 
 export interface IssuesCardType {
