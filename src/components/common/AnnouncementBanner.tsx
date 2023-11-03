@@ -16,14 +16,9 @@ export default function AnnouncementBanner({ parentClassName = '' }) {
             getDateInMilliseconds(localStorage.getItem('expiryDateOfHidingAnnouncementBanner'))
         )
     }
-
-    const [showAnouncementBanner, setshowAnouncementBanner] = useState(isAnouncementBanner())
-
-    console.log(
-        getDateInMilliseconds(new Date().valueOf()) <
-            getDateInMilliseconds(localStorage.getItem('expiryDateOfHidingAnnouncementBanner')),
-    )
     const message = window?._env_?.ANNOUNCEMENT_BANNER_MSG
+    const [showAnouncementBanner, setshowAnouncementBanner] = useState(message ? isAnouncementBanner() : false)
+   
     if (!message) {
         return null
     }
