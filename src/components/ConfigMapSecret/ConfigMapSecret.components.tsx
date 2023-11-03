@@ -322,32 +322,30 @@ export function ConfigMapSecretContainer({
             )
         }
         return (
-            ((data && name === data?.name) ||  name === 'create') && (
-                <ConfigMapSecretForm
-                    appChartRef={appChartRef}
-                    updateCollapsed={updateCollapsed}
-                    configMapSecretData={data}
-                    id={id}
-                    componentType={componentType}
-                    update={update}
-                    index={index}
-                    cmSecretStateLabel={cmSecretStateLabel}
-                    isJobView={isJobView}
-                    readonlyView={false}
-                    isProtectedView={isProtected}
-                    draftMode={false}
-                    latestDraftData={
-                        draftData?.draftId
-                            ? {
-                                  draftId: draftData?.draftId,
-                                  draftState: draftData?.draftState,
-                                  draftVersionId: draftData?.draftVersionId,
-                              }
-                            : null
-                    }
-                    reloadEnvironments={reloadEnvironments}
-                />
-            )
+            <ConfigMapSecretForm
+                appChartRef={appChartRef}
+                updateCollapsed={updateCollapsed}
+                configMapSecretData={data}
+                id={id}
+                componentType={componentType}
+                update={update}
+                index={index}
+                cmSecretStateLabel={cmSecretStateLabel}
+                isJobView={isJobView}
+                readonlyView={false}
+                isProtectedView={isProtected}
+                draftMode={false}
+                latestDraftData={
+                    draftData?.draftId
+                        ? {
+                              draftId: draftData?.draftId,
+                              draftState: draftData?.draftState,
+                              draftVersionId: draftData?.draftVersionId,
+                          }
+                        : null
+                }
+                reloadEnvironments={reloadEnvironments}
+            />
         ) 
     }
 
@@ -670,7 +668,7 @@ export function ProtectedConfigMapSecretDetails({
             return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
         }
         return (
-            ((data && name === data?.name) || name === 'create') && <ConfigMapSecretForm
+            <ConfigMapSecretForm
                 appChartRef={appChartRef}
                 updateCollapsed={updateCollapsed}
                 configMapSecretData={getData()}
