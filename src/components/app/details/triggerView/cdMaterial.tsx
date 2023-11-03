@@ -108,7 +108,6 @@ export default function CDMaterial({
     envName,
     closeCDModal,
     triggerType,
-    isApplicationGroupTrigger,
     history,
     isVirtualEnvironment,
     parentEnvironmentName,
@@ -542,13 +541,7 @@ export default function CDMaterial({
 
     const viewAllImages = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
-        if (!isApplicationGroupTrigger) {
-            onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
-        }
-
-        history.push({
-            search: `approval-node=${pipelineId}`,
-        })
+        onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
     }
 
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>
@@ -1064,7 +1057,7 @@ export default function CDMaterial({
                     image={noartifact}
                     title="No eligible image found"
                     subTitle={renderFilterEmptyStateSubtitle()}
-                    isButtonAvailable={noMoreImages}
+                    isButtonAvailable={!noMoreImages}
                     renderButton={renderLoadMoreButton}
                 />
             )

@@ -554,7 +554,6 @@ export default function BulkCDTrigger({
                             envName={selectedApp.envName}
                             closeCDModal={closeBulkCDModal}
                             triggerType={selectedApp.triggerType}
-                            isApplicationGroupTrigger
                             history={history}
                             isLoading={isLoading}
                             parentPipelineId={selectedApp.parentPipelineId}

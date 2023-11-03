@@ -1847,7 +1847,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 envName={node?.environmentName}
                                 closeCDModal={closeCDModal}
                                 triggerType={node?.triggerType}
-                                isApplicationGroupTrigger
                                 history={history}
                                 isVirtualEnvironment={isVirtualEnv}
                                 parentEnvironmentName={node?.parentEnvironmentName}

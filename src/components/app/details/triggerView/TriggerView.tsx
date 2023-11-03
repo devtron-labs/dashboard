@@ -1188,7 +1188,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 envId={node?.environmentId}
                                 closeCDModal={this.closeCDModal}
                                 triggerType={node.triggerType}
-                                isApplicationGroupTrigger={false}
                                 history={this.props.history}
                                 isVirtualEnvironment={node.isVirtualEnvironment}
                                 parentEnvironmentName={node.parentEnvironmentName}

@@ -75,7 +75,6 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
-    isApplicationGroupTrigger?: boolean
     handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, fromRollback?: boolean) => void
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
