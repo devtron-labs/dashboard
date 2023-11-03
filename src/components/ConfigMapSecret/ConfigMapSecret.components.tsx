@@ -226,14 +226,10 @@ export function ConfigMapSecretContainer({
         if (_collapsed !== undefined) {
             toggleCollapse(_collapsed)
         } else {
-            if (collapsed && data?.name) {
-                getData()
-            } else {
-                toggleCollapse(!collapsed)
-                if (!collapsed) {
-                    toggleDraftComments(null)
-                    setDraftData(null)
-                }
+            toggleCollapse(!collapsed)
+            if (!collapsed) {
+                toggleDraftComments(null)
+                setDraftData(null)
             }
         }
 
