@@ -16,7 +16,7 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, DELETE_ACTION, ModuleNameMap, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, FloatingVariablesSuggestions, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
@@ -52,6 +52,8 @@ import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -176,6 +178,8 @@ export default function NewCDPipeline({
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
+    const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
+
 
     useEffect(() => {
         getInit()
@@ -195,6 +199,7 @@ export default function NewCDPipeline({
     }
 
     const getInit = () => {
+        getSecurityModuleStatus()
         Promise.all([
             getDeploymentStrategyList(appId),
             getGlobalVariable(Number(appId), true),
@@ -274,6 +279,15 @@ export default function NewCDPipeline({
             .catch((error) => {
                 showError(error)
             })
+    }
+
+    const getSecurityModuleStatus = async (): Promise<void> => {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                setSecurityModuleInstalled(true)
+            }
+        } catch (error) {}
     }
 
     const calculateLastStepDetail = (
@@ -1028,12 +1042,12 @@ export default function NewCDPipeline({
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} isSecurityModuleInstalled={isSecurityModuleInstalled} />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} isSecurityModuleInstalled={isSecurityModuleInstalled} />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>

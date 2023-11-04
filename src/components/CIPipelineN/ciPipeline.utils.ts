@@ -262,3 +262,5 @@ export const reactSelectStyles = {
         }
     },
 }
+
+export const VulnerabilityScanning = 'Vulnerability Scanning'
