@@ -5,7 +5,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { getDateInMilliseconds } from '../apiTokens/authorization.utils'
 import { setActionWithExpiry } from './helpers/Helpers'
 
-export default function AnnouncementBanner({ parentClassName = '', hideCloseIcon = false }) {
+export default function AnnouncementBanner({ parentClassName = '', isCDMaterial = false }) {
  
     const message = window?._env_?.ANNOUNCEMENT_BANNER_MSG
     const showAnnouncementBanner = (): boolean => {
@@ -42,8 +42,8 @@ export default function AnnouncementBanner({ parentClassName = '', hideCloseIcon
         return (
             <div className="flex">
                 <div>{message}</div>
-                {hideCloseIcon ? (
-                    ''
+                {isCDMaterial ? (
+                    null
                 ) : (
                     <Close className="icon-dim-20 ml-8 fcn-9" onClick={onClickCloseAnnouncememtBanner} />
                 )}
@@ -51,7 +51,7 @@ export default function AnnouncementBanner({ parentClassName = '', hideCloseIcon
         )
     }
 
-    return showAnouncementBanner ? (
+    return (showAnouncementBanner || isCDMaterial) ? (
         <div className={`announcement-banner-container ${parentClassName}`}>
             <InfoColourBar
                 message={renderAnnouncementBanner()}
