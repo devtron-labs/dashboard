@@ -38,6 +38,21 @@ function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
                 <li className="tab-list__tab dc__ellipsis-right fs-13">
                     <NavLink
                         activeClassName="active"
+                        to={`${match.url}/${URLS.APP_OVERVIEW}`}
+                        className="tab-list__tab-link"
+                        onClick={(event) => {
+                            ReactGA.event({
+                                category: 'App',
+                                action: 'App Overview Clicked',
+                            })
+                        }}
+                    >
+                        Overview
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab dc__ellipsis-right fs-13">
+                    <NavLink
+                        activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
                         onClick={(event) => {

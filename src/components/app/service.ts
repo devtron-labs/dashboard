@@ -15,7 +15,7 @@ import {
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, ArtifactsCiJob, CreateAppLabelsRequest } from './types'
+import { AppDetails, ArtifactsCiJob, EditAppRequest } from './types'
 import { DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
@@ -125,16 +125,18 @@ export function fetchAppDetailsInTime(
     appId: number | string,
     envId: number | string,
     reloadTimeOut: number,
+    signal?: AbortSignal
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
 }
 
 export function fetchResourceTreeInTime(
     appId: number | string,
     envId: number | string,
     reloadTimeOut: number,
+    signal?: AbortSignal,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
 }
 
 export function getEvents(pathParams) {
@@ -641,8 +643,12 @@ export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse> 
     return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 
-export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {
-    return post(Routes.APP_LABELS, request)
+export function getHelmAppOverviewInfo(installedAppId: string): Promise<AppMetaInfoResponse> {
+    return get(`${Routes.HELM_APP_OVERVIEW}?installedAppId=${installedAppId}`)
+}
+
+export const editApp = (request: EditAppRequest): Promise<ResponseType> => {
+    return post(Routes.APP_EDIT, request)
 }
 
 export const getIngressServiceUrls = (params: {

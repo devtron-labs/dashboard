@@ -125,6 +125,7 @@ export const selectVariableStyle = {
         display: 'flex',
         height: '32px',
         lineHeight: '26px',
+        flexWrap: 'no-wrap'
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
