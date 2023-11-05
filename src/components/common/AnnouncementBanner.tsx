@@ -6,19 +6,26 @@ import { getDateInMilliseconds } from '../apiTokens/authorization.utils'
 import { setActionWithExpiry } from './helpers/Helpers'
 
 export default function AnnouncementBanner({ parentClassName = '', hideCloseIcon = false }) {
-    const isAnouncementBanner = (): boolean => {
-        if (!localStorage.getItem('expiryDateOfHidingAnnouncementBanner' && localStorage.getItem('isDashboardLoggedIn'))) {
+ 
+    const message = window?._env_?.ANNOUNCEMENT_BANNER_MSG
+    const showAnnouncementBanner = (): boolean => {
+        const expiryDateOfHidingAnnouncementBanner: string = localStorage.getItem(
+            //it will store date and time of next day i.e, it will hide banner until this date
+            'expiryDateOfHidingAnnouncementBanner',
+        )
+        const showAnnouncementBannerNextDay: boolean =
+            typeof Storage !== 'undefined' &&
+            getDateInMilliseconds(localStorage.getItem('dashboardLoginTime')) >
+                getDateInMilliseconds(expiryDateOfHidingAnnouncementBanner)
+
+        if (showAnnouncementBannerNextDay && !expiryDateOfHidingAnnouncementBanner) {
             return true
         }
 
-        return (
-            getDateInMilliseconds(new Date().valueOf()) >
-            getDateInMilliseconds(localStorage.getItem('expiryDateOfHidingAnnouncementBanner'))
-        )
+        return getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiryDateOfHidingAnnouncementBanner)
     }
 
-    const message = window?._env_?.ANNOUNCEMENT_BANNER_MSG
-    const [showAnouncementBanner, setshowAnouncementBanner] = useState(message ? isAnouncementBanner() : false)
+    const [showAnouncementBanner, setshowAnouncementBanner] = useState(message ? showAnnouncementBanner() : false)
 
     if (!message) {
         return null
