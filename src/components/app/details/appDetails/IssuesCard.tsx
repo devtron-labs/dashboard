@@ -27,7 +27,7 @@ export const IssuesCard = ({ hideDetails }: IssuesCardType) => {
                         </div>
                     </div>
                 </div>
-                <Error className="form__icon--error app-details-info-card__top-container__error-icon" />
+                <Error className="form__icon--error icon-dim-24" />
             </div>
             <div className="app-details-info-card__bottom-container">
                 {/* @TODO: Get these error titles from api response */}

@@ -7,6 +7,7 @@ import { DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
 
 const AppStatusCard = ({ appDetails, status, loadingResourceTree, setDetailed, message }: AppStatusCardType) => {
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+    const displayMessage = message && appDetails?.deploymentAppType === DeploymentAppTypes.HELM
 
     const showApplicationDetailedModal = (): void => {
         setDetailed && setDetailed(true)
@@ -19,7 +20,7 @@ const AppStatusCard = ({ appDetails, status, loadingResourceTree, setDetailed, m
     const renderBottomContainer = () => {
         return (
             <>
-                {message && appDetails?.deploymentAppType === DeploymentAppTypes.HELM && (
+                {displayMessage && (
                     <div className="app-details-info-card__bottom-container__message fs-12 fw-4">
                         {message.slice(0, 30)}
                     </div>
@@ -33,7 +34,9 @@ const AppStatusCard = ({ appDetails, status, loadingResourceTree, setDetailed, m
         <div
             data-testid="app-status-card"
             onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
-            className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-250"
+            className={`app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 ${
+                displayMessage ? 'w-250' : 'w-200'
+            }`}
         >
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
