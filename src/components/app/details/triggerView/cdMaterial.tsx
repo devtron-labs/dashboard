@@ -109,7 +109,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             searchText: this.props.searchImageTag ?? '',
             showConfiguredFilters: false,
             filterView: FilterConditionViews.ELIGIBLE,
-            isSuperAdmin:false,
+            isSuperAdmin: this.props.isSuperAdmin ?? false,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -194,13 +194,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             ? this.state.selectedMaterial.wfrId
             : this.props.material?.find((_mat) => _mat.isSelected)?.wfrId
     }
+
     async initialise() {
-        try {
-            const userRole =  await getUserRole()
-            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
-            this.setState({isSuperAdmin:superAdmin})
-        } catch (err) {
-            showError(err)
+        if (!this.props.isSuperAdmin) {
+            try {
+                const userRole =  await getUserRole()
+                const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+                this.setState({isSuperAdmin:superAdmin})
+            } catch (err) {
+                showError(err)
+            }
         }
     }
 
@@ -804,7 +807,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 forceReInit
                                 hideHardDelete={this.props.hideImageTaggingHardDelete}
                                 updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
-                                isSuperAdmin={this.props.isSuperAdmin}
+                                isSuperAdmin={this.state.isSuperAdmin}
                             />
                         </div>
                     </div>
