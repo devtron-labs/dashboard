@@ -16,6 +16,7 @@ function NodeTreeDetailTab({
     externalLinks,
     monitoringTools,
     isDevtronApp = false,
+    isExternalApp
 }: NodeTreeDetailTabProps) {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path, url } = useRouteMatch()
@@ -26,7 +27,7 @@ function NodeTreeDetailTab({
     useEffect(() => {
         const _pods = IndexStore.getNodesByKind(NodeType.Pod)
         const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0
-        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL)
+        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL, isExternalApp)
     }, [params.appId, params.envId])
 
     const handleFocusTabs = () => {
@@ -44,6 +45,7 @@ function NodeTreeDetailTab({
                         setLogSearchTerms={setLogSearchTerms}
                         tabRef={tabRef}
                         appType={appDetails.appType}
+                        isExternalApp={isExternalApp}
                     />
                     <Switch>
                         <Route

@@ -180,6 +180,7 @@ const AppDetailsComponent = ({
                 appDetails={appDetails}
                 externalLinks={externalLinks}
                 monitoringTools={monitoringTools}
+                isExternalApp={isExternalApp}
             />
         )
     }

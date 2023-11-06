@@ -431,6 +431,7 @@ export interface TerminalComponentProps {
 export interface NodeTreeTabListProps extends LogSearchTermType {
     tabRef?: MutableRefObject<HTMLDivElement>
     appType?: string
+    isExternalApp?: boolean
 }
 
 export interface OptionsBase {
@@ -502,6 +503,7 @@ export interface NodeTreeDetailTabProps {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
+    isExternalApp?: boolean
 }
 
 export interface K8ResourceComponentProps {

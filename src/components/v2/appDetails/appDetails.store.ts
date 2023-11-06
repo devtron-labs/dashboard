@@ -44,6 +44,7 @@ const AppDetailsStore = {
         _url: string,
         displayLogAnalyzer: boolean,
         isLogAnalyserURL: boolean,
+        isExternalApp?: boolean,
         isResourceBrowserView?: boolean,
         nodeType?: string,
     ) => {
@@ -58,8 +59,7 @@ const AppDetailsStore = {
                 AppDetailsTabs.k8s_Resources,
             ),
         )
-
-        if (displayLogAnalyzer) {
+        if (displayLogAnalyzer && !isExternalApp) {
             aots.push(
                 addAOT(
                     AppDetailsTabs.log_analyzer,
