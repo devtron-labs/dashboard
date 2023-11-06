@@ -1435,10 +1435,9 @@ export default function CDMaterial({
                                     matId={mat.id}
                                     appId={appId}
                                     pipelineId={pipelineId}
-                                    stageType={stageType}
                                     requestedUserId={requestedUserId}
                                     userApprovalMetadata={mat.userApprovalMetadata}
-                                    onClickCDMaterial={onClickCDMaterial}
+                                    reloadMaterials={reloadMaterials}
                                 />
                             ) : (
                                 <div />
@@ -1490,9 +1489,8 @@ export default function CDMaterial({
                                         matId={mat.id}
                                         appId={appId}
                                         pipelineId={pipelineId}
-                                        stageType={stageType}
                                         userApprovalMetadata={mat.userApprovalMetadata}
-                                        onClickCDMaterial={onClickCDMaterial}
+                                        reloadMaterials={reloadMaterials}
                                     />
 
                                     {mat.filterState !== FilterStates.ALLOWED && (
@@ -1548,9 +1546,8 @@ export default function CDMaterial({
                                                 matId={mat.id}
                                                 appId={appId}
                                                 pipelineId={pipelineId}
-                                                stageType={stageType}
                                                 userApprovalMetadata={mat.userApprovalMetadata}
-                                                onClickCDMaterial={onClickCDMaterial}
+                                                reloadMaterials={reloadMaterials}
                                             />
 
                                             {mat.filterState !== FilterStates.ALLOWED && (
