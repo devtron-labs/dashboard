@@ -186,12 +186,12 @@ export default function NavigationRoutes() {
         }
 
         if (typeof Storage !== 'undefined') {
+            setActionWithExpiry('dashboardLoginTime', 0)
             if (localStorage.isDashboardLoggedIn) return
             dashboardLoggedIn()
                 .then((response) => {
                     if (response.result) {
                         localStorage.isDashboardLoggedIn = true
-                        setActionWithExpiry('dashboardLoginTime', 0)
                     }
                 })
                 .catch((errors) => {})
