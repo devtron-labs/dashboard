@@ -527,7 +527,10 @@ function DockerForm({
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL)
                     ? customState.repositoryList?.value.split(',') || []
                     : null,
-            registryUrl: customState.registryUrl.value.replace(/^https?:\/\//, '').replace(/^oci?:\/\//, ''),
+            registryUrl: customState.registryUrl.value.replace(/^https?:\/\//, '')
+                .replace(/^oci?:\/\//, '')
+                .replace(/^docker?:\/\//, '')
+                .replace(/^http?:\/\//, ''),
             ...(selectedDockerRegistryType.value === RegistryType.ECR
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value?.trim(),
