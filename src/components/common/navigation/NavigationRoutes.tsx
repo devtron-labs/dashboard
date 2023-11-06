@@ -23,7 +23,7 @@ import {
     getModuleInfo,
     getServerInfo,
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { importComponentFromFELibrary } from '../helpers/Helpers'
+import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
@@ -186,6 +186,7 @@ export default function NavigationRoutes() {
         }
 
         if (typeof Storage !== 'undefined') {
+            setActionWithExpiry('dashboardLoginTime', 0)
             if (localStorage.isDashboardLoggedIn) return
             dashboardLoggedIn()
                 .then((response) => {
