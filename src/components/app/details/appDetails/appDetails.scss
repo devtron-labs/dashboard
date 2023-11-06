@@ -1910,7 +1910,6 @@ table.resource-tree {
     align-items: flex-start;
     flex-direction: column;
     overflow: hidden;
-    width: 200px;
 
     &__top-container {
         align-items: flex-start;
@@ -1952,10 +1951,12 @@ table.resource-tree {
     }
 
     &__bottom-container {
+        display: flex;
         border-color: var(--N100);
         border-top-style: solid;
         border-top-width: 1px;
         padding: 8px 12px;
+        width: 100%;
 
         // @TODO: this can be re-named to a more generic name
         &__message {

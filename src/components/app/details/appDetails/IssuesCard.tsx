@@ -7,7 +7,7 @@ import { IssuesCardType } from './appDetails.type'
 
 export const IssuesCard = ({ hideDetails }: IssuesCardType) => {
     return (
-        <div data-testid="issues-card" className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20">
+        <div data-testid="issues-card" className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200">
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
@@ -29,7 +29,7 @@ export const IssuesCard = ({ hideDetails }: IssuesCardType) => {
                 </div>
                 <Error className="form__icon--error app-details-info-card__top-container__error-icon" />
             </div>
-            <div className="app-details-info-card__bottom-container flex">
+            <div className="app-details-info-card__bottom-container">
                 {/* @TODO: Get these error titles from api response */}
                 <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
                     SyncError, OutOfSyncError
