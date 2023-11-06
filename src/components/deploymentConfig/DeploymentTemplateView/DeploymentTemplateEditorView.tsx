@@ -6,7 +6,7 @@ import {
     DeploymentTemplateEditorViewProps,
     CompareApprovalAndDraftSelectedOption,
 } from '../types'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getApprovalPendingOption } from '../constants'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
 import { versionComparator } from '../../common'
 import { SortingOrder } from '../../app/types'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
@@ -24,6 +24,7 @@ import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { useParams } from 'react-router-dom'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
+import { toast } from 'react-toastify'
 
 export default function DeploymentTemplateEditorView({
     isEnvOverride,
@@ -35,6 +36,8 @@ export default function DeploymentTemplateEditorView({
     editorOnChange,
     handleOverride,
     isValues,
+    convertVariables,
+    setConvertVariables,
     groupedData,
 }: DeploymentTemplateEditorViewProps) {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
@@ -53,6 +56,9 @@ export default function DeploymentTemplateEditorView({
     const [selectedOptionDraft, setSelectedOptionDraft] = useState<CompareApprovalAndDraftSelectedOption>(
         getApprovalPendingOption(state.selectedChart?.version),
     )
+    const [resolvedValuesLHS, setResolvedValuesLHS] = useState(null)
+    const [resolvedValuesRHS, setResolvedValuesRHS] = useState(null)
+    const [resolveLoading, setResolveLoading] = useState(false)
 
     const getLocalDaftManifest = async () => {
         const request = {
@@ -67,8 +73,20 @@ export default function DeploymentTemplateEditorView({
         return response.result.data
     }
 
+    const resolveVariables = async (value: string) => {
+        const request = {
+            appId: +appId,
+            chartRefId: state.selectedChartRefId,
+            values: value,
+            valuesAndManifestFlag: 1,
+        }
+        const response = await getDeploymentManisfest(request)
+
+        return { resolvedData: response.result.resolvedData, variableSnapshot: response.result.variableSnapshot }
+    }
+
     useEffect(() => {
-        if (!showDraftData) return
+        if (!showDraftData || isValues) return // hit api only when manifest is selected, for values use local states.
         setDraftLoading(true)
         getLocalDaftManifest()
             .then((data) => {
@@ -141,7 +159,8 @@ export default function DeploymentTemplateEditorView({
                 ? !state.fetchedValues[state.selectedCompareOption.id]
                 : !state.fetchedValuesManifest[state.selectedCompareOption.id]) && // check if present in respective cache
             !state.chartConfigLoading &&
-            !fetchingValues
+            !fetchingValues &&
+            !convertVariables
         ) {
             setFetchingValues(true)
 
@@ -252,16 +271,45 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
+    useEffect(() => {
+        if (!convertVariables) return
+        setResolveLoading(true)
+        Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
+            .then(([lhs, rhs]) => {
+                if (
+                    Object.keys(lhs.variableSnapshot || {}).length === 0 &&
+                    Object.keys(rhs.variableSnapshot || {}).length === 0
+                ) {
+                    setConvertVariables(false)
+                    toast.error(NO_SCOPED_VARIABLES_MESSAGE)
+                }
+                setResolvedValuesLHS(lhs.resolvedData)
+                setResolvedValuesRHS(rhs.resolvedData)
+            })
+            .catch((err) => {
+                showError(err)
+            })
+            .finally(() => {
+                setResolveLoading(false)
+            })
+    }, [convertVariables, selectedOptionDraft])
+
     // choose LHS value for comparison
     const selectedOptionId = state.selectedCompareOption?.id
     const isIdMatch = selectedOptionId === -1
     const source = isValues ? state.fetchedValues : state.fetchedValuesManifest
     const valueLHS = isIdMatch ? defaultValue : source[selectedOptionId] // fetch LHS data from respective cache store
 
+    // final value for LHS
+    const lhs = convertVariables ? resolvedValuesLHS : valueLHS
+
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
     const selectedData = isValues ? state.tempFormData || state.draftValues : draftManifestData
     const valueRHS = shouldUseDraftData ? selectedData : value
+
+    // final value for RHS
+    const rhs = convertVariables ? resolvedValuesRHS : valueRHS
 
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header
@@ -303,6 +351,7 @@ export default function DeploymentTemplateEditorView({
                             globalChartRef={globalChartRef}
                             isValues={isValues}
                             groupedData={groupedData}
+                            setConvertVariables={setConvertVariables}
                         />
                         {!isDeleteDraftState &&
                             isEnvOverride &&
@@ -371,13 +420,18 @@ export default function DeploymentTemplateEditorView({
             }`}
         >
             <CodeEditor
-                defaultValue={valueLHS}
-                value={valueRHS}
+                defaultValue={lhs}
+                value={rhs}
                 onChange={editorOnChange}
                 mode={MODES.YAML}
                 validatorSchema={state.schema}
                 loading={
-                    state.chartConfigLoading || value === undefined || value === null || fetchingValues || draftLoading
+                    state.chartConfigLoading ||
+                    value === undefined ||
+                    value === null ||
+                    fetchingValues ||
+                    draftLoading ||
+                    resolveLoading
                 }
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}

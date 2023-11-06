@@ -143,11 +143,11 @@ export const DEPLOYMENT_TEMPLATE_LABELS_KEYS = {
     },
 }
 
-export const getDeploymentConfigDropdownStyles = (overridden:boolean) => {
+export const getDeploymentConfigDropdownStyles = (overridden: boolean) => {
     return {
         control: (base) => ({
             ...base,
-            backgroundColor: `${overridden ? 'var(--Y100)': 'var(--N100)'}`,
+            backgroundColor: `${overridden ? 'var(--Y100)' : 'var(--N100)'}`,
             border: 'none',
             boxShadow: 'none',
             minHeight: '32px',
@@ -184,16 +184,18 @@ export const getDeploymentConfigDropdownStyles = (overridden:boolean) => {
     }
 }
 
-export const getApprovalPendingOption = (selectedChartVersion:string) => {
+export const getApprovalPendingOption = (selectedChartVersion: string) => {
     return {
         id: 0,
         label: `Approval Pending (v${selectedChartVersion})`,
     }
 }
 
-export const getDraftOption = (selectedChartVersion:string, isValues:boolean) => {
+export const getDraftOption = (selectedChartVersion: string, isValues: boolean) => {
     return {
         id: 1,
         label: `${isValues ? 'Values' : 'Manifest'} from draft (v${selectedChartVersion})`,
     }
 }
+
+export const NO_SCOPED_VARIABLES_MESSAGE = 'No valid variable found on this page'

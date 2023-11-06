@@ -15,7 +15,6 @@ import {
     DeploymentChartOptionType,
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
-    DropdownContainerProps,
     DropdownItemProps,
 } from '../types'
 import {
@@ -126,6 +125,7 @@ export const CompareWithDropdown = ({
     globalChartRef,
     isValues,
     groupedData,
+    setConvertVariables,
 }: CompareWithDropdownProps) => {
     const [groupedOptions, setGroupedOptions] = useState([
         {
@@ -206,6 +206,7 @@ export const CompareWithDropdown = ({
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
+        setConvertVariables(false)
         setSelectedOption(selected)
     }
 
@@ -511,25 +512,15 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
     )
 }
 
-export function DropdownContainer({ isOpen, onClose, children }: DropdownContainerProps) {
-    if (!isOpen) {
-        return null
-    }
-
-    return (
-        <div className="dc__transparent-div" onClick={onClose}>
-            <div className="flex-col bcn-0 w-204 h-72 dc__position-abs dc__top-119 dc__border-radius-4-imp dc__left-405 dc__border dc__zi-20 config-toolbar-dropdown-shadow">
-                <div className="pt-4 pb-4 pl-0 pr-0">{children}</div>
-            </div>
-        </div>
-    )
-}
-
-export function DropdownItem({ label, isValues, onClick }: DropdownItemProps) {
+export function DropdownItem({ label, onClick, index, isValues }: DropdownItemProps) {
+    const isSelected = (index === 1 && isValues) || (index === 2 && !isValues)
     return (
         <div
-            className={`dc__content-start cursor pt-6 pb-6 pr-8 pl-8 fs-13 ${isValues ? 'fw-6 bcb-1' : 'fw-n cn-9'}`}
+            className={`dc__content-start cursor pt-6 pb-6 pr-8 pl-8 fs-13 ${
+                isSelected ? 'fw-6 bcb-1 cb-5' : 'fw-n cn-9'
+            }`}
             onClick={onClick}
+            data-testid="dropdown-item"
         >
             {label}
         </div>

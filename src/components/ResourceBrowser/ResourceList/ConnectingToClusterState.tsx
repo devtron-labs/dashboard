@@ -113,7 +113,7 @@ export default function ConnectingToClusterState({
     const renderClusterState = () => {
         return (
             <div
-                className="flex column dc__text-center bcn-0"
+                className="flex column dc__text-center"
                 style={{
                     height: 'calc(100vh - 152px)',
                 }}

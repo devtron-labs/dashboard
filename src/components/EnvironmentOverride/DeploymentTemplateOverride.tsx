@@ -500,6 +500,7 @@ export default function DeploymentTemplateOverride({
                         manifestDataLHS={state.manifestDataLHSOverride}
                         setManifestDataRHS={setManifestDataRHSOverride}
                         setManifestDataLHS={setManifestDataLHSOverride}
+                        convertVariablesOverride={state.convertVariablesOverride}
                     />
                 )}
             </div>

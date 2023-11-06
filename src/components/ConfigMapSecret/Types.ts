@@ -81,6 +81,7 @@ export interface ConfigMapListProps {
     parentState?: ComponentStates
     setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
     reloadEnvironments?: () => void
+    clusterId?: string
 }
 
 export interface ConfigMapSecretFormProps {

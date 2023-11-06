@@ -286,24 +286,25 @@ function ChartDeploymentHistory({
                                     className="w-100"
                                     style={{
                                         height: '64px',
-                                        display: 'grid',
+                                        display: installedAppInfo ? 'grid' : 'flex',
                                         gridTemplateColumns: '20px 1fr',
                                         padding: '12px 16px',
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div
-                                        className={`dc__app-summary__icon icon-dim-22 ${
-                                            deployment?.status &&
-                                            installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS || installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
-                                                ? deployment?.status.toLowerCase()
-                                                : ''
-                                        } ${
-                                            installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
-                                                ? helmDeploymentStatus
-                                                : ''
-                                        }`}
-                                    ></div>
+                                    {installedAppInfo ? 
+                                        <div
+                                            className={`dc__app-summary__icon icon-dim-22 ${
+                                                deployment?.status &&
+                                                installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS || installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+                                                    ? deployment?.status.toLowerCase()
+                                                    : ''
+                                            } ${
+                                                installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
+                                                    ? helmDeploymentStatus
+                                                    : ''
+                                            }`}
+                                        ></div> : ''}
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14" data-testid = "chart-deployment-time">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
