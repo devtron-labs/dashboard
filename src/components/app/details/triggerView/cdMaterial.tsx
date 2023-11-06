@@ -135,6 +135,8 @@ export default function CDMaterial({
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
+    const isConsumedImageAvailable = useRef<boolean>(false)
+
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, materialsResult, materialsError, reloadMaterials] = useAsync(
         () =>
@@ -179,6 +181,7 @@ export default function CDMaterial({
     const requestedUserId = materialsResult?.requestedUserId ?? ''
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
+    const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
 
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
@@ -285,6 +288,10 @@ export default function CDMaterial({
                     setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
 
                     setMaterial(_newMaterials)
+                    // Setting isConsumedImageAvailable to true if any of the image is consumed
+                    isConsumedImageAvailable.current = _newMaterials.some(
+                        (materialItem) => materialItem.deployed && materialItem.latest,
+                    )
 
                     getSecurityModuleStatus()
                     // NOTE: Would be better if move rollback out
@@ -307,6 +314,10 @@ export default function CDMaterial({
                 setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
 
                 setMaterial(materialsResult.materials)
+                // Setting isConsumedImageAvailable to true if any of the image is consumed
+                isConsumedImageAvailable.current = materialsResult.materials.some(
+                    (materialItem) => materialItem.deployed && materialItem.latest,
+                )
 
                 getSecurityModuleStatus()
 
@@ -913,7 +924,7 @@ export default function CDMaterial({
                 stageType,
                 abortControllerRef.current.signal,
                 {
-                    offset: material.length,
+                    offset: material.length - Number(isConsumedImageAvailable.current),
                     size: 20,
                     search: searchImageTag,
                 },
@@ -1342,7 +1353,7 @@ export default function CDMaterial({
                     Security Issues Found
                 </span>
             )
-        } else if (disableSelection || isImageApprover) {
+        } else if (disableSelection || (!canApproverDeploy && isImageApprover)) {
             return (
                 <Tippy
                     className="default-tt w-200"
