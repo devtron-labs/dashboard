@@ -7,10 +7,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { AppCreationType, repoType } from '../../config/constants'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 
 function GitManagment({ setRepoURL: string }) {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
