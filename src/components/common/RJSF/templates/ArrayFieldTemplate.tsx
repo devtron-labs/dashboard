@@ -1,47 +1,53 @@
 import React from 'react'
 import { getTemplate, getUiOptions, ArrayFieldTemplateProps, ArrayFieldTemplateItemType } from '@rjsf/utils'
+import { FieldRowWithLabel } from '../common/FieldRow'
 
-export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
-    const {
-        canAdd,
-        className,
-        disabled,
-        idSchema,
-        uiSchema,
-        items,
-        onAddClick,
-        readonly,
-        registry,
-        required,
-        schema,
-        title,
-    } = props
-    const uiOptions = getUiOptions(uiSchema)
-    const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate'>('ArrayFieldItemTemplate', registry, uiOptions)
-    const TitleFieldTemplate = getTemplate<'TitleFieldTemplate'>('TitleFieldTemplate', registry, uiOptions)
+const ActionButton = ({ canAdd, onAddClick, disabled, readonly, uiSchema, registry }) => {
     const {
         ButtonTemplates: { AddButton },
     } = registry.templates
+
+    return (
+        canAdd && (
+            <AddButton onClick={onAddClick} disabled={disabled || readonly} uiSchema={uiSchema} registry={registry} />
+        )
+    )
+}
+
+export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
+    const { canAdd, className, disabled, idSchema, uiSchema, items, onAddClick, readonly, registry, required, title } =
+        props
+    const uiOptions = getUiOptions(uiSchema)
+    const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate'>('ArrayFieldItemTemplate', registry, uiOptions)
+
     return (
         <fieldset className={className} id={idSchema.$id}>
-            <TitleFieldTemplate
-                id={idSchema.$id}
-                title={uiOptions.title || title}
-                required={required}
-                schema={schema}
-                uiSchema={uiSchema}
-                registry={registry}
-            />
-            {items?.map(({ key, ...itemProps }: ArrayFieldTemplateItemType) => (
-                <ArrayFieldItemTemplate key={key} {...itemProps} />
-            ))}
-            {canAdd && (
-                <AddButton
-                    onClick={onAddClick}
-                    disabled={disabled || readonly}
-                    uiSchema={uiSchema}
-                    registry={registry}
-                />
+            {/* Show the label here in case there are no items, otherwise handled by Field Template */}
+            {items.length ? (
+                <>
+                    {items?.map(({ key, ...itemProps }: ArrayFieldTemplateItemType) => (
+                        <ArrayFieldItemTemplate key={key} {...itemProps} />
+                    ))}
+                    <ActionButton
+                        canAdd={canAdd}
+                        onAddClick={onAddClick}
+                        disabled={disabled}
+                        readonly={readonly}
+                        uiSchema={uiSchema}
+                        registry={registry}
+                    />
+                </>
+            ) : (
+                <FieldRowWithLabel label={title} required={required} showLabel id={idSchema.$id}>
+                    <ActionButton
+                        canAdd={canAdd}
+                        onAddClick={onAddClick}
+                        disabled={disabled}
+                        readonly={readonly}
+                        uiSchema={uiSchema}
+                        registry={registry}
+                    />
+                </FieldRowWithLabel>
             )}
         </fieldset>
     )

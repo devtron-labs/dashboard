@@ -8,7 +8,7 @@ export const AddButton = ({ icon, iconType, registry, uiSchema, ...props }: Icon
         <button
             {...props}
             type="button"
-            className="dc__outline-none-imp p-0 dc__transparent flex dc__gap-4"
+            className="dc__outline-none-imp p-0 dc__transparent flex dc__gap-4 cursor"
             title="Add"
         >
             <PlusIcon className="icon-dim-16 fcb-5" />
