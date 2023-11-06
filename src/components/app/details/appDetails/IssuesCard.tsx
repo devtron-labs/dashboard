@@ -42,4 +42,4 @@ export const IssuesCard = ({ hideDetails }: IssuesCardType) => {
     )
 }
 
-export default IssuesCard
+export default React.memo(IssuesCard)

@@ -83,4 +83,4 @@ const AppStatusCard = ({ appDetails, status, loadingResourceTree, setDetailed, m
     )
 }
 
-export default AppStatusCard
+export default React.memo(AppStatusCard)
