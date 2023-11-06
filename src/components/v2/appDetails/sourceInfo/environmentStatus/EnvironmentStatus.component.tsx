@@ -15,9 +15,9 @@ import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
 import { DeploymentAppTypes, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import { EnvironmentStatusComponentType } from '../environment.type'
 import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
+import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -40,7 +40,6 @@ function EnvironmentStatusComponent({
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
-    const hideDeploymentStatusLeftInfo = appDetails?.deploymentAppType === DeploymentAppTypes.HELM // Todo test for helm/gitops app details
 
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
@@ -146,13 +145,10 @@ function EnvironmentStatusComponent({
     const renderLastUpdatedBlock = () => {
         return (
             appDetails?.lastDeployedTime && appDetails?.appType !== "external_helm_chart" && (
-                <DeploymentStatusCard
+                <LastUpdatedCard
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}
                     deploymentTriggerTime={appDetails?.lastDeployedTime}
                     triggeredBy={appDetails?.lastDeployedBy}
-                    isVirtualEnvironment={isVirtualEnvironment}
-                    refetchDeploymentStatus={refetchDeploymentStatus}
                 />
             )
         )
