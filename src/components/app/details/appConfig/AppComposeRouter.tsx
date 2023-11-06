@@ -109,7 +109,7 @@ export default function AppComposeRouter({
                     />,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
-                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?/:name?`}
+                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                         render={(props) => (
                             <EnvironmentOverride
                                 environments={environments}
