@@ -6,7 +6,7 @@ import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-c
 
 const DeployedCommitCard = () => {
     return (
-        <div data-testid="deployed-commit-card" className="app-details-info-card flex left bcn-0 br-8 mr-12">
+        <div data-testid="deployed-commit-card" className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200">
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
@@ -29,7 +29,7 @@ const DeployedCommitCard = () => {
                 </div>
                 <GitHub className="github-icon" />
             </div>
-            <div className="app-details-info-card__bottom-container flex">
+            <div className="app-details-info-card__bottom-container">
                 {/* @TODO: Get this commit message from the api response */}
                 <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
                     Update Dockerfile Resetting Docker file
