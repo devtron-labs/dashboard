@@ -401,6 +401,7 @@ export interface NodeDetailPropsType extends LogSearchTermType {
     addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
     selectedResource?: SelectedResourceType
     removeTabByIdentifier?: (id: string) => string
+    isExternalApp?: boolean
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {

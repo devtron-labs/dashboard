@@ -70,6 +70,7 @@ function NodeTreeDetailTab({
                                     <NodeDetailComponent
                                         logSearchTerms={logSearchTerms}
                                         setLogSearchTerms={setLogSearchTerms}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
