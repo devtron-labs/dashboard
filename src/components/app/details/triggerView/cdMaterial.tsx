@@ -87,6 +87,7 @@ import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
+import AnnouncementBanner from '../../../common/AnnouncementBanner'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -133,9 +134,10 @@ export default function CDMaterial({
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))
+    // It is derived from materialResult and can be fixed as a constant fix this
+    const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
-    const isConsumedImageAvailable = useRef<boolean>(false)
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, materialsResult, materialsError, reloadMaterials] = useAsync(
@@ -288,10 +290,12 @@ export default function CDMaterial({
                     setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
 
                     setMaterial(_newMaterials)
-                    // Setting isConsumedImageAvailable to true if any of the image is consumed
-                    isConsumedImageAvailable.current = _newMaterials.some(
-                        (materialItem) => materialItem.deployed && materialItem.latest,
-                    )
+                    const _isConsumedImageAvailable =
+                        _newMaterials.some(
+                            (materialItem) => materialItem.deployed && materialItem.latest,
+                        ) ?? false
+
+                    setIsConsumedImageAvailable(_isConsumedImageAvailable)
 
                     getSecurityModuleStatus()
                     // NOTE: Would be better if move rollback out
@@ -314,10 +318,11 @@ export default function CDMaterial({
                 setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
 
                 setMaterial(materialsResult.materials)
-                // Setting isConsumedImageAvailable to true if any of the image is consumed
-                isConsumedImageAvailable.current = materialsResult.materials.some(
-                    (materialItem) => materialItem.deployed && materialItem.latest,
-                )
+                const _isConsumedImageAvailable =
+                    materialsResult.materials?.some((materialItem) => materialItem.deployed && materialItem.latest) ??
+                    false
+
+                setIsConsumedImageAvailable(_isConsumedImageAvailable)
 
                 getSecurityModuleStatus()
 
@@ -924,7 +929,7 @@ export default function CDMaterial({
                 stageType,
                 abortControllerRef.current.signal,
                 {
-                    offset: material.length - Number(isConsumedImageAvailable.current),
+                    offset: material.length - Number(isConsumedImageAvailable),
                     size: 20,
                     search: searchImageTag,
                 },
@@ -1004,12 +1009,17 @@ export default function CDMaterial({
     }
 
     const getTriggerBodyHeight = (isApprovalConfigured: boolean) => {
+        const subHeight = window?._env_?.ANNOUNCEMENT_BANNER_MSG ? 37 : 0
+
         if (state.showConfigDiffView) {
-            return 'calc(100vh - 141px)'
-        } else if (isApprovalConfigured && (state.isRollbackTrigger || material.length > 1)) {
-            return 'calc(100vh - 156px)'
+            return `calc(100vh - 141px - ${subHeight}px)`
+        } else if (
+            isApprovalConfigured &&
+            (state.isRollbackTrigger || material.length - Number(isConsumedImageAvailable) > 0)
+        ) {
+            return `calc(100vh - 156px - ${subHeight}px)`
         } else {
-            return 'calc(100vh - 116px)'
+            return `calc(100vh - 116px - ${subHeight}px)`
         }
     }
 
@@ -2076,15 +2086,21 @@ export default function CDMaterial({
                 </button>
             </div>
 
-            {/* FIXME: This material.length>1 needs to be optimised */}
-            {isApprovalConfigured && ApprovedImagesMessage && (state.isRollbackTrigger || material.length > 1) && (
-                <InfoColourBar
-                    message={<ApprovedImagesMessage viewAllImages={viewAllImages} />}
-                    classname="info_bar dc__no-border-radius dc__no-top-border"
-                    Icon={InfoIcon}
-                    iconClass="icon-dim-20"
-                />
+            {!state.showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
+                <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
             )}
+
+            {/* FIXME: This material.length>1 needs to be optimised */}
+            {isApprovalConfigured &&
+                ApprovedImagesMessage &&
+                (state.isRollbackTrigger || material.length - Number(isConsumedImageAvailable) > 0) && (
+                    <InfoColourBar
+                        message={<ApprovedImagesMessage viewAllImages={viewAllImages} />}
+                        classname="info_bar dc__no-border-radius dc__no-top-border"
+                        Icon={InfoIcon}
+                        iconClass="icon-dim-20"
+                    />
+                )}
             {renderTriggerBody(isApprovalConfigured)}
             {renderTriggerModalCTA(isApprovalConfigured)}
         </>
