@@ -1551,6 +1551,7 @@ function ChartValuesView({
                                     handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
                                     isDeployChartView={isDeployChartView}
                                     allowedDeploymentTypes={allowedDeploymentTypes}
+                                    // appMetaInfoGitUrl={appMetaInfoGitUrl}
                                 />
                             )}
                         {/**

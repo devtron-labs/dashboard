@@ -102,7 +102,7 @@ export default function AppComposeRouter({
                         key={`${path}/${URLS.GIT_OPS_CONFIG}`}
                         path={`${path}/${URLS.GIT_OPS_CONFIG}`}
                         render={()=>(
-                            <GitManagment />
+                            <GitManagment setRepoURL={path} />
                         )}        
                     />,
                     <Route

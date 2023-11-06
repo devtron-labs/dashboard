@@ -90,10 +90,11 @@ export interface DeploymentAppSelectorType {
     handleDeploymentAppTypeSelection?: (event) => void
     isDeployChartView: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
+    appMetaInfoGitUrl?: string
 }
 
 export interface DeploymentAppRadioGroupType {
-    isDisabled: boolean
+    isDisabled?: boolean
     deploymentAppType: string
     handleOnChange?: (event) => void
     allowedDeploymentTypes?: DeploymentAppTypes[]
@@ -101,9 +102,8 @@ export interface DeploymentAppRadioGroupType {
     isFromCDPipeline?: boolean
 }
 
-export interface gitOpsDrawerType{
-    deploymentAppType: string
-    allowedDeploymentTypes?: DeploymentAppTypes[]
+export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
+    gitRepoURL?: Promise<void>
 }
 
 export interface ChartProjectSelectorType {

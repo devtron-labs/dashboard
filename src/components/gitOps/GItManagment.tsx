@@ -12,7 +12,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 
-function GitManagment() {
+function GitManagment({ setRepoURL: string }) {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [repoText, setRepoText] = useState('')
 
