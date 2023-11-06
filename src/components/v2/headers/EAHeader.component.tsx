@@ -86,6 +86,7 @@ function EAHeaderComponent({ title, redirectURL, appType }: EAHeaderComponentTyp
                 showTabs={true}
                 renderHeaderTabs={renderExternalHelmApp}
                 breadCrumbs={renderBreadcrumbs}
+                showAnnouncementHeader={true}
             />
         </div>
     )
