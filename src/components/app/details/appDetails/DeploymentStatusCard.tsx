@@ -3,7 +3,6 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { useHistory } from 'react-router'
 import { DeploymentStatusCardType } from './appDetails.type'
@@ -16,9 +15,8 @@ function DeploymentStatusCard({
     hideDeploymentStatusLeftInfo,
     hideDetails,
     deploymentTriggerTime,
-    triggeredBy,
     isVirtualEnvironment,
-    refetchDeploymentStatus
+    refetchDeploymentStatus,
 }: DeploymentStatusCardType) {
     const history = useHistory()
 
@@ -28,45 +26,52 @@ function DeploymentStatusCard({
             search: DEPLOYMENT_STATUS_QUERY_PARAM,
         })
     }
+
     const renderDeploymentStatus = () => {
+        const { triggeredBy, deploymentStatus, deploymentTriggerTime, deploymentStatusText } =
+            deploymentStatusDetailsBreakdownData
         return (
             <>
-                <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                    {isVirtualEnvironment ? <Rocket className="icon-dim-32" /> : <CD className="icon-dim-32" />}
-                </div>
-                <div className="flex left column pr-16 dc__border-right-n1 mr-16">
-                    <div className="flexbox">
-                        <span className="fs-12 mr-5 fw-4 cn-9">Deployment status</span>
-
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content="Status of last triggered deployment"
-                        >
-                            <Question className="icon-dim-16 mt-2" />
-                        </Tippy>
+                <div className="app-details-info-card__top-container flex">
+                    <div className="app-details-info-card__top-container__content">
+                        <div className="app-details-info-card__top-container__content__title-wrapper">
+                            <div className="fs-12 fw-4 cn-7 mr-5">Deployment status</div>
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content="Status of last triggered deployment"
+                            >
+                                <Question className="icon-dim-16 mt-2" />
+                            </Tippy>
+                        </div>
+                        <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
+                            <span
+                                data-testid="deployment-status-name"
+                                className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus?.toLowerCase()} ${
+                                    deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS ? 'dc__loading-dots' : ''
+                                }`}
+                            >
+                                {deploymentStatusText}
+                            </span>
+                        </div>
                     </div>
-                    <div className="flexbox">
-                        <span
-                            data-testid="deployment-status-name"
-                            className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatusDetailsBreakdownData?.deploymentStatus?.toLowerCase()} ${
-                                deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
-                                    ? 'dc__loading-dots'
-                                    : ''
-                            }`}
-                        >
-                            {deploymentStatusDetailsBreakdownData?.deploymentStatusText}
+
+                    {isVirtualEnvironment ? <Rocket className="icon-dim-24 mr-2" /> : <CD className="icon-dim-24 dc__flip-90 mr-2" />}
+                </div>
+                <div className="app-details-info-card__bottom-container dc__content-space">
+                    <div className="app-details-info-card__bottom-container__message fs-12 fw-4">
+                        <span className="fs-13 mr-5 fw-6">
+                            {validateMomentDate(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ')}
                         </span>
-                        <div
-                            className={`${deploymentStatusDetailsBreakdownData?.deploymentStatus} icon-dim-20 mt-2`}
-                        ></div>
+                        by {triggeredBy || '-'}
                     </div>
                     {!hideDetails && (
-                        <div>
-                            <span data-testid="deployment-status-deatils" className="cb-5 fw-6 pointer">
-                                Details
-                            </span>
+                        <div
+                            data-testid="deployment-status-details"
+                            className="app-details-info-card__bottom-container__details fs-12 fw-6"
+                        >
+                            Details
                         </div>
                     )}
                 </div>
@@ -88,39 +93,13 @@ function DeploymentStatusCard({
         <div
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}
-            className={`source-info-container flex left bcn-0 p-16 br-8 ${
+            className={`app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-250 ${
                 hideDeploymentStatusLeftInfo || hideDetails ? '' : 'cursor'
-            } mr-12`}
+            }`}
         >
-            {!hideDeploymentStatusLeftInfo && renderDeploymentStatus()}
-            <div className="flex left column mw-140">
-                <div className="fs-12 fw-4 cn-9" data-testid="last-updated-heading">
-                    {hideDeploymentStatusLeftInfo ? 'Last updated' : 'Deployment triggered'}
-                </div>
-                <div className="flexbox" data-testid="last-updated-time">
-                    <span className="fs-13 mr-5 fw-6 cn-9">
-                        {validateMomentDate(
-                            hideDeploymentStatusLeftInfo
-                                ? deploymentTriggerTime
-                                : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime,
-                            'YYYY-MM-DDTHH:mm:ssZ',
-                        )}
-                    </span>
-                    {deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
-                        <Timer className="icon-dim-16 mt-4" />
-                    )}
-                </div>
-
-                {hideDeploymentStatusLeftInfo ? (
-                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">by {triggeredBy || '-'}</div>
-                ) : (
-                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
-                        by {deploymentStatusDetailsBreakdownData.triggeredBy || '-'}
-                    </div>
-                )}
-            </div>
+            {renderDeploymentStatus()}
         </div>
     )
 }
 
-export default DeploymentStatusCard
+export default React.memo(DeploymentStatusCard)

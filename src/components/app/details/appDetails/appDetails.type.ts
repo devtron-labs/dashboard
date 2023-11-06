@@ -221,3 +221,9 @@ export interface DeploymentStatusCardType {
 export interface IssuesCardType {
     hideDetails?: boolean
 }
+
+export interface LastUpdatedCardType {
+    deploymentTriggerTime: string
+    triggeredBy: string
+    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+}

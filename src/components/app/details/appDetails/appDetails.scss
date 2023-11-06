@@ -1811,7 +1811,8 @@ table.resource-tree {
 
 .source-info-container,
 .deployment-status-breakdown-modal-container,
-.deployment-status-breakdown-container {
+.deployment-status-breakdown-container,
+.app-details-info-card {
     .app-summary__status-name {
         text-transform: none !important;
         &.f-succeeded {
@@ -1943,10 +1944,6 @@ table.resource-tree {
                     text-overflow: ellipsis;
                 }
             }
-        }
-
-        &__error-icon {
-            height: 24px;
         }
     }
 
