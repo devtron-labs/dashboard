@@ -22,14 +22,16 @@ const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: st
 export const AppDetailsTabs = {
     k8s_Resources: 'K8s Resources',
     log_analyzer: 'Log Analyzer',
-    terminal: 'Terminal'
-};
+    terminal: 'Terminal',
+    cluster_overview: 'Overview',
+}
 
 export const AppDetailsTabsIdPrefix = {
     k8s_Resources: 'k8s_resources',
     log_analyzer: 'log_analyzer',
-    terminal: 'cluster_terminal'
-};
+    terminal: 'cluster_terminal',
+    cluster_overview: 'overview',
+}
 
 const AppDetailsStore = {
     getAppDetailsTabs: () => {

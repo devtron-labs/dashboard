@@ -13,6 +13,7 @@ import {
     CDMaterialServiceEnum,
     CDMaterialType,
     FilterStates,
+    useSuperAdmin,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -63,6 +64,7 @@ export default function BulkCDTrigger({
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch()
+    const { isSuperAdmin } = useSuperAdmin()
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search)
@@ -539,6 +541,7 @@ export default function BulkCDTrigger({
                     {selectedApp.warningMessage || unauthorizedAppList[selectedApp.appId] ? (
                         renderEmptyView()
                     ) : (
+                        // TODO: Handle isSuperAdmin prop
                         <CDMaterial
                             // TODO: Handle this
                             triggerDeploy={onClickStartDeploy}
@@ -563,6 +566,7 @@ export default function BulkCDTrigger({
                             updateCurrentAppMaterial={updateCurrentAppMaterial}
                             updateBulkCDMaterialsItem={updateBulkCDMaterialsItem}
                             selectedImageFromBulk={selectedImageFromBulk}
+                            isSuperAdmin={isSuperAdmin}
                         />
                     )}
                 </div>

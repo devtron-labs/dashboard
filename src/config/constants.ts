@@ -27,8 +27,8 @@ export const Routes = {
     VALIDATE: 'cluster/validate',
     SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
-    CLUSTER_NOTE: 'cluster/description',
-    APPLICATION_NOTE: 'app/description',
+    CLUSTER_NOTE: 'cluster/note',
+    APPLICATION_NOTE: 'app/note',
 
     CD_CONFIG: 'app/cd-pipeline',
     V2_CD_CONFIG: 'app/v2/cd-pipeline',
@@ -65,7 +65,7 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
-    APP_LABELS: 'app/edit',
+    APP_EDIT: 'app/edit',
 
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
@@ -168,6 +168,7 @@ export const Routes = {
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API: 'application/update',
     UPDATE_APP_API: 'app-store/deployment/application/update',
+    HELM_APP_OVERVIEW: 'app-store/overview',
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
@@ -789,3 +790,12 @@ export const SERVER_ERROR_CODES = {
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+
+/**
+ * Tabs for the overview of the app(s)
+ */
+export const OVERVIEW_TABS = {
+    ABOUT: 'about',
+    ENVIRONMENTS: 'environments',
+    JOB_PIPELINES: 'job-pipelines',
+} as const
