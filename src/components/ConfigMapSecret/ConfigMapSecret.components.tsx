@@ -279,7 +279,6 @@ export function ConfigMapSecretContainer({
         updateCollapsed()
         update()
     }
-    console.log(name, title)
 
     const renderDetails = (): JSX.Element => {
         if ((name && ((!title && name !== 'create') || (title && name !== title))) || !name) return null
