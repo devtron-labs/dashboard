@@ -40,4 +40,4 @@ const DeployedCommitCard = () => {
     )
 }
 
-export default DeployedCommitCard
+export default React.memo(DeployedCommitCard)
