@@ -59,7 +59,7 @@ const AppDetailsStore = {
                 AppDetailsTabs.k8s_Resources,
             ),
         )
-        if (displayLogAnalyzer && !isExternalApp) {
+        if (displayLogAnalyzer) {
             aots.push(
                 addAOT(
                     AppDetailsTabs.log_analyzer,
