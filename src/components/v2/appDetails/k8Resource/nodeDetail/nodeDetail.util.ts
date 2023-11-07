@@ -222,7 +222,10 @@ export function getInitialPodContainerSelection(
 }
 
 export function getFirstOrNull<T>(arr: T[]): T | null {
-    if (arr.length > 0) {
+    if (arr.length >=2) {
+        return arr[1]
+    }
+    else if (arr.length === 1) {
         return arr[0]
     }
     return null
