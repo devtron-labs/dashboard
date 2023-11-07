@@ -334,6 +334,12 @@ export default function BulkCDTrigger({
                 setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
                 setSelectedTagName({ value: 'Multiple tags', label: 'Multiple tags' })
             }
+            else {
+                // remove warning if any
+                const _tagNotFoundWarningsMap = new Map(tagNotFoundWarningsMap)
+                _tagNotFoundWarningsMap.delete(appId)
+                setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
+            }
         }
 
         const parseApplistIntoCDMaterialResponse = (
