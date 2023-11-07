@@ -67,7 +67,8 @@ export default function NewCDPipeline({
     getWorkflows,
     refreshParentWorkflows,
     envIds,
-    isLastNode
+    isLastNode,
+    noGitOpsModuleInstalledAndConfigured
 }) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -1046,6 +1047,7 @@ export default function NewCDPipeline({
                                     isWebhookCD={isWebhookCD}
                                     dockerRegistries={dockerRegistries}
                                     envIds={envIds}
+                                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

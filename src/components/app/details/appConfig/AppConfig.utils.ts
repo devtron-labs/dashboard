@@ -26,13 +26,13 @@ export const isUnlocked = (stage: string): AppStageUnlockedType => {
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
-        gitOpsConfig: 
-            stage === STAGE_NAME.CI_CONFIG ||
-            stage === STAGE_NAME.CI_PIPELINE ||
-            stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || 
-            stage === STAGE_NAME.GIT_OPS_CONFIG || 
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
+        // gitOpsConfig: 
+        //     stage === STAGE_NAME.CI_CONFIG ||
+        //     stage === STAGE_NAME.CI_PIPELINE ||
+        //     stage === STAGE_NAME.DEPLOYMENT_TEMPLATE || 
+        //     stage === STAGE_NAME.GIT_OPS_CONFIG || 
+        //     stage === STAGE_NAME.CD_PIPELINE ||
+        //     stage === STAGE_NAME.CHART_ENV_CONFIG,
         workflowEditor:
             stage === STAGE_NAME.CI_PIPELINE ||
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
@@ -159,10 +159,11 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 isProtectionAllowed: true,
             },
             {
-                title: 'Git Ops Configuration',
-                href: `/app/${appId}/edit/gitOpsConfig`,
-                stage: STAGE_NAME.GIT_OPS_CONFIG,
-                isLocked: !isUnlocked.gitOpsConfig,
+                title: 'GitOps Configuration',
+                href: `/app/${appId}/edit/gitops-config`,
+                stage: STAGE_NAME.GITOPS_CONFIG,
+                isLocked: false,
+                supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
             },

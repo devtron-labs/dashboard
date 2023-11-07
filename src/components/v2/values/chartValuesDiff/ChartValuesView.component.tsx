@@ -23,6 +23,7 @@ import {
     ConditionalWrap,
     DeploymentAppTypes,
     Drawer,
+    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -55,10 +56,12 @@ import { DELETE_ACTION, repoType } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
+import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
-
+const isGitOpsNotConfigured=true
 export const ChartEnvironmentSelector = ({
     isExternal,
     isDeployChartView,
@@ -223,6 +226,16 @@ const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: strin
       </Tippy>
   )
 }
+const renderInfoColorBar = () => {
+    return (
+        <InfoColourBar
+            message="GitOps repository is required to deploy using GitOps. Configure GitOps Repository"
+            classname="warn"
+            Icon={Warn}
+            iconClass="warning-icon"
+        />
+    )
+}
 
 export const DeploymentAppRadioGroup = ({
     isDisabled,
@@ -279,6 +292,9 @@ export const DeploymentAppRadioGroup = ({
                     </RadioGroupItem>
                 </ConditionalWrap>
             </RadioGroup>
+            {deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsNotConfigured && (
+                <div>{renderInfoColorBar()}</div>
+            )}
         </>
     )
 }
