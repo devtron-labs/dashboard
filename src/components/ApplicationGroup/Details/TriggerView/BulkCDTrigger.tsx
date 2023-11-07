@@ -167,7 +167,8 @@ export default function BulkCDTrigger({
                         // if first image does not have filerState.ALLOWED then unselect all images and set SELECT_NONE for selectedImage and for first app send the trigger of SELECT_NONE from selectedImageFromBulk
                         if (
                             response.value.materials?.length > 0 &&
-                            response.value.materials[0].filterState !== FilterStates.ALLOWED
+                            (response.value.materials[0].filterState !== FilterStates.ALLOWED ||
+                                response.value.materials[0].vulnerable)
                         ) {
                             const updatedMaterials = response.value.materials.map((mat) => ({
                                 ...mat,
@@ -181,6 +182,11 @@ export default function BulkCDTrigger({
                                 ...prevSelectedImages,
                                 [response.value['appId']]: BulkSelectionEvents.SELECT_NONE,
                             }))
+
+                            const _warningMessage = response.value.materials[0].vulnerable
+                                ? 'has security vulnerabilities'
+                                : 'is not eligible'
+
                             setTagNotFoundWarningsMap((prevTagNotFoundWarningsMap) => {
                                 const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
                                 _tagNotFoundWarningsMap.set(
@@ -189,7 +195,7 @@ export default function BulkCDTrigger({
                                         (selectedTagName.value?.length > 15
                                             ? selectedTagName.value.substring(0, 10) + '...'
                                             : selectedTagName.value) +
-                                        "' is not eligible",
+                                        `' ${_warningMessage}`,
                                 )
                                 return _tagNotFoundWarningsMap
                             })
@@ -328,6 +334,12 @@ export default function BulkCDTrigger({
                 setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
                 setSelectedTagName({ value: 'Multiple tags', label: 'Multiple tags' })
             }
+            else {
+                // remove warning if any
+                const _tagNotFoundWarningsMap = new Map(tagNotFoundWarningsMap)
+                _tagNotFoundWarningsMap.delete(appId)
+                setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
+            }
         }
 
         const parseApplistIntoCDMaterialResponse = (
@@ -367,6 +379,16 @@ export default function BulkCDTrigger({
                                     ? selectedTag.value.substring(0, 10) + '...'
                                     : selectedTag.value) +
                                 "' is not eligible",
+                        )
+                    } else if (app.material?.[artifactIndex]?.vulnerable) {
+                        artifactIndex = -1
+                        _tagNotFoundWarningsMap.set(
+                            app.appId,
+                            "Tag '" +
+                                (selectedTag.value?.length > 15
+                                    ? selectedTag.value.substring(0, 10) + '...'
+                                    : selectedTag.value) +
+                                "' has security vulnerabilities",
                         )
                     }
                 } else {
@@ -513,18 +535,18 @@ export default function BulkCDTrigger({
                             {app.name}
                             {(app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) && (
                                 <span
-                                    className={`flex left fw-4 fs-12 ${
+                                    className={`flex left top fw-4 m-0 fs-12 ${
                                         tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
                                     }`}
                                 >
                                     <Error
-                                        className={`icon-dim-12 mr-4 ${
+                                        className={`icon-dim-12 mr-4 dc__no-shrink mt-5 ${
                                             tagNotFoundWarningsMap.has(app.appId)
                                                 ? 'alert-icon-r5-imp'
                                                 : 'warning-icon-y7'
                                         }`}
                                     />
-                                    {app.warningMessage || tagNotFoundWarningsMap.get(app.appId)}
+                                    <p className="m-0">{app.warningMessage || tagNotFoundWarningsMap.get(app.appId)}</p>
                                 </span>
                             )}
                             {unauthorizedAppList[app.appId] && (
