@@ -232,6 +232,13 @@ export interface SecurityVulnerabilityCardType {
     loadingResourceTree?: boolean
 }
 
+export interface DeployedCommitCardType{
+    showCommitInfoDrawer: () => void
+    loadingResourceTree?: boolean
+    envId: number | string
+    ciArtifactId: number
+}
+
 export interface LastUpdatedCardType {
     deploymentTriggerTime: string
     triggeredBy: string

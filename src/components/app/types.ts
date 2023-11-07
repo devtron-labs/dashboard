@@ -556,6 +556,8 @@ export interface SourceInfoType {
     low: number
 }
   showVulnerabilitiesModal?: () => void
+  envId?: number | string
+  ciArtifactId?: number 
 }
 
 export interface EnvironmentListMinType {
