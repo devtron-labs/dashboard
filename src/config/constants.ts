@@ -798,4 +798,5 @@ export const OVERVIEW_TABS = {
     ABOUT: 'about',
     ENVIRONMENTS: 'environments',
     JOB_PIPELINES: 'job-pipelines',
+    DEPENDENCIES: 'dependencies',
 } as const
