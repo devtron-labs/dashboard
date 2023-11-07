@@ -69,16 +69,15 @@ export default function BulkCDTrigger({
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search)
         const search = searchParams.get('search')
+        const _appSearchTextMap = { ...appSearchTextMap }
 
         if (search) {
-            const _appSearchTextMap = { ...appSearchTextMap }
             _appSearchTextMap[selectedApp.appId] = search
-            setAppSearchTextMap(_appSearchTextMap)
         } else {
-            const _appSearchTextMap = { ...appSearchTextMap }
             delete _appSearchTextMap[selectedApp.appId]
-            setAppSearchTextMap(_appSearchTextMap)
         }
+
+        setAppSearchTextMap(_appSearchTextMap)
     }, [location])
 
     const closeBulkCDModal = (e: React.MouseEvent): void => {
