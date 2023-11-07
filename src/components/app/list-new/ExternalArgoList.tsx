@@ -100,6 +100,7 @@ export default function ExternalArgoList({
                 })
                 .finally(() => {
                     updateDataSyncing(false)
+                    setFetchingExternalAppsState(false)
                 })
         
     }, [clusterIdsCsv, appStatus, syncListData])
