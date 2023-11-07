@@ -606,6 +606,10 @@ export const Details: React.FC<DetailsType> = ({
                     loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
+                    severityCount={lastExecutionDetail.severityCount}
+                    showVulnerabilitiesModal={() => {
+                        toggleScanDetailsModal(true)
+                    }}
                 />
             </div>
             {!loadingResourceTree && (
