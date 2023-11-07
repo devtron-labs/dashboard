@@ -54,8 +54,8 @@ const DeployedCommitCard = ({
                         </Tippy>
                     </div>
                     <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
-                        <CommitIcon className="app-details-info-card__top-container__content__commit-text-wrapper__commit-icon" />
-                        <div className="app-details-info-card__top-container__content__commit-text-wrapper__commit-sha ml-2 fw-4 fs-12">
+                        <CommitIcon className="icon-dim-20" />
+                        <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12">
                             {commitId}
                         </div>
                     </div>
