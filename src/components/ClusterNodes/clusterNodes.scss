@@ -476,7 +476,7 @@
 .cluster-terminal-hidden {
     visibility: hidden;
     height: 0;
-    .terminal-strip {
+    .cluster-terminal-strip-hidden {
         display: none;
       }
 }

@@ -22,7 +22,7 @@ import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
 
-function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
+function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp, isExternalApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
     const history = useHistory()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
@@ -437,12 +437,14 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </div>
                             </div>
                         </div>
-                        {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
-                            <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
-                                {portNumberPlaceHolder(node)}
-                                {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
-                            </div>
-                        )}
+                        {params.nodeType === NodeType.Service.toLowerCase() &&
+                            node.kind !== 'Endpoints' &&
+                            node.kind !== 'EndpointSlice' && (
+                                <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
+                                    {portNumberPlaceHolder(node)}
+                                    {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
+                                </div>
+                            )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div data-testid="pod-ready-count" className={'flex left col-1 pt-9 pb-9'}>
@@ -483,11 +485,14 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 )}
                             </div>
                         )}
-                        {node?.kind !== NodeType.Containers && node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && (
+                        {node?.kind !== NodeType.Containers &&
+                        node?.kind !== 'Endpoints' &&
+                        node?.kind !== 'EndpointSlice' &&
+                        !isExternalApp ? (
                             <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                 <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                             </div>
-                        )}
+                        ) : null}
                     </div>
 
                     {node.childNodes?.length > 0 && _isSelected && (

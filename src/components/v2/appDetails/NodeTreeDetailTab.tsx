@@ -59,6 +59,7 @@ function NodeTreeDetailTab({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
@@ -86,6 +87,7 @@ function NodeTreeDetailTab({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}

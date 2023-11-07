@@ -215,6 +215,9 @@
 .pod-terminal-hidden {
     visibility: hidden;
     height: 0;
+    .cluster-terminal-strip-hidden {
+        display: none;
+      }
 }
 
 .pod-terminal-hidden * {
