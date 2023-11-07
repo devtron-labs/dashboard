@@ -222,6 +222,16 @@ export interface IssuesCardType {
     hideDetails?: boolean
 }
 
+export interface SecurityVulnerabilityCardType {
+    severityCount?: {
+        critical: number
+        moderate: number
+        low: number
+    }
+    showVulnerabilitiesModal?: () => void
+    loadingResourceTree?: boolean
+}
+
 export interface LastUpdatedCardType {
     deploymentTriggerTime: string
     triggeredBy: string

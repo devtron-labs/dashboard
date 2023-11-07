@@ -550,6 +550,12 @@ export interface SourceInfoType {
   isVirtualEnvironment?: boolean
   setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
   refetchDeploymentStatus: (showTimeline?: boolean)=> void
+  severityCount?: {
+    critical: number
+    moderate: number
+    low: number
+}
+  showVulnerabilitiesModal?: () => void
 }
 
 export interface EnvironmentListMinType {

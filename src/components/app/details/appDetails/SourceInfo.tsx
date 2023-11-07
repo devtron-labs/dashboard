@@ -38,6 +38,8 @@ export function SourceInfo({
     isVirtualEnvironment,
     setRotateModal = null,
     refetchDeploymentStatus,
+    severityCount,
+    showVulnerabilitiesModal,
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -250,7 +252,11 @@ export function SourceInfo({
                                 refetchDeploymentStatus={refetchDeploymentStatus}
                             />
                             <DeployedCommitCard />
-                            <SecurityVulnerabilityCard />
+                            <SecurityVulnerabilityCard
+                                loadingResourceTree={loadingResourceTree}
+                                severityCount={severityCount}
+                                showVulnerabilitiesModal={showVulnerabilitiesModal}
+                            />
                             <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (
                                     <>
