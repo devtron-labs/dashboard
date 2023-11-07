@@ -40,6 +40,8 @@ export function SourceInfo({
     refetchDeploymentStatus,
     severityCount,
     showVulnerabilitiesModal,
+    envId,
+    ciArtifactId,
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -251,7 +253,12 @@ export function SourceInfo({
                                 isVirtualEnvironment={isVirtualEnvironment}
                                 refetchDeploymentStatus={refetchDeploymentStatus}
                             />
-                            <DeployedCommitCard />
+                            <DeployedCommitCard
+                                loadingResourceTree={loadingResourceTree}
+                                showCommitInfoDrawer={onClickShowCommitInfo}
+                                envId={envId}
+                                ciArtifactId={ciArtifactId}
+                            />
                             <SecurityVulnerabilityCard
                                 loadingResourceTree={loadingResourceTree}
                                 severityCount={severityCount}

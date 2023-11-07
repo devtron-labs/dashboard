@@ -610,6 +610,8 @@ export const Details: React.FC<DetailsType> = ({
                     showVulnerabilitiesModal={() => {
                         toggleScanDetailsModal(true)
                     }}
+                    envId={appDetails?.environmentId}
+                    ciArtifactId={appDetails?.ciArtifactId}
                 />
             </div>
             {!loadingResourceTree && (
