@@ -357,9 +357,9 @@ export default function NavigationRoutes() {
                                             path={URLS.GLOBAL_CONFIG}
                                             render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                         />
-                                        <Route path={URLS.CLUSTER_LIST}>
+                                        {/* <Route path={URLS.CLUSTER_LIST}>
                                             <ClusterNodeContainer />
-                                        </Route>
+                                        </Route> */}
                                         {!window._env_.K8S_CLIENT && [
                                             <Route
                                                 key={URLS.APP}

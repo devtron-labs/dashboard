@@ -33,6 +33,7 @@ import { getAppConfig, getGitProviderIcon } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
+const Catalog = importComponentFromFELibrary('Catalog')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
@@ -316,6 +317,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         }
     }
 
+    const kind = isJobOverview
+        ? 'job'
+        : isHelmChart
+        ? 'application/helm-application'
+        : 'application/devtron-application'
+
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (
@@ -388,6 +395,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderAppDescription() {
         return (
             <div>
+                {Catalog && <Catalog id={appId} kind={kind} />}
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin={true}
