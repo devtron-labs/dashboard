@@ -1934,18 +1934,6 @@ table.resource-tree {
                     font-family: 'Open Sans-Regular', Helvetica;
                 }
             }
-
-            // @TODO: this can be re-named to a more generic name
-            &__commit-text-wrapper {
-                &__commit-icon {
-                    height: 20px;
-                }
-
-                &__commit-sha {
-                    color: var(--N700);
-                    text-overflow: ellipsis;
-                }
-            }
         }
     }
 
@@ -1957,7 +1945,6 @@ table.resource-tree {
         padding: 8px 12px;
         width: 100%;
 
-        // @TODO: this can be re-named to a more generic name
         &__message {
             // @TODO: figure out the alternative of -webkit-box-orient
             -webkit-box-orient: vertical;
@@ -1969,7 +1956,6 @@ table.resource-tree {
             text-overflow: ellipsis;
         }
 
-        // @TODO: this can be re-named to a more generic name
         &__details {
             color: var(--B500);
             line-height: 18px;
