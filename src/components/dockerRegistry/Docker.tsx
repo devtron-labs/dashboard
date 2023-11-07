@@ -527,7 +527,7 @@ function DockerForm({
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL)
                     ? customState.repositoryList?.value.split(',') || []
                     : null,
-            registryUrl: customState.registryUrl.value.replace(/^https?:\/\//, '')
+            registryUrl: customState.registryUrl.value?.trim().replace(/^https?:\/\//, '')
                 .replace(/^oci?:\/\//, '')
                 .replace(/^docker?:\/\//, '')
                 .replace(/^http?:\/\//, ''),
