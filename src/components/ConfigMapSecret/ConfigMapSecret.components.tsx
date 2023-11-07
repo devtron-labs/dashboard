@@ -28,7 +28,7 @@ import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
 import { getCMSecret, getConfigMapList, getSecretList } from './service'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 
@@ -114,12 +114,14 @@ export function ConfigMapSecretContainer({
     parentName,
     reloadEnvironments,
 }: ConfigMapSecretProps) {
-    const { appId, envId } = useParams<{ appId; envId }>()
+    const { appId, envId, name } = useParams<{ appId; envId; name }>()
+    const history = useHistory()
+    const match = useRouteMatch()
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
     const [draftData, setDraftData] = useState(null)
     const [selectedTab, setSelectedTab] = useState(data?.draftState === 4 ? 2 : 3)
-    const [abortController, setAbortController] = useState(new AbortController());
+    const [abortController, setAbortController] = useState(new AbortController())
 
     let cmSecretStateLabel = !data?.isNew ? CM_SECRET_STATE.BASE : CM_SECRET_STATE.UNPUBLISHED
     if (isOverrideView) {
@@ -133,14 +135,22 @@ export function ConfigMapSecretContainer({
     const getData = async () => {
         try {
             abortController.abort()
-            const newAbortController = new AbortController();
-            setAbortController(newAbortController);
+            const newAbortController = new AbortController()
+            setAbortController(newAbortController)
             setLoader(true)
             const [_draftData, _cmSecretData] = await Promise.allSettled([
                 isProtected && getDraftByResourceName
-                    ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name, newAbortController.signal )
+                    ? getDraftByResourceName(
+                          appId,
+                          envId ?? -1,
+                          componentType === 'secret' ? 2 : 1,
+                          data.name,
+                          newAbortController.signal,
+                      )
                     : null,
-                !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId, newAbortController.signal ) : null,
+                !data?.isNew
+                    ? getCMSecret(componentType, id, appId, data?.name, envId, newAbortController.signal)
+                    : null,
             ])
             let draftId, draftState
             if (
@@ -195,7 +205,10 @@ export function ConfigMapSecretContainer({
                     update(index, null)
                 }
             }
-            if((_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) || (_draftData?.status === 'fulfilled' && _draftData?.value !== null)) {
+            if (
+                (_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) ||
+                (_draftData?.status === 'fulfilled' && _draftData?.value !== null)
+            ) {
                 toggleCollapse(false)
             }
             if (
@@ -213,18 +226,31 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    const getURL = (urlTo: string = ''): string => {
+        const componentTypeName = componentType === 'secret' ? 'secrets' : 'configmap'
+        const urlPrefix = match.url.split(componentTypeName)[0]
+        return `${urlPrefix}${componentTypeName}/${urlTo}`
+    }
+
     const updateCollapsed = (_collapsed?: boolean): void => {
-        if (_collapsed !== undefined) {
-            toggleCollapse(_collapsed)
+
+        if (!title) {
+            //Redirect and Add config map & secret
+            if (name === 'create') {
+                toggleDraftComments(null)
+                setDraftData(null)
+                return history.push(getURL())
+            }
+            return history.push(getURL('create'))
         } else {
-            if (collapsed && data?.name) {
-                getData()
+            //Redirect and Open existing config map & secret
+            if (name === title) {
+                toggleDraftComments(null)
+                setDraftData(null)
+                return history.push(getURL())
             } else {
-                toggleCollapse(!collapsed)
-                if (!collapsed) {
-                    toggleDraftComments(null)
-                    setDraftData(null)
-                }
+                getData()
+                return history.push(getURL(title))
             }
         }
     }
@@ -255,6 +281,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
+        if ((name && ((!title && name !== 'create') || (title && name !== title))) || !name) return null
         if (title && isProtected && draftData?.draftId) {
             return (
                 <>
@@ -334,7 +361,7 @@ export function ConfigMapSecretContainer({
         return null
     }
 
-    const handleCMSecretClick = () => {
+    const handleCMSecretClick = (event) => {
         if (title && isProtected && draftData?.draftId) {
             setSelectedTab(draftData.draftState === 4 ? 2 : 3)
         }
@@ -345,7 +372,9 @@ export function ConfigMapSecretContainer({
         <>
             <section
                 className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
-                    reduceOpacity ? 'dc__disable-click dc__blur-1_5' : ''
+                    reduceOpacity || (name && ((!title && name !== 'create') || (title && name !== title)))
+                        ? 'dc__disable-click dc__blur-1_5'
+                        : ''
                 }`}
             >
                 <article
@@ -379,7 +408,7 @@ export function ConfigMapSecretContainer({
                         </div>
                     )}
                 </article>
-                {!collapsed && renderDetails()}
+                {renderDetails()}
             </section>
         </>
     )
@@ -400,11 +429,10 @@ export function ProtectedConfigMapSecretDetails({
     parentName,
     reloadEnvironments,
 }: ProtectedConfigMapSecretDetailsProps) {
-    const { appId, envId } = useParams<{ appId; envId }>()
+    const { appId, name } = useParams<{ appId; name }>()
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
-    const [abortController, setAbortController] = useState(new AbortController());
-    
+    const [abortController, setAbortController] = useState(new AbortController())
 
     const getBaseData = async () => {
         try {
@@ -412,7 +440,9 @@ export function ProtectedConfigMapSecretDetails({
             let newAbortController = new AbortController()
             setAbortController(newAbortController)
             setLoader(true)
-            const { result } = await(componentType === 'secret' ? getSecretList(appId, {signal: newAbortController.signal}) : getConfigMapList(appId, {signal: newAbortController.signal}))
+            const { result } = await (componentType === 'secret'
+                ? getSecretList(appId, { signal: newAbortController.signal })
+                : getConfigMapList(appId, { signal: newAbortController.signal }))
             let _baseData
             if (result?.configData?.length) {
                 _baseData = result.configData.find((config) => config.name === data.name)
@@ -420,7 +450,9 @@ export function ProtectedConfigMapSecretDetails({
                     _baseData.unAuthorized = data.unAuthorized
                 }
                 if (componentType === 'secret' && !data.unAuthorized) {
-                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name, {signal: newAbortController.signal})
+                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name, {
+                        signal: newAbortController.signal,
+                    })
                     if (secretResult?.configData?.length) {
                         _baseData = { ...secretResult.configData[0], unAuthorized: false }
                     }
@@ -435,7 +467,7 @@ export function ProtectedConfigMapSecretDetails({
 
     useEffect(() => {
         if (draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN) {
-            getBaseData()   
+            getBaseData()
         }
     }, [])
 
