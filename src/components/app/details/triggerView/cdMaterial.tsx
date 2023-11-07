@@ -291,9 +291,7 @@ export default function CDMaterial({
 
                     setMaterial(_newMaterials)
                     const _isConsumedImageAvailable =
-                        _newMaterials.some(
-                            (materialItem) => materialItem.deployed && materialItem.latest,
-                        ) ?? false
+                        _newMaterials.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
 
                     setIsConsumedImageAvailable(_isConsumedImageAvailable)
 
@@ -2179,7 +2177,16 @@ export default function CDMaterial({
     }
 
     if (material.length > 0) {
-        return isFromBulkCD ? renderTriggerBody(isApprovalConfigured) : renderCDModal(isApprovalConfigured)
+        return isFromBulkCD ? (
+            <>
+                {!state.showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
+                    <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
+                )}
+                {renderTriggerBody(isApprovalConfigured)}
+            </>
+        ) : (
+            renderCDModal(isApprovalConfigured)
+        )
     }
 
     if (isFromBulkCD) {
