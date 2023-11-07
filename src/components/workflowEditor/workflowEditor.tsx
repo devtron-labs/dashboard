@@ -9,13 +9,14 @@ import {
     DeleteDialog,
     InfoColourBar,
     ConditionalWrap,
+    TippyCustomized,
+    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
 import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
-import add from '../../assets/icons/misc/addWhite.svg'
 import CIPipeline from '../CIPipelineN/CIPipeline'
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
@@ -23,8 +24,9 @@ import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
+import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
-import { PipelineSelect } from './PipelineSelect'
 import './workflowEditor.scss'
 import { PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
@@ -34,6 +36,7 @@ import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
 import Tippy from '@tippyjs/react'
+import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 
@@ -83,9 +86,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     componentDidUpdate(prevProps) {
-        if (
-            prevProps.filteredEnvIds !== this.props.filteredEnvIds
-        ) {
+        if (prevProps.filteredEnvIds !== this.props.filteredEnvIds) {
             this.getWorkflows()
         }
     }
@@ -102,11 +103,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(
-            this.props.match.params.appId,
-            this.props.isJobView,
-            this.props.filteredEnvIds
-        )
+        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView, this.props.filteredEnvIds)
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -142,7 +139,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     view: ViewType.FORM,
                     envToShowWebhookTippy: -1,
                     filteredCIPipelines: result.filteredCIPipelines,
-                    envIds: _envIds
+                    envIds: _envIds,
                 })
             })
             .catch((errors) => {
@@ -173,17 +170,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     toggleCIMenu = (event) => {
-      if (this.props.filteredEnvIds) {
-          return
-      }
-      const { top, left } = event.target.getBoundingClientRect()
-      this.setState({
-          cIMenuPosition: {
-              top: top,
-              left: left,
-          },
-          showCIMenu: !this.state.showCIMenu,
-      })
+        if (this.props.filteredEnvIds) {
+            return
+        }
+        const { top, left } = event.target.getBoundingClientRect()
+        this.setState({
+            cIMenuPosition: {
+                top: top,
+                left: left,
+            },
+            showCIMenu: !this.state.showCIMenu,
+        })
     }
 
     deleteWorkflow = (appId?: string, workflowId?: number) => {
@@ -447,13 +444,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     renderNewBuildPipelineButton(openAtTop: boolean) {
-        let { top, left } = this.state.cIMenuPosition
-        if (openAtTop) {
-            top = top - 382 + 80
-            left = left - 85
-        } else {
-            top = top + 40
-        }
+        // let { top, left } = this.state.cIMenuPosition
+        // if (openAtTop) {
+        //     top = top - 382 + 80
+        //     left = left - 85
+        // } else {
+        //     top = top + 40
+        // }
         return (
             <ConditionalWrap
                 condition={!!this.props.filteredEnvIds}
@@ -468,17 +465,23 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     </Tippy>
                 )}
             >
-                <div className="dc_max-width__max-content">
-                    <button
-                        type="button"
-                        className={`cta dc__no-decor flex mb-20 ${this.props.filteredEnvIds ? 'dc__disabled' : ''}`}
-                        data-testid="new-workflow-button"
-                        onClick={this.toggleCIMenu}
-                    >
-                        <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
-                        New workflow
-                    </button>
-                    <PipelineSelect
+                {/* TODO: Integrate new onClick */}
+                <button
+                    type="button"
+                    className={`cta flexbox dc__align-items-center pt-6 pr-10 pb-6 pl-8 dc__gap-6 h-32 ${
+                        this.props.filteredEnvIds ? 'dc__disabled' : ''
+                    }`}
+                    data-testid="new-workflow-button"
+                    onClick={this.toggleCIMenu}
+                >
+                    <div className="flexbox dc__content-space dc__align-items-center h-20">
+                        <ICAddWhite className="icon-dim-18 mr-5" />
+                        <p className="m-0 fs-13 lh-20 cn-0">New workflow</p>
+                    </div>
+                </button>
+
+                {/* FIXME: */}
+                {/* <PipelineSelect
                         workflowId={0}
                         showMenu={this.state.showCIMenu}
                         addCIPipeline={this.addCIPipeline}
@@ -488,8 +491,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             left: `${left}px`,
                             top: `${top}px`,
                         }}
-                    />
-                </div>
+                    /> */}
             </ConditionalWrap>
         )
     }
@@ -502,16 +504,19 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         return (
             <button
                 type="button"
-                className="cta dc__no-decor flex mb-20"
+                className="cta flexbox dc__align-items-center pt-6 pr-10 pb-6 pl-8 dc__gap-6 h-32"
                 data-testid="job-pipeline-button"
                 onClick={this.openCreateModal}
             >
-                <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
-                Job pipeline
+                <div className="flexbox dc__content-space dc__align-items-center h-20">
+                    <ICAddWhite className="icon-dim-18 mr-5" />
+                    <p className="m-0 fs-13 lh-20 cn-0">Job pipeline</p>
+                </div>
             </button>
         )
     }
 
+    // TODO: Enhance this function as well
     renderEmptyState() {
         return (
             <div className="create-here">
@@ -525,7 +530,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     {this.props.isJobView
                         ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
                         : 'Workflows consist of pipelines from build to deployment stages of an application.'}
-                    <br></br>
+                    <br />
                     {!this.props.isJobView && (
                         <a
                             className="dc__link"
@@ -653,31 +658,48 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             )
         } else {
             return (
-                <div className="workflow-editor" data-testid="workflow-editor-page">
-                    <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
-                    <p>
+                <div className="workflow-editor bcn-0" data-testid="workflow-editor-page">
+                    <div className="flex dc__content-space pb-16">
+                        <div className="flex dc__gap-8 dc__content-start">
+                            <h1 className="m-0 cn-9 fs-16 fw-6">Workflow Editor</h1>
+
+                            <TippyCustomized
+                                theme={TippyTheme.white}
+                                className="w-300 h-100 fcv-5"
+                                placement="right"
+                                Icon={HelpIcon}
+                                heading={WORKFLOW_EDITOR_HEADER_TIPPY.HEADING}
+                                infoText={
+                                    this.props.isJobView
+                                        ? WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.JOB_VIEW
+                                        : WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.DEFAULT
+                                }
+                                showCloseButton
+                                trigger="click"
+                                interactive
+                                documentationLink={
+                                    this.props.isJobView
+                                        ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
+                                        : DOCUMENTATION.APP_CREATE_WORKFLOW
+                                }
+                                documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
+                            >
+                                <button
+                                    className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp flex"
+                                    type="button"
+                                >
+                                    <ICHelpOutline className="icon-dim-16" />
+                                </button>
+                            </TippyCustomized>
+                        </div>
+
                         {this.props.isJobView
-                            ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
-                            : 'Workflow consist of pipelines from build to deployment stages of an application.'}
-                        &nbsp;
-                        <a
-                            className="dc__link"
-                            href={
-                                this.props.isJobView
-                                    ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
-                                    : DOCUMENTATION.APP_CREATE_WORKFLOW
-                            }
-                            target="blank"
-                            rel="noreferrer noopener"
-                        >
-                            Learn more
-                        </a>
-                    </p>
+                            ? this.renderNewJobPipelineButton()
+                            : this.renderNewBuildPipelineButton(false)}
+                    </div>
+
                     {this.renderRouter()}
                     {this.renderHostErrorMessage()}
-                    {this.props.isJobView
-                        ? this.renderNewJobPipelineButton()
-                        : this.renderNewBuildPipelineButton(false)}
                     {this.renderWorkflows()}
                     {this.renderDeleteDialog()}
                     {this.state.showSuccessScreen && (
