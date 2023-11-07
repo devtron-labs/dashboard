@@ -9,6 +9,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ValidateForm } from '../common/ValidateForm/ValidateForm';
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 import { UserGitRepoProps } from './gitops.type';
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 
 function UserGitRepo(props: UserGitRepoProps) {
     const repoTypeChange = () => {
@@ -91,7 +92,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                                 validationError={props.errorInFetching}
                                 validationStatus={props.errorInFetching ? 'FAILURE' : 'SUCCESS'}
                                 configName="gitOps"
-                                onClickValidate={onClickValidate}
+                                onClickValidate={()=>{}}
                             />
                         )}
                     </RadioGroup>

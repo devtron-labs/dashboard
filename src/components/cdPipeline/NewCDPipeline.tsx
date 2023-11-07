@@ -1130,6 +1130,7 @@ export default function NewCDPipeline({
                                     dockerRegistries={dockerRegistries}
                                     envIds={envIds}
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

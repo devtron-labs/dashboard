@@ -25,6 +25,7 @@ import {
     DeploymentAppTypes,
     Drawer,
     showError,
+    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -58,10 +59,12 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
+import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
-
+const isGitOpsNotConfigured=true
 export const ChartEnvironmentSelector = ({
     isExternal,
     isDeployChartView,
@@ -240,6 +243,16 @@ const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: strin
       </Tippy>
   )
 }
+const renderInfoColorBar = () => {
+    return (
+        <InfoColourBar
+            message="GitOps repository is required to deploy using GitOps. Configure GitOps Repository"
+            classname="warn"
+            Icon={Warn}
+            iconClass="warning-icon"
+        />
+    )
+}
 
 export const DeploymentAppRadioGroup = ({
     isDisabled,
@@ -411,7 +424,6 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                                     repoURL={repoURL}
                                     selectedRepoType={selectedRepoType}
                                     errorInFetching={errorInFetching}
-                                    isDeploymentAllowed={isDeploymentAllowed}
                                     displayValidation={displayValidation}
                                     setDisplayValidation={setDisplayValidation}
                                 />

@@ -82,7 +82,6 @@ export interface UserGitRepoProps {
     repoURL: string
     selectedRepoType: string
     errorInFetching: Map<string, any>
-    validateRepoURL: () => void
     displayValidation: boolean
     setDisplayValidation: React.Dispatch<React.SetStateAction<boolean>>
 }
