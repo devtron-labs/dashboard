@@ -1971,7 +1971,6 @@ table.resource-tree {
     overflow: scroll;
 
     &__body {
-        
         &__head-row {
             display: flex;
             font-size: 13px;
@@ -1990,7 +1989,7 @@ table.resource-tree {
             }
 
             &__col-2 {
-                flex: 2
+                flex: 3;
             }
         }
 
@@ -2008,9 +2007,8 @@ table.resource-tree {
             }
 
             &__col-2 {
-                flex: 2
+                flex: 3;
             }
-
         }
     }
 }
