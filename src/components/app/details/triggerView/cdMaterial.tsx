@@ -1398,9 +1398,7 @@ export default function CDMaterial({
                     className={selectClassName}
                     onClick={(event) => {
                         event.stopPropagation()
-                        if (!disableSelection && !isImageApprover && !mat.vulnerable) {
-                            handleImageSelection(mat.index, mat)
-                        }
+                        handleImageSelection(mat.index, mat)
                     }}
                     data-testid={`cd-artifact-select-${mat.index}`}
                 >
