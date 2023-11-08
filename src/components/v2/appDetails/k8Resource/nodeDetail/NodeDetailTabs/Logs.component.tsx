@@ -33,6 +33,7 @@ import {
     getSelectedPodList,
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
+import ReactGA from 'react-ga4'
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -77,6 +78,14 @@ function LogsComponent({
     }
 
     const handlePodSelection = (selectedOption: string) => {
+        if (selectedOption.startsWith('All')) {
+            ReactGA.event({
+                category: 'log analyser',
+                action: 'all-pods-selected',
+                label: '',
+            })
+        }
+
         const pods = getSelectedPodList(selectedOption)
         const containers = new Set(pods[0].containers ?? [])
         const selectedContainer = containers.has(logState.selectedContainerOption)
@@ -361,8 +370,6 @@ function LogsComponent({
         ]
     }
 
-    
-
     return isDeleted ? (
         <div>
             <MessageUI
@@ -416,7 +423,7 @@ function LogsComponent({
                                             <Select
                                                 placeholder="Select Pod"
                                                 options={getPodGroups()}
-                                                defaultValue={getFirstOrNull(
+                                                defaultValue={getFirstOrNull<{ label: string; value: string }>(
                                                     podContainerOptions.podOptions.map((_pod) => ({
                                                         label: _pod.name,
                                                         value: _pod.name,

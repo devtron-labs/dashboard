@@ -221,14 +221,16 @@ export function getInitialPodContainerSelection(
     }
 }
 
-export function getFirstOrNull<T>(arr: T[]): T | null {
-    if (arr.length >=2) {
-        return arr[1]
+export function getFirstOrNull<T extends {label:string}>(arr: T[]): T | null {
+
+    if(arr.length === 0){
+        return null
     }
-    else if (arr.length === 1) {
-        return arr[0]
-    }
-    return null
+    // remove all pods in 'ALL PODS FOR' category, to get only 'INDIVIDUAL PODS' list
+    const indvPodsList: T[] = arr.filter((_pod) => !_pod.label.startsWith('All'))
+
+    // select first pod from the 'INDIVIDUAL PODS' list
+    return indvPodsList.length > 0 ? indvPodsList[0] : null
 }
 
 export const getContainerSelectStyles = () => {

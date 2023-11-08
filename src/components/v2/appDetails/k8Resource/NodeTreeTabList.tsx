@@ -9,6 +9,7 @@ import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '../../../common'
 import './NodeTreeTabList.scss'
+import ReactGA from 'react-ga4'
 
 export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
@@ -53,6 +54,15 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                 className="resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor m-0-imp"
             >
                 <div
+                    onClick={() => {
+                        if (tab.name === AppDetailsTabs.log_analyzer) {
+                            ReactGA.event({
+                                category: 'log analyser',
+                                action: 'log-analyser-clicked',
+                                label: '',
+                            })
+                        }
+                    }}
                     className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${
                         tab.isDeleted ? 'tab-list__deleted cr-5' : ''
                     }`}
@@ -104,7 +114,12 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                 }
                                 wrap={(children) => {
                                     return (
-                                        <Tippy className="default-tt dc_max-width__max-content" arrow={false} placement="top" content={tab.title}>
+                                        <Tippy
+                                            className="default-tt dc_max-width__max-content"
+                                            arrow={false}
+                                            placement="top"
+                                            content={tab.title}
+                                        >
                                             {children}
                                         </Tippy>
                                     )
