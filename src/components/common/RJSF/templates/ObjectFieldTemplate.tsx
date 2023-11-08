@@ -86,12 +86,6 @@ export const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
     const hasAdditionalProperties = !!schema.additionalProperties
     const showTitle = title && !hasAdditionalProperties
 
-    if (hasAdditionalProperties) {
-        console.log({ title, properties })
-    }
-
-    console.log({ title, properties })
-
     return (
         <fieldset id={idSchema.$id}>
             {showTitle && (
