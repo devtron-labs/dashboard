@@ -211,6 +211,8 @@ export interface DeploymentStatusCardType {
 
 export interface IssuesCardType {
     hideDetails?: boolean
+    loadingResourceTree?: boolean
+    showIssuesListingModal: () => void
 }
 
 export interface SecurityVulnerabilityCardType {
@@ -223,11 +225,15 @@ export interface SecurityVulnerabilityCardType {
     loadingResourceTree?: boolean
 }
 
-export interface DeployedCommitCardType{
+export interface DeployedCommitCardType {
     showCommitInfoDrawer: () => void
     loadingResourceTree?: boolean
     envId: number | string
     ciArtifactId: number
+}
+
+export interface IssuesListingModalType {
+    closeIssuesListingModal: () => void
 }
 
 export interface LastUpdatedCardType {

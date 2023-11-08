@@ -40,6 +40,7 @@ export function SourceInfo({
     refetchDeploymentStatus,
     severityCount,
     showVulnerabilitiesModal,
+    showIssuesListingModal,
     envId,
     ciArtifactId,
 }: SourceInfoType) {
@@ -245,7 +246,7 @@ export function SourceInfo({
                                 />
                             )}
                             {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                            <IssuesCard />
+                            <IssuesCard loadingResourceTree={loadingResourceTree} showIssuesListingModal={showIssuesListingModal} />
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}

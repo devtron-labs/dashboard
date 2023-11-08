@@ -1965,3 +1965,54 @@ table.resource-tree {
         }
     }
 }
+
+.issues-listing-modal {
+    margin: auto;
+    margin-right: 0;
+    height: 100%;
+    overflow: scroll;
+
+    &__body {
+        
+        &__head-row {
+            display: flex;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 20px;
+            padding: 12px 0;
+            margin: 0 20px;
+            color: var(--N700);
+            border-color: var(--N100);
+            border-bottom-style: solid;
+            border-bottom-width: 1px;
+            text-transform: uppercase;
+
+            &__col-1 {
+                flex: 1;
+            }
+
+            &__col-2 {
+                flex: 2
+            }
+        }
+
+        &__row {
+            display: flex;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 20px;
+            text-transform: capitalize;
+            padding: 8px 20px;
+            color: var(--N900);
+
+            &__col-1 {
+                flex: 1;
+            }
+
+            &__col-2 {
+                flex: 2
+            }
+
+        }
+    }
+}

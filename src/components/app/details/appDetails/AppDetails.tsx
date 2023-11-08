@@ -24,13 +24,7 @@ import {
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
-import {
-    NavigationArrow,
-    useAppContext,
-    useEventSource,
-    FragmentHOC,
-    ScanDetailsModal,
-} from '../../../common'
+import { NavigationArrow, useAppContext, useEventSource, FragmentHOC, ScanDetailsModal } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
@@ -95,6 +89,7 @@ import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
+import IssuesListingModal from './IssuesListingModal'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
@@ -105,7 +100,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
 let deploymentStatusTimer = null
 let appDetailsIntervalID = null
 
-export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
+export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
@@ -116,41 +111,41 @@ export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
     const isVirtualEnvRef = useRef(false)
 
     const envList = useMemo(() => {
-      if (otherEnvsResult?.result?.length > 0) {
-          const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-          const _envList =
-              otherEnvsResult.result
-                  .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                  ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+        if (otherEnvsResult?.result?.length > 0) {
+            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+            const _envList =
+                otherEnvsResult.result
+                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
 
-          if (_envList.length > 0) {
-              let _envId
-              if (!params.envId && _envList.length === 1) {
-                  _envId = _envList[0].environmentId
-              } else if (
-                  !params.envId &&
-                  environmentId &&
-                  _envList.map((env) => env.environmentId).includes(environmentId)
-              ) {
-                  _envId = environmentId
-              } else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
-                  _envId = _envList[0].environmentId
-              }
-              if (_envId) {
-                  const newUrl = getAppDetailsURL(params.appId, _envId)
-                  push(newUrl)
-              } else{
+            if (_envList.length > 0) {
+                let _envId
+                if (!params.envId && _envList.length === 1) {
+                    _envId = _envList[0].environmentId
+                } else if (
+                    !params.envId &&
+                    environmentId &&
+                    _envList.map((env) => env.environmentId).includes(environmentId)
+                ) {
+                    _envId = environmentId
+                } else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
+                    _envId = _envList[0].environmentId
+                }
+                if (_envId) {
+                    const newUrl = getAppDetailsURL(params.appId, _envId)
+                    push(newUrl)
+                } else {
+                    setEnvironmentId(null)
+                }
+            } else {
                 setEnvironmentId(null)
-              }
-          } else {
-              setEnvironmentId(null)
-          }
-          return _envList
-      } else {
-          setEnvironmentId(null)
-      }
-      return []
-  }, [filteredEnvIds, otherEnvsResult])
+            }
+            return _envList
+        } else {
+            setEnvironmentId(null)
+        }
+        return []
+    }, [filteredEnvIds, otherEnvsResult])
 
     useEffect(() => {
         if (!params.envId) return
@@ -163,9 +158,7 @@ export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {(envList.length === 0) &&
-                        !isAppDeleted &&
-                        !isVirtualEnvRef.current && <AppNotConfigured />}
+                    {envList.length === 0 && !isAppDeleted && !isVirtualEnvRef.current && <AppNotConfigured />}
                     {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
                         <EnvironmentNotConfigured environments={envList} />
                     )}
@@ -232,7 +225,8 @@ export const Details: React.FC<DetailsType> = ({
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
-    const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
+    const [showScanDetailsModal, toggleScanDetailsModal] = useState<boolean>(false)
+    const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
     const [lastExecutionDetail, setLastExecutionDetail] = useState({
         imageScanDeployInfoId: 0,
         severityCount: { critical: 0, moderate: 0, low: 0 },
@@ -505,11 +499,11 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetailsError])
 
     useEffect(() => {
-      clearPollingInterval()
-      if (isPollingRequired) {
-          appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
-          callAppDetailsAPI(true)
-      }
+        clearPollingInterval()
+        if (isPollingRequired) {
+            appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
+            callAppDetailsAPI(true)
+        }
     }, [isPollingRequired])
 
     async function handleHibernate(e) {
@@ -612,6 +606,9 @@ export const Details: React.FC<DetailsType> = ({
                     showVulnerabilitiesModal={() => {
                         toggleScanDetailsModal(true)
                     }}
+                    showIssuesListingModal={() => {
+                        toggleIssuesModal(true)
+                    }}
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
                 />
@@ -681,6 +678,7 @@ export const Details: React.FC<DetailsType> = ({
                     }}
                 />
             )}
+            {showIssuesModal && <IssuesListingModal closeIssuesListingModal={() => toggleIssuesModal(false)} />}
             {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
             {commitInfo && (
                 <TriggerInfoModal
