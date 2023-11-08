@@ -35,15 +35,6 @@ export interface AppDetailsPathParams {
     appId: string
     envId?: string
 }
-export interface SecurityVulnerabilititesProps {
-    imageScanDeployInfoId: number
-    severityCount: {
-        critical: number
-        moderate: number
-        low: number
-    }
-    onClick: () => void
-}
 
 export interface SyncStageResourceDetail {
     id: number

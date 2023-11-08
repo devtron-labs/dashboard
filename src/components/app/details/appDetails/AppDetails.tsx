@@ -59,7 +59,6 @@ import { SourceInfo } from './SourceInfo'
 import { AppStreamData, Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
 import {
     aggregateNodes,
-    SecurityVulnerabilitites,
     getSelectedNodeItems,
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
@@ -625,13 +624,6 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest ? (
                 <>
-                    <SecurityVulnerabilitites
-                        imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
-                        severityCount={lastExecutionDetail.severityCount}
-                        onClick={() => {
-                            toggleScanDetailsModal(true)
-                        }}
-                    />
                     {environment && !isVirtualEnvRef.current && (
                         <AppMetrics
                             appName={appDetails.appName}
