@@ -46,6 +46,16 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
         }, 1)
     }
 
+    const sendLogAnalyserEvent = (tab: ApplicationObject) => {
+        if (tab.name === AppDetailsTabs.log_analyzer) {
+            ReactGA.event({
+                category: 'log analyser',
+                action: 'log-analyser-clicked',
+                label: '',
+            })
+        }
+    }
+
     const getTabNavLink = (tab: ApplicationObject) => {
         return (
             <NavLink
@@ -54,15 +64,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                 className="resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor m-0-imp"
             >
                 <div
-                    onClick={() => {
-                        if (tab.name === AppDetailsTabs.log_analyzer) {
-                            ReactGA.event({
-                                category: 'log analyser',
-                                action: 'log-analyser-clicked',
-                                label: '',
-                            })
-                        }
-                    }}
+                    onClick={() => sendLogAnalyserEvent(tab)}
                     className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${
                         tab.isDeleted ? 'tab-list__deleted cr-5' : ''
                     }`}
