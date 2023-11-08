@@ -21,6 +21,7 @@ import { PageHeaderType } from './header.type'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { getLoginInfo, getRandomColor, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { BULK_EDIT_HEADER } from './constants'
+import AnnouncementBanner from '../AnnouncementBanner'
 
 function PageHeader({
     headerName,
@@ -38,6 +39,7 @@ function PageHeader({
     showCloseButton = false,
     onClose,
     markAsBeta,
+    showAnnouncementHeader,
 }: PageHeaderType) {
     const { loginCount, setLoginCount, showGettingStartedCard, setShowGettingStartedCard, setGettingStartedClicked } =
         useContext(mainContext)
@@ -242,6 +244,7 @@ function PageHeader({
                     {renderLogoutHelpSection()}
                 </div>
             )}
+              {showAnnouncementHeader && <AnnouncementBanner parentClassName="page-header-banner" />}
         </div>
     )
 }
