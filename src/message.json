@@ -23,6 +23,9 @@
                 "age": {
                     "type": "number",
                     "default": 0
+                },
+                "Null": {
+                    "type": "null"
                 }
             },
             "required": ["owner"]
