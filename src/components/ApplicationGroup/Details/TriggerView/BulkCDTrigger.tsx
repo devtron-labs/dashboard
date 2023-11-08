@@ -202,7 +202,21 @@ export default function BulkCDTrigger({
                             if (response.value['appId'] === selectedApp.appId) {
                                 setSelectedImageFromBulk(BulkSelectionEvents.SELECT_NONE)
                             }
+                        } else if (response.value.materials?.length === 0) {
+                            setTagNotFoundWarningsMap((prevTagNotFoundWarningsMap) => {
+                                const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
+                                _tagNotFoundWarningsMap.set(
+                                    response.value['appId'],
+                                    "Tag '" +
+                                        (selectedTagName.value?.length > 15
+                                            ? selectedTagName.value.substring(0, 10) + '...'
+                                            : selectedTagName.value) +
+                                        `' not found`,
+                                )
+                                return _tagNotFoundWarningsMap
+                            })
                         }
+
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
                         const errorReason = response.reason
@@ -310,18 +324,22 @@ export default function BulkCDTrigger({
 
         const appWiseTagsToArtifactIdMapMappings = {}
         appList.forEach((app) => {
-            const tagsToArtifactIdMap = { latest: 0 }
-            for (let i = 0; i < app.material?.length; i++) {
-                const mat = app.material?.[i]
-                mat.imageReleaseTags?.forEach((imageTag) => {
-                    tagsToArtifactIdMap[imageTag.tagName] = i
-                })
+            if (!app.material?.length) {
+                appWiseTagsToArtifactIdMapMappings[app.appId] = {}
+            } else {
+                const tagsToArtifactIdMap = { latest: 0 }
+                for (let i = 0; i < app.material?.length; i++) {
+                    const mat = app.material?.[i]
+                    mat.imageReleaseTags?.forEach((imageTag) => {
+                        tagsToArtifactIdMap[imageTag.tagName] = i
+                    })
 
-                if (mat.deployed && mat.latest) {
-                    tagsToArtifactIdMap['active'] = i
+                    if (mat.deployed && mat.latest) {
+                        tagsToArtifactIdMap['active'] = i
+                    }
                 }
+                appWiseTagsToArtifactIdMapMappings[app.appId] = tagsToArtifactIdMap
             }
-            appWiseTagsToArtifactIdMapMappings[app.appId] = tagsToArtifactIdMap
         })
 
         // Don't use it as single, use it through update function
@@ -333,8 +351,7 @@ export default function BulkCDTrigger({
                 _tagNotFoundWarningsMap.delete(appId)
                 setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
                 setSelectedTagName({ value: 'Multiple tags', label: 'Multiple tags' })
-            }
-            else {
+            } else {
                 // remove warning if any
                 const _tagNotFoundWarningsMap = new Map(tagNotFoundWarningsMap)
                 _tagNotFoundWarningsMap.delete(appId)
@@ -370,6 +387,7 @@ export default function BulkCDTrigger({
                 // Handling the behavior for excluded filter state
                 if (artifactIndex !== -1) {
                     const selectedImageFilterState = app.material?.[artifactIndex]?.filterState
+
                     if (selectedImageFilterState !== FilterStates.ALLOWED) {
                         artifactIndex = -1
                         _tagNotFoundWarningsMap.set(
