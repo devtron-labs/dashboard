@@ -1,10 +1,7 @@
 import React from 'react'
 import {
-    FormContextType,
     ObjectFieldTemplatePropertyType,
     ObjectFieldTemplateProps,
-    RJSFSchema,
-    StrictRJSFSchema,
     canExpand,
     getTemplate,
     getUiOptions,
@@ -31,7 +28,7 @@ const Field = (props: ObjectFieldTemplateProps) => {
     } = registry.templates
     const hasAdditionalProperties = !!schema.additionalProperties
 
-    const ActionButton = () =>
+    const ActionButton = 
         canExpand(schema, uiSchema, formData) && (
             <AddButton
                 className="object-property-expand"
@@ -42,7 +39,7 @@ const Field = (props: ObjectFieldTemplateProps) => {
             />
         )
 
-    const Properties = () => <>{properties.map((prop: ObjectFieldTemplatePropertyType) => prop.content)}</>
+    const Properties = properties.map((prop: ObjectFieldTemplatePropertyType) => prop.content)
 
     if (hasAdditionalProperties) {
         if (properties.length) {
@@ -55,17 +52,17 @@ const Field = (props: ObjectFieldTemplateProps) => {
                         id={idSchema.$id}
                         shouldAlignCenter={false}
                     >
-                        <div><Properties /></div>
+                        <div>{Properties}</div>
                     </FieldRowWithLabel>
-                    <ActionButton />
+                    {ActionButton}
                 </>
             )
         } else {
             return (
                 <>
-                    <Properties />
+                    {Properties}
                     <FieldRowWithLabel label={title} required={required} showLabel id={idSchema.$id}>
-                        <ActionButton />
+                        {ActionButton}
                     </FieldRowWithLabel>
                 </>
             )
@@ -73,8 +70,8 @@ const Field = (props: ObjectFieldTemplateProps) => {
     }
     return (
         <>
-            <Properties />
-            <ActionButton />
+            {Properties}
+            {ActionButton}
         </>
     )
 }
