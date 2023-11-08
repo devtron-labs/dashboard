@@ -5,6 +5,20 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 
 const IssuesListingModal = ({ closeIssuesListingModal }: IssuesListingModalType) => {
+
+    const renderErrorRow = () => {
+        // @TODO: Get this data from the api response
+        const data = [];
+        return data.map(errorItem => {
+            return (
+                <div className="issues-listing-modal__body__row">
+                    <div className="issues-listing-modal__body__row__col-1">{errorItem.error}</div>
+                    <div className="issues-listing-modal__body__row__col-2">{errorItem.description}</div>
+                </div>
+            )
+        })
+    }
+
     return (
         <Drawer position="right" width="800px" onEscape={closeIssuesListingModal}>
             <div className="issues-listing-modal bcn-0">
