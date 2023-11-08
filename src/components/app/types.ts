@@ -510,6 +510,7 @@ export interface SourceInfoType {
     low: number
 }
   showVulnerabilitiesModal?: () => void
+  showIssuesListingModal?: () => void
   envId?: number | string
   ciArtifactId?: number 
 }

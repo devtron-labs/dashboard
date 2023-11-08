@@ -2,12 +2,17 @@ import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
 
 import { IssuesCardType } from './appDetails.type'
 
-export const IssuesCard = ({ hideDetails }: IssuesCardType) => {
+export const IssuesCard = ({ hideDetails, loadingResourceTree, showIssuesListingModal }: IssuesCardType) => {
     return (
-        <div data-testid="issues-card" className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200">
+        <div
+            data-testid="issues-card"
+            onClick={loadingResourceTree ? noop : showIssuesListingModal}
+            className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200"
+        >
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
@@ -22,9 +27,7 @@ export const IssuesCard = ({ hideDetails }: IssuesCardType) => {
                         </Tippy>
                     </div>
                     <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
-                        <div className="fs-13 fw-6  lh-20 f-degraded">
-                            3 Errors found
-                        </div>
+                        <div className="fs-13 fw-6  lh-20 f-degraded">3 Errors found</div>
                     </div>
                 </div>
                 <Error className="form__icon--error icon-dim-24" />
