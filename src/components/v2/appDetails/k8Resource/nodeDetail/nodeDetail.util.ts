@@ -227,7 +227,7 @@ export function getFirstOrNull<T extends {label:string}>(arr: T[]): T | null {
         return null
     }
     // remove all pods in 'ALL PODS FOR' category, to get only 'INDIVIDUAL PODS' list
-    const indvPodsList: T[] = arr.filter((_pod) => !_pod.label.startsWith('All'))
+    const indvPodsList: T[] = arr.filter((_pod) => !_pod.label.startsWith('All '))
 
     // select first pod from the 'INDIVIDUAL PODS' list
     return indvPodsList.length > 0 ? indvPodsList[0] : null

@@ -78,7 +78,7 @@ function LogsComponent({
     }
 
     const handlePodSelection = (selectedOption: string) => {
-        if (selectedOption.startsWith('All')) {
+        if (selectedOption.startsWith('All ')) {
             ReactGA.event({
                 category: 'log analyser',
                 action: 'all-pods-selected',
