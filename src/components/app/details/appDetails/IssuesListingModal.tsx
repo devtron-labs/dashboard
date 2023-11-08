@@ -1,10 +1,27 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { IssuesListingModalType } from './appDetails.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 
 const IssuesListingModal = ({ closeIssuesListingModal }: IssuesListingModalType) => {
+    const issuesModalRef = useRef<HTMLDivElement>(null)
+    const outsideClickHandler = (evt): void => {
+        if (
+            issuesModalRef.current &&
+            !issuesModalRef.current.contains(evt.target) &&
+            typeof closeIssuesListingModal === 'function'
+        ) {
+            closeIssuesListingModal()
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('click', outsideClickHandler)
+        return (): void => {
+            document.removeEventListener('click', outsideClickHandler)
+        }
+    }, [outsideClickHandler])
 
     const renderErrorRow = () => {
         // @TODO: Get this data from the api response
@@ -21,7 +38,7 @@ const IssuesListingModal = ({ closeIssuesListingModal }: IssuesListingModalType)
 
     return (
         <Drawer position="right" width="800px" onEscape={closeIssuesListingModal}>
-            <div className="issues-listing-modal bcn-0">
+            <div className="issues-listing-modal bcn-0" ref={issuesModalRef}>
                 <div className="issues-listing-modal__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bcn-0 flex dc__content-space">
                     <div className="issues-listing-modal__header-text flex">
                         <Error className="form__icon--error icon-dim-20" />
