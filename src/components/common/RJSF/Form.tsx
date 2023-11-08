@@ -1,9 +1,10 @@
-import React, { ComponentProps } from 'react'
+import React from 'react'
 import RJSFForm from '@rjsf/core'
 import validator from '@rjsf/validator-ajv8'
 
-import { fields, templates, widgets } from './config'
+import { templates, widgets } from './config'
 import { FormProps } from './types'
+import { translateString } from './utils'
 import './rjsfForm.scss'
 
 export const Form = (props: FormProps) => (
@@ -18,6 +19,6 @@ export const Form = (props: FormProps) => (
             ...props.templates,
         }}
         widgets={{ ...widgets, ...props.widgets }}
-        fields={{ ...fields, ...props.fields }}
+        translateString={translateString}
     />
 )

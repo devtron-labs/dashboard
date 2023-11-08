@@ -1,13 +1,13 @@
 import React from 'react'
-import { FieldProps, RegistryWidgetsType } from '@rjsf/utils'
+import { RegistryWidgetsType } from '@rjsf/utils'
 
-import { ArrayField } from './fields'
 import {
     AddButton,
     ArrayFieldItemTemplate,
     ArrayFieldTemplate,
     BaseInputTemplate,
     FieldTemplate,
+    ObjectFieldTemplate,
     RemoveButton,
     TitleFieldTemplate,
     WrapIfAdditionalTemplate,
@@ -26,8 +26,7 @@ export const templates: FormProps['templates'] = {
     BaseInputTemplate,
     ButtonTemplates: { AddButton, RemoveButton },
     FieldTemplate,
+    ObjectFieldTemplate,
     TitleFieldTemplate,
     WrapIfAdditionalTemplate,
 }
-
-export const fields: FormProps['fields'] = { ArrayField: ArrayField as unknown as React.ComponentType<FieldProps> }

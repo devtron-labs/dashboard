@@ -1,5 +1,5 @@
 import React from 'react'
-import { FieldTemplateProps, getUiOptions, getTemplate } from '@rjsf/utils'
+import { FieldTemplateProps, getUiOptions, getTemplate, ADDITIONAL_PROPERTY_FLAG } from '@rjsf/utils'
 import { FieldRowWithLabel } from '../common/FieldRow'
 
 export const Field = (props: FieldTemplateProps) => {
@@ -11,8 +11,10 @@ export const Field = (props: FieldTemplateProps) => {
         registry,
         uiOptions,
     )
-    // Label is not displayed for boolean fields by default
-    const showLabel = displayLabel || schema.type === 'boolean'
+    // Object type fields have additional properties for key/value pairs
+    const hasAdditionalProperties = ADDITIONAL_PROPERTY_FLAG in schema
+    // Label is not displayed for boolean fields by default and hide for object type fields
+    const showLabel = (displayLabel || schema.type === 'boolean') && !hasAdditionalProperties
 
     return hidden ? (
         <div className="hidden">{children}</div>

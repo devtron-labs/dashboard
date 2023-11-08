@@ -19,15 +19,28 @@ export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
         props
     const uiOptions = getUiOptions(uiSchema)
     const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate'>('ArrayFieldItemTemplate', registry, uiOptions)
+    const label = uiOptions.title || title
 
     return (
         <fieldset className={className} id={idSchema.$id}>
             {/* Show the label here in case there are no items, otherwise handled by Field Template */}
             {items.length ? (
                 <>
-                    {items?.map(({ key, ...itemProps }: ArrayFieldTemplateItemType) => (
-                        <ArrayFieldItemTemplate key={key} {...itemProps} />
-                    ))}
+                    {items?.map(({ key, ...itemProps }: ArrayFieldTemplateItemType, index) => {
+                        // Show the title as the label for the first field
+                        const children = {
+                            ...itemProps.children,
+                            props: {
+                                ...itemProps.children.props,
+                                name: index === 0 ? label : '',
+                            },
+                        }
+                        return (
+                            <ArrayFieldItemTemplate key={key} {...itemProps}>
+                                {children}
+                            </ArrayFieldItemTemplate>
+                        )
+                    })}
                     <ActionButton
                         canAdd={canAdd}
                         onAddClick={onAddClick}
@@ -38,7 +51,7 @@ export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
                     />
                 </>
             ) : (
-                <FieldRowWithLabel label={title} required={required} showLabel id={idSchema.$id}>
+                <FieldRowWithLabel label={label} required={required} showLabel id={idSchema.$id}>
                     <ActionButton
                         canAdd={canAdd}
                         onAddClick={onAddClick}
