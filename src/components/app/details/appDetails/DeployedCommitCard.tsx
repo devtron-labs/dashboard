@@ -48,16 +48,14 @@ const DeployedCommitCard = ({
                             className="default-tt"
                             arrow={false}
                             placement="top"
-                            content="Status of last triggered deployment" // @TODO: update this copy
+                            content="Last deployment was triggered with this commit"
                         >
                             <Question className="icon-dim-16 mt-2" />
                         </Tippy>
                     </div>
                     <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
                         <CommitIcon className="icon-dim-20" />
-                        <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12">
-                            {commitId}
-                        </div>
+                        <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12">{commitId}</div>
                     </div>
                 </div>
                 <GitHub className="github-icon" />
