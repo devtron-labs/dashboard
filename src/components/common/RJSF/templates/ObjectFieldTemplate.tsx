@@ -28,16 +28,15 @@ const Field = (props: ObjectFieldTemplateProps) => {
     } = registry.templates
     const hasAdditionalProperties = !!schema.additionalProperties
 
-    const ActionButton = 
-        canExpand(schema, uiSchema, formData) && (
-            <AddButton
-                className="object-property-expand"
-                onClick={onAddClick(schema)}
-                disabled={disabled || readonly}
-                uiSchema={uiSchema}
-                registry={registry}
-            />
-        )
+    const ActionButton = canExpand(schema, uiSchema, formData) && (
+        <AddButton
+            className="object-property-expand"
+            onClick={onAddClick(schema)}
+            disabled={disabled || readonly}
+            uiSchema={uiSchema}
+            registry={registry}
+        />
+    )
 
     const Properties = properties.map((prop: ObjectFieldTemplatePropertyType) => prop.content)
 
@@ -59,11 +58,9 @@ const Field = (props: ObjectFieldTemplateProps) => {
             )
         } else {
             return (
-                <>
-                    <FieldRowWithLabel label={title} required={required} showLabel id={idSchema.$id}>
-                        {ActionButton}
-                    </FieldRowWithLabel>
-                </>
+                <FieldRowWithLabel label={title} required={required} showLabel id={idSchema.$id}>
+                    {ActionButton}
+                </FieldRowWithLabel>
             )
         }
     }

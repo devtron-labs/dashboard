@@ -3,9 +3,18 @@ import { ADDITIONAL_PROPERTY_FLAG, WrapIfAdditionalTemplateProps } from '@rjsf/u
 
 import { PLACEHOLDERS } from '../constants'
 
-export const WrapIfAdditionalTemplate = (props: WrapIfAdditionalTemplateProps) => {
-    const { id, disabled, label, onKeyChange, onDropPropertyClick, readonly, schema, children, uiSchema, registry } =
-        props
+export const WrapIfAdditionalTemplate = ({
+    id,
+    disabled,
+    label,
+    onKeyChange,
+    onDropPropertyClick,
+    readonly,
+    schema,
+    children,
+    uiSchema,
+    registry,
+}: WrapIfAdditionalTemplateProps) => {
     const { templates } = registry
     const { RemoveButton } = templates.ButtonTemplates
     const additional = ADDITIONAL_PROPERTY_FLAG in schema

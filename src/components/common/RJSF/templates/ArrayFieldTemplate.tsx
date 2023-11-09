@@ -26,7 +26,7 @@ export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
             {/* Show the label here in case there are no items, otherwise handled by Field Template */}
             {items.length ? (
                 <>
-                    {items?.map(({ key, ...itemProps }: ArrayFieldTemplateItemType, index) => {
+                    {items.map(({ key, ...itemProps }: ArrayFieldTemplateItemType, index) => {
                         // Show the title as the label for the first field
                         const children = {
                             ...itemProps.children,
