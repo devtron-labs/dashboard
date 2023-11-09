@@ -32,6 +32,7 @@ export interface WorkflowEditState {
     showOpenCIPipelineBanner?: boolean
     filteredCIPipelines?: any[]
     envIds?: number[]
+    showWorkflowOptionsModal: boolean
 }
 
 export interface WorkflowEditProps
@@ -210,4 +211,21 @@ export interface PipelineContext {
     globalVariables: {
         stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string
 }[]
+}
+
+export interface SourceTypeCardProps {
+    title: string
+    subtitle: string
+    image: string
+    alt: string
+    handleCardAction: (e: React.MouseEvent) => void
+    dataTestId: string
+    type: string
+}
+
+export interface WorkflowOptionsModalProps {
+    handleWorkflowOptionsModalToggle: (e: any) => void
+    addCIPipeline: (type: CIPipelineNodeType, workflowId?: number | string) => void
+    addWebhookCD: (workflowId?: number | string) => void
+    workflowId?: number | string
 }

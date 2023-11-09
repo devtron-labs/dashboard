@@ -12,6 +12,7 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
+// import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
@@ -37,8 +38,10 @@ import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
 import Tippy from '@tippyjs/react'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
+import WorkflowOptionsModal from './WorkflowOptionsModal'
 
 export const pipelineContext = createContext<PipelineContext>(null)
+// const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
@@ -70,6 +73,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             envToShowWebhookTippy: -1,
             filteredCIPipelines: [],
             envIds: [],
+            showWorkflowOptionsModal: false,
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -169,6 +173,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ workflowId, showDeleteDialog: true })
     }
 
+    // TODO: Remove this
     toggleCIMenu = (event) => {
         if (this.props.filteredEnvIds) {
             return
@@ -180,6 +185,16 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 left: left,
             },
             showCIMenu: !this.state.showCIMenu,
+        })
+    }
+
+    handleWorkflowOptionsModalToggle = () => {
+        if (this.props.filteredEnvIds) {
+            return
+        }
+
+        this.setState({
+            showWorkflowOptionsModal: !this.state.showWorkflowOptionsModal,
         })
     }
 
@@ -443,14 +458,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
-    renderNewBuildPipelineButton(openAtTop: boolean) {
-        // let { top, left } = this.state.cIMenuPosition
-        // if (openAtTop) {
-        //     top = top - 382 + 80
-        //     left = left - 85
-        // } else {
-        //     top = top + 40
-        // }
+    renderNewBuildPipelineButton() {
         return (
             <ConditionalWrap
                 condition={!!this.props.filteredEnvIds}
@@ -472,26 +480,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         this.props.filteredEnvIds ? 'dc__disabled' : ''
                     }`}
                     data-testid="new-workflow-button"
-                    onClick={this.toggleCIMenu}
+                    onClick={this.handleWorkflowOptionsModalToggle}
                 >
                     <div className="flexbox dc__content-space dc__align-items-center h-20">
                         <ICAddWhite className="icon-dim-18 mr-5" />
                         <p className="m-0 fs-13 lh-20 cn-0">New workflow</p>
                     </div>
                 </button>
-
-                {/* FIXME: */}
-                {/* <PipelineSelect
-                        workflowId={0}
-                        showMenu={this.state.showCIMenu}
-                        addCIPipeline={this.addCIPipeline}
-                        addWebhookCD={this.addWebhookCD}
-                        toggleCIMenu={this.toggleCIMenu}
-                        styles={{
-                            left: `${left}px`,
-                            top: `${top}px`,
-                        }}
-                    /> */}
             </ConditionalWrap>
         )
     }
@@ -543,7 +538,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         </a>
                     )}
                 </p>
-                {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton(true)}
+                {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton()}
             </div>
         )
     }
@@ -665,7 +660,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
                             <TippyCustomized
                                 theme={TippyTheme.white}
-                                className="w-300 h-100 fcv-5"
+                                className="w-300 h-100 dc__align-left"
                                 placement="right"
                                 Icon={HelpIcon}
                                 heading={WORKFLOW_EDITOR_HEADER_TIPPY.HEADING}
@@ -695,13 +690,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
                         {this.props.isJobView
                             ? this.renderNewJobPipelineButton()
-                            : this.renderNewBuildPipelineButton(false)}
+                            : this.renderNewBuildPipelineButton()}
                     </div>
 
                     {this.renderRouter()}
                     {this.renderHostErrorMessage()}
                     {this.renderWorkflows()}
                     {this.renderDeleteDialog()}
+                    {/* {SyncEnvironment && <SyncEnvironment/>} */}
                     {this.state.showSuccessScreen && (
                         <CDSuccessModal
                             appId={this.props.match.params.appId}
@@ -713,6 +709,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     )}
                     {this.state.showNoGitOpsWarningPopup && (
                         <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning} />
+                    )}
+
+                    {this.state.showWorkflowOptionsModal && (
+                        <WorkflowOptionsModal
+                            handleWorkflowOptionsModalToggle={this.handleWorkflowOptionsModalToggle}
+                            addWebhookCD={this.addWebhookCD}
+                            addCIPipeline={this.addCIPipeline}
+                            workflowId={0}
+                        />
                     )}
                     {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}
                 </div>
