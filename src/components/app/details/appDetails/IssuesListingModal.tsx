@@ -4,7 +4,7 @@ import { IssuesListingModalType } from './appDetails.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 
-const IssuesListingModal = ({ closeIssuesListingModal }: IssuesListingModalType) => {
+const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListingModalType) => {
     const issuesModalRef = useRef<HTMLDivElement>(null)
     const outsideClickHandler = (evt): void => {
         if (
@@ -23,14 +23,12 @@ const IssuesListingModal = ({ closeIssuesListingModal }: IssuesListingModalType)
         }
     }, [outsideClickHandler])
 
-    const renderErrorRow = () => {
-        // @TODO: Get this data from the api response
-        const data = [];
-        return data.map(errorItem => {
+    const renderErrorRows = () => {
+        return errorsList?.map((errorItem) => {
             return (
                 <div className="issues-listing-modal__body__row">
                     <div className="issues-listing-modal__body__row__col-1">{errorItem.error}</div>
-                    <div className="issues-listing-modal__body__row__col-2">{errorItem.description}</div>
+                    <div className="issues-listing-modal__body__row__col-2">{errorItem.message}</div>
                 </div>
             )
         })
@@ -56,26 +54,7 @@ const IssuesListingModal = ({ closeIssuesListingModal }: IssuesListingModalType)
                         <div className="issues-listing-modal__body__head-row__col-1">ERROR</div>
                         <div className="issues-listing-modal__body__head-row__col-2">MESSAGE</div>
                     </div>
-                    <div className="issues-listing-modal__body__row">
-                        <div className="issues-listing-modal__body__row__col-1">error1</div>
-                        <div className="issues-listing-modal__body__row__col-2">
-                            Description of error1. Lorem Ipsum is simply dummy text of the printing and typesetting
-                            industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when
-                            an unknown printer took a galley of type and scrambled it to make a type specimen book. It
-                            has survived not only five centuries, but also the leap into electronic typesetting,
-                            remaining essentially unchanged. It was popularised in the 1960s with the release of
-                            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-                            software like Aldus PageMaker including versions of Lorem Ipsum.
-                        </div>
-                    </div>
-                    <div className="issues-listing-modal__body__row">
-                        <div className="issues-listing-modal__body__row__col-1">error2</div>
-                        <div className="issues-listing-modal__body__row__col-2">Description of error2</div>
-                    </div>
-                    <div className="issues-listing-modal__body__row">
-                        <div className="issues-listing-modal__body__row__col-1">error3</div>
-                        <div className="issues-listing-modal__body__row__col-2">Description of error3</div>
-                    </div>
+                    {renderErrorRows()}
                 </div>
             </div>
         </Drawer>

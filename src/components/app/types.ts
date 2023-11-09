@@ -1,7 +1,8 @@
+import React from 'react'
 import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
-import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
@@ -492,6 +493,7 @@ export interface TagChipsContainerType {
 }
 export interface SourceInfoType {
   appDetails: AppDetails
+  appStreamData?: AppStreamData
   setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
   environment: AppEnvironment
   environments: AppEnvironment[]
@@ -513,6 +515,7 @@ export interface SourceInfoType {
   showIssuesListingModal?: () => void
   envId?: number | string
   ciArtifactId?: number 
+  setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
 }
 
 export interface EnvironmentListMinType {
