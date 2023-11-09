@@ -1,9 +1,8 @@
-import { ReactNode } from 'react'
-
+import React, { ReactNode } from 'react'
 import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
-import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
@@ -94,8 +93,8 @@ export interface ChartUsed {
 }
 
 interface GitMaterial {
-  displayName: string,
-  redirectionUrl: string,
+    displayName: string
+    redirectionUrl: string
 }
 
 export interface AppMetaInfo {
@@ -343,7 +342,7 @@ export interface GenericNode<T> {
 
 export enum AppListColumnSort {
     appNameSort = 'appName',
-    lastDeployedSort = 'lastDeployedAt'
+    lastDeployedSort = 'lastDeployedAt',
 }
 
 export enum Nodes {
@@ -387,7 +386,7 @@ export enum Nodes {
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
     Namespace = 'Namespace',
-    Overview = 'Overview'
+    Overview = 'Overview',
 }
 export type NodeType = keyof typeof Nodes
 
@@ -530,35 +529,37 @@ export interface JobPipeline {
 export interface TagChipsContainerType {
     labelTags: TagType[]
     onAddTagButtonClick: (e) => void
-    resourceName: string;
+    resourceName: string
     /**
      * Toggles the background to white when true
      */
-    whiteBackground?: boolean;
+    whiteBackground?: boolean
 }
 export interface SourceInfoType {
-  appDetails: AppDetails
-  setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
-  environment: AppEnvironment
-  environments: AppEnvironment[]
-  showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-  showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
-  showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
-  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
-  loadingDetails?: boolean
-  loadingResourceTree?: boolean
-  isVirtualEnvironment?: boolean
-  setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
-  refetchDeploymentStatus: (showTimeline?: boolean)=> void
-  severityCount?: {
-    critical: number
-    moderate: number
-    low: number
-}
-  showVulnerabilitiesModal?: () => void
-  showIssuesListingModal?: () => void
-  envId?: number | string
-  ciArtifactId?: number 
+    appDetails: AppDetails
+    appStreamData?: AppStreamData
+    setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+    environment: AppEnvironment
+    environments: AppEnvironment[]
+    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
+    deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+    loadingDetails?: boolean
+    loadingResourceTree?: boolean
+    isVirtualEnvironment?: boolean
+    setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
+    refetchDeploymentStatus: (showTimeline?: boolean) => void
+    severityCount?: {
+        critical: number
+        moderate: number
+        low: number
+    }
+    showVulnerabilitiesModal?: () => void
+    showIssuesListingModal?: () => void
+    envId?: number | string
+    ciArtifactId?: number
+    setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
 }
 
 export interface EnvironmentListMinType {

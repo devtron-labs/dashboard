@@ -210,9 +210,10 @@ export interface DeploymentStatusCardType {
 }
 
 export interface IssuesCardType {
-    hideDetails?: boolean
     loadingResourceTree?: boolean
     showIssuesListingModal: () => void
+    appStreamData?: AppStreamData
+    setErrorsList: () => void
 }
 
 export interface SecurityVulnerabilityCardType {
@@ -232,8 +233,14 @@ export interface DeployedCommitCardType {
     ciArtifactId: number
 }
 
+export type ErrorItem = {
+    error: string
+    message: string
+}
+
 export interface IssuesListingModalType {
     closeIssuesListingModal: () => void
+    errorsList: ErrorItem[]
 }
 
 export interface LastUpdatedCardType {

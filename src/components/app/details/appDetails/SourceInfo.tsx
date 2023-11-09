@@ -26,6 +26,7 @@ const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadC
 
 export function SourceInfo({
     appDetails,
+    appStreamData,
     setDetailed = null,
     environment,
     environments,
@@ -43,6 +44,7 @@ export function SourceInfo({
     showIssuesListingModal,
     envId,
     ciArtifactId,
+    setErrorsList
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -246,7 +248,12 @@ export function SourceInfo({
                                 />
                             )}
                             {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                            <IssuesCard loadingResourceTree={loadingResourceTree} showIssuesListingModal={showIssuesListingModal} />
+                            <IssuesCard
+                                appStreamData={appStreamData}
+                                loadingResourceTree={loadingResourceTree}
+                                showIssuesListingModal={showIssuesListingModal}
+                                setErrorsList={setErrorsList}
+                            />
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}

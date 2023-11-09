@@ -80,6 +80,7 @@ import {
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
     DetailsType,
+    ErrorItem,
     NodeSelectorsType,
 } from './appDetails.type'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
@@ -240,6 +241,7 @@ export const Details: React.FC<DetailsType> = ({
     })
     const [loadingDetails, setLoadingDetails] = useState(true)
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
+    const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
     const deploymentModalShownRef = useRef(false)
@@ -590,6 +592,7 @@ export const Details: React.FC<DetailsType> = ({
             <div className="w-100 pt-16 pr-20 pb-16 pl-20">
                 <SourceInfo
                     appDetails={appDetails}
+                    appStreamData={streamData}
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
                     environments={environments}
@@ -611,6 +614,7 @@ export const Details: React.FC<DetailsType> = ({
                     }}
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
+                    setErrorsList={setErrorsList}
                 />
             </div>
             {!loadingResourceTree && (
@@ -678,7 +682,9 @@ export const Details: React.FC<DetailsType> = ({
                     }}
                 />
             )}
-            {showIssuesModal && <IssuesListingModal closeIssuesListingModal={() => toggleIssuesModal(false)} />}
+            {showIssuesModal && (
+                <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
+            )}
             {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
             {commitInfo && (
                 <TriggerInfoModal
