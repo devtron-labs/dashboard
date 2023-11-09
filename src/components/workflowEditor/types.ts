@@ -127,30 +127,44 @@ export interface PipelineBuildStageType {
     steps: StepType[];
 }
 
-export interface PipelineFormType extends Partial<FormType> , Partial<CDFormType> {
-    name: string;
-    triggerType: string;
-    preBuildStage?: PipelineBuildStageType;
-    postBuildStage?: PipelineBuildStageType;
+export interface CustomTagType {
+    tagPattern: string
+    counterX: string
+}
+export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType> {
+    name: string
+    triggerType: string
+    preBuildStage?: PipelineBuildStageType
+    postBuildStage?: PipelineBuildStageType
+    defaultTag?: string[]
+    customTag?: CustomTagType
 }
 
 export interface PipelineFormDataErrorType {
-    name: { message?: string, isValid: boolean },
-    envNameError?: { message?: string, isValid: boolean },
-    nameSpaceError?: { message?: string, isValid: boolean },
-    containerRegistryError?: { isValid: boolean, message?: string },
-    repositoryError?: { isValid: boolean, message?: string },
+    name: { message?: string; isValid: boolean }
+    envNameError?: { message?: string; isValid: boolean }
+    nameSpaceError?: { message?: string; isValid: boolean }
+    containerRegistryError?: { isValid: boolean; message?: string }
+    repositoryError?: { isValid: boolean; message?: string }
     preBuildStage: {
-        steps: any[],
-        isValid: boolean,
-    },
+        steps: any[]
+        isValid: boolean
+    }
     buildStage: {
-        isValid: boolean,
-    },
+        isValid: boolean
+    }
     postBuildStage: {
-        steps: any[],
-        isValid: boolean,
-    },
+        steps: any[]
+        isValid: boolean
+    }
+    customTag?: {
+        message: string[]
+        isValid: boolean
+    }
+    counterX?: {
+        message: string
+        isValid: boolean
+    }
 }
 
 export interface PipelineContext {

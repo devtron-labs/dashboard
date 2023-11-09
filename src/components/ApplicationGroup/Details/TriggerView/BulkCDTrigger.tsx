@@ -10,6 +10,7 @@ import {
     ImageComment,
     showError,
     stopPropagation,
+    useSuperAdmin,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -62,6 +63,7 @@ export default function BulkCDTrigger({
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch()
+    const { isSuperAdmin } = useSuperAdmin()
 
     const setCurrentAppReleaseTagsWrapper = (appReleaseTags: string[]) => {
         setCurrentAppReleaseTags(appReleaseTags)
@@ -451,6 +453,7 @@ export default function BulkCDTrigger({
                             handleMaterialFilters={handleMaterialFilters}
                             searchImageTag={appSearchTextMap[selectedApp.appId]}
                             resourceFilters={cdMaterialResponse[selectedApp.appId]?.resourceFilters ?? []}
+                            isSuperAdmin={isSuperAdmin}
                         />
                     )}
                 </div>

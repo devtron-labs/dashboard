@@ -48,7 +48,9 @@ export const enum DeleteComponentsName {
 
 export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
+export const INVALID_VOLUME_MOUNT_PATH_IN_CM_CS = 'Use only alphanumeric, (/), (-), (_); Do not use "spaces"'
 export const MAX_LENGTH_30 = 'Max 30 characters allowed'
+export const MAX_LENGTH_350 = 'Max 350 characters allowed'
 export const REPO_NAME_VALIDATION = 'Repository name is not valid; Invalid character(s) "_"'
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
@@ -61,6 +63,16 @@ export const CHARACTER_ERROR_MIN = 'At least 2 characters required'
 export const CHARACTER_ERROR_MAX = 'Max 50 characters allowed'
 export const COPIED_MESSAGE = 'Copied!'
 export const PROJECT_EXIST_MSG = 'This Project already exists.'
+
+export const CustomErrorMessage = {
+    CUSTOM_TAG_ERROR_MSG: 'Allowed: Alphanumeric characters, including (_) (.) (-) but cannot begin or end with (.) or (-).',
+    CUSTOM_TAG_MANDATORY_X: 'Using variable {x} is mandatory',
+    CUSTOM_TAG_LIMIT: 'Max 128 characters.',
+    INVALID_IMAGE_PATTERN: 'Invalid image tag pattern',
+    REQUIRED_IMAGE_PATTERN: 'Image tag pattern is required to generate container images',
+    VARIABLE_X_ONLY_ONCE: 'Variable {x} can be used only once',
+    USE_ONLY_NON_NEGATIVE_INTERGER: 'Use only non-negative integer',
+}
 
 export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
     "Unable to trigger build as you're using Dockerfile from $GIT_MATERIAL_ID repo but code source is not configured for the repo."
@@ -393,6 +405,12 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'Trigger not found',
         SUBTITLE: 'The trigger you are looking for does not exist',
     },
+    OVERVIEW: {
+        DEPLOYMENT_TITLE: 'Explore your application\'s deployment landscape',
+        DEPLOYMENT_SUB_TITLE: 'Although there are no deployments to display just yet, it\'s the perfect time to start configuring and deploying your app to various environments. Let\'s go!',
+        APP_DESCRIPTION: 'Write a short description for this application',
+        JOB_DESCRIPTION: 'Write a short description for this job'
+    }
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'

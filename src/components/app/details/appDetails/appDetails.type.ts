@@ -183,7 +183,7 @@ export interface NodeSelectorsType {
 
 export interface DetailsType {
     environment?: any
-    appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>
+    appDetailsAPI: (appId: string, envId: string, timeout: number, signal?: AbortSignal) => Promise<any>
     setAppDetailResultInParent?: (appDetails) => void
     isAppDeployment?: boolean
     environments: any

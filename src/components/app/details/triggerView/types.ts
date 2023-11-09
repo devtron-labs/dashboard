@@ -76,6 +76,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, fromRollback?: boolean) => void
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
+    isSuperAdmin?:boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -118,6 +119,7 @@ export interface CDMaterialState {
     searchText: string
     showConfiguredFilters: boolean
     filterView: FilterConditionViews
+    isSuperAdmin?:boolean
 }
 
 export interface MaterialInfo {
@@ -175,6 +177,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     selectedEnv?: Environment
     setSelectedEnv?: (selectedEnv: Environment) => void;
     environmentLists?: any[]
+    isJobCI?: boolean
 }
 
 export interface RegexValueType {

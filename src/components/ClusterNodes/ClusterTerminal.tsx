@@ -14,7 +14,7 @@ import { clusterImageDescription, convertToOptionsList } from '../common'
 import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
-import { ClusterTerminalType } from './types'
+import { ClusterTerminalType, NodeTaintType } from './types'
 import {
     AUTO_SELECT,
     clusterImageSelect,
@@ -51,10 +51,11 @@ export default function ClusterTerminal({
     clusterImageList,
     isClusterDetailsPage,
     isNodeDetailsPage,
-    namespaceList,
+    namespaceList = [],
     node,
     taints,
     setSelectedNode,
+    showTerminal,
 }: ClusterTerminalType) {
     const location = useLocation()
     const history = useHistory()
@@ -119,7 +120,7 @@ export default function ClusterTerminal({
         manifest: manifestData,
         debugNode: debugMode,
         podName: resourceData?.podName || '',
-        taints: taints.get(selectedNodeName.value),
+        taints: (taints as Map<string, NodeTaintType[]>).get(selectedNodeName.value) || [],
         containerName: containerName,
     }
 
@@ -626,8 +627,6 @@ export default function ClusterTerminal({
         setTerminalCleared(!terminalCleared)
     }
 
-
-
     const renderRegisterLinkMatcher = (terminal) => {
         const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
         terminal.registerLinkMatcher(linkMatcherRegex, (_event, text) => {
@@ -971,7 +970,7 @@ export default function ClusterTerminal({
     }
 
     return (
-        <>
+        <div className={`${showTerminal ? '' : 'cluster-terminal-hidden'}`}>
             <TerminalWrapper
                 selectionListData={selectionListData}
                 socketConnection={socketConnection}
@@ -988,6 +987,6 @@ export default function ClusterTerminal({
                     forceDeletePod={setForceDelete}
                 />
             )}
-        </>
+        </div>
     )
 }

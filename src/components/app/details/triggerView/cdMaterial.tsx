@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import {
     CDMaterialProps,
@@ -67,6 +67,8 @@ import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT, EXCLUDED_IMAGE_TOOLTIP } from '
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { getUserRole } from '../../../userGroups/userGroup.service'
+import AnnouncementBanner from '../../../common/AnnouncementBanner'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -108,6 +110,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             searchText: this.props.searchImageTag ?? '',
             showConfiguredFilters: false,
             filterView: FilterConditionViews.ELIGIBLE,
+            isSuperAdmin: this.props.isSuperAdmin ?? false,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -130,6 +133,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.props.material.length > 0
         ) {
             this.getDeploymentConfigDetails()
+            this.initialise()
         }
     }
 
@@ -190,6 +194,18 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return this.state.selectedMaterial
             ? this.state.selectedMaterial.wfrId
             : this.props.material?.find((_mat) => _mat.isSelected)?.wfrId
+    }
+
+    async initialise() {
+        if (!this.props.isSuperAdmin) {
+            try {
+                const userRole =  await getUserRole()
+                const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+                this.setState({isSuperAdmin:superAdmin})
+            } catch (err) {
+                showError(err)
+            }
+        }
     }
 
     getDeploymentConfigDetails() {
@@ -792,6 +808,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 forceReInit
                                 hideHardDelete={this.props.hideImageTaggingHardDelete}
                                 updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
+                                isSuperAdmin={this.state.isSuperAdmin}
                             />
                         </div>
                     </div>
@@ -1543,7 +1560,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     getTriggerBodyHeight = (isApprovalConfigured: boolean) => {
         if (this.state.showConfigDiffView) {
             return 'calc(100vh - 141px)'
-        } else if (isApprovalConfigured && (this.state.isRollbackTrigger || this.props.material.length > 1)) {
+        } else if (isApprovalConfigured && ((this.state.isRollbackTrigger || this.props.material.length > 1) && window?._env_?.ANNOUNCEMENT_BANNER_MSG)) {
             return 'calc(100vh - 156px)'
         } else {
             return 'calc(100vh - 116px)'
@@ -1607,6 +1624,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img alt="close" src={close} />
                     </button>
                 </div>
+                {!this.state.showConfigDiffView && <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial={true} />}
                 {isApprovalConfigured &&
                     ApprovedImagesMessage &&
                     (this.state.isRollbackTrigger || this.props.material.length > 1) && (
