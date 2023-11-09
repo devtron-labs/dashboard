@@ -28,7 +28,6 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
     const [clusterName, setClusterName] = useState('')
     const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState('')
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
-    const [collapsed, toggleCollapsed] = useState(true)
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
 
     const conditions = useRef(appStreamData?.result?.application?.status?.conditions || [])
@@ -112,10 +111,6 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
         await nonCascadeDeleteArgoCDApp(false)
     }
 
-    const toggleErrorHeader = () => {
-        toggleCollapsed(!collapsed)
-    }
-
     const errorCounter = conditions.current?.length + (isImagePullBackOff ? 1 : 0) + (clusterConnectionError ? 1 : 0)
 
     const handleForceDelete = () => {
@@ -150,7 +145,7 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
                 error: 'ImagePullBackOff',
                 message: `'${appDetails.clusterName}' cluster ${
                     appDetails.ipsAccessProvided ? 'could not' : 'does not have permission to'
-                } pull container image from ‘${appDetails.dockerRegistryId}’ registry.`,
+                } pull container image from '${appDetails.dockerRegistryId}'registry.`,
             })
         }
 
@@ -185,7 +180,7 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
                             className="default-tt"
                             arrow={false}
                             placement="top"
-                            content="Status of last triggered deployment" // @TODO: update this copy
+                            content="Issues or errors detected in the current deployment"
                         >
                             <Question className="icon-dim-16 mt-2" />
                         </Tippy>
