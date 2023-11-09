@@ -60,7 +60,6 @@ const Field = (props: ObjectFieldTemplateProps) => {
         } else {
             return (
                 <>
-                    {Properties}
                     <FieldRowWithLabel label={title} required={required} showLabel id={idSchema.$id}>
                         {ActionButton}
                     </FieldRowWithLabel>
@@ -77,7 +76,7 @@ const Field = (props: ObjectFieldTemplateProps) => {
 }
 
 export const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
-    const { idSchema, properties, registry, required, schema, title, uiSchema } = props
+    const { idSchema, registry, required, schema, title, uiSchema } = props
     const options = getUiOptions(uiSchema)
     const TitleFieldTemplate = getTemplate('TitleFieldTemplate', registry, options)
     const hasAdditionalProperties = !!schema.additionalProperties
