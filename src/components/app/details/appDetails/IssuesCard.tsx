@@ -11,7 +11,7 @@ import {
     ForceDeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
-import { ClusterConnectionResponse } from './appDetails.type'
+import { ClusterConnectionResponse, ErrorItem } from './appDetails.type'
 import { toast } from 'react-toastify'
 import { TOAST_INFO } from '../../../../config/constantMessaging'
 import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
@@ -21,7 +21,7 @@ import { AppType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
 
-const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModal, setErrorsList }: IssuesCardType) => {
+const IssuesCard = ({ appStreamData, loadingResourceTree, showIssuesListingModal, setErrorsList }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState(false)
@@ -30,7 +30,7 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
 
-    const conditions = useRef(appStreamData?.result?.application?.status?.conditions || [])
+    const conditions = appStreamData?.result?.application?.status?.conditions || []
     const appDetails = IndexStore.getAppDetails()
 
     useEffect(() => {
@@ -111,7 +111,7 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
         await nonCascadeDeleteArgoCDApp(false)
     }
 
-    const errorCounter = conditions.current?.length + (isImagePullBackOff ? 1 : 0) + (clusterConnectionError ? 1 : 0)
+    const errorCounter = conditions?.length + (isImagePullBackOff ? 1 : 0) + (clusterConnectionError ? 1 : 0)
 
     const handleForceDelete = () => {
         nonCascadeDeleteArgoCDApp(true)
@@ -121,7 +121,7 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
         showNonCascadeDeleteDialog(true)
     }
 
-    const getErrorsList = () => {
+    const getErrorsList = (): ErrorItem[] => {
         const errorsList = []
 
         if (clusterConnectionError) {
@@ -133,7 +133,7 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
             })
         }
 
-        conditions.current?.forEach((condition) => {
+        conditions?.forEach((condition) => {
             errorsList.push({
                 error: condition.type,
                 message: condition.message,
@@ -145,7 +145,7 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
                 error: 'ImagePullBackOff',
                 message: `'${appDetails.clusterName}' cluster ${
                     appDetails.ipsAccessProvided ? 'could not' : 'does not have permission to'
-                } pull container image from '${appDetails.dockerRegistryId}'registry.`,
+                } pull container image from '${appDetails.dockerRegistryId}' registry.`,
             })
         }
 
@@ -158,13 +158,17 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
     }, [
         clusterConnectionError,
         clusterName,
-        conditions.current,
+        conditions,
         isImagePullBackOff,
         appDetails.externalCi,
         appDetails.ipsAccessProvided,
         appDetails.dockerRegistryId,
         appDetails.clusterName,
     ])
+
+    if (!appDetails || (conditions?.length === 0 && !isImagePullBackOff && !clusterConnectionError)) {
+        return null
+    }
 
     return (
         <div
@@ -196,12 +200,12 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
                     {/* @TODO: Put this message logic in a separate function */}
                     {clusterConnectionError &&
                         `Cluster is not reachable${
-                            conditions.current?.length > 0 || (isImagePullBackOff && !appDetails.externalCi) ? ', ' : ''
+                            conditions?.length > 0 || (isImagePullBackOff && !appDetails.externalCi) ? ', ' : ''
                         }`}
                     {isImagePullBackOff &&
                         !appDetails.externalCi &&
-                        `imagePullBackOff${conditions.current?.length > 0 ? ', ' : ''}`}
-                    {conditions.current?.map((condition) => condition.type).join(', ')}
+                        `imagePullBackOff${conditions?.length > 0 ? ', ' : ''}`}
+                    {conditions?.map((condition) => condition.type).join(', ')}
                 </span>
                 <div
                     className="app-details-info-card__bottom-container__details fs-12 fw-6"
@@ -229,4 +233,4 @@ const IssuesCard1 = ({ appStreamData, loadingResourceTree, showIssuesListingModa
     )
 }
 
-export default React.memo(IssuesCard1)
+export default React.memo(IssuesCard)

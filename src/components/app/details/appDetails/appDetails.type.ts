@@ -213,7 +213,7 @@ export interface IssuesCardType {
     loadingResourceTree?: boolean
     showIssuesListingModal: () => void
     appStreamData?: AppStreamData
-    setErrorsList: () => void
+    setErrorsList: React.Dispatch<React.SetStateAction<ErrorItem[]>>
 }
 
 export interface SecurityVulnerabilityCardType {
