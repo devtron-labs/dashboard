@@ -44,7 +44,7 @@ export function SourceInfo({
     showIssuesListingModal,
     envId,
     ciArtifactId,
-    setErrorsList
+    setErrorsList,
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -248,12 +248,14 @@ export function SourceInfo({
                                 />
                             )}
                             {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                            <IssuesCard
-                                appStreamData={appStreamData}
-                                loadingResourceTree={loadingResourceTree}
-                                showIssuesListingModal={showIssuesListingModal}
-                                setErrorsList={setErrorsList}
-                            />
+                            {!loadingResourceTree && (
+                                <IssuesCard
+                                    appStreamData={appStreamData}
+                                    loadingResourceTree={loadingResourceTree}
+                                    showIssuesListingModal={showIssuesListingModal}
+                                    setErrorsList={setErrorsList}
+                                />
+                            )}
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}

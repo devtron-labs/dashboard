@@ -34,6 +34,10 @@ const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListi
         })
     }
 
+    const getErrorCountText = () => {
+        return errorsList.length > 1 ? `${errorsList.length} Errors` : `${errorsList.length} Error`
+    }
+
     return (
         <Drawer position="right" width="800px" onEscape={closeIssuesListingModal}>
             <div className="issues-listing-modal bcn-0" ref={issuesModalRef}>
@@ -42,7 +46,7 @@ const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListi
                         <Error className="form__icon--error icon-dim-20" />
                         {/* @TODO: Get this errors count from the api data */}
                         <div data-testid="issues-listing-modal-title" className="cn-9 fs-16 fw-6 ml-8 lh-24">
-                            3 Errors
+                            {getErrorCountText()} 
                         </div>
                     </div>
                     <span className="cursor" onClick={closeIssuesListingModal} data-testid="issues-listing-modal-cross">
