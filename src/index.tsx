@@ -42,6 +42,8 @@ interface customEnv {
     CLAIR_TOOL_VERSION?: string
     ENABLE_RESTART_WORKLOAD?: boolean
     ENABLE_SCOPED_VARIABLES?: boolean
+    LOGIN_PAGE_IMAGE?: string
+    LOGIN_PAGE_IMAGE_BG?: string
 }
 declare global {
     interface Window {
@@ -142,6 +144,8 @@ if (!window || !window._env_) {
         CLAIR_TOOL_VERSION:'V4',
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
+        LOGIN_PAGE_IMAGE: '',
+        LOGIN_PAGE_IMAGE_BG: ''
     }
 }
 
