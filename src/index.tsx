@@ -43,6 +43,8 @@ interface customEnv {
     CLAIR_TOOL_VERSION?: string
     ENABLE_RESTART_WORKLOAD?: boolean
     ENABLE_SCOPED_VARIABLES?: boolean
+    LOGIN_PAGE_IMAGE?: string
+    LOGIN_PAGE_IMAGE_BG?: string
 }
 declare global {
     interface Window {
@@ -125,7 +127,7 @@ if (!window || !window._env_) {
         POSTHOG_TOKEN: '',
         RECOMMEND_SECURITY_SCANNING: false,
         FORCE_SECURITY_SCANNING: false,
-        ENABLE_CI_JOB: false, 
+        ENABLE_CI_JOB: false,
         HIDE_DISCORD: true,
         DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
@@ -144,6 +146,8 @@ if (!window || !window._env_) {
         CLAIR_TOOL_VERSION:'V4',
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
+        LOGIN_PAGE_IMAGE: '',
+        LOGIN_PAGE_IMAGE_BG: ''
     }
 }
 
