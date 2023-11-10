@@ -26,11 +26,17 @@ export function getInstalledAppDetail(installedAppId, envId) {
 }
 
 export function installChart(request) {
-    return post(`app-store/deployment/application/install`, request)
+    const options = window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT && Number.isInteger(window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT)
+        ? { timeout: window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT }
+        : { timeout: 600000 }
+    return post(`app-store/deployment/application/install`, request, options)
 }
 
 export function updateChart(request) {
-    return put(Routes.UPDATE_APP_API, request)
+    const options = window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT && Number.isInteger(window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT)
+    ? { timeout: window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT }
+    : { timeout: 600000 }
+    return put(Routes.UPDATE_APP_API, request, options)
 }
 
 export function deleteInstalledChart(installedAppId: string | number, isGitops?: boolean, deleteAction?: DELETE_ACTION) {

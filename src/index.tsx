@@ -45,6 +45,7 @@ interface customEnv {
     ENABLE_SCOPED_VARIABLES?: boolean
     LOGIN_PAGE_IMAGE?: string
     LOGIN_PAGE_IMAGE_BG?: string
+    UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT?: number
 }
 declare global {
     interface Window {
@@ -147,7 +148,8 @@ if (!window || !window._env_) {
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
         LOGIN_PAGE_IMAGE: '',
-        LOGIN_PAGE_IMAGE_BG: ''
+        LOGIN_PAGE_IMAGE_BG: '',
+        UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT: 60000,
     }
 }
 

@@ -129,7 +129,10 @@ export const updateAppReleaseWithoutLinking = (requestPayload: UpdateAppReleaseW
 };
 
 export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest): Promise<any> => {
-    return put(Routes.UPDATE_APP_API, requestPayload);
+    const options = window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT && Number.isInteger(window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT)
+        ? { timeout: window._env_.UPDATE_AND_INSTALL_HELM_CHART_TIME_OUT }
+        : { timeout: 600000 }
+    return put(Routes.UPDATE_APP_API, requestPayload, options);
 };
 
 export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<UpdateReleaseResponse> => {
