@@ -56,7 +56,7 @@ export default function SuggestionItem({
 
     return (
         <Tippy
-            className="default-tt"
+            className="default-tt dc__word-break-all"
             content={
                 <div className="mw-200 flex column dc__content-start dc__align-start">
                     <div className="flex column dc__content-start dc__align-start">Value</div>
