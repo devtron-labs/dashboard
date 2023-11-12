@@ -201,6 +201,9 @@ export function getEnvironmentConfigs(appId, envId, option?) {
 export function getEnvironmentSecrets(appId, envId) {
     return get(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`)
 }
+export const getAllWorkflowsForAppNames = (appNames,{signal}) => {
+    return post(`${Routes.WORKFLOW}/all`, { appNames }, {signal})
+}
 
 export function getWorkflowList(appId, filteredEnvIds?: string) {
   let filteredEnvParams = ''
