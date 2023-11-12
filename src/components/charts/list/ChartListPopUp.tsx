@@ -156,7 +156,7 @@ function ChartListPopUp({
         return (
             <div className="dc__overflow-scroll h-100 mxh-390-imp">
                 {filteredChartList.map((list, index) => {
-                    return <ChartListPopUpRow index={index} list={list} />
+                    return (list.id != 1) && <ChartListPopUpRow index={index} list={list} />
                 })}
                 <InfoColourBar
                     message={renderInfoText()}

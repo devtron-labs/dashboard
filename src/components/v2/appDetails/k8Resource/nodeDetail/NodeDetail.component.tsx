@@ -76,7 +76,7 @@ function NodeDetailComponent({
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
     useEffect(() => {
-        if (location.pathname.includes('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
+        if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
         }
     }, [location])
@@ -262,7 +262,7 @@ function NodeDetailComponent({
         if (!startTerminal) return null
         return (
             <TerminalComponent
-                showTerminal={location.pathname.includes('/terminal')}
+                showTerminal={location.pathname.endsWith('/terminal')}
                 selectedTab={handleSelectedTab}
                 isDeleted={isDeleted}
                 isResourceBrowserView={isResourceBrowserView}
@@ -399,7 +399,7 @@ function NodeDetailComponent({
                             <SummaryComponent selectedTab={handleSelectedTab} />
                         </Route>
                     )}
-                    {!location.pathname.includes('/terminal') && (
+                    {!location.pathname.endsWith('/terminal') && (
                         <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
                     )}
                 </Switch>

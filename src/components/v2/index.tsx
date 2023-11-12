@@ -21,6 +21,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../extern
 import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
 import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
+import { HelmAppOverview } from './HelmAppOverview/HelpAppOverview'
 
 let initTimer = null
 
@@ -84,17 +85,17 @@ function RouterComponent({ envType }) {
     }
 
     const handleAppDetailsCallError = (e: any) => {
-      setErrorResponseCode(e.code)
-      if (e.code === 404 && initTimer) {
-        clearTimeout(initTimer)
-      }
+        setErrorResponseCode(e.code)
+        if (e.code === 404 && initTimer) {
+            clearTimeout(initTimer)
+        }
     }
 
     const handlePublishAppDetails = (response) => {
         appDetailsRef.current = {
             ...appDetailsRef.current,
             ...response.result,
-            helmReleaseStatus: response.result?.releaseStatus || appDetailsRef.current?.helmReleaseStatus
+            helmReleaseStatus: response.result?.releaseStatus || appDetailsRef.current?.helmReleaseStatus,
         }
         IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
         setErrorResponseCode(undefined)
@@ -127,7 +128,7 @@ function RouterComponent({ envType }) {
         } else {
             try {
                 // Revisit this flow
-                const response = await getInstalledAppDetail(+params.appId, +params.envId)    
+                const response = await getInstalledAppDetail(+params.appId, +params.envId)
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
                 setErrorResponseCode(undefined)
             } catch (e: any) {
@@ -189,6 +190,13 @@ function RouterComponent({ envType }) {
                     {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
                     <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                         <Switch>
+                            <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
+                                <HelmAppOverview
+                                    key={params.appId}
+                                    appId={params.appId}
+                                    setErrorResponseCode={setErrorResponseCode}
+                                />
+                            </Route>
                             <Route path={`${path}/${URLS.APP_DETAILS}`}>
                                 <AppDetailsComponent
                                     externalLinks={externalLinksAndTools.externalLinks}
@@ -203,7 +211,13 @@ function RouterComponent({ envType }) {
                                 <ValuesComponent appId={params.appId} init={_init} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
-                                <ChartDeploymentHistory appId={params.appId} isExternal={false} isLoadingDetails={loadingDetails} isVirtualEnvironment={isVirtualRef.current} helmAppPackageName={helmAppPackageName}/>
+                                <ChartDeploymentHistory
+                                    appId={params.appId}
+                                    isExternal={false}
+                                    isLoadingDetails={loadingDetails}
+                                    isVirtualEnvironment={isVirtualRef.current}
+                                    helmAppPackageName={helmAppPackageName}
+                                />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
                         </Switch>
