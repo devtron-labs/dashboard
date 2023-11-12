@@ -23,7 +23,7 @@ import {
     getModuleInfo,
     getServerInfo,
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { importComponentFromFELibrary } from '../helpers/Helpers'
+import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
@@ -186,6 +186,7 @@ export default function NavigationRoutes() {
         }
 
         if (typeof Storage !== 'undefined') {
+            setActionWithExpiry('dashboardLoginTime', 0)
             if (localStorage.isDashboardLoggedIn) return
             dashboardLoggedIn()
                 .then((response) => {
@@ -356,9 +357,6 @@ export default function NavigationRoutes() {
                                             path={URLS.GLOBAL_CONFIG}
                                             render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                         />
-                                        <Route path={URLS.CLUSTER_LIST}>
-                                            <ClusterNodeContainer />
-                                        </Route>
                                         {!window._env_.K8S_CLIENT && [
                                             <Route
                                                 key={URLS.APP}

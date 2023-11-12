@@ -22,11 +22,7 @@ import './appDetails/appDetails.scss'
 import './app.scss'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs } from '../../ApplicationGroup/Constants'
-import {
-    CreateGroupAppListType,
-    FilterParentType,
-    GroupOptionType,
-} from '../../ApplicationGroup/AppGroup.types'
+import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
@@ -43,7 +39,7 @@ const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
-    const { appId } = useParams<{ appId; }>()
+    const { appId } = useParams<{ appId }>()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -363,6 +359,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview
+                                appType="app"
                                 appMetaInfo={appMetaInfo}
                                 getAppMetaInfoRes={getAppMetaInfoRes}
                                 filteredEnvIds={_filteredEnvIds}
