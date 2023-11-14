@@ -57,6 +57,8 @@ export const Select = (props: WidgetProps) => {
                 IndicatorSeparator: null,
                 DropdownIndicator,
             }}
+            menuPlacement="auto"
+            menuPortalTarget={document.body}
         />
     )
 }
