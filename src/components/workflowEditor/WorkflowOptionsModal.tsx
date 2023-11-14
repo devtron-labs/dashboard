@@ -1,8 +1,10 @@
 import React from 'react'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-// TODO: Chang this image
+import { toast } from 'react-toastify'
+import { VisibleModal, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+// TODO: Change this image
 import workflowModal from '../../assets/img/guide-onboard.png'
 import {
+    NO_ENV_FOUND,
     SOURCE_TYPE_CARD_VARIANTS,
     WORKFLOW_OPTIONS_MODAL,
     WORKFLOW_OPTIONS_MODAL_TYPES,
@@ -14,10 +16,14 @@ import { importComponentFromFELibrary } from '../common'
 
 export default function WorkflowOptionsModal({
     handleWorkflowOptionsModalToggle,
-    addWebhookCD,
     addCIPipeline,
+    addWebhookCD,
+    addLinkedCD,
     workflowId,
+    showWorkflowOptionsModal,
 }: WorkflowOptionsModalProps) {
+    const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
+
     const handleCardAction = (e: React.MouseEvent) => {
         if (!(e.currentTarget instanceof HTMLDivElement)) {
             return
@@ -28,6 +34,12 @@ export default function WorkflowOptionsModal({
 
         if (pipelineType === PipelineType.WEBHOOK) {
             addWebhookCD(workflowId)
+        } else if (LINKED_CD_SOURCE_VARIANT && pipelineType === LINKED_CD_SOURCE_VARIANT.type) {
+            if (!showWorkflowOptionsModal) {
+                toast.error(NO_ENV_FOUND)
+                return
+            }
+            addLinkedCD(workflowId)
         } else {
             addCIPipeline(pipelineType as CIPipelineNodeType, workflowId)
         }
@@ -35,11 +47,9 @@ export default function WorkflowOptionsModal({
         handleWorkflowOptionsModalToggle(e)
     }
 
-    const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
-
     return (
         <VisibleModal className="" onEscape={handleWorkflowOptionsModalToggle} close={handleWorkflowOptionsModalToggle}>
-            <div className="workflow-options-modal br-8 flexbox h-500 dc__overflow-scroll">
+            <div className="workflow-options-modal br-8 flexbox h-500 dc__overflow-scroll" onClick={stopPropagation}>
                 {/* Sidebar */}
                 <div className="flexbox-col w-236 pt-32 dc__window-bg br-8">
                     {/* Info */}
@@ -104,7 +114,6 @@ export default function WorkflowOptionsModal({
                         )}
                     </section>
 
-                    {/* TODO: Integrate based on flag */}
                     {window._env_.ENABLE_CI_JOB && (
                         <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
                             <p className="m-0 cn-7 fs-11 fw-6 lh-16">{WORKFLOW_OPTIONS_MODAL_TYPES.JOB}</p>

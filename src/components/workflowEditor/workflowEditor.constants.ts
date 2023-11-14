@@ -59,3 +59,5 @@ export const SOURCE_TYPE_CARD_VARIANTS = {
         type: CIPipelineNodeType.JOB_CI,
     },
 }
+
+export const NO_ENV_FOUND = 'No environment found. Please create a CD Pipeline first.'
