@@ -10,7 +10,7 @@ import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import SecretList from '../../../ConfigMapSecret/Secret/SecretList'
 import ConfigMapList from '../../../ConfigMapSecret/ConfigMap/ConfigMapList'
 import './appConfig.scss'
-import GitManagment from '../../../gitOps/GItManagment'
+import GitManagment from '../../../gitOps/UserGitRepo'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))

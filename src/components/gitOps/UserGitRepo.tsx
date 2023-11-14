@@ -14,19 +14,15 @@ function GitManagment({ setRepoURL: string }) {
     const [repoText, setRepoText] = useState('')
 
     const repoTypeChange = () => {
-        if (selectedRepoType === 'DEFAULT') {
-            setSelectedRepoType('CONFIGURE')
+        if (selectedRepoType === repoType.DEFAULT) {
+            setSelectedRepoType(repoType.CONFIGURE)
         } else {
-            setSelectedRepoType('DEFAULT')
+            setSelectedRepoType(repoType.DEFAULT)
         }
     }
 
-    const onChange = (event) => {
-        if (event.target.value === '') {
-            setRepoText('')
-        } else {
-            setRepoText(event.target.value)
-        }
+    const onChange = (event) => { 
+        setRepoText(event.target.value)   
     }
 
     const inputUrlBox = () => {
@@ -78,7 +74,7 @@ function GitManagment({ setRepoURL: string }) {
                             </RadioGroupItem>
                         </div>
                     </RadioGroup>
-                    {selectedRepoType === 'CONFIGURE' && inputUrlBox()}
+                    {selectedRepoType === repoType.CONFIGURE && inputUrlBox()}
                 </div>
                 {renderInfoColorBar()}
                 <hr />

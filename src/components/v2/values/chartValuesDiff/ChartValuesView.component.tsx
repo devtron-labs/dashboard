@@ -54,7 +54,7 @@ import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
-import GitManagment from '../../../gitOps/GItManagment'
+import GitManagment from '../../../gitOps/UserGitRepo'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
