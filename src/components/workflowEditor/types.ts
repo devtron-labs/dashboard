@@ -1,9 +1,13 @@
 import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
-import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
+import { CIPipelineNodeType, CdPipelineResult, NodeAttr } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
+
+export interface BlackListedCI {
+    [key: number]: boolean
+}
 
 export interface WorkflowEditState {
     view: string
@@ -33,6 +37,8 @@ export interface WorkflowEditState {
     filteredCIPipelines?: any[]
     envIds?: number[]
     showWorkflowOptionsModal: boolean
+    cachedCDConfigResponse: CdPipelineResult
+    blackListedCI: BlackListedCI
 }
 
 export interface WorkflowEditProps
@@ -227,5 +233,7 @@ export interface WorkflowOptionsModalProps {
     handleWorkflowOptionsModalToggle: (e: any) => void
     addCIPipeline: (type: CIPipelineNodeType, workflowId?: number | string) => void
     addWebhookCD: (workflowId?: number | string) => void
+    addLinkedCD: (workflowId?: number | string) => void
     workflowId?: number | string
+    showWorkflowOptionsModal: boolean
 }

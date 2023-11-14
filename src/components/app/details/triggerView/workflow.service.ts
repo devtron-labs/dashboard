@@ -18,6 +18,7 @@ import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { TriggerTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
+import { BlackListedCI } from '../../../workflowEditor/types'
 
 export const getTriggerWorkflows = (
     appId,
@@ -32,7 +33,7 @@ export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
     filteredEnvIds?: string
-): Promise<{ appName: string; workflows: WorkflowType[], filteredCIPipelines }> => {
+): Promise<{ appName: string; workflows: WorkflowType[], filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI }> => {
     return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
@@ -43,7 +44,7 @@ const getInitialWorkflows = (
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
     filteredEnvIds?: string
-): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
+): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI }> => {
     if (useAppWfViewAPI) {
         return getWorkflowViewList(id, filteredEnvIds).then((response) => {
             const workflows = {
@@ -137,7 +138,7 @@ export function processWorkflow(
     workflowOffset: Offset,
     filter?: (workflows: WorkflowType[]) => WorkflowType[],
     useParentRefFromWorkflow?: boolean,
-): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
+): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI } {
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
@@ -221,7 +222,15 @@ export function processWorkflow(
     }
 
     addDimensions(workflows, workflowOffset, dimensions)
-    return { appName, workflows, filteredCIPipelines }
+
+    const blackListedCI = ciResponse.ciPipelines
+        .filter((ciPipeline) => ciPipeline.pipelineType === CIPipelineBuildType.LINKED_CD)
+        .reduce((acc, ciPipeline) => {
+            acc[ciPipeline.id] = true
+            return acc
+        }, {})
+
+    return { appName, workflows, filteredCIPipelines, cachedCDConfigResponse: cdResponse, blackListedCI }
 }
 
 function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimensions: WorkflowDimensions) {

@@ -12,7 +12,7 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-// import { importComponentFromFELibrary } from '../common'
+import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
@@ -41,8 +41,9 @@ import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
 
 export const pipelineContext = createContext<PipelineContext>(null)
-// const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
+const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
 
+// TODO: Remove all the checks for envList instead use cachedCDConfigResponse
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
 
@@ -74,6 +75,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             filteredCIPipelines: [],
             envIds: [],
             showWorkflowOptionsModal: false,
+            cachedCDConfigResponse: {
+                pipelines: [],
+                appId: 0,
+            },
+            blackListedCI: {},
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -144,6 +150,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     envToShowWebhookTippy: -1,
                     filteredCIPipelines: result.filteredCIPipelines,
                     envIds: _envIds,
+                    cachedCDConfigResponse: result.cachedCDConfigResponse ?? {
+                        pipelines: [],
+                        appId: 0,
+                    },
+                    blackListedCI: result.blackListedCI ?? {},
                 })
             })
             .catch((errors) => {
@@ -244,6 +255,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
+    addLinkedCD = (workflowId?: number | string) => {
+        this.props.history.push(
+            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
+                workflowId ?? 0
+            }/linked-cd/0/${URLS.APP_CD_CONFIG}/0/build`,
+        )
+    }
+
     handleCDSelect = (
         workflowId: number | string,
         ciPipelineId: number | string,
@@ -311,6 +330,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         if (showWebhookTippy) {
             this.setState({ envToShowWebhookTippy: environmentId })
         }
+    }
+
+    closeSyncEnvironment = () => {
+        this.props.history.push(
+            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+        )
     }
 
     hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
@@ -453,6 +478,22 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             )
                         }}
                     />,
+
+                    ...(SyncEnvironment
+                        ? [
+                              <Route
+                                  key={`${this.props.match.path}/linked-cd/`}
+                                  path={`${this.props.match.path}/linked-cd`}
+                              >
+                                  <SyncEnvironment
+                                      closeModal={this.closeSyncEnvironment}
+                                      appId={this.props.match.params.appId}
+                                      cdPipelines={this.state.cachedCDConfigResponse.pipelines ?? []}
+                                      blackListedIds={this.state.blackListedCI ?? {}}
+                                  />
+                              </Route>,
+                          ]
+                        : []),
                 ]}
             </Switch>
         )
@@ -649,6 +690,16 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             successTitle={this.state.successTitle}
                         />
                     )}
+                    {this.state.showWorkflowOptionsModal && (
+                        <WorkflowOptionsModal
+                            handleWorkflowOptionsModalToggle={this.handleWorkflowOptionsModalToggle}
+                            addWebhookCD={this.addWebhookCD}
+                            addCIPipeline={this.addCIPipeline}
+                            addLinkedCD={this.addLinkedCD}
+                            workflowId={0}
+                            showWorkflowOptionsModal={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
+                        />
+                    )}
                 </>
             )
         } else {
@@ -663,6 +714,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 className="w-300 h-100 dc__align-left"
                                 placement="right"
                                 Icon={HelpIcon}
+                                iconClass="fcv-5"
                                 heading={WORKFLOW_EDITOR_HEADER_TIPPY.HEADING}
                                 infoText={
                                     this.props.isJobView
@@ -688,16 +740,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             </TippyCustomized>
                         </div>
 
-                        {this.props.isJobView
-                            ? this.renderNewJobPipelineButton()
-                            : this.renderNewBuildPipelineButton()}
+                        {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton()}
                     </div>
 
                     {this.renderRouter()}
                     {this.renderHostErrorMessage()}
                     {this.renderWorkflows()}
                     {this.renderDeleteDialog()}
-                    {/* {SyncEnvironment && <SyncEnvironment/>} */}
                     {this.state.showSuccessScreen && (
                         <CDSuccessModal
                             appId={this.props.match.params.appId}
@@ -716,7 +765,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             handleWorkflowOptionsModalToggle={this.handleWorkflowOptionsModalToggle}
                             addWebhookCD={this.addWebhookCD}
                             addCIPipeline={this.addCIPipeline}
+                            addLinkedCD={this.addLinkedCD}
                             workflowId={0}
+                            showWorkflowOptionsModal={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
                         />
                     )}
                     {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}
