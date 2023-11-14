@@ -480,7 +480,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         )}
                     </div>
                     {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
-                    <div className="workflow__body">
+                    <div className="workflow__body bc-n50">
                         <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                             {this.renderEdgeList()}
                             {this.renderNodes()}
