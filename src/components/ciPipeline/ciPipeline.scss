@@ -168,6 +168,10 @@
     border-radius: 4px;
     background: var(--N50);
 
+    &.no-padding-script-container {
+        padding: 0px;
+    }
+
     .react-monaco-editor-container {
         min-height: 300px;
     }
@@ -515,3 +519,27 @@
         fill: var(--B500);
     }
 }
+
+.image-tag-alert-icon {
+    path {
+        &:nth-child(1) {
+            fill: (--Y500) !important;
+        }
+    }
+}
+
+.custom-tag-radio{
+    .form__radio-item {
+            border: none;
+            min-width: 125px;
+            margin-right: 20px;
+    
+            .form__radio-item-content {
+                padding: 6px 0 6px 0 !important;
+    
+                .radio__title {
+                    text-transform: none;
+                }
+            }
+        }
+    }

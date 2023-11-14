@@ -390,7 +390,8 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                 {(state.cmSecretState !== CM_SECRET_STATE.INHERITED || draftMode) &&
                     !state.unAuthorized &&
                     !state.secretMode &&
-                    !state.yamlMode && (
+                    !state.yamlMode &&
+                    !state.external && (
                         <div
                             className="dc__bold anchor pointer pb-10 dc_max-width__max-content"
                             onClick={handleAddParam}

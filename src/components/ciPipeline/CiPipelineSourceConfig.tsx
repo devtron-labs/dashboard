@@ -137,7 +137,7 @@ export function CiPipelineSourceConfig({
                         />
                     )}
                     {showTooltip && (
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={sourceValueAdv}>
+                        <Tippy className="default-tt dc__word-break-all" arrow={false} placement="bottom" content={sourceValueAdv}>
                             <div className="flex" style={{ maxWidth: !baseText ? 'calc(100% - 15px)' : 'auto' }}>
                                 {!baseText && (
                                     <>

@@ -1,3 +1,5 @@
+import { URLS } from "../../../config"
+
 export function getCDPipelineURL(
     appId: string,
     workflowId: string,
@@ -23,7 +25,7 @@ export function getCIPipelineURL(
         prefixURL = `/${isJobView ? 'job' : 'app'}/${appId}/edit/workflow/`
     }
     const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''
-    const ciPipelineType = isCIJob ? 'ci-job' : 'ci-pipeline'
+    const ciPipelineType = isCIJob ? URLS.APP_JOB_CI_CONFIG : URLS.APP_CI_CONFIG
     return `${prefixURL}${workflowId}/${ciPipelineType}${ciPipelineSuffix}`
 }
 

@@ -51,7 +51,9 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     manifestDataRHSOverride:'',
     loadingManifestOverride:false,
     isValuesOverride:true,
-    groupedOptionsDataOverride:[]
+    groupedOptionsDataOverride:[],
+    convertVariables: false,
+    convertVariablesOverride: false,
 }
 
 export const deploymentConfigReducer = (
@@ -158,7 +160,11 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.loadingManifestOverride:
             return { ...state, loadingManifestOverride: action.payload }
         case DeploymentConfigStateActionTypes.groupedOptionsDataOverride:
-            return { ...state, groupedOptionsDataOverride: action.payload }                                     
+            return { ...state, groupedOptionsDataOverride: action.payload }
+        case DeploymentConfigStateActionTypes.convertVariables:
+            return { ...state, convertVariables: action.payload }       
+        case DeploymentConfigStateActionTypes.convertVariablesOverride:
+            return { ...state, convertVariablesOverride: action.payload }                                      
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

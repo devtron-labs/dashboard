@@ -19,6 +19,9 @@ export default function SuggestionItem({
     const sanitiseVariableValue = (value): JSX.Element => {
         if (isRedacted) return <i className="cn-3 fs-12 fw-6 lh-18 m-0">is sensitive & hidden</i>
         if (value === '') return <p className="cn-0 fs-12 fw-6 lh-18 m-0">&apos;&quot;&quot;&apos;</p>
+        if (typeof value === 'boolean') {
+            return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value ? 'true' : 'false'}</p>
+        }
         return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value}</p>
     }
 
@@ -53,7 +56,7 @@ export default function SuggestionItem({
 
     return (
         <Tippy
-            className="default-tt"
+            className="default-tt dc__word-break-all"
             content={
                 <div className="mw-200 flex column dc__content-start dc__align-start">
                     <div className="flex column dc__content-start dc__align-start">Value</div>

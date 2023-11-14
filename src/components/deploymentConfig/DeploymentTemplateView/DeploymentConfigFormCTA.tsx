@@ -24,6 +24,7 @@ export default function DeploymentConfigFormCTA({
     isPublishedMode,
     reload,
     isValues,
+    convertVariables,
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
@@ -69,7 +70,7 @@ export default function DeploymentConfigFormCTA({
                             ? 'base-deployment-template-save-and-next-button'
                             : 'base-deployment-template-save-changes-button'
                     }`}
-                    disabled={state.unableToParseYaml || (!isValues && !isApprovalPending)}
+                    disabled={state.unableToParseYaml || (!isValues && !isApprovalPending) || convertVariables}
                 >
                     {loading ? (
                         <Progressing />

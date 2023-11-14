@@ -1,6 +1,7 @@
 import {
     CDModalTabType,
     DeploymentNodeType,
+    FilterConditionsListType,
     ResponseType,
     UserApprovalConfigType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -23,6 +24,7 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     isFirstTrigger: boolean
     isCacheAvailable: boolean
     isLinkedCI: boolean
+    isJobCI: boolean
     isWebhookCI: boolean
     parentAppId: number
     parentCIPipelineId: number
@@ -52,6 +54,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     tagsEditable?: boolean
     ciPipelineId?: number
     hideImageTaggingHardDelete?: boolean
+    resourceFilters?: FilterConditionsListType[]
 }
 
 export interface ResponseRowType {

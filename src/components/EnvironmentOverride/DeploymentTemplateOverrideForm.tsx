@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary, useJsonYaml } from '../common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
 import { DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { EDITOR_VIEW } from '../deploymentConfig/constants'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../config'
@@ -51,6 +51,7 @@ export default function DeploymentTemplateOverrideForm({
     manifestDataLHS,
     setManifestDataRHS,
     setManifestDataLHS,
+    convertVariablesOverride,
 }) {
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -81,6 +82,13 @@ export default function DeploymentTemplateOverrideForm({
     const setLoadingManifestOverride = (value: boolean) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.loadingManifestOverride,
+            payload: value,
+        })
+    }
+
+    const setConvertVariables = (value: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.convertVariablesOverride,
             payload: value,
         })
     }
@@ -217,7 +225,7 @@ export default function DeploymentTemplateOverrideForm({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
 
-        if (isValuesOverride) {
+        if (isValuesOverride && !convertVariablesOverride) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: str,
@@ -278,6 +286,8 @@ export default function DeploymentTemplateOverrideForm({
                     ? state.selectedTabIndex
                     : index,
         })
+
+        setConvertVariables(false)
 
         switch (index) {
             case 1:
@@ -455,6 +465,7 @@ export default function DeploymentTemplateOverrideForm({
     const fetchManifestData = async (data) => {
         const request = {
             appId: +appId,
+            envId: +envId,
             chartRefId: state.selectedChartRefId,
             valuesAndManifestFlag: 2,
             values: data,
@@ -493,15 +504,28 @@ export default function DeploymentTemplateOverrideForm({
                     }
                     editorOnChange={editorOnChange}
                     environmentName={environmentName}
-                    readOnly={!state.duplicate || isCompareAndApprovalState || !overridden || !isValuesOverride}
+                    readOnly={
+                        !state.duplicate ||
+                        isCompareAndApprovalState ||
+                        !overridden ||
+                        !isValuesOverride ||
+                        convertVariablesOverride
+                    }
                     globalChartRefId={state.data.globalChartRefId}
                     handleOverride={handleOverride}
                     isValues={isValuesOverride}
+                    convertVariables={convertVariablesOverride}
+                    setConvertVariables={setConvertVariables}
                     groupedData={groupedData}
                 />
             )
         }
     }
+
+    const clusterId = useMemo(
+        () => environments.find((env) => env.environmentId === Number(envId))?.clusterId,
+        [environments, envId],
+    )
 
     const renderValuesView = () => (
         <form
@@ -510,6 +534,9 @@ export default function DeploymentTemplateOverrideForm({
             }`}
             onSubmit={handleSubmit}
         >
+            <div className="variables-widget-position">
+                <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
+            </div>
             <DeploymentTemplateOptionsTab
                 isEnvOverride={true}
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
@@ -537,6 +564,7 @@ export default function DeploymentTemplateOverrideForm({
                 isPublishedMode={readOnlyPublishedMode}
                 reload={reload}
                 isValues={isValuesOverride}
+                convertVariables={convertVariablesOverride}
             />
         </form>
     )
@@ -572,6 +600,9 @@ export default function DeploymentTemplateOverrideForm({
                 reload={reload}
                 isValues={isValuesOverride}
                 setIsValues={setIsValuesOverride}
+                convertVariables={convertVariablesOverride}
+                setConvertVariables={setConvertVariables}
+                componentType={3}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}

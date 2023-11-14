@@ -138,11 +138,19 @@ export const prepareConfigMapAndSecretData = (
             secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type][''] }
             if (type === 'Secret' && historyData.codeEditorValue.value) {
                 const secretData = JSON.parse(historyData.codeEditorValue.value)
+                let resolvedSecretData = {}
+                if (historyData.codeEditorValue?.resolvedValue) {
+                    resolvedSecretData = JSON.parse(historyData.codeEditorValue.resolvedValue)
+                }
                 const decodeNotRequired =
                     skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
+                    
                 historyData.codeEditorValue.value = decodeNotRequired
                     ? historyData.codeEditorValue.value
                     : JSON.stringify(decode(secretData))
+                historyData.codeEditorValue.resolvedValue = decodeNotRequired
+                    ? historyData.codeEditorValue.resolvedValue
+                    : JSON.stringify(decode(resolvedSecretData))    
             }
         }
     }

@@ -5,6 +5,7 @@ import {
     ClusterComponentStatusType,
     ClusterComponentStatus,
     ClusterTerminalParamsType,
+    emptyClusterTerminalParamsData,
 } from './cluster.type'
 
 export function getEnvName(components: ClusterComponentType[], agentInstallationStage): string {
@@ -45,6 +46,7 @@ export function getClusterTerminalParamsData(
     clusterShellList: OptionType[],
     node: string,
 ): ClusterTerminalParamsType {
+    if (!nodeList || nodeList.length === 0) return emptyClusterTerminalParamsData
     const _selectedImage = imageList.find((image) => image.value === params.get('image'))
     const _selectedNamespace = namespaceList.find((namespace) => namespace.value === params.get('namespace'))
     let nodeOptionList: OptionType[] = []
