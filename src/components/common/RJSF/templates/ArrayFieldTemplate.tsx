@@ -14,9 +14,19 @@ const ActionButton = ({ canAdd, onAddClick, disabled, readonly, uiSchema, regist
     )
 }
 
-export const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
-    const { canAdd, className, disabled, idSchema, uiSchema, items, onAddClick, readonly, registry, required, title } =
-        props
+export const ArrayFieldTemplate = ({
+    canAdd,
+    className,
+    disabled,
+    idSchema,
+    uiSchema,
+    items,
+    onAddClick,
+    readonly,
+    registry,
+    required,
+    title,
+}: ArrayFieldTemplateProps) => {
     const uiOptions = getUiOptions(uiSchema)
     const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate'>('ArrayFieldItemTemplate', registry, uiOptions)
     const label = uiOptions.title || title

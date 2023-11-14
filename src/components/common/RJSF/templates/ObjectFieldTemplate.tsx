@@ -9,20 +9,19 @@ import {
 } from '@rjsf/utils'
 import { FieldRowWithLabel } from '../common/FieldRow'
 
-const Field = (props: ObjectFieldTemplateProps) => {
-    const {
-        disabled,
-        formData,
-        idSchema,
-        onAddClick,
-        properties,
-        readonly,
-        registry,
-        required,
-        schema,
-        title,
-        uiSchema,
-    } = props
+const Field = ({
+    disabled,
+    formData,
+    idSchema,
+    onAddClick,
+    properties,
+    readonly,
+    registry,
+    required,
+    schema,
+    title,
+    uiSchema,
+}: ObjectFieldTemplateProps) => {
     const {
         ButtonTemplates: { AddButton },
     } = registry.templates

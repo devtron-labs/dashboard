@@ -1,20 +1,18 @@
 import React, { CSSProperties } from 'react'
 import { ArrayFieldTemplateItemType } from '@rjsf/utils'
 
-export const ArrayFieldItemTemplate = (props: ArrayFieldTemplateItemType) => {
-    const {
-        children,
-        className,
-        disabled,
-        hasToolbar,
-        hasRemove,
-        index,
-        onCopyIndexClick,
-        onDropIndexClick,
-        readonly,
-        registry,
-        uiSchema,
-    } = props
+export const ArrayFieldItemTemplate = ({
+    children,
+    className,
+    disabled,
+    hasToolbar,
+    hasRemove,
+    index,
+    onDropIndexClick,
+    readonly,
+    registry,
+    uiSchema,
+}: ArrayFieldTemplateItemType) => {
     const { RemoveButton } = registry.templates.ButtonTemplates
 
     return (
