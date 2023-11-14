@@ -20,3 +20,5 @@ export const HISTORY_LABEL = {
     ENVIRONMENT: 'Environment',
     PIPELINE: 'Pipeline',
 }
+
+export const WORKER_POD_BASE_URL = '/resource-browser/1/devtron-ci/pod/k8sEmptyGroup'

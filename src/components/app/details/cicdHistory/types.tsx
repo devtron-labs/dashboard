@@ -104,7 +104,7 @@ export interface CIListItemType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
-    isSuperAdmin?:boolean
+    isSuperAdmin?: boolean
 }
 
 export interface ImageComment {
@@ -200,6 +200,7 @@ export interface TriggerDetailsType {
     artifact?: string
     environmentName?: string
     isJobView?: boolean
+    name?: string
 }
 
 export interface TriggerDetailsStatusIconType {
@@ -216,6 +217,8 @@ export interface WorkerStatusType {
     message: string
     podStatus: string
     stage: DeploymentStageType
+    finishedOn?: string
+    name?: string
 }
 export interface ProgressingStatusType {
     status: string
@@ -223,6 +226,8 @@ export interface ProgressingStatusType {
     podStatus: string
     stage: DeploymentStageType
     type: HistoryComponentType
+    finishedOn?: string
+    name?: string
 }
 
 export interface CurrentStatusType {
@@ -234,6 +239,7 @@ export interface CurrentStatusType {
     stage: DeploymentStageType
     type: HistoryComponentType
     isJobView?: boolean
+    name?: string
 }
 
 export interface StartDetailsType {
