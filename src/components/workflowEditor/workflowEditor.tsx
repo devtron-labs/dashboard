@@ -34,6 +34,7 @@ import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
 import Tippy from '@tippyjs/react'
+import EmptyWorkflow from './EmptyWorkflow'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 
@@ -83,9 +84,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     componentDidUpdate(prevProps) {
-        if (
-            prevProps.filteredEnvIds !== this.props.filteredEnvIds
-        ) {
+        if (prevProps.filteredEnvIds !== this.props.filteredEnvIds) {
             this.getWorkflows()
         }
     }
@@ -102,11 +101,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(
-            this.props.match.params.appId,
-            this.props.isJobView,
-            this.props.filteredEnvIds
-        )
+        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView, this.props.filteredEnvIds)
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -142,7 +137,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     view: ViewType.FORM,
                     envToShowWebhookTippy: -1,
                     filteredCIPipelines: result.filteredCIPipelines,
-                    envIds: _envIds
+                    envIds: _envIds,
                 })
             })
             .catch((errors) => {
@@ -173,17 +168,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     toggleCIMenu = (event) => {
-      if (this.props.filteredEnvIds) {
-          return
-      }
-      const { top, left } = event.target.getBoundingClientRect()
-      this.setState({
-          cIMenuPosition: {
-              top: top,
-              left: left,
-          },
-          showCIMenu: !this.state.showCIMenu,
-      })
+        if (this.props.filteredEnvIds) {
+            return
+        }
+        const { top, left } = event.target.getBoundingClientRect()
+        this.setState({
+            cIMenuPosition: {
+                top: top,
+                left: left,
+            },
+            showCIMenu: !this.state.showCIMenu,
+        })
     }
 
     deleteWorkflow = (appId?: string, workflowId?: number) => {
@@ -350,6 +345,21 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
+                <Route
+                    path={`${this.props.match.path}/empty-workflow`}
+                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                        return (
+                            <EmptyWorkflow
+                                match={match}
+                                history={history}
+                                location={location}
+                                name={this.state.appName}
+                                onClose={this.closeAddWorkflow}
+                                getWorkflows={this.getWorkflows}
+                            />
+                        )
+                    }}
+                />
                 {!this.props.isJobView && (
                     <Route
                         path={[URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
@@ -495,7 +505,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     openCreateModal = () => {
-        this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/0/ci-pipeline/0`)
+        // this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/0/ci-pipeline/0`)
+        this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`)
     }
 
     renderNewJobPipelineButton = () => {

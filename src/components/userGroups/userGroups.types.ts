@@ -102,7 +102,7 @@ export interface APIRoleFilter {
     group?: any
     kind?: any
     resource?: any
-    // workflow?:any
+    workflow?:any
 }
 
 export interface OptionType {

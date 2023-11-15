@@ -28,7 +28,7 @@ import { WebhookNode } from './nodes/WebhookNode'
 import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
-import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
+import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
@@ -120,7 +120,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     true,
                     node.downstreams[0].split('-')[1],
                     this.props.isJobView,
-                    node.isJobCI
+                    node.isJobCI,
                 ),
             )
         }
@@ -427,6 +427,26 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
         return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
     }
+    emptyWorkflow = () => {
+        return (
+            <div className="fs-12 cn-7 pt-16 pb-16 pr-16 pl-16">
+                <div className="text-center lh-18 bc-n50 flexbox-col dc__align-items-center bw-1 en-2 dashed h-100 dc__content-center br-4 pt-16 pb-16" onClick={() => {
+                            this.props.history.push(
+                                `${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/${this.props.id}/ci-pipeline/0`,
+                            )
+                        }}>
+                    <div
+                        className="fw-6 mb-4 w-300 cursor"
+                    >
+                        Add job pipeline to this workflow
+                    </div>
+                    <div className="fw-4 w-300">
+                        Job pipeline enables you to execute a series of tasks manually or automatically
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     renderWorkflow() {
         let ciPipelineId = 0
@@ -481,10 +501,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     </div>
                     {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                     <div className="workflow__body">
-                        <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
-                            {this.renderEdgeList()}
-                            {this.renderNodes()}
-                        </svg>
+                        {this.getEdges().length == 0 ? (
+                            this.emptyWorkflow()
+                        ) : (
+                            <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
+                                {this.renderEdgeList()}
+                                {this.renderNodes()}
+                            </svg>
+                        )}
                         {!configDiffView && (
                             <PipelineSelect
                                 workflowId={this.props.id}

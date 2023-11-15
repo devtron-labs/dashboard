@@ -51,8 +51,17 @@ export interface AddWorkflowState {
     name: string
     showError: boolean
 }
+export interface EmptyWorkflowState {
+    name: string
+    showError: boolean
+}
 
 export interface AddWorkflowProps extends RouteComponentProps<{ appId: string; workflowId: string }> {
+    name: string
+    onClose: () => void
+    getWorkflows: () => void
+}
+export interface EmptyWorkflowProps extends RouteComponentProps<{ appId: string; workflowId: string }> {
     name: string
     onClose: () => void
     getWorkflows: () => void
