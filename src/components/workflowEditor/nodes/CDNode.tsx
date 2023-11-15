@@ -52,17 +52,17 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     onClickAddNode = (event: any) => {
-      if (this.props.addNewPipelineBlocked) {
-          return
-      }
-      if (this.props.deploymentAppDeleteRequest) {
-          toast.error(ERR_MESSAGE_ARGOCD)
-      } else {
-          event.stopPropagation()
-          let { top, left } = event.target.getBoundingClientRect()
-          top = top + 25
-          this.props.toggleCDMenu()
-      }
+        if (this.props.addNewPipelineBlocked) {
+            return
+        }
+        if (this.props.deploymentAppDeleteRequest) {
+            toast.error(ERR_MESSAGE_ARGOCD)
+        } else {
+            event.stopPropagation()
+            let { top, left } = event.target.getBoundingClientRect()
+            top = top + 25
+            this.props.toggleCDMenu()
+        }
     }
 
     getAppDetailsURL(): string {

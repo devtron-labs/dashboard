@@ -963,7 +963,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }
 
     useEffect(() => {
-        console.log('environemnt list',environmentsList)
         const envOptions = createClusterEnvGroup(
             environmentsList,
             'cluster_name',
@@ -971,7 +970,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             'environmentIdentifier',
         )
         setEnvironments(envOptions)
-        console.log('options',envOptions)
     }, [environmentsList])
 
     useEffect(() => {
@@ -1028,7 +1026,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             const isJobs = permission.entity === EntityTypes.JOB
             return {
                 label: isJobs ? app.jobName : app.name,
-                value: isJobs ? app.jobName : app.name
+                value: isJobs ? app.appName : app.name
             }
         })
         setApplications(appOptions)
@@ -1054,7 +1052,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         setWorkflows({ loading: true, options: [] })
         try {
             setWorkflows({ loading: true, options: [] })
-            const jobNames=applications.map((app)=>app.value)
+            const jobNames=applications.map((app)=>app.value.split('/')[0])
             const { result:{appIdWorkflowNamesMapping} } = await getAllWorkflowsForAppNames(jobNames, { signal: abortControllerRef.current.signal })
             const workflowOptions=[]
             for( const jobName in appIdWorkflowNamesMapping){ 

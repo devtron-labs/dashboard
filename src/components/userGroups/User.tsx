@@ -117,7 +117,6 @@ export default function UserForm({
     }
 
     function isFormComplete(): boolean {
-        console.log('directPermission',directPermission)
         let isComplete: boolean = true;
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
