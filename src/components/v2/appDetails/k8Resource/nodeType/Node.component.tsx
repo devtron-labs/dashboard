@@ -264,10 +264,10 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </TippyCustomized>
                     </>
                 )
-            } else if(node.port?.length ===  1){
+            } else if (node.port?.length === 1) {
                 return `${node.name}.${node.namespace}:${node.port}`
             } else {
-                return "Port Number is missing"
+                return 'Port Number is missing'
             }
         }
 
