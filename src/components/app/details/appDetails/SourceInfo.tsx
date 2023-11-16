@@ -76,11 +76,6 @@ export function SourceInfo({
         showHibernateModal(isHibernated ? 'resume' : 'hibernate')
     }
 
-    const showApplicationDetailedModal = (): void => {
-        toggleIssuesModal(false)
-        setDetailed(true)
-    }
-
     const conditionalScalePodsButton = (children) => {
         return (
             <Tippy
@@ -222,9 +217,9 @@ export function SourceInfo({
                         <IssuesCard
                             appStreamData={appStreamData}
                             cardLoading={cardLoading}
-                            showIssuesListingModal={() => toggleIssuesModal(true)}
+                            toggleIssuesModal={toggleIssuesModal}
                             setErrorsList={setErrorsList}
-                            showApplicationDetailedModal={showApplicationDetailedModal}
+                            setDetailed={setDetailed}
                         />
                     )}
                     <DeploymentStatusCard

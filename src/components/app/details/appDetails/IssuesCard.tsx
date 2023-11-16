@@ -23,13 +23,7 @@ import IndexStore from '../../../v2/appDetails/index.store'
 import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 import LoadingCard from './LoadingCard'
 
-const IssuesCard = ({
-    appStreamData,
-    cardLoading,
-    showIssuesListingModal,
-    setErrorsList,
-    showApplicationDetailedModal,
-}: IssuesCardType) => {
+const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState(false)
@@ -40,6 +34,15 @@ const IssuesCard = ({
 
     const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData])
     const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
+
+    const showIssuesListingModal = () => {
+        toggleIssuesModal(true)
+    }
+
+    const showApplicationDetailedModal = () => {
+        toggleIssuesModal(false)
+        setDetailed(true)
+    }
 
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP && appDetails.resourceTree?.nodes?.length) {
