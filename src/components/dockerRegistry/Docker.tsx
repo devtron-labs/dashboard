@@ -315,7 +315,7 @@ function DockerForm({
         {
             id: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.*$/ },
+                validator: { error: 'Do not use "/" ', regex: /^[^/]+$/ },
             },
             registryType: {
                 required: true,
@@ -341,6 +341,7 @@ function DockerForm({
         state.registryType.value === RegistryType.GCR || state.registryType.value === RegistryType.ARTIFACT_REGISTRY
             ? password.substring(1, password.length - 1)
             : password
+
     const [customState, setCustomState] = useState({
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: {
@@ -526,7 +527,10 @@ function DockerForm({
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL)
                     ? customState.repositoryList?.value.split(',') || []
                     : null,
-            registryUrl: customState.registryUrl.value,
+            registryUrl: customState.registryUrl.value?.trim().replace(/^https?:\/\//, '')
+                .replace(/^oci?:\/\//, '')
+                .replace(/^docker?:\/\//, '')
+                .replace(/^http?:\/\//, ''),
             ...(selectedDockerRegistryType.value === RegistryType.ECR
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value?.trim(),

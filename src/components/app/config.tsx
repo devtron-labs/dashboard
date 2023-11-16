@@ -77,4 +77,5 @@ export const APP_STATUS = {
     Hibernating: 'HIBERNATING',
     Missing: 'Missing',
     Progressing : 'Progressing',
+    ['Not Deployed'] : 'NOT DEPLOYED',
 }

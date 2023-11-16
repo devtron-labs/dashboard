@@ -4,13 +4,13 @@ import { ImageComment } from "../cicdHistory/types"
 export interface DeploymentHistorySingleValue {
     displayName: string
     value: string
+    variableSnapshot?:object
+    resolvedValue?: string
 }
 export interface DeploymentHistoryDetail {
     componentName?: string
     values: Record<string, DeploymentHistorySingleValue>
     codeEditorValue: DeploymentHistorySingleValue
-    resolvedTemplateData: string
-    variableSnapshot: object
 }
 export interface HistoryDiffSelectorList {
     id: number

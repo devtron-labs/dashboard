@@ -578,6 +578,10 @@ a:focus {
     &.direction-left {
         text-align: left;
     }
+
+    &.text-overflow-clip {
+        text-overflow: clip;
+    }
 }
 
 .anchor {
@@ -788,7 +792,7 @@ button.anchor {
 .Toastify__toast--default {
     &.devtron-toast {
         &:before {
-            background-image: url('../assets/icons/ic-info-filled.svg');
+            background-image: url('../assets/icons/ic-info-filled-lg.svg');
         }
     }
 }
@@ -1414,6 +1418,16 @@ button.anchor {
             }
         }
     }
+
+    &--lg {
+        &.radio-group {
+            height: 30px;
+
+            input + .radio__item-label {
+                padding-inline: 8px;
+            }
+        }
+    }
 }
 
 .manual-approvals-switch {
@@ -1592,6 +1606,10 @@ button.anchor {
 
     &:not(.form__input--error):focus {
         border: solid 1px var(--B500);
+    }
+
+    &--vertical {
+        resize: vertical;
     }
 }
 
@@ -2158,6 +2176,10 @@ button.anchor {
     max-width: none !important;
 }
 
+.dc__mxw-120 {
+    max-width: 120px;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2184,6 +2206,10 @@ button.anchor {
 
 .dc__mxw-1000 {
     max-width: 1000px;
+}
+
+.dc__mxw-1068 {
+    max-width: 1068px;
 }
 
 .dc__mxw-180 {
@@ -2683,6 +2709,10 @@ textarea,
     min-width: 385px;
 }
 
+.w-20 {
+    width: 20px;
+}
+
 .w-24 {
     width: 24px;
 }
@@ -3093,6 +3123,10 @@ textarea,
     min-height: 30px;
 }
 
+.mh-40 {
+    min-height: 40px;
+}
+
 .mh-48 {
     min-height: 48px;
 }
@@ -3125,8 +3159,16 @@ textarea,
     min-height: 400px;
 }
 
+.mh-500 {
+    min-height: 500px;
+}
+
 .mh-600 {
     min-height: 600px;
+}
+
+.mxh-64 {
+    max-height: 64px;
 }
 
 .mxh-140 {
@@ -3311,6 +3353,10 @@ textarea,
     margin: auto;
 }
 
+.mb-neg-1 {
+    margin-bottom: -1px;
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
@@ -3383,6 +3429,10 @@ textarea,
     background: none;
 }
 
+.dc__no-background-imp {
+    background: none !important;
+}
+
 //Overflow
 .dc__overflow-hidden {
     overflow: hidden !important;
@@ -3423,7 +3473,9 @@ textarea,
 .dc__column-gap-24 {
     column-gap: 24px;
 }
-
+.dc__column-gap-32 {
+    column-gap: 32px;
+}
 .dc__gap-2 {
     gap: 2px;
 }
@@ -3547,6 +3599,10 @@ textarea::placeholder {
 
 .dc__hover-b500:hover {
     background-color: var(--B500);
+}
+
+.dc__hover-color-b500:hover {
+    color: var(--B500);
 }
 
 .dc__hover-n100:hover {
@@ -3867,3 +3923,42 @@ textarea::placeholder {
 .br-48 {
     border-radius: 48px;
 }
+
+.fetch-more-loading-button svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+// Start: accouncement banner
+.announcement-banner-container {
+    &.page-header-banner {
+            width: fit-content;
+            position: absolute;
+            margin: auto;
+            left: 0;
+            right: 0;
+            top: 0;
+            text-align: center;
+        }
+    
+        &.cd-trigger-announcement {
+            .info-bar-container {
+                .announcement-bar {
+                    border-radius: 0;
+                    border: none;
+                    border-bottom: 1px solid var(--Y700);
+                }
+            }
+        }
+    }
+    
+    .announcement-bar {
+        background-color: var(--Y500);
+        border: 1px solid var(--Y700);
+        border-top: none;
+        padding: 8px 12px !important;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+}
+
+// End: accouncement banner

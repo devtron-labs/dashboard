@@ -476,6 +476,9 @@
 .cluster-terminal-hidden {
     visibility: hidden;
     height: 0;
+    .terminal-action-strip {
+        display: none;
+      }
 }
 
 .cluster-terminal-hidden * {

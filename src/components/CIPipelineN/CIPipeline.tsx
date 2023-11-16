@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
 import {
     ButtonWithLoader,
     FloatingVariablesSuggestions,
@@ -84,6 +84,7 @@ export default function CIPipeline({
         activeStageName = BuildStageVariable.PostBuild
     }
     const { path } = useRouteMatch()
+    const history = useHistory()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const saveOrUpdateButtonTitle = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const isJobCard = isJobCI || isJobView // constant for common elements of both Job and CI_JOB
@@ -209,7 +210,7 @@ export default function CIPipeline({
             ciPipeline.pipelineType === CIPipelineBuildType.CI_JOB 
         ) {
             const editCIPipelineURL: string = location.pathname.replace(`/${URLS.APP_CI_CONFIG}/`, `/${URLS.APP_JOB_CI_CONFIG}/`)
-            window.location.href =  editCIPipelineURL
+            history.push(editCIPipelineURL)
         }
     }, [location.pathname, ciPipeline.pipelineType])
 

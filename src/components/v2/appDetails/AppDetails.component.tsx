@@ -187,14 +187,14 @@ const AppDetailsComponent = ({
                 <EnvironmentSelectorComponent
                     isExternalApp={isExternalApp}
                     _init={_init}
-                    loadingResourceTree={loadingResourceTree}
+                    loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                     isVirtualEnvironment={isVirtualEnv.current}
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
                         appStreamData={streamData}
-                        loadingDetails={loadingDetails}
-                        loadingResourceTree={loadingResourceTree}
+                        loadingDetails={loadingDetails || !appDetails?.appType}
+                        loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
                         isHelmApp={true}
