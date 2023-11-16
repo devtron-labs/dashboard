@@ -28,12 +28,13 @@ import { WebhookNode } from './nodes/WebhookNode'
 import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
-import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
+import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ChangeCIPayloadType } from './types'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
+const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -152,10 +153,27 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI)
         const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
-        const _nodesData = this.getNodesData(ci?.id || webhook?.id || '')
+        const linkedCD = this.props.nodes.find((node) => node.type === WorkflowNodeType.LINKED_CD)
+        const _nodesData = this.getNodesData(ci?.id || webhook?.id || linkedCD?.id || '')
         const _nodes = _nodesData.nodes
 
-        if (ci) {
+        if (linkedCD) {
+            return _nodes.map((node: NodeAttr) => {
+                if (node.type == WorkflowNodeType.LINKED_CD) {
+                    return this.renderLinkedCD(node)
+                } else if (_nodesData.cdNamesList.length > 0) {
+                    return (
+                        <>
+                            {this.renderAdditionalEdge()}
+                            {this.renderCDNodes(node, linkedCD.id, false, _nodesData.cdNamesList)}
+                        </>
+                    )
+                }
+
+                return this.renderCDNodes(node, linkedCD.id, false)
+            })
+        }
+        else if (ci) {
             return _nodes.map((node: NodeAttr) => {
                 if (node.type == WorkflowNodeType.GIT) {
                     return this.renderSourceNode(node, ci)
@@ -337,6 +355,27 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 envList={this.props.envList}
                 filteredCIPipelines={this.props.filteredCIPipelines}
                 addNewPipelineBlocked={this.props.addNewPipelineBlocked}
+            />
+        )
+    }
+
+    renderLinkedCD(node: NodeAttr) {
+        return (
+            <LinkedCDNode
+                x={node.x}
+                y={node.y}
+                width={node.width}
+                height={node.height}
+                configDiffView={this.props.cdWorkflowList?.length > 0}
+                title={node.title}
+                // TODO: Change this to a proper URL
+                redirectTo={`${this.props.match.url}/${
+                    this.props.id ?? 0
+                }/${URLS.LINKED_CD}/0`}
+                blockAddNewPipeline={this.props.addNewPipelineBlocked}
+                toggleCDMenu={() => {
+                    this.props.handleCDSelect(this.props.id, node.id, WorkflowNodeType.LINKED_CD, node.id)
+                }}
             />
         )
     }

@@ -430,6 +430,7 @@ export enum WorkflowNodeType {
     PRE_CD = 'PRECD',
     CD = 'CD',
     POST_CD = 'POSTCD',
+    LINKED_CD = 'LINKED_CD',
 }
 
 export interface Task {

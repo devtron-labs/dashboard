@@ -245,7 +245,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         }
 
         const ciNode = workflow.nodes.find(
-            (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK,
+            (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK || node.type == WorkflowNodeType.LINKED_CD,
         )
         ciNode.sourceNodes?.forEach((s, si) => {
             const sourceNodeY =
@@ -258,7 +258,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
             s.width = dimensions.staticNodeSizes.nodeWidth
         })
         
-        if (ciNode.type === PipelineType.WEBHOOK || ciNode.isLinkedCD) {
+        if (ciNode.type === PipelineType.WEBHOOK || ciNode.type === WorkflowNodeType.LINKED_CD) {
             ciNode.x = startX + workflowOffset.offsetX
         } else {
             ciNode.x =
@@ -281,7 +281,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
                 finalWorkflow.push(node)
                 delete node['sourceNodes']
             }
-            if (node.type == PipelineType.WEBHOOK) {
+            if (node.type == PipelineType.WEBHOOK || node.type === WorkflowNodeType.LINKED_CD) {
                 finalWorkflow.push(node)
                 delete node['sourceNodes']
             }
@@ -339,6 +339,9 @@ function addDownstreams(workflows: WorkflowType[]) {
                 parentType = WorkflowNodeType.CI
             } else if (node.parentPipelineType == PipelineType.WEBHOOK) {
                 parentType = WorkflowNodeType.WEBHOOK
+            }
+            else if (node.parentPipelineType == PipelineType.LINKED_CD) {
+                parentType = WorkflowNodeType.LINKED_CD
             }
 
             let parentNode = nodes.get(parentType + '-' + node.parentPipelineId)
@@ -471,14 +474,13 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         title: ciPipeline.name,
         triggerType: TriggerTypeMap[trigger],
         status: DEFAULT_STATUS,
-        type: WorkflowNodeType.CI,
+        type: !(ciPipeline.pipelineType === PipelineType.LINKED_CD) ? WorkflowNodeType.CI: WorkflowNodeType.LINKED_CD,
         inputMaterialList: [],
         downstreams: [],
         isExternalCI: ciPipeline.isExternal,
         // Can't rely on pipelineType for legacy pipelines, so using parentCiPipeline as well
-        isLinkedCI: !(ciPipeline?.pipelineType === PipelineType.LINKED_CD) && !!ciPipeline.parentCiPipeline,
+        isLinkedCI: !(ciPipeline.pipelineType === PipelineType.LINKED_CD) && !!ciPipeline.parentCiPipeline,
         isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
-        isLinkedCD: ciPipeline?.pipelineType === PipelineType.LINKED_CD,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes: sourceNodes,
         downstreamNodes: new Array<NodeAttr>(),
