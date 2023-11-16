@@ -551,7 +551,7 @@ export default function ResourceList() {
                         replace({
                             pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
                                 namespace || ALL_NAMESPACE_OPTION.value
-                            }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
+                            }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
                         })
                     }
                     setSelectedResource({
