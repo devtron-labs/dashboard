@@ -53,6 +53,8 @@ export interface AddWorkflowState {
 }
 export interface EmptyWorkflowState {
     name: string
+    loading: boolean
+
     showError: boolean
 }
 

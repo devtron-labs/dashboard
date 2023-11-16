@@ -484,11 +484,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         <span className="workflow__name">{this.props.name}</span>
                         {!configDiffView && (
                             <>
-                                <Link to={this.props.openEditWorkflow(null, this.props.id)}>
-                                    <button type="button" className="dc__transparent">
-                                        <img src={edit} alt="edit" className="icon-dim-18" />
-                                    </button>
-                                </Link>
+                                {!this.props.isJobView && (
+                                    <Link to={this.props.openEditWorkflow(null, this.props.id)}>
+                                        <button type="button" className="dc__transparent">
+                                            <img src={edit} alt="edit" className="icon-dim-18" />
+                                        </button>
+                                    </Link>
+                                )}
                                 <button
                                     type="button"
                                     className="dc__align-right dc__transparent"

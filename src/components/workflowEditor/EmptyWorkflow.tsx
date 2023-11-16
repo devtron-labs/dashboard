@@ -3,8 +3,6 @@ import { EmptyWorkflowProps, EmptyWorkflowState } from './types';
 import { DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { createWorkflow, updateWorkflow } from './service';
 import { toast } from 'react-toastify';
-import { getWorkflowList } from '../../services/service';
-import { URLS } from '../../config'
 import error from '../../assets/icons/misc/errorInfo.svg';
 
 export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWorkflowState> {
@@ -15,6 +13,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
         this.state = {
             name: '',
             showError: false,
+            loading:false
         }
     }
 
@@ -24,27 +23,13 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
         }
     }
 
-    // getWorkflow(): void {
-    //     getWorkflowList(this.props.match.params.appId).then((response) => {
-    //         if (response.result) {
-    //             let workflows = response.result.workflows || [];
-    //             let workflow = workflows.find(wf => wf.id == +this.props.match.params.workflowId);
-    //             if (workflow) this.setState({ id: workflow.id, name: workflow.name });
-    //             else toast.error("Workflow Not Found");
-    //         }
-    //     }).catch((error: ServerErrors) => {
-    //         showError(error)
-    //     })
-    //     if (this._inputName) this._inputName.focus();
-    // }
-
     handleWorkflowName = (event): void => {
         this.setState({ name: event.target.value })
     }
 
     saveWorkflow = (event): void => {
         event.preventDefault()
-        this.setState({ showError: true })
+        this.setState({ showError: true, loading: true })
         let request = {
             appId: +this.props.match.params.appId,
             name: this.state.name,
@@ -58,6 +43,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                 this.setState({
                     name: response.result.name,
                     showError: false,
+                    loading:false
                 })
                 this.props.onClose()
                 this.props.getWorkflows()
@@ -79,7 +65,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                 className=""
                 close={(event) => this.props.onClose()}
                 onSave={this.saveWorkflow}
-                isLoading={false}
+                isLoading={this.state.loading}
                 closeOnESC={true}
             >
                 <label className="form__row">
