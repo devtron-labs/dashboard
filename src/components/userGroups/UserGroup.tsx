@@ -889,9 +889,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     >('')
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
-    // const [workflows, setWorkflows] = useState({loading:false,options:[
-
-    // ]})
     const [envClusters, setEnvClusters] = useState([])
     const [projectInput, setProjectInput] = useState('')
     const [clusterInput, setClusterInput] = useState('')
@@ -1020,7 +1017,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }, [envClustersList])
 
     useEffect(() => {
-        console.log('joblist',jobsList)
         const appOptions = (
             (projectId &&
                 (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
@@ -1037,7 +1033,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 value: isJobs ? app.appName : app.name
             }
         })
-        console.log('options',appOptions)
         setApplications(appOptions)
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
@@ -1061,7 +1056,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         setWorkflowList({ loading: true, options: [] })
         try {
             setWorkflowList({ loading: true, options: [] })
-            console.log('selected jobs', selectedJobs)
             const jobNames = selectedJobs.map((job) => job.value.split('/')[0])
             const {
                 result: { appIdWorkflowNamesMapping },
@@ -1079,7 +1073,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             abortControllerRef.current = null
             setWorkflowList({ loading: false, options: workflowOptions })
         } catch (err: any) {
-            //check if error is not of aborted reques
             if (err.errors[0].code != 0) showError(err)
             setWorkflowList({ loading: false, options: [] })
         }
@@ -1639,9 +1632,9 @@ const ValueContainer = (props) => {
     }
     let Item
     if (props.selectProps.name.includes('entityName')) {
-        Item = props.selectProps.name.split('/')[1] === 'jobs' ? 'jobs' : 'applications'
+        Item = props.selectProps.name.split('/')[1] === 'jobs' ? 'job' : 'application'
     } else {
-        Item = props.selectProps.name === 'environment' ? 'environments' : 'workflow'
+        Item = props.selectProps.name === 'environment' ? 'environment' : 'workflow'
     }
     return (
         <components.ValueContainer {...props}>

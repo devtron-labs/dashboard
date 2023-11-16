@@ -48,6 +48,7 @@ export default function AppPermissions({
         fetchJobsList,
         jobsList,
         superAdmin,
+        setWorkflowList
     } = useUserGroupContext()
     const { url, path } = useRouteMatch()
     const [selectedJobs, setSelectedJobs] = useState([])
@@ -73,8 +74,6 @@ export default function AppPermissions({
     }
     emptyDirectPermissionJobs.entity=EntityTypes.JOB
     useEffect(() => {
-        console.log('data',data)
-
         if (!data) {
             let emptyPermissionArr = [emptyDirectPermissionHelmApps]
 
@@ -203,70 +202,77 @@ export default function AppPermissions({
             fetchJobsList([...new Set(uniqueProjectIdsJobs)].map(Number)),
         ])
         
-        const directPermissions: DirectPermissionsRoleFilter[] = await Promise.all(roleFilters
-            ?.filter(
-                (roleFilter: APIRoleFilter) =>
-                    roleFilter.entity === EntityTypes.DIRECT || roleFilter.entity === EntityTypes.JOB,
-            )
-            ?.map(async(directRolefilter: APIRoleFilter, index: number) => {
-                const projectId =
-                    directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT && projectsMap.get(directRolefilter.team)?.id
-                if (!directRolefilter['accessType'] && directRolefilter.entity !== EntityTypes.JOB) {
-                    directRolefilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS
-                }
-                if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-                    foundDevtronApps = true
-                } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
-                    foundHelmApps = true
-                } else if (directRolefilter.entity === EntityTypes.JOB) {
-                    foundJobs = true
-                }
-                let jobNames
-                let appIdWorkflowNamesMapping
-                let workflowOptions = []
-                if (directRolefilter.entity === EntityTypes.JOB) {
-                    jobNames = directRolefilter?.entityName
-                        ? directRolefilter.entityName.split(',').map((eachJob) => eachJob.split('/')[0])
-                        : []
+        const directPermissions: DirectPermissionsRoleFilter[] = await Promise.all(
+            roleFilters
+                ?.filter(
+                    (roleFilter: APIRoleFilter) =>
+                        roleFilter.entity === EntityTypes.DIRECT || roleFilter.entity === EntityTypes.JOB,
+                )
+                ?.map(async (directRolefilter: APIRoleFilter, index: number) => {
+                    const projectId =
+                        directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
+                        projectsMap.get(directRolefilter.team)?.id
+                    if (!directRolefilter['accessType'] && directRolefilter.entity !== EntityTypes.JOB) {
+                        directRolefilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS
+                    }
+                    if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                        foundDevtronApps = true
+                    } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+                        foundHelmApps = true
+                    } else if (directRolefilter.entity === EntityTypes.JOB) {
+                        foundJobs = true
+                    }
+                    let jobNames
+                    let appIdWorkflowNamesMapping
+                    let workflowOptions = []
+                    if (directRolefilter.entity === EntityTypes.JOB) {
+                        jobNames = directRolefilter?.entityName
+                            ? directRolefilter.entityName.split(',').map((eachJob) => eachJob.split('/')[0])
+                            : []
 
                         const { result } = await getAllWorkflowsForAppNames(jobNames)
-                        console.log('result',result)
                         appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
-                        const selectedWorkflows = directRolefilter?.workflow.split(',')
-                    for (const jobName in appIdWorkflowNamesMapping) {
-                        const workflows = appIdWorkflowNamesMapping[jobName]
-                        const filteredWorkflows = workflows.filter((workflow) => selectedWorkflows.includes(workflow))
-                        if (filteredWorkflows.length > 0) {
+                        for (const jobName in appIdWorkflowNamesMapping) {
                             workflowOptions.push({
                                 label: jobName,
-                                options: filteredWorkflows.map((workflow) => ({ label: workflow, value: workflow })),
+                                options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
+                                    label: workflow,
+                                    value: workflow,
+                                })),
                             })
                         }
+                        setWorkflowList({ loading: false, options: workflowOptions })
+                        setSelectedJobs(
+                            directRolefilter.entityName
+                                .split(',')
+                                .map((entity) => ({ value: entity, label: entity.split('/')[0] })),
+                        )
                     }
-                    setSelectedJobs(
-                        directRolefilter.entityName
-                            .split(',')
-                            .map((entity) => ({ value: entity, label: entity.split('/')[0] })),
-                    )
-                    
-                }
-                console.log('options',workflowOptions)
-                
-                return {
-                    ...directRolefilter,
-                    accessType: directRolefilter.accessType,
-                    action: { label: directRolefilter.action, value: directRolefilter.action },
-                    team: { label: directRolefilter.team, value: directRolefilter.team },
-                    entity: directRolefilter.entity,
-                    entityName: directRolefilter?.entityName
-                        ? directRolefilter.entityName.split(',').map((entity) => ({ value: entity, label: directRolefilter.entity===EntityTypes.JOB?entity.split('/')[0]:entity }))
-                        : setAllApplication(directRolefilter, projectId),
-                    environment: setAllEnv(directRolefilter),
-                    workflow: workflowOptions?.length ? workflowOptions : '',
 
-                } as DirectPermissionsRoleFilter
-            })
-            );
+                    return {
+                        ...directRolefilter,
+                        accessType: directRolefilter.accessType,
+                        action: { label: directRolefilter.action, value: directRolefilter.action },
+                        team: { label: directRolefilter.team, value: directRolefilter.team },
+                        entity: directRolefilter.entity,
+                        entityName: directRolefilter?.entityName
+                            ? directRolefilter.entityName
+                                  .split(',')
+                                  .map((entity) => ({
+                                      value: entity,
+                                      label:
+                                          directRolefilter.entity === EntityTypes.JOB ? entity.split('/')[0] : entity,
+                                  }))
+                            : setAllApplication(directRolefilter, projectId),
+                        environment: setAllEnv(directRolefilter),
+                        workflow: directRolefilter.workflow
+                            ? directRolefilter.workflow
+                                  .split('/')
+                                  .map((workflow) => ({ value: workflow, label: workflow }))
+                            : '',
+                    } as DirectPermissionsRoleFilter
+                }),
+        )
 
         if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
             directPermissions.push(emptyDirectPermissionDevtronApps)
@@ -277,7 +283,6 @@ export default function AppPermissions({
         if(!foundJobs){
             directPermissions.push(emptyDirectPermissionJobs)
         }
-        console.log('directPermissions prefill',directPermissions)
         setDirectPermission(directPermissions)
 
         const tempChartPermission: APIRoleFilter = roleFilters?.find(
@@ -425,7 +430,6 @@ export default function AppPermissions({
                                 .get(projectId)
                                 .result.map((app) => ({ label: app.name, value: app.name })),
                         ]
-                        console.log('selected',tempPermissions[index]['entityName'])
                     } else {
                         tempPermissions[index][name] = [{ label: 'Select all', value: '*' }]
                     }
@@ -440,7 +444,6 @@ export default function AppPermissions({
                     setSelectedJobs(selectedOptions)
                 }
                 tempPermissions[index]['entityName'] = selectedOptions
-                console.log('selected Options',tempPermissions[index]['entityName'])
                 tempPermissions[index]['entityNameError'] = null
             }
             

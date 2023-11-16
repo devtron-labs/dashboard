@@ -143,23 +143,23 @@ export default function UserForm({
     }
 
     function getSelectedEnvironments(permission) {
-        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
             return permission.environment.find((env) => env.value === '*')
                 ? ''
-                : permission.environment.map((env) => env.value).join(',');
+                : permission.environment.map((env) => env.value).join(',')
         } else {
-            let allFutureCluster = {};
-            let envList = '';
+            let allFutureCluster = {}
+            let envList = ''
             permission.environment.forEach((element) => {
                 if (element.clusterName === '' && element.value.startsWith('#')) {
-                    const clusterName = element.value.substring(1);
-                    allFutureCluster[clusterName] = true;
-                    envList += (envList !== '' ? ',' : '') + clusterName + '__*';
+                    const clusterName = element.value.substring(1)
+                    allFutureCluster[clusterName] = true
+                    envList += (envList !== '' ? ',' : '') + clusterName + '__*'
                 } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                    envList += (envList !== '' ? ',' : '') + element.value;
+                    envList += (envList !== '' ? ',' : '') + element.value
                 }
-            });
-            return envList;
+            })
+            return envList
         }
     }
 
