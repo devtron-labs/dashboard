@@ -189,39 +189,8 @@ export function SourceInfo({
         )
     }
 
-    const shimmerLoaderBlocks = () => {
-        return (
-            <div className="flex left mb-16">
-                <div className="bcn-0 w-220 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left w-85 dc__place-abs-shimmer-center ml-16">
-                        <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
-                        <div>
-                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
-                            <div className="shimmer-loading w-64 h-12 br-2 mb-6" />
-                        </div>
-                    </div>
-                </div>
-                <div className="bcn-0 w-400 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left w-85 dc__place-abs-shimmer-center ml-16">
-                        <div className="flex left">
-                            <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
-                            <div>
-                                <div className="shimmer-loading w-150 h-16 br-2 mb-6" />
-                                <div className="shimmer-loading w-64 h-12 br-2 mb-6" />
-                            </div>
-                        </div>
-                        <div className="dc__border-right-n1 ml-12 mr-12 h-60" />
-                        <div>
-                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
-                            <div className="shimmer-loading w-54 h-12 br-2 mb-6" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+    const cardLoading = loadingDetails || loadingResourceTree
 
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
         const paramsId = {
@@ -237,66 +206,60 @@ export function SourceInfo({
     return (
         <div className="flex left w-100 column source-info-container">
             {renderDevtronAppsEnvironmentSelector(environment)}
-            {loadingDetails ? (
-                shimmerLoaderBlocks()
-            ) : (
-                <>
-                    {!isdeploymentAppDeleting && environment && (
-                        <div className="flex left w-100">
-                            {!isVirtualEnvironment && (
-                                <AppStatusCard
-                                    appDetails={appDetails}
-                                    status={status}
-                                    loadingResourceTree={loadingResourceTree}
-                                    setDetailed={setDetailed}
-                                    message={message}
-                                />
-                            )}
-                            {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                            {!loadingResourceTree && (
-                                <IssuesCard
-                                    appStreamData={appStreamData}
-                                    loadingResourceTree={loadingResourceTree}
-                                    showIssuesListingModal={() => toggleIssuesModal(true)}
-                                    setErrorsList={setErrorsList}
-                                    showApplicationDetailedModal={showApplicationDetailedModal}
-                                />
-                            )}
-                            <DeploymentStatusCard
-                                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                                loadingResourceTree={loadingResourceTree}
-                                hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
-                                isVirtualEnvironment={isVirtualEnvironment}
-                                refetchDeploymentStatus={refetchDeploymentStatus}
-                            />
-                            <DeployedCommitCard
-                                loadingResourceTree={loadingResourceTree}
-                                showCommitInfoDrawer={onClickShowCommitInfo}
-                                envId={envId}
-                                ciArtifactId={ciArtifactId}
-                            />
-                            <SecurityVulnerabilityCard
-                                loadingResourceTree={loadingResourceTree}
-                                severityCount={severityCount}
-                                showVulnerabilitiesModal={showVulnerabilitiesModal}
-                            />
-                            <div className="flex right ml-auto">
-                                {appDetails?.appStoreChartId && (
-                                    <>
-                                        <span className="mr-8 fs-12 cn-7">Chart:</span>
-                                        <Link
-                                            className="cb-5 fw-6"
-                                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                                        >
-                                            {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
-                                            {appDetails.appStoreAppVersion})
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
-                        </div>
+            {!isdeploymentAppDeleting && environment && (
+                <div className="flex left w-100">
+                    {!isVirtualEnvironment && (
+                        <AppStatusCard
+                            appDetails={appDetails}
+                            status={status}
+                            cardLoading={cardLoading}
+                            setDetailed={setDetailed}
+                            message={message}
+                        />
                     )}
-                </>
+                    {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                    {!loadingResourceTree && (
+                        <IssuesCard
+                            appStreamData={appStreamData}
+                            cardLoading={cardLoading}
+                            showIssuesListingModal={() => toggleIssuesModal(true)}
+                            setErrorsList={setErrorsList}
+                            showApplicationDetailedModal={showApplicationDetailedModal}
+                        />
+                    )}
+                    <DeploymentStatusCard
+                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        cardLoading={cardLoading}
+                        hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
+                        isVirtualEnvironment={isVirtualEnvironment}
+                        refetchDeploymentStatus={refetchDeploymentStatus}
+                    />
+                    <DeployedCommitCard
+                        cardLoading={cardLoading}
+                        showCommitInfoDrawer={onClickShowCommitInfo}
+                        envId={envId}
+                        ciArtifactId={ciArtifactId}
+                    />
+                    <SecurityVulnerabilityCard
+                        cardLoading={cardLoading}
+                        severityCount={severityCount}
+                        showVulnerabilitiesModal={showVulnerabilitiesModal}
+                    />
+                    <div className="flex right ml-auto">
+                        {appDetails?.appStoreChartId && (
+                            <>
+                                <span className="mr-8 fs-12 cn-7">Chart:</span>
+                                <Link
+                                    className="cb-5 fw-6"
+                                    to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                                >
+                                    {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
+                                    {appDetails.appStoreAppVersion})
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </div>
             )}
         </div>
     )

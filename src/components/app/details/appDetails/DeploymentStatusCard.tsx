@@ -8,13 +8,13 @@ import { useHistory } from 'react-router'
 import { DeploymentStatusCardType } from './appDetails.type'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { validateMomentDate } from './utils'
+import LoadingCard from './LoadingCard'
 
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
-    loadingResourceTree,
+    cardLoading,
     hideDeploymentStatusLeftInfo,
     hideDetails,
-    deploymentTriggerTime,
     isVirtualEnvironment,
     refetchDeploymentStatus,
 }: DeploymentStatusCardType) {
@@ -57,7 +57,11 @@ function DeploymentStatusCard({
                         </div>
                     </div>
 
-                    {isVirtualEnvironment ? <Rocket className="icon-dim-24 mr-2" /> : <CD className="icon-dim-24 dc__flip-90 mr-2" />}
+                    {isVirtualEnvironment ? (
+                        <Rocket className="icon-dim-24 mr-2" />
+                    ) : (
+                        <CD className="icon-dim-24 dc__flip-90 mr-2" />
+                    )}
                 </div>
                 <div className="app-details-info-card__bottom-container dc__content-space">
                     <div className="app-details-info-card__bottom-container__message fs-12 fw-4">
@@ -83,11 +87,13 @@ function DeploymentStatusCard({
         if (!hideDetails) {
             refetchDeploymentStatus(true)
         }
-        if (loadingResourceTree) noop()
+        if (cardLoading) noop()
         if (!hideDetails && !hideDeploymentStatusLeftInfo) {
             showDeploymentDetailedStatus(e)
         }
     }
+
+    if (cardLoading) return <LoadingCard wider />
 
     return (
         <div

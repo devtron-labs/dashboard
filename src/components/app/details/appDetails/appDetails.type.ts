@@ -193,24 +193,23 @@ export interface DeletedAppComponentType extends SyncErrorType {
 export interface AppStatusCardType {
     appDetails: AppDetails
     status: string
-    loadingResourceTree?: boolean
+    cardLoading?: boolean
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     message: string
 }
 
 export interface DeploymentStatusCardType {
     deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
-    loadingResourceTree?: boolean
+    cardLoading?: boolean
     hideDeploymentStatusLeftInfo?: boolean
     hideDetails?: boolean
-    deploymentTriggerTime?: string
     triggeredBy?: string
     isVirtualEnvironment?: boolean
     refetchDeploymentStatus: (showTimeline?: boolean) => void
 }
 
 export interface IssuesCardType {
-    loadingResourceTree?: boolean
+    cardLoading?: boolean
     showIssuesListingModal: () => void
     appStreamData?: AppStreamData
     setErrorsList: React.Dispatch<React.SetStateAction<ErrorItem[]>>
@@ -224,14 +223,18 @@ export interface SecurityVulnerabilityCardType {
         low: number
     }
     showVulnerabilitiesModal?: () => void
-    loadingResourceTree?: boolean
+    cardLoading?: boolean
 }
 
 export interface DeployedCommitCardType {
     showCommitInfoDrawer: () => void
-    loadingResourceTree?: boolean
+    cardLoading?: boolean
     envId: number | string
     ciArtifactId: number
+}
+
+export interface LoadingCardType {
+    wider?: boolean
 }
 
 export type ErrorItem = {

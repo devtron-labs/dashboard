@@ -21,10 +21,11 @@ import { AppType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
+import LoadingCard from './LoadingCard'
 
 const IssuesCard = ({
     appStreamData,
-    loadingResourceTree,
+    cardLoading,
     showIssuesListingModal,
     setErrorsList,
     showApplicationDetailedModal,
@@ -179,10 +180,12 @@ const IssuesCard = ({
         return null
     }
 
+    if (cardLoading) return <LoadingCard />
+
     return (
         <div
             data-testid="issues-card"
-            onClick={loadingResourceTree ? noop : showIssuesListingModal}
+            onClick={cardLoading ? noop : showIssuesListingModal}
             className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200"
         >
             <div className="app-details-info-card__top-container flex">
