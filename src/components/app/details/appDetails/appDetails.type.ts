@@ -209,11 +209,11 @@ export interface DeploymentStatusCardType {
 }
 
 export interface IssuesCardType {
-    cardLoading?: boolean
-    showIssuesListingModal: () => void
     appStreamData?: AppStreamData
+    cardLoading?: boolean
     setErrorsList: React.Dispatch<React.SetStateAction<ErrorItem[]>>
-    showApplicationDetailedModal: () => void
+    toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
+    setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface SecurityVulnerabilityCardType {
