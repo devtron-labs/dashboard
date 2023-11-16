@@ -404,7 +404,7 @@ export default function NavigationRoutes() {
                                                 />
                                             </Route>,
                                         ]}
-                                        {isSuperAdmin && !window._env_.K8S_CLIENT && (
+                                        {!window._env_.K8S_CLIENT && (
                                             <Route path={URLS.JOB}>
                                                 <AppContext.Provider value={contextValue}>
                                                     <Jobs />
