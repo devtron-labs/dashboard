@@ -509,6 +509,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
     if (!isEmpty(cdPipeline?.preDeployStage?.steps || cdPipeline?.preStage?.config)) {
         let trigger = cdPipeline.preDeployStage?.triggerType?.toLowerCase() || cdPipeline.preStage?.triggerType?.toLowerCase() || ''
         preCD = {
+            // Need this for Release Tags in CDMaterials
+            connectingCiPipelineId: cdPipeline.ciPipelineId,
             parents: [String(parentId)],
             height: dimensions.cDNodeSizes.nodeHeight,
             width: dimensions.cDNodeSizes.nodeWidth,
@@ -585,6 +587,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
     if (!isEmpty(cdPipeline?.postDeployStage?.steps || cdPipeline?.postStage?.config)) {
         let trigger = cdPipeline.postDeployStage?.triggerType?.toLowerCase() || cdPipeline.postStage?.triggerType?.toLowerCase() || ''
         postCD = {
+            // Need this for Release Tags in CDMaterialss
+            connectingCiPipelineId: cdPipeline.ciPipelineId,
             parents: [String(cdPipeline.id)],
             height: dimensions.cDNodeSizes.nodeHeight,
             width: dimensions.cDNodeSizes.nodeWidth,
