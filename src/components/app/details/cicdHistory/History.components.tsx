@@ -85,7 +85,9 @@ export const GitChanges = ({
     imageReleaseTags,
     appReleaseTagNames,
     tagsEditable,
-    hideImageTaggingHardDelete
+    hideImageTaggingHardDelete,
+    appliedFilters,
+    appliedFiltersTimestamp,
 }: GitChangesType) => {
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
     useEffect(() => {
@@ -113,6 +115,7 @@ export const GitChanges = ({
             />
         )
     }
+    
     return (
         <div className="flex column left w-100 ">
             {ciMaterials?.map((ciMaterial, index) => {
@@ -155,6 +158,8 @@ export const GitChanges = ({
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                        appliedFilters={appliedFilters}
+                        appliedFiltersTimestamp={appliedFiltersTimestamp}
                         isSuperAdmin={isSuperAdmin}
                     >
                         <div className="flex column left hover-trigger">

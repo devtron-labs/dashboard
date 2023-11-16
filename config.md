@@ -12,7 +12,7 @@
 | SENTRY_ENABLED                     | "false"   | Sentry integration status                      |
 | SENTRY_ENV                         | stage     | Sentry environment                              |
 | SENTRY_ERROR_ENABLED               | false     |  To send uncaught errors to sentry             |
-| SENTRY_PERFORMANCE_ENABLED         | false     |  To send persormance sentry      | 
+| SENTRY_PERFORMANCE_ENABLED         | false     |  To send persormance sentry      |
 | SENTRY_DSN                         | ''        | SENTRY Data Source Name |
 | SENTRY_TRACES_SAMPLE_RATE          | 0.2       | Rate at which data send to sentry.(min=0 max=1)|
 | USE_V2                             | "true"    | Use the v2 APIs                                 |
@@ -25,5 +25,7 @@
 | RECOMMEND_SECURITY_SCANNING        | "false"    | Recommend security scanning                  |
 | FORCE_SECURITY_SCANNING            | "false"    |  Force Security Scanning                |
 | CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL     | 7000    |  Interval for checking connection with cluster terminal.     |
+| LOGIN_PAGE_IMAGE                   | ""         | Login page image url                          |
+| LOGIN_PAGE_IMAGE_BG                | ""         | Login page image background color code        |
 
 # DASHBOARD CONFIG SECRET

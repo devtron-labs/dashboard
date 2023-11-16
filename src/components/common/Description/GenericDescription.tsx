@@ -330,7 +330,8 @@ export default function GenericDescription({
                         </div>
                         <ReactMde
                             classes={{
-                                reactMde: 'mark-down-editor-container pb-16 pt-8 mark-down-editor__no-border',
+                                reactMde:
+                                    'mark-down-editor-container dc__word-break pb-16 pt-8 mark-down-editor__no-border',
                                 toolbar: 'mark-down-editor__hidden',
                                 preview: 'mark-down-editor-preview dc__bottom-radius-4',
                                 textArea: 'mark-down-editor__hidden',
@@ -348,7 +349,7 @@ export default function GenericDescription({
                         <ReactMde
                             ref={mdeRef}
                             classes={{
-                                reactMde: `mark-down-editor-container ${
+                                reactMde: `mark-down-editor-container dc__word-break ${
                                     initialEditDescriptionView ? '' : 'create-app-description'
                                 }`,
                                 toolbar: 'mark-down-editor-toolbar tab-description',

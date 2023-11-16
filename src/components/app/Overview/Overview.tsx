@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { Moment12HourFormat, OVERVIEW_TABS, URLS } from '../../../config'
+import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
@@ -32,10 +32,20 @@ import { editApp } from '../service'
 import { getAppConfig, getGitProviderIcon } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
+import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
+const Catalog = importComponentFromFELibrary('Catalog')
+const DependencyList = importComponentFromFELibrary('DependencyList')
+
+type AvailableTabs = typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
+    const location = useLocation();
+    const history = useHistory()
+    const searchParams = new URLSearchParams(location.search)
+    const activeTab = searchParams.get(TAB_SEARCH_KEY) as AvailableTabs
     const config = getAppConfig(appType)
     const isJobOverview = appType === 'job'
     const isHelmChart = appType === 'helm-chart'
@@ -52,11 +62,27 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
-    const [activeTab, setActiveTab] = useState<typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]>(OVERVIEW_TABS.ABOUT)
+    const [, isArgoInstalled] = useAsync(
+        () => getModuleInfo(ModuleNameMap.ARGO_CD),
+        [],
+    )
     const resourceName = config.resourceName
 
     let _moment: moment.Moment
     let _date: string
+
+    const setActiveTab = (selectedTab: AvailableTabs) => {
+        searchParams.set(TAB_SEARCH_KEY, selectedTab)
+        history.replace({ search: searchParams.toString() })
+    }
+
+    useEffect(() => {
+        // add a default tab if not set
+        if (!activeTab || !Object.values(OVERVIEW_TABS).includes(activeTab)) {
+            searchParams.set(TAB_SEARCH_KEY, OVERVIEW_TABS.ABOUT)
+            history.replace({ search: searchParams.toString() })
+        }
+    }, [searchParams])
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
@@ -316,6 +342,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         }
     }
 
+    const kind = isJobOverview
+        ? 'job'
+        : isHelmChart
+        ? 'application/helm-application'
+        : 'application/devtron-application'
+
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (
@@ -388,6 +420,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderAppDescription() {
         return (
             <div>
+                {Catalog && <Catalog id={appId} kind={kind} />}
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin={true}
@@ -413,7 +446,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             return (
                 <div className="app-overview-wrapper flexbox-col dc__gap-12">
                     <RadioGroup
-                        className="gui-yaml-switch gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
                         name="overview-tabs"
                         initialTab={OVERVIEW_TABS.ABOUT}
                         disabled={false}
@@ -433,14 +466,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             const contentToRender = {
                 [OVERVIEW_TABS.ABOUT]: renderAppDescription,
                 [OVERVIEW_TABS.ENVIRONMENTS]: () => <EnvironmentList appId={+appId} filteredEnvIds={filteredEnvIds} />,
+                [OVERVIEW_TABS.DEPENDENCIES]: () => DependencyList ? <DependencyList appId={+appId} isArgoInstalled={isArgoInstalled} /> : null,
             }
 
             return (
                 <div className="app-overview-wrapper flexbox-col dc__gap-12">
                     <RadioGroup
-                        className="gui-yaml-switch gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
                         name="overview-tabs"
-                        initialTab={OVERVIEW_TABS.ABOUT}
+                        initialTab={activeTab}
                         disabled={false}
                         onChange={(e) => {
                             setActiveTab(e.target.value)
@@ -448,6 +482,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     >
                         <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
                         <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
+                        {DependencyList && <RadioGroup.Radio value={OVERVIEW_TABS.DEPENDENCIES}>Dependencies</RadioGroup.Radio>}
                     </RadioGroup>
                     <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
                 </div>
