@@ -50,6 +50,7 @@ export const URLS = {
     AUTHENTICATE: '/auth/login',
     BULK_EDITS: '/bulk-edits',
     DEPLOYMENT_GROUPS: '/deployment-groups',
+    LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
     GLOBAL_CONFIG: '/global-config',

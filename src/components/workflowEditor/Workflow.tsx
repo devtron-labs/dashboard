@@ -30,6 +30,8 @@ import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
+import { ChangeCIPayloadType } from './types'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 
@@ -61,6 +63,7 @@ export interface WorkflowProps
     envList?: any[]
     filteredCIPipelines?: any[]
     addNewPipelineBlocked?: boolean
+    handleChangeCI?: (changeCIPayload: ChangeCIPayloadType) => void
 }
 
 interface WorkflowState {
@@ -423,6 +426,26 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         this.props.showDeleteDialog(this.props.id)
     }
 
+    handleCIChange = () => {
+        const payload: ChangeCIPayloadType = {
+            appWorkflowId: Number(this.props.id),
+            appId: Number(this.props.match.params.appId),
+        }
+
+        const ciPipelineId = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)?.id
+        
+        if (ciPipelineId) {
+            payload.switchFromCiPipelineId = Number(ciPipelineId)
+        }
+        else {
+            const externalCiPipelineId = this.props.nodes.find((nd) => nd.isExternalCI && nd.type === WorkflowNodeType.WEBHOOK)?.id
+            if (externalCiPipelineId) {
+                payload.switchFromExternalCiPipelineId = Number(externalCiPipelineId)
+            }
+        }
+        this.props.handleChangeCI?.(payload)
+    }
+
     renderWebhookTippyContent() {
         const webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
         return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
@@ -469,6 +492,19 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                         <img src={edit} alt="edit" className="icon-dim-18" />
                                     </button>
                                 </Link>
+
+                                {!!this.props.handleChangeCI && (
+                                    <Tippy content="Change Source" placement="top" arrow={false} className="default-tt">
+                                        <button
+                                            type="button"
+                                            className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex"
+                                            onClick={this.handleCIChange}
+                                        >
+                                            <ICInput className="icon-dim-20" />
+                                        </button>
+                                    </Tippy>
+                                )}
+
                                 <button
                                     type="button"
                                     className="dc__align-right dc__transparent"

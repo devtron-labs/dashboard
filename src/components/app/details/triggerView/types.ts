@@ -413,6 +413,7 @@ export enum PipelineType {
     CI_PIPELINE = 'CI_PIPELINE',
     CD_PIPELINE = 'CD_PIPELINE',
     WEBHOOK = 'WEBHOOK',
+    LINKED_CD = 'LINKED_CD',
 }
 
 export enum CIPipelineNodeType {

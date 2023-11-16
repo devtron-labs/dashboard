@@ -167,7 +167,7 @@ export function processWorkflow(
             _wfTree
                 .sort((a, b) => a.id - b.id)
                 .forEach((branch) => {
-                    if (branch.type == PipelineType.CI_PIPELINE) {
+                    if (branch.type == PipelineType.CI_PIPELINE || branch.type === PipelineType.LINKED_CD) {
                         const ciNode = ciMap.get(String(branch.componentId))
                         if (!ciNode) {
                             return
@@ -222,9 +222,9 @@ export function processWorkflow(
     }
 
     addDimensions(workflows, workflowOffset, dimensions)
-
+    
     const blackListedCI = ciResponse.ciPipelines
-        .filter((ciPipeline) => ciPipeline.pipelineType === CIPipelineBuildType.LINKED_CD)
+        ?.filter((ciPipeline) => ciPipeline.pipelineType === CIPipelineBuildType.LINKED_CD)
         .reduce((acc, ciPipeline) => {
             acc[ciPipeline.id] = true
             return acc
@@ -257,8 +257,8 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
             s.height = dimensions.staticNodeSizes.nodeHeight
             s.width = dimensions.staticNodeSizes.nodeWidth
         })
-
-        if (ciNode.type === PipelineType.WEBHOOK) {
+        
+        if (ciNode.type === PipelineType.WEBHOOK || ciNode.isLinkedCD) {
             ciNode.x = startX + workflowOffset.offsetX
         } else {
             ciNode.x =
@@ -329,7 +329,6 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
 function addDownstreams(workflows: WorkflowType[]) {
     workflows.forEach((wf) => {
         let nodes = new Map(wf.nodes.map((node) => [node.type + '-' + node.id, node] as [string, NodeAttr]))
-
         wf.nodes.forEach((node) => {
             if (!node.parentPipelineId) {
                 return node
@@ -456,6 +455,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         } as NodeAttr
     })
     let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
+    
     let ciNode = {
         isSource: true,
         isGitSource: false,
@@ -475,8 +475,10 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         inputMaterialList: [],
         downstreams: [],
         isExternalCI: ciPipeline.isExternal,
-        isLinkedCI: !!ciPipeline.parentCiPipeline,
+        // Can't rely on pipelineType for legacy pipelines, so using parentCiPipeline as well
+        isLinkedCI: !(ciPipeline?.pipelineType === PipelineType.LINKED_CD) && !!ciPipeline.parentCiPipeline,
         isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
+        isLinkedCD: ciPipeline?.pipelineType === PipelineType.LINKED_CD,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes: sourceNodes,
         downstreamNodes: new Array<NodeAttr>(),
@@ -484,6 +486,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
         ciBlockState: ciPipeline.ciBlockState,
     } as NodeAttr
+
     return ciNode
 }
 
@@ -641,12 +644,21 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
 }
 
 function getCINodeHeight(dimensionType: WorkflowDimensionType, pipeline: CiPipeline): number {
-    if (dimensionType === WorkflowDimensionType.CREATE) return WorkflowCreate.cINodeSizes.nodeHeight
-    else {
-        if (pipeline.parentCiPipeline)
-            //linked CI pipeline
-            return WorkflowTrigger.linkedCINodeSizes?.nodeHeight ?? 0
-        else if (pipeline.isExternal) return WorkflowTrigger.externalCINodeSizes?.nodeHeight ?? 0 //external CI
-        else return WorkflowTrigger.cINodeSizes.nodeHeight
+    if (dimensionType === WorkflowDimensionType.CREATE) {
+        return WorkflowCreate.cINodeSizes.nodeHeight
     }
+    
+    // Keeping the check above the next condition since LinkedCD can also have parentCiPipeline
+    if (pipeline.pipelineType === PipelineType.LINKED_CD) {
+        return WorkflowTrigger.cINodeSizes.nodeHeight
+    }
+
+    if (pipeline.parentCiPipeline) {
+        //linked CI pipeline
+        return WorkflowTrigger.linkedCINodeSizes?.nodeHeight ?? 0
+    }
+    if (pipeline.isExternal) {
+        return WorkflowTrigger.externalCINodeSizes?.nodeHeight ?? 0 //external CI
+    }
+    return WorkflowTrigger.cINodeSizes.nodeHeight
 }

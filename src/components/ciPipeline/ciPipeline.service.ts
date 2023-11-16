@@ -12,7 +12,7 @@ import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/servic
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
-import { PipelineBuildStageType } from '../workflowEditor/types'
+import { ChangeCIPayloadType, PipelineBuildStageType } from '../workflowEditor/types'
 import { ImageTagType } from '../CIPipelineN/CustomImageTag.type'
 
 const emptyStepsData = () => {
@@ -168,12 +168,12 @@ export function getInitDataWithCIPipeline(
     })
 }
 
-export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; appId: number; workflowId: number }) {
+export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; appId: number; workflowId: number }, changeCIPayload?: ChangeCIPayloadType) {
     delete parentCIPipeline['beforeDockerBuildScripts']
     delete parentCIPipeline['afterDockerBuildScripts']
-    const request = {
-        appId: params.appId,
-        appWorkflowId: params.workflowId,
+    const request: any = {
+        appId: changeCIPayload.appId ?? params.appId,
+        appWorkflowId: changeCIPayload.appWorkflowId ?? params.workflowId,
         action: PatchAction.CREATE,
         ciPipeline: {
             ...parentCIPipeline,
@@ -183,6 +183,13 @@ export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; a
             parentCiPipeline: parentCIPipeline.id,
             id: null,
         },
+    }
+
+    if (changeCIPayload?.switchFromCiPipelineId) {
+        request.switchFromCiPipelineId = changeCIPayload.switchFromCiPipelineId
+    }
+    else if (changeCIPayload?.switchFromExternalCiPipelineId) {
+        request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
     return savePipeline(request).then((response) => {
@@ -208,17 +215,26 @@ export function saveCIPipeline(
     webhookConditionList,
     ciPipelineSourceTypeOptions,
     imageTagValue?: string,
+    changeCIPayload?: ChangeCIPayloadType,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
-    if(imageTagValue === ImageTagType.Default){
+    if (imageTagValue === ImageTagType.Default){
         delete(ci.customTag)
     }
-    const request = {
-        appId: appId,
-        appWorkflowId: workflowId,
+    const request: any = {
+        appId: changeCIPayload?.appId ?? appId,
+        appWorkflowId: changeCIPayload?.appWorkflowId ?? workflowId,
         action: ciPipeline.id ? PatchAction.UPDATE_SOURCE : PatchAction.CREATE,
         ciPipeline: ci,
     }
+
+    if (changeCIPayload?.switchFromCiPipelineId) {
+        request.switchFromCiPipelineId = changeCIPayload.switchFromCiPipelineId
+    }
+    else if (changeCIPayload?.switchFromExternalCiPipelineId) {
+        request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
+    }
+
     return savePipeline(request).then((response) => {
         const ciPipelineFromRes = response.result.ciPipelines[0]
         return parseCIResponse(

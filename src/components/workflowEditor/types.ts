@@ -9,6 +9,13 @@ export interface BlackListedCI {
     [key: number]: boolean
 }
 
+export interface ChangeCIPayloadType {
+    appWorkflowId: number
+    switchFromCiPipelineId?: number
+    appId: number
+    switchFromExternalCiPipelineId?: number
+}
+
 export interface WorkflowEditState {
     view: string
     code: number
@@ -39,6 +46,7 @@ export interface WorkflowEditState {
     showWorkflowOptionsModal: boolean
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
+    changeCIPayload: ChangeCIPayloadType
 }
 
 export interface WorkflowEditProps
@@ -230,10 +238,10 @@ export interface SourceTypeCardProps {
 }
 
 export interface WorkflowOptionsModalProps {
-    handleWorkflowOptionsModalToggle: (e: any) => void
+    handleCloseWorkflowOptionsModal: () => void
     addCIPipeline: (type: CIPipelineNodeType, workflowId?: number | string) => void
     addWebhookCD: (workflowId?: number | string) => void
     addLinkedCD: (workflowId?: number | string) => void
-    workflowId?: number | string
-    showWorkflowOptionsModal: boolean
+    showLinkedCDSource: boolean
+    changeCIPayload: ChangeCIPayloadType
 }

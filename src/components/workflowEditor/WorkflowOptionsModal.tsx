@@ -15,12 +15,12 @@ import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/typ
 import { importComponentFromFELibrary } from '../common'
 
 export default function WorkflowOptionsModal({
-    handleWorkflowOptionsModalToggle,
+    handleCloseWorkflowOptionsModal,
     addCIPipeline,
     addWebhookCD,
     addLinkedCD,
-    workflowId,
-    showWorkflowOptionsModal,
+    showLinkedCDSource,
+    changeCIPayload,
 }: WorkflowOptionsModalProps) {
     const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
 
@@ -33,25 +33,31 @@ export default function WorkflowOptionsModal({
         const pipelineType = e.currentTarget.dataset.pipelineType
 
         if (pipelineType === PipelineType.WEBHOOK) {
-            addWebhookCD(workflowId)
-        } else if (LINKED_CD_SOURCE_VARIANT && pipelineType === LINKED_CD_SOURCE_VARIANT.type) {
-            if (!showWorkflowOptionsModal) {
+            addWebhookCD(changeCIPayload?.appWorkflowId ?? 0)
+            handleCloseWorkflowOptionsModal()
+            return
+        }
+
+        if (LINKED_CD_SOURCE_VARIANT && pipelineType === LINKED_CD_SOURCE_VARIANT.type) {
+            if (!showLinkedCDSource) {
                 toast.error(NO_ENV_FOUND)
                 return
             }
-            addLinkedCD(workflowId)
-        } else {
-            addCIPipeline(pipelineType as CIPipelineNodeType, workflowId)
+
+            addLinkedCD(changeCIPayload?.appWorkflowId ?? 0)
+            handleCloseWorkflowOptionsModal()
+            return
         }
 
-        handleWorkflowOptionsModalToggle(e)
+        addCIPipeline(pipelineType as CIPipelineNodeType, changeCIPayload?.appWorkflowId ?? 0)
+        handleCloseWorkflowOptionsModal()
     }
 
     return (
-        <VisibleModal className="" onEscape={handleWorkflowOptionsModalToggle} close={handleWorkflowOptionsModalToggle}>
+        <VisibleModal className="" onEscape={handleCloseWorkflowOptionsModal} close={handleCloseWorkflowOptionsModal}>
             <div className="workflow-options-modal br-8 flexbox h-500 dc__overflow-scroll" onClick={stopPropagation}>
                 {/* Sidebar */}
-                <div className="flexbox-col w-236 pt-32 dc__window-bg br-8">
+                <div className="flexbox-col w-236 pt-32 dc__window-bg">
                     {/* Info */}
                     <div className="flexbox-col dc__gap-6 dc__align-self-stretch pt-0 pb-0 pl-24 pr-24">
                         <p className="cn-9 fs-16 fw-6 lh-24">{WORKFLOW_OPTIONS_MODAL.ACTION_TEXT}</p>
@@ -63,7 +69,7 @@ export default function WorkflowOptionsModal({
                 </div>
 
                 {/* Content */}
-                <div className="flexbox-col p-20 dc__gap-12">
+                <div className="flexbox-col p-20 dc__gap-12 dc__overflow-scroll">
                     <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
                         <p className="m-0 cn-7 fs-11 fw-6 lh-16">{WORKFLOW_OPTIONS_MODAL_TYPES.DEFAULT}</p>
 

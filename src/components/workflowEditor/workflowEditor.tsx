@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react'
-import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
+import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import {
@@ -80,6 +80,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 appId: 0,
             },
             blackListedCI: {},
+            changeCIPayload: null,
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -184,6 +185,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ workflowId, showDeleteDialog: true })
     }
 
+    handleChangeCI = (changeCIPayload: ChangeCIPayloadType) => {
+        this.setState({ changeCIPayload, showWorkflowOptionsModal: true })
+    }
+
     // TODO: Remove this
     toggleCIMenu = (event) => {
         if (this.props.filteredEnvIds) {
@@ -199,14 +204,18 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         })
     }
 
-    handleWorkflowOptionsModalToggle = () => {
+    handleNewPipelineModal = () => {
         if (this.props.filteredEnvIds) {
             return
         }
 
-        this.setState({
-            showWorkflowOptionsModal: !this.state.showWorkflowOptionsModal,
-        })
+        // This is meant for newPipeline
+        this.setState({ showWorkflowOptionsModal: true, changeCIPayload: null })
+    }
+
+    handleCloseWorkflowOptionsModal = () => {
+        // Not setting changeCIPayload to null as it is used in the routes as props
+        this.setState({ showWorkflowOptionsModal: false })
     }
 
     deleteWorkflow = (appId?: string, workflowId?: number) => {
@@ -259,7 +268,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.history.push(
             `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                 workflowId ?? 0
-            }/linked-cd/0/${URLS.APP_CD_CONFIG}/0/build`,
+            }/${URLS.LINKED_CD}/0`,
         )
     }
 
@@ -330,12 +339,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         if (showWebhookTippy) {
             this.setState({ envToShowWebhookTippy: environmentId })
         }
+        this.setState({ changeCIPayload: null })
     }
 
     closeSyncEnvironment = () => {
+        // Its going to be there in APP only
         this.props.history.push(
             `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
         )
+        this.setState({ changeCIPayload: null })
     }
 
     hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
@@ -429,6 +441,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 deleteWorkflow={this.deleteWorkflow}
                                 isJobView={this.props.isJobView}
                                 isJobCI={isJobCI}
+                                changeCIPayload={this.state.changeCIPayload}
                             />
                         )
                     }}
@@ -474,6 +487,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     connectCDPipelines={0}
                                     close={this.closePipeline}
                                     getWorkflows={this.getWorkflows}
+                                    changeCIPayload={this.state.changeCIPayload}
                                 />
                             )
                         }}
@@ -482,8 +496,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     ...(SyncEnvironment
                         ? [
                               <Route
-                                  key={`${this.props.match.path}/linked-cd/`}
-                                  path={`${this.props.match.path}/linked-cd`}
+                                  key={`${this.props.match.path}/${URLS.LINKED_CD}/`}
+                                  path={`${this.props.match.path}/${URLS.LINKED_CD}/`}
                               >
                                   <SyncEnvironment
                                       closeModal={this.closeSyncEnvironment}
@@ -514,14 +528,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     </Tippy>
                 )}
             >
-                {/* TODO: Integrate new onClick */}
                 <button
                     type="button"
                     className={`cta flexbox dc__align-items-center pt-6 pr-10 pb-6 pl-8 dc__gap-6 h-32 ${
                         this.props.filteredEnvIds ? 'dc__disabled' : ''
                     }`}
                     data-testid="new-workflow-button"
-                    onClick={this.handleWorkflowOptionsModalToggle}
+                    onClick={this.handleNewPipelineModal}
                 >
                     <div className="flexbox dc__content-space dc__align-items-center h-20">
                         <ICAddWhite className="icon-dim-18 mr-5" />
@@ -635,6 +648,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     envList={this.props.envList}
                     filteredCIPipelines={this.state.filteredCIPipelines}
                     addNewPipelineBlocked={!!this.props.filteredEnvIds}
+                    handleChangeCI={this.handleChangeCI}
                 />
             )
         })
@@ -692,12 +706,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     )}
                     {this.state.showWorkflowOptionsModal && (
                         <WorkflowOptionsModal
-                            handleWorkflowOptionsModalToggle={this.handleWorkflowOptionsModalToggle}
+                            handleCloseWorkflowOptionsModal={this.handleCloseWorkflowOptionsModal}
                             addWebhookCD={this.addWebhookCD}
                             addCIPipeline={this.addCIPipeline}
                             addLinkedCD={this.addLinkedCD}
-                            workflowId={0}
-                            showWorkflowOptionsModal={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
+                            showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
+                            changeCIPayload={this.state.changeCIPayload}
                         />
                     )}
                 </>
@@ -762,12 +776,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
                     {this.state.showWorkflowOptionsModal && (
                         <WorkflowOptionsModal
-                            handleWorkflowOptionsModalToggle={this.handleWorkflowOptionsModalToggle}
+                            handleCloseWorkflowOptionsModal={this.handleCloseWorkflowOptionsModal}
                             addWebhookCD={this.addWebhookCD}
                             addCIPipeline={this.addCIPipeline}
                             addLinkedCD={this.addLinkedCD}
-                            workflowId={0}
-                            showWorkflowOptionsModal={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
+                            showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
+                            changeCIPayload={this.state.changeCIPayload}
                         />
                     )}
                     {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}
