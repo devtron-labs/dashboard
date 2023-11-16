@@ -36,7 +36,18 @@ function EventsComponent({
         try {
             getEvent(appDetails, params.podName, params.nodeType, isResourceBrowserView, selectedResource)
                 .then((response) => {
-                    setEvents(response.result.items || (response.result.events && response.result.events.items) || [])
+                    /* Sorting the EventList object on the basis of Last TimeStamp. */
+                    const eventResult = response.result.items || response.result.events && response.result.events.items || []
+                    eventResult.sort(((a, b) => {
+                        if (a.lastTimestamp > b.lastTimestamp) {
+                            return -1
+                        }
+                        if (a.lastTimestamp < b.lastTimestamp) {
+                            return 1
+                        }
+                        return 0
+                    }))
+                    setEvents(eventResult)
                     setLoading(false)
                 })
                 .catch((err) => {

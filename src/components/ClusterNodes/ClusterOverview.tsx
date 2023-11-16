@@ -24,6 +24,9 @@ import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluste
 import { MAX_LENGTH_350, SOME_ERROR_MSG } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { EditableTextArea } from '../common/EditableTextArea/EditableTextArea'
+import { importComponentFromFELibrary } from '../common'
+
+const Catalog = importComponentFromFELibrary('Catalog')
 
 function ClusterOverview({
     isSuperAdmin,
@@ -516,23 +519,6 @@ function ClusterOverview({
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Region</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterInfo.Region}</div>
                     </div> */}
-                    {clusterDetails.serverURL && (
-                        <div>
-                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Server URL</div>
-                            <div className="flexbox">
-                                <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right mr-6">
-                                    {clusterDetails.serverURL}
-                                </div>
-                                <ClipboardButton
-                                    content={clusterDetails.serverURL}
-                                    copiedTippyText="Copied Server URL"
-                                    duration={1000}
-                                    trigger={triggerCopy}
-                                    setTrigger={setTriggerCopy}
-                                />
-                            </div>
-                        </div>
-                    )}
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added on</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterDetails.addedOn}</div>
@@ -584,12 +570,13 @@ function ClusterOverview({
             return (
                 <div
                     className="pl-20 pt-20 pr-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
-                    style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%,  var(--N50)50.58%)' }}
+                    style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%, var(--N0)50.58%)' }}
                 >
                     {renderSideInfoData()}
                     <div className="dc__mxw-1068 flex-grow-1">
                         {renderCardDetails()}
                         {renderClusterError()}
+                        {Catalog && <Catalog id={clusterId} kind={'cluster'} />}
                         <GenericDescription
                             isClusterTerminal={true}
                             clusterId={clusterId}
