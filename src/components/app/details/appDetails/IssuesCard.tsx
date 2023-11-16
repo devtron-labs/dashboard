@@ -40,8 +40,13 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
     }
 
     const showApplicationDetailedModal = () => {
+        // Close the opened issues list modal first
+        // then open the application details modal with some time gap,
+        // to avoid batch state updates
         toggleIssuesModal(false)
-        setDetailed(true)
+        setTimeout(() => {
+            setDetailed(true)
+        }, 100)
     }
 
     useEffect(() => {
