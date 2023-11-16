@@ -86,7 +86,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                     .concat(result && Array.isArray(result.result) ? result.result : [])
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((chart) => (
-                        <CollapsedList {...chart} key={chart.id || getRandomInt()} reload={reload} />
+                        (chart.id != 1) && <CollapsedList {...chart} key={chart.id || getRandomInt()} reload={reload} />
                     ))}
             </section>
         )
@@ -508,4 +508,4 @@ function ChartForm({
             )}
         </form>
     )
-}
+} 
