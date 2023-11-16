@@ -90,6 +90,8 @@ const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
+    workflowList:{loading:false,options:[]},
+    setWorkflowList:()=>{},
     userGroupsList: [],
     environmentsList: [],
     projectsList: [],
@@ -180,6 +182,7 @@ export default function UserGroupRoute() {
     const [appsList, setAppsList] = useState(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState(new Map())
     const [jobsList,setJobsList] = useState(new Map())
+    const [workflowList,setWorkflowList] = useState({loading:false,options:[]})
 
     useEffect(() => {
         if (!lists) return
@@ -311,6 +314,8 @@ export default function UserGroupRoute() {
                     value={{
                         fetchAppList,
                         appsList,
+                        workflowList,
+                        setWorkflowList,
                         userGroupsList: userGroups.status === 'fulfilled' ? userGroups?.value?.result : [],
                         environmentsList: environments?.status === 'fulfilled' ? environments?.value?.result : [],
                         projectsList: projects.status === 'fulfilled' ? projects?.value?.result : [],
@@ -861,7 +866,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     removeRow,
     selectedJobs
 }) => {
-    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles ,jobsList} =
+    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles ,jobsList,workflowList,setWorkflowList} =
         useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
@@ -884,7 +889,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     >('')
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
-    const [workflows, setWorkflows] = useState({loading:false,options:[]})
+    // const [workflows, setWorkflows] = useState({loading:false,options:[
+
+    // ]})
     const [envClusters, setEnvClusters] = useState([])
     const [projectInput, setProjectInput] = useState('')
     const [clusterInput, setClusterInput] = useState('')
@@ -1013,6 +1020,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }, [envClustersList])
 
     useEffect(() => {
+        console.log('joblist',jobsList)
         const appOptions = (
             (projectId &&
                 (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
@@ -1029,6 +1037,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 value: isJobs ? app.appName : app.name
             }
         })
+        console.log('options',appOptions)
         setApplications(appOptions)
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
@@ -1043,19 +1052,22 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         setApplications(sortedApplications)
     }, [openMenu, permission.environment, permission.entityName, projectId])
 
-    const setWorkflowsForJobs=async()=>{
+    const setWorkflowsForJobs = async () => {
         if (abortControllerRef.current) {
             abortControllerRef.current.abort()
             abortControllerRef.current = null
         }
         abortControllerRef.current = new AbortController()
-        setWorkflows({ loading: true, options: [] })
+        setWorkflowList({ loading: true, options: [] })
         try {
-            setWorkflows({ loading: true, options: [] })
-            const jobNames=applications.map((app)=>app.value.split('/')[0])
-            const { result:{appIdWorkflowNamesMapping} } = await getAllWorkflowsForAppNames(jobNames, { signal: abortControllerRef.current.signal })
-            const workflowOptions=[]
-            for( const jobName in appIdWorkflowNamesMapping){ 
+            setWorkflowList({ loading: true, options: [] })
+            console.log('selected jobs', selectedJobs)
+            const jobNames = selectedJobs.map((job) => job.value.split('/')[0])
+            const {
+                result: { appIdWorkflowNamesMapping },
+            } = await getAllWorkflowsForAppNames(jobNames, { signal: abortControllerRef.current.signal })
+            const workflowOptions = []
+            for (const jobName in appIdWorkflowNamesMapping) {
                 workflowOptions.push({
                     label: jobName,
                     options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
@@ -1065,14 +1077,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 })
             }
             abortControllerRef.current = null
-            setWorkflows({ loading: false, options: workflowOptions })
+            setWorkflowList({ loading: false, options: workflowOptions })
         } catch (err: any) {
             //check if error is not of aborted reques
-            if(err.errors[0].code!=0)
-                showError(err)
-            setWorkflows({ loading: false, options: [] })
+            if (err.errors[0].code != 0) showError(err)
+            setWorkflowList({ loading: false, options: [] })
         }
-
     }
 
     function formatOptionLabel({ value, label }) {
@@ -1362,13 +1372,13 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         onFocus={() => onFocus('workflow')}
                         onMenuClose={onMenuClose}
                         placeholder="Select workflow"
-                        options={workflows.options}
+                        options={workflowList.options}
                         className="basic-multi-select"
                         menuPlacement="auto"
                         classNamePrefix="select-devtron-app-workflow-dropdown"
                         hideSelectedOptions={false}
                         styles={tempMultiSelectStyles}
-                        isLoading={workflows.loading}
+                        isLoading={workflowList.loading}
                         components={{
                             ClearIndicator: null,
                             ValueContainer,

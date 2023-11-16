@@ -430,13 +430,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     emptyWorkflow = () => {
         return (
             <div className="fs-12 cn-7 pt-16 pb-16 pr-16 pl-16">
-                <div className="text-center lh-18 bc-n50 flexbox-col dc__align-items-center bw-1 en-2 dashed h-100 dc__content-center br-4 pt-16 pb-16" onClick={() => {
+                <div className="text-center lh-18 bc-n50 flexbox-col dc__align-items-center bw-1 en-2 dashed h-100 dc__content-center br-4 pt-16 pb-16 cursor" onClick={() => {
                             this.props.history.push(
                                 `${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/${this.props.id}/ci-pipeline/0`,
                             )
                         }}>
                     <div
-                        className="fw-6 mb-4 w-300 cursor"
+                        className="fw-6 mb-4 w-300"
                     >
                         Add job pipeline to this workflow
                     </div>
