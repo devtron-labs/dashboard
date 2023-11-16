@@ -54,7 +54,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                             <Question className="icon-dim-16 mt-2" />
                         </Tippy>
                     </div>
-                    <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
+                    <div className="flex fs-12 fw-4">
                         <div className={`fs-13 fw-6 lh-20 f-${status.toLowerCase()}`}>
                             {isHibernated ? 'Hibernating' : status}
                         </div>
