@@ -54,7 +54,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                             <Question className="icon-dim-16 mt-2" />
                         </Tippy>
                     </div>
-                    <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
+                    <div className="flex fs-12 fw-4">
                         <CommitIcon className="icon-dim-20" />
                         <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12">{commitId}</div>
                     </div>

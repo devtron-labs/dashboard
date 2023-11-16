@@ -45,7 +45,7 @@ function DeploymentStatusCard({
                                 <Question className="icon-dim-16 mt-2" />
                             </Tippy>
                         </div>
-                        <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
+                        <div className="flex fs-12 fw-4">
                             <span
                                 data-testid="deployment-status-name"
                                 className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus?.toLowerCase()} ${
