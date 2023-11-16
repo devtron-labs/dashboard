@@ -41,7 +41,7 @@ export function SourceInfo({
     refetchDeploymentStatus,
     severityCount,
     showVulnerabilitiesModal,
-    showIssuesListingModal,
+    toggleIssuesModal,
     envId,
     ciArtifactId,
     setErrorsList,
@@ -74,6 +74,11 @@ export function SourceInfo({
 
     const onClickShowHibernateModal = (): void => {
         showHibernateModal(isHibernated ? 'resume' : 'hibernate')
+    }
+
+    const showApplicationDetailedModal = (): void => {
+        toggleIssuesModal(false)
+        setDetailed(true)
     }
 
     const conditionalScalePodsButton = (children) => {
@@ -252,8 +257,9 @@ export function SourceInfo({
                                 <IssuesCard
                                     appStreamData={appStreamData}
                                     loadingResourceTree={loadingResourceTree}
-                                    showIssuesListingModal={showIssuesListingModal}
+                                    showIssuesListingModal={() => toggleIssuesModal(true)}
                                     setErrorsList={setErrorsList}
+                                    showApplicationDetailedModal={showApplicationDetailedModal}
                                 />
                             )}
                             <DeploymentStatusCard

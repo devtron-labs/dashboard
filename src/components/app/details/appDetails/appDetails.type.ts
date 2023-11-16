@@ -214,6 +214,7 @@ export interface IssuesCardType {
     showIssuesListingModal: () => void
     appStreamData?: AppStreamData
     setErrorsList: React.Dispatch<React.SetStateAction<ErrorItem[]>>
+    showApplicationDetailedModal: () => void
 }
 
 export interface SecurityVulnerabilityCardType {
