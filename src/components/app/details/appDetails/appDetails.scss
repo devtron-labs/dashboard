@@ -1946,14 +1946,11 @@ table.resource-tree {
         width: 100%;
 
         &__message {
-            // @TODO: figure out the alternative of -webkit-box-orient
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 1;
-            color: var(--N900);
-            display: -webkit-box;
-            line-height: 18px;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: var(--N900);
+            line-height: 18px;
         }
 
         &__details {

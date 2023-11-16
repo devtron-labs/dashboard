@@ -217,7 +217,6 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
             </div>
             <div className="app-details-info-card__bottom-container dc__content-space">
                 <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
-                    {/* @TODO: Put this message logic in a separate function */}
                     {clusterConnectionError &&
                         `Cluster is not reachable${
                             conditions?.length > 0 || (isImagePullBackOff && !appDetails.externalCi) ? ', ' : ''
