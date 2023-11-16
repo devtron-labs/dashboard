@@ -106,6 +106,10 @@
                         {
                             "properties": {
                                 "lorem": {
+                                    "type": "string",
+                                    "default": "Lorem ipsum dolor sit amet, consectetur"
+                                },
+                                "lorem1": {
                                     "type": "string"
                                 }
                             },
@@ -114,6 +118,9 @@
                         {
                             "properties": {
                                 "ipsum": {
+                                    "type": "string"
+                                },
+                                "lorem1": {
                                     "type": "string"
                                 }
                             },
