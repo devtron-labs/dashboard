@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
@@ -20,8 +20,15 @@ import { IssuesCardType } from './appDetails.type'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
+import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 
-const IssuesCard = ({ appStreamData, loadingResourceTree, showIssuesListingModal, setErrorsList }: IssuesCardType) => {
+const IssuesCard = ({
+    appStreamData,
+    loadingResourceTree,
+    showIssuesListingModal,
+    setErrorsList,
+    showApplicationDetailedModal,
+}: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState(false)
@@ -30,8 +37,8 @@ const IssuesCard = ({ appStreamData, loadingResourceTree, showIssuesListingModal
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
 
-    const conditions = appStreamData?.result?.application?.status?.conditions || []
-    const appDetails = IndexStore.getAppDetails()
+    const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData])
+    const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
 
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP && appDetails.resourceTree?.nodes?.length) {
@@ -143,9 +150,7 @@ const IssuesCard = ({ appStreamData, loadingResourceTree, showIssuesListingModal
         if (isImagePullBackOff && !appDetails.externalCi) {
             errorsList.push({
                 error: 'ImagePullBackOff',
-                message: `'${appDetails.clusterName}' cluster ${
-                    appDetails.ipsAccessProvided ? 'could not' : 'does not have permission to'
-                } pull container image from '${appDetails.dockerRegistryId}' registry.`,
+                message: renderErrorHeaderMessage(appDetails, 'sync-error', showApplicationDetailedModal),
             })
         }
 
@@ -165,6 +170,10 @@ const IssuesCard = ({ appStreamData, loadingResourceTree, showIssuesListingModal
         appDetails.dockerRegistryId,
         appDetails.clusterName,
     ])
+
+    const getErrorCountText = () => {
+        return errorCounter > 1 ? `${errorCounter} Errors` : `${errorCounter} Error`
+    }
 
     if (!appDetails || (conditions?.length === 0 && !isImagePullBackOff && !clusterConnectionError)) {
         return null
@@ -190,7 +199,7 @@ const IssuesCard = ({ appStreamData, loadingResourceTree, showIssuesListingModal
                         </Tippy>
                     </div>
                     <div className="app-details-info-card__top-container__content__commit-text-wrapper flex fs-12 fw-4">
-                        <div className="fs-13 fw-6  lh-20 f-degraded">{errorCounter} Errors found</div>
+                        <div className="fs-13 fw-6  lh-20 f-degraded">{getErrorCountText()}</div>
                     </div>
                 </div>
                 <ErrorIcon className="form__icon--error icon-dim-24" />

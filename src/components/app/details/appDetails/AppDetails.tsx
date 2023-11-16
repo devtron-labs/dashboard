@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react'
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import {
     showError,
     Progressing,
@@ -283,49 +283,66 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [location.search])
 
-    const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
-        // Deployments status details for Devtron apps
-        getDeploymentStatusDetail(params.appId, params.envId, showTimeline ?? deploymentModalShownRef.current).then(
-            (deploymentStatusDetailRes) => {
-                processDeploymentStatusData(deploymentStatusDetailRes.result)
-            },
-        )
-    }
-
-    const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData =
-            isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
-                ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
-                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
-        clearDeploymentStatusTimer()
-        if (
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
-        ) {
-            deploymentModalShownRef.current = false
-        }
-        if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
-            deploymentStatusTimer = setTimeout(() => {
-                getDeploymentDetailStepsData()
-            }, 10000)
-        }
-        setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
-    }
-
-    const clearDeploymentStatusTimer = (): void => {
+    const clearDeploymentStatusTimer = useCallback((): void => {
         if (deploymentStatusTimer) {
             clearTimeout(deploymentStatusTimer)
         }
-    }
+    }, [deploymentStatusTimer])
 
-    useEffect(() => {
-        return () => {
+    const processDeploymentStatusData = useCallback(
+        (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
+            const processedDeploymentStatusDetailsData =
+                isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
+                    ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
+                    : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+
             clearDeploymentStatusTimer()
-            clearPollingInterval()
-        }
-    }, [])
+
+            if (
+                processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
+                processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
+                processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
+                processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
+            ) {
+                deploymentModalShownRef.current = false
+            }
+
+            if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
+                deploymentStatusTimer = setTimeout(() => {
+                    getDeploymentDetailStepsData()
+                }, 10000)
+            }
+
+            setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
+        },
+        [
+            isVirtualEnvRef,
+            processVirtualEnvironmentDeploymentData,
+            processDeploymentStatusDetailsData,
+            clearDeploymentStatusTimer,
+            DEPLOYMENT_STATUS,
+            deploymentModalShownRef,
+            setDeploymentStatusDetailsBreakdownData,
+        ],
+    )
+
+    const getDeploymentDetailStepsData = useCallback(
+        (showTimeline?: boolean): void => {
+            // Deployments status details for Devtron apps
+            getDeploymentStatusDetail(params.appId, params.envId, showTimeline ?? deploymentModalShownRef.current).then(
+                (deploymentStatusDetailRes) => {
+                    processDeploymentStatusData(deploymentStatusDetailRes.result)
+                },
+            )
+        },
+        [
+            params.appId,
+            params.envId,
+            deploymentModalShownRef.current,
+            getDeploymentStatusDetail,
+            processDeploymentStatusData,
+        ],
+    )
 
     const handleAppDetailsCallError = (error) => {
         if (error['code'] === 404 || appDetailsRequestRef.current) {
@@ -525,6 +542,10 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
+    const showVulnerabilitiesModal = useCallback(() => {
+        toggleScanDetailsModal(true)
+    }, [toggleScanDetailsModal])
+
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
@@ -603,12 +624,8 @@ export const Details: React.FC<DetailsType> = ({
                     loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
                     severityCount={lastExecutionDetail.severityCount}
-                    showVulnerabilitiesModal={() => {
-                        toggleScanDetailsModal(true)
-                    }}
-                    showIssuesListingModal={() => {
-                        toggleIssuesModal(true)
-                    }}
+                    showVulnerabilitiesModal={showVulnerabilitiesModal}
+                    toggleIssuesModal={toggleIssuesModal}
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
