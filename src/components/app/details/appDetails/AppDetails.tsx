@@ -638,12 +638,6 @@ export const Details: React.FC<DetailsType> = ({
                     setErrorsList={setErrorsList}
                 />
             </div>
-            {!loadingResourceTree && (
-                <SyncErrorComponent
-                    showApplicationDetailedModal={showApplicationDetailedModal}
-                    appStreamData={streamData}
-                />
-            )}
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest ? (
                 <>
                     {environment && !isVirtualEnvRef.current && (
