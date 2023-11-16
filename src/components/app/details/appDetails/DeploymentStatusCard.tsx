@@ -8,13 +8,13 @@ import { useHistory } from 'react-router'
 import { DeploymentStatusCardType } from './appDetails.type'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { validateMomentDate } from './utils'
+import LoadingCard from './LoadingCard'
 
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
-    loadingResourceTree,
+    cardLoading,
     hideDeploymentStatusLeftInfo,
     hideDetails,
-    deploymentTriggerTime,
     isVirtualEnvironment,
     refetchDeploymentStatus,
 }: DeploymentStatusCardType) {
@@ -91,11 +91,13 @@ function DeploymentStatusCard({
         if (!hideDetails) {
             refetchDeploymentStatus(true)
         }
-        if (loadingResourceTree) noop()
+        if (cardLoading) noop()
         if (!hideDetails && !hideDeploymentStatusLeftInfo) {
             showDeploymentDetailedStatus(e)
         }
     }
+
+    if (cardLoading) return <LoadingCard wider />
 
     return (
         <div

@@ -6,13 +6,9 @@ import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-c
 import { DeployedCommitCardType } from './appDetails.type'
 import { noop, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { getCITriggerInfoModal } from '../../service'
+import LoadingCard from './LoadingCard'
 
-const DeployedCommitCard = ({
-    loadingResourceTree,
-    showCommitInfoDrawer,
-    envId,
-    ciArtifactId,
-}: DeployedCommitCardType) => {
+const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifactId }: DeployedCommitCardType) => {
     const [commitId, setCommitId] = useState<string>(null)
     const [commitMessage, setCommitMessage] = useState<string>(null)
 
@@ -34,10 +30,12 @@ const DeployedCommitCard = ({
             })
     }, [])
 
+    if (cardLoading) return <LoadingCard />
+
     return (
         <div
             data-testid="deployed-commit-card"
-            onClick={loadingResourceTree ? noop : showCommitInfoDrawer}
+            onClick={cardLoading ? noop : showCommitInfoDrawer}
             className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200"
         >
             <div className="app-details-info-card__top-container flex">
