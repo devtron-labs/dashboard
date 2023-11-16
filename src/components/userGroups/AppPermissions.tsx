@@ -153,6 +153,22 @@ export default function AppPermissions({
                 })
             return returnArr
         }
+        else if(directRolefilter.entity===EntityTypes.JOB){
+            if (directRolefilter.environment) {
+                return directRolefilter.environment
+                    .split(',')
+                    .map((directRole) => ({ value: directRole, label: directRole }))
+            } else {
+                return [
+                    { label: 'All environments', value: '*' },
+                    ...environmentsList.map((env) => ({
+                        label: env.environment_name,
+                        value: env.environmentIdentifier,
+                    })),
+                ]
+            }
+
+        }
     }
 
     async function populateDataFromAPI(roleFilters: APIRoleFilter[]) {
@@ -173,8 +189,12 @@ export default function AppPermissions({
                         uniqueProjectIdsHelmApps.push(projectId)
                     }
                 }
+            } else if (element.entity === EntityTypes.JOB) {
+                const projectId = projectsMap.get(element.team)?.id
+                if (typeof projectId !== 'undefined' && projectId != null) {
+                    uniqueProjectIdsJobs.push(projectId)
+                }
             }
-            
         }
 
         await Promise.all([
@@ -212,9 +232,10 @@ export default function AppPermissions({
                         const { result } = await getAllWorkflowsForAppNames(jobNames)
                         console.log('result',result)
                         appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
+                        const selectedWorkflows = directRolefilter?.workflow.split(',')
                     for (const jobName in appIdWorkflowNamesMapping) {
                         const workflows = appIdWorkflowNamesMapping[jobName]
-                        const filteredWorkflows = workflows.filter((workflow) => jobNames.includes(workflow))
+                        const filteredWorkflows = workflows.filter((workflow) => selectedWorkflows.includes(workflow))
                         if (filteredWorkflows.length > 0) {
                             workflowOptions.push({
                                 label: jobName,
@@ -222,6 +243,12 @@ export default function AppPermissions({
                             })
                         }
                     }
+                    setSelectedJobs(
+                        directRolefilter.entityName
+                            .split(',')
+                            .map((entity) => ({ value: entity, label: entity.split('/')[0] })),
+                    )
+                    
                 }
                 console.log('options',workflowOptions)
                 
@@ -398,6 +425,7 @@ export default function AppPermissions({
                                 .get(projectId)
                                 .result.map((app) => ({ label: app.name, value: app.name })),
                         ]
+                        console.log('selected',tempPermissions[index]['entityName'])
                     } else {
                         tempPermissions[index][name] = [{ label: 'Select all', value: '*' }]
                     }
@@ -412,6 +440,7 @@ export default function AppPermissions({
                     setSelectedJobs(selectedOptions)
                 }
                 tempPermissions[index]['entityName'] = selectedOptions
+                console.log('selected Options',tempPermissions[index]['entityName'])
                 tempPermissions[index]['entityNameError'] = null
             }
             

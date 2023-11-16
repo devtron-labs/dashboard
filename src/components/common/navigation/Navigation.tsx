@@ -45,7 +45,7 @@ const NavigationList = [
         icon: JobsIcon,
         href: URLS.JOB,
         isAvailableInEA: false,
-        markOnlyForSuperAdmin: true,
+        markOnlyForSuperAdmin: false,
     },
     {
         title: 'Application Groups',
