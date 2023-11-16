@@ -13,24 +13,27 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
     const [commitMessage, setCommitMessage] = useState<string>(null)
 
     useEffect(() => {
-        const params = {
-            envId,
-            ciArtifactId,
-        }
-        getCITriggerInfoModal(params, null)
-            .then((response) => {
-                const materials = response.result?.materials
-                const lastCommit = materials[0]?.history[0]
-                const shortenCommitId = lastCommit?.commit?.slice(0, 8)
-                setCommitId(shortenCommitId)
-                setCommitMessage(lastCommit?.message)
-            })
-            .catch((error) => {
-                showError(error)
-            })
-    }, [])
+        if (envId && ciArtifactId) {
+            const params = {
+                envId,
+                ciArtifactId,
+            }
 
-    if (cardLoading) return <LoadingCard />
+            getCITriggerInfoModal(params, null)
+                .then((response) => {
+                    const materials = response.result?.materials
+                    const lastCommit = materials[0]?.history[0]
+                    const shortenCommitId = lastCommit?.commit?.slice(0, 8)
+                    setCommitId(shortenCommitId)
+                    setCommitMessage(lastCommit?.message)
+                })
+                .catch((error) => {
+                    showError(error)
+                })
+        }
+    }, [envId, ciArtifactId])
+
+    if (cardLoading || !commitId) return <LoadingCard />
 
     return (
         <div
