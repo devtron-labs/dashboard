@@ -1,16 +1,16 @@
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as UnhibernateModalIcon } from '../../../../assets/icons/ic-medium-unhibernate.svg'
-import { hibernate, unhibernate } from './service'
-import { get } from 'http'
+import { unhibernate } from './service'
 
-interface HibernateModalProps {
+interface UnhibernateModalProps {
     selectedAppIds: number[]
     envName: string
     envId: string
     setOpenUnhiberateModal: (value: boolean) => void
-    getAppListData: any
     fetchDeployments: any
+    setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
+    setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const UnhibernateModal = ({
@@ -18,19 +18,26 @@ export const UnhibernateModal = ({
     envName,
     envId,
     setOpenUnhiberateModal,
-    getAppListData,
     fetchDeployments,
-}: HibernateModalProps) => {
-    const UnhibernateApps = (e) => {
+    setAppStatusResponseList,
+    setShowHibernateStatusDrawer,
+}: UnhibernateModalProps) => {
+    const [loader, setLoader] = useState<boolean>(false)
+    const unhibernateApps = (e) => {
         e.preventDefault()
+        setLoader(true)
         unhibernate(selectedAppIds, Number(envId), envName)
-            .then((res) => {})
-            .catch((err) => {})
-            .finally(() => {
-                Promise.all([getAppListData(), fetchDeployments()]).then(() => {
-                    setOpenUnhiberateModal(false)
-                })
+            .then((res) => {
+                setOpenUnhiberateModal(false)
+                setAppStatusResponseList(res?.result?.response)
+                setShowHibernateStatusDrawer(true)
             })
+            .catch((err) => {})
+            // .finally(() => {
+            //     fetchDeployments().then(() => {
+            //         setOpenUnhiberateModal(false)
+            //     })
+            // })
     }
 
     return (
@@ -60,14 +67,16 @@ export const UnhibernateModal = ({
                     <button
                         onClick={() => setOpenUnhiberateModal(false)}
                         className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
+                        disabled={loader}
                     >
                         Cancel
                     </button>
                     <button
-                        onClick={UnhibernateApps}
+                        onClick={unhibernateApps}
                         className="flex cn-0 bcb-5 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border-n0"
+                        disabled={loader}
                     >
-                        Unhibernate
+                        {loader ? 'Please wait...' : 'Unhibernate'}
                     </button>
                 </div>
             </div>

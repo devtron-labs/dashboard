@@ -1,16 +1,16 @@
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { hibernate } from './service'
-import { get } from 'http'
 
 interface HibernateModalProps {
     selectedAppIds: number[]
     envName: string
     envId: string
     setOpenHiberateModal: (value: boolean) => void
-    getAppListData: any
     fetchDeployments: any
+    setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
+    setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const HibernateModal = ({
@@ -18,19 +18,27 @@ export const HibernateModal = ({
     envName,
     envId,
     setOpenHiberateModal,
-    getAppListData,
     fetchDeployments,
+    setAppStatusResponseList,
+    setShowHibernateStatusDrawer,
 }: HibernateModalProps) => {
+    const [loader, setLoader] = useState<boolean>(false)
+
     const hibernateApps = (e) => {
         e.preventDefault()
+        setLoader(true)
         hibernate(selectedAppIds, Number(envId), envName)
-            .then((res) => {})
-            .catch((err) => {})
-            .finally(() => {
-                Promise.all([getAppListData(), fetchDeployments()]).then(() => {
-                    setOpenHiberateModal(false)
-                })
+            .then((res) => {
+                setAppStatusResponseList(res?.result?.response)
+                setOpenHiberateModal(false)
+                setShowHibernateStatusDrawer(true)
             })
+            .catch((err) => {})
+            // .finally(() => {
+            //     fetchDeployments().then(() => {
+            //         setOpenHiberateModal(false)
+            //     })
+            // })
     }
 
     return (
@@ -60,14 +68,16 @@ export const HibernateModal = ({
                     <button
                         onClick={() => setOpenHiberateModal(false)}
                         className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
+                        disabled={loader}
                     >
                         Cancel
                     </button>
                     <button
                         onClick={hibernateApps}
                         className="flex cn-0 bcb-5 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border-n0"
+                        disabled={loader}
                     >
-                        Hibernate
+                        {loader ? 'Please wait...' : 'Hibernate'}
                     </button>
                 </div>
             </div>

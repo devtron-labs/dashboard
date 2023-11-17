@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Checkbox, Progressing, getRandomColor, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, getRandomColor, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import AppStatus from '../../../app/AppStatus'
 import { StatusConstants } from '../../../app/list-new/Constants'
@@ -22,6 +22,7 @@ import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid
 import Tippy from '@tippyjs/react'
 import { HibernateModal } from './HibernateModal'
 import { UnhibernateModal } from './UnhibernateModal'
+import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -33,8 +34,9 @@ export default function EnvironmentOverview({
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, setLoading] = useState<boolean>()
     const [description, setDescription] = useState<string>(appGroupListData.description)
+    const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<boolean>(false)
+    const [appStatusResponseList, setAppStatusResponseList] = useState<any[]>([])
     const timerId = useRef(null)
-
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
     const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
     const [openUnhiberateModal, setOpenUnhiberateModal] = useState<boolean>(false)
@@ -119,6 +121,10 @@ export default function EnvironmentOverview({
         setAppListData(parsedData)
     }
 
+    const closePopup = () => {
+        setShowHibernateStatusDrawer(false)
+    }
+
     if (loading) {
         return (
             <div className="loading-state">
@@ -167,7 +173,7 @@ export default function EnvironmentOverview({
                             <>
                                 <div>...</div>
                                 <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
-                                    {item?.lastDeployedImage.split(':').at(-1)}
+                                    {item?.lastDeployedImage?.split(':').at(-1)}
                                 </div>
                             </>
                         </div>
@@ -354,8 +360,9 @@ export default function EnvironmentOverview({
                     envId={envId}
                     envName={appListData.environment}
                     setOpenHiberateModal={setOpenHiberateModal}
-                    getAppListData={getAppListData}
                     fetchDeployments={fetchDeployments}
+                    setAppStatusResponseList={setAppStatusResponseList}
+                    setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
                 />
             )}
             {openUnhiberateModal && (
@@ -364,8 +371,17 @@ export default function EnvironmentOverview({
                     envId={envId}
                     envName={appListData.environment}
                     setOpenUnhiberateModal={setOpenUnhiberateModal}
-                    getAppListData={getAppListData}
                     fetchDeployments={fetchDeployments}
+                    setAppStatusResponseList={setAppStatusResponseList}
+                    setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
+                />
+            )}
+            {showHibernateStatusDrawer && (
+                <HibernateStatusListDrawer
+                    closePopup={closePopup}
+                    isLoading={false}
+                    responseList={appStatusResponseList}
+                    getAppListData={getAppListData}
                 />
             )}
         </div>

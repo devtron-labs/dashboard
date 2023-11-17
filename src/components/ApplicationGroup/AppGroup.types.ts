@@ -406,3 +406,17 @@ export enum FilterParentType {
     app = 'env-group',
     env = 'app-group',
 }
+
+export interface HibernateStatusRowType {
+    rowData: HibernateResponseRowType
+    index: number
+    isVirtualEnv?: boolean
+}
+
+export interface HibernateResponseRowType {
+    id: number
+    appName: string
+    success: boolean
+    authError?: boolean
+    error?: string
+}
