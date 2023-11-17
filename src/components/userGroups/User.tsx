@@ -178,12 +178,9 @@ export default function UserForm({
             groups: userGroups.map((group) => group.value),
             roleFilters: [
                 ...directPermission
-                    .filter(
-                        (permission) =>
-                        {
-                           return  permission.team?.value && permission.environment.length && permission.entityName.length
-                        }
-                    )
+                    .filter((permission) => {
+                        return permission.team?.value && permission.environment.length && permission.entityName.length
+                    })
                     .map((permission) => {
                         const payload = {
                             ...permission,
@@ -196,9 +193,11 @@ export default function UserForm({
                                 ? ''
                                 : permission.entityName.map((entity) => entity.value).join(','),
                             entity: permission.entity,
-                            workflow: permission.workflow?.length ? permission.workflow.map((workflow) => workflow.value).join(',') : '',
+                            workflow: permission.workflow?.length
+                                ? permission.workflow.map((workflow) => workflow.value).join(',')
+                                : '',
                         }
-                        if(permission.entity!==EntityTypes.JOB)delete payload.workflow
+                        if (permission.entity !== EntityTypes.JOB) delete payload.workflow
                         return payload
                     }),
                 ...k8sPermission.map((permission) => ({
