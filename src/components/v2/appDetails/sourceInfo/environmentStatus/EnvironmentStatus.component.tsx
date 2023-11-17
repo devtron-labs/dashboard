@@ -1,25 +1,22 @@
 import React, { useMemo, useState } from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
-import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
 import { AppType } from '../../../appDetails/appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
-import { Link } from 'react-router-dom'
 import { useRouteMatch, useHistory, useParams } from 'react-router'
-import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
-import { DeploymentAppTypes, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
 import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
 import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
 import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
+import ChartUsedCard from './ChartUsedCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -141,45 +138,8 @@ function EnvironmentStatusComponent({
     }
 
     const renderChartUsedBlock = () => {
-        return (
-            appDetails?.appStoreAppName && (
-                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
-                    <div className="cn-9 flex left">
-                        <span data-testid="chart-used-heading">Chart used</span>
-                        <Tippy
-                            className="default-tt cursor"
-                            arrow={false}
-                            content={'Chart used to deploy to this application'}
-                        >
-                            <Question className="cursor icon-dim-16 ml-4" />
-                        </Tippy>
-                    </div>
-                    <div className=" fw-6 fs-14" data-testid="full-chart-name-with-version">
-                        {appDetails.appStoreChartName && (
-                            <span data-testid="chart-name-value">{appDetails.appStoreChartName}/</span>
-                        )}
-                        <Link
-                            className="cb-5 fw-6"
-                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                            style={{ pointerEvents: !appDetails.appStoreChartId ? 'none' : 'auto' }}
-                        >
-                            {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
-                        </Link>
-                    </div>
-                    <div className="flex left">
-                        {notes && (
-                            <div
-                                className="details-hover flex cb-5 fw-6 cursor"
-                                onClick={onClickShowNotes}
-                                data-testid="notes.txt-heading"
-                            >
-                                <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )
-        )
+        if (!appDetails.appStoreAppName) return null
+        return <ChartUsedCard appDetails={appDetails} notes={notes} onClickShowNotes={onClickShowNotes} />
     }
 
     const renderUpgraderChartBlock = () => {
