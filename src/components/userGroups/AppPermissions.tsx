@@ -89,15 +89,21 @@ export default function AppPermissions({
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
         if (directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             return [
-                { label: 'All applications', value: '*' },
+                { label: directRolefilter.entity === EntityTypes.JOB ? 'All Jobs' : 'All applications', value: '*' },
                 ...(
-                    (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS ? appsList : appsListHelmApps).get(
-                        projectId,
-                    )?.result || []
-                ).map((app) => ({
-                    label: app.name,
-                    value: app.name,
-                })),
+                    (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                        ? appsList
+                        : directRolefilter.entity === EntityTypes.JOB
+                        ? jobsList
+                        : appsListHelmApps
+                    ).get(projectId)?.result || []
+                ).map((app) => {
+                    const isJobs = directRolefilter.entity === EntityTypes.JOB
+                    return {
+                        label: isJobs ? app.jobName : app.name,
+                        value: isJobs ? app.appName : app.name,
+                    }
+                }),
             ]
         } else {
             return [{ label: 'All applications', value: '*' }]
@@ -225,11 +231,14 @@ export default function AppPermissions({
                     let jobNames
                     let appIdWorkflowNamesMapping
                     let workflowOptions = []
+                    console.log('here',directRolefilter?.entityName)
+                    const selectedJobs = directRolefilter?.entityName
+                        ? directRolefilter.entityName
+                              .split(',')
+                              .map((entity) => ({ value: entity, label: entity.split('/')[0] }))
+                        : setAllApplication(directRolefilter, projectId).filter((entity) => entity.value !== '*')
                     if (directRolefilter.entity === EntityTypes.JOB) {
-                        jobNames = directRolefilter?.entityName
-                            ? directRolefilter.entityName.split(',').map((eachJob) => eachJob.split('/')[0])
-                            : []
-
+                        jobNames = selectedJobs.filter((job) => job.value !== '*').map((job) => job.value.split('/')[0])
                         const { result } = await getAllWorkflowsForAppNames(jobNames)
                         appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
                         for (const jobName in appIdWorkflowNamesMapping) {
@@ -242,11 +251,13 @@ export default function AppPermissions({
                             })
                         }
                         setWorkflowList({ loading: false, options: workflowOptions })
-                        setSelectedJobs(
-                            directRolefilter.entityName
-                                .split(',')
-                                .map((entity) => ({ value: entity, label: entity.split('/')[0] })),
-                        )
+                        console.log('workflow selected', directRolefilter.workflow
+                        ? directRolefilter.workflow
+                              .split('/')
+                              .map((workflow) => ({ value: workflow, label: workflow }))
+                        : '',)
+                        console.log('selected jobs 1',selectedJobs)
+                        setSelectedJobs(selectedJobs)
                     }
 
                     return {
@@ -267,7 +278,7 @@ export default function AppPermissions({
                         environment: setAllEnv(directRolefilter),
                         workflow: directRolefilter.workflow
                             ? directRolefilter.workflow
-                                  .split('/')
+                                  .split(',')
                                   .map((workflow) => ({ value: workflow, label: workflow }))
                             : '',
                     } as DirectPermissionsRoleFilter
@@ -428,7 +439,13 @@ export default function AppPermissions({
                                 : appsListHelmApps
                             )
                                 .get(projectId)
-                                .result.map((app) => ({ label: app.name, value: app.name })),
+                                .result.map((app) => {
+                                    const isJobs = tempPermissions[index].entity === EntityTypes.JOB
+                                    return {
+                                        label: isJobs ? app.jobName : app.name,
+                                        value: isJobs ? app.appName : app.name,
+                                    }
+                                }),
                         ]
                     } else {
                         tempPermissions[index][name] = [{ label: 'Select all', value: '*' }]
@@ -439,15 +456,18 @@ export default function AppPermissions({
                 }
             } else {
                 const selectedOptions= selectedValue.filter(({ value, label }) => value !== '*')
-                if(tempPermissions[index].entity===EntityTypes.JOB)
-                {
-                    setSelectedJobs(selectedOptions)
-                }
                 tempPermissions[index]['entityName'] = selectedOptions
                 tempPermissions[index]['entityNameError'] = null
             }
-            
+            if (tempPermissions[index].entity === EntityTypes.JOB) {
+                setSelectedJobs(
+                    tempPermissions[index]['entityName']
+                        .filter((entity) => entity.value !== '*')
+                )
 
+                tempPermissions[index]['workflow']=[]
+            }
+            
         } else if (name === 'environment') {
             setEnvValues(index, selectedValue, actionMeta, tempPermissions)
         } 

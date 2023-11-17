@@ -838,10 +838,10 @@ const AddUser: React.FC<AddUser> = ({
     )
 }
 
-const allApplicationsOption = {
-    label: 'All applications',
+const allApplicationsOption = (entity) => ({
+    label: entity === EntityTypes.JOB ? 'All Jobs' : 'All applications',
     value: '*',
-}
+})
 
 const allEnvironmentsOption = {
     label: 'All environments',
@@ -939,6 +939,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     ? 'Admin'
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? customRoles.possibleRolesMetaForHelm[value].value
+                    : permission.entity === EntityTypes.JOB
+                    ? customRoles.possibleRolesMetaForJob[value].value
                     : customRoles.possibleRolesMeta[value].value}
                 {ApproverPermission && (permission.approver || primaryActionRole.configApprover) && ', Approver'}
                 {React.cloneElement(children[1])}
@@ -1335,7 +1337,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     onMenuClose={onMenuClose}
                     placeholder={permission.accessType === '' ? 'Select Job' : 'Select applications'}
                     options={[
-                        ...(permission.accessType !== ACCESS_TYPE_MAP.JOBS ? [allApplicationsOption] : []),
+                        allApplicationsOption(permission.entity),
                         ...applications,
                     ]}
                     className="basic-multi-select"
@@ -1803,7 +1805,6 @@ function SearchEmpty({ searchString, setSearchString }) {
 
 export function ParseData(dataList: any[], entity: string, accessType?: string) {
     switch (entity) {
-
         case EntityTypes.DIRECT:
             if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                 return dataList.filter(

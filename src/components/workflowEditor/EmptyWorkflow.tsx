@@ -50,6 +50,10 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
             })
             .catch((error: ServerErrors) => {
                 showError(error)
+                this.setState({
+                    loading:false
+                })
+                this.props.onClose()
             })
     }
 
