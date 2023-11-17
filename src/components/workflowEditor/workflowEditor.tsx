@@ -420,6 +420,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     isLastNode={
                                         this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
                                     }
+                                    changeCIPayload={this.state.changeCIPayload}
                                 />
                             )
                         }}

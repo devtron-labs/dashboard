@@ -39,6 +39,7 @@ import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning
 import './cdPipeline.scss'
 import { toast } from 'react-toastify'
 import {
+    CHANGE_TO_EXTERNAL_SOURCE,
     CREATE_DEPLOYMENT_PIPELINE,
     DEPLOY_IMAGE_EXTERNALSOURCE,
     EDIT_DEPLOYMENT_PIPELINE,
@@ -52,6 +53,7 @@ import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
+import { NewCDPipelineProps } from './types'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -67,8 +69,9 @@ export default function NewCDPipeline({
     getWorkflows,
     refreshParentWorkflows,
     envIds,
-    isLastNode
-}) {
+    isLastNode,
+    changeCIPayload,
+}: NewCDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
     const validationRules = new ValidationRules()
@@ -568,6 +571,11 @@ export default function NewCDPipeline({
                     : formData.triggerType // In case of virtual environment trigger type will always be manual
         }
 
+        // Its not allowed to switch from external to external
+        if (changeCIPayload?.switchFromCiPipelineId) {
+            pipeline['switchFromCiPipelineId'] = changeCIPayload.switchFromCiPipelineId
+        }
+
         const request = {
             appId: +appId,
         }
@@ -1060,6 +1068,8 @@ export default function NewCDPipeline({
         let title;
         if (isWebhookCD && workflowId === '0') {
             title = DEPLOY_IMAGE_EXTERNALSOURCE;
+        } else if (isWebhookCD && changeCIPayload) {
+            title = CHANGE_TO_EXTERNAL_SOURCE
         } else if (cdPipelineId) {
             title = EDIT_DEPLOYMENT_PIPELINE;
         } else {
