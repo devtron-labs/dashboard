@@ -124,7 +124,6 @@ function EnvironmentStatusComponent({
         ) {
             return (
                 <LastUpdatedCard
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     deploymentTriggerTime={appDetails?.lastDeployedTime}
                     triggeredBy={appDetails?.lastDeployedBy}
                 />

@@ -1,7 +1,6 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
-import { ReactComponent as Success } from '../../../../../assets/icons/ic-success.svg'
 
 function HelmAppConfigApplyStatusCard({ releaseStatus }) {
     return releaseStatus ? (
