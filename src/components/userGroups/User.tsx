@@ -117,29 +117,29 @@ export default function UserForm({
     }
 
     function isFormComplete(): boolean {
-        let isComplete: boolean = true;
+        let isComplete: boolean = true
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
-                isComplete = false;
-                curr.entityNameError = `${curr.entity===EntityTypes.JOB?'Jobs':'Applications'} are mandatory`;
+                isComplete = false
+                curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
             }
             if (curr.team && curr.environment.length === 0) {
-                isComplete = false;
-                curr.environmentError = 'Environments are mandatory';
+                isComplete = false
+                curr.environmentError = 'Environments are mandatory'
             }
-            if(curr.team&&curr.workflow?.length===0){
-                isComplete = false;
-                curr.workflowError = 'Worflows are mandatory';
+            if (curr.team && curr.workflow?.length === 0) {
+                isComplete = false
+                curr.workflowError = 'Worflows are mandatory'
             }
-            agg.push(curr);
-            return agg;
-        }, []);
+            agg.push(curr)
+            return agg
+        }, [])
 
         if (!isComplete) {
-            setDirectPermission(tempPermissions);
+            setDirectPermission(tempPermissions)
         }
 
-        return isComplete;
+        return isComplete
     }
 
     function getSelectedEnvironments(permission) {
@@ -194,10 +194,14 @@ export default function UserForm({
                                 : permission.entityName.map((entity) => entity.value).join(','),
                             entity: permission.entity,
                             workflow: permission.workflow?.length
-                                ? permission.workflow.map((workflow) => workflow.value).join(',')
+                                ? permission.workflow.find((workflow) => workflow.value === '*')
+                                    ? ''
+                                    : permission.workflow.map((workflow) => workflow.value).join(',')
                                 : '',
                         }
-                        if (permission.entity !== EntityTypes.JOB) delete payload.workflow
+                        if (permission.entity !== EntityTypes.JOB) {
+                            delete payload.workflow
+                        }
                         return payload
                     }),
                 ...k8sPermission.map((permission) => ({
@@ -221,7 +225,7 @@ export default function UserForm({
                 team: '',
                 environment: '',
                 entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
-            });
+            })
             if (chartPermission.action != ActionTypes.VIEW) {
                 payload.roleFilters.push({
                     ...ViewChartGroupPermission,

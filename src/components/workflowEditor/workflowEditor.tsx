@@ -505,7 +505,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     openCreateModal = () => {
-        // this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/0/ci-pipeline/0`)
         this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`)
     }
 
