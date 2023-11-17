@@ -7,7 +7,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads, WorkflowNodeType, WorkflowType } from '../app/details/triggerView/types'
-import { OptionType } from '../app/types'
+import { EditDescRequest, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
@@ -205,6 +205,8 @@ export interface AppInfoListType {
     appStatus: string
     deploymentStatus: string
     lastDeployed: string
+    lastDeployedImage?: string
+    lastDeployedBy?: string
     appId: number
     envId: number
 }
@@ -267,6 +269,7 @@ export interface AppGroupDetailDefaultType {
     appGroupListData?: AppGroupListType
     isVirtualEnv?: boolean
     envName?: string
+    getAppListData?: any
 }
 
 interface CIPipeline {
@@ -323,6 +326,8 @@ export interface ApplistEnvType {
     appName: string
     appStatus: string
     lastDeployedTime: string
+    lastDeployedBy?: string
+    lastDeployedImage?: string
 }
 
 export interface AppGroupListType {
@@ -331,6 +336,11 @@ export interface AppGroupListType {
     clusterName: string
     environmentId: number
     apps: ApplistEnvType[]
+    description?: string
+    environmentType?: string
+    createdOn?: string
+    createdBy?: string
+    clusterId?: number
 }
 export interface ConfigAppListType extends ResponseType {
     result?: ConfigAppList[]
@@ -386,6 +396,10 @@ export interface SearchBarType {
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchApplied: boolean
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface EditDescRequestResponse extends ResponseType {
+    result?: EditDescRequest
 }
 
 export enum FilterParentType {

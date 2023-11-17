@@ -19,6 +19,7 @@ import {
     CheckPermissionResponse,
     CheckPermissionType,
     ConfigAppListType,
+    EditDescRequestResponse,
     EnvAppType,
     EnvDeploymentStatusType,
     EnvGroupListResponse,
@@ -28,6 +29,7 @@ import {
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { EditDescRequest } from '../app/types'
 
 const getFilteredAppQueryString = (appIds: string): string => {
     let _appIdsQueryParam = ''
@@ -193,7 +195,7 @@ export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
     return get(`${Routes.APP_LIST_GROUP}/${envId}`)
 }
 
-export const getEnvGroupList = (envId: number, filterParentType?:string): Promise<EnvGroupListResponse> => {
+export const  getEnvGroupList = (envId: number, filterParentType?:string): Promise<EnvGroupListResponse> => {
     let filterParentTypeQuery = ''
     if (filterParentType) {
         filterParentTypeQuery = `?groupType=${filterParentType}`
@@ -222,4 +224,8 @@ export const deleteEnvGroup = (envId: string, groupId: string, filterParentType?
         filterParentTypeQuery = `?groupType=${filterParentType}`
     }
     return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}${filterParentTypeQuery}`)
+}
+
+export const editDescription = (payload): Promise<EditDescRequestResponse> => {
+    return put(`${Routes.ENVIRONMENT}`, payload)
 }
