@@ -172,8 +172,8 @@ export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; a
     delete parentCIPipeline['beforeDockerBuildScripts']
     delete parentCIPipeline['afterDockerBuildScripts']
     const request: any = {
-        appId: changeCIPayload.appId ?? params.appId,
-        appWorkflowId: changeCIPayload.appWorkflowId ?? params.workflowId,
+        appId: changeCIPayload?.appId ?? params.appId,
+        appWorkflowId: changeCIPayload?.appWorkflowId ?? params.workflowId,
         action: PatchAction.CREATE,
         ciPipeline: {
             ...parentCIPipeline,
