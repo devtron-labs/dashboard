@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
 import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
@@ -18,6 +18,8 @@ import { DeploymentAppTypes, noop, useAsync } from '@devtron-labs/devtron-fe-com
 import { EnvironmentStatusComponentType } from '../environment.type'
 import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
 import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
+import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
+import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -28,7 +30,7 @@ function EnvironmentStatusComponent({
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
     isHelmApp,
-    refetchDeploymentStatus
+    refetchDeploymentStatus,
 }: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -48,9 +50,7 @@ function EnvironmentStatusComponent({
 
     const notes = appDetails.notes || notesResult?.result?.gitOpsNotes
 
-    const handleShowAppStatusDetail = () => {
-        setShowAppStatusDetail(true)
-    }
+    const cardLoading = useMemo(() => loadingDetails || loadingResourceTree, [loadingDetails, loadingResourceTree])
 
     const shimmerLoaderBlocks = () => {
         return (
@@ -78,41 +78,15 @@ function EnvironmentStatusComponent({
     }
 
     const renderStatusBlock = () => {
-        return status ? (
-            <div
-                className="app-status-card bcn-0 mr-12 br-8 p-16 cursor  "
-                onClick={loadingResourceTree ? noop : handleShowAppStatusDetail}
-            >
-                <div className="cn-9 flex left">
-                    <span data-testid="application-status-heading">Application status</span>
-                    <Tippy className="default-tt cursor" arrow={false} content={'The health status of your app'}>
-                        <Question className="cursor icon-dim-16 ml-4" />
-                    </Tippy>
-                </div>
-                {loadingResourceTree ? (
-                    <div className="flex left column mt-6">
-                        <div className="shimmer-loading w-80px h-16 br-2 mb-6" />
-                        <div className="shimmer-loading w-60 h-12 br-2" />
-                    </div>
-                ) : (
-                    <>
-                        <div className={`f-${status.toLowerCase()} dc__capitalize fw-6 fs-14 flex left`}>
-                            <span data-testid="application-status-app-details">{status}</span>
-                            <figure
-                                className={`${
-                                    showHibernationStatusMessage ? 'hibernating' : status.toLowerCase()
-                                } dc__app-summary__icon ml-8 icon-dim-20`}
-                            ></figure>
-                        </div>
-                        <div>
-                            <span className="details-hover cb-5 fw-6" data-testid="details-button-app-details">
-                                Details
-                            </span>
-                        </div>
-                    </>
-                )}
-            </div>
-        ) : null
+        if (!status) return null
+        return (
+            <AppStatusCard
+                appDetails={appDetails}
+                status={status}
+                setDetailed={setShowAppStatusDetail}
+                cardLoading={cardLoading}
+            />
+        )
     }
 
     const onClickShowNotes = () => {
@@ -143,14 +117,27 @@ function EnvironmentStatusComponent({
     }
 
     const renderLastUpdatedBlock = () => {
-        return (
-            appDetails?.lastDeployedTime && appDetails?.appType !== "external_helm_chart" && (
+        if (
+            appDetails?.deploymentAppType === DeploymentAppTypes.HELM &&
+            appDetails?.appType === AppType.DEVTRON_HELM_CHART &&
+            appDetails?.lastDeployedTime
+        ) {
+            return (
                 <LastUpdatedCard
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     deploymentTriggerTime={appDetails?.lastDeployedTime}
                     triggeredBy={appDetails?.lastDeployedBy}
                 />
             )
+        }
+        return (
+            <DeploymentStatusCard
+                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                cardLoading={cardLoading}
+                hideDetails={false}
+                refetchDeploymentStatus={refetchDeploymentStatus}
+                isVirtualEnvironment={isVirtualEnvironment}
+            />
         )
     }
 

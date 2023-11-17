@@ -13,7 +13,6 @@ import LoadingCard from './LoadingCard'
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
     cardLoading,
-    hideDeploymentStatusLeftInfo,
     hideDetails,
     isVirtualEnvironment,
     refetchDeploymentStatus,
@@ -84,11 +83,9 @@ function DeploymentStatusCard({
     }
 
     const onClickLastDeploymentStatus = (e) => {
+        if (cardLoading) noop()
         if (!hideDetails) {
             refetchDeploymentStatus(true)
-        }
-        if (cardLoading) noop()
-        if (!hideDetails && !hideDeploymentStatusLeftInfo) {
             showDeploymentDetailedStatus(e)
         }
     }
@@ -100,7 +97,7 @@ function DeploymentStatusCard({
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}
             className={`app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-250 ${
-                hideDeploymentStatusLeftInfo || hideDetails ? '' : 'cursor'
+                hideDetails ? '' : 'cursor'
             }`}
         >
             {renderDeploymentStatus()}

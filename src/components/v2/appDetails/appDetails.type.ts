@@ -154,7 +154,6 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 }
 
-
 export interface AppDetails {
     appId: number
     appName: string
