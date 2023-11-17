@@ -184,7 +184,6 @@ export default function CDMaterial({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -1444,7 +1443,7 @@ export default function CDMaterial({
                             )}
                         >
                             <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                                <img src={docker} alt="" className="commit-hash__icon" />
+                            <div className={`dc__registry-icon ${mat.registryType} mr-8`}></div>
                                 {mat.image}
                             </div>
                         </ConditionalWrap>
