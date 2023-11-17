@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { EmptyWorkflowProps, EmptyWorkflowState } from './types';
+import React, { Component } from 'react'
+import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
 import { DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { createWorkflow, updateWorkflow } from './service';
-import { toast } from 'react-toastify';
-import error from '../../assets/icons/misc/errorInfo.svg';
+import { createWorkflow, updateWorkflow } from './service'
+import { toast } from 'react-toastify'
+import error from '../../assets/icons/misc/errorInfo.svg'
 
 export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWorkflowState> {
     _inputName: HTMLInputElement
@@ -13,7 +13,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
         this.state = {
             name: '',
             showError: false,
-            loading:false
+            loading: false,
         }
     }
 
@@ -43,7 +43,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                 this.setState({
                     name: response.result.name,
                     showError: false,
-                    loading:false
+                    loading: false,
                 })
                 this.props.onClose()
                 this.props.getWorkflows()
@@ -51,7 +51,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
             .catch((error: ServerErrors) => {
                 showError(error)
                 this.setState({
-                    loading:false
+                    loading: false,
                 })
                 this.props.onClose()
             })

@@ -85,13 +85,14 @@ import {
     USER_NOT_EDITABLE,
 } from '../../config/constantMessaging'
 import { getJobs } from '../Jobs/Service'
+import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
-    workflowList:{loading:false,options:[]},
-    setWorkflowList:()=>{},
+    workflowList: { loading: false, options: [] },
+    setWorkflowList: () => {},
     userGroupsList: [],
     environmentsList: [],
     projectsList: [],
@@ -182,7 +183,7 @@ export default function UserGroupRoute() {
     const [appsList, setAppsList] = useState(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState(new Map())
     const [jobsList,setJobsList] = useState(new Map())
-    const [workflowList,setWorkflowList] = useState({loading:false,options:[]})
+    const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
     useEffect(() => {
         if (!lists) return
@@ -866,8 +867,17 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     removeRow,
     selectedJobs
 }) => {
-    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles ,jobsList,workflowList,setWorkflowList} =
-        useUserGroupContext()
+    const {
+        environmentsList,
+        projectsList,
+        appsList,
+        envClustersList,
+        appsListHelmApps,
+        customRoles,
+        jobsList,
+        workflowList,
+        setWorkflowList,
+    } = useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
@@ -969,12 +979,24 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }
 
     useEffect(() => {
-        const envOptions = createClusterEnvGroup(
+        let envOptions = createClusterEnvGroup(
             environmentsList,
             'cluster_name',
             'environment_name',
             'environmentIdentifier',
         )
+        if (permission.entity === EntityTypes.JOB) {
+            envOptions = envOptions.filter((option) => option.isClusterCdActive)
+            envOptions.push({
+                label: '',
+                options: [
+                    {
+                        label: DEFAULT_ENV,
+                        value: DEFAULT_ENV,
+                    },
+                ],
+            })
+        }
         setEnvironments(envOptions)
     }, [environmentsList])
 
@@ -1032,7 +1054,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             const isJobs = permission.entity === EntityTypes.JOB
             return {
                 label: isJobs ? app.jobName : app.name,
-                value: isJobs ? app.appName : app.name
+                value: isJobs ? app.appName : app.name,
             }
         })
         setApplications(appOptions)
@@ -1177,7 +1199,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         }
     }
 
-    function onFocus(name: 'entityName/apps' | 'entityName/jobs'| 'environment' | 'workflow') {
+    function onFocus(name: 'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow') {
         changeOpenMenu(name)
     }
 
@@ -1323,7 +1345,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         projectId
                             ? (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                                   ? appsList
-                                  : permission.accessType === ACCESS_TYPE_MAP.JOBS
+                                  : permission.entity === EntityTypes.JOB
                                   ? jobsList
                                   : appsListHelmApps
                               ).get(projectId)?.loading
@@ -1336,10 +1358,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     onFocus={() => onFocus(`entityName/${permission.entity}`)}
                     onMenuClose={onMenuClose}
                     placeholder={permission.accessType === '' ? 'Select Job' : 'Select applications'}
-                    options={[
-                        allApplicationsOption(permission.entity),
-                        ...applications,
-                    ]}
+                    options={[allApplicationsOption(permission.entity), ...applications]}
                     className="basic-multi-select"
                     classNamePrefix="select-application-dropdown"
                     onChange={handleDirectPermissionChange}
@@ -1357,7 +1376,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 />
                 {permission.entityNameError && <span className="form__error">{permission.entityNameError}</span>}
             </div>
-            {permission.accessType === ACCESS_TYPE_MAP.JOBS && (
+            {permission.entity === EntityTypes.JOB && (
                 <div style={{ order: 2 }}>
                     <Select
                         value={permission.workflow}
@@ -1367,7 +1386,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         onFocus={() => onFocus('workflow')}
                         onMenuClose={onMenuClose}
                         placeholder="Select workflow"
-                        options={workflowList.options}
+                        options={[
+                            { label: '', options: [{ label: 'All Workflows', value: '*' }] },
+                            ...workflowList.options,
+                        ]}
                         className="basic-multi-select"
                         menuPlacement="auto"
                         classNamePrefix="select-devtron-app-workflow-dropdown"
@@ -1379,7 +1401,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ValueContainer,
                             IndicatorSeparator: null,
                             Option,
-                            GroupHeading,
+                            GroupHeading: workflowGroupHeading,
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
@@ -1442,6 +1464,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             <CloseIcon className="pointer margin-top-6px" onClick={(e) => removeRow(index)} style={{ order: 5 }} />
         </React.Fragment>
     )
+}
+const workflowGroupHeading = (props) => {
+    return <GroupHeading {...props} hideClusterName={true} />
 }
 
 const AppOption = (props) => {
@@ -1615,7 +1640,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
 const ValueContainer = (props) => {
     let length = props.getValue().length
     let optionLength = props.options.length
-    if (props.selectProps.name === 'environment') {
+    if (props.selectProps.name === 'environment'||props.selectProps.name === 'workflow') {
         let _optionLength = 0
         props.options.forEach((option) => {
             _optionLength += option.options?.length
@@ -1626,7 +1651,9 @@ const ValueContainer = (props) => {
     let count = ''
     if (
         length === optionLength &&
-        (props.selectProps.name.includes('entityName') || props.selectProps.name === 'environment')
+        (props.selectProps.name.includes('entityName') ||
+            props.selectProps.name === 'environment' ||
+            props.selectProps.name.includes('workflow'))
     ) {
         count = 'All'
     } else {
