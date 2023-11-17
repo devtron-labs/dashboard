@@ -1,7 +1,13 @@
 import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
-import { CIPipelineNodeType, CdPipelineResult, CiPipeline, NodeAttr } from '../app/details/triggerView/types'
+import {
+    CIPipelineNodeType,
+    CdPipelineResult,
+    CiPipeline,
+    NodeAttr,
+    WorkflowType,
+} from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 
@@ -86,7 +92,7 @@ export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
 }
 
-export interface CDNodeProps{
+export interface CDNodeProps {
     id: string
     deploymentStrategy: string
     triggerType: string
@@ -119,27 +125,27 @@ export interface WebhookNodeProps {
     to?: string
     configDiffView?: boolean
     toggleCDMenu?: () => void
-    hideWebhookTippy?:  () => void
+    hideWebhookTippy?: () => void
     addNewPipelineBlocked?: boolean
 }
 
 export interface WebhookTippyType {
     link: string
-    hideTippy: ()=> void
+    hideTippy: () => void
 }
 
 export interface DeprecatedWarningModalType {
-  closePopup: () => void
+    closePopup: () => void
 }
 
-export interface CDNodeState{
-  showDeletePipelinePopup: boolean
+export interface CDNodeState {
+    showDeletePipelinePopup: boolean
 }
 
 export interface PipelineBuildStageType {
-    id: number;
+    id: number
     triggerType?: string
-    steps: StepType[];
+    steps: StepType[]
 }
 
 export interface CustomTagType {
@@ -192,7 +198,7 @@ export interface PipelineContext {
         _formData: PipelineFormType,
         activeStageName: string,
         startIndex?: number,
-        isFromMoveTask?: boolean
+        isFromMoveTask?: boolean,
     ) => {
         index: number
         calculatedStageVariables: Map<string, VariableType>[]
@@ -204,17 +210,17 @@ export interface PipelineContext {
     setConfigurationType: React.Dispatch<React.SetStateAction<string>>
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
     validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any) => void
-    isCdPipeline?: boolean,
+    isCdPipeline?: boolean
     configMapAndSecrets?: {
-        label: string;
-        options: any;
-    }[],
+        label: string
+        options: any
+    }[]
     loadingState?: LoadingState
     setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
     appId: string
-    inputVariablesListFromPrevStep?: InputVariablesFromInputListType,
-    setInputVariablesListFromPrevStep?: (inputVariables: InputVariablesFromInputListType) => void,
-    addNewTask: () => void,
+    inputVariablesListFromPrevStep?: InputVariablesFromInputListType
+    setInputVariablesListFromPrevStep?: (inputVariables: InputVariablesFromInputListType) => void
+    addNewTask: () => void
     pageState?: string
     setPageState?: React.Dispatch<React.SetStateAction<string>>
     isEnvUsedState?: boolean
@@ -223,8 +229,13 @@ export interface PipelineContext {
     getPrePostStageInEnv?: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
     isVirtualEnvironment?: boolean
     globalVariables: {
-        stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string
-}[]
+        stageType?: string
+        label: string
+        value: string
+        format: string
+        description?: string
+        variableType?: string
+    }[]
 }
 
 export interface SourceTypeCardProps {
@@ -243,5 +254,8 @@ export interface WorkflowOptionsModalProps {
     addWebhookCD: (workflowId?: number | string) => void
     addLinkedCD: (changeCIPayload: ChangeCIPayloadType) => void
     showLinkedCDSource: boolean
-    changeCIPayload: ChangeCIPayloadType
+    // ------------------ Optional types ------------------
+    changeCIPayload?: ChangeCIPayloadType
+    workflows?: WorkflowType[]
+    getWorkflows?: () => void
 }

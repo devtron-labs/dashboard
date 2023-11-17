@@ -61,3 +61,7 @@ export const SOURCE_TYPE_CARD_VARIANTS = {
 }
 
 export const NO_ENV_FOUND = 'No environment found. Please create a CD Pipeline first.'
+
+export const TOAST_MESSAGES = {
+    SUCCESS_CHANGE_TO_WEBHOOK: 'Successfully changed CI to webhook',
+}

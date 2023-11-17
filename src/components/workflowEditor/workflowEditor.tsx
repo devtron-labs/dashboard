@@ -715,6 +715,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             addLinkedCD={this.addLinkedCD}
                             showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
                             changeCIPayload={this.state.changeCIPayload}
+                            workflows={this.state.workflows}
+                            getWorkflows={this.getWorkflows}
                         />
                     )}
                 </>
@@ -785,6 +787,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             addLinkedCD={this.addLinkedCD}
                             showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
                             changeCIPayload={this.state.changeCIPayload}
+                            workflows={this.state.workflows}
+                            getWorkflows={this.getWorkflows}
                         />
                     )}
                     {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}

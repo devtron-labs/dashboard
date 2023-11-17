@@ -1,6 +1,6 @@
 import React from 'react'
 import { toast } from 'react-toastify'
-import { VisibleModal, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 // TODO: Change this image
 import workflowModal from '../../assets/img/guide-onboard.png'
 import {
@@ -8,11 +8,14 @@ import {
     SOURCE_TYPE_CARD_VARIANTS,
     WORKFLOW_OPTIONS_MODAL,
     WORKFLOW_OPTIONS_MODAL_TYPES,
+    TOAST_MESSAGES,
 } from './workflowEditor.constants'
 import SourceTypeCard from './SourceTypeCard'
-import { WorkflowOptionsModalProps } from './types'
-import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
+import { ChangeCIPayloadType, WorkflowOptionsModalProps } from './types'
+import { CIPipelineNodeType, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
 import { importComponentFromFELibrary } from '../common'
+import { saveCDPipeline } from '../cdPipeline/cdPipeline.service'
+import { TriggerType } from '../../config'
 
 export default function WorkflowOptionsModal({
     handleCloseWorkflowOptionsModal,
@@ -21,8 +24,50 @@ export default function WorkflowOptionsModal({
     addLinkedCD,
     showLinkedCDSource,
     changeCIPayload,
+    workflows,
+    getWorkflows,
 }: WorkflowOptionsModalProps) {
     const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
+
+    const getWebhookPayload = (changeCIPayload: ChangeCIPayloadType) => ({
+        appId: changeCIPayload.appId,
+        pipelines: [
+            {
+                // name and triggerType are useless to backend for this case
+                name: 'change-webhook-ci',
+                triggertype: TriggerType.Manual,
+                appWorkflowId: changeCIPayload.appWorkflowId,
+                environmentId: -1,
+                id: 0,
+                parentPipelineType: PipelineType.WEBHOOK,
+                switchFromCiPipelineId: changeCIPayload.switchFromCiPipelineId,
+            },
+        ],
+    })
+
+    const handleChangeToWebhook = () => {
+        if (changeCIPayload) {
+            const currentWorkflow = workflows.find((workflow) => +workflow.id === changeCIPayload.appWorkflowId)
+            // This is in case when we already have deployments in workflow in the current workflow
+            const containsCDPipeline = currentWorkflow.nodes.some((node) => node.type === WorkflowNodeType.CD)
+            if (containsCDPipeline) {
+                saveCDPipeline(getWebhookPayload(changeCIPayload))
+                    .then((response) => {
+                        if (response.result) {
+                            toast.success(TOAST_MESSAGES.SUCCESS_CHANGE_TO_WEBHOOK)
+                            getWorkflows()
+                        }
+                    })
+                    .catch((error) => {
+                        showError(error)
+                    })
+                return
+            }
+
+            addWebhookCD(changeCIPayload.appWorkflowId)
+        }
+        addWebhookCD(0)
+    }
 
     const handleCardAction = (e: React.MouseEvent) => {
         if (!(e.currentTarget instanceof HTMLDivElement)) {
@@ -33,7 +78,7 @@ export default function WorkflowOptionsModal({
         const pipelineType = e.currentTarget.dataset.pipelineType
 
         if (pipelineType === PipelineType.WEBHOOK) {
-            addWebhookCD(changeCIPayload?.appWorkflowId ?? 0)
+            handleChangeToWebhook()
             handleCloseWorkflowOptionsModal()
             return
         }
