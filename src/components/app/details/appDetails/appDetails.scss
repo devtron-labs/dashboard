@@ -1790,7 +1790,8 @@ table.resource-tree {
     margin-right: 4px;
 }
 
-.source-info-container {
+.source-info-container,
+.app-details-info-card {
     .dc__app-summary__icon {
         &.healthy {
             background-size: contain, contain;
