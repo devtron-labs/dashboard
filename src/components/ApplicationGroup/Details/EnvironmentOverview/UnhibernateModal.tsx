@@ -10,6 +10,7 @@ interface HibernateModalProps {
     envId: string
     setOpenUnhiberateModal: (value: boolean) => void
     getAppListData: any
+    fetchDeployments: any
 }
 
 export const UnhibernateModal = ({
@@ -18,6 +19,7 @@ export const UnhibernateModal = ({
     envId,
     setOpenUnhiberateModal,
     getAppListData,
+    fetchDeployments,
 }: HibernateModalProps) => {
     const UnhibernateApps = (e) => {
         e.preventDefault()
@@ -25,7 +27,7 @@ export const UnhibernateModal = ({
             .then((res) => {})
             .catch((err) => {})
             .finally(() => {
-                getAppListData().then(() => {
+                Promise.all([getAppListData(), fetchDeployments()]).then(() => {
                     setOpenUnhiberateModal(false)
                 })
             })

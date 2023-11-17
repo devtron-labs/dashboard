@@ -10,6 +10,7 @@ interface HibernateModalProps {
     envId: string
     setOpenHiberateModal: (value: boolean) => void
     getAppListData: any
+    fetchDeployments: any
 }
 
 export const HibernateModal = ({
@@ -18,6 +19,7 @@ export const HibernateModal = ({
     envId,
     setOpenHiberateModal,
     getAppListData,
+    fetchDeployments,
 }: HibernateModalProps) => {
     const hibernateApps = (e) => {
         e.preventDefault()
@@ -25,7 +27,7 @@ export const HibernateModal = ({
             .then((res) => {})
             .catch((err) => {})
             .finally(() => {
-                getAppListData().then(() => {
+                Promise.all([getAppListData(), fetchDeployments()]).then(() => {
                     setOpenHiberateModal(false)
                 })
             })

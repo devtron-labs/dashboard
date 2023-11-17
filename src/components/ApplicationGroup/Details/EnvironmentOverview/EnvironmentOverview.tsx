@@ -18,6 +18,7 @@ import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docke
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
 import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { ReactComponent as DevtronIcon } from '../../../../assets/icons/ic-devtron-app.svg'
+import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
 import Tippy from '@tippyjs/react'
 import { HibernateModal } from './HibernateModal'
 import { UnhibernateModal } from './UnhibernateModal'
@@ -128,6 +129,7 @@ export default function EnvironmentOverview({
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
         const isSelected = selectedAppIds.includes(item.appId)
+        console.log(item, 'ritvik')
         return (
             <div
                 key={`${item.application}-${index}`}
@@ -149,11 +151,7 @@ export default function EnvironmentOverview({
                         <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`}></span>
                     </label>
                 )}
-                {!isVirtualEnv && (
-                    <AppStatus
-                        appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
-                    />
-                )}
+                {!isVirtualEnv && <AppStatus appStatus={item.appStatus} />}
                 <span className="fs-13 fw-4 cn-7">{item.application}</span>
                 <AppStatus
                     appStatus={item.lastDeployed ? item.deploymentStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
@@ -222,15 +220,15 @@ export default function EnvironmentOverview({
                 <div className="flexbox-col dc__gap-12">
                     <div>
                         <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
-                            <img
-                                // src={chartUsed.chartAvatar}
-                                alt="App icon"
-                                // className={`dc__chart-grid-item__icon ${chartUsed.chartAvatar ? '' : 'icon-dim-48'}`}
-                            />
+                            <div className="flex dc__border-radius-8-imp mw-48 h-48 bcb-1">
+                                <GridIconBlue className="w-32 h-32" />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">{'hlll'}</div>
+                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">
+                        {appGroupListData.environmentName}
+                    </div>
                     <EditableTextArea
                         emptyState={'you can add description here'}
                         placeholder={''}
@@ -357,6 +355,7 @@ export default function EnvironmentOverview({
                     envName={appListData.environment}
                     setOpenHiberateModal={setOpenHiberateModal}
                     getAppListData={getAppListData}
+                    fetchDeployments={fetchDeployments}
                 />
             )}
             {openUnhiberateModal && (
@@ -366,6 +365,7 @@ export default function EnvironmentOverview({
                     envName={appListData.environment}
                     setOpenUnhiberateModal={setOpenUnhiberateModal}
                     getAppListData={getAppListData}
+                    fetchDeployments={fetchDeployments}
                 />
             )}
         </div>
