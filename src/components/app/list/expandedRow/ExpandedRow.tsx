@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { statusIcon, statusColor } from '../../config'
+import { AppStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { statusColor } from '../../config'
 import { handleUTCTime } from '../../../common'
 import { ExpandedRowProps } from './types'
 import { Link } from 'react-router-dom'
@@ -7,7 +8,6 @@ import { ReactComponent as Expand } from '../../../../assets/icons/ic-dropdown-f
 import { ReactComponent as Settings } from '../../../../assets/icons/ic-settings.svg'
 import Tippy from '@tippyjs/react'
 import './expandedRow.css'
-import AppStatus from '../../AppStatus'
 
 export class ExpandedRow extends Component<ExpandedRowProps> {
     handleEditApp = () => {

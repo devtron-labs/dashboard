@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../config'
 import { Pagination, handleUTCTime } from '../../common'
 import { Link } from 'react-router-dom'
@@ -19,7 +19,6 @@ import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../conf
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
-import AppStatus from '../AppStatus'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import cluster from 'cluster'
 export class AppListView extends Component<AppListViewProps> {

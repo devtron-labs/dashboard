@@ -2,17 +2,21 @@ import React, { useMemo, useState } from 'react'
 
 import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
-import { useAsync, getRandomColor, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    useAsync,
+    getRandomColor,
+    processDeployedTime,
+    AppStatus,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ModuleNameMap, URLS } from '../../../config'
-import { processDeployedTime } from '../../common'
 import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
 import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
 import { ReactComponent as ArrowLineDown } from '../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as DockerIcon } from '../../../assets/icons/git/docker.svg'
-import AppStatus from '../AppStatus'
 import { StatusConstants } from '../list-new/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import { AppMetaInfo, AppOverviewProps } from '../types'
