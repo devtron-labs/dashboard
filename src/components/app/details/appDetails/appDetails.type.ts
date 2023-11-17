@@ -1,6 +1,7 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { AggregatedNodes, AppDetails, AppStreamData, OptionType } from '../../types'
+import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
 import { SyncErrorType } from '../../../v2/appDetails/appDetails.type'
+import { AppDetails } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -195,13 +196,12 @@ export interface AppStatusCardType {
     status: string
     cardLoading?: boolean
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
-    message: string
+    message?: string
 }
 
 export interface DeploymentStatusCardType {
     deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
     cardLoading?: boolean
-    hideDeploymentStatusLeftInfo?: boolean
     hideDetails?: boolean
     triggeredBy?: string
     isVirtualEnvironment?: boolean

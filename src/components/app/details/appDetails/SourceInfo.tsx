@@ -1,6 +1,6 @@
 //@ts-nocheck
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
@@ -185,7 +185,7 @@ export function SourceInfo({
     }
 
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
-    const cardLoading = loadingDetails || loadingResourceTree
+    const cardLoading = useMemo(() => loadingDetails || loadingResourceTree, [loadingDetails, loadingResourceTree])
 
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
         const paramsId = {
