@@ -1,12 +1,12 @@
 import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
-import { CIPipelineNodeType, CdPipelineResult, NodeAttr } from '../app/details/triggerView/types'
+import { CIPipelineNodeType, CdPipelineResult, CiPipeline, NodeAttr } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 
 export interface BlackListedCI {
-    [key: number]: boolean
+    [key: number]: CiPipeline
 }
 
 export interface ChangeCIPayloadType {
@@ -241,7 +241,7 @@ export interface WorkflowOptionsModalProps {
     handleCloseWorkflowOptionsModal: () => void
     addCIPipeline: (type: CIPipelineNodeType, workflowId?: number | string) => void
     addWebhookCD: (workflowId?: number | string) => void
-    addLinkedCD: (workflowId?: number | string) => void
+    addLinkedCD: (changeCIPayload: ChangeCIPayloadType) => void
     showLinkedCDSource: boolean
     changeCIPayload: ChangeCIPayloadType
 }

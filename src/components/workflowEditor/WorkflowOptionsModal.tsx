@@ -44,7 +44,7 @@ export default function WorkflowOptionsModal({
                 return
             }
 
-            addLinkedCD(changeCIPayload?.appWorkflowId ?? 0)
+            addLinkedCD(changeCIPayload)
             handleCloseWorkflowOptionsModal()
             return
         }

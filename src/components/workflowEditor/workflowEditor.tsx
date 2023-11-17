@@ -264,11 +264,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
-    addLinkedCD = (workflowId?: number | string) => {
+    addLinkedCD = (changeCIPayload?: ChangeCIPayloadType) => {
         this.props.history.push(
             `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
-                workflowId ?? 0
-            }/${URLS.LINKED_CD}/0`,
+                changeCIPayload?.appWorkflowId ?? 0
+            }/${URLS.LINKED_CD}?changeCi=${Number(!!changeCIPayload)}&switchFromCiPipelineId=${
+                changeCIPayload?.switchFromCiPipelineId ?? 0
+            }&switchFromExternalCiPipelineId=${changeCIPayload?.switchFromExternalCiPipelineId ?? 0}`,
         )
     }
 
@@ -501,9 +503,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                               >
                                   <SyncEnvironment
                                       closeModal={this.closeSyncEnvironment}
-                                      appId={this.props.match.params.appId}
                                       cdPipelines={this.state.cachedCDConfigResponse.pipelines ?? []}
                                       blackListedIds={this.state.blackListedCI ?? {}}
+                                      deleteWorkflow={this.deleteWorkflow}
                                   />
                               </Route>,
                           ]

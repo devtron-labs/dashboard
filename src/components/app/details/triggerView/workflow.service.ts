@@ -223,10 +223,10 @@ export function processWorkflow(
 
     addDimensions(workflows, workflowOffset, dimensions)
     
-    const blackListedCI = ciResponse.ciPipelines
+    const blackListedCI: BlackListedCI = ciResponse.ciPipelines
         ?.filter((ciPipeline) => ciPipeline.pipelineType === CIPipelineBuildType.LINKED_CD)
         .reduce((acc, ciPipeline) => {
-            acc[ciPipeline.id] = true
+            acc[ciPipeline.id] = ciPipeline
             return acc
         }, {})
 

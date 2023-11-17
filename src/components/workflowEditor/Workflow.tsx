@@ -362,20 +362,21 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     renderLinkedCD(node: NodeAttr) {
         return (
             <LinkedCDNode
+                key={`linked-cd-${node.id}`}
                 x={node.x}
                 y={node.y}
                 width={node.width}
                 height={node.height}
                 configDiffView={this.props.cdWorkflowList?.length > 0}
                 title={node.title}
-                // TODO: Change this to a proper URL
-                redirectTo={`${this.props.match.url}/${
+                redirectTo={`${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                     this.props.id ?? 0
-                }/${URLS.LINKED_CD}/0`}
+                }/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${node.id}&switchFromExternalCiPipelineId=0`}
                 blockAddNewPipeline={this.props.addNewPipelineBlocked}
                 toggleCDMenu={() => {
                     this.props.handleCDSelect(this.props.id, node.id, WorkflowNodeType.LINKED_CD, node.id)
                 }}
+                history={this.props.history}
             />
         )
     }
@@ -471,10 +472,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             appId: Number(this.props.match.params.appId),
         }
 
-        const ciPipelineId = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)?.id
-        
-        if (ciPipelineId) {
-            payload.switchFromCiPipelineId = Number(ciPipelineId)
+        const switchFromCiPipelineId = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI || nd.type === WorkflowNodeType.LINKED_CD)?.id
+
+        if (switchFromCiPipelineId) {
+            payload.switchFromCiPipelineId = Number(switchFromCiPipelineId)
         }
         else {
             const externalCiPipelineId = this.props.nodes.find((nd) => nd.isExternalCI && nd.type === WorkflowNodeType.WEBHOOK)?.id
