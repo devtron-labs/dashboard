@@ -699,16 +699,18 @@ export default function BuildCD({
                         />
                     </>
                 )}
-                <CustomImageTags
-                    formData={formData}
-                    setFormData={setFormData}
-                    formDataErrorObj={formDataErrorObj}
-                    setFormDataErrorObj={setFormDataErrorObj}
-                    isCDBuild={true}
-                    savedTagPattern={savedCustomTagPattern}
-                    selectedCDStageTypeValue={selectedCDStageTypeValue}
-                    setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
-                />
+                {isAdvanced && (
+                    <CustomImageTags
+                        formData={formData}
+                        setFormData={setFormData}
+                        formDataErrorObj={formDataErrorObj}
+                        setFormDataErrorObj={setFormDataErrorObj}
+                        isCDBuild={true}
+                        savedTagPattern={savedCustomTagPattern}
+                        selectedCDStageTypeValue={selectedCDStageTypeValue}
+                        setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
+                    />
+                )}
             </>
         )
     }

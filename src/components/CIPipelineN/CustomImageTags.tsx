@@ -8,7 +8,7 @@ import { OptionType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
-import { Option, DropdownIndicator, styles, getCustomOptionSelectionStyle, getCommonSelectStyle } from '../v2/common/ReactSelect.utils'
+import { Option, DropdownIndicator, getCommonSelectStyle } from '../v2/common/ReactSelect.utils'
 import { getCDStageTypeSelectorValue, customTagStageTypeOptions } from './ciPipeline.utils'
 import ReactSelect from 'react-select'
 import '../ciPipeline/ciPipeline.scss'
@@ -74,7 +74,7 @@ function CustomImageTags({
                 <ReactSelect
                     value={selectedCDStageTypeValue}
                     options={customTagStageTypeOptions}
-                    className="select-width w-200 p-0"
+                    className="select-width w-250 p-0"
                     classNamePrefix="select-custom-image-tag-cd-stage-type"
                     isSearchable={false}
                     onChange={handleCustomTagStageOnCD}
@@ -153,7 +153,7 @@ function CustomImageTags({
                         <div className="flexbox">
                             Tag Preview:
                             <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
-                                <div className={'dc__registry-icon mr-5 '}></div>
+                                <div className="dc__registry-icon docker mr-5"></div>
                                 {formData.customTag?.tagPattern?.replace(
                                     '{x}',
                                     formData.customTag?.counterX?.toString() ?? '0',
@@ -208,7 +208,7 @@ function CustomImageTags({
                 </div>
                 <hr className="mt-8 mb-8" />
                 <div className="dc__italic-font-style cn-7">
-                    {`{X}`} = {formData.customTag.counterX} in the next build trigger
+                    {`{X}`} = {formData.customTag.counterX} in the next trigger
                     {isCDBuild && formData?.customTagStage
                         ? ` of ${getCDStageTypeSelectorValue(formData.customTagStage).label}`
                         : ''}
