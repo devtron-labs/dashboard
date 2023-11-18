@@ -4,6 +4,7 @@ import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import CertManager from './../../../../../assets/icons/tools/ic-helm-app-cert-manager.png'
+import {ReactComponent as DefaultChart} from '../../../../../assets/icons/ic-default-chart.svg'
 import { URLS } from '../../../../../config'
 
 
@@ -39,7 +40,7 @@ const ChartUsedCard = ({appDetails, notes, onClickShowNotes}) => {
                     </div>
                 </div>
                 {/* @TODO: Replace this with the chart image url from api response */}
-                <img src={CertManager} alt="CertManager" />
+                {true ? <img src={CertManager} alt="CertManager" /> : <DefaultChart className="icon-dim-24" />}
             </div>
             <div className="app-details-info-card__bottom-container dc__content-space">
                 <span className="app-details-info-card__bottom-container__message fs-12 fw-4">

@@ -12,9 +12,8 @@ const LastUpdatedCard = ({
     const history = useHistory()
     const match = useRouteMatch()
 
-    // @TODO: Fix this function to redirect to the correct URL
     const goToDeploymentHistory = () => {
-        history.push(`${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`)
+        history.push(`${match.url.split(URLS.APP_DETAILS)[0]}${URLS.APP_DEPLOYMNENT_HISTORY}`)
     }
 
     return (
