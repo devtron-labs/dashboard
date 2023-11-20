@@ -29,7 +29,6 @@ import {
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { EditDescRequest } from '../app/types'
 
 const getFilteredAppQueryString = (appIds: string): string => {
     let _appIdsQueryParam = ''

@@ -76,7 +76,7 @@ export default function EnvironmentOverview({
                     statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
                 })
                 setLoading(false)
-                
+
                 parseAppListData(appGroupListData, statusRecord)
             }
         } catch (err) {
@@ -89,10 +89,8 @@ export default function EnvironmentOverview({
 
         if (value === 'ALL') {
             if (checked) {
-                // setSelectAll(true)
                 setSelectedAppIds(appListData.appInfoList.map((item) => item.appId))
             } else {
-                // setSelectAll(false)
                 setSelectedAppIds([])
             }
         } else {
@@ -124,7 +122,7 @@ export default function EnvironmentOverview({
             }
             parsedData.appInfoList.push(appInfo)
         })
-        
+
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
         setAppListData(parsedData)
     }
@@ -146,7 +144,7 @@ export default function EnvironmentOverview({
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
         const isSelected = selectedAppIds.includes(item.appId)
-        
+
         return (
             <div
                 key={`${item.application}-${index}`}
@@ -154,7 +152,7 @@ export default function EnvironmentOverview({
                 onMouseEnter={() => setIsHovered(index)}
                 onMouseLeave={() => setIsHovered(null)}
             >
-                {!(isHovered === index) && !isSelected ? (
+                {isHovered !== index && !isSelected ? (
                     <DevtronIcon className="icon-dim-20" />
                 ) : (
                     <label className="dc__position-rel pointer m-0-imp">
@@ -181,12 +179,10 @@ export default function EnvironmentOverview({
                             className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flexbox dc__align-items-center dc__gap-4 dc_width-max-content`}
                         >
                             <DockerIcon className="icon-dim-14" />
-                            <>
-                                <div>...</div>
-                                <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
-                                    {item?.lastDeployedImage?.split(':').at(-1)}
-                                </div>
-                            </>
+                            <span>...</span>
+                            <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
+                                {item?.lastDeployedImage?.split(':').at(-1)}
+                            </div>
                         </div>
                     </Tippy>
                 </div>
@@ -209,8 +205,6 @@ export default function EnvironmentOverview({
     }
 
     const renderSideInfoColumn = () => {
-        // const { appName, description, gitMaterials = [], createdOn, createdBy, projectName, chartUsed } = appMetaInfo
-
         const handleSaveDescription = async (value: string) => {
             const payload: EditDescRequest = {
                 id: appGroupListData.environmentId,

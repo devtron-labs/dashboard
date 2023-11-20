@@ -103,22 +103,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getEnvGroupList(+envId)
-        console.log(result, 'result')
         if (result) {
-            const _groupFilterOption = [
-                {
-                    label: 'Hibernating Applications',
-                    value: '-1',
-                    appIds: [1, 2],
-                    description: 'Applications that are hibernated',
-                },
-                {
-                    label: 'Unhibernating Applications',
-                    value: '-2',
-                    appIds: [2],
-                    description: 'Applications that are unhibernated',
-                },
-            ]
+            const _groupFilterOption = []
             let _selectedGroup
             for (const group of result) {
                 const processedGroupData = {
@@ -132,7 +118,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     _selectedGroup = processedGroupData
                 }
             }
-
             if (_selectedGroup) {
                 const selectedAppsMap: Record<string, boolean> = {}
                 const groupAppIds = _selectedGroup?.appIds || []
