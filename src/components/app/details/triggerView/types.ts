@@ -421,6 +421,7 @@ export enum CIPipelineNodeType {
     CI = 'CI',
     LINKED_CI = 'LINKED-CI',
     JOB_CI = 'JOB-CI',
+    LINKED_CD = 'LINKED_CD',
 }
 
 export enum WorkflowNodeType {
@@ -430,7 +431,6 @@ export enum WorkflowNodeType {
     PRE_CD = 'PRECD',
     CD = 'CD',
     POST_CD = 'POSTCD',
-    LINKED_CD = 'LINKED_CD',
 }
 
 export interface Task {

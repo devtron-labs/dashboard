@@ -118,4 +118,9 @@
 	box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.20);
     background: var(--N0);
     position: relative;
+
+	.disabled-source-card {
+	  pointer-events: none;
+	  opacity: 0.5;
+	}
 }

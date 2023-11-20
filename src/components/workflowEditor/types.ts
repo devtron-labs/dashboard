@@ -246,6 +246,7 @@ export interface SourceTypeCardProps {
     handleCardAction: (e: React.MouseEvent) => void
     dataTestId: string
     type: string
+    disableInfo: string
 }
 
 export interface WorkflowOptionsModalProps {

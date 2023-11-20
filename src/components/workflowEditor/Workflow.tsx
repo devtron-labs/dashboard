@@ -22,8 +22,6 @@ import {
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { Link } from 'react-router-dom'
-import edit from '../../assets/icons/misc/editBlack.svg'
-import trash from '../../assets/icons/misc/delete.svg'
 import { WebhookNode } from './nodes/WebhookNode'
 import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
@@ -31,6 +29,9 @@ import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
+import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
+import { ReactComponent as ICDelete } from '../../assets/icons/misc/delete.svg'
+import { ReactComponent as ICEdit } from '../../assets/icons/misc/editBlack.svg'
 import { ChangeCIPayloadType } from './types'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
@@ -151,15 +152,15 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     renderNodes() {
-        const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI)
+        const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI && !node.isLinkedCD)
         const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
-        const linkedCD = this.props.nodes.find((node) => node.type === WorkflowNodeType.LINKED_CD)
+        const linkedCD = this.props.nodes.find((node) => node.isLinkedCD)
         const _nodesData = this.getNodesData(ci?.id || webhook?.id || linkedCD?.id || '')
         const _nodes = _nodesData.nodes
 
         if (linkedCD) {
             return _nodes.map((node: NodeAttr) => {
-                if (node.type == WorkflowNodeType.LINKED_CD) {
+                if (node.isLinkedCD && LinkedCDNode) {
                     return this.renderLinkedCD(node)
                 } else if (_nodesData.cdNamesList.length > 0) {
                     return (
@@ -359,7 +360,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
-    renderLinkedCD(node: NodeAttr) {
+    renderLinkedCD(node: NodeAttr) {        
         return (
             <LinkedCDNode
                 key={`linked-cd-${node.id}`}
@@ -374,7 +375,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 }/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${node.id}&switchFromExternalCiPipelineId=0`}
                 blockAddNewPipeline={this.props.addNewPipelineBlocked}
                 toggleCDMenu={() => {
-                    this.props.handleCDSelect(this.props.id, node.id, WorkflowNodeType.LINKED_CD, node.id)
+                    this.props.handleCDSelect(this.props.id, node.id, 'ci-pipeline', node.id)
                 }}
                 history={this.props.history}
             />
@@ -472,7 +473,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             appId: Number(this.props.match.params.appId),
         }
 
-        const switchFromCiPipelineId = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI || nd.type === WorkflowNodeType.LINKED_CD)?.id
+        const switchFromCiPipelineId = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)?.id
 
         if (switchFromCiPipelineId) {
             payload.switchFromCiPipelineId = Number(switchFromCiPipelineId)
@@ -518,26 +519,33 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 )}
             >
                 <div
-                    className="mb-20 workflow workflow--create"
+                    className={configDiffView ? 'mb-20 workflow workflow--create' : 'workflow--create flexbox-col mb-16 dc__gap-6'}
                     style={{
-                        minWidth: typeof this.props.width === 'string' ? this.props.width : `${this.props.width}px`,
+                        minWidth: configDiffView ? typeof this.props.width === 'string' ? this.props.width : `${this.props.width}px`: 'auto',
                     }}
                 >
-                    <div className="workflow__header">
-                        <span className="workflow__name">{this.props.name}</span>
+                    <div className={configDiffView ? 'workflow__header': 'flexbox dc__align-items-center dc__align-self_center dc__gap-8'}>
+                        <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
                         {!configDiffView && (
-                            <>
-                                <Link to={this.props.openEditWorkflow(null, this.props.id)}>
-                                    <button type="button" className="dc__transparent">
-                                        <img src={edit} alt="edit" className="icon-dim-18" />
-                                    </button>
-                                </Link>
+                            <div className="flexbox dc__align-items-center dc__gap-8 workflow-action-header">
+                                <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon"/>
 
-                                {!!this.props.handleChangeCI && (
-                                    <Tippy content="Change Source" placement="top" arrow={false} className="default-tt">
+                                <Tippy content="Edit workflow name" placement="top" arrow={false} className="default-tt">
+                                    <Link to={this.props.openEditWorkflow(null, this.props.id)}>
+                                        <button 
+                                            type="button"
+                                            className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex workflow-header-action-btn"
+                                        >
+                                            <ICEdit className="icon-dim-20" />
+                                        </button>
+                                    </Link>
+                                </Tippy>
+
+                                {!!this.props.handleChangeCI && LinkedCDNode && (
+                                    <Tippy content="Change source" placement="top" arrow={false} className="default-tt">
                                         <button
                                             type="button"
-                                            className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex"
+                                            className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex workflow-header-action-btn"
                                             onClick={this.handleCIChange}
                                         >
                                             <ICInput className="icon-dim-20" />
@@ -545,18 +553,20 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                     </Tippy>
                                 )}
 
-                                <button
-                                    type="button"
-                                    className="dc__align-right dc__transparent"
-                                    onClick={this.toggleShowDeleteDialog}
-                                >
-                                    <img src={trash} alt="delete" className="h-20" />
-                                </button>
-                            </>
+                                <Tippy content="Delete workflow" placement="top" arrow={false} className="default-tt">
+                                    <button
+                                        type="button"
+                                        className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex workflow-header-action-btn"
+                                        onClick={this.toggleShowDeleteDialog}
+                                    >
+                                        <ICDelete className="icon-dim-20" />
+                                    </button>
+                                </Tippy>
+                            </div>
                         )}
                     </div>
                     {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
-                    <div className="workflow__body bc-n50">
+                    <div className={configDiffView ? 'workflow__body' : 'workflow__body bc-n50 dc__overflow-scroll'}>
                         <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                             {this.renderEdgeList()}
                             {this.renderNodes()}

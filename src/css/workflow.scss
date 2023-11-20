@@ -49,7 +49,7 @@
 
 .workflow__body {
     position: relative;
-    border-radius: 0 0 8px 8px;
+    border-radius: 4px !important;
 }
 
 .workflow__name {
@@ -340,4 +340,20 @@
 .workflow-node__add-cd-btn-tippy .add-cd-btn-tippy {
     display: block;
     width: 145px;
+}
+
+.workflow-action-header {
+    .workflow-header-action-btn {
+        visibility: hidden;
+    }
+}
+
+.workflow-action-header:hover {
+    .workflow-header-menu-icon {
+        display: none;
+    }
+
+    .workflow-header-action-btn {
+        visibility: visible;
+    }
 }

@@ -2055,7 +2055,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
     return (
         <div
-            className="svg-wrapper-trigger app-group-trigger-view-container"
+            className="svg-wrapper-trigger app-group-trigger-view-container bcn-0"
             style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}
         >
             <div className="flex left mb-14">

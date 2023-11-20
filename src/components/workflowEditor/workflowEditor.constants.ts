@@ -17,6 +17,8 @@ export const WORKFLOW_EDITOR_HEADER_TIPPY = {
 export const WORKFLOW_OPTIONS_MODAL = {
     ACTION_TEXT: 'Select an image source for new workflow',
     ACTION_NOTE: 'You can switch between image sources later',
+    CHANGE_CI_TEXT: 'Change image source',
+    CHANGE_CI_NOTE: 'Deploy to environments in this workflow from another image source'
 }
 
 export const WORKFLOW_OPTIONS_MODAL_TYPES = {
@@ -61,6 +63,8 @@ export const SOURCE_TYPE_CARD_VARIANTS = {
 }
 
 export const NO_ENV_FOUND = 'No environment found. Please create a CD Pipeline first.'
+export const CHANGE_SAME_CI = 'Cannot change to same source type'
+export const REQUEST_IN_PROGRESS = 'Request in progress'
 
 export const TOAST_MESSAGES = {
     SUCCESS_CHANGE_TO_WEBHOOK: 'Successfully changed CI to webhook',

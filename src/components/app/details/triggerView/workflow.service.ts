@@ -129,6 +129,7 @@ function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse
     }
 }
 
+// NOTE: For linked cd, In node.type we have type as CI but in ciResponse its going to be LINKED_CD
 export function processWorkflow(
     workflow: WorkflowResult,
     ciResponse: CiPipelineResult,
@@ -167,7 +168,7 @@ export function processWorkflow(
             _wfTree
                 .sort((a, b) => a.id - b.id)
                 .forEach((branch) => {
-                    if (branch.type == PipelineType.CI_PIPELINE || branch.type === PipelineType.LINKED_CD) {
+                    if (branch.type == PipelineType.CI_PIPELINE) {
                         const ciNode = ciMap.get(String(branch.componentId))
                         if (!ciNode) {
                             return
@@ -223,8 +224,8 @@ export function processWorkflow(
 
     addDimensions(workflows, workflowOffset, dimensions)
     
-    const blackListedCI: BlackListedCI = ciResponse.ciPipelines
-        ?.filter((ciPipeline) => ciPipeline.pipelineType === CIPipelineBuildType.LINKED_CD)
+    const blackListedCI: BlackListedCI = ciResponse?.ciPipelines
+        ?.filter((ciPipeline) => ciPipeline.pipelineType === PipelineType.LINKED_CD)
         .reduce((acc, ciPipeline) => {
             acc[ciPipeline.id] = ciPipeline
             return acc
@@ -245,7 +246,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         }
 
         const ciNode = workflow.nodes.find(
-            (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK || node.type == WorkflowNodeType.LINKED_CD,
+            (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK,
         )
         ciNode.sourceNodes?.forEach((s, si) => {
             const sourceNodeY =
@@ -258,7 +259,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
             s.width = dimensions.staticNodeSizes.nodeWidth
         })
         
-        if (ciNode.type === PipelineType.WEBHOOK || ciNode.type === WorkflowNodeType.LINKED_CD) {
+        if (ciNode.type === PipelineType.WEBHOOK || ciNode.isLinkedCD) {
             ciNode.x = startX + workflowOffset.offsetX
         } else {
             ciNode.x =
@@ -276,12 +277,12 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
 
         const finalWorkflow = new Array<NodeAttr>()
         workflow.nodes.forEach((node) => {
-            if (node.type == WorkflowNodeType.CI) {
+            if (node.type == WorkflowNodeType.CI && !node.isLinkedCD) {
                 node.sourceNodes && finalWorkflow.push(...node.sourceNodes)
                 finalWorkflow.push(node)
                 delete node['sourceNodes']
             }
-            if (node.type == PipelineType.WEBHOOK || node.type === WorkflowNodeType.LINKED_CD) {
+            if (node.type == PipelineType.WEBHOOK || node.isLinkedCD) {
                 finalWorkflow.push(node)
                 delete node['sourceNodes']
             }
@@ -328,7 +329,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
 
 function addDownstreams(workflows: WorkflowType[]) {
     workflows.forEach((wf) => {
-        let nodes = new Map(wf.nodes.map((node) => [node.type + '-' + node.id, node] as [string, NodeAttr]))
+        const nodes = new Map(wf.nodes.map((node) => [node.type + '-' + node.id, node] as [string, NodeAttr]))
         wf.nodes.forEach((node) => {
             if (!node.parentPipelineId) {
                 return node
@@ -340,11 +341,8 @@ function addDownstreams(workflows: WorkflowType[]) {
             } else if (node.parentPipelineType == PipelineType.WEBHOOK) {
                 parentType = WorkflowNodeType.WEBHOOK
             }
-            else if (node.parentPipelineType == PipelineType.LINKED_CD) {
-                parentType = WorkflowNodeType.LINKED_CD
-            }
 
-            let parentNode = nodes.get(parentType + '-' + node.parentPipelineId)
+            const parentNode = nodes.get(parentType + '-' + node.parentPipelineId)
 
             const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
 
@@ -474,12 +472,13 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         title: ciPipeline.name,
         triggerType: TriggerTypeMap[trigger],
         status: DEFAULT_STATUS,
-        type: !(ciPipeline.pipelineType === PipelineType.LINKED_CD) ? WorkflowNodeType.CI: WorkflowNodeType.LINKED_CD,
+        type: WorkflowNodeType.CI,
         inputMaterialList: [],
         downstreams: [],
         isExternalCI: ciPipeline.isExternal,
         // Can't rely on pipelineType for legacy pipelines, so using parentCiPipeline as well
         isLinkedCI: !(ciPipeline.pipelineType === PipelineType.LINKED_CD) && !!ciPipeline.parentCiPipeline,
+        isLinkedCD: ciPipeline.pipelineType === PipelineType.LINKED_CD,
         isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes: sourceNodes,
@@ -652,7 +651,8 @@ function getCINodeHeight(dimensionType: WorkflowDimensionType, pipeline: CiPipel
     
     // Keeping the check above the next condition since LinkedCD can also have parentCiPipeline
     if (pipeline.pipelineType === PipelineType.LINKED_CD) {
-        return WorkflowTrigger.cINodeSizes.nodeHeight
+        // Giving it same height as webhook
+        return WorkflowTrigger.externalCINodeSizes.nodeHeight
     }
 
     if (pipeline.parentCiPipeline) {

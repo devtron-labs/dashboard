@@ -29,7 +29,7 @@ import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outlin
 import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
-import { PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
+import { CIPipelineNodeType, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
@@ -233,7 +233,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             })
     }
 
-    handleCISelect = (workflowId: number | string, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI' | 'JOB-CI') => {
+    handleCISelect = (workflowId: number | string, type: CIPipelineNodeType) => {
         let link = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}`
         switch (type) {
             case 'CI':
@@ -248,11 +248,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             case 'JOB-CI':
                 link = `${link}/ci-job/0`
                 break
+            case CIPipelineNodeType.LINKED_CD:
+                link = `${link}/${URLS.LINKED_CD}`
+                break
         }
         this.props.history.push(link)
     }
 
-    addCIPipeline = (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI' | 'JOB-CI', workflowId?: number | string) => {
+    addCIPipeline = (type: CIPipelineNodeType, workflowId?: number | string) => {
         this.handleCISelect(workflowId || 0, type)
     }
 
@@ -264,6 +267,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
+    // Replace this with addCISelect
     addLinkedCD = (changeCIPayload?: ChangeCIPayloadType) => {
         this.props.history.push(
             `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
@@ -323,6 +327,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             URLS.APP_CONFIG
         }/${URLS.APP_WORKFLOW_CONFIG}`
         this.props.history.push(_url)
+
         if (showSuccessCD) {
             setTimeout(() => {
                 this.setState({
@@ -341,14 +346,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         if (showWebhookTippy) {
             this.setState({ envToShowWebhookTippy: environmentId })
         }
-        this.setState({ changeCIPayload: null })
-    }
-
-    closeSyncEnvironment = () => {
-        // Its going to be there in APP only
-        this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
-        )
         this.setState({ changeCIPayload: null })
     }
 
@@ -503,10 +500,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                   path={`${this.props.match.path}/${URLS.LINKED_CD}/`}
                               >
                                   <SyncEnvironment
-                                      closeModal={this.closeSyncEnvironment}
+                                      closeModal={this.closePipeline}
                                       cdPipelines={this.state.cachedCDConfigResponse.pipelines ?? []}
                                       blackListedIds={this.state.blackListedCI ?? {}}
                                       deleteWorkflow={this.deleteWorkflow}
+                                      getWorkflows={this.getWorkflows}
                                   />
                               </Route>,
                           ]
