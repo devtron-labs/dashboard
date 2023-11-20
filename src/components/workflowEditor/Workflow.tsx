@@ -566,7 +566,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         )}
                     </div>
                     {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
-                    <div className={configDiffView ? 'workflow__body' : 'workflow__body bc-n50 dc__overflow-scroll'}>
+                    <div className={configDiffView ? 'workflow__body' : 'workflow__body bc-n50 dc__overflow-scroll br-4'}>
                         <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                             {this.renderEdgeList()}
                             {this.renderNodes()}
