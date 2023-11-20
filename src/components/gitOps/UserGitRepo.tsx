@@ -1,12 +1,10 @@
 import {
-    CustomInput,
     InfoColourBar,
     RadioGroup,
     RadioGroupItem,
-    ResizableTextarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
-import { AppCreationType, repoType } from '../../config/constants'
+import { repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 
 function UserGitRepo(props) {

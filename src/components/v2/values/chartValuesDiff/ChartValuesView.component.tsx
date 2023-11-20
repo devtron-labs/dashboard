@@ -368,13 +368,13 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
             )}
             {gitOpsState ? (
                 <div
-                    className="form__input dashed mt-10 flex dc__postion-abs"
+                    className="form__input dashed mt-10 flex"
                     style={{ height: '50px' }}
                 >
                     <div className='mb-10'>
                         <span className="">
                             Commit deployment manifests to
-                            <EditIcon className="icon-dim-16 cursor ml-28 pt-4 dc__position-rel" onClick={toggleDrawer} />
+                            <EditIcon className="icon-dim-16 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
                         <a className="flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${repoRadio ? ( repoURL.length>0 ? repoURL : 'Auto-create repository') :  'Set GitOps repository'}`}</a>
                     </div>
