@@ -243,7 +243,7 @@ export interface SourceTypeCardProps {
     subtitle: string
     image: string
     alt: string
-    handleCardAction: (e: React.MouseEvent) => void
+    handleCardAction: (e: React.MouseEvent | React.KeyboardEvent) => void
     dataTestId: string
     type: string
     disableInfo: string

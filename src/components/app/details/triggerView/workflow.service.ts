@@ -477,7 +477,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         downstreams: [],
         isExternalCI: ciPipeline.isExternal,
         // Can't rely on pipelineType for legacy pipelines, so using parentCiPipeline as well
-        isLinkedCI: !(ciPipeline.pipelineType === PipelineType.LINKED_CD) && !!ciPipeline.parentCiPipeline,
+        isLinkedCI: ciPipeline.pipelineType !== PipelineType.LINKED_CD && !!ciPipeline.parentCiPipeline,
         isLinkedCD: ciPipeline.pipelineType === PipelineType.LINKED_CD,
         isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
         linkedCount: ciPipeline.linkedCount || 0,

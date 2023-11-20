@@ -43,7 +43,6 @@ import WorkflowOptionsModal from './WorkflowOptionsModal'
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
 
-// TODO: Remove all the checks for envList instead use cachedCDConfigResponse
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
 
@@ -187,21 +186,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     handleChangeCI = (changeCIPayload: ChangeCIPayloadType) => {
         this.setState({ changeCIPayload, showWorkflowOptionsModal: true })
-    }
-
-    // TODO: Remove this
-    toggleCIMenu = (event) => {
-        if (this.props.filteredEnvIds) {
-            return
-        }
-        const { top, left } = event.target.getBoundingClientRect()
-        this.setState({
-            cIMenuPosition: {
-                top: top,
-                left: left,
-            },
-            showCIMenu: !this.state.showCIMenu,
-        })
     }
 
     handleNewPipelineModal = () => {
@@ -677,16 +661,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
-    render() {
-        if (this.props.configStatus === AppConfigStatus.LOADING || this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
-            return (
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={this.state.code} />
-                </div>
-            )
-        } else if (
+    renderMainContent = () => {
+        if (
             this.state.view === ViewType.FORM &&
             this.props.configStatus >= AppConfigStatus.LOADING &&
             !this.state.workflows.length
@@ -696,103 +672,101 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     {this.renderRouter()}
                     <div className="mt-16 ml-20 mr-20 mb-16">{this.renderHostErrorMessage()}</div>
                     {this.renderEmptyState()}
-                    {this.state.showSuccessScreen && (
-                        <CDSuccessModal
-                            appId={this.props.match.params.appId}
-                            envId={this.state.environmentId}
-                            envName={this.state.environmentName}
-                            closeSuccessPopup={this.closeSuccessPopup}
-                            successTitle={this.state.successTitle}
-                        />
-                    )}
-                    {this.state.showWorkflowOptionsModal && (
-                        <WorkflowOptionsModal
-                            handleCloseWorkflowOptionsModal={this.handleCloseWorkflowOptionsModal}
-                            addWebhookCD={this.addWebhookCD}
-                            addCIPipeline={this.addCIPipeline}
-                            addLinkedCD={this.addLinkedCD}
-                            showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
-                            changeCIPayload={this.state.changeCIPayload}
-                            workflows={this.state.workflows}
-                            getWorkflows={this.getWorkflows}
-                        />
-                    )}
                 </>
             )
-        } else {
-            return (
-                <div className="workflow-editor bcn-0" data-testid="workflow-editor-page">
-                    <div className="flex dc__content-space pb-16">
-                        <div className="flex dc__gap-8 dc__content-start">
-                            <h1 className="m-0 cn-9 fs-16 fw-6">Workflow Editor</h1>
+        }
 
-                            <TippyCustomized
-                                theme={TippyTheme.white}
-                                className="w-300 h-100 dc__align-left"
-                                placement="right"
-                                Icon={HelpIcon}
-                                iconClass="fcv-5"
-                                heading={WORKFLOW_EDITOR_HEADER_TIPPY.HEADING}
-                                infoText={
-                                    this.props.isJobView
-                                        ? WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.JOB_VIEW
-                                        : WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.DEFAULT
-                                }
-                                showCloseButton
-                                trigger="click"
-                                interactive
-                                documentationLink={
-                                    this.props.isJobView
-                                        ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
-                                        : DOCUMENTATION.APP_CREATE_WORKFLOW
-                                }
-                                documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
+        return (
+            <div className="workflow-editor bcn-0" data-testid="workflow-editor-page">
+                <div className="flex dc__content-space pb-16">
+                    <div className="flex dc__gap-8 dc__content-start">
+                        <h1 className="m-0 cn-9 fs-16 fw-6">Workflow Editor</h1>
+
+                        <TippyCustomized
+                            theme={TippyTheme.white}
+                            className="w-300 h-100 dc__align-left"
+                            placement="right"
+                            Icon={HelpIcon}
+                            iconClass="fcv-5"
+                            heading={WORKFLOW_EDITOR_HEADER_TIPPY.HEADING}
+                            infoText={
+                                this.props.isJobView
+                                    ? WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.JOB_VIEW
+                                    : WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.DEFAULT
+                            }
+                            showCloseButton
+                            trigger="click"
+                            interactive
+                            documentationLink={
+                                this.props.isJobView
+                                    ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
+                                    : DOCUMENTATION.APP_CREATE_WORKFLOW
+                            }
+                            documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
+                        >
+                            <button
+                                className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp flex"
+                                type="button"
                             >
-                                <button
-                                    className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp flex"
-                                    type="button"
-                                >
-                                    <ICHelpOutline className="icon-dim-16" />
-                                </button>
-                            </TippyCustomized>
-                        </div>
-
-                        {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton()}
+                                <ICHelpOutline className="icon-dim-16" />
+                            </button>
+                        </TippyCustomized>
                     </div>
 
-                    {this.renderRouter()}
-                    {this.renderHostErrorMessage()}
-                    {this.renderWorkflows()}
-                    {this.renderDeleteDialog()}
-                    {this.state.showSuccessScreen && (
-                        <CDSuccessModal
-                            appId={this.props.match.params.appId}
-                            envId={this.state.environmentId}
-                            envName={this.state.environmentName}
-                            closeSuccessPopup={this.closeSuccessPopup}
-                            successTitle={this.state.successTitle}
-                        />
-                    )}
-                    {this.state.showNoGitOpsWarningPopup && (
-                        <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning} />
-                    )}
+                    {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton()}
+                </div>
 
-                    {this.state.showWorkflowOptionsModal && (
-                        <WorkflowOptionsModal
-                            handleCloseWorkflowOptionsModal={this.handleCloseWorkflowOptionsModal}
-                            addWebhookCD={this.addWebhookCD}
-                            addCIPipeline={this.addCIPipeline}
-                            addLinkedCD={this.addLinkedCD}
-                            showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
-                            changeCIPayload={this.state.changeCIPayload}
-                            workflows={this.state.workflows}
-                            getWorkflows={this.getWorkflows}
-                        />
-                    )}
-                    {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}
+                {this.renderRouter()}
+                {this.renderHostErrorMessage()}
+                {this.renderWorkflows()}
+                {this.renderDeleteDialog()}
+                {this.state.showNoGitOpsWarningPopup && (
+                    <NoGitOpsConfiguredWarning closePopup={this.hideNoGitOpsWarning} />
+                )}
+                {this.state.showOpenCIPipelineBanner && this.renderOpenCIPipelineBanner()}
+            </div>
+        )
+    }
+
+    render() {
+        if (this.props.configStatus === AppConfigStatus.LOADING || this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+
+        if (this.state.view === ViewType.ERROR) {
+            return (
+                <div className="dc__loading-wrapper">
+                    <ErrorScreenManager code={this.state.code} />
                 </div>
             )
         }
+
+        return (
+            <>
+                {this.renderMainContent()}
+                {this.state.showSuccessScreen && (
+                    <CDSuccessModal
+                        appId={this.props.match.params.appId}
+                        envId={this.state.environmentId}
+                        envName={this.state.environmentName}
+                        closeSuccessPopup={this.closeSuccessPopup}
+                        successTitle={this.state.successTitle}
+                    />
+                )}
+                {this.state.showWorkflowOptionsModal && (
+                    <WorkflowOptionsModal
+                        handleCloseWorkflowOptionsModal={this.handleCloseWorkflowOptionsModal}
+                        addWebhookCD={this.addWebhookCD}
+                        addCIPipeline={this.addCIPipeline}
+                        addLinkedCD={this.addLinkedCD}
+                        showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
+                        changeCIPayload={this.state.changeCIPayload}
+                        workflows={this.state.workflows}
+                        getWorkflows={this.getWorkflows}
+                    />
+                )}
+            </>
+        )
     }
 }
 

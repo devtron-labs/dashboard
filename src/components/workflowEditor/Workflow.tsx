@@ -541,7 +541,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                     </Link>
                                 </Tippy>
 
-                                {!!this.props.handleChangeCI && LinkedCDNode && (
+                                {!!this.props.handleChangeCI && LinkedCDNode && !this.props.isJobView && (
                                     <Tippy content="Change source" placement="top" arrow={false} className="default-tt">
                                         <button
                                             type="button"

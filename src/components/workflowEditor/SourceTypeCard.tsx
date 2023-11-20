@@ -12,7 +12,7 @@ export default function SourceTypeCard({
     type,
     handleCardAction,
     disableInfo,
-}: SourceTypeCardProps) {
+}: Readonly<SourceTypeCardProps>) {
     function renderTippy(children) {
         return (
             <Tippy className="default-tt" placement="top" content={disableInfo} arrow={false}>
@@ -32,6 +32,8 @@ export default function SourceTypeCard({
                 data-testid={dataTestId}
                 data-pipeline-type={type}
                 onClick={handleCardAction}
+                onKeyDown={handleCardAction}
+                tabIndex={0}
                 aria-disabled={!!disableInfo}
             >
                 <div>

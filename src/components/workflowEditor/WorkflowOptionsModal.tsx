@@ -30,7 +30,7 @@ export default function WorkflowOptionsModal({
     changeCIPayload,
     workflows,
     getWorkflows,
-}: WorkflowOptionsModalProps) {
+}: Readonly<WorkflowOptionsModalProps>) {
     const [currentCIPipelineType, setCurrentCIPipelineType] = useState<CIPipelineNodeType | null>(null)
     const [loadingWebhook, setLoadingWebhook] = useState<boolean>(false)
 
@@ -97,8 +97,12 @@ export default function WorkflowOptionsModal({
         handleCloseWorkflowOptionsModal()
     }
 
-    const handleCardAction = (e: React.MouseEvent) => {
+    const handleCardAction = (e: React.MouseEvent | React.KeyboardEvent) => {
         if (!(e.currentTarget instanceof HTMLDivElement)) {
+            return
+        }
+        
+        if ('key' in e && e.key !== 'Enter') {
             return
         }
 
