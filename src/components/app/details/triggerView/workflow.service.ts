@@ -140,7 +140,7 @@ export function processWorkflow(
     filter?: (workflows: WorkflowType[]) => WorkflowType[],
     useParentRefFromWorkflow?: boolean,
 ): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI } {
-    let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
+    let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions, cdResponse)
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
     handleSourceNotConfigured(filteredCIPipelines, ciResponse)
@@ -428,7 +428,18 @@ const getStaticCurrentBranchName = (ciMaterial) => {
     return ciMaterial?.source?.regex || ciMaterial?.source?.value || ''
 }
 
-function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions): NodeAttr {
+const getParentEnvCiName = (id: number, cdResponse: CdPipelineResult, title: string) => {
+    if (cdResponse) {
+        const parentPipeline = cdResponse.pipelines.find((pipeline) => pipeline.id === id)
+        if (parentPipeline) {
+            return parentPipeline.environmentName
+        }
+    }
+
+    return title
+}
+
+function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions, cdResponse?: CdPipelineResult): NodeAttr {
     let sourceNodes = (ciPipeline?.ciMaterial ?? []).map((ciMaterial, index) => {
         let materialName = ciMaterial.gitMaterialName || ''
         return {
@@ -469,7 +480,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         parentCiPipeline: ciPipeline.parentCiPipeline,
         height: getCINodeHeight(dimensions.type, ciPipeline),
         width: dimensions.cINodeSizes.nodeWidth,
-        title: ciPipeline.name,
+        title: ciPipeline.pipelineType !== PipelineType.LINKED_CD ? ciPipeline.name : getParentEnvCiName(ciPipeline.parentCiPipeline, cdResponse, ciPipeline.name),
         triggerType: TriggerTypeMap[trigger],
         status: DEFAULT_STATUS,
         type: WorkflowNodeType.CI,
