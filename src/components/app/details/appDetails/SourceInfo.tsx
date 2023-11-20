@@ -169,7 +169,7 @@ export function SourceInfo({
                                             onClick={setRotateModal}
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
-                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-9" />
+                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
                                             Restart workloads
                                         </button>
                                     </ConditionalWrap>
