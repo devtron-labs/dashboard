@@ -310,7 +310,7 @@ export default function EnvironmentOverview({
             <div className="pt-16 pb-16 pl-20 pr-20 w-300 dc__border-right">{renderSideInfoColumn()}</div>
             <div className="dc__overflow-scroll">
                 <div className="flex column left pt-16 ml-20 pr-20 list-container">
-                    <div className="dc__align-self-stretch flex dc__content-space left fs-14 fw-6 lh-20 cn-9 mb-12">
+                    <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-24 fw-6 lh-20 cn-9 mb-12">
                         <span className="flex">
                             <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                         </span>
