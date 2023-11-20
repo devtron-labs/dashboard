@@ -9,22 +9,21 @@ import React, { useState } from 'react'
 import { AppCreationType, repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 
-function UserGitRepo({ setRepoURL: string }) {
-    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
+function UserGitRepo(props) {
+    const [selectedRepoType, setSelectedRepoTypeLocal] = useState(repoType.DEFAULT);
     const [repoText, setRepoText] = useState('')
 
     const repoTypeChange = () => {
-        if (selectedRepoType === repoType.DEFAULT) {
-            setSelectedRepoType(repoType.CONFIGURE)
-        } else {
-            setSelectedRepoType(repoType.DEFAULT)
-        }
+        const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT;
+        setSelectedRepoTypeLocal(newRepoType);
+        props.setSelectedRepoType(newRepoType);
     }
 
     const onChange = (event) => { 
-        setRepoText(event.target.value)   
+        setRepoText(event.target.value)
+        props.setRepoURL(event.target.value)   
     }
-        
+       
     const inputUrlBox = () => {
         return (
             <div className="mr-10 ml-26">

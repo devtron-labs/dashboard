@@ -51,7 +51,7 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
-import { DELETE_ACTION } from '../../../../config'
+import { DELETE_ACTION, repoType } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
@@ -284,6 +284,7 @@ export const DeploymentAppRadioGroup = ({
 }
 
 const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: gitOpsDrawerType): JSX.Element => {
+    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
     const [repoRadio, setRepoRadio] = useState(false)
@@ -291,11 +292,16 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
 
     const payload = 
 
+
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
             setIsDeploymentAllowed(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1)
         }
     }, [deploymentAppType, allowedDeploymentTypes])
+
+    const handleRepoTypeChange = (newRepoType) => {
+        setSelectedRepoType(newRepoType);
+    };
 
     const handleCloseButton = () => {
         setIsDeploymentAllowed(false)
@@ -307,6 +313,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
       };
 
     const handleSaveButton = () => {
+        setGitOpsState(true)
         setIsDeploymentAllowed(false)
         setRepoRadio(true)
     }
@@ -335,7 +342,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
                                 </button>
                             </div>
                             <div className="ml-20 mt-10">
-                                <UserGitRepo setRepoURL={handleRepoTextChange} />
+                                <UserGitRepo setRepoURL={handleRepoTextChange} setSelectedRepoType={handleRepoTypeChange}/>
                             </div>
                         </div>
                         <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
@@ -369,7 +376,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-16 cursor ml-28 pt-4 dc__position-rel" onClick={toggleDrawer} />
                         </span>
-                        <a className="flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${repoRadio ? 'Auto-create repository' :  'Set GitOps repository'}`}</a>
+                        <a className="flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${repoRadio ? ( repoURL.length>0 ? repoURL : 'Auto-create repository') :  'Set GitOps repository'}`}</a>
                     </div>
                 </div>
             ) : null}
