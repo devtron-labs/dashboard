@@ -173,33 +173,37 @@ export default function EnvironmentOverview({
                     isDeploymentStatus={true}
                     isVirtualEnv={isVirtualEnv}
                 />
-                <div className="cn-7 fs-13">
-                    <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
-                        <div
-                            className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flexbox dc__align-items-center dc__gap-4 dc_width-max-content`}
-                        >
-                            <DockerIcon className="icon-dim-14" />
-                            <span>...</span>
-                            <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
-                                {item?.lastDeployedImage?.split(':').at(-1)}
+                {item?.lastDeployedImage && (
+                    <div className="cn-7 fs-13">
+                        <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
+                            <div
+                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flexbox dc__align-items-center dc__gap-4 dc_width-max-content`}
+                            >
+                                <DockerIcon className="icon-dim-14" />
+                                <span>...</span>
+                                <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
+                                    {item?.lastDeployedImage?.split(':').at(-1)}
+                                </div>
                             </div>
-                        </div>
-                    </Tippy>
-                </div>
-                <span className="fs-13 fw-4 cn-9 dc__ellipsis-right dc__word-break flex left dc__gap-6">
-                    <span className="flex left dc__gap-8">
-                        <span
-                            className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
-                            style={{
-                                backgroundColor: getRandomColor(item?.lastDeployedBy),
-                            }}
-                        >
-                            {item?.lastDeployedBy[0]}
+                        </Tippy>
+                    </div>
+                )}
+                {item?.lastDeployedBy && (
+                    <span className="fs-13 fw-4 cn-9 dc__ellipsis-right dc__word-break flex left dc__gap-6">
+                        <span className="flex left dc__gap-8">
+                            <span
+                                className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
+                                style={{
+                                    backgroundColor: getRandomColor(item?.lastDeployedBy),
+                                }}
+                            >
+                                {item?.lastDeployedBy[0]}
+                            </span>
+                            <span>{item?.lastDeployedBy}</span>
                         </span>
-                        <span>{item?.lastDeployedBy}</span>
+                        <span style={{ color: 'var(--B500)' }}>{processDeployedTime(item?.lastDeployed, true)}</span>
                     </span>
-                    <span style={{ color: 'var(--B500)' }}>{processDeployedTime(item?.lastDeployed, true)}</span>
-                </span>
+                )}
             </div>
         )
     }
