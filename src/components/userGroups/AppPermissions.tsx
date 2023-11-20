@@ -473,7 +473,6 @@ export default function AppPermissions({
             }
             if (tempPermissions[index].entity === EntityTypes.JOB) {
                 setSelectedJobs(tempPermissions[index]['entityName'].filter((entity) => entity.value !== '*'))
-
                 tempPermissions[index]['workflow'] = []
             }
         } else if (name === 'environment') {
@@ -489,6 +488,7 @@ export default function AppPermissions({
                         { label: 'Select all', value: '*' },
                         ...(allWorkflowOptions || []),
                     ]
+                    tempPermissions[index].workflowError = null
                 } else {
                     tempPermissions[index]['workflow'] = []
                 }
