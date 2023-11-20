@@ -1,5 +1,5 @@
 import { DeploymentStatusDetailsBreakdownDataType } from "../../../app/details/appDetails/appDetails.type"
-import { AppStreamData } from "../appDetails.type"
+import { AppDetails, AppStreamData } from "../appDetails.type"
 export interface EnvironmentStatusComponentType {
     appStreamData: any
     loadingDetails: boolean
@@ -33,4 +33,10 @@ export interface AppStatusDetailsChartType {
     appStreamData: AppStreamData
     filterRemoveHealth?: boolean
     showFooter: boolean
+}
+
+export interface ChartUsedCardType {
+    appDetails: AppDetails
+    notes: string
+    onClickShowNotes: ()=> void
 }
