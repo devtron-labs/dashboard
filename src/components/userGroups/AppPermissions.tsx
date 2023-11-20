@@ -111,10 +111,11 @@ export default function AppPermissions({
             return [{ label: 'All applications', value: '*' }]
         }
     }
-    function setAllWorkflows() {
+
+    function setAllWorkflows(workflowList) {
         return [
             { label: 'All Workflows', value: '*' },
-            ...workflowList?.options?.reduce((acc, option) => {
+            ...workflowList?.reduce((acc, option) => {
                 return [...acc, ...option.options]
             }, []),
         ]
@@ -279,12 +280,12 @@ export default function AppPermissions({
                               }))
                             : setAllApplication(directRolefilter, projectId),
                         environment: setAllEnv(directRolefilter),
-                        ...(directRolefilter.hasOwnProperty('workflow') && {
+                        ...(directRolefilter.entity === EntityTypes.JOB && {
                             workflow: directRolefilter.workflow
                                 ? directRolefilter.workflow
                                       .split(',')
                                       .map((workflow) => ({ value: workflow, label: workflow }))
-                                : setAllWorkflows(),
+                                : setAllWorkflows(workflowOptions),
                         }),
                     } as DirectPermissionsRoleFilter
                 }),
