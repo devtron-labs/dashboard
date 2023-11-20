@@ -245,10 +245,21 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             return
         }
         if (triggerId === triggerDetail?.id) {
-            setTriggerHistory((triggerHistory) => {
-                triggerHistory.set(triggerId, triggerDetail)
-                return new Map(triggerHistory)
-            })
+            const appliedFilters = triggerHistory.get(triggerId)?.appliedFilters ?? []
+            const appliedFiltersTimestamp = triggerHistory.get(triggerId)?.appliedFiltersTimestamp
+            if (appliedFilters.length) {
+                setTriggerHistory((triggerHistory) => {
+                    triggerHistory.set(triggerId, { ...triggerDetail, appliedFilters, appliedFiltersTimestamp })
+                    return new Map(triggerHistory)
+                })
+            }
+            else {
+                setTriggerHistory((triggerHistory) => {
+                    triggerHistory.set(triggerId, triggerDetail)
+                    return new Map(triggerHistory)
+                })
+            }
+
             if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
                 setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
             }
@@ -374,7 +385,8 @@ export const TriggerOutput: React.FC<{
     }>()
     const triggerDetails = triggerHistory.get(+triggerId)
     const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
-        () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
+        () => getTriggerDetails({ appId, envId, pipelineId, triggerId, fetchIdData }),
+        // TODO: Ask if fetchIdData is required here as dependency
         [triggerId, appId, envId],
         !!triggerId && !!pipelineId,
     )
@@ -663,6 +675,8 @@ const HistoryLogs: React.FC<{
                                 appReleaseTagNames={appReleaseTags}
                                 tagsEditable={tagsEditable}
                                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                appliedFilters={triggerDetails.appliedFilters ?? []}
+                                appliedFiltersTimestamp={triggerDetails.appliedFiltersTimestamp}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (
