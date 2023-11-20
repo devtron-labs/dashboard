@@ -1,8 +1,12 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
+import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
+import { HelmAppConfigApplyStatusCardType } from '../environment.type'
 
-function HelmAppConfigApplyStatusCard({ releaseStatus }) {
+function HelmAppConfigApplyStatusCard({ releaseStatus, cardLoading }: HelmAppConfigApplyStatusCardType) {
+    if (cardLoading) return <LoadingCard wider />
+
     return releaseStatus ? (
         <div
             data-testid="helm-config-apply-status-card"

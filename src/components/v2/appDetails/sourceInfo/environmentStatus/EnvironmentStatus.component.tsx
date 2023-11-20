@@ -17,6 +17,7 @@ import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import ChartUsedCard from './ChartUsedCard'
 import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
+import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -50,28 +51,12 @@ function EnvironmentStatusComponent({
     const cardLoading = useMemo(() => loadingDetails || loadingResourceTree, [loadingDetails, loadingResourceTree])
 
     const shimmerLoaderBlocks = () => {
-        return (
-            <div className="flex left ml-20 mb-16">
-                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
-                    <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
-                        <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
-                    </div>
-                </div>
-                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
-                    <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
-                        <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
-                    </div>
-                </div>
-                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
-                    <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
-                        <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
-                    </div>
-                </div>
-            </div>
-        )
+        const loadingCards = []
+        for (let i = 0; i < 4; i++) {
+            loadingCards.push(<LoadingCard key={i} />)
+        }
+
+        return <div className="flex left ml-20 mb-16">{loadingCards}</div>
     }
 
     const renderStatusBlock = () => {
@@ -96,7 +81,9 @@ function EnvironmentStatusComponent({
             (appDetails?.deploymentAppType === DeploymentAppTypes.HELM &&
                 appDetails?.appType === AppType.DEVTRON_HELM_CHART)
         ) {
-            return <HelmAppConfigApplyStatusCard releaseStatus={appDetails.helmReleaseStatus} />
+            return (
+                <HelmAppConfigApplyStatusCard releaseStatus={appDetails.helmReleaseStatus} cardLoading={cardLoading} />
+            )
         }
         return null
     }

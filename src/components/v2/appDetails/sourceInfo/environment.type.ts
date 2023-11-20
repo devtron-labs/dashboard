@@ -1,5 +1,6 @@
-import { DeploymentStatusDetailsBreakdownDataType } from "../../../app/details/appDetails/appDetails.type"
-import { AppDetails, AppStreamData } from "../appDetails.type"
+import { DeploymentStatusDetailsBreakdownDataType } from '../../../app/details/appDetails/appDetails.type'
+import { HelmReleaseStatus } from '../../../external-apps/ExternalAppService'
+import { AppDetails, AppStreamData } from '../appDetails.type'
 export interface EnvironmentStatusComponentType {
     appStreamData: any
     loadingDetails: boolean
@@ -7,7 +8,7 @@ export interface EnvironmentStatusComponentType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     isVirtualEnvironment?: boolean
     isHelmApp?: boolean
-    refetchDeploymentStatus: (showTimeline?: boolean)=> void
+    refetchDeploymentStatus: (showTimeline?: boolean) => void
 }
 export interface AppEnvironment {
     environmentName: string
@@ -38,6 +39,11 @@ export interface AppStatusDetailsChartType {
 export interface ChartUsedCardType {
     appDetails: AppDetails
     notes: string
-    onClickShowNotes: ()=> void
+    onClickShowNotes: () => void
+    cardLoading: boolean
+}
+
+export interface HelmAppConfigApplyStatusCardType {
+    releaseStatus: HelmReleaseStatus
     cardLoading: boolean
 }
