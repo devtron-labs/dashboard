@@ -1338,7 +1338,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         ClearIndicator: null,
                         ValueContainer,
                         IndicatorSeparator: null,
-                        Option: AppOption,
+                        Option: (props) => <AppOption props={props} permission={permission} />,
                         GroupHeading,
                     }}
                     isLoading={
@@ -1469,8 +1469,9 @@ const workflowGroupHeading = (props) => {
     return <GroupHeading {...props} hideClusterName={true} />
 }
 
-const AppOption = (props) => {
+const AppOption = ({props,permission}) => {
     const { selectOption, data } = props
+    console.log('permission in app option',permission)
     return (
         <div
             onClick={(e) => selectOption(data)}
@@ -1486,7 +1487,9 @@ const AppOption = (props) => {
                 <components.Option className="w-100 option-label-padding" {...props} />
                 {data.value === '*' && (
                     <span className="fs-12 cn-6 ml-8 mb-4 mr-4">
-                        Allow access to existing and new apps for this project
+                        {`Allow access to existing and new ${
+                            permission.entity === EntityTypes.JOB ? 'jobs' : 'apps'
+                        } for this project`}
                     </span>
                 )}
             </div>
