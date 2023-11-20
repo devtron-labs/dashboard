@@ -13,10 +13,10 @@ import { importComponentFromFELibrary } from '../../../../common'
 import { DeploymentAppTypes, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
 import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
-import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
 import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import ChartUsedCard from './ChartUsedCard'
+import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -123,6 +123,7 @@ function EnvironmentStatusComponent({
                 <LastUpdatedCard
                     deploymentTriggerTime={appDetails?.lastDeployedTime}
                     triggeredBy={appDetails?.lastDeployedBy}
+                    cardLoading={cardLoading}
                 />
             )
         }
@@ -139,7 +140,14 @@ function EnvironmentStatusComponent({
 
     const renderChartUsedBlock = () => {
         if (!appDetails.appStoreAppName) return null
-        return <ChartUsedCard appDetails={appDetails} notes={notes} onClickShowNotes={onClickShowNotes} />
+        return (
+            <ChartUsedCard
+                appDetails={appDetails}
+                notes={notes}
+                onClickShowNotes={onClickShowNotes}
+                cardLoading={cardLoading}
+            />
+        )
     }
 
     const renderUpgraderChartBlock = () => {

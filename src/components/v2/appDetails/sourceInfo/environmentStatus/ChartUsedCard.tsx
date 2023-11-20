@@ -6,8 +6,12 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as DefaultChart } from '../../../../../assets/icons/ic-default-chart.svg'
 import { URLS } from '../../../../../config'
 import { ChartUsedCardType } from '../environment.type'
+import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 
-const ChartUsedCard = ({ appDetails, notes, onClickShowNotes }: ChartUsedCardType) => {
+const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: ChartUsedCardType) => {
+    
+    if (cardLoading) return <LoadingCard />
+
     return (
         <div
             data-testid="chart-used-card"
@@ -39,7 +43,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes }: ChartUsedCardTyp
                     </div>
                 </div>
                 {appDetails.chartAvatar ? (
-                    <img src={appDetails.chartAvatar} alt={appDetails.appStoreAppName} />
+                    <img src={appDetails.chartAvatar} alt={appDetails.appStoreAppName} className='icon-dim-24'/>
                 ) : (
                     <DefaultChart className="icon-dim-24" />
                 )}

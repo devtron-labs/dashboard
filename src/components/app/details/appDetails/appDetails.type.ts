@@ -250,4 +250,5 @@ export interface IssuesListingModalType {
 export interface LastUpdatedCardType {
     deploymentTriggerTime: string
     triggeredBy: string
+    cardLoading: boolean
 }
