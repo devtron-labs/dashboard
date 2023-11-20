@@ -790,7 +790,7 @@ button.anchor {
 .Toastify__toast--default {
     &.devtron-toast {
         &:before {
-            background-image: url('../assets/icons/ic-info-filled.svg');
+            background-image: url('../assets/icons/ic-info-filled-lg.svg');
         }
     }
 }
@@ -2705,6 +2705,10 @@ textarea,
     min-width: 385px;
 }
 
+.w-20 {
+    width: 20px;
+}
+
 .w-24 {
     width: 24px;
 }
@@ -3345,6 +3349,10 @@ textarea,
     margin: auto;
 }
 
+.mb-neg-1 {
+    margin-bottom: -1px;
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
@@ -3587,6 +3595,10 @@ textarea::placeholder {
 
 .dc__hover-b500:hover {
     background-color: var(--B500);
+}
+
+.dc__hover-color-b500:hover {
+    color: var(--B500);
 }
 
 .dc__hover-n100:hover {
@@ -3907,6 +3919,12 @@ textarea::placeholder {
 .br-48 {
     border-radius: 48px;
 }
+
+.fetch-more-loading-button svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 // Start: accouncement banner
 .announcement-banner-container {
     &.page-header-banner {

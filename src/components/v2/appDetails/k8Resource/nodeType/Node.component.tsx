@@ -124,7 +124,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             let podsType = []
             if (isPodAvailable) {
                 podsType = _selectedNodes.filter((el) =>
-                    podMetaData?.some((f) => f.name === el.name && f.isNew === podType),
+                    podMetaData?.some((f) => {
+                        // Set f.isNew to false if it is undefined
+                        f.isNew = f.isNew || false
+                        return f.name === el.name && f.isNew === podType
+                    }),
                 )
             }
 
@@ -260,10 +264,10 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </TippyCustomized>
                     </>
                 )
-            } else if(node.port?.length ===  1){
+            } else if (node.port?.length === 1) {
                 return `${node.name}.${node.namespace}:${node.port}`
             } else {
-                return "Port Number is missing"
+                return 'Port Number is missing'
             }
         }
 
@@ -438,11 +442,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         </div>
                         {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
-                            <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
-                                {portNumberPlaceHolder(node)}
-                                {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
-                            </div>
-                        )}
+                                <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
+                                    {portNumberPlaceHolder(node)}
+                                    {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
+                                </div>
+                            )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div data-testid="pod-ready-count" className={'flex left col-1 pt-9 pb-9'}>
@@ -484,10 +488,10 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         )}
                         {node?.kind !== NodeType.Containers && node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && (
-                            <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
-                                <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
-                            </div>
-                        )}
+                                <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
+                                    <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
+                                </div>
+                            )}
                     </div>
 
                     {node.childNodes?.length > 0 && _isSelected && (
