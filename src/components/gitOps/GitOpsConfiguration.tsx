@@ -32,7 +32,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
-import GitManagment from './UserGitRepo'
+import UserGitRepo from './UserGitRepo'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {

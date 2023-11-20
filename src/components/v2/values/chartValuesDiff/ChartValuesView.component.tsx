@@ -54,7 +54,7 @@ import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
-import GitManagment from '../../../gitOps/UserGitRepo'
+import UserGitRepo from '../../../gitOps/UserGitRepo'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -335,7 +335,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
                                 </button>
                             </div>
                             <div className="ml-20 mt-10">
-                                <GitManagment setRepoURL={handleRepoTextChange} />
+                                <UserGitRepo setRepoURL={handleRepoTextChange} />
                             </div>
                         </div>
                         <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">

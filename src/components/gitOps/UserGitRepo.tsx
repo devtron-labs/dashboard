@@ -9,7 +9,7 @@ import React, { useState } from 'react'
 import { AppCreationType, repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 
-function GitManagment({ setRepoURL: string }) {
+function UserGitRepo({ setRepoURL: string }) {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [repoText, setRepoText] = useState('')
 
@@ -24,7 +24,7 @@ function GitManagment({ setRepoURL: string }) {
     const onChange = (event) => { 
         setRepoText(event.target.value)   
     }
-
+        
     const inputUrlBox = () => {
         return (
             <div className="mr-10 ml-26">
@@ -83,4 +83,4 @@ function GitManagment({ setRepoURL: string }) {
     )
 }
 
-export default GitManagment
+export default UserGitRepo
