@@ -39,4 +39,5 @@ export interface ChartUsedCardType {
     appDetails: AppDetails
     notes: string
     onClickShowNotes: ()=> void
+    cardLoading: boolean
 }
