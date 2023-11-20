@@ -105,7 +105,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                     >
                         Cancel
                     </button>
-                    <div style={{ marginLeft: 0 }} className="flex">
+                    <div className="flex ml-0">
                         <DialogFormSubmit tabIndex={2}>Create Workflow</DialogFormSubmit>
                     </div>
                 </div>

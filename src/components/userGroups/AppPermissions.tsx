@@ -77,11 +77,7 @@ export default function AppPermissions({
     emptyDirectPermissionJobs.entity = EntityTypes.JOB
     useEffect(() => {
         if (!data) {
-            let emptyPermissionArr = [emptyDirectPermissionHelmApps]
-
-            emptyPermissionArr.push(emptyDirectPermissionDevtronApps)
-            emptyPermissionArr.push(emptyDirectPermissionJobs)
-
+            let emptyPermissionArr = [emptyDirectPermissionHelmApps, emptyDirectPermissionDevtronApps, emptyDirectPermissionJobs]
             setDirectPermission(emptyPermissionArr)
             return
         }
@@ -90,17 +86,17 @@ export default function AppPermissions({
     const { customRoles } = useUserGroupContext()
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
         if (directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
+            const isJobs = directRolefilter.entity === EntityTypes.JOB
             return [
                 { label: directRolefilter.entity === EntityTypes.JOB ? 'All Jobs' : 'All applications', value: '*' },
                 ...(
                     (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                         ? appsList
-                        : directRolefilter.entity === EntityTypes.JOB
+                        : isJobs
                         ? jobsList
                         : appsListHelmApps
                     ).get(projectId)?.result || []
                 ).map((app) => {
-                    const isJobs = directRolefilter.entity === EntityTypes.JOB
                     return {
                         label: isJobs ? app.jobName : app.name,
                         value: isJobs ? app.appName : app.name,
