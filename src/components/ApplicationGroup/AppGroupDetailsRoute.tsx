@@ -103,12 +103,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getEnvGroupList(+envId)
+        
         if (result) {
             const _groupFilterOption = []
             let _selectedGroup
             for (const group of result) {
                 const processedGroupData = {
-                    value: group.id.toString(),
+                    value: group.id ? group.id.toString() : group.name,
                     label: group.name,
                     appIds: group.appIds,
                     description: group.description,

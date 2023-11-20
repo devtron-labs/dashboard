@@ -1,4 +1,4 @@
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal, showError } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { hibernate } from './service'
@@ -8,7 +8,6 @@ interface HibernateModalProps {
     envName: string
     envId: string
     setOpenHiberateModal: (value: boolean) => void
-    fetchDeployments: any
     setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
     setShowHibernateStatusDrawer: React.Dispatch<
         React.SetStateAction<{
@@ -23,7 +22,6 @@ export const HibernateModal = ({
     envName,
     envId,
     setOpenHiberateModal,
-    fetchDeployments,
     setAppStatusResponseList,
     setShowHibernateStatusDrawer,
 }: HibernateModalProps) => {
@@ -41,12 +39,9 @@ export const HibernateModal = ({
                     showStatus: true,
                 })
             })
-            .catch((err) => {})
-        // .finally(() => {
-        //     fetchDeployments().then(() => {
-        //         setOpenHiberateModal(false)
-        //     })
-        // })
+            .catch((err) => {
+                showError(err)
+            })
     }
 
     return (

@@ -1,4 +1,4 @@
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal, showError } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as UnhibernateModalIcon } from '../../../../assets/icons/ic-medium-unhibernate.svg'
 import { unhibernate } from './service'
@@ -8,7 +8,6 @@ interface UnhibernateModalProps {
     envName: string
     envId: string
     setOpenUnhiberateModal: (value: boolean) => void
-    fetchDeployments: any
     setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
     setShowHibernateStatusDrawer: React.Dispatch<
         React.SetStateAction<{
@@ -23,7 +22,6 @@ export const UnhibernateModal = ({
     envName,
     envId,
     setOpenUnhiberateModal,
-    fetchDeployments,
     setAppStatusResponseList,
     setShowHibernateStatusDrawer,
 }: UnhibernateModalProps) => {
@@ -40,12 +38,9 @@ export const UnhibernateModal = ({
                     showStatus: true,
                 })
             })
-            .catch((err) => {})
-        // .finally(() => {
-        //     fetchDeployments().then(() => {
-        //         setOpenUnhiberateModal(false)
-        //     })
-        // })
+            .catch((err) => {
+                showError(err)
+            })
     }
 
     return (

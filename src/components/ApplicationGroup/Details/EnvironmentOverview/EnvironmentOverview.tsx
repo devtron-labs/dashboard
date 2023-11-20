@@ -365,7 +365,6 @@ export default function EnvironmentOverview({
                     envId={envId}
                     envName={appListData.environment}
                     setOpenHiberateModal={setOpenHiberateModal}
-                    fetchDeployments={fetchDeployments}
                     setAppStatusResponseList={setAppStatusResponseList}
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
                 />
@@ -376,7 +375,6 @@ export default function EnvironmentOverview({
                     envId={envId}
                     envName={appListData.environment}
                     setOpenUnhiberateModal={setOpenUnhiberateModal}
-                    fetchDeployments={fetchDeployments}
                     setAppStatusResponseList={setAppStatusResponseList}
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
                 />
