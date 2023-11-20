@@ -3,12 +3,11 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-question.sv
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import CertManager from './../../../../../assets/icons/tools/ic-helm-app-cert-manager.png'
-import {ReactComponent as DefaultChart} from '../../../../../assets/icons/ic-default-chart.svg'
+import { ReactComponent as DefaultChart } from '../../../../../assets/icons/ic-default-chart.svg'
 import { URLS } from '../../../../../config'
+import { ChartUsedCardType } from '../environment.type'
 
-
-const ChartUsedCard = ({appDetails, notes, onClickShowNotes}) => {
+const ChartUsedCard = ({ appDetails, notes, onClickShowNotes }: ChartUsedCardType) => {
     return (
         <div
             data-testid="chart-used-card"
@@ -39,8 +38,11 @@ const ChartUsedCard = ({appDetails, notes, onClickShowNotes}) => {
                         </Link>
                     </div>
                 </div>
-                {/* @TODO: Replace this with the chart image url from api response */}
-                {true ? <img src={CertManager} alt="CertManager" /> : <DefaultChart className="icon-dim-24" />}
+                {appDetails.chartAvatar ? (
+                    <img src={appDetails.chartAvatar} alt={appDetails.appStoreAppName} />
+                ) : (
+                    <DefaultChart className="icon-dim-24" />
+                )}
             </div>
             <div className="app-details-info-card__bottom-container dc__content-space">
                 <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
