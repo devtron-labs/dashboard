@@ -342,12 +342,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         }
     }
 
-    const kind = isJobOverview
-        ? 'job'
-        : isHelmChart
-        ? 'application/helm-application'
-        : 'application/devtron-application'
-
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (
@@ -420,7 +414,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderAppDescription() {
         return (
             <div>
-                {Catalog && <Catalog id={appId} kind={kind} />}
+                {Catalog && <Catalog id={appId} resourceType={appType} />}
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin={true}
