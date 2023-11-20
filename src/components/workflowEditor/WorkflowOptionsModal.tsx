@@ -19,6 +19,8 @@ import { importComponentFromFELibrary } from '../common'
 import { saveCDPipeline } from '../cdPipeline/cdPipeline.service'
 import { TriggerType } from '../../config'
 
+const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
+
 export default function WorkflowOptionsModal({
     handleCloseWorkflowOptionsModal,
     addCIPipeline,
@@ -29,8 +31,6 @@ export default function WorkflowOptionsModal({
     workflows,
     getWorkflows,
 }: WorkflowOptionsModalProps) {
-    const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
-
     const [currentCIPipelineType, setCurrentCIPipelineType] = useState<CIPipelineNodeType | null>(null)
     const [loadingWebhook, setLoadingWebhook] = useState<boolean>(false)
 
