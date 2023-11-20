@@ -410,6 +410,7 @@ export enum FilterParentType {
 export interface HibernateStatusRowType {
     rowData: HibernateResponseRowType
     index: number
+    isHibernateOperation: boolean
     isVirtualEnv?: boolean
 }
 

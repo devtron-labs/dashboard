@@ -3,7 +3,13 @@ import { Drawer, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { HibernateStatusRow } from './HibernateStatusRow'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 
-export default function HibernateStatusListDrawer({ closePopup, responseList, isLoading, getAppListData }) {
+export default function HibernateStatusListDrawer({
+    closePopup,
+    responseList,
+    isLoading,
+    getAppListData,
+    isHibernateOperation,
+}) {
     useEffect(() => {
         return () => {
             getAppListData().then(() => {})
@@ -13,7 +19,9 @@ export default function HibernateStatusListDrawer({ closePopup, responseList, is
     const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Hibernate applications</h2>
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">
+                    {isHibernateOperation ? 'Hibernate applications' : 'Unhibernate applications'}
+                </h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
@@ -41,7 +49,12 @@ export default function HibernateStatusListDrawer({ closePopup, responseList, is
                     <div className="fs-12 fw-6 cn-7 ">Message</div>
                 </div>
                 {responseList.map((response, index) => (
-                    <HibernateStatusRow key={response.id} rowData={response} index={index} />
+                    <HibernateStatusRow
+                        key={response.id}
+                        rowData={response}
+                        index={index}
+                        isHibernateOperation={isHibernateOperation}
+                    />
                 ))}
             </div>
         )

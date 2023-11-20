@@ -10,7 +10,12 @@ interface HibernateModalProps {
     setOpenHiberateModal: (value: boolean) => void
     fetchDeployments: any
     setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
-    setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<boolean>>
+    setShowHibernateStatusDrawer: React.Dispatch<
+        React.SetStateAction<{
+            hibernationOperation: boolean
+            showStatus: boolean
+        }>
+    >
 }
 
 export const HibernateModal = ({
@@ -31,14 +36,17 @@ export const HibernateModal = ({
             .then((res) => {
                 setAppStatusResponseList(res?.result?.response)
                 setOpenHiberateModal(false)
-                setShowHibernateStatusDrawer(true)
+                setShowHibernateStatusDrawer({
+                    hibernationOperation: true,
+                    showStatus: true,
+                })
             })
             .catch((err) => {})
-            // .finally(() => {
-            //     fetchDeployments().then(() => {
-            //         setOpenHiberateModal(false)
-            //     })
-            // })
+        // .finally(() => {
+        //     fetchDeployments().then(() => {
+        //         setOpenHiberateModal(false)
+        //     })
+        // })
     }
 
     return (
@@ -56,7 +64,7 @@ export const HibernateModal = ({
                 <div className="flexbox-col dc__gap-12">
                     <HibernateModalIcon className="dc__align-left" />
                     <span className="fs-16 fw-6">
-                        Hibernate '{selectedAppIds.length} applications on '{envName}'
+                        Hibernate '{selectedAppIds.length}' applications on '{envName}'
                     </span>
                     <span>
                         Pods for the selected applications will be{' '}

@@ -14,7 +14,7 @@ export default function AppStatus({
     hideStatusMessage = false,
 }: AppStatusType) {
     let status = appStatus
-    if (!isDeploymentStatus) console.log('appStatus', appStatus)
+    if (!isDeploymentStatus) 
     if (isDeploymentStatus) {
         status = triggerStatus(appStatus)
     }

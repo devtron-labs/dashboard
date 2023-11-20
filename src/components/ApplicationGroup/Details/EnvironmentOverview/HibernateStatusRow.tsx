@@ -4,7 +4,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 
-export function HibernateStatusRow({ rowData, index, isVirtualEnv }: HibernateStatusRowType) {
+export function HibernateStatusRow({ rowData, index, isVirtualEnv, isHibernateOperation }: HibernateStatusRowType) {
     const renderStatusIcon = (rowData: HibernateResponseRowType): JSX.Element => {
         if (rowData.success) {
             return <Success className="mr-8 icon-dim-18" />
@@ -17,7 +17,7 @@ export function HibernateStatusRow({ rowData, index, isVirtualEnv }: HibernateSt
 
     const getStatus = () => {
         if (rowData.success) {
-            return 'Hibernation initiated'
+            return isHibernateOperation ? 'Hibernation Initiated' : 'Unhibernation Initiated'
         } else if (rowData.authError) {
             return 'Not authorized'
         } else {

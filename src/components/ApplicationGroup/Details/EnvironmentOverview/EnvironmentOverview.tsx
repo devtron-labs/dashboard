@@ -34,7 +34,13 @@ export default function EnvironmentOverview({
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, setLoading] = useState<boolean>()
     const [description, setDescription] = useState<string>(appGroupListData.description)
-    const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<boolean>(false)
+    const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<{
+        hibernationOperation: boolean
+        showStatus: boolean
+    }>({
+        hibernationOperation: true,
+        showStatus: false,
+    })
     const [appStatusResponseList, setAppStatusResponseList] = useState<any[]>([])
     const timerId = useRef(null)
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
@@ -70,6 +76,7 @@ export default function EnvironmentOverview({
                     statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
                 })
                 setLoading(false)
+                
                 parseAppListData(appGroupListData, statusRecord)
             }
         } catch (err) {
@@ -117,12 +124,16 @@ export default function EnvironmentOverview({
             }
             parsedData.appInfoList.push(appInfo)
         })
+        
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
         setAppListData(parsedData)
     }
 
     const closePopup = () => {
-        setShowHibernateStatusDrawer(false)
+        setShowHibernateStatusDrawer({
+            ...showHibernateStatusDrawer,
+            showStatus: false,
+        })
     }
 
     if (loading) {
@@ -135,7 +146,7 @@ export default function EnvironmentOverview({
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
         const isSelected = selectedAppIds.includes(item.appId)
-        console.log(item, 'ritvik')
+        
         return (
             <div
                 key={`${item.application}-${index}`}
@@ -376,12 +387,13 @@ export default function EnvironmentOverview({
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
                 />
             )}
-            {showHibernateStatusDrawer && (
+            {showHibernateStatusDrawer.showStatus && (
                 <HibernateStatusListDrawer
                     closePopup={closePopup}
                     isLoading={false}
                     responseList={appStatusResponseList}
                     getAppListData={getAppListData}
+                    isHibernateOperation={showHibernateStatusDrawer.hibernationOperation}
                 />
             )}
         </div>
