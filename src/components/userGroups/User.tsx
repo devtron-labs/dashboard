@@ -193,14 +193,13 @@ export default function UserForm({
                                 ? ''
                                 : permission.entityName.map((entity) => entity.value).join(','),
                             entity: permission.entity,
-                            workflow: permission.workflow?.length
-                                ? permission.workflow.find((workflow) => workflow.value === '*')
-                                    ? ''
-                                    : permission.workflow.map((workflow) => workflow.value).join(',')
-                                : '',
-                        }
-                        if (permission.entity !== EntityTypes.JOB) {
-                            delete payload.workflow
+                            ...(permission.entity === EntityTypes.JOB && {
+                                workflow: permission.workflow?.length
+                                    ? permission.workflow.find((workflow) => workflow.value === '*')
+                                        ? ''
+                                        : permission.workflow.map((workflow) => workflow.value).join(',')
+                                    : '',
+                            }),
                         }
                         return payload
                     }),

@@ -210,23 +210,24 @@ export default function UserGroupRoute() {
 
             const jobs = [{ projectId: projectIds[0], jobsList: jobContainers }]
             const projectsMap = mapByKey(jobs || [], 'projectId')
-            setJobsList((jobsList) => {
-                return new Map(
-                    missingProjects.reduce((jobsList, projectId, index) => {
-                        jobsList.set(projectId, {
-                            loading: false,
-                            result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
-                            error: null,
-                        })
-                        return jobsList
-                    }, jobsList),
-                )
-            })
+            setJobsList(
+                (jobsList) =>
+                    new Map(
+                        missingProjects.reduce((jobsList, projectId, index) => {
+                            jobsList.set(projectId, {
+                                loading: false,
+                                result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
+                                error: null,
+                            })
+                            return jobsList
+                        }, jobsList),
+                    ),
+            )
         } catch (error) {
             showError(error)
             setJobsList((jobsList) => {
                 return missingProjects.reduce((jobsList, projectId) => {
-                    jobsList.set(projectId, { loading: true, result: [], error: null })
+                    jobsList.set(projectId, { loading: false, result: [], error: null })
                     return jobsList
                 }, jobsList)
             })
@@ -1041,17 +1042,17 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }, [envClustersList])
 
     useEffect(() => {
+        const isJobs = permission.entity === EntityTypes.JOB
         const appOptions = (
             (projectId &&
                 (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                     ? appsList
-                    : permission.entity === EntityTypes.JOB
+                    : isJobs
                     ? jobsList
                     : appsListHelmApps
                 ).get(projectId)?.result) ||
             []
         )?.map((app) => {
-            const isJobs = permission.entity === EntityTypes.JOB
             return {
                 label: isJobs ? app.jobName : app.name,
                 value: isJobs ? app.appName : app.name,

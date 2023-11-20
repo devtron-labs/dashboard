@@ -55,7 +55,7 @@ export interface CollapsedUserOrGroupProps {
 interface RoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
     team?: OptionType
-    entityName?: any
+    entityName?: OptionType[]
     environment?: OptionType[]
     action?: any
     cluster?: OptionType
@@ -79,7 +79,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter {
         configApprover?: boolean
     }
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
-    workflow?: any
+    workflow?: OptionType[]
     approver?: boolean
 }
 
@@ -177,8 +177,8 @@ export interface K8sListItemCardType {
 export interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
     userGroupsList: any[]
-    workflowList:{loading:boolean,options:any[]},
-    setWorkflowList,
+    workflowList: { loading: boolean; options: { label: string; options: OptionType[] }[] }
+    setWorkflowList
     environmentsList: any[]
     projectsList: any[]
     chartGroupsList: ChartGroup[]
@@ -223,7 +223,7 @@ export interface AppPermissionsDetailType {
     ) => void
     directPermission: DirectPermissionsRoleFilter[]
     hideInfoLegend?: boolean
-    selectedJobs?: any[]
+    selectedJobs?: string[]
 }
 
 export const K8S_PERMISSION_INFO_MESSAGE = {

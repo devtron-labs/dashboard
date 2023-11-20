@@ -13,6 +13,7 @@ import {
     ClusterListResponse,
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
+    AllWorkflows
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
@@ -201,7 +202,7 @@ export function getEnvironmentConfigs(appId, envId, option?) {
 export function getEnvironmentSecrets(appId, envId) {
     return get(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`)
 }
-export const getAllWorkflowsForAppNames= (appNames,signal?) :Promise<any>=> {
+export const getAllWorkflowsForAppNames= (appNames,signal?) :Promise<AllWorkflows>=> {
     return post(`${Routes.WORKFLOW}/all`, { appNames }, signal)
 }
 
