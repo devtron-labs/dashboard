@@ -135,6 +135,13 @@ export default function Artifacts({
                 image={noartifact}
             />
         )
+    } else if(!artifactId && status.toLowerCase() === TERMINAL_STATUS_MAP.ERROR){
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+            />
+        )
     } else {
         return (
             <div className={`flex left column p-16 ${jobCIClass??''}`}>

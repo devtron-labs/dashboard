@@ -366,7 +366,7 @@ function GitForm({
         {
             name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.{5,}$/ },
+                validator: { error: 'Atleast 5 chars required', regex: /^.{5,}$/ },
             },
             url: {
                 required: true,
@@ -556,12 +556,13 @@ function GitForm({
                 <div className="mb-16">
                     <CustomInput
                         dataTestid="git-account-name-textbox"
+                        labelClassName="dc__required-field"
                         autoComplete="off"
                         value={state.name.value}
                         onChange={handleOnChange}
                         name="name"
                         error={state.name.error}
-                        label="Name*"
+                        label="Name"
                     />
                 </div>
                 <div className="form__row form__row--two-third">
