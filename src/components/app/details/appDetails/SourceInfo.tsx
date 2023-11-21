@@ -6,7 +6,6 @@ import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
-import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { useParams } from 'react-router'
 import { Nodes, SourceInfoType } from '../../types'
 import Tippy from '@tippyjs/react'
@@ -127,16 +126,6 @@ export function SourceInfo({
                                     >
                                         <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                                         URLs
-                                    </button>
-                                )}
-                                {appDetails?.dataSource !== 'EXTERNAL' && showCommitInfo && (
-                                    <button
-                                        className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                        onClick={onClickShowCommitInfo}
-                                        data-testid="app-details-commit-info"
-                                    >
-                                        <CommitIcon className="icon-dim-16 mr-6" />
-                                        commit info
                                     </button>
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
