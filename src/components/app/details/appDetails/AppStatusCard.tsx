@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
-import { DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import LoadingCard from './LoadingCard'
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
@@ -36,7 +36,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
     return (
         <div
             data-testid="app-status-card"
-            onClick={cardLoading ? noop : showApplicationDetailedModal}
+            onClick={showApplicationDetailedModal}
             className={`app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 ${
                 displayMessage ? 'w-250' : 'w-200'
             }`}
