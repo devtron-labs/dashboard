@@ -6,14 +6,12 @@ import { ReactComponent as Question } from '../../../../assets/icons/ic-help-out
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { useHistory } from 'react-router'
 import { DeploymentStatusCardType } from './appDetails.type'
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { validateMomentDate } from './utils'
 import LoadingCard from './LoadingCard'
 
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
     cardLoading,
-    hideDeploymentStatusLeftInfo,
     hideDetails,
     isVirtualEnvironment,
     refetchDeploymentStatus,
@@ -86,9 +84,6 @@ function DeploymentStatusCard({
     const onClickLastDeploymentStatus = (e) => {
         if (!hideDetails) {
             refetchDeploymentStatus(true)
-        }
-        if (cardLoading) noop()
-        if (!hideDetails && !hideDeploymentStatusLeftInfo) {
             showDeploymentDetailedStatus(e)
         }
     }
@@ -100,7 +95,7 @@ function DeploymentStatusCard({
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}
             className={`app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-250 ${
-                hideDeploymentStatusLeftInfo || hideDetails ? '' : 'cursor'
+                hideDetails ? '' : 'cursor'
             }`}
         >
             {renderDeploymentStatus()}

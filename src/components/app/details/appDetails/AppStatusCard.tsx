@@ -26,7 +26,13 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                         {message.slice(0, 30)}
                     </div>
                 )}
-                <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
+                <div
+                    className={`app-details-info-card__bottom-container__details fs-12 fw-6 ${
+                        displayMessage ? 'ml-4' : ''
+                    }`}
+                >
+                    Details
+                </div>
             </>
         )
     }
