@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { showError, Progressing, ConfirmationDialog, not } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConfirmationDialog, not, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, asyncWrap } from '../../../common'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
 import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
@@ -134,7 +135,18 @@ const WorkerStatus = React.memo(({ message, podStatus, stage }: WorkerStatusType
                         </div>
                     )}
                 </div>
-                {message && <div className="fs-12 cn-7">{message}</div>}
+                {message && (
+                    <Tippy
+                        theme={TippyTheme.black}
+                        className="default-tt"
+                        arrow={false}
+                        placement="bottom-start"
+                        animation="shift-toward-subtle"
+                        content={message}
+                    >
+                        <div className="fs-12 cn-7 dc__ellipsis-right__2nd-line">{message}</div>
+                    </Tippy>
+                )}
             </div>
         </>
     )
