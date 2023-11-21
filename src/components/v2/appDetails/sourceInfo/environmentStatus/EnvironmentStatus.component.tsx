@@ -140,7 +140,7 @@ function EnvironmentStatusComponent({
     const renderUpgraderChartBlock = () => {
         return (
             appDetails?.deprecated && (
-                <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
+                <div className="chart-upgrade-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
                     <div className="cn-9 flex left">
                         <span>Chart deprecated</span>
                         <Alert className="icon-dim-16 ml-4" />
