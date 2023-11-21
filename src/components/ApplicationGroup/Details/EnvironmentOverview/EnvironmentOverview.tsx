@@ -303,13 +303,12 @@ export default function EnvironmentOverview({
                         </div>
                     </div>
                 </div>
-                <div className="dc__border-top-n1" />
             </aside>
         )
     }
 
     return appListData ? (
-        <div className="env-overview-container flexbox bcn-0 dc__overflow-hidden pt-20 pb-20 pl-20 pr-20 dc__gap-32">
+        <div className="env-overview-container flexbox dc__content-center bcn-0 dc__overflow-hidden pt-20 pb-20 pl-20 pr-20 dc__gap-32">
             <div className="w-300 dc__no-shrink">{renderSideInfoColumn()}</div>
             <div className="dc__overflow-scroll">
                 <div className="flex column left list-container">
