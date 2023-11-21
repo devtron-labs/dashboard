@@ -148,7 +148,7 @@ export default function ClusterForm({
         [clusterId],
         !window._env_.K8S_CLIENT,
     )
-    
+
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -209,7 +209,7 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: isConnectedViaProxyTemp,
+                required: KubectlConnectionRadio && isConnectedViaProxyTemp,
                 validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             sshTunnelUser: {
