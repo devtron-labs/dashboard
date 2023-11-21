@@ -67,7 +67,7 @@ function DeploymentStatusCard({
                 </div>
                 <div className="app-details-info-card__bottom-container dc__content-space">
                     <div className="app-details-info-card__bottom-container__message fs-12 fw-4">
-                        <span className="fs-13 mr-5 fw-6">
+                        <span className="fs-12 mr-5 fw-6">
                             {validateMomentDate(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ')}
                         </span>
                         by {triggeredBy || '-'}
