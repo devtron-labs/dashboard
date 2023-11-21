@@ -1089,9 +1089,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         setWorkflowList({ loading: true, options: [] })
         try {
             setWorkflowList({ loading: true, options: [] })
-            const jobNames = perimssion.entityName
-                .filter((option) => option.value != '*')
-                .map((app) => app.value.split('/')[0])
+            const jobNames = perimssion.entityName.filter((option) => option.value != '*').map((app) => app.label)
             const {
                 result: { appIdWorkflowNamesMapping },
             } = await getAllWorkflowsForAppNames(jobNames, { signal: abortControllerRef.current.signal })
