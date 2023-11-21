@@ -23,6 +23,7 @@ import Tippy from '@tippyjs/react'
 import { HibernateModal } from './HibernateModal'
 import { UnhibernateModal } from './UnhibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
+import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -252,8 +253,8 @@ export default function EnvironmentOverview({
                         updateContent={handleSaveDescription}
                         validations={{
                             maxLength: {
-                                value: 40,
-                                message: 'max length is 40',
+                                value: BIO_MAX_LENGTH,
+                                message: BIO_MAX_LENGTH_ERROR,
                             },
                         }}
                     />
