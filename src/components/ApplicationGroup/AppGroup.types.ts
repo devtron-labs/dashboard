@@ -209,6 +209,7 @@ export interface AppInfoListType {
     lastDeployedBy?: string
     appId: number
     envId: number
+    pipelineId?: number
 }
 
 export interface AppListDataType {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Progressing, getRandomColor, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import AppStatus from '../../../app/AppStatus'
@@ -24,6 +24,7 @@ import { HibernateModal } from './HibernateModal'
 import { UnhibernateModal } from './UnhibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
+import { pipe } from 'rxjs'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -74,7 +75,13 @@ export default function EnvironmentOverview({
             if (response?.result) {
                 let statusRecord = {}
                 response.result.forEach((item) => {
-                    statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
+                    statusRecord = {
+                        ...statusRecord,
+                        [item.appId]: {
+                            status: item.deployStatus,
+                            pipelineId: item.pipelineId,
+                        },
+                    }
                 })
                 setLoading(false)
 
@@ -103,7 +110,13 @@ export default function EnvironmentOverview({
         }
     }
 
-    const parseAppListData = (data: AppGroupListType, statusRecord: Record<string, string>): void => {
+    const getDeploymentHistoryLink = (appId: number, pipelineId: number) =>
+        `/application-group/${envId}/cd-details/${appId}/${pipelineId}/`
+
+    const parseAppListData = (
+        data: AppGroupListType,
+        statusRecord: Record<string, { status: string; pipelineId: number }>,
+    ): void => {
         const parsedData = {
             environment: data.environmentName,
             namespace: data.namespace || '-',
@@ -116,7 +129,8 @@ export default function EnvironmentOverview({
                 appId: app.appId,
                 application: app.appName,
                 appStatus: app.appStatus,
-                deploymentStatus: statusRecord[app.appId],
+                deploymentStatus: statusRecord[app.appId].status,
+                pipelineId: statusRecord[app.appId].pipelineId,
                 lastDeployed: app.lastDeployedTime,
                 lastDeployedBy: app.lastDeployedBy,
                 lastDeployedImage: app.lastDeployedImage,
@@ -125,6 +139,7 @@ export default function EnvironmentOverview({
         })
 
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
+        console.log(parsedData, 'parsedData')
         setAppListData(parsedData)
     }
 
@@ -145,6 +160,7 @@ export default function EnvironmentOverview({
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
         const isSelected = selectedAppIds.includes(item.appId)
+        console.log(item, 'item')
 
         return (
             <div
@@ -204,7 +220,9 @@ export default function EnvironmentOverview({
                             </span>
                             <span>{item?.lastDeployedBy}</span>
                         </span>
-                        <span style={{ color: 'var(--B500)' }}>{processDeployedTime(item?.lastDeployed, true)}</span>
+                        <Link to={getDeploymentHistoryLink(item.appId, item.pipelineId)}>
+                            {processDeployedTime(item?.lastDeployed, true)}
+                        </Link>
                     </span>
                 )}
             </div>
@@ -310,7 +328,12 @@ export default function EnvironmentOverview({
     return appListData ? (
         <div className="env-overview-container flexbox dc__content-center bcn-0 dc__overflow-hidden pt-20 pb-20 pl-20 pr-20 dc__gap-32">
             <div className="w-300 dc__no-shrink">{renderSideInfoColumn()}</div>
-            <div className="dc__overflow-scroll">
+            <div
+                className="dc__overflow-scroll"
+                style={{
+                    width: '1049px',
+                }}
+            >
                 <div className="flex column left list-container">
                     <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
                         <span className="flex">
