@@ -54,12 +54,12 @@ export const HibernateModal = ({
                 onClick={(e) => {
                     e.stopPropagation()
                 }}
-                className={`modal__body w-400 pl-24 pr-24 pt-24 pb-24 flex column`}
+                className={`modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column`}
             >
                 <div className="flexbox-col dc__gap-12">
                     <HibernateModalIcon className="dc__align-left" />
                     <span className="fs-16 fw-6">
-                        Hibernate '{selectedAppIds.length}' applications on '{envName}'
+                        Hibernate '{selectedAppIds.length} applications' on '{envName}'
                     </span>
                     <span>
                         Pods for the selected applications will be{' '}
@@ -67,7 +67,7 @@ export const HibernateModal = ({
                     </span>
                     <span> Are you sure you want to continue?</span>
                 </div>
-                <div className="pt-40 flexbox dc__content-end w-100 dc__align-end dc__gap-6">
+                <div className="pt-40 flexbox dc__content-end w-100 dc__align-end dc__gap-12">
                     <button
                         onClick={() => setOpenHiberateModal(false)}
                         className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"

@@ -39,7 +39,7 @@ type AvailableTabs = typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
-    const location = useLocation();
+    const location = useLocation()
     const history = useHistory()
     const searchParams = new URLSearchParams(location.search)
     const activeTab = searchParams.get(TAB_SEARCH_KEY) as AvailableTabs
@@ -185,7 +185,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             <aside className="flexbox-col dc__gap-16">
                 <div className="flexbox-col dc__gap-12">
                     {(config.icon || (isHelmChart && !!chartUsed)) && (
-                        <div>
+                        <>
                             {config.icon ?? (
                                 // For Helm Charts
                                 <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
@@ -198,7 +198,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                     />
                                 </div>
                             )}
-                        </div>
+                        </>
                     )}
                     <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">{appName}</div>
                     <EditableTextArea

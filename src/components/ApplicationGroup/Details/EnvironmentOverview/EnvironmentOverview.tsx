@@ -149,7 +149,9 @@ export default function EnvironmentOverview({
         return (
             <div
                 key={`${item.application}-${index}`}
-                className="pl-16 app-deployments-info-row display-grid dc__align-items-center"
+                className={`pl-16 app-deployments-info-row display-grid dc__align-items-center ${
+                    isHovered === index ? 'bc-n50' : ''
+                }`}
                 onMouseEnter={() => setIsHovered(index)}
                 onMouseLeave={() => setIsHovered(null)}
             >
@@ -176,7 +178,7 @@ export default function EnvironmentOverview({
                 />
                 {item?.lastDeployedImage && (
                     <div className="cn-7 fs-13">
-                        <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
+                        <Tippy content={item.lastDeployedImage} className="default-tt" placement="right">
                             <div
                                 className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flexbox dc__align-items-center dc__gap-4 dc_width-max-content`}
                             >
@@ -307,11 +309,11 @@ export default function EnvironmentOverview({
     }
 
     return appListData ? (
-        <div className="env-overview-container flexbox bcn-0 dc__overflow-hidden">
-            <div className="pt-16 pb-16 pl-20 pr-20 w-300 dc__border-right">{renderSideInfoColumn()}</div>
+        <div className="env-overview-container flexbox bcn-0 dc__overflow-hidden pt-20 pb-20 pl-20 pr-20 dc__gap-32">
+            <div className="w-300 dc__no-shrink">{renderSideInfoColumn()}</div>
             <div className="dc__overflow-scroll">
-                <div className="flex column left pt-16 ml-20 pr-20 list-container">
-                    <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-24 fw-6 lh-20 cn-9 mb-12">
+                <div className="flex column left list-container">
+                    <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
                         <span className="flex">
                             <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                         </span>
@@ -319,14 +321,14 @@ export default function EnvironmentOverview({
                             <div className="flexbox dc__gap-6">
                                 <button
                                     onClick={() => setOpenHiberateModal(true)}
-                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex"
+                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <HibernateIcon className="icon-dim-12 mr-4" />
                                     Hibernate
                                 </button>
                                 <button
                                     onClick={() => setOpenUnhiberateModal(true)}
-                                    className="bcn-0 fs-12 dc__border flex"
+                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <UnhibernateIcon className="icon-dim-12 mr-4" />
                                     Unhibernate
