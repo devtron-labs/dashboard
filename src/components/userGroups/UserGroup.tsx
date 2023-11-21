@@ -91,8 +91,6 @@ const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
-    workflowList: { loading: false, options: [] },
-    setWorkflowList: () => {},
     userGroupsList: [],
     environmentsList: [],
     projectsList: [],
@@ -183,7 +181,6 @@ export default function UserGroupRoute() {
     const [appsList, setAppsList] = useState(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState(new Map())
     const [jobsList,setJobsList] = useState(new Map())
-    const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
     useEffect(() => {
         if (!lists) return
@@ -316,8 +313,6 @@ export default function UserGroupRoute() {
                     value={{
                         fetchAppList,
                         appsList,
-                        workflowList,
-                        setWorkflowList,
                         userGroupsList: userGroups.status === 'fulfilled' ? userGroups?.value?.result : [],
                         environmentsList: environments?.status === 'fulfilled' ? environments?.value?.result : [],
                         projectsList: projects.status === 'fulfilled' ? projects?.value?.result : [],
@@ -858,15 +853,13 @@ interface DirectPermissionRow {
     handleDirectPermissionChange: (...rest) => void
     index: number
     removeRow: (index: number) => void
-    selectedJobs: any[]
 }
 
 export const DirectPermission: React.FC<DirectPermissionRow> = ({
     permission,
     handleDirectPermissionChange,
     index,
-    removeRow,
-    selectedJobs
+    removeRow
 }) => {
     const {
         environmentsList,
@@ -875,9 +868,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         envClustersList,
         appsListHelmApps,
         customRoles,
-        jobsList,
-        workflowList,
-        setWorkflowList,
+        jobsList
     } = useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
@@ -906,6 +897,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     const [envInput, setEnvInput] = useState('')
     const [appInput, setAppInput] = useState('')
     const [workflowInput, setWorkflowInput] = useState('')
+    const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
+
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
 
@@ -986,9 +979,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             'environment_name',
             'environmentIdentifier',
         )
+
         if (permission.entity === EntityTypes.JOB) {
-            envOptions = envOptions.filter((option) => option.isClusterCdActive)
-            envOptions.push({
+            const deafultEnv = {
                 label: '',
                 options: [
                     {
@@ -996,9 +989,18 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         value: DEFAULT_ENV,
                     },
                 ],
+            }
+            const filteredEnvOptions = envOptions.filter((envOptions) => {
+                const filteredOptions = envOptions.options.filter((option) => option.isClusterCdActive)
+                if (filteredOptions.length > 0) {
+                    envOptions.options = filteredOptions
+                }
+                return filteredOptions.length > 0
             })
+            setEnvironments([deafultEnv, ...filteredEnvOptions])
+        } else {
+            setEnvironments(envOptions)
         }
-        setEnvironments(envOptions)
     }, [environmentsList])
 
     useEffect(() => {
@@ -1040,7 +1042,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
 
         setEnvClusters(envOptions)
     }, [envClustersList])
-
     useEffect(() => {
         const isJobs = permission.entity === EntityTypes.JOB
         const appOptions = (
@@ -1059,6 +1060,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             }
         })
         setApplications(appOptions)
+        if (permission.entity === EntityTypes.JOB && permission.entityName.length > 0) {
+            setWorkflowsForJobs(permission)
+        }
+                        
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
     useEffect(() => {
@@ -1066,13 +1071,16 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         if ((environments && environments.length === 0) || applications.length === 0) {
             return
         }
-
-        const sortedApplications =
-            openMenu === 'entityName/apps' ? applications : sortBySelected(permission.entityName, applications, 'value')
-        setApplications(sortedApplications)
+        setApplications((applications) => {
+            const sortedApplications =
+                openMenu === 'entityName/apps' || openMenu === 'entityName/jobs'
+                    ? applications
+                    : sortBySelected(permission.entityName, applications, 'value')
+            return sortedApplications
+        })
     }, [openMenu, permission.environment, permission.entityName, projectId])
 
-    const setWorkflowsForJobs = async () => {
+    const setWorkflowsForJobs = async (perimssion) => {
         if (abortControllerRef.current) {
             abortControllerRef.current.abort()
             abortControllerRef.current = null
@@ -1081,7 +1089,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         setWorkflowList({ loading: true, options: [] })
         try {
             setWorkflowList({ loading: true, options: [] })
-            const jobNames = selectedJobs.map((job) => job.value.split('/')[0])
+            const jobNames = perimssion.entityName
+                .filter((option) => option.value != '*')
+                .map((app) => app.value.split('/')[0])
             const {
                 result: { appIdWorkflowNamesMapping },
             } = await getAllWorkflowsForAppNames(jobNames, { signal: abortControllerRef.current.signal })
@@ -1098,7 +1108,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             abortControllerRef.current = null
             setWorkflowList({ loading: false, options: workflowOptions })
         } catch (err: any) {
-            if (err.errors[0].code != 0) showError(err)
+            if (err.errors && err.errors[0].code != 0) showError(err)
             setWorkflowList({ loading: false, options: [] })
         }
     }
@@ -1362,14 +1372,16 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     options={[allApplicationsOption(permission.entity), ...applications]}
                     className="basic-multi-select"
                     classNamePrefix="select-application-dropdown"
-                    onChange={handleDirectPermissionChange}
+                    onChange={(value, actionMeta) => {
+                        handleDirectPermissionChange(value, actionMeta)
+                    }}
                     hideSelectedOptions={false}
                     inputValue={appInput}
                     menuPlacement="auto"
                     onBlur={(e) => {
                         setAppInput('') //send selected options to setWorkflowsForJobs function
                         if (permission.entity === EntityTypes.JOB && !jobsList.get(projectId)?.loading)
-                            setWorkflowsForJobs()
+                            setWorkflowsForJobs(permission)
                     }}
                     onInputChange={(value, action) => {
                         if (action.action === 'input-change') setAppInput(value)
@@ -1405,7 +1417,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             GroupHeading: workflowGroupHeading,
                         }}
                         isDisabled={!permission.team}
-                        onChange={handleDirectPermissionChange}
+                        onChange={(value,actionMeta)=>{
+                            handleDirectPermissionChange(value,actionMeta,workflowList)
+                        }}
                         inputValue={workflowInput}
                         onBlur={() => {
                             setWorkflowInput('')
@@ -1472,7 +1486,6 @@ const workflowGroupHeading = (props) => {
 
 const AppOption = ({props,permission}) => {
     const { selectOption, data } = props
-    console.log('permission in app option',permission)
     return (
         <div
             onClick={(e) => selectOption(data)}

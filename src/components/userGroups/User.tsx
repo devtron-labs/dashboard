@@ -123,11 +123,11 @@ export default function UserForm({
                 isComplete = false
                 curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
             }
-            if (curr.team && curr.entity === EntityTypes.JOB && curr.environment.length === 0) {
+            if (curr.team && curr.environment.length === 0) {
                 isComplete = false
                 curr.environmentError = 'Environments are mandatory'
             }
-            if (curr.team && curr.workflow?.length === 0) {
+            if (curr.team && curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
                 isComplete = false
                 curr.workflowError = 'Worflows are mandatory'
             }
