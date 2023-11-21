@@ -28,7 +28,6 @@ import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrow
 import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
-import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
 import {
