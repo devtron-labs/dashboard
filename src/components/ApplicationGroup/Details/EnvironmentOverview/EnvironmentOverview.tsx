@@ -19,6 +19,7 @@ import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hib
 import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { ReactComponent as DevtronIcon } from '../../../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
+import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
 import Tippy from '@tippyjs/react'
 import { HibernateModal } from './HibernateModal'
 import { UnhibernateModal } from './UnhibernateModal'
@@ -49,6 +50,8 @@ export default function EnvironmentOverview({
     const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
     const [openUnhiberateModal, setOpenUnhiberateModal] = useState<boolean>(false)
     const [isHovered, setIsHovered] = useState<number>(null)
+    const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
+    const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
 
     useEffect(() => {
         setDescription(appGroupListData.description)
@@ -110,6 +113,11 @@ export default function EnvironmentOverview({
         }
     }
 
+    const toggleIsLastDeployedExpanded = () => {
+        
+        setIsLastDeployedExpanded(!isLastDeployedExpanded)
+    }
+
     const getDeploymentHistoryLink = (appId: number, pipelineId: number) =>
         `/application-group/${envId}/cd-details/${appId}/${pipelineId}/`
 
@@ -139,7 +147,7 @@ export default function EnvironmentOverview({
         })
 
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
-        console.log(parsedData, 'parsedData')
+        
         setAppListData(parsedData)
     }
 
@@ -160,14 +168,14 @@ export default function EnvironmentOverview({
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
         const isSelected = selectedAppIds.includes(item.appId)
-        console.log(item, 'item')
+        
 
         return (
             <div
                 key={`${item.application}-${index}`}
                 className={`pl-16 app-deployments-info-row display-grid dc__align-items-center ${
                     isHovered === index ? 'bc-n50' : ''
-                }`}
+                } ${lastDeployedClassName}`}
                 onMouseEnter={() => setIsHovered(index)}
                 onMouseLeave={() => setIsHovered(null)}
             >
@@ -193,16 +201,22 @@ export default function EnvironmentOverview({
                     isVirtualEnv={isVirtualEnv}
                 />
                 {item?.lastDeployedImage && (
-                    <div className="cn-7 fs-13">
-                        <Tippy content={item.lastDeployedImage} className="default-tt" placement="right">
-                            <div
-                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flexbox dc__align-items-center dc__gap-4 dc_width-max-content`}
-                            >
+                    <div className="cn-7 fs-13 flexbox">
+                        <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
+                            <div className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex`}>
                                 <DockerIcon className="icon-dim-14" />
-                                <span>...</span>
-                                <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
-                                    {item?.lastDeployedImage?.split(':').at(-1)}
-                                </div>
+                                {isLastDeployedExpanded ? (
+                                    <div className="mono dc__ellipsis-left direction-left">
+                                        {item.lastDeployedImage}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div>...</div>
+                                        <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
+                                            {item.lastDeployedImage.split(':').at(-1)}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </Tippy>
                     </div>
@@ -359,7 +373,9 @@ export default function EnvironmentOverview({
                         )}
                     </div>
                     <div className="app-deployments-info-wrapper w-100">
-                        <div className="pl-16 app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
+                        <div
+                            className={`pl-16 app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
+                        >
                             <label className="dc__position-rel pointer m-0-imp">
                                 <input
                                     type="checkbox"
@@ -381,7 +397,17 @@ export default function EnvironmentOverview({
                             {!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}
                             <span>{OVERVIEW_HEADER.APPLICATION}</span>
                             <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
-                            <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
+                            <button
+                                type="button"
+                                className="dc__outline-none-imp p-0 dc__transparent flexbox dc__align-items-center dc__gap-4"
+                                onClick={toggleIsLastDeployedExpanded}
+                            >
+                                <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
+                                <ArrowLineDown
+                                    className="icon-dim-14 scn-5 rotate"
+                                    style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
+                                />
+                            </button>
                             <span>Deployed By</span>
                         </div>
                         {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
