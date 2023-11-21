@@ -209,7 +209,7 @@ function CustomImageTags({
                 <hr className="mt-8 mb-8" />
                 <div className="dc__italic-font-style cn-7">
                     {`{X}`} = {formData.customTag.counterX} in the next trigger
-                    {isCDBuild && formData?.customTagStage
+                    {isCDBuild && formData.customTagStage
                         ? ` of ${getCDStageTypeSelectorValue(formData.customTagStage).label}`
                         : ''}
                 </div>

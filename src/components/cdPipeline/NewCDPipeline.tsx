@@ -79,7 +79,7 @@ export default function NewCDPipeline({
     const noStrategyAvailable = useRef(false)
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
-    const [ savedCustomTagPattern, setSavedCustomTagPattern ] = React.useState<string>('')
+    const [ savedCustomTagPattern, setSavedCustomTagPattern ] = useState<string>('')
 
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string

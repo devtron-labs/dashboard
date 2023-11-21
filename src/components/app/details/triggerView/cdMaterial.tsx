@@ -1430,7 +1430,7 @@ export default function CDMaterial({
                 <div className="flex left column">
                     {mat.filterState === FilterStates.ALLOWED ? (
                         <ConditionalWrap
-                            condition={mat?.imagePath?.length > 0}
+                            condition={mat.imagePath?.length > 0}
                             wrap={(children) => (
                                 <Tippy
                                     className="default-tt dc__mxw-500"
