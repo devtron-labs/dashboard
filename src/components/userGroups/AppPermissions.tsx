@@ -25,6 +25,7 @@ import K8sPermissons from './K8sObjectPermissions/K8sPermissons'
 import { apiGroupAll } from './K8sObjectPermissions/K8sPermissions.utils'
 import { getAllWorkflowsForAppNames } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { getJobs } from '../Jobs/Service'
 
 export default function AppPermissions({
     data = null,
@@ -109,7 +110,7 @@ export default function AppPermissions({
        let jobNames
        let appIdWorkflowNamesMapping
        let workflowOptions = []
-       jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.value.split('/')[0])
+       jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
        const { result } = await getAllWorkflowsForAppNames(jobNames)
        appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
        for (const jobName in appIdWorkflowNamesMapping) {
@@ -251,10 +252,22 @@ export default function AppPermissions({
                     } else if (directRolefilter.entity === EntityTypes.JOB) {
                         foundJobs = true
                     }
+                    const jobNameToAppNameMapping = new Map()
+                    if (directRolefilter.entity === EntityTypes.JOB) {
+                        const {
+                            result: { jobContainers },
+                        } = await getJobs({ teams: [projectId] })
+                        jobContainers.forEach((job) => {
+                            jobNameToAppNameMapping.set(job.appName, job.jobName)
+                        })
+                    }
                     const updatedEntityName = directRolefilter?.entityName
                         ? directRolefilter.entityName.split(',').map((entity) => ({
                               value: entity,
-                              label: directRolefilter.entity === EntityTypes.JOB ? entity.split('/')[0] : entity,
+                              label:
+                                  directRolefilter.entity === EntityTypes.JOB
+                                      ? jobNameToAppNameMapping.get(entity)
+                                      : entity,
                           }))
                         : setAllApplication(directRolefilter, projectId)
 
