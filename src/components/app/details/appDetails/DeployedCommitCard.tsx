@@ -17,7 +17,7 @@ const DeployedCommitCard = ({
     const [commitMessage, setCommitMessage] = useState<string>(null)
 
     useEffect(() => {
-        let params = {
+        const params = {
             envId,
             ciArtifactId,
         }
