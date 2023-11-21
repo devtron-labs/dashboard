@@ -48,12 +48,9 @@ export default function AppPermissions({
         appsListHelmApps,
         fetchJobsList,
         jobsList,
-        superAdmin,
-        setWorkflowList,
-        workflowList,
+        superAdmin
     } = useUserGroupContext()
     const { url, path } = useRouteMatch()
-    const [selectedJobs, setSelectedJobs] = useState([])
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
         entityName: [],
@@ -108,14 +105,30 @@ export default function AppPermissions({
         }
     }
 
-    function setAllWorkflows(workflowList) {
-        return [
-            { label: 'All Workflows', value: '*' },
-            ...workflowList?.reduce((acc, option) => {
-                return [...acc, ...option.options]
-            }, []),
-        ]
-    }
+   async function setAllWorkflows(jobOptions) {
+       let jobNames
+       let appIdWorkflowNamesMapping
+       let workflowOptions = []
+       jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.value.split('/')[0])
+       const { result } = await getAllWorkflowsForAppNames(jobNames)
+       appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
+       for (const jobName in appIdWorkflowNamesMapping) {
+           workflowOptions.push({
+               label: jobName,
+               options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
+                   label: workflow,
+                   value: workflow,
+               })),
+           })
+       }
+
+       return [
+           { label: 'All Workflows', value: '*' },
+           ...workflowOptions?.reduce((acc, option) => {
+               return [...acc, ...option.options]
+           }, []),
+       ]
+   }
 
     function setAllEnv(directRolefilter: APIRoleFilter) {
         if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
@@ -238,30 +251,12 @@ export default function AppPermissions({
                     } else if (directRolefilter.entity === EntityTypes.JOB) {
                         foundJobs = true
                     }
-                    let jobNames
-                    let appIdWorkflowNamesMapping
-                    let workflowOptions = []
-                    const selectedJobs = directRolefilter?.entityName
-                        ? directRolefilter.entityName
-                              .split(',')
-                              .map((entity) => ({ value: entity, label: entity.split('/')[0] }))
-                        : setAllApplication(directRolefilter, projectId).filter((entity) => entity.value !== '*')
-                    if (directRolefilter.entity === EntityTypes.JOB) {
-                        jobNames = selectedJobs.filter((job) => job.value !== '*').map((job) => job.value.split('/')[0])
-                        const { result } = await getAllWorkflowsForAppNames(jobNames)
-                        appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
-                        for (const jobName in appIdWorkflowNamesMapping) {
-                            workflowOptions.push({
-                                label: jobName,
-                                options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
-                                    label: workflow,
-                                    value: workflow,
-                                })),
-                            })
-                        }
-                        setWorkflowList({ loading: false, options: workflowOptions })
-                        setSelectedJobs(selectedJobs)
-                    }
+                    const updatedEntityName = directRolefilter?.entityName
+                        ? directRolefilter.entityName.split(',').map((entity) => ({
+                              value: entity,
+                              label: directRolefilter.entity === EntityTypes.JOB ? entity.split('/')[0] : entity,
+                          }))
+                        : setAllApplication(directRolefilter, projectId)
 
                     return {
                         ...directRolefilter,
@@ -269,19 +264,14 @@ export default function AppPermissions({
                         action: { label: directRolefilter.action, value: directRolefilter.action },
                         team: { label: directRolefilter.team, value: directRolefilter.team },
                         entity: directRolefilter.entity,
-                        entityName: directRolefilter?.entityName
-                            ? directRolefilter.entityName.split(',').map((entity) => ({
-                                  value: entity,
-                                  label: directRolefilter.entity === EntityTypes.JOB ? entity.split('/')[0] : entity,
-                              }))
-                            : setAllApplication(directRolefilter, projectId),
+                        entityName: updatedEntityName,
                         environment: setAllEnv(directRolefilter),
                         ...(directRolefilter.entity === EntityTypes.JOB && {
                             workflow: directRolefilter.workflow
                                 ? directRolefilter.workflow
                                       .split(',')
                                       .map((workflow) => ({ value: workflow, label: workflow }))
-                                : setAllWorkflows(workflowOptions),
+                                : await setAllWorkflows(updatedEntityName),
                         }),
                     } as DirectPermissionsRoleFilter
                 }),
@@ -431,7 +421,7 @@ export default function AppPermissions({
         }
     }
 
-    async function handleDirectPermissionChange(index, selectedValue, actionMeta) {
+    async function handleDirectPermissionChange(index, selectedValue, actionMeta,workflowList?) {
         const { action, option, name } = actionMeta
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {
@@ -472,7 +462,6 @@ export default function AppPermissions({
                 tempPermissions[index]['entityNameError'] = null
             }
             if (tempPermissions[index].entity === EntityTypes.JOB) {
-                setSelectedJobs(tempPermissions[index]['entityName'].filter((entity) => entity.value !== '*'))
                 tempPermissions[index]['workflow'] = []
             }
         } else if (name === 'environment') {
@@ -659,7 +648,6 @@ export default function AppPermissions({
                             AddNewPermissionRow={AddNewPermissionRowLocal}
                             directPermission={directPermission}
                             hideInfoLegend={hideInfoLegend}
-                            selectedJobs={selectedJobs}
                         />
                     </Route>
                     {superAdmin && (
@@ -690,7 +678,6 @@ function AppPermissionDetail({
     AddNewPermissionRow,
     directPermission,
     hideInfoLegend,
-    selectedJobs,
 }: AppPermissionsDetailType) {
     return (
         <>
@@ -751,10 +738,9 @@ function AppPermissionDetail({
                                 key={idx}
                                 permission={permission}
                                 removeRow={removeDirectPermissionRow}
-                                handleDirectPermissionChange={(value, actionMeta) =>
-                                    handleDirectPermissionChange(idx, value, actionMeta)
+                                handleDirectPermissionChange={(value, actionMeta,workflowList?) =>
+                                    handleDirectPermissionChange(idx, value, actionMeta,workflowList)
                                 }
-                                selectedJobs={selectedJobs}
                             />
                         </div>
                     ),
