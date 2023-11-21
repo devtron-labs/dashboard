@@ -11,6 +11,10 @@ import {
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 
+export enum DisableType {
+    COMING_SOON = 'COMING SOON',
+}
+
 export interface BlackListedCI {
     [key: number]: CiPipeline
 }

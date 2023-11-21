@@ -18,7 +18,7 @@ export const WORKFLOW_OPTIONS_MODAL = {
     ACTION_TEXT: 'Select an image source for new workflow',
     ACTION_NOTE: 'You can switch between image sources later',
     CHANGE_CI_TEXT: 'Change image source',
-    CHANGE_CI_NOTE: 'Deploy to environments in this workflow from another image source'
+    CHANGE_CI_NOTE: 'Deploy to environments in this workflow from another image source',
 }
 
 export const WORKFLOW_OPTIONS_MODAL_TYPES = {
@@ -68,4 +68,10 @@ export const REQUEST_IN_PROGRESS = 'Request in progress'
 
 export const TOAST_MESSAGES = {
     SUCCESS_CHANGE_TO_WEBHOOK: 'Successfully changed CI to webhook',
+}
+
+export const CHANGE_CI_TOOLTIP = {
+    TITLE: 'Change image source',
+    DISABLED:
+        'Currently, changing image source is only supported between Build Pipeline and Sync with Environment options',
 }

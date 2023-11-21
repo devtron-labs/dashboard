@@ -13,7 +13,7 @@ import {
     REQUEST_IN_PROGRESS,
 } from './workflowEditor.constants'
 import SourceTypeCard from './SourceTypeCard'
-import { ChangeCIPayloadType, WorkflowOptionsModalProps } from './types'
+import { ChangeCIPayloadType, DisableType, WorkflowOptionsModalProps } from './types'
 import { CIPipelineNodeType, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
 import { importComponentFromFELibrary } from '../common'
 import { saveCDPipeline } from '../cdPipeline/cdPipeline.service'
@@ -132,6 +132,10 @@ export default function WorkflowOptionsModal({
     const getDisabledInfo = (requiredCIPipelineType: CIPipelineNodeType) => {
         if (currentCIPipelineType === requiredCIPipelineType) {
             return CHANGE_SAME_CI
+        }
+
+        if (currentCIPipelineType && requiredCIPipelineType !== CIPipelineNodeType.CI && requiredCIPipelineType !== CIPipelineNodeType.LINKED_CD) {
+            return DisableType.COMING_SOON
         }
 
         if (loadingWebhook) {
