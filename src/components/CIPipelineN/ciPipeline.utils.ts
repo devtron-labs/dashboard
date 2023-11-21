@@ -287,7 +287,7 @@ export const customTagStageTypeOptions = [
 ]
 
 export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType => {
-    let stageTypeSelectorValue = { label: '', value: '' }
+    let stageTypeSelectorValue: OptionType
     if (customTagStage === StageTypeEnums.POST_CD) {
         stageTypeSelectorValue = { label: StageTypeMap.POST_CD, value: StageTypeEnums.POST_CD }
     } else {

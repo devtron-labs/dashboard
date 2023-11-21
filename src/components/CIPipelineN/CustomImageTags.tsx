@@ -25,7 +25,7 @@ function CustomImageTags({
 }: CustomImageTagsType) {
     const validationRules = new ValidationRules()
     const isCustomTagError = formDataErrorObj.customTag?.message.length > 0 && !formDataErrorObj.customTag?.isValid
-    const [showCreateImageTagView, setCreateImageTagView] = useState<boolean>(false)
+    const [showCreateImageTagView, setShowCreateImageTagView] = useState<boolean>(false)
 
     const renderInputErrorMessage = (errorMessage: string) => {
         return (
@@ -196,7 +196,7 @@ function CustomImageTags({
     }
 
     const toggleEditToShowCreateImageView = () => {
-        setCreateImageTagView(!showCreateImageTagView)
+        setShowCreateImageTagView(!showCreateImageTagView)
     }
 
     const renderCustomTagCollapsedValue = () => {
