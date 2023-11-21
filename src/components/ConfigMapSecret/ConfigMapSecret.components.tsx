@@ -132,6 +132,10 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    useEffect(() => {
+        reload()
+    },[])
+
     const getData = async () => {
         try {
             abortController.abort()
@@ -233,7 +237,6 @@ export function ConfigMapSecretContainer({
     }
 
     const updateCollapsed = (_collapsed?: boolean): void => {
-
         if (!title) {
             //Redirect and Add config map & secret
             if (name === 'create') {
