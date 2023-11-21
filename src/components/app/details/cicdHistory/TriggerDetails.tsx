@@ -25,7 +25,7 @@ import {
 import { Link, NavLink } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
 import { DEFAULT_ENV } from '../triggerView/Constants'
-import { DEFAULT_TIMESTAMP, WORKER_POD_BASE_URL } from './Constants'
+import { WORKER_POD_BASE_URL } from './Constants'
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -134,7 +134,7 @@ const WorkerStatus = React.memo(
         const isAnHourOld = moment(finishedOn).isBefore(moment().subtract(1, 'hours'))
 
         // finishedOn is 0001-01-01T00:00:00Z when the worker is still running
-        const showLink = finishedOn === DEFAULT_TIMESTAMP || !isAnHourOld
+        const showLink = finishedOn === ZERO_TIME_STRING || !isAnHourOld
 
         return (
             <>

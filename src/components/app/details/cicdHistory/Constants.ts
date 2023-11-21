@@ -22,5 +22,3 @@ export const HISTORY_LABEL = {
 }
 
 export const WORKER_POD_BASE_URL = '/resource-browser/1/devtron-ci/pod/k8sEmptyGroup'
-
-export const DEFAULT_TIMESTAMP = '0001-01-01T00:00:00Z'
