@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { VisibleModal, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import selectWorkflowSource from '../../assets/img/select-workflow.png'
-import changeCI from '../../assets/img/change-ci.png'
+import selectWorkflowSource from '../../assets/img/select-image-source.png'
+import changeCI from '../../assets/img/change-source.png'
 import {
     NO_ENV_FOUND,
     SOURCE_TYPE_CARD_VARIANTS,
