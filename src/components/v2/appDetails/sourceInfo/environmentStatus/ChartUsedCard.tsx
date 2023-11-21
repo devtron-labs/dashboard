@@ -43,7 +43,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
                     </div>
                 </div>
                 {appDetails.chartAvatar ? (
-                    <img src={appDetails.chartAvatar} alt={appDetails.appStoreAppName} className='icon-dim-24'/>
+                    <img src={appDetails.chartAvatar} alt={appDetails.appStoreAppName} className="icon-dim-24"/>
                 ) : (
                     <DefaultChart className="icon-dim-24" />
                 )}
