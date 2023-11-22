@@ -573,7 +573,7 @@ function ClusterOverview({
                     style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%, var(--N0)50.58%)' }}
                 >
                     {renderSideInfoData()}
-                    <div className="dc__mxw-1068 flex-grow-1">
+                    <div className="dc__mxw-1068 flex-grow-1 mw-none">
                         {renderCardDetails()}
                         {renderClusterError()}
                         {Catalog && <Catalog id={clusterId} resourceType="cluster" />}
