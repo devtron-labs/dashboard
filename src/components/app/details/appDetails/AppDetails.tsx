@@ -614,7 +614,7 @@ export const Details: React.FC<DetailsType> = ({
 
     return (
         <React.Fragment>
-            <div className="w-100 pt-16 pr-20 pb-16 pl-20">
+            <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg-gradient">
                 <SourceInfo
                     appDetails={appDetails}
                     appStreamData={streamData}
