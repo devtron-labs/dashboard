@@ -130,13 +130,14 @@ export default function ClusterSelectionList({
             >
                 <div
                     data-testid={`cluster-row-${clusterData.name}`}
-                    className="cb-5 dc__ellipsis-right cursor  flex left"
+                    className="cb-5 dc__ellipsis-right flex left"
                 >
                     <div
                         key={clusterData.name}
                         data-label={clusterData.name}
                         data-value={clusterData.id}
                         onClick={selectCluster}
+                        className="cursor"
                     >
                         {clusterData.name}
                     </div>
