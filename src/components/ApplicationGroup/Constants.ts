@@ -128,6 +128,7 @@ export const OVERVIEW_HEADER = {
     APP_STATUS: 'app status',
     DEPLOYMENT_STATUS: 'deployment status',
     LAST_DEPLOYED: 'last deployed',
+    DEPLOYED_BY: 'deployed by',
 }
 
 export const ENV_APP_GROUP_GA_EVENTS = {

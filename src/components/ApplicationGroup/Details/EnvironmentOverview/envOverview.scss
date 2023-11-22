@@ -10,13 +10,18 @@
 
         .app-deployments-info-header,
         .app-deployments-info-row {
-            grid-template-columns: 20px 16px 200px 130px 200px 1fr;
+            grid-template-columns: 268px 130px 200px 1fr;
             column-gap: 16px;
             grid-auto-rows: 36px;
             transition: grid-template-columns 0.4s ease-out;
 
             &.last-deployed-expanded {
-                grid-template-columns: 20px 16px 200px 130px 330px 1fr;
+                grid-template-columns: 268px 130px 330px 1fr;
+            }
+
+            .app-deployment-info-row-leftsection {
+                grid-template-columns: 20px 16px 200px;
+                column-gap: 16px;
             }
         }
 
@@ -46,11 +51,6 @@
     border-radius: 3px;
 }
 
-.checkbox--active {
-    background-color: red;
-    border-color: red;
-}
-
 .temp {
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
@@ -61,6 +61,8 @@
     width: 1px;
 }
 
-.list-container {
-    width: 1012px;
+.sticky-column {
+    left: 16px;
+    z-index: 3;
+    // background-color: var(--N0);
 }

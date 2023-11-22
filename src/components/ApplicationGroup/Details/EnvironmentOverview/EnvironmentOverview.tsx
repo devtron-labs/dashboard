@@ -114,7 +114,6 @@ export default function EnvironmentOverview({
     }
 
     const toggleIsLastDeployedExpanded = () => {
-        
         setIsLastDeployedExpanded(!isLastDeployedExpanded)
     }
 
@@ -147,7 +146,7 @@ export default function EnvironmentOverview({
         })
 
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
-        
+
         setAppListData(parsedData)
     }
 
@@ -168,8 +167,6 @@ export default function EnvironmentOverview({
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
         const isSelected = selectedAppIds.includes(item.appId)
-        
-
         return (
             <div
                 key={`${item.application}-${index}`}
@@ -179,22 +176,26 @@ export default function EnvironmentOverview({
                 onMouseEnter={() => setIsHovered(index)}
                 onMouseLeave={() => setIsHovered(null)}
             >
-                {isHovered !== index && !isSelected ? (
-                    <DevtronIcon className="icon-dim-20" />
-                ) : (
-                    <label className="dc__position-rel pointer m-0-imp">
-                        <input
-                            type="checkbox"
-                            className="form__checkbox"
-                            value={item.appId}
-                            onChange={handleSelect}
-                            checked={isSelected}
-                        />
-                        <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`}></span>
-                    </label>
-                )}
-                {!isVirtualEnv && <AppStatus appStatus={item.appStatus} />}
-                <span className="fs-13 fw-4 cn-7">{item.application}</span>
+                <div className="app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column">
+                    <span>
+                        {isHovered !== index && !isSelected ? (
+                            <DevtronIcon className="icon-dim-20" />
+                        ) : (
+                            <label className="dc__position-rel pointer m-0-imp">
+                                <input
+                                    type="checkbox"
+                                    className="form__checkbox"
+                                    value={item.appId}
+                                    onChange={handleSelect}
+                                    checked={isSelected}
+                                />
+                                <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`}></span>
+                            </label>
+                        )}
+                    </span>
+                    <span>{!isVirtualEnv && <AppStatus appStatus={item.appStatus} />}</span>
+                    <span className="fs-13 fw-4 cn-7">{item.application}</span>
+                </div>
                 <AppStatus
                     appStatus={item.lastDeployed ? item.deploymentStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
                     isDeploymentStatus={true}
@@ -203,7 +204,9 @@ export default function EnvironmentOverview({
                 {item?.lastDeployedImage && (
                     <div className="cn-7 fs-13 flexbox">
                         <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
-                            <div className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex`}>
+                            <div
+                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4`}
+                            >
                                 <DockerIcon className="icon-dim-14" />
                                 {isLastDeployedExpanded ? (
                                     <div className="mono dc__ellipsis-left direction-left">
@@ -222,7 +225,10 @@ export default function EnvironmentOverview({
                     </div>
                 )}
                 {item?.lastDeployedBy && (
-                    <span className="fs-13 fw-4 cn-9 dc__ellipsis-right dc__word-break flex left dc__gap-6">
+                    <span
+                        className="fs-13 fw-4 cn-9 dc__word-break flex left dc__gap-6 pr-8"
+                        style={{ whiteSpace: 'nowrap' }}
+                    >
                         <span className="flex left dc__gap-8">
                             <span
                                 className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
@@ -340,15 +346,10 @@ export default function EnvironmentOverview({
     }
 
     return appListData ? (
-        <div className="env-overview-container flexbox dc__content-center bcn-0 dc__overflow-hidden pt-20 pb-20 pl-20 pr-20 dc__gap-32">
+        <div className="env-overview-container flexbox dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20 dc__gap-32">
             <div className="w-300 dc__no-shrink">{renderSideInfoColumn()}</div>
-            <div
-                className="dc__overflow-scroll"
-                style={{
-                    width: '1049px',
-                }}
-            >
-                <div className="flex column left list-container">
+            <div className="dc__h-fit-content">
+                <div className="flex column left">
                     <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
                         <span className="flex">
                             <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
@@ -372,34 +373,41 @@ export default function EnvironmentOverview({
                             </div>
                         )}
                     </div>
-                    <div className="app-deployments-info-wrapper w-100">
+                    <div
+                        className="app-deployments-info-wrapper w-100 dc__overflow-scroll dc__position-rel"
+                        style={{
+                            width: '1049px',
+                        }}
+                    >
                         <div
                             className={`pl-16 app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
                         >
-                            <label className="dc__position-rel pointer m-0-imp">
-                                <input
-                                    type="checkbox"
-                                    className="form__checkbox"
-                                    value={'ALL'}
-                                    onChange={handleSelect}
-                                    checked={selectedAppIds.length === appListData.appInfoList.length}
-                                />
-                                <span
-                                    className={`form__checkbox-container ${
-                                        selectedAppIds.length === appListData.appInfoList.length
-                                            ? 'tick-icon'
-                                            : selectedAppIds.length > 0
-                                            ? 'any-selected'
-                                            : ''
-                                    }`}
-                                ></span>
-                            </label>
-                            {!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}
-                            <span>{OVERVIEW_HEADER.APPLICATION}</span>
+                            <div className="app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column">
+                                <label className="dc__position-rel pointer m-0-imp">
+                                    <input
+                                        type="checkbox"
+                                        className="form__checkbox"
+                                        value={'ALL'}
+                                        onChange={handleSelect}
+                                        checked={selectedAppIds.length === appListData.appInfoList.length}
+                                    />
+                                    <span
+                                        className={`form__checkbox-container ${
+                                            selectedAppIds.length === appListData.appInfoList.length
+                                                ? 'tick-icon'
+                                                : selectedAppIds.length > 0
+                                                ? 'any-selected'
+                                                : ''
+                                        }`}
+                                    ></span>
+                                </label>
+                                <span className="">{!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}</span>
+                                <span className="">{OVERVIEW_HEADER.APPLICATION}</span>
+                            </div>
                             <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
                             <button
                                 type="button"
-                                className="dc__outline-none-imp p-0 dc__transparent flexbox dc__align-items-center dc__gap-4"
+                                className="dc__outline-none-imp p-0 dc__uppercase dc__transparent flexbox dc__align-items-center dc__gap-4"
                                 onClick={toggleIsLastDeployedExpanded}
                             >
                                 <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
@@ -408,9 +416,11 @@ export default function EnvironmentOverview({
                                     style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
                                 />
                             </button>
-                            <span>Deployed By</span>
+                            <span>{OVERVIEW_HEADER.DEPLOYED_BY}</span>
                         </div>
+                        {/* <div className="pr-16 "> */}
                         {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
+                        {/* </div> */}
                     </div>
                 </div>
             </div>
