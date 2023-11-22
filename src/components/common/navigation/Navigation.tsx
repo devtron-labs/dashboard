@@ -20,7 +20,6 @@ import { Command, CommandErrorBoundary } from '../../command'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import ReactGA from 'react-ga4'
 import './navigation.scss'
-import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
@@ -79,16 +78,6 @@ const NavigationList = [
         markAsBeta: false,
         isAvailableInDesktop: true,
     },
-    // {
-    //     title: 'Clusters',
-    //     dataTestId: 'click-on-cluster',
-    //     type: 'link',
-    //     href: URLS.CLUSTER_LIST,
-    //     iconClass: 'nav-short-clusters',
-    //     icon: ClusterIcon,
-    //     isAvailableInEA: true,
-    //     isAvailableInDesktop: true,
-    // },
     {
         title: 'Chart Store',
         dataTestId: 'click-on-chart-store',
