@@ -19,14 +19,14 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 export default function AdvancedConfigOptions({
     ciPipeline,
     setDockerConfigOverridden,
-    imageTagValue,
-    setImageTagValue
 }: AdvancedConfigOptionsProps) {
     const {
         formData,
         setFormData,
         loadingState,
         setLoadingState,
+        formDataErrorObj,
+        setFormDataErrorObj
     } = useContext(pipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
@@ -276,7 +276,13 @@ export default function AdvancedConfigOptions({
                                     updateDockerConfigOverride={updateDockerConfigOverride}
                                 />
                             </div>
-                            <CustomImageTags imageTagValue={imageTagValue} setImageTagValue={setImageTagValue} />
+                            <CustomImageTags
+                                savedTagPattern={parentState.selectedCIPipeline.customTag?.tagPattern}
+                                formData={formData}
+                                setFormData={setFormData}
+                                formDataErrorObj={formDataErrorObj}
+                                setFormDataErrorObj={setFormDataErrorObj}
+                            />
 
                             {renderDockerArgs()}
                         </>

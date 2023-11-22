@@ -28,7 +28,6 @@ import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrow
 import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
-import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
 import {
@@ -184,7 +183,6 @@ export default function CDMaterial({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -1417,14 +1415,37 @@ export default function CDMaterial({
         const isApprovalRequester = getIsApprovalRequester(mat.userApprovalMetadata)
         const isImageApprover = getIsImageApprover(mat.userApprovalMetadata)
 
+        const renderImagePathTippyContent = (imagePath: string, registryName: string) => {
+            return (
+                <div>
+                    <div className="fw-6">{registryName}</div>
+                    <div>{imagePath}</div>
+                </div>
+            )
+        }
+
         return (
             <>
                 <div className="flex left column">
                     {mat.filterState === FilterStates.ALLOWED ? (
-                        <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                            <img src={docker} alt="" className="commit-hash__icon" />
-                            {mat.image}
-                        </div>
+                        <ConditionalWrap
+                            condition={mat.imagePath?.length > 0}
+                            wrap={(children) => (
+                                <Tippy
+                                    className="default-tt dc__mxw-500"
+                                    arrow={false}
+                                    placement="top-start"
+                                    content={renderImagePathTippyContent(mat.imagePath, mat.registryName)}
+                                >
+                                    {children}
+                                </Tippy>
+                            )}
+                        >
+                            <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
+                            <div className={`dc__registry-icon ${mat.registryType} mr-8`}></div>
+                                {mat.image}
+                            </div>
+                        </ConditionalWrap>
                     ) : (
                         <Tippy
                             className="default-tt w-200"
