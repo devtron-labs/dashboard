@@ -1,9 +1,6 @@
 import React from 'react'
-
-export const ImageTagType = {
-    Default: 'DEFAULT',
-    Custom: 'CUSTOM',
-}
+import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CustomTagType {
     tagPattern: string
@@ -11,6 +8,12 @@ export interface CustomTagType {
 }
 
 export interface CustomImageTagsType {
-    imageTagValue: string
-    setImageTagValue: React.Dispatch<React.SetStateAction<string>>
+    savedTagPattern?: string
+    formData: PipelineFormType
+    setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
+    formDataErrorObj: PipelineFormDataErrorType
+    setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
+    isCDBuild?: boolean
+    selectedCDStageTypeValue?: OptionType
+    setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
 }

@@ -149,7 +149,7 @@ if (!window || !window._env_) {
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
-        ANNOUNCEMENT_BANNER_MSG: 'Avoid deploying non critical changes to production between 1st to 31st August 2023',
+        ANNOUNCEMENT_BANNER_MSG: '',
         LOGIN_PAGE_IMAGE: '',
         LOGIN_PAGE_IMAGE_BG: ''
     }
