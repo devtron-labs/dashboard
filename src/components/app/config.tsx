@@ -9,11 +9,13 @@ export const Colors = {
 export const statusColor = {
     suspended: '#ffaa00',
     unknown: 'var(--N700)',
+    queued: 'var(--N700)',
     degraded: 'var(--R500)',
     healthy: 'var(--G500)',
     notdeployed: 'var(--N500)',
     missing: 'var(--N700)',
     progressing: "var(--orange)",
+    initiating: "var(--orange)",
     starting: "#FF7E5B",
     succeeded: '#1dad70',
     running: '#FF7E5B',
@@ -28,8 +30,10 @@ export const statusColor = {
 
 export const statusIcon = {
     failed:'failed',
+    queued:'queued',
     suspended: 'suspended',
     starting: "progressing",
+    initiating: "progressing",
     unknown: 'unknown',
     degraded: 'degraded',
     healthy: 'healthy',
