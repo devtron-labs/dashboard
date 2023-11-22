@@ -24,7 +24,7 @@ export function HibernateStatusRow({ rowData, index, isVirtualEnv, isHibernateOp
         } else if (rowData.authError) {
             return 'Not authorized'
         } else if (rowData.skipped) {
-            return rowData.skipped
+            return 'Skipped'
         } else {
             return 'Failed'
         }
@@ -35,6 +35,8 @@ export function HibernateStatusRow({ rowData, index, isVirtualEnv, isHibernateOp
             return 'You do not have permission to trigger deployment for this application + environment'
         } else if (rowData.error) {
             return rowData.error
+        } else if (rowData.skipped) {
+            return rowData.skipped
         }
         return '-'
     }
