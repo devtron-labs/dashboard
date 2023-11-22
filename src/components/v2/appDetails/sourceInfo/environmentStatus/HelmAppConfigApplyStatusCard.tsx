@@ -30,7 +30,7 @@ function HelmAppConfigApplyStatusCard({ releaseStatus, cardLoading }: HelmAppCon
                 </div>
                 <div className="flex br-4">
                     <figure
-                        className={`${releaseStatus['status'].toLowerCase()} dc__app-summary__icon ml-8 icon-dim-24`}
+                        className={`${releaseStatus['status'].toLowerCase()}  ml-8 icon-dim-24`}
                     ></figure>
                 </div>
             </div>
