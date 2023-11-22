@@ -578,7 +578,6 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
-            null,
             changeCIPayload,
         )
             .then((response) => {

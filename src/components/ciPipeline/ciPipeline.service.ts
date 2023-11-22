@@ -13,7 +13,6 @@ import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType, PipelineBuildStageType } from '../workflowEditor/types'
-import { ImageTagType } from '../CIPipelineN/CustomImageTag.type'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -214,13 +213,9 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
-    imageTagValue?: string,
     changeCIPayload?: ChangeCIPayloadType,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
-    if (imageTagValue === ImageTagType.Default) {
-        delete(ci.customTag)
-    }
 
     const request: any = {
         appId: changeCIPayload?.appId ?? appId,
