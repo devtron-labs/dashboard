@@ -1,4 +1,4 @@
-import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import {
@@ -163,6 +163,8 @@ export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType>
     postBuildStage?: PipelineBuildStageType
     defaultTag?: string[]
     customTag?: CustomTagType
+    enableCustomTag?: boolean;
+    customTagStage?: string
 }
 
 export interface PipelineFormDataErrorType {
@@ -240,6 +242,9 @@ export interface PipelineContext {
         description?: string
         variableType?: string
     }[]
+    savedCustomTagPattern?: string
+    selectedCDStageTypeValue?: OptionType
+    setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
 }
 
 export interface SourceTypeCardProps {
@@ -264,3 +269,4 @@ export interface WorkflowOptionsModalProps {
     workflows?: WorkflowType[]
     getWorkflows?: () => void
 }
+    

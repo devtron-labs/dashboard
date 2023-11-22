@@ -218,9 +218,10 @@ export function saveCIPipeline(
     changeCIPayload?: ChangeCIPayloadType,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
-    if (imageTagValue === ImageTagType.Default){
+    if (imageTagValue === ImageTagType.Default) {
         delete(ci.customTag)
     }
+
     const request: any = {
         appId: changeCIPayload?.appId ?? appId,
         appWorkflowId: changeCIPayload?.appWorkflowId ?? workflowId,
@@ -330,6 +331,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
             counterX: formData.customTag ? +formData.customTag.counterX : 0,
         },
+        enableCustomTag: formData.enableCustomTag,
     }
     return ci
 }
@@ -517,6 +519,7 @@ function parseCIResponse(
                     tagPattern: ciPipeline.customTag?.tagPattern || '',
                     counterX: +ciPipeline.customTag?.counterX || 0,
                 },
+                enableCustomTag: ciPipeline.enableCustomTag
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
