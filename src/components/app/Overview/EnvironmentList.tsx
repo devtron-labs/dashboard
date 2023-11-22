@@ -142,12 +142,12 @@ export const EnvironmentList = ({
                                                 )}
                                                 <Link
                                                     to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
-                                                    className="fs-13 dc__ellipsis-right"
+                                                    className="anchor fs-13 dc__ellipsis-right"
                                                 >
                                                     {_env.environmentName}
                                                 </Link>
                                                 {_env.lastDeployedImage ? (
-                                                    <div className="cn-7 fs-13 flexbox">
+                                                    <div className="cn-7 fs-14 flexbox">
                                                         <Tippy
                                                             content={_env.lastDeployedImage}
                                                             className="default-tt"
@@ -193,7 +193,7 @@ export const EnvironmentList = ({
                                                             </span>
                                                             <span>{_env.lastDeployedBy}</span>
                                                         </span>
-                                                        <Link to={getDeploymentHistoryLink(_env)} className="cursor">
+                                                        <Link to={getDeploymentHistoryLink(_env)} className="anchor cursor">
                                                             {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
                                                         </Link>
                                                     </span>

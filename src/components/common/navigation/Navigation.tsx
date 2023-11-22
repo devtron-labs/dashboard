@@ -79,6 +79,16 @@ const NavigationList = [
         markAsBeta: false,
         isAvailableInDesktop: true,
     },
+    // {
+    //     title: 'Clusters',
+    //     dataTestId: 'click-on-cluster',
+    //     type: 'link',
+    //     href: URLS.CLUSTER_LIST,
+    //     iconClass: 'nav-short-clusters',
+    //     icon: ClusterIcon,
+    //     isAvailableInEA: true,
+    //     isAvailableInDesktop: true,
+    // },
     {
         title: 'Chart Store',
         dataTestId: 'click-on-chart-store',
