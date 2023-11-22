@@ -2,6 +2,7 @@ import { VisibleModal, showError } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { hibernate } from './service'
+import { ButtonWithLoader } from '../../../common'
 
 interface HibernateModalProps {
     selectedAppIds: number[]
@@ -75,13 +76,15 @@ export const HibernateModal = ({
                     >
                         Cancel
                     </button>
-                    <button
+                    <ButtonWithLoader
+                        rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 w-96 dc__border-radius-4-imp"
+                        loaderColor="#fff"
+                        isLoading={loader}
+                        disabled={false}
                         onClick={hibernateApps}
-                        className="flex cn-0 bcb-5 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border-n0"
-                        disabled={loader}
                     >
-                        {loader ? 'Please wait...' : 'Hibernate'}
-                    </button>
+                        Hibernate
+                    </ButtonWithLoader>
                 </div>
             </div>
         </VisibleModal>

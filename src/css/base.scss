@@ -263,6 +263,7 @@ a:focus {
 .dc__white-space-normal {
     white-space: normal;
 }
+
 .dc__white-space-pre {
     white-space: pre;
 }
@@ -332,6 +333,7 @@ a:focus {
 .dc__top-26 {
     top: 26px;
 }
+
 .dc__top-47 {
     top: 47px;
 }
@@ -688,6 +690,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
+
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -962,6 +965,7 @@ button.anchor {
 }
 
 .override-button.cta {
+
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1013,6 +1017,7 @@ button.anchor {
     display: grid;
     grid-template-columns: 24px 1fr 200px;
     grid-column-gap: 10px;
+
     .tag {
         border: 1px solid var(--N200);
         height: 20px;
@@ -1274,12 +1279,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1308,19 +1313,19 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px;
                 border-bottom-right-radius: 4px;
                 border: 1px solid var(--N200);
             }
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1339,12 +1344,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             color: var(--N900);
             background-color: var(--N0);
@@ -1374,12 +1379,12 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px;
                 border-bottom-right-radius: 4px;
                 border: 1px solid var(--N200);
@@ -1390,7 +1395,7 @@ button.anchor {
 
 .gui-yaml-switch {
     &.radio-group {
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1419,7 +1424,7 @@ button.anchor {
         &.radio-group {
             height: 30px;
 
-            input + .radio__item-label {
+            input+.radio__item-label {
                 padding-inline: 8px;
             }
         }
@@ -1428,7 +1433,7 @@ button.anchor {
 
 .manual-approvals-switch {
     &.radio-group {
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1436,7 +1441,7 @@ button.anchor {
             }
         }
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             padding: 4px 8px;
         }
 
@@ -1447,12 +1452,12 @@ button.anchor {
                 fill: var(--N500);
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
             }
@@ -1755,7 +1760,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -1937,9 +1942,11 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
+
     &.dc__link_over {
         color: var(--N600);
     }
+
     &:hover {
         color: var(--B500);
     }
@@ -2446,7 +2453,7 @@ textarea,
     }
 }
 
-.basic-multi-select > .select__control--is-disabled {
+.basic-multi-select>.select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2588,6 +2595,7 @@ textarea,
 .dc__word-wrap-anywhere {
     word-wrap: anywhere;
 }
+
 .dc__ff-monospace {
     font-family: monospace;
 }
@@ -2739,6 +2747,10 @@ textarea,
 
 .w-80px-imp {
     width: 80px !important;
+}
+
+.w-96 {
+    width: 96px;
 }
 
 .w-100px {
@@ -3469,9 +3481,11 @@ textarea,
 .dc__column-gap-24 {
     column-gap: 24px;
 }
+
 .dc__column-gap-32 {
     column-gap: 32px;
 }
+
 .dc__gap-2 {
     gap: 2px;
 }
@@ -3850,6 +3864,7 @@ textarea::placeholder {
     .action-icon {
         display: none;
     }
+
     &.icon-hover {
         &:hover {
             .show-icon {
@@ -3892,7 +3907,8 @@ textarea::placeholder {
 }
 
 .dc__grabbable {
-    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: move;
+    /* fallback if grab cursor is unsupported */
     cursor: grab;
     cursor: -moz-grab;
     cursor: -webkit-grab;
@@ -3928,33 +3944,33 @@ textarea::placeholder {
 // Start: accouncement banner
 .announcement-banner-container {
     &.page-header-banner {
-            width: fit-content;
-            position: absolute;
-            margin: auto;
-            left: 0;
-            right: 0;
-            top: 0;
-            text-align: center;
-        }
-    
-        &.cd-trigger-announcement {
-            .info-bar-container {
-                .announcement-bar {
-                    border-radius: 0;
-                    border: none;
-                    border-bottom: 1px solid var(--Y700);
-                }
+        width: fit-content;
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        text-align: center;
+    }
+
+    &.cd-trigger-announcement {
+        .info-bar-container {
+            .announcement-bar {
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid var(--Y700);
             }
         }
     }
-    
-    .announcement-bar {
-        background-color: var(--Y500);
-        border: 1px solid var(--Y700);
-        border-top: none;
-        padding: 8px 12px !important;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
+}
+
+.announcement-bar {
+    background-color: var(--Y500);
+    border: 1px solid var(--Y700);
+    border-top: none;
+    padding: 8px 12px !important;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 // End: accouncement banner
