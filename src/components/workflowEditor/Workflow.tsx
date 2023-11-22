@@ -30,8 +30,8 @@ import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
-import { ReactComponent as ICDelete } from '../../assets/icons/misc/delete.svg'
-import { ReactComponent as ICEdit } from '../../assets/icons/misc/editBlack.svg'
+import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
 import { ChangeCIPayloadType } from './types'
 import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
 
@@ -544,7 +544,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     className={
                         configDiffView
                             ? 'mb-20 workflow workflow--create'
-                            : 'workflow--create flexbox-col mb-16 dc__gap-6'
+                            : 'workflow--create flexbox-col mb-16 dc__gap-6 workflow-action-header'
                     }
                     style={{
                         minWidth: configDiffView
@@ -563,7 +563,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     >
                         <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
                         {!configDiffView && (
-                            <div className="flexbox dc__align-items-center dc__gap-8 workflow-action-header">
+                            <div className="flexbox dc__align-items-center dc__gap-8">
                                 <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon" />
 
                                 <Tippy
@@ -577,7 +577,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                             type="button"
                                             className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex workflow-header-action-btn"
                                         >
-                                            <ICEdit className="icon-dim-20" />
+                                            <ICEdit className="icon-dim-16" />
                                         </button>
                                     </Link>
                                 </Tippy>
@@ -598,7 +598,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                                 onClick={this.handleCIChange}
                                                 disabled={!isChangeCIEnabled}
                                             >
-                                                <ICInput className="icon-dim-20" />
+                                                <ICInput className="icon-dim-16" />
                                             </button>
                                         </span>
                                     </Tippy>
@@ -610,7 +610,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                         className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex workflow-header-action-btn"
                                         onClick={this.toggleShowDeleteDialog}
                                     >
-                                        <ICDelete className="icon-dim-20" />
+                                        <ICDelete className="icon-dim-16" />
                                     </button>
                                 </Tippy>
                             </div>
