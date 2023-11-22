@@ -2,10 +2,15 @@ import React, { useMemo, useState } from 'react'
 
 import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
-import { useAsync, getRandomColor, AppStatus, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    useAsync,
+    getRandomColor,
+    processDeployedTime,
+    AppStatus,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ModuleNameMap, URLS } from '../../../config'
-import { processDeployedTime } from '../../common'
 import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
 import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
