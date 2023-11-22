@@ -9,7 +9,6 @@ import { ChartUsedCardType } from '../environment.type'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 
 const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: ChartUsedCardType) => {
-    
     if (cardLoading) return <LoadingCard />
 
     return (
@@ -43,7 +42,11 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
                     </div>
                 </div>
                 {appDetails.chartAvatar ? (
-                    <img src={appDetails.chartAvatar} alt={appDetails.appStoreAppName} className="icon-dim-24"/>
+                    <img
+                        src={appDetails.chartAvatar}
+                        alt={appDetails.appStoreAppName}
+                        className="dc__chart-grid-item__icon icon-dim-24"
+                    />
                 ) : (
                     <DefaultChart className="icon-dim-24" />
                 )}
