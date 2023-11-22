@@ -561,48 +561,49 @@ export default function NodeDetailsList({
 
     return (
         <>
-            <div data-testid="cluster_name_info_page" className={getScrollableResourceClass("node-list dc__overflow-scroll dc__border-left", filteredFlattenNodeList.length > pageSize ,syncError)}>
-                {typeof renderCallBackSync === 'function' && renderCallBackSync()}
-                <div
-                    className={`bcn-0 pt-16 list-min-height ${syncError ? 'sync-error' : ''} ${
-                        noResults ? 'no-result-container' : ''
-                    }`}
-                >
-                    <div className="pl-20 pr-20">
-                        <NodeListSearchFilter
-                            defaultVersion={defaultVersion}
-                            nodeK8sVersions={nodeK8sVersions}
-                            selectedVersion={selectedVersion}
-                            setSelectedVersion={setSelectedVersion}
-                            appliedColumns={appliedColumns}
-                            setAppliedColumns={setAppliedColumns}
-                            selectedSearchTextType={selectedSearchTextType}
-                            setSelectedSearchTextType={setSelectedSearchTextType}
-                            searchText={searchText}
-                            setSearchText={setSearchText}
-                            searchedTextMap={searchedTextMap}
-                            setSearchedTextMap={setSearchedTextMap}
-                        />
-                    </div>
-                    {noResults ? (
-                        <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
-                    ) : (
-                        <>
-                            <div className="mt-16" style={{ width: '100%', overflow: 'auto'}}>
-                                <div
-                                    className="fw-6 cn-7 fs-13 dc__border-bottom pr-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0"
-                                    style={{ width: 'max-content', minWidth: '100%' ,zIndex:5}}
-                                >
-                                    {appliedColumns.map((column) => renderNodeListHeader(column))}
+            <div data-testid="cluster_name_info_page" className="node-list dc__overflow-scroll dc__border-left">
+                    {typeof renderCallBackSync === 'function' && renderCallBackSync()}
+                    <div
+                        className={`bcn-0 pt-16 list-min-height ${syncError ? 'sync-error' : ''} ${
+                            noResults ? 'no-result-container' : ''
+                        }`}
+                    >
+                        <div className="pl-20 pr-20">
+                            <NodeListSearchFilter
+                                defaultVersion={defaultVersion}
+                                nodeK8sVersions={nodeK8sVersions}
+                                selectedVersion={selectedVersion}
+                                setSelectedVersion={setSelectedVersion}
+                                appliedColumns={appliedColumns}
+                                setAppliedColumns={setAppliedColumns}
+                                selectedSearchTextType={selectedSearchTextType}
+                                setSelectedSearchTextType={setSelectedSearchTextType}
+                                searchText={searchText}
+                                setSearchText={setSearchText}
+                                searchedTextMap={searchedTextMap}
+                                setSearchedTextMap={setSearchedTextMap}
+                            />
+                        </div>
+                        {noResults ? (
+                            <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
+                        ) : (
+                            <>
+                                <div className={getScrollableResourceClass('scrollable-node-list mt-16', filteredFlattenNodeList.length > pageSize, syncError)} style={{ width: '100%', overflow: 'auto' }}>
+                                    <div
+                                        className="fw-6 cn-7 fs-13 dc__border-bottom pr-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0"
+                                        style={{ width: 'max-content', minWidth: '100%', zIndex: 5 }}
+                                    >
+                                        {appliedColumns.map((column) => renderNodeListHeader(column))}
+                                    </div>
+                                    {filteredFlattenNodeList
+                                        .slice(nodeListOffset, nodeListOffset + pageSize)
+                                        ?.map((nodeData) => renderNodeList(nodeData))}
                                 </div>
-                                {filteredFlattenNodeList
-                                    .slice(nodeListOffset, nodeListOffset + pageSize)
-                                    ?.map((nodeData) => renderNodeList(nodeData))}
-                            </div>
-                            {renderPagination()}
-                        </>
-                    )}
-                </div>
+                                {renderPagination()}
+                            </>
+                        )}
+                    </div>
+
             </div>
         </>
     )
