@@ -170,13 +170,17 @@ export default function EnvironmentOverview({
         return (
             <div
                 key={`${item.application}-${index}`}
-                className={`pl-16 app-deployments-info-row display-grid dc__align-items-center ${
+                className={`app-deployments-info-row dc__w-fit-inherit display-grid dc__align-items-center ${
                     isHovered === index ? 'bc-n50' : ''
                 } ${lastDeployedClassName}`}
                 onMouseEnter={() => setIsHovered(index)}
                 onMouseLeave={() => setIsHovered(null)}
             >
-                <div className="app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column">
+                <div
+                    className={`pl-16 app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column ${
+                        isHovered === index ? 'bc-n50' : 'bcn-0'
+                    }`}
+                >
                     <span>
                         {isHovered !== index && !isSelected ? (
                             <DevtronIcon className="icon-dim-20" />
@@ -347,7 +351,7 @@ export default function EnvironmentOverview({
 
     return appListData ? (
         <div className="env-overview-container flexbox dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20 dc__gap-32">
-            <div className="w-300 dc__no-shrink">{renderSideInfoColumn()}</div>
+            <div className="w-300">{renderSideInfoColumn()}</div>
             <div className="dc__h-fit-content">
                 <div className="flex column left">
                     <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
@@ -376,13 +380,13 @@ export default function EnvironmentOverview({
                     <div
                         className="app-deployments-info-wrapper w-100 dc__overflow-scroll dc__position-rel"
                         style={{
-                            width: '1049px',
+                            width: '1012px',
                         }}
                     >
                         <div
-                            className={`pl-16 app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
+                            className={`app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
                         >
-                            <div className="app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column">
+                            <div className="pl-16 app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column bcn-0">
                                 <label className="dc__position-rel pointer m-0-imp">
                                     <input
                                         type="checkbox"
@@ -418,9 +422,9 @@ export default function EnvironmentOverview({
                             </button>
                             <span>{OVERVIEW_HEADER.DEPLOYED_BY}</span>
                         </div>
-                        {/* <div className="pr-16 "> */}
-                        {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
-                        {/* </div> */}
+                        <div className="mt-4 mb-4">
+                            {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
+                        </div>
                     </div>
                 </div>
             </div>

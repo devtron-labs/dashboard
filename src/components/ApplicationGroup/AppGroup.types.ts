@@ -421,4 +421,5 @@ export interface HibernateResponseRowType {
     success: boolean
     authError?: boolean
     error?: string
+    skipped?: string
 }
