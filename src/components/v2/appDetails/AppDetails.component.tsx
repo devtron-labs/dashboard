@@ -183,7 +183,7 @@ const AppDetailsComponent = ({
 
     return (
         <div className="helm-details" data-testid="app-details-wrapper">
-            <div className='app-info-bg-gradient'>
+            <div className="app-info-bg-gradient">
                 <EnvironmentSelectorComponent
                     isExternalApp={isExternalApp}
                     _init={_init}
