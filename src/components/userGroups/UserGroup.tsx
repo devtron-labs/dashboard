@@ -423,8 +423,14 @@ const UserGroupList: React.FC<{
     )
 
     const deleteCallback = useCallback(
-        (index: number, payload) => {
+        (email_id: string) => {
+            // find index from the filtered list
+            const index = result.findIndex((userOrGroup) => userOrGroup.email_id === email_id)
+
+            // remove the item from the filtered list
             const newResult = removeItemsFromArray(result, index, 1)
+
+            // update the state
             setState((state) => ({ ...state, result: newResult }))
         },
         [result.length],
@@ -757,6 +763,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 deleteCallback,
                                 createCallback,
                                 index,
+                                email_id,
                                 cancelCallback,
                             }}
                         />
