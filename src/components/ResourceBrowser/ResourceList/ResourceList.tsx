@@ -308,6 +308,11 @@ export default function ResourceList() {
     // Starts the cluster terminal when the cluster tab is opened for the first time
     useEffect(() => {
         triggerTerminal()
+        if (location.pathname === URLS.RESOURCE_BROWSER) {
+            setStartTerminal(false)
+            setSelectedTerminal(null)
+        }
+        triggerTerminal()
     }, [location.search, nodeType])
 
     useEffect(() => {
@@ -1074,6 +1079,8 @@ export default function ResourceList() {
                             isOverview={isOverview}
                             isStaleDataRef={isStaleDataRef}
                             setLastDataSyncTimeString={setLastDataSyncTimeString}
+                            setStartTerminal={setStartTerminal}
+                            selectedTerminal={selectedTerminal}
                         />
                     </div>
                 </div>

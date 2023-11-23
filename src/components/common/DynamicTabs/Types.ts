@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { ClusterDetail } from '../../ClusterNodes/types'
 
 interface CommonTabArgsType {
     name: string
@@ -32,6 +33,8 @@ export interface DynamicTabsProps {
     lastDataSync:boolean,
     setLastDataSyncTimeString: (time: string) => void,
     isStaleDataRef: any,
+    setStartTerminal: (startTerminal: boolean) => void,
+    selectedTerminal: ClusterDetail,
 }
 
 export interface TabsDataType {

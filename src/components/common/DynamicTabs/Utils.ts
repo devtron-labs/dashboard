@@ -1,3 +1,5 @@
+import { ClusterDetail } from '../../ClusterNodes/types'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import { TabsDataType } from './Types'
 
 export const COMMON_TABS_SELECT_STYLES = {
@@ -41,6 +43,7 @@ export const initTabsData = (
     setTabsData: React.Dispatch<React.SetStateAction<TabsDataType>>,
     setSelectedTab: React.Dispatch<React.SetStateAction<any>>,
     updateMenuState: () => void,
+    selectedTerminal: ClusterDetail,
 ): void => {
     const fixedTabs = []
     const dynamicTabs = []
@@ -51,11 +54,16 @@ export const initTabsData = (
             value: tab.id,
         }
         if (tab.positionFixed) {
-            fixedTabs.push(tabOption)
+            if (tab.name === AppDetailsTabs.terminal) {
+                if (selectedTerminal) {
+                    fixedTabs.push(tabOption)
+                }
+            } else {
+                fixedTabs.push(tabOption)
+            }
         } else {
             dynamicTabs.push(tabOption)
         }
-
         if (tabOption.isSelected) {
             setSelectedTab(tabOption)
         }

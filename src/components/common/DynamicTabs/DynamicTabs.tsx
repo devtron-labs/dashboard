@@ -41,7 +41,10 @@ function DynamicTabs({
     isOverview,
     lastDataSync,
     setLastDataSyncTimeString,
-    isStaleDataRef
+    isStaleDataRef,
+    selectedTerminal,
+    setStartTerminal,
+
 }: DynamicTabsProps & IWithShortcut) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -75,7 +78,7 @@ function DynamicTabs({
     }, [lastDataSync])
 
     useEffect(() => {
-        initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
+        initTabsData(tabs, setTabsData, setSelectedTab, closeMenu, selectedTerminal)
     }, [tabs])
 
     const updateRef = (_node: HTMLAnchorElement) => {
@@ -134,6 +137,7 @@ function DynamicTabs({
                 push(pushURL)
             }
         }, 1)
+        setStartTerminal(false)
     }
 
     const getTabTippyContent = (title: string) => {
