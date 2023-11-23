@@ -171,33 +171,33 @@ export default function EnvironmentOverview({
             <div
                 key={`${item.application}-${index}`}
                 className={`app-deployments-info-row dc__w-fit-inherit display-grid dc__align-items-center ${
-                    isHovered === index ? 'bc-n50' : ''
+                    isHovered === index ? 'bc-n50' : 'bcn-0'
                 } ${lastDeployedClassName}`}
                 onMouseEnter={() => setIsHovered(index)}
                 onMouseLeave={() => setIsHovered(null)}
             >
                 <div
-                    className={`pl-16 app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column ${
+                    className={`pl-16 app-deployment-info-row-leftsection dc__align-items-center display-grid dc__position-sticky sticky-column ${
                         isHovered === index ? 'bc-n50' : 'bcn-0'
                     }`}
                 >
-                    <span>
-                        {isHovered !== index && !isSelected ? (
-                            <DevtronIcon className="icon-dim-20" />
-                        ) : (
-                            <label className="dc__position-rel pointer m-0-imp">
-                                <input
-                                    type="checkbox"
-                                    className="form__checkbox"
-                                    value={item.appId}
-                                    onChange={handleSelect}
-                                    checked={isSelected}
-                                />
-                                <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`}></span>
-                            </label>
-                        )}
-                    </span>
-                    <span>{!isVirtualEnv && <AppStatus appStatus={item.appStatus} />}</span>
+                    {/* <span> */}
+                    {isHovered !== index && !isSelected ? (
+                        <DevtronIcon className="icon-dim-20" />
+                    ) : (
+                        <label className="dc__position-rel pointer">
+                            <input
+                                type="checkbox"
+                                className="form__checkbox"
+                                value={item.appId}
+                                onChange={handleSelect}
+                                checked={isSelected}
+                            />
+                            <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`}></span>
+                        </label>
+                    )}
+                    {/* </span> */}
+                    {!isVirtualEnv && <AppStatus appStatus={item.appStatus} />}
                     <span className="fs-13 fw-4 cn-7">{item.application}</span>
                 </div>
                 <AppStatus
@@ -352,7 +352,14 @@ export default function EnvironmentOverview({
     return appListData ? (
         <div className="env-overview-container flexbox dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20 dc__gap-32">
             <div className="w-300">{renderSideInfoColumn()}</div>
-            <div className="dc__h-fit-content">
+            <div
+                className="dc__h-fit-content"
+                style={{
+                    // minWidth: '1012px',
+                    // minWidth: 'auto',
+                    maxWidth: '1068px',
+                }}
+            >
                 <div className="flex column left">
                     <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
                         <span className="flex">
@@ -377,12 +384,7 @@ export default function EnvironmentOverview({
                             </div>
                         )}
                     </div>
-                    <div
-                        className="app-deployments-info-wrapper w-100 dc__overflow-scroll dc__position-rel"
-                        style={{
-                            width: '1012px',
-                        }}
-                    >
+                    <div className="app-deployments-info-wrapper w-100 dc__overflow-scroll dc__position-rel">
                         <div
                             className={`app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
                         >
@@ -422,7 +424,7 @@ export default function EnvironmentOverview({
                             </button>
                             <span>{OVERVIEW_HEADER.DEPLOYED_BY}</span>
                         </div>
-                        <div className="mt-4 mb-4">
+                        <div className="mt-4 mb-4 pr-16">
                             {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
                         </div>
                     </div>
