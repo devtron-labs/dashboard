@@ -759,6 +759,8 @@ table.pod__table td:last-child {
             color: var(--green);
         }
 
+        &.f-starting,
+        &.f-initiating,
         &.f-suspended,
         &.f-switchedtoactiveservice {
             color: var(--orange);

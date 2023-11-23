@@ -609,6 +609,8 @@ export const TERMINAL_STATUS_MAP = {
     RUNNING: 'running',
     PROGRESSING: 'progressing',
     STARTING: 'starting',
+    INITIATING: 'initiating',
+    QUEUED: 'queued',
     FAILED: 'failed',
     ERROR: 'error',
     CANCELLED: 'cancelled',
@@ -726,7 +728,10 @@ export const DEPLOYMENT_STATUS = {
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
     PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    INITIATING: 'initiating',
     SUPERSEDED: 'superseded',
+    QUEUED: 'queued',
     UNKNOWN: 'unknown',
 }
 
