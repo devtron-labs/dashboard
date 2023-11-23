@@ -101,7 +101,7 @@ export default function WorkflowOptionsModal({
         if (!(e.currentTarget instanceof HTMLDivElement)) {
             return
         }
-        
+
         if ('key' in e && e.key !== 'Enter') {
             return
         }
@@ -115,11 +115,6 @@ export default function WorkflowOptionsModal({
         }
 
         if (LINKED_CD_SOURCE_VARIANT && pipelineType === LINKED_CD_SOURCE_VARIANT.type) {
-            if (!showLinkedCDSource) {
-                toast.error(NO_ENV_FOUND)
-                return
-            }
-
             addLinkedCD(changeCIPayload)
             handleCloseWorkflowOptionsModal()
             return
@@ -130,11 +125,19 @@ export default function WorkflowOptionsModal({
     }
 
     const getDisabledInfo = (requiredCIPipelineType: CIPipelineNodeType) => {
+        if (!showLinkedCDSource && requiredCIPipelineType === CIPipelineNodeType.LINKED_CD) {
+            return NO_ENV_FOUND
+        }
+
         if (currentCIPipelineType === requiredCIPipelineType) {
             return CHANGE_SAME_CI
         }
 
-        if (currentCIPipelineType && requiredCIPipelineType !== CIPipelineNodeType.CI && requiredCIPipelineType !== CIPipelineNodeType.LINKED_CD) {
+        if (
+            currentCIPipelineType &&
+            requiredCIPipelineType !== CIPipelineNodeType.CI &&
+            requiredCIPipelineType !== CIPipelineNodeType.LINKED_CD
+        ) {
             return DisableType.COMING_SOON
         }
 
@@ -153,10 +156,10 @@ export default function WorkflowOptionsModal({
         >
             <div className="workflow-options-modal br-8 flexbox h-500 dc__overflow-scroll" onClick={stopPropagation}>
                 {/* Sidebar */}
-                <div className="flexbox-col w-236 pt-32 dc__window-bg">
+                <div className="flexbox-col w-250 pt-32 dc__window-bg dc__content-space">
                     {/* Info */}
                     <div className="flexbox-col dc__gap-6 dc__align-self-stretch pt-0 pb-0 pl-24 pr-24">
-                        <p className="cn-9 fs-16 fw-6 lh-24">
+                        <p className="m-0 cn-9 fs-16 fw-6 lh-24">
                             {changeCIPayload
                                 ? WORKFLOW_OPTIONS_MODAL.CHANGE_CI_TEXT
                                 : WORKFLOW_OPTIONS_MODAL.ACTION_TEXT}
@@ -169,13 +172,20 @@ export default function WorkflowOptionsModal({
                         </p>
                     </div>
 
-                    <img src={changeCIPayload ? changeCI : selectWorkflowSource} alt="workflow-action" />
+                    <img
+                        src={changeCIPayload ? changeCI : selectWorkflowSource}
+                        alt="workflow-action"
+                        width={250}
+                        height={350}
+                    />
                 </div>
 
                 {/* Content */}
                 <div className="flexbox-col p-20 dc__gap-12 dc__overflow-scroll">
                     <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
-                        <p className="m-0 cn-7 fs-11 fw-6 lh-16">{WORKFLOW_OPTIONS_MODAL_TYPES.DEFAULT}</p>
+                        <p className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
+                            {WORKFLOW_OPTIONS_MODAL_TYPES.DEFAULT}
+                        </p>
 
                         <SourceTypeCard
                             title={SOURCE_TYPE_CARD_VARIANTS.SOURCE_CODE.title}
@@ -201,7 +211,9 @@ export default function WorkflowOptionsModal({
                     </section>
 
                     <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
-                        <p className="m-0 cn-7 fs-11 fw-6 lh-16">{WORKFLOW_OPTIONS_MODAL_TYPES.RECIEVE}</p>
+                        <p className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
+                            {WORKFLOW_OPTIONS_MODAL_TYPES.RECIEVE}
+                        </p>
 
                         <SourceTypeCard
                             title={SOURCE_TYPE_CARD_VARIANTS.EXTERNAL_SERVICE.title}
@@ -230,7 +242,9 @@ export default function WorkflowOptionsModal({
 
                     {window._env_.ENABLE_CI_JOB && (
                         <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
-                            <p className="m-0 cn-7 fs-11 fw-6 lh-16">{WORKFLOW_OPTIONS_MODAL_TYPES.JOB}</p>
+                            <p className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
+                                {WORKFLOW_OPTIONS_MODAL_TYPES.JOB}
+                            </p>
 
                             <SourceTypeCard
                                 title={SOURCE_TYPE_CARD_VARIANTS.JOB.title}
