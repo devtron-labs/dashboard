@@ -4,6 +4,7 @@ import { DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-
 import { createWorkflow, updateWorkflow } from './service'
 import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
+import { FILTER_NAME_REGEX } from '../ApplicationGroup/Constants'
 
 export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWorkflowState> {
     _inputName: HTMLInputElement
@@ -34,7 +35,10 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
             appId: +this.props.match.params.appId,
             name: this.state.name,
         }
-        if (!this.isNameValid()) return
+        if (!this.isNameValid().isValid) {
+            this.setState({ loading: false })
+            return
+        }
         let message = 'Empty Workflow Created successfully'
         let promise = createWorkflow(request)
         promise
@@ -43,26 +47,55 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                 this.setState({
                     name: response.result.name,
                     showError: false,
-                    loading: false,
                 })
                 this.props.onClose()
                 this.props.getWorkflows()
             })
             .catch((error: ServerErrors) => {
                 showError(error)
-                this.setState({
-                    loading: false,
-                })
                 this.props.onClose()
+            })
+            .finally(() => {
+                this.setState({ loading: false })
             })
     }
 
-    isNameValid(): boolean {
-        return !!this.state.name?.length
+    isNameValid(): {errorMsg:string, isValid:boolean} {
+        const name = this.state.name;
+        if (!name) {
+            return {
+                errorMsg: 'Please enter workflow name',
+                isValid: false
+            }
+        }
+        if(name.length < 3) {
+            return {
+                errorMsg: 'Min 3 chars',
+                isValid: false
+            }
+        }
+        if(name.length > 30) {
+            return {
+                errorMsg: 'Max 30 chars',
+                isValid: false
+            }
+        }
+        if (!FILTER_NAME_REGEX.test(name)) {
+            return {
+                errorMsg: 'Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use "spaces"',
+                isValid: false
+            }
+        } 
+
+        return {
+            errorMsg: '',
+            isValid: true
+        }
+       
     }
 
     render() {
-        let isValid = this.isNameValid()
+        let validationStatus = this.isNameValid()
         return (
             <DialogForm
                 title={'Create job workflow'}
@@ -90,9 +123,9 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                         onChange={this.handleWorkflowName}
                         required
                     />
-                    {this.state.showError && !isValid ? (
+                    {this.state.showError || !validationStatus.isValid ? (
                         <span className="form__error">
-                            <img src={error} alt="" className="form__icon" /> This is required Field
+                            <img src={error} alt="" className="form__icon" /> {validationStatus.errorMsg}
                         </span>
                     ) : null}
                 </label>
