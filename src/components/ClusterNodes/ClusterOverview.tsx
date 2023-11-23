@@ -576,7 +576,7 @@ function ClusterOverview({
                     <div className="dc__mxw-1068 flex-grow-1 mw-none">
                         {renderCardDetails()}
                         {renderClusterError()}
-                        {Catalog && <Catalog id={clusterId} resourceType="cluster" />}
+                        {Catalog && <Catalog resourceId={clusterId} resourceType="cluster" />}
                         <GenericDescription
                             isClusterTerminal={true}
                             clusterId={clusterId}
