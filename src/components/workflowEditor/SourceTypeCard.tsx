@@ -15,7 +15,7 @@ export default function SourceTypeCard({
 }: Readonly<SourceTypeCardProps>) {
     function renderTippy(children) {
         return (
-            <Tippy className="default-tt" placement="top" content={disableInfo} arrow={false}>
+            <Tippy className="default-tt w-200" placement="top" content={disableInfo} arrow={false}>
                 {/* Since in disabled state Tippy does'nt work */}
                 <span>{children}</span>
             </Tippy>
