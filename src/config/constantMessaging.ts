@@ -233,8 +233,8 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'Pipeline trigger history, details and logs will be available here.',
     },
     CI_BUILD_HISTORY_LINKED_PIPELINE: {
-        TITLE: 'This is a Linked CI Pipelined',
-        SUBTITLE: 'This is a Linked CI Pipelined',
+        TITLE: 'This is a Linked CI Pipeline',
+        SUBTITLE: 'This is a Linked CI Pipeline',
     },
     CI_BUILD_HISTORY_NO_PIPELINE: {
         TITLE: 'No pipeline selected',

@@ -1538,9 +1538,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const getWarningMessage = (_ciNode): string => {
+        if (_ciNode.isLinkedCD) {
+            return 'Uses another environment as image source'
+        }
+
         if (_ciNode.isLinkedCI) {
             return 'Has linked build pipeline'
-        } else if (_ciNode.type === WorkflowNodeType.WEBHOOK) {
+        }
+
+        if (_ciNode.type === WorkflowNodeType.WEBHOOK) {
             return 'Has webhook build pipeline'
         }
     }
@@ -1594,7 +1600,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     if (!_ciNode[MATERIAL_TYPE.inputMaterialList]) {
                         _ciNode[MATERIAL_TYPE.inputMaterialList] = []
                     }
-                    if (!_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK) {
+                    if (!_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK && !_ciNode.isLinkedCD) {
                         const gitMaterials = new Map<number, string[]>()
                         for (const _inputMaterial of _ciNode.inputMaterialList) {
                             gitMaterials[_inputMaterial.gitMaterialId] = [
@@ -1618,13 +1624,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         isFirstTrigger: _ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED,
                         isCacheAvailable: _ciNode.storageConfigured,
                         isLinkedCI: _ciNode.isLinkedCI,
+                        isLinkedCD: _ciNode.isLinkedCD,
+                        title: _ciNode.title,
                         isWebhookCI: _ciNode.type === WorkflowNodeType.WEBHOOK,
                         parentAppId: _ciNode.parentAppId,
                         parentCIPipelineId: _ciNode.parentCiPipeline,
                         material: _ciNode.inputMaterialList,
                         warningMessage: getWarningMessage(_ciNode),
                         errorMessage: getErrorMessage(wf.appId, _ciNode),
-                        hideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
+                        hideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI || _ciNode.isLinkedCD,
                         filteredCIPipelines: filteredCIPipelines.get(wf.appId),
                         isJobCI: !!_ciNode.isJobCI,
                     })
