@@ -327,6 +327,7 @@ export default function UserForm({
             showError(err);
         } finally {
             setSubmitting(false);
+            setDeleteConfirmationModal(false)
         }
     }
 
