@@ -61,6 +61,7 @@ export default function UserForm({
     id = null,
     userData = null,
     index,
+    email_id=null,
     updateCallback,
     deleteCallback,
     createCallback,
@@ -321,7 +322,7 @@ export default function UserForm({
         setSubmitting(true);
         try {
             await deleteUser(id);
-            deleteCallback(index);
+            deleteCallback(email_id);
             toast.success('User deleted');
         } catch (err) {
             showError(err);
