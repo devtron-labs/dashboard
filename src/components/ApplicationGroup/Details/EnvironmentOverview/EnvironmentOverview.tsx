@@ -185,7 +185,7 @@ export default function EnvironmentOverview({
                     {isHovered !== index && !isSelected ? (
                         <DevtronIcon className="icon-dim-20" />
                     ) : (
-                        <label className="dc__position-rel pointer">
+                        <label className="dc__position-rel pointer mb-0">
                             <input
                                 type="checkbox"
                                 className="form__checkbox"
@@ -197,8 +197,8 @@ export default function EnvironmentOverview({
                         </label>
                     )}
                     {/* </span> */}
-                    {!isVirtualEnv && <AppStatus appStatus={item.appStatus} />}
-                    <span className="fs-13 fw-4 cn-7">{item.application}</span>
+                    {!isVirtualEnv && <AppStatus appStatus={item.appStatus} hideStatusMessage />}
+                    <span className="fs-13 fw-4 cn-7 dc__ellipsis-right">{item.application}</span>
                 </div>
                 <AppStatus
                     appStatus={item.lastDeployed ? item.deploymentStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
@@ -230,7 +230,7 @@ export default function EnvironmentOverview({
                 )}
                 {item?.lastDeployedBy && (
                     <span
-                        className="fs-13 fw-4 cn-9 dc__word-break flex left dc__gap-6 pr-8"
+                        className="fs-13 fw-4 cn-9 dc__word-break flex left dc__gap-6 pr-8 mw-none"
                         style={{ whiteSpace: 'nowrap' }}
                     >
                         <span className="flex left dc__gap-8">
@@ -350,15 +350,15 @@ export default function EnvironmentOverview({
     }
 
     return appListData ? (
-        <div className="env-overview-container flexbox dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20 dc__gap-32">
+        <div className="env-overview-container dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20">
             <div className="w-300">{renderSideInfoColumn()}</div>
             <div
                 className="dc__h-fit-content"
-                style={{
-                    // minWidth: '1012px',
-                    // minWidth: 'auto',
-                    maxWidth: '1068px',
-                }}
+                // style={{
+                //     // minWidth: '1012px',
+                //     // minWidth: 'auto',
+                //     maxWidth: '1068px',
+                // }}
             >
                 <div className="flex column left">
                     <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
@@ -384,11 +384,11 @@ export default function EnvironmentOverview({
                             </div>
                         )}
                     </div>
-                    <div className="app-deployments-info-wrapper w-100 dc__overflow-scroll dc__position-rel">
+                    <div className="app-deployments-info-wrapper dc__overflow-scroll w-100 dc__position-rel min-w-500">
                         <div
                             className={`app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
                         >
-                            <div className="pl-16 app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column bcn-0">
+                            <div className="pl-16 app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center">
                                 <label className="dc__position-rel pointer m-0-imp">
                                     <input
                                         type="checkbox"
@@ -410,21 +410,21 @@ export default function EnvironmentOverview({
                                 <span className="">{!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}</span>
                                 <span className="">{OVERVIEW_HEADER.APPLICATION}</span>
                             </div>
-                            <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
+                            <span className="">{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
                             <button
                                 type="button"
                                 className="dc__outline-none-imp p-0 dc__uppercase dc__transparent flexbox dc__align-items-center dc__gap-4"
                                 onClick={toggleIsLastDeployedExpanded}
                             >
-                                <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
+                                <span className="">{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
                                 <ArrowLineDown
                                     className="icon-dim-14 scn-5 rotate"
                                     style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
                                 />
                             </button>
-                            <span>{OVERVIEW_HEADER.DEPLOYED_BY}</span>
+                            <span className="">{OVERVIEW_HEADER.DEPLOYED_BY}</span>
                         </div>
-                        <div className="mt-4 mb-4 pr-16">
+                        <div className="mt-4 mb-4">
                             {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
                         </div>
                     </div>
