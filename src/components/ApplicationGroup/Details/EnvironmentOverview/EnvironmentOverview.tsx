@@ -160,6 +160,14 @@ export default function EnvironmentOverview({
         })
     }
 
+    const openHiberateModalPopup = () => {
+        setOpenHiberateModal(true)
+    }
+
+    const openUnhiberateModalPopup = () => {
+        setOpenUnhiberateModal(true)
+    }
+
     if (loading) {
         return (
             <div className="loading-state">
@@ -362,14 +370,14 @@ export default function EnvironmentOverview({
                         {selectedAppIds.length > 0 && (
                             <div className="flexbox dc__gap-6">
                                 <button
-                                    onClick={() => setOpenHiberateModal(true)}
+                                    onClick={openHiberateModalPopup}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <HibernateIcon className="icon-dim-12 mr-4" />
                                     Hibernate
                                 </button>
                                 <button
-                                    onClick={() => setOpenUnhiberateModal(true)}
+                                    onClick={openHiberateModalPopup}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <UnhibernateIcon className="icon-dim-12 mr-4" />
