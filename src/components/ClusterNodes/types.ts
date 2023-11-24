@@ -4,10 +4,10 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { K8SObjectMapType } from '../ResourceBrowser/Types'
+import { ApiResourceGroupType, ClusterOptionType, K8SObjectMapType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
-    VERSION_ERROR = 'VERSION_ERROR',
+    VERSION_ERROR = 'K8s Version diff',
     OTHER = 'OTHER',
 }
 
@@ -70,6 +70,8 @@ export interface ClusterDetail {
 export interface ClusterDescriptionType {
     clusterId: number
     clusterName: string
+    serverUrl:string,
+    description:string,
     clusterCreatedBy: string
     clusterCreatedOn: string
     clusterNote?: ClusterNoteType
@@ -183,6 +185,7 @@ export interface ClusterListType {
     ) => boolean
     updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
     k8SObjectMapRaw: Map<string, K8SObjectMapType>
+    lastDataSync: boolean
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
@@ -221,6 +224,7 @@ export interface ClusterTerminalType {
     setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
     nodeGroups?: SelectGroupType[]
     taints: Map<string, NodeTaintType[]>
+    showTerminal: boolean
 }
 
 export const TEXT_COLOR_CLASS = {
@@ -289,6 +293,11 @@ export interface NodeCordonRequest extends NodeActionRequest {
 export interface ClusteNotePatchRequest {
     id: number //this is mandatory to send in the request
     identifier: number //equals clusterId for cluster description and appId for app/job description
+    description: string
+}
+
+export interface ClusterShortDescriptionPatchRequest {
+    id: number
     description: string
 }
 
@@ -374,6 +383,14 @@ export interface DescriptionDataType {
     descriptionUpdatedOn: string
 }
 
+export interface ClusterDetailsType {
+    clusterName: string
+    shortDescription: string
+    serverURL: string
+    addedOn: string
+    addedBy: string
+}
+
 export interface ClusterErrorType {
     errorText: string
     errorType: ERROR_TYPE
@@ -382,7 +399,13 @@ export interface ClusterErrorType {
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
     clusterCapacityData: ClusterCapacityType
-    clusterErrorList: ClusterErrorType[]
-    clusterErrorTitle: string
-    errorStatusCode: number
+    setClusterErrorTitle: React.Dispatch<React.SetStateAction<string>>
+    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
+    setClusterCapacityData: React.Dispatch<React.SetStateAction<ClusterCapacityType>>
+    selectedCluster: ClusterOptionType
+    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
+    sideDataAbortController: {
+        prev: AbortController
+        new: AbortController
+    }
 }

@@ -1,20 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { pluginSelectStyle, baseSelectStyles } from './ciPipeline.utils'
-import {
-    RefVariableType,
-    PluginType,
-    RefVariableStageType,
-} from '@devtron-labs/devtron-fe-common-lib'
-import CreatableSelect from 'react-select/creatable'
-import { components } from 'react-select'
+import React, { useState, useEffect, useContext, useRef } from 'react'
+import { RefVariableType, PluginType, RefVariableStageType } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildStageVariable } from '../../config'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import Tippy from '@tippyjs/react'
-import { OptionType } from '../app/types'
+import { ExtendedOptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
+import { InputPluginSelection } from './InputPluginSelect'
+import { SuggestedTagOptionType } from '../ConfigMapSecret/Types'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
+    const refVar = useRef(null)
     const {
         formData,
         setFormData,
@@ -25,25 +19,27 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
-        isCdPipeline
+        isCdPipeline,
     } = useContext(pipelineContext)
-    const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
+    const [selectedOutputVariable, setSelectedOutputVariable] = useState<ExtendedOptionType>({
         label: '',
         value: '',
+        format: '',
     })
 
-    const [inputVariableOptions, setInputVariableOptions] = useState<
-        {
-            label: string
-            options: any[]
-        }[]
-    >([])
+    const [inputVariableOptions, setInputVariableOptions] = useState<SuggestedTagOptionType[]>([])
 
     useEffect(() => {
         const previousStepVariables = []
+
         if (inputVariablesListFromPrevStep[activeStageName].length > 0) {
             inputVariablesListFromPrevStep[activeStageName][selectedTaskIndex].forEach((element) => {
-                previousStepVariables.push({ ...element, label: element.name, value: element.name })
+                previousStepVariables.push({
+                    ...element,
+                    label: element.name,
+                    value: element.name,
+                    refVariableTaskName: formData[activeStageName]?.steps[element?.refVariableStepIndex - 1].name,
+                })
             })
         }
         if (activeStageName === BuildStageVariable.PostBuild) {
@@ -53,7 +49,14 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 if (inputVariablesListFromPrevStep[BuildStageVariable.PreBuild].length > 0) {
                     inputVariablesListFromPrevStep[BuildStageVariable.PreBuild][preBuildTaskLength - 1].forEach(
                         (element) => {
-                            preBuildStageVariables.push({ ...element, label: element.name, value: element.name })
+                            preBuildStageVariables.push({
+                                ...element,
+                                label: element.name,
+                                value: element.name,
+                                refVariableTaskName:
+                                    formData[BuildStageVariable.PreBuild]?.steps[element?.refVariableStepIndex - 1]
+                                        .name,
+                            })
                         },
                     )
                 }
@@ -74,6 +77,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                             label: currentVariableDetails.name,
                             value: currentVariableDetails.name,
                             refVariableStepIndex: preBuildTaskLength,
+                            refVariableTaskName:
+                                formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1].name,
                             refVariableStage: RefVariableStageType.PRE_CI,
                         })
                     }
@@ -101,15 +106,18 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 {
                     label: 'System variables',
-                    options: globalVariables.filter((variable) => (isCdPipeline && variable.stageType !== 'post-cd') || (!excludeVariables.includes(variable.value))),
-                    
+                    options: globalVariables.filter(
+                        (variable) =>
+                            (isCdPipeline && variable.stageType !== 'post-cd') ||
+                            !excludeVariables.includes(variable.value),
+                    ),
                 },
             ])
         }
         setSelectedVariableValue()
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
-    const handleOutputVariableSelector = (selectedValue: OptionType) => {
+    const handleOutputVariableSelector = (selectedValue: ExtendedOptionType) => {
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -180,116 +188,15 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
-    function formatOptionLabel(option) {
-        if (option.refVariableStepIndex) {
-            return (
-                <div className="flexbox justify-space">
-                    <span className="cn-9 fw-4">{option.label}</span>
-                    <span className="cn-5 fw-4">
-                        {option.refVariableStage === 'PRE_CI'
-                            ? formData[BuildStageVariable.PreBuild].steps[option.refVariableStepIndex - 1]?.name
-                            : formData[activeStageName].steps[option.refVariableStepIndex - 1]?.name}
-                    </span>
-                </div>
-            )
-        } else {
-            return (
-                <div className="">
-                    <span className="cn-9 fw-4">{option.label}</span>
-                </div>
-            )
-        }
-    }
-
-    const ValueContainer = (props) => {
-        let value = props.getValue()[0]?.label
-        return (
-            <components.ValueContainer {...props}>
-                <>
-                    {!props.selectProps.menuIsOpen &&
-                        (value ? `${value}` : <span className="cn-5">Select source or input value</span>)}
-                    {React.cloneElement(props.children[1])}
-                </>
-            </components.ValueContainer>
-        )
-    }
-
-    function Option(_props) {
-        const { selectProps, data } = _props
-        selectProps.styles.option = getCustomOptionSelectionStyle({ padding: '4px 10px' })
-        if (data.description) {
-            return (
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="left"
-                    content={<span style={{ display: 'block', width: '180px' }}>{data.description}</span>}
-                >
-                    <div className="flex left">
-                        <components.Option {..._props}>{_props.children}</components.Option>
-                    </div>
-                </Tippy>
-            )
-        } else {
-            return (
-                <div className="flex left">
-                    <components.Option {..._props}>{_props.children}</components.Option>
-                </div>
-            )
-        }
-    }
-
-    function handleCreatableBlur(e) {
-        if (e.target.value) {
-            handleOutputVariableSelector({
-                label: e.target.value,
-                value: e.target.value,
-            })
-        }
-    }
-
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter' || event.key === 'Tab') {
-            event.target.blur()
-        }
-    }
-
     return (
-        <CreatableSelect
-            tabIndex={1}
-            value={selectedOutputVariable}
-            options={inputVariableOptions}
+        <InputPluginSelection
             placeholder="Select source or input value"
-            onChange={handleOutputVariableSelector}
-            styles={
-                formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
-                    ? baseSelectStyles
-                    : pluginSelectStyle
-            }
-            formatOptionLabel={formatOptionLabel}
-            classNamePrefix="select"
-            components={{
-                MenuList: (props) => {
-                    return (
-                        <components.MenuList {...props}>
-                            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                                Type to enter a custom value. Press Enter to accept.
-                            </div>
-                            {props.children}
-                        </components.MenuList>
-                    )
-                },
-                Option,
-                ValueContainer,
-                IndicatorSeparator: null,
-            }}
-            noOptionsMessage={(): string => {
-                return 'No matching options'
-            }}
-            onBlur={handleCreatableBlur}
-            isValidNewOption={() => false}
-            onKeyDown={handleKeyDown}
-            menuPlacement="auto"
+            selectedOutputVariable={selectedOutputVariable}
+            setVariableData={handleOutputVariableSelector}
+            variableData={selectedOutputVariable}
+            refVar={refVar}
+            variableOptions={inputVariableOptions}
+            selectedVariableIndex={selectedVariableIndex}
         />
     )
 }

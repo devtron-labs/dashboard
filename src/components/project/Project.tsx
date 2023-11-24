@@ -62,7 +62,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         this.props.handleChange(event, this.props.index, 'name')
     }
 
-    saveProjectData = (event: React.MouseEvent) => {
+    saveProjectData = (event: React.SyntheticEvent) => {
         event.preventDefault()
         this.props.saveProject(this.props.index, 'name')
     }
@@ -101,7 +101,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         let errorMessage = this.props.errorMessage;
         return (
             <div>
-                <form className="white-card p-24 mb-16 dashed">
+                <form className="white-card p-24 mb-16 dashed" onSubmit={this.saveProjectData}>
                     <div className="white-card__header"> {this.props.id ? 'Edit project' : 'Add Project'} </div>
                     <label className="form__row">
                         <span className="form__label dc__required-field">Project name</span>
@@ -130,10 +130,10 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                                 Cancel
                             </button>
                             <ButtonWithLoader
+                                type="submit"
                                 rootClassName="cta"
                                 loaderColor="#ffffff"
                                 isLoading={this.props.loadingData}
-                                onClick={this.saveProjectData}
                                 dataTestId="project-save-button"
                             >
                                 Save

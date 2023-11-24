@@ -124,7 +124,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             let podsType = []
             if (isPodAvailable) {
                 podsType = _selectedNodes.filter((el) =>
-                    podMetaData.some((f) => f.name === el.name && f.isNew === podType),
+                    podMetaData?.some((f) => {
+                        // Set f.isNew to false if it is undefined
+                        f.isNew = f.isNew || false
+                        return f.name === el.name && f.isNew === podType
+                    }),
                 )
             }
 
@@ -201,24 +205,27 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
+            const portList = [...new Set(node?.port)];
             return (
                 <>
-                    {node?.port.map((val) => {
-                        return (
-                            <div className="flex left cn-9 m-0 dc__no-decore">
-                                <div className="" key={node.name}>
-                                    {node.name}:{val}
-                                <Clipboard
-                                    className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
-                                    onClick={(event) => {
-                                        toggleClipBoardPort(event, node.name.concat(":",val))
-                                    }}
-                                />
+                    {portList.map((val, idx) => {
+                        if (idx > 0) {
+                            return (
+                                <div className="flex left cn-9 m-0 dc__no-decore">
+                                    <div className="" key={node.name}>
+                                        {node.name}:{node.namespace}:{val}
+                                        <Clipboard
+                                            className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
+                                            onClick={(event) => {
+                                                toggleClipBoardPort(event, `${node.name}:${node.namespace}:${val}`)
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        )
+                            )
+                        }
                     })}
-            </>
+                </>
             )
         }
         const portNumberPlaceHolder = (node) => {
@@ -234,7 +241,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             <Clipboard
                                 className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                                 onClick={(event) => {
-                                    toggleClipBoardPort(event, node.name.concat(":", node.port))
+                                    toggleClipBoardPort(event, `${node.name}:${node.namespace}:${node.port[0]}`)
                                 }}
                             />
                         </span>
@@ -257,10 +264,10 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </TippyCustomized>
                     </>
                 )
-            } else if(node.port?.length ===  1){
+            } else if (node.port?.length === 1) {
                 return `${node.name}.${node.namespace}:${node.port}`
             } else {
-                return "Port Number is missing"
+                return 'Port Number is missing'
             }
         }
 
@@ -435,11 +442,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         </div>
                         {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
-                            <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
-                                {portNumberPlaceHolder(node)}
-                                {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
-                            </div>
-                        )}
+                                <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
+                                    {portNumberPlaceHolder(node)}
+                                    {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
+                                </div>
+                            )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div data-testid="pod-ready-count" className={'flex left col-1 pt-9 pb-9'}>
@@ -481,10 +488,10 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         )}
                         {node?.kind !== NodeType.Containers && node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && (
-                            <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
-                                <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
-                            </div>
-                        )}
+                                <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
+                                    <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
+                                </div>
+                            )}
                     </div>
 
                     {node.childNodes?.length > 0 && _isSelected && (

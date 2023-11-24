@@ -14,18 +14,17 @@ import {
     ImageComment,
     DeploymentAppTypes,
     TaskErrorObj,
+    FilterConditionsListType,
+    CDMaterialResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
-interface SearchParams {
-    search: string
-}
-
 export interface CDMaterialProps extends RouteComponentProps<{}> {
-    material: CDMaterialType[]
+    material?: CDMaterialType[]
     isLoading: boolean
     materialType: string
     envName: string
+    envId?: number
     redirectToCD?: () => void
     stageType: DeploymentNodeType
     changeTab?: (
@@ -35,25 +34,27 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
-    triggerDeploy: (
+    triggerDeploy?: (
         stageType: DeploymentNodeType,
         _appId: number,
+        ciArtifactId: number,
         deploymentWithConfig?: string,
         wfrId?: number,
     ) => void
-    selectImage: (
+    selectImage?: (
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?:number,
     ) => void
-    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    closeCDModal: (e) => void
+    toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
+    closeCDModal: (e: React.MouseEvent) => void
     onClickRollbackMaterial?: (
         cdNodeId: number,
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+        searchText?: string,
     ) => void
     parentPipelineId?: string
     parentPipelineType?: string
@@ -74,9 +75,13 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
-    isApplicationGroupTrigger?: boolean
-    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
+    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, fromRollback?: boolean) => void
     searchImageTag?: string
+    resourceFilters?: FilterConditionsListType[]
+    updateBulkCDMaterialsItem?: (singleCDMaterialResponse: CDMaterialResponseType) => void
+    deploymentAppType?: DeploymentAppTypes
+    selectedImageFromBulk?: string
+    isSuperAdmin?:boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -91,6 +96,11 @@ export interface ConfigToDeployOptionType {
     infoText: string
 }
 
+export enum FilterConditionViews {
+    ELIGIBLE = 'ELIGIBLE',
+    ALL = 'ALL',
+}
+
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
@@ -100,7 +110,6 @@ export interface CDMaterialState {
     showConfigDiffView: boolean
     loadingMore: boolean
     showOlderImages: boolean
-    noMoreImages: boolean
     selectedConfigToDeploy: ConfigToDeployOptionType
     isRollbackTrigger: boolean
     recentDeploymentConfig: any
@@ -112,6 +121,9 @@ export interface CDMaterialState {
     areMaterialsPassingFilters: boolean
     searchApplied: boolean
     searchText: string
+    showConfiguredFilters: boolean
+    filterView: FilterConditionViews
+    isSuperAdmin?:boolean
 }
 
 export interface MaterialInfo {
@@ -169,6 +181,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     selectedEnv?: Environment
     setSelectedEnv?: (selectedEnv: Environment) => void;
     environmentLists?: any[]
+    isJobCI?: boolean
 }
 
 export interface RegexValueType {
@@ -274,7 +287,6 @@ export interface TriggerViewContextType {
     invalidateCache: boolean
     refreshMaterial: (ciNodeId: number, materialId: number) => void
     onClickTriggerCINode: () => void
-    onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
     onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
@@ -285,6 +297,10 @@ export interface TriggerViewContextType {
     toggleInvalidateCache: () => void
     getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => void
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
+}
+
+export enum BulkSelectionEvents {
+    SELECT_NONE = 'SELECT_NONE',
 }
 
 export interface TriggerViewRouterProps {
@@ -368,6 +384,7 @@ export interface TriggerViewState {
     configs?: boolean
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
+    resourceFilters?: FilterConditionsListType[]
 }
 
 //-- begining of response type objects for trigger view

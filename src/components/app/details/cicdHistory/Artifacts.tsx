@@ -17,8 +17,9 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { getUserRole } from '../../../userGroups/userGroup.service'
 
-let ApprovalInfoTippy = null
+let CIListHeader: React.FC<any> | null = null
 
 export default function Artifacts({
     status,
@@ -36,7 +37,23 @@ export default function Artifacts({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
+    jobCIClass,
 }: ArtifactType) {
+    const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
+    useEffect(() => {
+        initialise()
+    }, [])
+    async function initialise() {
+        try {
+            const userRole = await getUserRole()
+
+            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+            setSuperAdmin(superAdmin)
+        } catch (err) {
+            showError(err)
+        }
+    }
+
     const { triggerId, buildId } = useParams<{
         triggerId: string
         buildId: string
@@ -120,7 +137,7 @@ export default function Artifacts({
         )
     } else {
         return (
-            <div className="flex left column p-16">
+            <div className={`flex left column p-16 ${jobCIClass??''}`}>
                 {!isJobView && type !== HistoryComponentType.CD && (
                     <CIListItem
                         type="artifact"
@@ -131,6 +148,9 @@ export default function Artifacts({
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                        isSuperAdmin={isSuperAdmin}
+                        
+
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
@@ -147,8 +167,13 @@ export default function Artifacts({
                     </CIListItem>
                 )}
                 {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
-                    <CIListItem type="report" hideImageTaggingHardDelete={hideImageTaggingHardDelete}>
+                    <CIListItem 
+                        type="report" 
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                        isSuperAdmin={isSuperAdmin}
+                    >
                         <div className="flex column left">
+                    
                             <div className="cn-9 fs-14">Reports.zip</div>
                             <button
                                 type="button"
@@ -213,8 +238,15 @@ export const CIListItem = ({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
+    appliedFilters,
+    appliedFiltersTimestamp,
+    isSuperAdmin,
 }: CIListItemType) => {
-    if(!ApprovalInfoTippy) ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
+    if (!CIListHeader) {
+        CIListHeader = importComponentFromFELibrary('CIListHeader')
+    }
+
+    const headerMetaDataPresent = !!userApprovalMetadata || !!appliedFilters?.length
     return (
         <>
             {type === 'deployed-artifact' && (
@@ -224,20 +256,20 @@ export const CIListItem = ({
                     <div className="w-50 text-underline-dashed-300" />
                 </div>
             )}
-            {ApprovalInfoTippy && userApprovalMetadata && (
-                <div className="dc__width-inherit bcn-0 dc__border dc__top-radius-4">
-                    <div className="pt-8 pr-16 pb-8 pl-16 lh-20">
-                        <ApprovalInfoTippy
-                            showCount={true}
-                            userApprovalMetadata={userApprovalMetadata}
-                            triggeredBy={triggeredBy}
-                        />
-                    </div>
-                </div>
+
+            {!!CIListHeader && headerMetaDataPresent && (
+                <CIListHeader
+                    userApprovalMetadata={userApprovalMetadata}
+                    showApprovalCounts
+                    triggeredBy={triggeredBy}
+                    appliedFilters={appliedFilters ?? []}
+                    appliedFiltersTimestamp={appliedFiltersTimestamp ?? ''}
+                />
             )}
+
             <div
                 className={`dc__h-fit-content ci-artifact ci-artifact--${type} image-tag-parent-card bcn-0 br-4 dc__border p-12 w-100 dc__mxw-800 ${
-                    ApprovalInfoTippy && userApprovalMetadata ? 'dc__no-top-radius dc__no-top-border' : ''
+                    CIListHeader && headerMetaDataPresent  ? 'dc__no-top-radius dc__no-top-border' : ''
                 }`}
                 data-testid="hover-on-report-artifact"
             >
@@ -256,6 +288,7 @@ export const CIListItem = ({
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                         hideHardDelete={hideImageTaggingHardDelete}
+                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>

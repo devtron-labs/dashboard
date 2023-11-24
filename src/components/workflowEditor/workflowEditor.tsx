@@ -111,14 +111,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
                 let isDeletionInProgress
+                const _envIds = []
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
-                        this.setState({
-                            envIds: [...this.state.envIds, node.environmentId]
-                        })
                         if (node.type === WorkflowNodeType.CI) {
                             allCINodeMap.set(node.id, node)
                         } else if (node.type === WorkflowNodeType.CD) {
+                            _envIds.push(node.environmentId)
                             if (
                                 node.parentPipelineType === PipelineType.WEBHOOK &&
                                 this.state.envToShowWebhookTippy === node.environmentId
@@ -142,7 +141,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     allDeploymentNodeMap: allDeploymentNodeMap,
                     view: ViewType.FORM,
                     envToShowWebhookTippy: -1,
-                    filteredCIPipelines: result.filteredCIPipelines
+                    filteredCIPipelines: result.filteredCIPipelines,
+                    envIds: _envIds
                 })
             })
             .catch((errors) => {
@@ -396,16 +396,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
-                <Route path={`${this.props.match.path}/ci-job/:ciPipelineId`}>
-                    <CIPipeline
-                        appName={this.state.appName}
-                        connectCDPipelines={this.getLen()}
-                        close={this.closePipeline}
-                        getWorkflows={this.getWorkflows}
-                        deleteWorkflow={this.deleteWorkflow}
-                        isJobView={this.props.isJobView}
-                    />
-                </Route>
                 <Route path={`${this.props.match.path}/deprecated-warning`}>
                     <DeprecatedWarningModal closePopup={this.closePipeline} />
                 </Route>

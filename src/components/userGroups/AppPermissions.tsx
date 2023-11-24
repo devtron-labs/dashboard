@@ -71,7 +71,7 @@ export default function AppPermissions({
             setDirectPermission(emptyPermissionArr)
             return
         }
-        populateDataFromAPI(data.roleFilters)
+        populateDataFromAPI(data.roleFilters ?? [])
     }, [data])
     const { customRoles } = useUserGroupContext()
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {

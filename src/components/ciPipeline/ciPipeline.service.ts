@@ -304,6 +304,12 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             }, {}),
         isDockerConfigOverridden: formData.isDockerConfigOverridden,
         dockerConfigOverride: formData.isDockerConfigOverridden ? formData.dockerConfigOverride : {},
+        defaultTag: formData.defaultTag,
+        customTag: {
+            tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
+            counterX: formData.customTag ? +formData.customTag.counterX : 0,
+        },
+        enableCustomTag: formData.enableCustomTag,
     }
     return ci
 }
@@ -485,7 +491,13 @@ function parseCIResponse(
                 isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,
                 dockerConfigOverride: ciPipeline.isDockerConfigOverridden ? ciPipeline.dockerConfigOverride : {},
                 isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
-                isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin
+                isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin,
+                defaultTag: ciPipeline.defaultTag,
+                customTag: {
+                    tagPattern: ciPipeline.customTag?.tagPattern || '',
+                    counterX: +ciPipeline.customTag?.counterX || 0,
+                },
+                enableCustomTag: ciPipeline.enableCustomTag
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,

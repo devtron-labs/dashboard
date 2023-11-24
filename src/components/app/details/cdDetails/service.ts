@@ -1,6 +1,6 @@
 import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, Routes } from '../../../../config'
-import { History } from '../cicdHistory/types'
+import { FetchIdDataStatus, History } from '../cicdHistory/types'
 import {
     DeploymentTemplateList,
     HistoryDiffSelectorList,
@@ -63,11 +63,19 @@ interface TriggerDetails extends ResponseType {
     result?: History
 }
 
-export function getTriggerDetails({ appId, envId, pipelineId, triggerId }): Promise<TriggerDetails> {
+const getTriggerDetailsQuery = (fetchIdData) => {
+    if (fetchIdData && fetchIdData === FetchIdDataStatus.FETCHING) {
+        return '?SHOW_APPLIED_FILTERS=true'
+    }
+
+    return ''
+}
+
+export function getTriggerDetails({ appId, envId, pipelineId, triggerId, fetchIdData }): Promise<TriggerDetails> {
     if (triggerId) {
-        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}`)
+        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}${getTriggerDetailsQuery(fetchIdData)}`)
     } else {
-        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last`)
+        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last${getTriggerDetailsQuery(fetchIdData)}`)
     }
 }
 
@@ -138,11 +146,19 @@ export const prepareConfigMapAndSecretData = (
             secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type][''] }
             if (type === 'Secret' && historyData.codeEditorValue.value) {
                 const secretData = JSON.parse(historyData.codeEditorValue.value)
+                let resolvedSecretData = {}
+                if (historyData.codeEditorValue?.resolvedValue) {
+                    resolvedSecretData = JSON.parse(historyData.codeEditorValue.resolvedValue)
+                }
                 const decodeNotRequired =
                     skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
+                    
                 historyData.codeEditorValue.value = decodeNotRequired
                     ? historyData.codeEditorValue.value
                     : JSON.stringify(decode(secretData))
+                historyData.codeEditorValue.resolvedValue = decodeNotRequired
+                    ? historyData.codeEditorValue.resolvedValue
+                    : JSON.stringify(decode(resolvedSecretData))    
             }
         }
     }

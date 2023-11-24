@@ -75,6 +75,7 @@ export const initState = (
         showProtectedDeleteOverrideModal: false,
         showDraftSaveModal: false,
         draftPayload: null,
+        isValidateFormError: false,
         ...secretInitState,
     }
     return initialState
@@ -142,6 +143,8 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
 
         case ConfigMapActionTypes.toggleDraftSaveModal:
             return { ...state, showDraftSaveModal: !state.showDraftSaveModal }
+        case ConfigMapActionTypes.setValidateFormError:
+            return { ...state, isValidateFormError: action.payload }
 
         default:
             return state

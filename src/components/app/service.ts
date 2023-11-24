@@ -7,15 +7,12 @@ import {
     ResponseType,
     sortCallback,
     DeploymentNodeType,
-    CDModalTab,
-    CDMaterialResponseType,
-    FilterStates,
     put,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, CreateAppLabelsRequest } from './types'
+import { AppDetails, ArtifactsCiJob, EditAppRequest } from './types'
 import { DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
@@ -113,6 +110,10 @@ interface AppMetaInfoResponse extends ResponseType {
     result?: AppMetaInfo
 }
 
+export interface ArtifactCiJobResponse extends ResponseType {
+    result?: ArtifactsCiJob
+}
+
 export function fetchAppDetails(appId: number | string, envId: number | string): Promise<AppDetailsResponse> {
     return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`)
 }
@@ -121,16 +122,18 @@ export function fetchAppDetailsInTime(
     appId: number | string,
     envId: number | string,
     reloadTimeOut: number,
+    signal?: AbortSignal
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
 }
 
 export function fetchResourceTreeInTime(
     appId: number | string,
     envId: number | string,
     reloadTimeOut: number,
+    signal?: AbortSignal,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
 }
 
 export function getEvents(pathParams) {
@@ -275,162 +278,8 @@ export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
     })
 }
 
-export function getCDMaterialList(
-    cdMaterialId,
-    stageType: DeploymentNodeType,
-    abortSignal: AbortSignal,
-    isApprovalNode?: boolean,
-    searchParam?: string,
-): Promise<CDMaterialResponseType> {
-    const URL = searchParam
-        ? `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
-              isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-          }&search=${searchParam}`
-        : `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
-              isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-          }`
-
-    return get(URL, {
-        signal: abortSignal,
-    }).then((response) => {
-        if (!response.result) {
-            return {
-                approvalUsers: [],
-                materials: [],
-                userApprovalConfig: null,
-                requestedUserId: 0,
-                tagsEditable: false,
-                appReleaseTagNames: [],
-                hideImageTaggingHardDelete: false,
-            }
-        } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
-            return {
-                approvalUsers: response.result.approvalUsers,
-                materials: cdMaterialListModal(
-                    response.result.ci_artifacts,
-                    1,
-                    response.result.latest_wf_artifact_id,
-                    response.result.latest_wf_artifact_status,
-                ),
-                userApprovalConfig: response.result.userApprovalConfig,
-                requestedUserId: response.result.requestedUserId,
-                appReleaseTagNames: response.result.appReleaseTagNames,
-                tagsEditable: response.result.tagsEditable,
-                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
-            }
-        } else {
-            return {
-                approvalUsers: [],
-                materials: cdMaterialListModal(
-                    response.result.ci_artifacts,
-                    1,
-                    response.result.latest_wf_artifact_id,
-                    response.result.latest_wf_artifact_status,
-                ),
-                userApprovalConfig: null,
-                requestedUserId: 0,
-                appReleaseTagNames: response.result.appReleaseTagNames,
-                tagsEditable: response.result.tagsEditable,
-                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
-            }
-        }
-    })
-}
-
-export function getRollbackMaterialList(
-    cdMaterialId,
-    offset: number,
-    size: number,
-    abortSignal: AbortSignal,
-): Promise<ResponseType> {
-    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
-    return get(URL, {
-        signal: abortSignal,
-    }).then((response) => {
-        return {
-            code: response.code,
-            status: response.status,
-            result: {
-                materials: cdMaterialListModal(response.result?.ci_artifacts, offset),
-                requestedUserId: response.result?.requestedUserId,
-            },
-        }
-    })
-}
-
 export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
-}
-
-function cdMaterialListModal(
-    artifacts: any[],
-    offset: number,
-    artifactId?: number,
-    artifactStatus?: string,
-) {
-    if (!artifacts || !artifacts.length) return []
-
-    const markFirstSelected = offset===1
-    const startIndex = offset-1
-    const materials = artifacts.map((material, index) => {
-        let artifactStatusValue = ''
-        const filterState = material.filterState ?? FilterStates.ALLOWED
-
-        if (artifactId && artifactStatus && material.id === artifactId) {
-            artifactStatusValue = artifactStatus
-        }
-
-        return {
-            index: startIndex+index,
-            id: material.id,
-            deployedTime: material.deployed_time
-                ? moment(material.deployed_time).format(Moment12HourFormat)
-                : 'Not Deployed',
-            deployedBy: material.deployedBy,
-            wfrId: material.wfrId,
-            tab: CDModalTab.Changes,
-            image: extractImage(material.image),
-            showChanges: false,
-            vulnerabilities: [],
-            buildTime: material.build_time || '',
-            isSelected: markFirstSelected && (filterState === FilterStates.ALLOWED) ? !material.vulnerable && index === 0 : false,
-            showSourceInfo: false,
-            deployed: material.deployed || false,
-            latest: material.latest || false,
-            vulnerabilitiesLoading: true,
-            scanned: material.scanned,
-            scanEnabled: material.scanEnabled,
-            vulnerable: material.vulnerable,
-            runningOnParentCd: material.runningOnParentCd,
-            artifactStatus: artifactStatusValue,
-            userApprovalMetadata: material.userApprovalMetadata,
-            triggeredBy: material.triggeredBy,
-            isVirtualEnvironment: material.isVirtualEnvironment,
-            imageComment: material.imageComment,
-            imageReleaseTags: material.imageReleaseTags,
-            materialInfo: material.material_info
-                ? material.material_info.map((mat) => {
-                      return {
-                          modifiedTime: mat.modifiedTime ? moment(mat.modifiedTime).format(Moment12HourFormat) : '',
-                          commitLink: createGitCommitUrl(mat.url, mat.revision),
-                          author: mat.author || '',
-                          message: mat.message || '',
-                          revision: mat.revision || '',
-                          tag: mat.tag || '',
-                          webhookData: mat.webhookData || '',
-                          url: mat.url || '',
-                          branch:
-                              (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK
-                                  ? material.ciConfigureSourceValue
-                                  : mat.branch) || '',
-                          type: material.ciConfigureSourceType || '',
-                      }
-                  })
-                : [],
-            filterState,
-        }
-    })
-    return materials
 }
 
 export const cancelCiTrigger = (params) => {
@@ -602,6 +451,11 @@ export function getArtifact(pipelineId, workflowId) {
     })
 }
 
+export function getArtifactForJobCi(pipelineId, workflowId): Promise<ArtifactCiJobResponse> {
+    const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${workflowId}/ci-job/artifacts`
+    return get(URL)
+}
+
 export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
     if (!group) group = ''
     return get(
@@ -617,8 +471,12 @@ export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse> 
     return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 
-export const createAppLabels = (request: CreateAppLabelsRequest): Promise<ResponseType> => {
-    return post(Routes.APP_LABELS, request)
+export function getHelmAppOverviewInfo(installedAppId: string): Promise<AppMetaInfoResponse> {
+    return get(`${Routes.HELM_APP_OVERVIEW}?installedAppId=${installedAppId}`)
+}
+
+export const editApp = (request: EditAppRequest): Promise<ResponseType> => {
+    return post(Routes.APP_EDIT, request)
 }
 
 export const getIngressServiceUrls = (params: {

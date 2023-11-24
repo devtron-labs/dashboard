@@ -55,6 +55,15 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
             `Key must consist of alphanumeric characters, '.', '-' and '_'`,
         )
+
+        if (state.isValidateFormError !== !!error) {
+            dispatch({
+                type: ConfigMapActionTypes.setValidateFormError,
+                payload: !!error,
+            })
+        }
+
+
         const { yaml: lockedYaml } = useKeyValueYaml(
             state.currentData?.map(({ k, v }) => ({ k, v: Array(8).fill('*').join('') })),
             setKeyValueArray,
@@ -381,7 +390,8 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                 {(state.cmSecretState !== CM_SECRET_STATE.INHERITED || draftMode) &&
                     !state.unAuthorized &&
                     !state.secretMode &&
-                    !state.yamlMode && (
+                    !state.yamlMode &&
+                    !state.external && (
                         <div
                             className="dc__bold anchor pointer pb-10 dc_max-width__max-content"
                             onClick={handleAddParam}

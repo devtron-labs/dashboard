@@ -1419,6 +1419,11 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                                 margin: '0 8px 0 0',
                                 padding: '1px',
                             }),
+                            menu: (base, state) => ({
+                                ...base,
+                                top: 'auto',
+                                width: '100%',
+                            }),
                         }}
                         closeMenuOnSelect={false}
                         name="entityName"

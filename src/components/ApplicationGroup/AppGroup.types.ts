@@ -1,6 +1,7 @@
 import {
     CDModalTabType,
     DeploymentNodeType,
+    FilterConditionsListType,
     ResponseType,
     UserApprovalConfigType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -23,6 +24,7 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     isFirstTrigger: boolean
     isCacheAvailable: boolean
     isLinkedCI: boolean
+    isJobCI: boolean
     isWebhookCI: boolean
     parentAppId: number
     parentCIPipelineId: number
@@ -42,6 +44,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     stageType?: DeploymentNodeType
     triggerType?: string
     envName: string
+    envId: number
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
@@ -52,6 +55,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     tagsEditable?: boolean
     ciPipelineId?: number
     hideImageTaggingHardDelete?: boolean
+    resourceFilters?: FilterConditionsListType[]
 }
 
 export interface ResponseRowType {
@@ -86,14 +90,14 @@ export interface BulkCDTriggerType {
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any>) => void
     onClickTriggerBulkCD: (appsToRetry?: Record<string, boolean>) => void
-    changeTab: (
+    changeTab?: (
         materrialId: string | number,
         artifactId: number,
         tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ) => void
-    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    selectImage: (
+    toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
+    selectImage?: (
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },

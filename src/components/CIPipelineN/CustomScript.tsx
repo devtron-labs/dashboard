@@ -34,7 +34,7 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
                         contentDescription={TaskFieldDescription.SCRIPT}
                     />
                 )}
-                <div className="script-container">
+                <div className="script-container no-padding-script-container">
                     <CodeEditor
                         theme="vs-alice-blue"
                         mode="shell"

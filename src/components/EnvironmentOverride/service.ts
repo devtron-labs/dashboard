@@ -25,6 +25,6 @@ export function toggleAppMetrics(appId, envId, payload){
     return post(`app/env/metrics/${appId}/${envId}`, payload)
 }
 
-export function chartRefAutocomplete(appId, envId){
-    return get(`${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}`)
+export function chartRefAutocomplete(appId, envId, signal?){
+    return get(`${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}`, {signal})
 }

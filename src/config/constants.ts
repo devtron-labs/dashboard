@@ -27,8 +27,8 @@ export const Routes = {
     VALIDATE: 'cluster/validate',
     SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
-    CLUSTER_NOTE: 'cluster/description',
-    APPLICATION_NOTE: 'app/description',
+    CLUSTER_NOTE: 'cluster/note',
+    APPLICATION_NOTE: 'app/note',
 
     CD_CONFIG: 'app/cd-pipeline',
     V2_CD_CONFIG: 'app/v2/cd-pipeline',
@@ -46,6 +46,9 @@ export const Routes = {
     DEPLOYMENT_TEMPLATE: 'app/template',
     DEPLOYMENT_TEMPLATE_UPDATE: 'app/template/update',
 
+    DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
+    DEPLOYMENT_OPTIONS:'app/template/list',
+
     DEPLOYMENT_STRATEGY: 'app/cd-pipeline/strategies',
     ENVIRONMENT_CONFIG: 'app/env',
     PIPELINE_CONFIG: 'app/cd-pipeline/pipeline-config',
@@ -62,7 +65,7 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
-    APP_LABELS: 'app/edit',
+    APP_EDIT: 'app/edit',
 
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
@@ -165,6 +168,7 @@ export const Routes = {
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
     HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API: 'application/update',
     UPDATE_APP_API: 'app-store/deployment/application/update',
+    HELM_APP_OVERVIEW: 'app-store/overview',
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
@@ -283,6 +287,9 @@ export const PATTERNS = {
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
+    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, //Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
+    ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
+
 }
 
 export const TriggerType = {
@@ -602,6 +609,8 @@ export const TERMINAL_STATUS_MAP = {
     RUNNING: 'running',
     PROGRESSING: 'progressing',
     STARTING: 'starting',
+    INITIATING: 'initiating',
+    QUEUED: 'queued',
     FAILED: 'failed',
     ERROR: 'error',
     CANCELLED: 'cancelled',
@@ -719,7 +728,10 @@ export const DEPLOYMENT_STATUS = {
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
     PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    INITIATING: 'initiating',
     SUPERSEDED: 'superseded',
+    QUEUED: 'queued',
     UNKNOWN: 'unknown',
 }
 

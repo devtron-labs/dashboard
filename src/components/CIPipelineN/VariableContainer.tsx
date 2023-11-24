@@ -92,7 +92,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
 
                                 <div className="fs-13 fw-4 lh-28">{variable.format}</div>
                                 {type === PluginVariableType.INPUT ? (
-                                    <div className="fs-14">
+                                    <div className="fs-14 dc__position-rel">
                                         <CustomInputVariableSelect selectedVariableIndex={index} />
                                         {errorObj && !errorObj.isValid && (
                                             <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">

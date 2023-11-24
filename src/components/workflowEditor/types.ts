@@ -1,4 +1,4 @@
-import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
@@ -127,30 +127,46 @@ export interface PipelineBuildStageType {
     steps: StepType[];
 }
 
-export interface PipelineFormType extends Partial<FormType> , Partial<CDFormType> {
-    name: string;
-    triggerType: string;
-    preBuildStage?: PipelineBuildStageType;
-    postBuildStage?: PipelineBuildStageType;
+export interface CustomTagType {
+    tagPattern: string
+    counterX: string
+}
+export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType> {
+    name: string
+    triggerType: string
+    preBuildStage?: PipelineBuildStageType
+    postBuildStage?: PipelineBuildStageType
+    defaultTag?: string[]
+    customTag?: CustomTagType
+    enableCustomTag?: boolean;
+    customTagStage?: string
 }
 
 export interface PipelineFormDataErrorType {
-    name: { message?: string, isValid: boolean },
-    envNameError?: { message?: string, isValid: boolean },
-    nameSpaceError?: { message?: string, isValid: boolean },
-    containerRegistryError?: { isValid: boolean, message?: string },
-    repositoryError?: { isValid: boolean, message?: string },
+    name: { message?: string; isValid: boolean }
+    envNameError?: { message?: string; isValid: boolean }
+    nameSpaceError?: { message?: string; isValid: boolean }
+    containerRegistryError?: { isValid: boolean; message?: string }
+    repositoryError?: { isValid: boolean; message?: string }
     preBuildStage: {
-        steps: any[],
-        isValid: boolean,
-    },
+        steps: any[]
+        isValid: boolean
+    }
     buildStage: {
-        isValid: boolean,
-    },
+        isValid: boolean
+    }
     postBuildStage: {
-        steps: any[],
-        isValid: boolean,
-    },
+        steps: any[]
+        isValid: boolean
+    }
+    customTag?: {
+        message: string[]
+        isValid: boolean
+    }
+    counterX?: {
+        message: string
+        isValid: boolean
+    }
 }
 
 export interface PipelineContext {
@@ -196,4 +212,7 @@ export interface PipelineContext {
     globalVariables: {
         stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string
 }[]
+    savedCustomTagPattern?: string
+    selectedCDStageTypeValue?: OptionType
+    setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
 }

@@ -97,6 +97,7 @@ export interface ClusterSelectionType {
     isSuperAdmin: boolean
     clusterListLoader: boolean
     refreshData: () => void
+    initTabsBasedOnRole: (reInit: boolean, _isSuperAdmin?: boolean) => void
 }
 
 export interface CreateResourceType {
@@ -126,7 +127,7 @@ export interface ResourceFilterOptionsProps {
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchApplied: boolean
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
-    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType) => void
+    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean ) => void
     clearSearch: () => void
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean

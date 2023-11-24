@@ -194,8 +194,8 @@ export function getJobCIPipeline(jobId) {
     return get(`${Routes.JOB_CI_DETAIL}/${jobId}`)
 }
 
-export function getEnvironmentConfigs(appId, envId) {
-    return get(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`)
+export function getEnvironmentConfigs(appId, envId, option?) {
+    return get(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`, option)
 }
 
 export function getEnvironmentSecrets(appId, envId) {

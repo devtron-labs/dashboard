@@ -3,7 +3,13 @@ import { ReactComponent as FileCode } from '../../../assets/icons/ic-file-code.s
 import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
+import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-view-variable-toggle.svg'
 import { DeploymentConfigToolbarProps } from '../types'
+import '../deploymentConfig.scss'
+import { DropdownItem } from './DeploymentTemplateView.component'
+import Tippy from '@tippyjs/react'
+import { PopupMenu, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentConfigToolbar({
     selectedTabIndex,
@@ -11,18 +17,53 @@ export default function DeploymentConfigToolbar({
     noReadme,
     showReadme,
     handleReadMeClick,
+    isValues,
+    setIsValues,
+    convertVariables,
+    setConvertVariables,
 }: DeploymentConfigToolbarProps) {
-    const getTabClassName = (index: number) => {
-        return `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
-    }
 
-    const getTabIconClass = (index: number) => {
-        return `icon-dim-16 mr-4 ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
-    }
+    const getTabClassName = (index: number) =>
+        `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
+
+    const getTabIconClass = (index: number) => `icon-dim-16 mr-4 ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
 
     const changeTab = (e) => {
         handleTabSelection(Number(e.currentTarget.dataset.index))
     }
+
+    const handleOptionClick = (newValue) => {
+        setIsValues(newValue)
+        setConvertVariables(false)
+    }
+
+    const handleViewVariablesClick = () => {
+        setConvertVariables(!convertVariables)
+    }
+
+    const renderDropdownContainer = () => (
+        <div
+            className="flex-col white-background dc__position-abs bcn-0 w-204 h-72  dc__border-radius-4-imp dc__left-0 dc__border dc__zi-20 config-toolbar-dropdown-shadow"
+            style={{ left: '-75px' }}
+        >
+            <div className="pt-4 pb-4 pl-0 pr-0">
+                <DropdownItem
+                    label="Compare Values"
+                    onClick={() => handleOptionClick(true)}
+                    index={1}
+                    isValues={isValues}
+                />
+                <DropdownItem
+                    label="Compare generated manifest"
+                    onClick={() => handleOptionClick(false)}
+                    index={2}
+                    isValues={isValues}
+                />
+            </div>
+        </div>
+    )
+
+    const tippyMsg = convertVariables ? 'Hide variables values' : 'Show variables values'
 
     return (
         <div className="config-toolbar-container flex dc__content-space bcn-0 pt-8 pl-16 pr-16 dc__border-bottom">
@@ -39,22 +80,47 @@ export default function DeploymentConfigToolbar({
                             Values
                         </li>
                         <li
-                            className={getTabClassName(2)}
+                            className={`${getTabClassName(2)} dc__position-rel`}
                             data-index={2}
                             data-testid="compare-values-tab"
                             onClick={changeTab}
                         >
                             <CompareIcon className={getTabIconClass(2)} />
-                            Compare Values
+                            Compare&nbsp;  
+                                <PopupMenu autoClose>
+                                    <PopupMenu.Button rootClassName="flexbox flex-align-center" isKebab>
+                                        <span style={{ color: 'black' }}>
+                                            &nbsp;
+                                            {`${isValues ? 'Values' : 'Manifest'}`}
+                                        </span>
+
+                                        <Dropdown className="icon-dim-16 ml-4 cursor" data-testid="dropdown-icon" />
+                                    </PopupMenu.Button>
+                                    <PopupMenu.Body autoWidth>{renderDropdownContainer()}</PopupMenu.Body>
+                                </PopupMenu>
                         </li>
                     </ol>
                 </div>
             )}
-            {!noReadme && !showReadme && (
-                <div className="flex right pb-8">
+            <div className="flexbox dc__content-space dc__align-items-center pb-8 dc__gap-14">
+                {!noReadme && !showReadme && (
                     <ReadmeIcon className="icon-dim-16 scn-7 cursor" onClick={handleReadMeClick} />
-                </div>
-            )}
+                )}
+                {isValues && !noReadme && (
+                    <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
+                        <li className="flex left dc_width-max-content cursor">
+                            <div className="w-40 h-20">
+                                <Toggle
+                                    selected={convertVariables}
+                                    color="var(--B500)"
+                                    onSelect={handleViewVariablesClick}
+                                    Icon={ViewVariablesIcon}
+                                />
+                            </div>
+                        </li>
+                    </Tippy>
+                )}
+            </div>
         </div>
     )
 }

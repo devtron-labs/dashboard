@@ -64,7 +64,7 @@ function ResourceFilterOptions({
         } else if (_key === 'Backspace' && searchText.length === 0) {
             clearSearch()
         } else {
-            handleFilterChanges(e.currentTarget.value, resourceList)
+            handleFilterChanges(e.currentTarget.value, resourceList, true)
             setSearchApplied(!!e.currentTarget.value)
         }
     }

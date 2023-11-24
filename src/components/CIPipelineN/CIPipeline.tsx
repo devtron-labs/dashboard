@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
 import {
     ButtonWithLoader,
     FloatingVariablesSuggestions,
@@ -62,7 +62,6 @@ import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
-
 export default function CIPipeline({
     appName,
     connectCDPipelines,
@@ -84,8 +83,9 @@ export default function CIPipeline({
         activeStageName = BuildStageVariable.PostBuild
     }
     const { path } = useRouteMatch()
+    const history = useHistory()
     const [pageState, setPageState] = useState(ViewType.LOADING)
-    const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
+    const saveOrUpdateButtonTitle = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const isJobCard = isJobCI || isJobView // constant for common elements of both Job and CI_JOB
     const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobCard ? 'job' : 'build'} pipeline`
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
@@ -114,7 +114,7 @@ export default function CIPipeline({
         name: '',
         args: [],
         materials: [],
-        triggerType: TriggerType.Auto,
+        triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
         gitHost: undefined,
         webhookEvents: [],
@@ -129,6 +129,12 @@ export default function CIPipeline({
             id: 0,
             steps: [],
         },
+        customTag: {
+            tagPattern: '',
+            counterX: '0',
+        },
+        defaultTag: [],
+        enableCustomTag: false
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
@@ -143,7 +149,16 @@ export default function CIPipeline({
             steps: [],
             isValid: true,
         },
+        customTag:{
+            message: [], 
+            isValid: true
+        },
+        counterX:{
+            message: '', 
+            isValid: true
+        }
     })
+
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
         active: true,
         ciMaterial: [],
@@ -157,6 +172,10 @@ export default function CIPipeline({
         scanEnabled: false,
         environmentId: 0,
         pipelineType: "",
+        customTag: {
+            tagPattern: '',
+            counterX: '',
+        },
     })
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
@@ -194,7 +213,7 @@ export default function CIPipeline({
             ciPipeline.pipelineType === CIPipelineBuildType.CI_JOB 
         ) {
             const editCIPipelineURL: string = location.pathname.replace(`/${URLS.APP_CI_CONFIG}/`, `/${URLS.APP_JOB_CI_CONFIG}/`)
-            window.location.href =  editCIPipelineURL
+            history.push(editCIPipelineURL)
         }
     }, [location.pathname, ciPipeline.pipelineType])
 
@@ -821,11 +840,13 @@ export default function CIPipeline({
                                             formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
                                             formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
                                                 CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
-                                            (loadingState.loading || loadingState.failed))
+                                            (loadingState.loading || loadingState.failed)) ||
+                                        formDataErrorObj.customTag.message.length > 0 ||
+                                        formDataErrorObj.counterX?.message.length > 0
                                     }
                                     isLoading={apiInProgress}
                                 >
-                                    {text}
+                                    {saveOrUpdateButtonTitle}
                                 </ButtonWithLoader>
                             )}
                         </div>

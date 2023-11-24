@@ -21,6 +21,7 @@ export default function ClusterSelectionList({
     isSuperAdmin,
     clusterListLoader,
     refreshData,
+    initTabsBasedOnRole
 }: ClusterSelectionType) {
     const location = useLocation()
     const history = useHistory()
@@ -105,6 +106,7 @@ export default function ClusterSelectionList({
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('clusterId', clusterData.id)
         history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
+        initTabsBasedOnRole(true, isSuperAdmin)
     }
 
     const selectCluster = (e): void => {
@@ -145,7 +147,7 @@ export default function ClusterSelectionList({
                     />
                 </div>
                 <div>
-                    {errorCount > 0 ? (
+                    {clusterData.errorInNodeListing ? (
                         <Tippy className="default-tt w-200" arrow={false} content={clusterData.errorInNodeListing}>
                             <div className="flexbox">
                                 <Error className="mt-2 mb-2 mr-8 icon-dim-18" />

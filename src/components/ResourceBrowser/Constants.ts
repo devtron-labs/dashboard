@@ -175,17 +175,16 @@ export const SIDEBAR_KEYS = {
     nodeGVK: {
         Group: '',
         Version: '',
-        Kind: 'Node',
+        Kind: 'Node' as Nodes,
     },
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: Nodes.ClusterOverview,
+        Kind: Nodes.Overview,
     }
 }
 
 export const FIXED_GVK_Keys = {
-    'cluster overview': 'overviewGVK',
     node: 'nodeGVK',
     event: 'eventGVK',
     namespace: 'namespaceGVK',
@@ -222,6 +221,11 @@ export const RESOURCE_PAGE_SIZE_OPTIONS = [
     { value: 100, selected: true },
     { value: 150, selected: false },
     { value: 200, selected: false },
+]
+export const NODE_DETAILS_PAGE_SIZE_OPTIONS = [
+    { value: 20, selected: true },
+    { value: 40, selected: false },
+    { value: 50, selected: false },
 ]
 
 export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'

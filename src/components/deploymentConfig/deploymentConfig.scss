@@ -3,6 +3,12 @@
     width: 100%;
 }
 
+.variables-widget-position {
+    position: absolute;
+    bottom: 120px;
+    right: 110px;
+}
+
 #deployment-config {
     .tab-content {
         width: 100%;
@@ -488,5 +494,17 @@
 .config-toolbar-container {
     .active-tab {
         border-bottom: 2px solid var(--B500);
+    }
+}
+
+.config-toolbar-dropdown-shadow {
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.icon-selected {
+    background-color: #0066cc;
+    border-radius: 4px;
+    path {
+        stroke: #fff;
     }
 }

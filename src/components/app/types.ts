@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
@@ -12,6 +14,12 @@ export interface AddNewAppProps extends RouteComponentProps<{}> {
 export interface OptionType {
     label: string
     value: string
+}
+
+export interface ExtendedOptionType extends OptionType {
+    format?: string
+    variableType?: string
+    refVariableStage?: string
 }
 
 export interface NumberOptionType {
@@ -45,9 +53,9 @@ export interface AddNewAppState {
         projectId: boolean
         appName: boolean
         cloneAppId: boolean
+        description: boolean
     }
     createAppLoader: boolean
-    showClusterDescription: boolean
 }
 
 export interface AppDetails {
@@ -76,18 +84,42 @@ export interface LabelTag {
     key: string
     value: string
 }
+
+export interface ChartUsed {
+    appStoreAppName: string
+    appStoreAppVersion: string
+    appStoreChartId: number
+    appStoreChartName: string
+    chartAvatar?: string
+}
+
+interface GitMaterial {
+  displayName: string,
+  redirectionUrl: string,
+}
+
 export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
-    description: Description
+    description: string
     createdOn: string
     projectId?: number
     projectName?: string
     labels?: TagType[]
+    /**
+     * Available only for helm apps
+     */
+    chartUsed?: ChartUsed
+    note?: Note
+    gitMaterials?: GitMaterial[]
 }
 
-interface Description{
+export interface ArtifactsCiJob {
+    artifacts?: string[]
+}
+
+interface Note {
     id: number
     description: string
     updatedBy: string
@@ -355,7 +387,7 @@ export enum Nodes {
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
     Namespace = 'Namespace',
-    ClusterOverview = 'ClusterOverview'
+    Overview = 'Overview'
 }
 export type NodeType = keyof typeof Nodes
 
@@ -412,10 +444,11 @@ export enum SortingOrder {
     DESC = 'DESC',
 }
 
-export interface CreateAppLabelsRequest {
+export interface EditAppRequest {
     id: number
-    labels?: TagType[]
-    teamId?: number
+    labels: TagType[]
+    teamId: number
+    description: AppMetaInfo['description']
 }
 
 export interface LabelTagsType {
@@ -427,11 +460,23 @@ export interface LabelTagsType {
 export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
-    isJobOverview?: boolean
     filteredEnvIds?: string
+    /**
+     * Type of the application
+     *
+     * @default 'app'
+     */
+    appType: 'job' | 'app' | 'helm-chart'
 }
 
-export interface AboutAppInfoModalProps {
+export interface OverviewConfig {
+    resourceName: string
+    defaultNote: string
+    icon: ReactNode
+    defaultDescription: string
+}
+
+export interface AboutAppInfoModalProps extends Pick<AppOverviewProps, 'appType'> {
     isLoading: boolean
     appId: string
     description: string
@@ -441,7 +486,6 @@ export interface AboutAppInfoModalProps {
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     fetchingProjects?: boolean
     projectsList?: Teams[]
-    isJobOverview?: boolean
 }
 
 export interface DeleteComponentProps {
@@ -465,6 +509,12 @@ export interface AppStatusType {
     isDeploymentStatus?: boolean
     isJobView?: boolean
     isVirtualEnv?: boolean
+    /**
+     * Hide the status message if true
+     *
+     * @default false
+     */
+    hideStatusMessage?: boolean
 }
 export interface JobPipeline {
     ciPipelineID: number
@@ -478,7 +528,13 @@ export interface JobPipeline {
 }
 
 export interface TagChipsContainerType {
-  labelTags: TagType[]
+    labelTags: TagType[]
+    onAddTagButtonClick: (e) => void
+    resourceName: string;
+    /**
+     * Toggles the background to white when true
+     */
+    whiteBackground?: boolean;
 }
 export interface SourceInfoType {
   appDetails: AppDetails
@@ -510,4 +566,3 @@ export interface EnvironmentListMinType {
     namespace?: string
     allowedDeploymentTypes?: DeploymentAppTypes[]
 }
-

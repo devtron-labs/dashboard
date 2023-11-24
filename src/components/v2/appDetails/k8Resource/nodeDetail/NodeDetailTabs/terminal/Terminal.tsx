@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react'
+import React, { useEffect, useRef, useState} from 'react'
 import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
@@ -11,9 +11,6 @@ import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 
-let socket
-let terminal
-let fitAddon
 let clusterTimeOut
 
 export default function TerminalView({
@@ -28,29 +25,31 @@ export default function TerminalView({
     clearTerminal,
     dataTestId
 }: TerminalViewType) {
+    const socket = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
+    const fitAddon = useRef(null)
 
     function resizeSocket() {
-        if (terminal && fitAddon && isTerminalTab) {
-            const dim = fitAddon.proposeDimensions()
-            if (dim && socket?.readyState === WebSocket.OPEN) {
-                socket?.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
+        if (terminalRef.current && fitAddon.current && isTerminalTab) {
+            const dim = fitAddon.current?.proposeDimensions()
+            if (dim && socket.current?.readyState === WebSocket.OPEN) {
+                socket.current?.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
-            fitAddon.fit()
+            fitAddon.current?.fit()
         }
     }
 
     const [myDivRef] = useHeightObserver(resizeSocket)
 
     useEffect(() => {
-        if (!terminal) {
+        if (!terminalRef.current) {
             elementDidMount('#terminal-id').then(() => {
                 createNewTerminal()
             })
         }
-        if (sessionId && terminal) {
+        if (sessionId && terminalRef.current) {
             setIsReconnection(true)
             postInitialize(sessionId)
         } else {
@@ -69,15 +68,15 @@ export default function TerminalView({
             if (clusterTimeOut) {
                 clearTimeout(clusterTimeOut)
             }
-            if (socket) {
-                socket.close()
-                socket = undefined
+            if (socket.current) {
+                socket.current.close()
+                socket.current = undefined
             }
         }
     }, [socketConnection])
 
     const createNewTerminal = () => {
-        terminal = new Terminal({
+        terminalRef.current = new Terminal({
             scrollback: 99999,
             fontSize: 14,
             lineHeight: 1.4,
@@ -89,21 +88,20 @@ export default function TerminalView({
                 foreground: '#FFFFFF',
             },
         })
-        terminalRef.current = terminal
-        handleSelectionChange(terminal, setPopupText)
-        fitAddon = new FitAddon()
+        handleSelectionChange(terminalRef.current, setPopupText)
+        fitAddon.current = new FitAddon()
         const webFontAddon = new XtermWebfont()
-        terminal.loadAddon(fitAddon)
-        terminal.loadAddon(webFontAddon)
+        terminalRef.current.loadAddon(fitAddon.current)
+        terminalRef.current.loadAddon(webFontAddon)
         if (typeof registerLinkMatcher === 'function') {
-            registerLinkMatcher(terminal)
+            registerLinkMatcher(terminalRef.current)
         }
-        terminal.loadWebfontAndOpen(document.getElementById('terminal-id'))
-        fitAddon.fit()
-        terminal.reset()
-        terminal.attachCustomKeyEventHandler((event) => {
+        terminalRef.current.loadWebfontAndOpen(document.getElementById('terminal-id'))
+        fitAddon.current?.fit()
+        terminalRef.current.reset()
+        terminalRef.current.attachCustomKeyEventHandler((event) => {
             if ((event.metaKey && event.key === 'k') || event.key === 'K') {
-                terminal?.clear()
+                terminalRef.current?.clear()
             }
 
             return true
@@ -119,13 +117,13 @@ export default function TerminalView({
     const postInitialize = (sessionId: string) => {
         const socketURL = generateSocketURL()
 
-        socket?.close()
+        socket.current?.close()
         setFirstMessageReceived(false)
 
-        socket = new SockJS(socketURL)
-        const _socket = socket
-        const _terminal = terminal
-        const _fitAddon = fitAddon
+        socket.current = new SockJS(socketURL)
+        const _socket = socket.current
+        const _terminal = terminalRef.current
+        const _fitAddon = fitAddon.current
 
         const disableInput = (): void => {
             _terminal.setOption('cursorBlink', false)
@@ -141,7 +139,7 @@ export default function TerminalView({
         _terminal.onData(function (data) {
             resizeSocket()
             const inData = { Op: 'stdin', SessionID: '', Data: data }
-            if (_socket.readyState === WebSocket.OPEN) {
+            if (_socket?.readyState === WebSocket.OPEN) {
                 _socket?.send(JSON.stringify(inData))
             }
         })
@@ -153,7 +151,7 @@ export default function TerminalView({
             const startData = { Op: 'bind', SessionID: sessionId }
             _socket.send(JSON.stringify(startData))
 
-            let dim = _fitAddon.proposeDimensions()
+            let dim = _fitAddon?.proposeDimensions()
             if (dim) {
                 _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
@@ -194,9 +192,9 @@ export default function TerminalView({
     useEffect(() => {
         if (firstMessageReceived) {
             if (isTerminalTab) {
-                fitAddon.fit()
+                fitAddon.current?.fit()
             }
-            terminal.setOption('cursorBlink', true)
+            terminalRef.current.setOption('cursorBlink', true)
             setSocketConnection(SocketConnectionType.CONNECTED)
         }
     }, [firstMessageReceived, isTerminalTab])
@@ -215,20 +213,20 @@ export default function TerminalView({
         setSocketConnection(SocketConnectionType.CONNECTING)
 
         return () => {
-            socket?.close()
-            terminal?.dispose()
-            socket = undefined
+            socket.current?.close()
+            terminalRef.current?.dispose()
+            socket.current = undefined
             terminalRef.current = undefined
-            terminal = undefined
-            fitAddon = undefined
+            terminalRef.current = undefined
+            fitAddon.current = null
             clearTimeout(clusterTimeOut)
         }
     }, [])
 
     useEffect(() => {
-        if (terminal) {
-            terminal.clear()
-            terminal.focus()
+        if (terminalRef.current) {
+            terminalRef.current.clear()
+            terminalRef.current.focus()
         }
     }, [clearTerminal])
 

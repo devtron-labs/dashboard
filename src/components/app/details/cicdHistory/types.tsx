@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-import { UserApprovalMetadataType, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
+import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType } from '@devtron-labs/devtron-fe-common-lib'
 export interface WebHookData {
     Id: number
     EventActionType: string
@@ -36,6 +36,8 @@ export interface History {
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
 }
 
 export interface CiMaterial {
@@ -83,6 +85,7 @@ export interface ArtifactType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    jobCIClass?: string
 }
 
 export interface CopyTippyWithTextType {
@@ -103,6 +106,9 @@ export interface CIListItemType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
+    isSuperAdmin?:boolean
 }
 
 export interface ImageComment {
@@ -140,7 +146,9 @@ export interface GitChangesType {
     ciPipelineId?: number
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
+    hideImageTaggingHardDelete?: boolean,
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
 }
 export interface EmptyViewType {
     imgSrc?: string
@@ -282,4 +290,6 @@ export const PROGRESSING_STATUS = {
     [TERMINAL_STATUS_MAP.RUNNING]: 'running',
     [TERMINAL_STATUS_MAP.PROGRESSING]: 'progressing',
     [TERMINAL_STATUS_MAP.STARTING]: 'starting',
+    [TERMINAL_STATUS_MAP.INITIATING]: 'initiating',
+    [TERMINAL_STATUS_MAP.QUEUED]: 'queued',
 }

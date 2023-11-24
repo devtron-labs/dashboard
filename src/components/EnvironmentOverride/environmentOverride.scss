@@ -99,12 +99,12 @@ section.config-map-overrides {
 }
 
 .configmap-secret-usage-radio {
-  .form__radio-item {
-      &.disabled {
-          opacity: 0.5;
-          background-color: transparent;
-      }
-  }
+    .form__radio-item {
+        &.disabled {
+            opacity: 0.5;
+            background-color: transparent;
+        }
+    }
 }
 
 div.override-container {
@@ -192,4 +192,10 @@ div.override-container {
     .chart-version.popup-button {
         width: 100%;
     }
+}
+
+.variables-widget-position {
+    position: absolute;
+    bottom: 120px;
+    right: 110px;
 }

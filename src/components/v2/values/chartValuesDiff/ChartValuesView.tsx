@@ -112,6 +112,8 @@ import {
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
+import IndexStore from '../../appDetails/index.store'
+import { AppDetails } from '../../appDetails/appDetails.type'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -799,6 +801,15 @@ function ChartValuesView({
 
         const validatedName = validationRules.appName(isCreateValueView ? valueName : appName)
         if (!isRequestDataValid(validatedName)) {
+            // If some validation error occurred, close the readme column or comparision column
+            // to show the validations errors
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    openReadMe: false,
+                    openComparison: false,
+                },
+            })
             return
         }
 
@@ -918,6 +929,7 @@ function ChartValuesView({
             } else if (res?.result && (res.result.success || res.result.appName)) {
               appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName, res.result?.helmPackageName)
                 toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
+                IndexStore.publishAppDetails({} as AppDetails, null)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 toast.error(SOME_ERROR_MSG)
@@ -1304,11 +1316,7 @@ function ChartValuesView({
 
     const renderChartValuesEditor = () => {
         return (
-            <div
-                className={`chart-values-view__editor dc__position-rel ${
-                    commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
-                }`}
-            >
+            <div className="chart-values-view__editor">
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
                     <GenericEmptyState SvgImage={ErrorExclamation} classname="dc__align-reload-center" title="" subTitle={commonState.valuesEditorError} />
 
@@ -1346,15 +1354,13 @@ function ChartValuesView({
                         selectedChartValues={commonState.chartValues}
                     />
                 )}
-                {!commonState.openComparison && !commonState.openReadMe && (
-                    <UpdateApplicationButton
-                        isUpdateInProgress={commonState.isUpdateInProgress}
-                        isDeleteInProgress={commonState.isDeleteInProgress}
-                        isDeployChartView={isDeployChartView}
-                        isCreateValueView={isCreateValueView}
-                        deployOrUpdateApplication={deployOrUpdateApplication}
-                    />
-                )}
+                <UpdateApplicationButton
+                    isUpdateInProgress={commonState.isUpdateInProgress}
+                    isDeleteInProgress={commonState.isDeleteInProgress}
+                    isDeployChartView={isDeployChartView}
+                    isCreateValueView={isCreateValueView}
+                    deployOrUpdateApplication={deployOrUpdateApplication}
+                />
             </div>
         )
     }
@@ -1433,8 +1439,16 @@ function ChartValuesView({
         )
     }
 
+    const getDynamicWrapperClassName = (): string => {
+        if (isDeployChartView) {
+            return 'sub162-vh'
+        }
+        return 'sub189-vh'
+    }
+
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
+        const wrapperClassName = getDynamicWrapperClassName();
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
@@ -1445,7 +1459,7 @@ function ChartValuesView({
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__hr-divider bcn-2" />
-                <div className="chart-values-view__wrapper">
+                <div className={`chart-values-view__wrapper ${wrapperClassName}`}>
                     <div className="chart-values-view__details">
                         {isCreateValueView && (
                             <ValueNameInput
