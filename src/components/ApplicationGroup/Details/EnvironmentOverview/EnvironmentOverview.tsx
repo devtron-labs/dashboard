@@ -400,7 +400,7 @@ export default function EnvironmentOverview({
                                         }`}
                                     ></span>
                                 </label>
-                                <span className="">{!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}</span>
+                                {!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}
                                 <span className="">{OVERVIEW_HEADER.APPLICATION}</span>
                             </div>
                             <span className="">{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
