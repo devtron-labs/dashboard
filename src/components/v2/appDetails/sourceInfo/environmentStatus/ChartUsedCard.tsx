@@ -17,7 +17,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
             className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200"
         >
             <div className="app-details-info-card__top-container flex">
-                <div className="app-details-info-card__top-container__content">
+                <div className="app-details-info-card__top-container__content dc__ellipsis-right">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
                         <div className="fs-12 fw-4 cn-7 mr-5" data-testid="chart-used-heading">
                             Chart used
