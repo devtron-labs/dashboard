@@ -13,17 +13,17 @@
 
         .app-deployments-info-header,
         .app-deployments-info-row {
-            grid-template-columns: minmax(170px, 20%) 15% 25% 38%;
+            grid-template-columns: minmax(170px, 28%) 15% 25% 30%;
             column-gap: 16px;
             grid-auto-rows: 36px;
             transition: grid-template-columns 0.2s ease-in-out;
 
             &.last-deployed-expanded {
-                grid-template-columns: minmax(170px, 20%) 15% 35% 28%;
+                grid-template-columns: minmax(170px, 28%) 15% 35% 20%;
             }
 
             .app-deployment-info-row-leftsection {
-                grid-template-columns: 15% 15% 70%;
+                grid-template-columns: 10% 10% 80%;
                 column-gap: 16px;
                 min-width: 170px;
             }
