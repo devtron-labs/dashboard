@@ -702,6 +702,8 @@ button.anchor {
         color: var(--G500);
     }
 
+    &.f-starting,
+    &.f-initiating,
     &.f-suspended,
     &.f-switchedtoactiveservice,
     &.f-containercreating,
@@ -1118,6 +1120,7 @@ button.anchor {
     width: 24px;
     z-index: 2;
 
+    &.queued,
     &.pending {
         background: url('../assets/icons/ic-clock.svg'), $background;
         background-size: contain, contain;
@@ -1179,6 +1182,7 @@ button.anchor {
         background-size: contain, contain;
     }
 
+    &.initiating,
     &.progressing,
     &.running,
     &.request_accepted,
@@ -2201,6 +2205,10 @@ button.anchor {
 
 .dc__mxw-400 {
     max-width: 400px;
+}
+
+.dc__mxw-500 {
+    max-width: 500px;
 }
 
 .dc__mxw-800 {
@@ -3418,6 +3426,10 @@ textarea,
 
 .mt-120 {
     margin-top: 120px;
+}
+
+.ml-54 {
+    margin-left: 54px
 }
 
 .ml-60 {
