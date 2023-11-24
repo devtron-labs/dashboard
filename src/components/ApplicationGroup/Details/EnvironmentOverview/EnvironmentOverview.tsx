@@ -290,8 +290,8 @@ export default function EnvironmentOverview({
                         {appGroupListData.environmentName}
                     </div>
                     <EditableTextArea
-                        emptyState={'you can add description here'}
-                        placeholder={''}
+                        emptyState={'Write a short description for this environment'}
+                        placeholder={'Write a short description for this environment'}
                         rows={4}
                         initialText={description}
                         updateContent={handleSaveDescription}
