@@ -10,7 +10,7 @@ import { getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Checkbox, CHECKBOX_VALUE, Host} from '@devtron-labs/devtron-fe-common-lib';
+import { Checkbox, CHECKBOX_VALUE, Host } from '@devtron-labs/devtron-fe-common-lib'
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -33,6 +33,7 @@ import {
     getSelectedPodList,
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
+import ReactGA from 'react-ga4'
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -77,6 +78,14 @@ function LogsComponent({
     }
 
     const handlePodSelection = (selectedOption: string) => {
+        if (selectedOption.startsWith('All ')) {
+            ReactGA.event({
+                category: 'log analyser',
+                action: 'all-pods-selected',
+                label: '',
+            })
+        }
+
         const pods = getSelectedPodList(selectedOption)
         const containers = new Set(pods[0].containers ?? [])
         const selectedContainer = containers.has(logState.selectedContainerOption)
@@ -146,7 +155,11 @@ function LogsComponent({
             subject.publish(log)
             if (prevContainer) {
                 for (const _co of podContainerOptions.containerOptions) {
-                    if ( _co.selected && log.toString() === `previous terminated container "${_co.name}" in pod "${podContainerOptions.podOptions[0].name}" not found`) {
+                    if (
+                        _co.selected &&
+                        log.toString() ===
+                            `previous terminated container "${_co.name}" in pod "${podContainerOptions.podOptions[0].name}" not found`
+                    ) {
                         setNoPrevContainer(log.toString())
                     }
                 }
@@ -410,10 +423,11 @@ function LogsComponent({
                                             <Select
                                                 placeholder="Select Pod"
                                                 options={getPodGroups()}
-                                                defaultValue={getFirstOrNull(
-                                                    podContainerOptions.podOptions
-                                                        .filter((_pod) => _pod.selected)
-                                                        .map((_pod) => ({ label: _pod.name, value: _pod.name })),
+                                                defaultValue={getFirstOrNull<{ label: string; value: string }>(
+                                                    podContainerOptions.podOptions.map((_pod) => ({
+                                                        label: _pod.name,
+                                                        value: _pod.name,
+                                                    })),
                                                 )}
                                                 onChange={(selected) => handlePodSelection(selected.value)}
                                                 styles={{

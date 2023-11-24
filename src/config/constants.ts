@@ -614,6 +614,8 @@ export const TERMINAL_STATUS_MAP = {
     RUNNING: 'running',
     PROGRESSING: 'progressing',
     STARTING: 'starting',
+    INITIATING: 'initiating',
+    QUEUED: 'queued',
     FAILED: 'failed',
     ERROR: 'error',
     CANCELLED: 'cancelled',
@@ -731,7 +733,10 @@ export const DEPLOYMENT_STATUS = {
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
     PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    INITIATING: 'initiating',
     SUPERSEDED: 'superseded',
+    QUEUED: 'queued',
     UNKNOWN: 'unknown',
 }
 
@@ -795,12 +800,3 @@ export const SERVER_ERROR_CODES = {
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
-
-/**
- * Tabs for the overview of the app(s)
- */
-export const OVERVIEW_TABS = {
-    ABOUT: 'about',
-    ENVIRONMENTS: 'environments',
-    JOB_PIPELINES: 'job-pipelines',
-} as const

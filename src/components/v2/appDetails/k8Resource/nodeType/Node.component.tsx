@@ -124,7 +124,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             let podsType = []
             if (isPodAvailable) {
                 podsType = _selectedNodes.filter((el) =>
-                    podMetaData?.some((f) => f.name === el.name && f.isNew === podType),
+                    podMetaData?.some((f) => {
+                        // Set f.isNew to false if it is undefined
+                        f.isNew = f.isNew || false
+                        return f.name === el.name && f.isNew === podType
+                    }),
                 )
             }
 
@@ -260,10 +264,10 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </TippyCustomized>
                     </>
                 )
-            } else if(node.port?.length ===  1){
+            } else if (node.port?.length === 1) {
                 return `${node.name}.${node.namespace}:${node.port}`
             } else {
-                return "Port Number is missing"
+                return 'Port Number is missing'
             }
         }
 
@@ -437,9 +441,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </div>
                             </div>
                         </div>
-                        {params.nodeType === NodeType.Service.toLowerCase() &&
-                            node.kind !== 'Endpoints' &&
-                            node.kind !== 'EndpointSlice' && (
+                        {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
                                 <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
                                     {portNumberPlaceHolder(node)}
                                     {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
