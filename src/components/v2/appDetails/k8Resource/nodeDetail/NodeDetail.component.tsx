@@ -133,7 +133,7 @@ function NodeDetailComponent({
 
                 if (Array.isArray(result.ephemeralContainers)) {
                     let ephemeralContainers = []
-                    result.manifest.ephemeralContainerStatuses?.forEach((_container) => {
+                    result.ephemeralContainerStatuses?.forEach((_container) => {
                         ephemeralContainers.push({
                             name: _container.name,
                             isInitContainer: false,
