@@ -5,7 +5,6 @@ import { AppStreamData, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
-import SyncErrorComponent from './SyncError.component'
 import { importComponentFromFELibrary, useEventSource } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import NodeTreeDetailTab from './NodeTreeDetailTab'
@@ -202,8 +201,6 @@ const AppDetailsComponent = ({
                     />
                 )}
             </div>
-
-            <SyncErrorComponent appStreamData={streamData} />
             {!appDetails.deploymentAppDeleteRequest && (
                 <AppLevelExternalLinks
                     helmAppDetails={appDetails}
