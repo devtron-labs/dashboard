@@ -687,7 +687,7 @@ export const Details: React.FC<DetailsType> = ({
             {commitInfo && (
                 <TriggerInfoModal
                     envId={appDetails?.environmentId}
-                    ciArtifactId={appDetails?.ciArtifactId}
+                    ciArtifactId={appDetails?.parentArtifactId ?? appDetails?.ciArtifactId}
                     close={() => showCommitInfo(false)}
                 />
             )}
