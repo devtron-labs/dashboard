@@ -100,12 +100,6 @@ function NodeDetailComponent({
         }
     }, [loadingResources, params.node, params.namespace])
 
-    const isExternalEphemeralContainer = (cmds: string[], name: string): boolean => {
-        const matchingCmd = `sh ${name}-devtron.sh`
-        const internal = cmds?.find((cmd) => cmd.includes(matchingCmd))
-        return !internal
-    }
-
     const getContainersFromManifest = async () => {
         try {
             const { result } = await getManifestResource(
@@ -137,26 +131,15 @@ function NodeDetailComponent({
                     )
                 }
 
-                if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
-                    const ephemeralContainerStatusMap = new Map<string, string[]>()
-                    result.manifest.spec.ephemeralContainers.forEach((con) => {
-                        ephemeralContainerStatusMap.set(con.name, con.command as string[])
-                    })
+                if (Array.isArray(result.ephemeralContainers)) {
                     let ephemeralContainers = []
-                    result.manifest.status.ephemeralContainerStatuses?.forEach((_container) => {
-                        //con.state contains three states running,waiting and terminated
-                        // at any point of time only one state will be there
-                        if (_container.state.running) {
-                            ephemeralContainers.push({
-                                name: _container.name,
-                                isInitContainer: false,
-                                isEphemeralContainer: true,
-                                isExternal: isExternalEphemeralContainer(
-                                    ephemeralContainerStatusMap.get(_container.name),
-                                    _container.name,
-                                ),
-                            })
-                        }
+                    result.manifest.ephemeralContainerStatuses?.forEach((_container) => {
+                        ephemeralContainers.push({
+                            name: _container.name,
+                            isInitContainer: false,
+                            isEphemeralContainer: true,
+                            isExternal: _container.isExternal,
+                        })
                     })
                     _resourceContainers.push(...ephemeralContainers)
                 }
