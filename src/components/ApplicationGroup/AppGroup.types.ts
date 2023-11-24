@@ -270,7 +270,7 @@ export interface AppGroupDetailDefaultType {
     appGroupListData?: AppGroupListType
     isVirtualEnv?: boolean
     envName?: string
-    getAppListData?: any
+    getAppListData?: () => Promise<void>
 }
 
 interface CIPipeline {
@@ -338,7 +338,7 @@ export interface AppGroupListType {
     environmentId: number
     apps: ApplistEnvType[]
     description?: string
-    environmentType?: string
+    environmentType?: 'Non-Production' | 'Production'
     createdOn?: string
     createdBy?: string
     clusterId?: number
@@ -422,4 +422,46 @@ export interface HibernateResponseRowType {
     authError?: boolean
     error?: string
     skipped?: string
+}
+
+export interface HibernateModalProps {
+    selectedAppIds: number[]
+    envName: string
+    envId: string
+    setOpenHiberateModal: (value: boolean) => void
+    setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
+    setShowHibernateStatusDrawer: React.Dispatch<
+        React.SetStateAction<{
+            hibernationOperation: boolean
+            showStatus: boolean
+        }>
+    >
+}
+
+export interface UnhibernateModalProps {
+    selectedAppIds: number[]
+    envName: string
+    envId: string
+    setOpenUnhiberateModal: (value: boolean) => void
+    setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
+    setShowHibernateStatusDrawer: React.Dispatch<
+        React.SetStateAction<{
+            hibernationOperation: boolean
+            showStatus: boolean
+        }>
+    >
+}
+
+export interface StatusDrawer {
+    hibernationOperation: boolean
+    showStatus: boolean
+}
+
+export interface manageAppsResponse {
+    appName: string
+    id: number
+    success: boolean
+    skipped?: string
+    error?: string
+    authError?: boolean
 }

@@ -1,22 +1,10 @@
 import { VisibleModal, showError } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
-import { hibernate } from './service'
+import { manageApps } from './service'
 import { ButtonWithLoader } from '../../../common'
 
-interface HibernateModalProps {
-    selectedAppIds: number[]
-    envName: string
-    envId: string
-    setOpenHiberateModal: (value: boolean) => void
-    setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
-    setShowHibernateStatusDrawer: React.Dispatch<
-        React.SetStateAction<{
-            hibernationOperation: boolean
-            showStatus: boolean
-        }>
-    >
-}
+import { HibernateModalProps } from '../../AppGroup.types'
 
 export const HibernateModal = ({
     selectedAppIds,
@@ -31,7 +19,7 @@ export const HibernateModal = ({
     const hibernateApps = (e) => {
         e.preventDefault()
         setLoader(true)
-        hibernate(selectedAppIds, Number(envId), envName)
+        manageApps(selectedAppIds, Number(envId), envName, 'hibernate')
             .then((res) => {
                 setAppStatusResponseList(res?.result?.response)
                 setOpenHiberateModal(false)
@@ -42,6 +30,9 @@ export const HibernateModal = ({
             })
             .catch((err) => {
                 showError(err)
+            })
+            .finally(() => {
+                setLoader(false)
             })
     }
 
@@ -55,7 +46,7 @@ export const HibernateModal = ({
                 onClick={(e) => {
                     e.stopPropagation()
                 }}
-                className={`modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column`}
+                className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column"
             >
                 <div className="flexbox-col dc__gap-12">
                     <HibernateModalIcon className="dc__align-left" />
@@ -63,7 +54,7 @@ export const HibernateModal = ({
                         Hibernate '{selectedAppIds.length} applications' on '{envName}'
                     </span>
                     <span>
-                        Pods for the selected applications will be{' '}
+                        Pods for the selected applications will be
                         <span className="fw-6">scaled down to 0 on {envName} environment.</span>
                     </span>
                     <span> Are you sure you want to continue?</span>

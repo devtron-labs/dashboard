@@ -14,10 +14,9 @@ export default function AppStatus({
     hideStatusMessage = false,
 }: AppStatusType) {
     let status = appStatus
-    if (!isDeploymentStatus)
-        if (isDeploymentStatus) {
-            status = triggerStatus(appStatus)
-        }
+    if (isDeploymentStatus) {
+        status = triggerStatus(appStatus)
+    }
     const appStatusLowerCase = status?.toLowerCase()
     const isNotDeployed = appStatusLowerCase === StatusConstants.NOT_DEPLOYED.noSpaceLower
     const iconClass = isNotDeployed ? StatusConstants.NOT_DEPLOYED.lowerCase : appStatusLowerCase

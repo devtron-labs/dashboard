@@ -7,7 +7,14 @@ import { StatusConstants } from '../../../app/list-new/Constants'
 import { EditableTextArea, processDeployedTime } from '../../../common'
 import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { editDescription, getDeploymentStatus } from '../../AppGroup.service'
-import { AppGroupDetailDefaultType, AppGroupListType, AppInfoListType, AppListDataType } from '../../AppGroup.types'
+import {
+    AppGroupDetailDefaultType,
+    AppGroupListType,
+    AppInfoListType,
+    AppListDataType,
+    StatusDrawer,
+    manageAppsResponse,
+} from '../../AppGroup.types'
 import './envOverview.scss'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../../../config'
@@ -25,7 +32,6 @@ import { HibernateModal } from './HibernateModal'
 import { UnhibernateModal } from './UnhibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
-import { pipe } from 'rxjs'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -37,14 +43,11 @@ export default function EnvironmentOverview({
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, setLoading] = useState<boolean>()
     const [description, setDescription] = useState<string>(appGroupListData.description)
-    const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<{
-        hibernationOperation: boolean
-        showStatus: boolean
-    }>({
+    const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<StatusDrawer>({
         hibernationOperation: true,
         showStatus: false,
     })
-    const [appStatusResponseList, setAppStatusResponseList] = useState<any[]>([])
+    const [appStatusResponseList, setAppStatusResponseList] = useState<manageAppsResponse[]>([])
     const timerId = useRef(null)
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
     const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
@@ -181,7 +184,6 @@ export default function EnvironmentOverview({
                         isHovered === index ? 'bc-n50' : 'bcn-0'
                     }`}
                 >
-                    {/* <span> */}
                     {isHovered !== index && !isSelected ? (
                         <DevtronIcon className="icon-dim-20" />
                     ) : (
@@ -196,7 +198,6 @@ export default function EnvironmentOverview({
                             <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`}></span>
                         </label>
                     )}
-                    {/* </span> */}
                     {!isVirtualEnv && <AppStatus appStatus={item.appStatus} hideStatusMessage />}
                     <span className="fs-13 fw-4 cn-7 dc__ellipsis-right">{item.application}</span>
                 </div>
@@ -261,7 +262,7 @@ export default function EnvironmentOverview({
                 cluster_id: appGroupListData.clusterId,
                 namespace: appGroupListData.namespace,
                 active: true,
-                default: appGroupListData.environmentType === 'Non-Production' ? false : true,
+                default: !(appGroupListData.environmentType === 'Non-Production'),
                 description: value?.trim(),
             }
             try {
@@ -351,7 +352,7 @@ export default function EnvironmentOverview({
 
     return appListData ? (
         <div className="env-overview-container dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20">
-            <div className="w-300">{renderSideInfoColumn()}</div>
+            <div>{renderSideInfoColumn()}</div>
             <div className="dc__h-fit-content">
                 <div className="flex column left">
                     <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
@@ -401,25 +402,23 @@ export default function EnvironmentOverview({
                                     ></span>
                                 </label>
                                 {!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}
-                                <span className="">{OVERVIEW_HEADER.APPLICATION}</span>
+                                <span>{OVERVIEW_HEADER.APPLICATION}</span>
                             </div>
-                            <span className="">{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
+                            <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
                             <button
                                 type="button"
                                 className="dc__outline-none-imp p-0 dc__uppercase dc__transparent flexbox dc__align-items-center dc__gap-4"
                                 onClick={toggleIsLastDeployedExpanded}
                             >
-                                <span className="">{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
+                                <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
                                 <ArrowLineDown
                                     className="icon-dim-14 scn-5 rotate"
                                     style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
                                 />
                             </button>
-                            <span className="">{OVERVIEW_HEADER.DEPLOYED_BY}</span>
+                            <span>{OVERVIEW_HEADER.DEPLOYED_BY}</span>
                         </div>
-                        <div className="">
-                            {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
-                        </div>
+                        <div>{appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}</div>
                     </div>
                 </div>
             </div>

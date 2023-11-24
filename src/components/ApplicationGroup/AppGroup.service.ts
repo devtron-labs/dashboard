@@ -226,5 +226,5 @@ export const deleteEnvGroup = (envId: string, groupId: string, filterParentType?
 }
 
 export const editDescription = (payload): Promise<EditDescRequestResponse> => {
-    return put(`${Routes.ENVIRONMENT}`, payload)
+    return put(Routes.ENVIRONMENT, payload)
 }

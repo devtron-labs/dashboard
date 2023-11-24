@@ -8,8 +8,8 @@
 
     .app-deployments-info-wrapper {
         border-radius: 4px;
-        background-color: white;
-        border: 1px solid var(--N200, #edf1f5);
+        background-color: var(--N0, #fff);
+        border: 1px solid var(--N200);
 
         .app-deployments-info-header,
         .app-deployments-info-row {
@@ -50,19 +50,9 @@
     display: inline-block;
     height: 20px;
     width: 30px;
-    background-color: #fff;
+    background-color: var(--N0);
     border: 1px solid #ccc;
     border-radius: 3px;
-}
-
-.temp {
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    height: 1px;
-    overflow: hidden;
-    position: absolute;
-    white-space: nowrap;
-    width: 1px;
 }
 
 .sticky-column {

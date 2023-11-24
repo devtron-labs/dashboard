@@ -41,12 +41,12 @@ export default function HibernateStatusListDrawer({
         return (
             <div className="response-list-container bcn-0 dc__height-inherit dc__overflow-auto pr-20 pb-16 pl-20">
                 <div
-                    className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom response-row dc__border-bottom pt-24 pb-8 dc__uppercase"
+                    className="dc__position-sticky fs-12 fw-6 cn-7 dc__top-0 bcn-0 dc__border-bottom response-row dc__border-bottom pt-24 pb-8 dc__uppercase"
                     style={{ zIndex: 1 }}
                 >
-                    <div className="fs-12 fw-6 cn-7 ">Application</div>
-                    <div className="fs-12 fw-6 cn-7 ">Status</div>
-                    <div className="fs-12 fw-6 cn-7 ">Message</div>
+                    <div>Application</div>
+                    <div>Status</div>
+                    <div>Message</div>
                 </div>
                 {responseList.map((response, index) => (
                     <HibernateStatusRow

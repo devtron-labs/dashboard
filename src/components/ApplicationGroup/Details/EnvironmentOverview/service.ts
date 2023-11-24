@@ -1,9 +1,8 @@
-import { post } from "@devtron-labs/devtron-fe-common-lib"
+import { post } from '@devtron-labs/devtron-fe-common-lib'
 
-export const hibernate = async (appIds:number[],envId:number,envName:string) => {
-    return post(`batch/v1beta1/hibernate`, { appIdIncludes: appIds, envId, envName })
-}
-
-export const unhibernate = async (appIds:number[],envId:number,envName:string) => {
-    return post(`batch/v1beta1/unhibernate`, { appIdIncludes: appIds, envId, envName })
-}
+export const manageApps = async (
+    appIds: number[],
+    envId: number,
+    envName: string,
+    action: 'hibernate' | 'unhibernate',
+) => post(`batch/v1beta1/${action}`, { appIdIncludes: appIds, envId, envName })
