@@ -177,7 +177,7 @@ export default function EnvironmentOverview({
                 onMouseLeave={() => setIsHovered(null)}
             >
                 <div
-                    className={`pl-16 app-deployment-info-row-leftsection dc__align-items-center display-grid dc__position-sticky sticky-column ${
+                    className={`pl-16 pr-16 app-deployment-info-row-leftsection dc__align-items-center display-grid dc__position-sticky sticky-column ${
                         isHovered === index ? 'bc-n50' : 'bcn-0'
                     }`}
                 >
@@ -352,14 +352,7 @@ export default function EnvironmentOverview({
     return appListData ? (
         <div className="env-overview-container dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20">
             <div className="w-300">{renderSideInfoColumn()}</div>
-            <div
-                className="dc__h-fit-content"
-                // style={{
-                //     // minWidth: '1012px',
-                //     // minWidth: 'auto',
-                //     maxWidth: '1068px',
-                // }}
-            >
+            <div className="dc__h-fit-content">
                 <div className="flex column left">
                     <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
                         <span className="flex">
@@ -388,7 +381,7 @@ export default function EnvironmentOverview({
                         <div
                             className={`app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
                         >
-                            <div className="pl-16 app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center">
+                            <div className="pl-16 pr-16 app-deployment-info-row-leftsection display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center">
                                 <label className="dc__position-rel pointer m-0-imp">
                                     <input
                                         type="checkbox"
