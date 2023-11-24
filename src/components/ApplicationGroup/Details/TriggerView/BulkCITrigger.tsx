@@ -38,6 +38,7 @@ import Tippy from '@tippyjs/react'
 import TriggerResponseModal from './TriggerResponseModal'
 import { BULK_CI_MESSAGING } from '../../Constants'
 import { processConsequenceData } from '../../AppGroup.utils'
+import { getIsAppUnorthodox } from './utils'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -77,8 +78,6 @@ export default function BulkCITrigger({
     } = useContext(TriggerViewContext)
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
-
-    const getIsAppUnorthodox = (app: BulkCIDetailType): boolean => app.isLinkedCI || app.isWebhookCI || app.isLinkedCD
 
     const closeBulkCIModal = (evt) => {
         abortControllerRef.current.abort()

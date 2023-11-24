@@ -18,7 +18,7 @@ export const WORKFLOW_OPTIONS_MODAL = {
     ACTION_TEXT: 'Select an image source for new workflow',
     ACTION_NOTE: 'You can switch between image sources later',
     CHANGE_CI_TEXT: 'Change image source',
-    CHANGE_CI_NOTE: 'Deploy to environments in this workflow from another image source',
+    CHANGE_CI_NOTE: 'Deploy to environments in the workflow from another image source',
 }
 
 export const WORKFLOW_OPTIONS_MODAL_TYPES = {

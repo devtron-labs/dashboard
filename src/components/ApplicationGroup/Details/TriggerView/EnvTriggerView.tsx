@@ -1008,6 +1008,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             appIds.push(app.id)
             appNameMap.set(app.id, app.name)
         })
+
         setIsBranchChangeLoading(true)
         triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
@@ -1402,7 +1403,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
-        if (isCILoading) return
+        if (isCILoading) {
+            return
+        }
+
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setCILoading(true)
         let node
@@ -1413,7 +1417,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 node = _wf.nodes.find((node) => {
                     return node.type === WorkflowNodeType.CI
                 })
-                if (node && !node.isLinkedCI) {
+                // Maybe we dont need to push webhook as well
+                if (node && !node.isLinkedCI && !node.isLinkedCD) {
                     triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                     nodeList.push(node)
                 }
@@ -1458,6 +1463,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
+        if (!_CITriggerPromiseList.length) {
+            toast.error('No valid CI pipeline found')
+            setCDLoading(false)
+            setCILoading(false)
+            return
+        }
         handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI)
     }
 
