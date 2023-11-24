@@ -407,7 +407,7 @@ export function ConfigMapSecretContainer({
                         </div>
                     )}
                 </article>
-                {renderDetails()}
+                {!isLoader ? renderDetails() : null}
             </section>
         </>
     )
