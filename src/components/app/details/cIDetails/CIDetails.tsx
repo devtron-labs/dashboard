@@ -157,7 +157,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const selectedPipelineExist = !pipelineId || pipelines.find((pipeline) => pipeline.id === +pipelineId)
 
     if (!pipelines.length && pipelineId) {
-        // reason is un-requried params like logs were leaking
+        // reason is un-required params like logs were leaking
         replace(generatePath(path, { appId }))
     }
     else if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist && pipelines.length)) {
