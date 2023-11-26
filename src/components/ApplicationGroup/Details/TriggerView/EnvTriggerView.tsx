@@ -1002,12 +1002,28 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const changeBranch = (value): void => {
-        let appIds = []
-        let appNameMap = new Map()
-        selectedAppList.map((app) => {
-            appIds.push(app.id)
-            appNameMap.set(app.id, app.name)
+        const appIds = []
+        const appNameMap = new Map()
+
+        filteredWorkflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _ciNode = wf.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                )
+                if (_ciNode) {
+                    // Need to add check for webhook if its source type is git
+                    if (!_ciNode.isLinkedCI && !_ciNode.isLinkedCD) {
+                        appIds.push(wf.appId)
+                        appNameMap.set(wf.appId, wf.name)
+                    }
+                }
+            }
         })
+
+        if (!appIds.length) {
+            toast.error('No valid application present')
+            return
+        }
 
         setIsBranchChangeLoading(true)
         triggerBranchChange(appIds, +envId, value)
