@@ -277,6 +277,7 @@ interface CIPipeline {
     id: number
     parentCiPipeline: number
     parentAppId: number
+    pipelineType?: string
 }
 export interface CIConfigListType {
     pipelineList: CIPipeline[]
