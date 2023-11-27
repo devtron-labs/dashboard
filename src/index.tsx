@@ -47,6 +47,7 @@ interface customEnv {
     ANNOUNCEMENT_BANNER_MSG?: string
     LOGIN_PAGE_IMAGE?: string
     LOGIN_PAGE_IMAGE_BG?: string
+    SHOW_DEFAULT_CLUSTER?: boolean
 }
 declare global {
     interface Window {
@@ -58,11 +59,7 @@ declare global {
 }
 
 const root = document.getElementById('root')
-if (
-    process.env.NODE_ENV === 'production' &&
-    window._env_ &&
-    (window._env_.SENTRY_ERROR_ENABLED)
-) {
+if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY_ERROR_ENABLED) {
     const integrationArr = []
     integrationArr.push(new CaptureConsole({ levels: ['error'] }))
     if (window._env_.SENTRY_PERFORMANCE_ENABLED) {
@@ -145,13 +142,14 @@ if (!window || !window._env_) {
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
         ENABLE_BUILD_CONTEXT: false,
-        CLAIR_TOOL_VERSION:'V4',
+        CLAIR_TOOL_VERSION: 'V4',
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
         LOGIN_PAGE_IMAGE: '',
-        LOGIN_PAGE_IMAGE_BG: ''
+        LOGIN_PAGE_IMAGE_BG: '',
+        SHOW_DEFAULT_CLUSTER: false,
     }
 }
 
@@ -167,5 +165,5 @@ ReactDOM.render(
 )
 
 if (process.env.NODE_ENV === 'development') {
-    (module as any).hot.accept()
+    ;(module as any).hot.accept()
 }

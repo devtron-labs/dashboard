@@ -18,6 +18,9 @@ interface ClusterSelectorType {
 }
 
 export default function ClusterSelector({ onChange, clusterList, clusterId }: ClusterSelectorType) {
+    if (!window._env_.SHOW_DEFAULT_CLUSTER) {
+        clusterList = clusterList.filter((item) => item.label !== 'default_cluster')
+    }
     const defaultOption = clusterList.find((item) => item.value == clusterId)
 
     return (

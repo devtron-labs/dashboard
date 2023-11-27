@@ -21,7 +21,7 @@ export default function ClusterSelectionList({
     isSuperAdmin,
     clusterListLoader,
     refreshData,
-    initTabsBasedOnRole
+    initTabsBasedOnRole,
 }: ClusterSelectionType) {
     const location = useLocation()
     const history = useHistory()
@@ -121,6 +121,7 @@ export default function ClusterSelectionList({
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
+        if (!window._env_.SHOW_DEFAULT_CLUSTER && clusterData.name === 'default_cluster') return <></>
         return (
             <div
                 key={`cluster-${clusterData.id}`}
