@@ -886,7 +886,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
     redirectToCIPipeline = () => {
         this.props.history.push(
-            getCIPipelineURL(this.props.match.params.appId, this.state.workflowId.toString(), true, this.state.ciNodeId, true, false),
+            getCIPipelineURL(this.props.match.params.appId, this.state.workflowId.toString(), true, this.state.ciNodeId, this.props.isJobView, !this.props.isJobView),
         )
     }
     selectCommit = (materialId: string, hash: string): void => {
