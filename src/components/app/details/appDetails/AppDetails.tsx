@@ -58,6 +58,10 @@ import {
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
     ValueContainer,
+    NoParamsNoEnvContext,
+    NoParamsWithEnvContext,
+    ParamsNoEnvContext,
+    ParamsAndEnvContext,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -113,34 +117,28 @@ export default function AppDetail({ filteredEnvIds, someValue }: { filteredEnvId
     const envList = useMemo(() => {
         if (otherEnvsResult?.result?.length > 0) {
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-
-            // Filter and sort the list of environments
             const _envList =
                 otherEnvsResult.result
                     .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
                     ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
 
             if (_envList.length > 0) {
-                let _envId
+                let selector
+                if (!params.envId && !environmentId) {
+                    selector = new NoParamsNoEnvContext()
+                } else if (!params.envId && environmentId) {
+                    selector = new NoParamsWithEnvContext()
+                } else if (params.envId && !environmentId) {
+                    selector = new ParamsNoEnvContext()
+                } else if (params.envId && environmentId) {
+                    selector = new ParamsAndEnvContext()
+                }
 
-                // When no environment specified in the URL and only one environment is available
-                if (!params.envId && _envList.length === 1) {
-                    _envId = _envList[0].environmentId
-                }
-                // When no environment specified in the URL, there's a context environment, and it's in the available list
-                else if (
-                    !params.envId &&
-                    environmentId &&
-                    _envList.map((env) => env.environmentId).includes(environmentId)
-                ) {
-                    _envId = environmentId
-                }
-                // When the specified environment in the URL is not in the available list
-                else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
-                    _envId = _envList[0].environmentId
-                }
-                if (_envId) {
-                    const newUrl = getAppDetailsURL(params.appId, _envId)
+                const selectedEnvId = selector.handleCondition(params, environmentId, _envList, setEnvironmentId)
+
+                // Set the URL and push to navigation stack
+                if (selectedEnvId) {
+                    const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
                     push(newUrl)
                 } else {
                     setEnvironmentId(null)
@@ -148,6 +146,7 @@ export default function AppDetail({ filteredEnvIds, someValue }: { filteredEnvId
             } else {
                 setEnvironmentId(null)
             }
+            // Return the filtered and sorted environment list
             return _envList
         }
         return []
