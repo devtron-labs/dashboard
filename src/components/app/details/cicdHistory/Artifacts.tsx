@@ -135,6 +135,14 @@ export default function Artifacts({
                 image={noartifact}
             />
         )
+    } else if (artifact === "") {
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsFound}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGeneratedByPipeline}
+                image={noartifact}
+            />
+        )
     } else {
         return (
             <div className={`flex left column p-16 ${jobCIClass??''}`}>
