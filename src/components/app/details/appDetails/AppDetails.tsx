@@ -24,13 +24,7 @@ import {
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
-import {
-    NavigationArrow,
-    useAppContext,
-    useEventSource,
-    FragmentHOC,
-    ScanDetailsModal,
-} from '../../../common'
+import { NavigationArrow, useAppContext, useEventSource, FragmentHOC, ScanDetailsModal } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
@@ -106,7 +100,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
 let deploymentStatusTimer = null
 let appDetailsIntervalID = null
 
-export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
+export default function AppDetail({ filteredEnvIds, someValue }: { filteredEnvIds?: string; someValue?: string }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
@@ -117,41 +111,47 @@ export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
     const isVirtualEnvRef = useRef(false)
 
     const envList = useMemo(() => {
-      if (otherEnvsResult?.result?.length > 0) {
-          const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-          const _envList =
-              otherEnvsResult.result
-                  .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                  ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+        if (otherEnvsResult?.result?.length > 0) {
+            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
 
-          if (_envList.length > 0) {
-              let _envId
-              if (!params.envId && _envList.length === 1) {
-                  _envId = _envList[0].environmentId
-              } else if (
-                  !params.envId &&
-                  environmentId &&
-                  _envList.map((env) => env.environmentId).includes(environmentId)
-              ) {
-                  _envId = environmentId
-              } else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
-                  _envId = _envList[0].environmentId
-              }
-              if (_envId) {
-                  const newUrl = getAppDetailsURL(params.appId, _envId)
-                  push(newUrl)
-              } else{
+            // Filter and sort the list of environments
+            const _envList =
+                otherEnvsResult.result
+                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+
+            if (_envList.length > 0) {
+                let _envId
+
+                // When no environment specified in the URL and only one environment is available
+                if (!params.envId && _envList.length === 1) {
+                    _envId = _envList[0].environmentId
+                }
+                // When no environment specified in the URL, there's a context environment, and it's in the available list
+                else if (
+                    !params.envId &&
+                    environmentId &&
+                    _envList.map((env) => env.environmentId).includes(environmentId)
+                ) {
+                    _envId = environmentId
+                }
+                // When the specified environment in the URL is not in the available list
+                else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
+                    _envId = _envList[0].environmentId
+                }
+                if (_envId) {
+                    const newUrl = getAppDetailsURL(params.appId, _envId)
+                    push(newUrl)
+                } else {
+                    setEnvironmentId(null)
+                }
+            } else {
                 setEnvironmentId(null)
-              }
-          } else {
-              setEnvironmentId(null)
-          }
-          return _envList
-      } else {
-          setEnvironmentId(null)
-      }
-      return []
-  }, [filteredEnvIds, otherEnvsResult])
+            }
+            return _envList
+        }
+        return []
+    }, [filteredEnvIds, otherEnvsResult])
 
     useEffect(() => {
         if (!params.envId) return
@@ -164,9 +164,7 @@ export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {(envList.length === 0) &&
-                        !isAppDeleted &&
-                        !isVirtualEnvRef.current && <AppNotConfigured />}
+                    {envList.length === 0 && !isAppDeleted && !isVirtualEnvRef.current && <AppNotConfigured />}
                     {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
                         <EnvironmentNotConfigured environments={envList} />
                     )}
@@ -506,11 +504,11 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetailsError])
 
     useEffect(() => {
-      clearPollingInterval()
-      if (isPollingRequired) {
-          appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
-          callAppDetailsAPI(true)
-      }
+        clearPollingInterval()
+        if (isPollingRequired) {
+            appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
+            callAppDetailsAPI(true)
+        }
     }, [isPollingRequired])
 
     async function handleHibernate(e) {
@@ -538,10 +536,14 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    if (!loadingResourceTree && (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) && !isVirtualEnvRef.current) {
+    if (
+        !loadingResourceTree &&
+        (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
+        !isVirtualEnvRef.current
+    ) {
         return (
             <>
-            {environments?.length > 0 && (
+                {environments?.length > 0 && (
                     <div className="flex left ml-20 mt-16">
                         <EnvSelector
                             environments={environments}
