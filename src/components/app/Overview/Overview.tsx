@@ -414,7 +414,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderAppDescription() {
         return (
             <div>
-                {Catalog && <Catalog id={appId} resourceType={appType} />}
+                {Catalog && <Catalog resourceId={appId} resourceType={appType} />}
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin={true}
