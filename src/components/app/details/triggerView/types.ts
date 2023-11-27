@@ -586,6 +586,7 @@ export interface PrePostDeployStageType {
     status: string
 }
 
+// Remove this and use from fe-common
 export interface CdPipeline {
     id: number
     environmentId: number
