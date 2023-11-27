@@ -18,7 +18,7 @@ export const OVERVIEW_TABS = {
     ABOUT: 'about',
     ENVIRONMENTS: 'environments',
     JOB_PIPELINES: 'job-pipelines',
-    // DEPENDENCIES: 'dependencies',
+    DEPENDENCIES: 'dependencies',
 } as const
 
 export const TAB_SEARCH_KEY = 'tab'
