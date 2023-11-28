@@ -134,7 +134,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     selector = new ParamsAndEnvContext()
                 }
 
-                const selectedEnvId = selector.handleCondition(params, environmentId, _envList, setEnvironmentId)
+                const selectedEnvId = selector.resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId)
 
                 // Set the URL and push to navigation stack
                 if (selectedEnvId) {

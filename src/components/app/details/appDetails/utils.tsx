@@ -738,19 +738,19 @@ export const validateMomentDate = (date: string, format: string): string => {
 }
 
 class EnvironmentSelection {
-    handleCondition(params, environmentId, _envList, setEnvironmentId) {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
         throw new Error('This method should be overridden by concrete classes.')
     }
 }
 
 export class NoParamsNoEnvContext extends EnvironmentSelection {
-    handleCondition(params, environmentId, _envList, setEnvironmentId) {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
         return _envList[0].environmentId
     }
 }
 
 export class NoParamsWithEnvContext extends EnvironmentSelection {
-    handleCondition(params, environmentId, _envList, setEnvironmentId) {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
         if (environmentId && _envList.map((env) => env.environmentId).includes(environmentId)) {
             return environmentId
         }
@@ -759,7 +759,7 @@ export class NoParamsWithEnvContext extends EnvironmentSelection {
 }
 
 export class ParamsNoEnvContext extends EnvironmentSelection {
-    handleCondition(params, environmentId, _envList, setEnvironmentId) {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
         if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
             return +params.envId
         }
@@ -768,7 +768,7 @@ export class ParamsNoEnvContext extends EnvironmentSelection {
 }
 
 export class ParamsAndEnvContext extends EnvironmentSelection {
-    handleCondition(params, environmentId, _envList, setEnvironmentId) {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
         if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
             // If environmentId is present and different from params.envContext, set environmentId
             if (environmentId && +environmentId !== +params.envId) {
