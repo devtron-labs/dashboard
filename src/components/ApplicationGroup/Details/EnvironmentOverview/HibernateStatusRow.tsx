@@ -42,7 +42,7 @@ export function HibernateStatusRow({ rowData, index, isVirtualEnv, isHibernateOp
     }
 
     return (
-        <div className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual' : ''}`} key={`response-${rowData.id}`}>
+        <div className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual' : ''}`}>
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
             <div className="flex left top fs-13 fw-4 cn-9">
                 {renderStatusIcon(rowData)}

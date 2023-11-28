@@ -424,32 +424,20 @@ export interface HibernateResponseRowType {
     skipped?: string
 }
 
-export interface HibernateModalProps {
+export interface BaseModalProps {
     selectedAppIds: number[]
     envName: string
     envId: string
-    setOpenHiberateModal: (value: boolean) => void
     setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
-    setShowHibernateStatusDrawer: React.Dispatch<
-        React.SetStateAction<{
-            hibernationOperation: boolean
-            showStatus: boolean
-        }>
-    >
+    setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
 }
 
-export interface UnhibernateModalProps {
-    selectedAppIds: number[]
-    envName: string
-    envId: string
-    setOpenUnhiberateModal: (value: boolean) => void
-    setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
-    setShowHibernateStatusDrawer: React.Dispatch<
-        React.SetStateAction<{
-            hibernationOperation: boolean
-            showStatus: boolean
-        }>
-    >
+export interface HibernateModalProps extends BaseModalProps {
+    setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface UnhibernateModalProps extends BaseModalProps {
+    setOpenUnhiberateModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface StatusDrawer {
@@ -457,7 +445,7 @@ export interface StatusDrawer {
     showStatus: boolean
 }
 
-export interface manageAppsResponse {
+export interface ManageAppsResponse {
     appName: string
     id: number
     success: boolean

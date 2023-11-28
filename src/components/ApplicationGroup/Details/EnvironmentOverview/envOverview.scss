@@ -1,14 +1,13 @@
 .env-overview-container {
     display: grid;
     grid-template-columns: 300px minmax(auto, 1068px);
-    grid-gap: 32px;
     gap: 32px;
     height: calc(100vh - 78px);
     background: linear-gradient(249deg, #d4e6f7 0%, var(--N50) 50.58%);
 
     .app-deployments-info-wrapper {
         border-radius: 4px;
-        background-color: var(--N0, #fff);
+        background-color: var(--N0);
         border: 1px solid var(--N200);
 
         .app-deployments-info-header,

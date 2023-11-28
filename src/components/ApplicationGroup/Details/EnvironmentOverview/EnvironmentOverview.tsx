@@ -12,8 +12,8 @@ import {
     AppGroupListType,
     AppInfoListType,
     AppListDataType,
+    ManageAppsResponse,
     StatusDrawer,
-    manageAppsResponse,
 } from '../../AppGroup.types'
 import './envOverview.scss'
 import moment from 'moment'
@@ -47,7 +47,7 @@ export default function EnvironmentOverview({
         hibernationOperation: true,
         showStatus: false,
     })
-    const [appStatusResponseList, setAppStatusResponseList] = useState<manageAppsResponse[]>([])
+    const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const timerId = useRef(null)
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
     const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
@@ -377,7 +377,7 @@ export default function EnvironmentOverview({
                                     Hibernate
                                 </button>
                                 <button
-                                    onClick={openHiberateModalPopup}
+                                    onClick={openUnhiberateModalPopup}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <UnhibernateIcon className="icon-dim-12 mr-4" />
