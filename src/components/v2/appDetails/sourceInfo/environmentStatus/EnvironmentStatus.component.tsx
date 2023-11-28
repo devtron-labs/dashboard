@@ -18,6 +18,9 @@ import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentS
 import ChartUsedCard from './ChartUsedCard'
 import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
+import IssuesCard from '../../../../app/details/appDetails/IssuesCard'
+import { ErrorItem } from '../../../../app/details/appDetails/appDetails.type'
+import IssuesListingModal from '../../../../app/details/appDetails/IssuesListingModal'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -40,6 +43,8 @@ function EnvironmentStatusComponent({
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
+    const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
+    const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
 
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
@@ -67,6 +72,18 @@ function EnvironmentStatusComponent({
                 status={status}
                 setDetailed={setShowAppStatusDetail}
                 cardLoading={cardLoading}
+            />
+        )
+    }
+
+    const renderIssuesCard = () => {
+        return (
+            <IssuesCard
+                appStreamData={appStreamData}
+                cardLoading={cardLoading}
+                setErrorsList={setErrorsList}
+                toggleIssuesModal={toggleIssuesModal}
+                setDetailed={setShowAppStatusDetail}
             />
         )
     }
@@ -140,7 +157,7 @@ function EnvironmentStatusComponent({
     const renderUpgraderChartBlock = () => {
         return (
             appDetails?.deprecated && (
-                <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
+                <div className="chart-upgrade-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
                     <div className="cn-9 flex left">
                         <span>Chart deprecated</span>
                         <Alert className="icon-dim-16 ml-4" />
@@ -161,6 +178,7 @@ function EnvironmentStatusComponent({
             ) : (
                 <div className="flex left ml-20 mb-16 lh-20">
                     {isVirtualEnvironment ? renderGeneratedManifestDownloadCard() : renderStatusBlock()}
+                    {renderIssuesCard()}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
@@ -175,6 +193,9 @@ function EnvironmentStatusComponent({
                     appStreamData={appStreamData}
                     showAppStatusMessage={showHibernationStatusMessage}
                 />
+            )}
+            {showIssuesModal && (
+                <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
             )}
             {showNotes && (
                 <NotesDrawer

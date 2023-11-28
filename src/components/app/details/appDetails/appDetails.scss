@@ -1688,8 +1688,7 @@ table.resource-tree {
 }
 
 .app-metrics-graph__empty-state-wrapper {
-    border-bottom: solid 1px var(--N200);
-    border-top: solid 1px var(--N200);
+    border-bottom: solid 1px var(--N100);
 }
 
 .app-metrics-graph__empty-state {
@@ -1914,6 +1913,7 @@ table.resource-tree {
     align-items: flex-start;
     flex-direction: column;
     overflow: hidden;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.20);
 
     &__top-container {
         align-items: flex-start;

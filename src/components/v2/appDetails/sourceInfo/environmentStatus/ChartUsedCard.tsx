@@ -9,7 +9,6 @@ import { ChartUsedCardType } from '../environment.type'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 
 const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: ChartUsedCardType) => {
-    
     if (cardLoading) return <LoadingCard />
 
     return (
@@ -18,7 +17,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
             className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200"
         >
             <div className="app-details-info-card__top-container flex">
-                <div className="app-details-info-card__top-container__content">
+                <div className="app-details-info-card__top-container__content dc__ellipsis-right">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
                         <div className="fs-12 fw-4 cn-7 mr-5" data-testid="chart-used-heading">
                             Chart used
@@ -43,7 +42,11 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
                     </div>
                 </div>
                 {appDetails.chartAvatar ? (
-                    <img src={appDetails.chartAvatar} alt={appDetails.appStoreAppName} className="icon-dim-24"/>
+                    <img
+                        src={appDetails.chartAvatar}
+                        alt={appDetails.appStoreAppName}
+                        className="dc__chart-grid-item__icon icon-dim-24"
+                    />
                 ) : (
                     <DefaultChart className="icon-dim-24" />
                 )}

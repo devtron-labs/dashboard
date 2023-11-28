@@ -68,7 +68,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                 </div>
                 <div className="flex br-4">
                     <figure
-                        className={`${status.toLowerCase()} dc__app-summary__icon h-24 w-24`}
+                        className={`${status.toLowerCase()} h-24 w-24`}
                         style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
                     ></figure>
                 </div>
