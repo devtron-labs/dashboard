@@ -117,7 +117,6 @@ export function ConfigMapSecretContainer({
     const { appId, envId, name } = useParams<{ appId; envId; name }>()
     const history = useHistory()
     const match = useRouteMatch()
-    const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
     const [draftData, setDraftData] = useState(null)
     const [selectedTab, setSelectedTab] = useState(data?.draftState === 4 ? 2 : 3)
@@ -131,25 +130,29 @@ export function ConfigMapSecretContainer({
             cmSecretStateLabel = !data?.isNew ? CM_SECRET_STATE.ENV : CM_SECRET_STATE.UNPUBLISHED
         }
     }
+    
+    useEffect(() => {
+        if (title !== '' && title === name) getData()
+    }, [])
 
     const getData = async () => {
+        setLoader(true)
         try {
             abortController.abort()
             const newAbortController = new AbortController()
             setAbortController(newAbortController)
-            setLoader(true)
             const [_draftData, _cmSecretData] = await Promise.allSettled([
                 isProtected && getDraftByResourceName
                     ? getDraftByResourceName(
                           appId,
                           envId ?? -1,
                           componentType === 'secret' ? 2 : 1,
-                          data.name,
+                          title,
                           newAbortController.signal,
                       )
                     : null,
                 !data?.isNew
-                    ? getCMSecret(componentType, id, appId, data?.name, envId, newAbortController.signal)
+                    ? getCMSecret(componentType, id, appId, title, envId, newAbortController.signal)
                     : null,
             ])
             let draftId, draftState
@@ -209,7 +212,7 @@ export function ConfigMapSecretContainer({
                 (_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) ||
                 (_draftData?.status === 'fulfilled' && _draftData?.value !== null)
             ) {
-                toggleCollapse(false)
+                setLoader(true)
             }
             if (
                 (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
@@ -349,7 +352,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDraftState = (): JSX.Element => {
-        if (collapsed) {
+        if (name && isProtected && draftData?.draftId) {
             if (data.draftState === 1) {
                 return <i className="mr-10 cr-5">In draft</i>
             } else if (data.draftState === 4) {
@@ -364,7 +367,7 @@ export function ConfigMapSecretContainer({
         if (title && isProtected && draftData?.draftId) {
             setSelectedTab(draftData.draftState === 4 ? 2 : 3)
         }
-        updateCollapsed()
+         updateCollapsed()
     }
 
     return (
@@ -402,12 +405,12 @@ export function ConfigMapSecretContainer({
                                     <Progressing />
                                 </span>
                             ) : (
-                                <Dropdown className={`icon-dim-20 rotate ${collapsed ? '' : 'dc__flip-180'}`} />
+                                <Dropdown className={`icon-dim-20 rotate ${!name ? '' : 'dc__flip-180'}`} />
                             )}
                         </div>
                     )}
                 </article>
-                {!isLoader ? renderDetails() : null}
+                {isLoader ? null : renderDetails()  }
             </section>
         </>
     )
