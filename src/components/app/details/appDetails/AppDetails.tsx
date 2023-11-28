@@ -104,7 +104,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
 let deploymentStatusTimer = null
 let appDetailsIntervalID = null
 
-export default function AppDetail({ filteredEnvIds, someValue }: { filteredEnvIds?: string; someValue?: string }) {
+export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
