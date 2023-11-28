@@ -207,6 +207,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         fetchIdData={fetchBuildIdData}
                         isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
+                        pipeline={pipeline}
                     />
                 </Route>
             )

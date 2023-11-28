@@ -532,6 +532,7 @@ export interface CiPipeline {
     }
     isOffendingMandatoryPlugin?: boolean
     pipelineType?: string
+    isGitRequired?: boolean
 }
 
 export interface Material {

@@ -80,6 +80,7 @@ const getInitialWorkflows = (
     } else {
         return Promise.all([getWorkflowList(id, filteredEnvIds), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
             ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
+                console.log('ciConfig', ciConfig)
                 return processWorkflow(
                     workflow.result as WorkflowResult,
                     ciConfig.result as CiPipelineResult,
@@ -156,7 +157,7 @@ export function processWorkflow(
     )
     const appName = workflow.appName
     let workflows = new Array<WorkflowType>()
-
+        console.log("workflow.workflows",workflow.workflows)
     //populate workflows with CI and CD nodes, sourceNodes are inside CI nodes and PreCD and PostCD nodes are inside CD nodes
     workflow.workflows
         ?.sort((a, b) => a.id - b.id)
@@ -443,7 +444,8 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             isRegex: ciMaterial?.isRegex,
             primaryBranchAfterRegex: ciMaterial?.source?.value,
             cipipelineId: ciMaterial?.id,
-            isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB
+            isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
+            isGitRequired: ciPipeline?.isGitRequired
         } as NodeAttr
     })
     let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
