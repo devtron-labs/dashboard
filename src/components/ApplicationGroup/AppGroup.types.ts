@@ -270,7 +270,9 @@ export interface AppGroupDetailDefaultType {
     appGroupListData?: AppGroupListType
     isVirtualEnv?: boolean
     envName?: string
+    description?: string
     getAppListData?: () => Promise<void>
+    handleSaveDescription?: (description: string) => Promise<void>
 }
 
 interface CIPipeline {

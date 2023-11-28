@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Progressing, getRandomColor, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatus,
+    Progressing,
+    getRandomColor,
+    processDeployedTime,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
-import AppStatus from '../../../app/AppStatus'
 import { StatusConstants } from '../../../app/list-new/Constants'
-import { EditableTextArea, processDeployedTime } from '../../../common'
+import { EditableTextArea } from '../../../common'
 import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
-import { editDescription, getDeploymentStatus } from '../../AppGroup.service'
+import { getDeploymentStatus } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,
     AppGroupListType,
@@ -37,12 +42,13 @@ export default function EnvironmentOverview({
     appGroupListData,
     filteredAppIds,
     isVirtualEnv,
+    description,
     getAppListData,
+    handleSaveDescription,
 }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, setLoading] = useState<boolean>()
-    const [description, setDescription] = useState<string>(appGroupListData.description)
     const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<StatusDrawer>({
         hibernationOperation: true,
         showStatus: false,
@@ -55,10 +61,6 @@ export default function EnvironmentOverview({
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
-
-    useEffect(() => {
-        setDescription(appGroupListData.description)
-    }, [appGroupListData.description])
 
     useEffect(() => {
         return () => {
@@ -263,27 +265,6 @@ export default function EnvironmentOverview({
     }
 
     const renderSideInfoColumn = () => {
-        const handleSaveDescription = async (value: string) => {
-            const payload: EditDescRequest = {
-                id: appGroupListData.environmentId,
-                environment_name: appGroupListData.environmentName,
-                cluster_id: appGroupListData.clusterId,
-                namespace: appGroupListData.namespace,
-                active: true,
-                default: !(appGroupListData.environmentType === 'Non-Production'),
-                description: value?.trim(),
-            }
-            try {
-                await editDescription(payload)
-                toast.success('Successfully saved')
-                appGroupListData.description = value
-                setDescription(value)
-            } catch (err) {
-                showError(err)
-                throw err
-            }
-        }
-
         return (
             <aside className="flexbox-col dc__gap-16">
                 <div className="flexbox-col dc__gap-12">

@@ -23,7 +23,14 @@ import { EnvSelector } from './EnvSelector'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
-import { deleteEnvGroup, getAppGroupList, getEnvAppList, getEnvGroupList, appGroupPermission } from './AppGroup.service'
+import {
+    deleteEnvGroup,
+    getAppGroupList,
+    getEnvAppList,
+    getEnvGroupList,
+    appGroupPermission,
+    editDescription,
+} from './AppGroup.service'
 import {
     AppGroupAdminType,
     AppGroupAppFilterContextType,
@@ -36,7 +43,7 @@ import {
     GroupOptionType,
 } from './AppGroup.types'
 import { MultiValue } from 'react-select'
-import { OptionType } from '../app/types'
+import { EditDescRequest, OptionType } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
@@ -76,6 +83,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [isVirtualEnv, setIsVirtualEnv] = useState<boolean>(false)
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map())
+    const [description, setDescription] = useState<string>(
+        appGroupListData?.description ? appGroupListData?.description : '',
+    )
 
     useEffect(() => {
         if (envList?.result) {
@@ -96,6 +106,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             setSelectedGroupFilter([])
             setAppListOptions([])
             setAppGroupListData(null)
+            setDescription('')
         }
     }, [envId])
 
@@ -103,7 +114,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getEnvGroupList(+envId)
-        
+
         if (result) {
             const _groupFilterOption = []
             let _selectedGroup
@@ -137,11 +148,32 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setAppListLoading(false)
     }
 
+    const handleSaveDescription = async (value: string) => {
+        const payload: EditDescRequest = {
+            id: appGroupListData.environmentId,
+            environment_name: appGroupListData.environmentName,
+            cluster_id: appGroupListData.clusterId,
+            namespace: appGroupListData.namespace,
+            active: true,
+            default: !(appGroupListData.environmentType === 'Non-Production'),
+            description: value?.trim(),
+        }
+        try {
+            await editDescription(payload)
+            toast.success('Successfully saved')
+            setDescription(value?.trim())
+        } catch (err) {
+            showError(err)
+            throw err
+        }
+    }
+
     const getAppListData = async (): Promise<void> => {
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getAppGroupList(+envId)
         setAppGroupListData(result)
+        setDescription(result.description)
         if (result.apps?.length) {
             setAppListOptions(
                 result.apps
@@ -323,7 +355,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             _appListData.apps = _filteredApps
         }
         return _appListData
-    }, [selectedAppList, appGroupListData?.apps])
+    }, [selectedAppList, appGroupListData?.apps, appGroupListData?.description])
 
     const renderRoute = () => {
         if (loading || appListLoading) {
@@ -346,6 +378,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                     appGroupListData={filteredAppListData}
                                     isVirtualEnv={isVirtualEnv}
                                     getAppListData={getAppListData}
+                                    handleSaveDescription={handleSaveDescription}
+                                    description={description}
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_TRIGGER}`}>
