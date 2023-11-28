@@ -151,14 +151,16 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
         const _nodesData = this.getNodesData(ci?.id || webhook?.id || '')
         const _nodes = _nodesData.nodes
-
         if (ci) {
             return _nodes.map((node: NodeAttr) => {
                 if (node.type == WorkflowNodeType.GIT) {
-                    return this.renderSourceNode(node, ci)
+                    console.log('1')
+                    return ((node.isJobCI && node.isGitRequired) || !node.isJobCI) && this.renderSourceNode(node, ci)
                 } else if (node.type == WorkflowNodeType.CI) {
+                    console.log('2;')
                     return this.renderCINodes(node)
                 } else if (_nodesData.cdNamesList.length > 0) {
+                    console.log('3')
                     return (
                         <>
                             {this.renderAdditionalEdge()}
@@ -166,6 +168,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         </>
                     )
                 }
+                console.log('4')
 
                 return this.renderCDNodes(node, ci.id, false)
             })
@@ -374,6 +377,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     getEdges() {
+        console.log('this.props.nodes', this.props.nodes)
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
                 const endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
@@ -381,6 +385,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     startNode: node,
                     endNode: endNode,
                 })
+                if (node.type === WorkflowNodeType.GIT && node.isJobCI && !node.isGitRequired) {
+                    edgeList.pop()
+                }
             })
             return edgeList
         }, [])
@@ -393,6 +400,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     renderEdgeList() {
         const edges = this.getEdges()
+        console.log('edges', edges.length,edges);
         return this.getEdges().map((edgeNode) => {
             if (ApprovalNodeEdge) {
                 return (
@@ -405,7 +413,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     />
                 )
             }
-
+            console.log('edgeNode', edgeNode)
             return (
                 <Edge
                     key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
@@ -481,10 +489,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     </div>
                     {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                     <div className="workflow__body">
-                        <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
-                            {this.renderEdgeList()}
-                            {this.renderNodes()}
-                        </svg>
+                        {this.getEdges().length == 0 ? (
+                            this.emptyWorkflow()
+                        ) : (
+                            <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
+                                {this.renderEdgeList()}
+                                {this.renderNodes()}
+                            </svg>
+                        )}
                         {!configDiffView && (
                             <PipelineSelect
                                 workflowId={this.props.id}

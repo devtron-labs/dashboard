@@ -52,6 +52,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
             ]),
         [appId, filteredEnvIds],
     )
+    console.log(initDataResults)
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -224,6 +225,8 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                                             hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                             fetchIdData={fetchBuildIdData}
                                             isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
+                                            pipeline={pipeline}
+
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -268,6 +271,7 @@ export const Details = ({
     appReleaseTags,
     hideImageTaggingHardDelete,
     fetchIdData,
+    pipeline
 }: BuildDetails) => {
     const isJobCard: boolean = isJobView || isJobCI
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
@@ -353,6 +357,7 @@ export const Details = ({
     if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
     if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
     if (triggerDetails.id !== +buildId) return null
+    console.log('sdfsdf',pipeline.isGitRequired)
     return (
         <>
             <div className="trigger-details-container">
@@ -386,17 +391,19 @@ export const Details = ({
                                     Logs
                                 </NavLink>
                             </li>
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link"
-                                    activeClassName="active"
-                                    to={`source-code`}
-                                    data-testid="source-code-link"
-                                >
-                                    Source
-                                </NavLink>
-                            </li>
+                            {isJobCI && pipeline.isGitRequired && (
+                                <li className="tab-list__tab">
+                                    <NavLink
+                                        replace
+                                        className="tab-list__tab-link"
+                                        activeClassName="active"
+                                        to={`source-code`}
+                                        data-testid="source-code-link"
+                                    >
+                                        Source
+                                    </NavLink>
+                                </li>
+                            )}
                             <li className="tab-list__tab">
                                 <NavLink
                                     replace

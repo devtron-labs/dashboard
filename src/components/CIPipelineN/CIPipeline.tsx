@@ -577,6 +577,7 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
+
         )
             .then((response) => {
                 if (response) {
@@ -814,7 +815,9 @@ export default function CIPipeline({
                                     setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobCard}
                                     getPluginData={getPluginData}
-                                />
+                                    setCIPipeline={setCIPipeline}
+                                    isJobCI={isJobCI}
+                                    />
                             </Route>
                             <Redirect to={`${path}/build`} />
                         </Switch>

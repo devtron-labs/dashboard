@@ -6,6 +6,7 @@ export interface CIPipeline {
     parentCiPipeline: number
     parentAppId: number
     pipelineType: string
+    isGitRequired: boolean
 }
 export interface BuildDetails {
     triggerHistory: Map<number, History>
@@ -20,6 +21,7 @@ export interface BuildDetails {
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
     fetchIdData: FetchIdDataStatus
+    pipeline:CIPipeline
 }
 
 export interface HistoryLogsType {

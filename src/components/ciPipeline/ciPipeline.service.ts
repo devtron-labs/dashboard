@@ -156,7 +156,7 @@ export function getInitDataWithCIPipeline(
     ]).then(([ciPipelineRes, pipelineMetaConfig]) => {
         const ciPipeline = ciPipelineRes?.result
         const pipelineMetaConfigResult = pipelineMetaConfig?.result
-        return parseCIResponse(
+        const x= parseCIResponse(
             pipelineMetaConfig.code,
             ciPipeline,
             pipelineMetaConfigResult.materials,
@@ -164,6 +164,8 @@ export function getInitDataWithCIPipeline(
             pipelineMetaConfigResult.webhookEvents,
             pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
         )
+        console.log('sdfsdf',x)
+        return x;
     })
 }
 
@@ -476,6 +478,8 @@ function parseCIResponse(
             ciPipeline: ciPipeline,
             form: {
                 name: ciPipeline.name,
+                pipelineType: ciPipeline.pipelineType,
+                isGitRequired: ciPipeline.isGitRequired,
                 triggerType: ciPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
                 materials: materials,
                 args: args.length ? args : [],
