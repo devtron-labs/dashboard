@@ -136,10 +136,10 @@ export function ConfigMapSecretContainer({
     }, [])
 
     const getData = async () => {
-        setLoader(true)
         try {
             abortController.abort()
             const newAbortController = new AbortController()
+            setLoader(true)
             setAbortController(newAbortController)
             const [_draftData, _cmSecretData] = await Promise.allSettled([
                 isProtected && getDraftByResourceName
@@ -405,12 +405,12 @@ export function ConfigMapSecretContainer({
                                     <Progressing />
                                 </span>
                             ) : (
-                                <Dropdown className={`icon-dim-20 rotate ${!name ? '' : 'dc__flip-180'}`} />
+                                <Dropdown className={`icon-dim-20 rotate ${name === title ? 'dc__flip-180' : ''}`} />
                             )}
                         </div>
                     )}
                 </article>
-                {isLoader ? null : renderDetails()  }
+                {!isLoader ?  renderDetails() : null }
             </section>
         </>
     )
