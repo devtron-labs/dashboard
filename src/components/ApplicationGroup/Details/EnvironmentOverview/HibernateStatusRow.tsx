@@ -6,7 +6,7 @@ import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-lock
 import { ReactComponent as Skipped } from '../../../../assets/icons/ic-info-filled.svg'
 
 export function HibernateStatusRow({ rowData, index, isVirtualEnv, isHibernateOperation }: HibernateStatusRowType) {
-    const renderStatusIcon = (rowData: HibernateResponseRowType): JSX.Element => {
+    const renderStatusIcon = (): JSX.Element => {
         if (rowData.success) {
             return <Success className="mr-8 icon-dim-18" />
         } else if (rowData.authError) {
@@ -45,7 +45,7 @@ export function HibernateStatusRow({ rowData, index, isVirtualEnv, isHibernateOp
         <div className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual' : ''}`}>
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
             <div className="flex left top fs-13 fw-4 cn-9">
-                {renderStatusIcon(rowData)}
+                {renderStatusIcon()}
                 <span data-testid={`response-status-text-${index}`}>{getStatus()}</span>
             </div>
             <div className="fs-13 fw-4 cn-9">{getMessage()}</div>
