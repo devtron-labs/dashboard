@@ -316,7 +316,7 @@ export function K8SResourceList({
                             }`}
                             onClick={() => handleColumnSort(columnName)}
                         >
-                            {columnName}
+                           <span className="dc__inline-block dc__ellipsis-right mw-85px ">{columnName}</span> 
                             {renderSortDirection(columnName)}
                         </div>
                     ))}
