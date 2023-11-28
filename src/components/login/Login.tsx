@@ -226,8 +226,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     render() {
         return (
             <div className="login">
-                <div className="login__bg">
-                    <div className="login__image" />
+                <div className="login__bg" style={window?._env_?.LOGIN_PAGE_IMAGE_BG?{backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG}:{}}>
+                    <div className="login__image" style={window?._env_?.LOGIN_PAGE_IMAGE?{backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})`}:{}} />
                 </div>
                 <div className="login__section">
                     <Switch>

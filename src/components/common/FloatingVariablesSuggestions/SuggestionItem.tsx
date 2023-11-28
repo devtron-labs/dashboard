@@ -56,9 +56,9 @@ export default function SuggestionItem({
 
     return (
         <Tippy
-            className="default-tt"
+            className="default-tt dc__word-break-all"
             content={
-                <div className="mw-200 flex column dc__content-start dc__align-start">
+                <div className="mw-200 flex column dc__content-start dc__align-start mxh-140 dc__overflow-scroll">
                     <div className="flex column dc__content-start dc__align-start">Value</div>
                     <div className="flex column dc__content-start dc__align-start">
                         {sanitiseVariableValue(variableValue)}
@@ -66,6 +66,9 @@ export default function SuggestionItem({
                 </div>
             }
             placement="left"
+            interactive
+            // Have to append to body because the parent is draggable
+            appendTo={document.body}
         >
             <div
                 className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bcn-0 dc__border-bottom-n1 dc__hover-n50"
