@@ -1198,8 +1198,7 @@ function DockerForm({
                                     disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
                                 }
                             >
-                                Use as chart repository (Pull helm charts and show in &nbsp;
-                                <a href={ChartStoreRedirectionUrl}>chart store</a>)
+                                Use as chart repository (Pull helm charts and show in&nbsp;<a href={ChartStoreRedirectionUrl}>chart store</a>)
                             </Checkbox>
                         </div>
                     </ConditionalWrap>
