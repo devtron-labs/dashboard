@@ -460,7 +460,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             const contentToRender = {
                 [OVERVIEW_TABS.ABOUT]: renderAppDescription,
                 [OVERVIEW_TABS.ENVIRONMENTS]: () => <EnvironmentList appId={+appId} filteredEnvIds={filteredEnvIds} />,
-                [OVERVIEW_TABS.DEPENDENCIES]: () => DependencyList ? <DependencyList appId={+appId} isArgoInstalled={isArgoInstalled} /> : null,
+                [OVERVIEW_TABS.DEPENDENCIES]: () => DependencyList ? <DependencyList resourceId={+appId} resourceType={appType} isArgoInstalled={isArgoInstalled} resourceName={appMetaInfo.appName} /> : null,
             }
 
             return (
