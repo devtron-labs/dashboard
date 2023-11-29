@@ -1,10 +1,17 @@
 import React, { Component } from 'react'
 import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
 import { DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { createWorkflow, updateWorkflow } from './service'
+import { createWorkflow } from './service'
 import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { FILTER_NAME_REGEX } from '../ApplicationGroup/Constants'
+import {
+    emptyWorkflowMessage,
+    invalidWorkflowNameError,
+    max30CharError,
+    min3CharError,
+    noWorkflowNameError,
+} from './constants'
 
 export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWorkflowState> {
     _inputName: HTMLInputElement
@@ -31,7 +38,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
     saveWorkflow = (event): void => {
         event.preventDefault()
         this.setState({ showError: true, loading: true })
-        let request = {
+        const request = {
             appId: +this.props.match.params.appId,
             name: this.state.name,
         }
@@ -39,8 +46,8 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
             this.setState({ loading: false })
             return
         }
-        let message = 'Empty Workflow Created successfully'
-        let promise = createWorkflow(request)
+        const message = emptyWorkflowMessage
+        const promise = createWorkflow(request)
         promise
             .then((response) => {
                 toast.success(message)
@@ -64,25 +71,25 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
         const name = this.state.name;
         if (!name) {
             return {
-                errorMsg: 'Please enter workflow name',
+                errorMsg: noWorkflowNameError,
                 isValid: false
             }
         }
         if(name.length < 3) {
             return {
-                errorMsg: 'Min 3 chars',
+                errorMsg: min3CharError,
                 isValid: false
             }
         }
         if(name.length > 30) {
             return {
-                errorMsg: 'Max 30 chars',
+                errorMsg: max30CharError,
                 isValid: false
             }
         }
         if (!FILTER_NAME_REGEX.test(name)) {
             return {
-                errorMsg: 'Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use "spaces"',
+                errorMsg:invalidWorkflowNameError ,
                 isValid: false
             }
         } 
@@ -95,7 +102,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
     }
 
     render() {
-        let validationStatus = this.isNameValid()
+        const validationStatus = this.isNameValid()
         return (
             <DialogForm
                 title={'Create job workflow'}
@@ -105,7 +112,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                 isLoading={this.state.loading}
                 closeOnESC={true}
             >
-                <label className="form__row">
+                <label className="form__row" htmlFor="workflow-name">
                     <span className="form__label dc__required-field">Workflow Name</span>
                     <input
                         autoComplete="off"
@@ -113,6 +120,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                             if (node) node.focus()
                             this._inputName = node
                         }}
+                        id="workflow-name"
                         className="form__input"
                         type="text"
                         name="workflow-name"
@@ -123,7 +131,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                         onChange={this.handleWorkflowName}
                         required
                     />
-                    {this.state.showError || !validationStatus.isValid ? (
+                    {this.state.showError && !validationStatus.isValid ? (
                         <span className="form__error">
                             <img src={error} alt="" className="form__icon" /> {validationStatus.errorMsg}
                         </span>

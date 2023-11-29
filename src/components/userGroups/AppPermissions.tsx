@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import {
     APPROVER_ACTION,
@@ -67,15 +67,19 @@ export default function AppPermissions({
         ...emptyDirectPermissionDevtronApps,
         accessType: ACCESS_TYPE_MAP.HELM_APPS,
     }
-    const emptyDirectPermissionJobs = {
+    const emptyDirectPermissionJobs: DirectPermissionsRoleFilter = {
         ...emptyDirectPermissionDevtronApps,
         accessType: ACCESS_TYPE_MAP.JOBS,
         workflow: [],
+        entity: EntityTypes.JOB,
     }
-    emptyDirectPermissionJobs.entity = EntityTypes.JOB
     useEffect(() => {
         if (!data) {
-            let emptyPermissionArr = [emptyDirectPermissionHelmApps, emptyDirectPermissionDevtronApps, emptyDirectPermissionJobs]
+            const emptyPermissionArr = [
+                emptyDirectPermissionHelmApps,
+                emptyDirectPermissionDevtronApps,
+                emptyDirectPermissionJobs,
+            ]
             setDirectPermission(emptyPermissionArr)
             return
         }
@@ -125,7 +129,7 @@ export default function AppPermissions({
 
        return [
            { label: 'All Workflows', value: '*' },
-           ...workflowOptions?.reduce((acc, option) => {
+           ...workflowOptions.reduce((acc, option) => {
                return [...acc, ...option.options]
            }, []),
        ]

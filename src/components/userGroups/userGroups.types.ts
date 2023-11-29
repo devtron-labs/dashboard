@@ -68,7 +68,7 @@ interface RoleFilter {
 export interface DirectPermissionsRoleFilter extends RoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.JOB
     team: OptionType
-    entityName: any
+    entityName: OptionType[]
     entityNameError?: string
     environment: OptionType[]
     environmentError?: string

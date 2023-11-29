@@ -18,7 +18,6 @@ import {
     useEffectAfterMount,
     GenericEmptyState,
     useAsync,
-    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     NavigationArrow,
@@ -1060,12 +1059,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : appsListHelmApps
                 ).get(projectId)?.result) ||
             []
-        )?.map((app) => {
-            return {
-                label: isJobs ? app.jobName : app.name,
-                value: isJobs ? app.appName : app.name,
-            }
-        })
+        )?.map((app) => ({
+            label: isJobs ? app.jobName : app.name,
+            value: isJobs ? app.appName : app.name,
+        }))
         setApplications(appOptions)
         if (permission.entity === EntityTypes.JOB && permission.entityName.length > 0) {
             setWorkflowsForJobs(permission)
@@ -1099,7 +1096,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             const jobNames = perimssion.entityName.filter((option) => option.value != '*').map((app) => app.label)
             const {
                 result: { appIdWorkflowNamesMapping },
-            } = await getAllWorkflowsForAppNames(jobNames, { signal: abortControllerRef.current.signal })
+            } = await getAllWorkflowsForAppNames(jobNames, abortControllerRef.current.signal)
             const workflowOptions = []
             for (const jobName in appIdWorkflowNamesMapping) {
                 workflowOptions.push({
