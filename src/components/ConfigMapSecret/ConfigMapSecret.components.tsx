@@ -245,13 +245,13 @@ export function ConfigMapSecretContainer({
             }
             return history.push(getURL('create'))
         } else {
-            getData()
             //Redirect and Open existing config map & secret
             if (name === title) {
                 toggleDraftComments(null)
                 setDraftData(null)
                 return history.push(getURL())
             } else {
+                getData()
                 return history.push(getURL(title))
             }
         }
