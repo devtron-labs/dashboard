@@ -220,7 +220,7 @@ export function processWorkflow(
     if (dimensions.type == WorkflowDimensionType.TRIGGER) {
         workflows = workflows.filter((wf) => wf.nodes.length > 0)
     }
-
+    console.log('workflows before', workflows)
     addDimensions(workflows, workflowOffset, dimensions)
     return { appName, workflows, filteredCIPipelines }
 }
@@ -235,11 +235,13 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         if (workflow.nodes.length == 0) {
             return
         }
-
+        console.log('each workflow', workflow)
         const ciNode = workflow.nodes.find(
             (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK,
         )
+        console.log('ciNode', ciNode.sourceNodes)
         ciNode.sourceNodes?.forEach((s, si) => {
+            console.log('s', s)
             const sourceNodeY =
                 startY +
                 workflowOffset.offsetY +

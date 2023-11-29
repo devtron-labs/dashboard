@@ -516,6 +516,7 @@ export default function CIPipeline({
             toast.error('Scanning is mandatory, please enable scanning')
             return
         }
+        console.log('materials', formData)
 
         if (
             !formDataErrorObj.buildStage.isValid ||
@@ -523,6 +524,7 @@ export default function CIPipeline({
             !formDataErrorObj.postBuildStage.isValid
         ) {
             setApiInProgress(false)
+            console.log('materials', formData)
             const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
             if (formData.name === '' || branchNameNotPresent) {
                 toast.error(MULTI_REQUIRED_FIELDS_MSG)
@@ -605,6 +607,7 @@ export default function CIPipeline({
                 isValid =
                     isValid &&
                     validationRules.sourceValue(mat.regex || mat.value, mat.type !== SourceTypeMap.WEBHOOK).isValid
+                    console.log('isValid', isValid,mat)
                 return isValid
             }, true)
             if (_formData.materials.length > 1) {
