@@ -36,14 +36,15 @@ export default function ClusterSelectionList({
     const [searchApplied, setSearchApplied] = useState(false)
 
     useEffect(() => {
+        let filteredClusterOptions = clusterOptions
         if (window._env_.HIDE_DEFAULT_CLUSTER) {
-            clusterOptions = clusterOptions.filter((item) => item.id !== DEFAULT_CLUSTER_ID)
+            filteredClusterOptions = clusterOptions.filter((item) => item.id !== DEFAULT_CLUSTER_ID)
         }
         setClusterList([])
         setFilteredClusterList([])
         setLastDataSync(!lastDataSync)
-        setClusterList(clusterOptions)
-        setFilteredClusterList(clusterOptions)
+        setClusterList(filteredClusterOptions)
+        setFilteredClusterList(filteredClusterOptions)
         setMinLoader(false)
     }, [clusterOptions])
 
