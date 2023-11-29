@@ -110,6 +110,7 @@ export default function CIPipeline({
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [selectedEnv, setSelectedEnv] = useState<Environment>()
     const [environments, setEnvironments] = useState([])
+    const [isGitRequired, setIsGitRequired] = useState<boolean>(true)
     const [formData, setFormData] = useState<PipelineFormType>({
         name: '',
         args: [],
@@ -181,6 +182,11 @@ export default function CIPipeline({
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
     const selectedBranchRef = useRef(null)
+    
+    useEffect(() => {
+        setIsGitRequired(ciPipeline?.isGitRequired ?? true)
+    }, [ciPipeline])
+
 
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
@@ -516,7 +522,6 @@ export default function CIPipeline({
             toast.error('Scanning is mandatory, please enable scanning')
             return
         }
-        console.log('materials', formData)
 
         if (
             !formDataErrorObj.buildStage.isValid ||
@@ -524,7 +529,6 @@ export default function CIPipeline({
             !formDataErrorObj.postBuildStage.isValid
         ) {
             setApiInProgress(false)
-            console.log('materials', formData)
             const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
             if (formData.name === '' || branchNameNotPresent) {
                 toast.error(MULTI_REQUIRED_FIELDS_MSG)
@@ -563,6 +567,7 @@ export default function CIPipeline({
                 ciPipelineType = CIPipelineBuildType.CI_EXTERNAL
             } else if (isJobCI) {
                 ciPipelineType = CIPipelineBuildType.CI_JOB
+                _ciPipeline.isGitRequired = isGitRequired
             }
             _ciPipeline.pipelineType = ciPipeline.id ? ciPipeline.pipelineType : ciPipelineType
         }
@@ -579,6 +584,7 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
+            
 
         )
             .then((response) => {
@@ -607,9 +613,10 @@ export default function CIPipeline({
                 isValid =
                     isValid &&
                     validationRules.sourceValue(mat.regex || mat.value, mat.type !== SourceTypeMap.WEBHOOK).isValid
-                    console.log('isValid', isValid,mat)
                 return isValid
             }, true)
+            const skipValidationForGitNotRequired = isJobCI && !isGitRequired
+            valid = valid || skipValidationForGitNotRequired
             if (_formData.materials.length > 1) {
                 const _isWebhook = _formData.materials.some((_mat) => _mat.type === SourceTypeMap.WEBHOOK)
                 if (_isWebhook) {
@@ -820,6 +827,8 @@ export default function CIPipeline({
                                     getPluginData={getPluginData}
                                     setCIPipeline={setCIPipeline}
                                     isJobCI={isJobCI}
+                                    isGitRequired={isGitRequired}
+                                    setIsGitRequired={setIsGitRequired}
                                     />
                             </Route>
                             <Redirect to={`${path}/build`} />

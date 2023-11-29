@@ -80,7 +80,6 @@ const getInitialWorkflows = (
     } else {
         return Promise.all([getWorkflowList(id, filteredEnvIds), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
             ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
-                console.log('ciConfig', ciConfig)
                 return processWorkflow(
                     workflow.result as WorkflowResult,
                     ciConfig.result as CiPipelineResult,
@@ -157,7 +156,6 @@ export function processWorkflow(
     )
     const appName = workflow.appName
     let workflows = new Array<WorkflowType>()
-        console.log("workflow.workflows",workflow.workflows)
     //populate workflows with CI and CD nodes, sourceNodes are inside CI nodes and PreCD and PostCD nodes are inside CD nodes
     workflow.workflows
         ?.sort((a, b) => a.id - b.id)
@@ -220,7 +218,6 @@ export function processWorkflow(
     if (dimensions.type == WorkflowDimensionType.TRIGGER) {
         workflows = workflows.filter((wf) => wf.nodes.length > 0)
     }
-    console.log('workflows before', workflows)
     addDimensions(workflows, workflowOffset, dimensions)
     return { appName, workflows, filteredCIPipelines }
 }
@@ -235,13 +232,10 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         if (workflow.nodes.length == 0) {
             return
         }
-        console.log('each workflow', workflow)
         const ciNode = workflow.nodes.find(
             (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK,
         )
-        console.log('ciNode', ciNode.sourceNodes)
         ciNode.sourceNodes?.forEach((s, si) => {
-            console.log('s', s)
             const sourceNodeY =
                 startY +
                 workflowOffset.offsetY +

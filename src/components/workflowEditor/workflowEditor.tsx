@@ -107,7 +107,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 const allDeploymentNodeMap = new Map()
                 let isDeletionInProgress
                 const _envIds = []
-                console.log('workflow',result)
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
                         if (node.type === WorkflowNodeType.CI) {

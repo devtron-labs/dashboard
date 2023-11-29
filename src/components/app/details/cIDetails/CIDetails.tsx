@@ -52,7 +52,6 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
             ]),
         [appId, filteredEnvIds],
     )
-    console.log(initDataResults)
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
         [pipelineId, pagination],
@@ -357,7 +356,6 @@ export const Details = ({
     if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
     if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
     if (triggerDetails.id !== +buildId) return null
-    console.log('sdfsdf',pipeline.isGitRequired)
     return (
         <>
             <div className="trigger-details-container">

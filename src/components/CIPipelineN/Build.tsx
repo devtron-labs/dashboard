@@ -21,6 +21,8 @@ export function Build({
     getPluginData,
     setCIPipeline,
     isJobCI,
+    isGitRequired,
+    setIsGitRequired
 }: BuildType) {
     const {
         formData,
@@ -28,11 +30,6 @@ export function Build({
         formDataErrorObj,
         setFormDataErrorObj,
     } = useContext(pipelineContext)
-    const [isGitRequired, setIsGitRequired] = React.useState<boolean>(false)
-
-    useEffect(() => {
-        setIsGitRequired(ciPipeline.isGitRequired)
-    },[ciPipeline])
 
     const validationRules = new ValidationRules()
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {

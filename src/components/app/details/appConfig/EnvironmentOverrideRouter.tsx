@@ -392,7 +392,6 @@ export default function EnvironmentOverrideRouter({
 
     const renderEnvsNav = (): JSX.Element => {
         if ((isJobView ? jobEnvs : allEnvs).length) {
-            console.log((isJobView ? jobEnvs : allEnvs).length, 'envs')
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
                     {(isJobView ? jobEnvs : allEnvs).map((env, index) => {

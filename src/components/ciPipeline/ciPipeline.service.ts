@@ -164,7 +164,6 @@ export function getInitDataWithCIPipeline(
             pipelineMetaConfigResult.webhookEvents,
             pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
         )
-        console.log('sdfsdf',x)
         return x;
     })
 }
