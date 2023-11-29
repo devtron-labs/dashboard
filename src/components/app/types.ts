@@ -576,3 +576,13 @@ export interface EnvironmentListMinType {
     namespace?: string
     allowedDeploymentTypes?: DeploymentAppTypes[]
 }
+
+export interface EditDescRequest {
+    id: number,
+    environment_name: string,
+    cluster_id: number,
+    namespace: string,
+    active: boolean,
+    default: boolean,
+    description: string,
+}
