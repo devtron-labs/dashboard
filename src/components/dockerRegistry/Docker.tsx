@@ -191,7 +191,7 @@ function CollapsedList({
     reload,
     connection = '',
     cert = '',
-    isOCICompliantRegistry = isHyperionMode ? true : false,
+    isOCICompliantRegistry = isHyperionMode,
     isPublic = false,
     ipsConfig = !isHyperionMode ? {
         id: 0,
@@ -1118,12 +1118,16 @@ function DockerForm({
                             )}
                         >
                             <div
-                                className={`flex left ${isContainerStore ? 'mb-12' : ''} ${!RegistryHelmPushCheckbox ? 'mb-12' : ''
-                                    }`}
+                                className={`flex left ${isContainerStore ? 'mb-12' : ''} ${
+                                    !RegistryHelmPushCheckbox ? 'mb-12' : ''
+                                }`}
                             >
                                 <Checkbox
-                                    rootClassName={`${disabledFields.some((test) => test === 'CONTAINER') ? 'registry-disabled-checkbox' : ''
-                                        } docker-default mb-0`}
+                                    rootClassName={`${
+                                        disabledFields.some((test) => test === 'CONTAINER')
+                                            ? 'registry-disabled-checkbox'
+                                            : ''
+                                    } docker-default mb-0`}
                                     isChecked={isContainerStore}
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CONTAINER)}
@@ -1178,23 +1182,24 @@ function DockerForm({
                     >
                         <div>
                             <Checkbox
-                                rootClassName={`${isHyperionMode || disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
+                                rootClassName={`${
+                                    isHyperionMode ||
+                                    disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
                                         ? 'registry-disabled-checkbox'
                                         : ''
-                                    } docker-default mb-12`}
+                                } docker-default mb-12`}
                                 id={RepositoryAction.CHART_PULL}
                                 isChecked={showHelmPull}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CHART_PULL)}
                                 dataTestId="store-checkbox"
                                 disabled={
-                                    isHyperionMode || disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
+                                    isHyperionMode ||
+                                    disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
                                 }
                             >
-                                <span>
-                                    Use as chart repository (Pull helm charts and show in&nbsp;
-                                    <a href={ChartStoreRedirectionUrl}>chart store</a>)
-                                </span>
+                                Use as chart repository (Pull helm charts and show in &nbsp;
+                                <a href={ChartStoreRedirectionUrl}>chart store</a>)
                             </Checkbox>
                         </div>
                     </ConditionalWrap>
