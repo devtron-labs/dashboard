@@ -156,7 +156,7 @@ export function getInitDataWithCIPipeline(
     ]).then(([ciPipelineRes, pipelineMetaConfig]) => {
         const ciPipeline = ciPipelineRes?.result
         const pipelineMetaConfigResult = pipelineMetaConfig?.result
-        const x= parseCIResponse(
+        return parseCIResponse(
             pipelineMetaConfig.code,
             ciPipeline,
             pipelineMetaConfigResult.materials,
@@ -164,7 +164,6 @@ export function getInitDataWithCIPipeline(
             pipelineMetaConfigResult.webhookEvents,
             pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
         )
-        return x;
     })
 }
 
