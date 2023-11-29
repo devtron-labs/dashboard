@@ -1118,12 +1118,14 @@ export const getDeploymentAppType = (
 export const hasApproverAccess = (approverList: string[]): boolean => {
     const loginInfo = getLoginInfo()
     let hasAccess = false
+    if(approverList?.length > 0) {
     for (const approver of approverList) {
         if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
             hasAccess = true
             break
         }
     }
+}
     return hasAccess
 }
 
