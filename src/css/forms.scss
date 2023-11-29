@@ -298,16 +298,26 @@ p.sentence-case:first-letter {
     height: 20px;
     position: absolute;
     left: 0;
+    top: 0;
     background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
 }
 
-.form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {
+.form__checkbox:checked[value='INTERMEDIATE']~.form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 
-.form__checkbox:checked[value='CHECKED'] ~ .form__checkbox-container {
+.form__checkbox:checked[value='CHECKED']~.form__checkbox-container {
+    background-image: url('../assets/icons/ic-checkbox-selected.svg');
+}
+
+.any-selected {
+
+    background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
+}
+
+.tick-icon {
     background-image: url('../assets/icons/ic-checkbox-selected.svg');
 }
 
