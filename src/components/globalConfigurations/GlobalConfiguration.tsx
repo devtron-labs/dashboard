@@ -174,7 +174,12 @@ function NavItem({ serverMode }) {
             isAvailableInDesktop: true,
         },
         { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container/ OCI Registry', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        {
+            name: serverMode === SERVER_MODE.EA_ONLY ? 'OCI Registry' : 'Container/ OCI Registry',
+            href: URLS.GLOBAL_CONFIG_DOCKER,
+            component: Docker,
+            isAvailableInEA: true,
+        },
     ]
 
     const ConfigOptional = [
@@ -516,6 +521,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                                     {...props}
                                     handleChecklistUpdate={handleChecklistUpdate}
                                     isSuperAdmin={isSuperAdmin}
+                                    isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
                                 />
                             </div>
                         )
