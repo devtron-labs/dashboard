@@ -145,22 +145,31 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             </g>
         )
     }
+    getPositionedNodes(nodes) {
+        let offsetx = 0
+        return nodes.reduce((newNodes, node) => {
+            node.x -= offsetx
+            newNodes.push(node)
+            if (node.type === WorkflowNodeType.GIT && node.isJobCI && !node.isGitRequired) {
+                newNodes.pop()
+                offsetx += node.width + 60
+            }
+            return newNodes
+        }, [])
+    }
 
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI)
         const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
         const _nodesData = this.getNodesData(ci?.id || webhook?.id || '')
-        const _nodes = _nodesData.nodes
+        const _nodes =this.getPositionedNodes( JSON.parse(JSON.stringify(_nodesData.nodes)))
         if (ci) {
             return _nodes.map((node: NodeAttr) => {
                 if (node.type == WorkflowNodeType.GIT) {
-                    console.log('1')
                     return ((node.isJobCI && node.isGitRequired) || !node.isJobCI) && this.renderSourceNode(node, ci)
                 } else if (node.type == WorkflowNodeType.CI) {
-                    console.log('2;')
                     return this.renderCINodes(node)
                 } else if (_nodesData.cdNamesList.length > 0) {
-                    console.log('3')
                     return (
                         <>
                             {this.renderAdditionalEdge()}
@@ -168,8 +177,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         </>
                     )
                 }
-                console.log('4')
-
                 return this.renderCDNodes(node, ci.id, false)
             })
         } else if (webhook) {
@@ -377,16 +384,20 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     getEdges() {
-        console.log('this.props.nodes', this.props.nodes)
-        return this.props.nodes.reduce((edgeList, node) => {
+        const nodes = JSON.parse(JSON.stringify(this.props.nodes))
+        let offsetx = 0
+        return nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                const endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const endNode = nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                node.x -= offsetx
+                endNode.x -= offsetx
                 edgeList.push({
                     startNode: node,
                     endNode: endNode,
                 })
                 if (node.type === WorkflowNodeType.GIT && node.isJobCI && !node.isGitRequired) {
                     edgeList.pop()
+                    offsetx += node.width + 60
                 }
             })
             return edgeList
@@ -400,8 +411,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     renderEdgeList() {
         const edges = this.getEdges()
-        console.log('edges', edges.length,edges);
-        return this.getEdges().map((edgeNode) => {
+        console.log('edges', edges)
+        return edges.map((edgeNode) => {
             if (ApprovalNodeEdge) {
                 return (
                     <ApprovalNodeEdge
@@ -413,7 +424,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     />
                 )
             }
-            console.log('edgeNode', edgeNode)
             return (
                 <Edge
                     key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
@@ -508,7 +518,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         )}
                     </div>
                     {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
-                    <div className=";workflow__body">
+                    <div className="workflow__body">
                         {this.props.nodes.length == 0 ? (
                             this.emptyWorkflow()
                         ) : (
