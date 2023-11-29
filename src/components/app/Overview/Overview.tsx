@@ -39,7 +39,7 @@ type AvailableTabs = typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
-    const location = useLocation();
+    const location = useLocation()
     const history = useHistory()
     const searchParams = new URLSearchParams(location.search)
     const activeTab = searchParams.get(TAB_SEARCH_KEY) as AvailableTabs
