@@ -160,7 +160,7 @@ function TerminalComponent({
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ?  K8sResourcePayloadAppType.DEVTRON_APP : appDetails.appType === AppType.EXTERNAL_ARGO_APP ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP : K8sResourcePayloadAppType.HELM_APP}`
+            return url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${appDetails.appType === AppType.DEVTRON_APP ?  K8sResourcePayloadAppType.DEVTRON_APP : appDetails.appType === AppType.EXTERNAL_ARGO_APP ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP : K8sResourcePayloadAppType.HELM_APP}`
         }
         return url
     }
