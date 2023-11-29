@@ -82,6 +82,7 @@ export const Option = (props): JSX.Element => {
     }
 
     const renderOptionIcon = (): JSX.Element => {
+        
         if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
             if (props.isSelected || props.isFocused) {
                 return (
@@ -92,7 +93,9 @@ export const Option = (props): JSX.Element => {
                 )
             }
         } else {
-            if (props.isFocused) {
+            // hide edit and delete icon for predefined filter
+            if (props.isFocused && props.data.value !== props.data.label) {
+                // for predefined filter, value and label are same (done in fe)
                 return (
                     <div className="flex">
                         <Tippy className="default-tt" arrow={false} content="Edit group">

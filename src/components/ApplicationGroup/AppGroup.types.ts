@@ -7,7 +7,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads, WorkflowNodeType, WorkflowType } from '../app/details/triggerView/types'
-import { OptionType } from '../app/types'
+import { EditDescRequest, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
@@ -205,8 +205,11 @@ export interface AppInfoListType {
     appStatus: string
     deploymentStatus: string
     lastDeployed: string
+    lastDeployedImage?: string
+    lastDeployedBy?: string
     appId: number
     envId: number
+    pipelineId?: number
 }
 
 export interface AppListDataType {
@@ -267,6 +270,9 @@ export interface AppGroupDetailDefaultType {
     appGroupListData?: AppGroupListType
     isVirtualEnv?: boolean
     envName?: string
+    description?: string
+    getAppListData?: () => Promise<void>
+    handleSaveDescription?: (description: string) => Promise<void>
 }
 
 interface CIPipeline {
@@ -323,6 +329,8 @@ export interface ApplistEnvType {
     appName: string
     appStatus: string
     lastDeployedTime: string
+    lastDeployedBy?: string
+    lastDeployedImage?: string
 }
 
 export interface AppGroupListType {
@@ -331,6 +339,11 @@ export interface AppGroupListType {
     clusterName: string
     environmentId: number
     apps: ApplistEnvType[]
+    description?: string
+    environmentType?: 'Non-Production' | 'Production'
+    createdOn?: string
+    createdBy?: string
+    clusterId?: number
 }
 export interface ConfigAppListType extends ResponseType {
     result?: ConfigAppList[]
@@ -388,7 +401,57 @@ export interface SearchBarType {
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+export interface EditDescRequestResponse extends ResponseType {
+    result?: EditDescRequest
+}
+
 export enum FilterParentType {
     app = 'env-group',
     env = 'app-group',
+}
+
+export interface HibernateStatusRowType {
+    rowData: HibernateResponseRowType
+    index: number
+    isHibernateOperation: boolean
+    isVirtualEnv?: boolean
+}
+
+export interface HibernateResponseRowType {
+    id: number
+    appName: string
+    success: boolean
+    authError?: boolean
+    error?: string
+    skipped?: string
+}
+
+export interface BaseModalProps {
+    selectedAppIds: number[]
+    envName: string
+    envId: string
+    setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
+    setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
+}
+
+export interface HibernateModalProps extends BaseModalProps {
+    setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface UnhibernateModalProps extends BaseModalProps {
+    setOpenUnhiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface StatusDrawer {
+    hibernationOperation: boolean
+    showStatus: boolean
+}
+
+export interface ManageAppsResponse {
+    appName: string
+    id: number
+    success: boolean
+    skipped?: string
+    error?: string
+    authError?: boolean
 }
