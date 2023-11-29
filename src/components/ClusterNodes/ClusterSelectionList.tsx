@@ -14,6 +14,7 @@ import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
+import { DEFAULT_CLUSTER_ID } from '../cluster/cluster.type'
 
 export default function ClusterSelectionList({
     clusterOptions,
@@ -35,6 +36,9 @@ export default function ClusterSelectionList({
     const [searchApplied, setSearchApplied] = useState(false)
 
     useEffect(() => {
+        if (window._env_.HIDE_DEFAULT_CLUSTER) {
+            clusterOptions = clusterOptions.filter((item) => item.id !== DEFAULT_CLUSTER_ID)
+        }
         setClusterList([])
         setFilteredClusterList([])
         setLastDataSync(!lastDataSync)
@@ -121,7 +125,6 @@ export default function ClusterSelectionList({
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
-        if (!window._env_.SHOW_DEFAULT_CLUSTER && clusterData.name === 'default_cluster') return <></>
         return (
             <div
                 key={`cluster-${clusterData.id}`}

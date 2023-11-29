@@ -47,7 +47,7 @@ interface customEnv {
     ANNOUNCEMENT_BANNER_MSG?: string
     LOGIN_PAGE_IMAGE?: string
     LOGIN_PAGE_IMAGE_BG?: string
-    SHOW_DEFAULT_CLUSTER?: boolean
+    HIDE_DEFAULT_CLUSTER?: boolean
 }
 declare global {
     interface Window {
@@ -149,7 +149,7 @@ if (!window || !window._env_) {
         ANNOUNCEMENT_BANNER_MSG: '',
         LOGIN_PAGE_IMAGE: '',
         LOGIN_PAGE_IMAGE_BG: '',
-        SHOW_DEFAULT_CLUSTER: false,
+        HIDE_DEFAULT_CLUSTER: false,
     }
 }
 

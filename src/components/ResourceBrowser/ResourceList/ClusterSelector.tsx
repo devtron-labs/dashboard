@@ -10,6 +10,7 @@ import {
     SIDEBAR_KEYS,
 } from '../Constants'
 import { ClusterOptionType } from '../Types'
+import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 
 interface ClusterSelectorType {
     onChange: ({ label, value }) => void
@@ -18,8 +19,8 @@ interface ClusterSelectorType {
 }
 
 export default function ClusterSelector({ onChange, clusterList, clusterId }: ClusterSelectorType) {
-    if (!window._env_.SHOW_DEFAULT_CLUSTER) {
-        clusterList = clusterList.filter((item) => item.label !== 'default_cluster')
+    if (window._env_.HIDE_DEFAULT_CLUSTER) {
+        clusterList = clusterList.filter((item) => Number(item.value) !== DEFAULT_CLUSTER_ID)
     }
     const defaultOption = clusterList.find((item) => item.value == clusterId)
 

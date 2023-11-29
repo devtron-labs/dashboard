@@ -73,6 +73,7 @@ import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
 import { createTaintsList } from '../../cluster/cluster.util'
 import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
+import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -687,7 +688,7 @@ export default function ResourceList() {
         setSelectedCluster(selected)
         getNamespaceList(selected.value)
 
-        if (selected.value === 1 && !window._env_.SHOW_DEFAULT_CLUSTER) {
+        if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
                 pathname: URLS.RESOURCE_BROWSER,
             })
