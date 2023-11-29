@@ -411,7 +411,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     renderEdgeList() {
         const edges = this.getEdges()
-        console.log('edges', edges)
         return edges.map((edgeNode) => {
             if (ApprovalNodeEdge) {
                 return (

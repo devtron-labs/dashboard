@@ -393,6 +393,8 @@ export interface BuildType {
     getPluginData: (_formData?: PipelineFormType) => void
     setCIPipeline: React.Dispatch<React.SetStateAction<CIPipelineDataType>>
     isJobCI?: boolean
+    isGitRequired?: boolean
+    setIsGitRequired?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface PreBuildType {

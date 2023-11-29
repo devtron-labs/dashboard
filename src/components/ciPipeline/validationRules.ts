@@ -112,7 +112,6 @@ export class ValidationRules {
 
     sourceValue = (value: string, doRegexValidation = true): { message: string | null; isValid: boolean } => {
         if (!value) {
-            console.log('value here', value)
             return { message: `This is required`, isValid: false }
         } else {
             if (doRegexValidation) {
