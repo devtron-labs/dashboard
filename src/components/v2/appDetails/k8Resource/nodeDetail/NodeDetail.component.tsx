@@ -279,7 +279,7 @@ function NodeDetailComponent({
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space">
                 <div className="flex left">
                     <div data-testid="app-resource-containor-header" className="flex left">
@@ -440,7 +440,7 @@ function NodeDetailComponent({
                     removeTabByIdentifier={removeTabByIdentifier}
                 />
             )}
-        </React.Fragment>
+        </>
     )
 }
 

@@ -11,7 +11,7 @@ import {
 } from './clusterNodes.service'
 import { GroupHeading, menuComponentForImage, Option } from '../../components/v2/common/ReactSelect.utils'
 import { clusterImageDescription, convertToOptionsList } from '../common'
-import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
 import { ClusterTerminalType, NodeTaintType } from './types'
@@ -815,6 +815,24 @@ export default function ClusterTerminal({
         }
     }
 
+    // TODO: Move into common component for deployment
+    const renderHideManagedFields = () => {
+        return (
+            <div className="pt-6 pb-6 pl-8 pr-8 top">
+                <Checkbox
+                    rootClassName="mb-0-imp h-20"
+                    isChecked
+                    value={CHECKBOX_VALUE.CHECKED}
+                    onChange={()=>{}}
+                >
+                    <span className="mr-5 cn-9 fs-12" data-testid="hide-pods-managed-fields">
+                        Hide Managed Fields
+                    </span>
+                </Checkbox>
+            </div>
+        )
+    }
+
     const closeManifetsPopup = (isClose: boolean): void => {
         setManifestButtonState(EditModeType.REVIEW)
         setManifestData('')
@@ -951,6 +969,14 @@ export default function ClusterTerminal({
                 buttonSelectionState: manifestButtonState,
                 setManifestButtonState: setManifestButtonState,
             },
+            ...(selectedTabIndex === 2 && isManifestAvailable
+                ? [
+                      {
+                          type: TerminalWrapperType.CUSTOM_COMPONENT,
+                          customComponent: renderHideManagedFields,
+                      },
+                  ]
+                : []),
         ],
         tabSwitcher: {
             terminalTabWrapper: terminalTabWrapper,
