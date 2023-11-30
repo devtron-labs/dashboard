@@ -35,6 +35,7 @@ import { styles, Option } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CodeEditor from '../CodeEditor/CodeEditor'
+import CustomImageTags from '../CIPipelineN/CustomImageTags'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -62,7 +63,10 @@ export default function BuildCD({
         isVirtualEnvironment,
         pageState,
         isEnvUsedState,
-        setIsEnvUsedState
+        setIsEnvUsedState,
+        savedCustomTagPattern,
+        selectedCDStageTypeValue,
+        setSelectedCDStageTypeValue
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     let { cdPipelineId } = useParams<{
@@ -696,6 +700,18 @@ export default function BuildCD({
                             onChangeRequiredApprovals={onChangeRequiredApprovals}
                         />
                     </>
+                )}
+                {isAdvanced && (
+                    <CustomImageTags
+                        formData={formData}
+                        setFormData={setFormData}
+                        formDataErrorObj={formDataErrorObj}
+                        setFormDataErrorObj={setFormDataErrorObj}
+                        isCDBuild={true}
+                        savedTagPattern={savedCustomTagPattern}
+                        selectedCDStageTypeValue={selectedCDStageTypeValue}
+                        setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
+                    />
                 )}
             </>
         )

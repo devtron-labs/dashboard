@@ -6,6 +6,7 @@ import {
     Drawer,
     ErrorScreenManager,
     ForceDeleteDialog,
+    OptionType,
     PluginDetailType,
     RefVariableType,
     ServerErrors,
@@ -52,6 +53,7 @@ import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
+import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -78,6 +80,7 @@ export default function NewCDPipeline({
     const noStrategyAvailable = useRef(false)
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
+    const [ savedCustomTagPattern, setSavedCustomTagPattern ] = useState<string>('')
 
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string
@@ -177,6 +180,7 @@ export default function NewCDPipeline({
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
+    const [selectedCDStageTypeValue, setSelectedCDStageTypeValue] = useState<OptionType>(customTagStageTypeOptions[0])
 
     useEffect(() => {
         getInit()
@@ -333,7 +337,9 @@ export default function NewCDPipeline({
                     ...form,
                     clusterId: result.form?.clusterId,
                 })
+                setSavedCustomTagPattern(pipelineConfigFromRes.customTag?.tagPattern)
                 setPageState(ViewType.FORM)
+                setSelectedCDStageTypeValue(getCDStageTypeSelectorValue(form.customTagStage))
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -442,6 +448,10 @@ export default function NewCDPipeline({
         form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
         form.userApprovalConfig = pipelineConfigFromRes.userApprovalConfig
         form.allowedDeploymentTypes = env.allowedDeploymentTypes || []
+        form.customTag = pipelineConfigFromRes.customTag
+        form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
+        form.customTagStage = pipelineConfigFromRes.customTagStage
+
         if (pipelineConfigFromRes?.preDeployStage) {
             if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
                 form.preBuildStage = pipelineConfigFromRes.preDeployStage
@@ -555,7 +565,13 @@ export default function NewCDPipeline({
             runPreStageInEnv: formData.runPreStageInEnv,
             runPostStageInEnv: formData.runPostStageInEnv,
             preDeployStage: {},
-            postDeployStage: {}
+            postDeployStage: {},
+            customTag: {
+                tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
+                counterX: formData.customTag ? +formData.customTag.counterX : 0,
+            },
+            enableCustomTag: formData.enableCustomTag,
+            customTagStage: formData?.customTagStage ? formData.customTagStage : StageTypeEnums.PRE_CD,
         }
 
         if (isVirtualEnvironment) {
@@ -973,7 +989,10 @@ export default function NewCDPipeline({
             isVirtualEnvironment,
             setInputVariablesListFromPrevStep,
             isEnvUsedState,
-            setIsEnvUsedState
+            setIsEnvUsedState,
+            savedCustomTagPattern,
+            selectedCDStageTypeValue,
+            setSelectedCDStageTypeValue
         }
     }, [
         formData,

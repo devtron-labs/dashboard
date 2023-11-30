@@ -699,6 +699,8 @@ button.anchor {
         color: var(--G500);
     }
 
+    &.f-starting,
+    &.f-initiating,
     &.f-suspended,
     &.f-switchedtoactiveservice,
     &.f-containercreating,
@@ -1113,6 +1115,7 @@ button.anchor {
     width: 24px;
     z-index: 2;
 
+    &.queued,
     &.pending {
         background: url('../assets/icons/ic-clock.svg'), $background;
         background-size: contain, contain;
@@ -1174,6 +1177,7 @@ button.anchor {
         background-size: contain, contain;
     }
 
+    &.initiating,
     &.progressing,
     &.running,
     &.request_accepted,
@@ -2196,6 +2200,10 @@ button.anchor {
     max-width: 400px;
 }
 
+.dc__mxw-500 {
+    max-width: 500px;
+}
+
 .dc__mxw-800 {
     max-width: 800px;
 }
@@ -2741,6 +2749,10 @@ textarea,
     width: 80px !important;
 }
 
+.w-96 {
+    width: 96px;
+}
+
 .w-100px {
     width: 100px;
 }
@@ -2972,6 +2984,10 @@ textarea,
 
 .h-12 {
     height: 12px;
+}
+
+.h-14 {
+    height: 14px;
 }
 
 .h-16 {
@@ -3408,6 +3424,10 @@ textarea,
     margin-top: 120px;
 }
 
+.ml-54 {
+    margin-left: 54px
+}
+
 .ml-60 {
     margin-left: 60px;
 }
@@ -3517,7 +3537,7 @@ textarea,
 }
 
 .dc__flip-90 {
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
 }
 
 .dc__flip-270 {
