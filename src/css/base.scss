@@ -2990,6 +2990,10 @@ textarea,
     height: 12px;
 }
 
+.h-14 {
+    height: 14px;
+}
+
 .h-16 {
     height: 16px;
 }
@@ -3541,7 +3545,7 @@ textarea,
 }
 
 .dc__flip-90 {
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
 }
 
 .dc__flip-270 {
