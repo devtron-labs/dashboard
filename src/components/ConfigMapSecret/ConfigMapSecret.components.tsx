@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, ResizableTextarea, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, Progressing, ResizableTextarea, TippyTheme, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -352,7 +352,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDraftState = (): JSX.Element => {
-        if (name && isProtected && draftData?.draftId) {
+        if (title !== name ) {
             if (data.draftState === 1) {
                 return <i className="mr-10 cr-5">In draft</i>
             } else if (data.draftState === 4) {
@@ -370,48 +370,67 @@ export function ConfigMapSecretContainer({
          updateCollapsed()
     }
 
+    const showBlurEffect = name && ((!title && name !== 'create') || (title && name !== title))
+
     return (
         <>
-            <section
-                className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
-                    reduceOpacity || (name && ((!title && name !== 'create') || (title && name !== title)))
-                        ? 'dc__disable-click dc__blur-1_5'
-                        : ''
-                }`}
-            >
-                <article
-                    className="dc__configuration-list pointer pr-16 pl-16 mb-16"
-                    onClick={handleCMSecretClick}
-                    data-testid="click-to-add-configmaps-secret"
-                >
-                    {renderIcon()}
-                    <div
-                        data-testid={`add-${componentType}-button`}
-                        className={`flex left lh-20 ${!title ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}
+            <ConditionalWrap
+                condition={showBlurEffect}
+                wrap={(children) => (
+                    <Tippy
+                        theme={TippyTheme.black}
+                        followCursor={true}
+                        arrow={true}
+                        animation="shift-toward-subtle"
+                        placement='top'
+                        content={`Collapse open ${componentType === 'secret' ? ' Secret' : ' ConfigMap'} first`}
                     >
-                        {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
-                        {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
-                    </div>
-                    {title && (
-                        <div className="flex right">
-                            {isProtected && (
-                                <>
-                                    {renderDraftState()}
-                                    <ProtectedIcon className="icon-dim-20 mr-10 fcv-5" />
-                                </>
-                            )}
-                            {isLoader ? (
-                                <span style={{ width: '20px' }}>
-                                    <Progressing />
-                                </span>
-                            ) : (
-                                <Dropdown className={`icon-dim-20 rotate ${name === title ? 'dc__flip-180' : ''}`} />
-                            )}
+                        <div>{children}</div>
+                    </Tippy>
+                )}
+            >
+                <section
+                    className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
+                        reduceOpacity || showBlurEffect ? 'dc__blur-1_5' : ''
+                    }`}
+                >
+                    <article
+                        className={`${showBlurEffect ? 'cursor-not-allowed' : 'cursor'} dc__configuration-list pr-16 pl-16 mb-16`}
+                        onClick={handleCMSecretClick}
+                        data-testid="click-to-add-configmaps-secret"
+                    >
+                        {renderIcon()}
+                        <div
+                            data-testid={`add-${componentType}-button`}
+                            className={`flex left lh-20 ${!title ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}
+                        >
+                            {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
+                            {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
                         </div>
-                    )}
-                </article>
-                {!isLoader ?  renderDetails() : null }
-            </section>
+                        {title && (
+                            <div className="flex right">
+                                {isProtected && (
+                                    <>
+                                        {renderDraftState()}
+                                        <ProtectedIcon className="icon-dim-20 mr-10 fcv-5" />
+                                    </>
+                                )}
+                                {isLoader ? (
+                                    <span style={{ width: '20px' }}>
+                                        <Progressing />
+                                    </span>
+                                ) : (
+                                    <Dropdown
+                                        className={`icon-dim-20 rotate ${name === title ? 'dc__flip-180' : ''}`}
+                                    />
+                                )}
+                            </div>
+                        )}
+                    </article>
+
+                    {!isLoader ? renderDetails() : null}
+                </section>
+            </ConditionalWrap>
         </>
     )
 }
