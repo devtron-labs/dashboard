@@ -91,7 +91,7 @@ export interface ChartGroupPermissionsFilter extends RoleFilter {
 }
 
 export interface APIRoleFilter {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER|EntityTypes.JOB
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
     team?: string
     entityName?: string
     environment?: string
@@ -102,7 +102,7 @@ export interface APIRoleFilter {
     group?: any
     kind?: any
     resource?: any
-    workflow?:any
+    workflow?: string
 }
 
 export interface OptionType {

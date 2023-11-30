@@ -1,139 +1,119 @@
-import React, { Component } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
 import { DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { createWorkflow } from './service'
 import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { FILTER_NAME_REGEX } from '../ApplicationGroup/Constants'
-import {
-    emptyWorkflowMessage,
-    invalidWorkflowNameError,
-    max30CharError,
-    min3CharError,
-    noWorkflowNameError,
-} from './constants'
+import { NO_WORKFLOW_NAME, INVALID_WORKFLOW_NAME, MIN_3CHARS, MAX_30CHARS, SUCCESS_CREATION } from './constants'
 
-export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWorkflowState> {
-    _inputName: HTMLInputElement
+export default function EmptyWorkflow(props: EmptyWorkflowProps) {
+    const [state, setState] = useState<EmptyWorkflowState>({
+        name: '',
+        showError: false,
+        loading: false,
+    })
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            name: '',
-            showError: false,
-            loading: false,
-        }
+    const handleWorkflowName = (event): void => {
+        setState({ ...state, name: event.target.value })
     }
 
-    componentDidMount() {
-        if (this._inputName) {
-            this._inputName.focus()
-        }
-    }
-
-    handleWorkflowName = (event): void => {
-        this.setState({ name: event.target.value })
-    }
-
-    saveWorkflow = (event): void => {
+    const saveWorkflow = (event): void => {
         event.preventDefault()
-        this.setState({ showError: true, loading: true })
+        setState({ ...state, showError: true, loading: true })
         const request = {
-            appId: +this.props.match.params.appId,
-            name: this.state.name,
+            appId: +props.match.params.appId,
+            name: state.name,
         }
-        if (!this.isNameValid().isValid) {
-            this.setState({ loading: false })
+        if (!isNameValid().isValid) {
+            setState((prevState) => ({
+                ...prevState,
+                loading: false,
+            }))
             return
         }
-        const message = emptyWorkflowMessage
+        const message = SUCCESS_CREATION
         const promise = createWorkflow(request)
         promise
             .then((response) => {
                 toast.success(message)
-                this.setState({
-                    name: response.result.name,
-                    showError: false,
-                })
-                this.props.onClose()
-                this.props.getWorkflows()
+                setState((prevState) => ({ ...prevState, name: response.result.name, showError: false }))
+                props.onClose()
+                props.getWorkflows()
             })
             .catch((error: ServerErrors) => {
                 showError(error)
-                this.props.onClose()
+                props.onClose()
             })
             .finally(() => {
-                this.setState({ loading: false })
+                setState((prevState) => ({ ...prevState, loading: false }))
             })
     }
 
-    isNameValid(): {errorMsg:string, isValid:boolean} {
-        const name = this.state.name;
+    const isNameValid = (): { errorMsg: string; isValid: boolean } => {
+        const name = state.name
+        console.log('name', name)
         if (!name) {
             return {
-                errorMsg: noWorkflowNameError,
-                isValid: false
+                errorMsg: NO_WORKFLOW_NAME,
+                isValid: false,
             }
         }
-        if(name.length < 3) {
+        if (name.length < 3) {
             return {
-                errorMsg: min3CharError,
-                isValid: false
+                errorMsg: MIN_3CHARS,
+                isValid: false,
             }
         }
-        if(name.length > 30) {
+        if (name.length > 30) {
             return {
-                errorMsg: max30CharError,
-                isValid: false
+                errorMsg: MAX_30CHARS,
+                isValid: false,
             }
         }
         if (!FILTER_NAME_REGEX.test(name)) {
             return {
-                errorMsg:invalidWorkflowNameError ,
-                isValid: false
+                errorMsg: INVALID_WORKFLOW_NAME,
+                isValid: false,
             }
-        } 
+        }
+        console.log({
+            errorMsg: '',
+            isValid: true,
+        })
 
         return {
             errorMsg: '',
-            isValid: true
+            isValid: true,
         }
-       
     }
 
-    render() {
-        const validationStatus = this.isNameValid()
-        return (
+    return (
+        <>
             <DialogForm
-                title={'Create job workflow'}
+                title="Create job workflow"
                 className=""
-                close={(event) => this.props.onClose()}
-                onSave={this.saveWorkflow}
-                isLoading={this.state.loading}
+                close={(event) => props.onClose()}
+                onSave={saveWorkflow}
+                isLoading={state.loading}
                 closeOnESC={true}
             >
                 <label className="form__row" htmlFor="workflow-name">
                     <span className="form__label dc__required-field">Workflow Name</span>
                     <input
                         autoComplete="off"
-                        ref={(node) => {
-                            if (node) node.focus()
-                            this._inputName = node
-                        }}
                         id="workflow-name"
                         className="form__input"
                         type="text"
                         name="workflow-name"
-                        value={this.state.name}
+                        value={state.name}
                         placeholder="Eg. my-job-workflow"
-                        autoFocus={true}
-                        tabIndex={1}
-                        onChange={this.handleWorkflowName}
+                        onChange={handleWorkflowName}
                         required
                     />
-                    {this.state.showError && !validationStatus.isValid ? (
+                    {state.showError && !isNameValid().isValid ? (
                         <span className="form__error">
-                            <img src={error} alt="" className="form__icon" /> {validationStatus.errorMsg}
+                            <img src={error} alt="" className="form__icon" /> {isNameValid().errorMsg}
                         </span>
                     ) : null}
                 </label>
@@ -141,7 +121,7 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                     <button
                         type="button"
                         className="flex cta cancel h-40 dc__align-right"
-                        onClick={(event) => this.props.onClose()}
+                        onClick={(event) => props.onClose()}
                         data-testid="close-export-csv-button"
                     >
                         Cancel
@@ -151,6 +131,6 @@ export default class EmptyWorkflow extends Component<EmptyWorkflowProps, EmptyWo
                     </div>
                 </div>
             </DialogForm>
-        )
-    }
+        </>
+    )
 }
