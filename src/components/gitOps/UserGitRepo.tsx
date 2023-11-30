@@ -6,12 +6,13 @@ import {
 import React, { useState } from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { ValidateForm } from '../common/ValidateForm/ValidateForm';
 
 function UserGitRepo(props) {
-    const [selectedRepoType, setSelectedRepoTypeLocal] = useState(repoType.DEFAULT);
-    const [repoText, setRepoText] = useState('')
+    const [selectedRepoType, setSelectedRepoTypeLocal] = useState(props.selectedRepoType || repoType.DEFAULT);
+    const [repoText, setRepoText] = useState(props.repoURL)
 
-    const repoTypeChange = () => {
+    const repoTypeChange = () => {  
         const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT;
         setSelectedRepoTypeLocal(newRepoType);
         props.setSelectedRepoType(newRepoType);
@@ -19,9 +20,9 @@ function UserGitRepo(props) {
 
     const onChange = (event) => { 
         setRepoText(event.target.value)
-        props.setRepoURL(event.target.value)   
+        props.setRepoURL(event.target.value)
     }
-       
+
     const inputUrlBox = () => {
         return (
             <div className="mr-10 ml-26">
@@ -50,11 +51,22 @@ function UserGitRepo(props) {
         )
     }
 
+    const onClickValidate = () => {
+
+    }
+
     return (
         <>
             <div>
                 <div className="form__row flex left">
-                    <div className="fw-6 cn-9 fs-14 mb-16">GitOps Configuration</div>
+                    {props.isDeploymentAllowed ? (
+                        <div className="fw-6 cn-9 fs-14 mb-16">GitOps Configuration</div>
+                    ) : (
+                        <div className="fw-4 mb-8">
+                            Application Deployemnt states are saved as manifest in a Git repository. ArgoCD uses these
+                            manifests to sync with your live Kubernetes cluster.
+                        </div>
+                    )}
                     <RadioGroup
                         className="radio-group-no-border"
                         name="trigger-type"
@@ -70,6 +82,12 @@ function UserGitRepo(props) {
                                 Commit manifest to a desired repository.
                             </RadioGroupItem>
                         </div>
+                        {/* <ValidateForm
+                            id={1}
+                            validationError={props.errorInFetching}
+                            configName={''}
+                            onClickValidate={onClickValidate}
+                        /> */}
                     </RadioGroup>
                     {selectedRepoType === repoType.CONFIGURE && inputUrlBox()}
                 </div>

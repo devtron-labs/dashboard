@@ -89,6 +89,7 @@ export const Routes = {
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
     GITOPS_VALIDATE: 'gitops/validate',
+    GITOPOS_HELM_VALIDATE: 'app-store/gitops/validate',
     GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',

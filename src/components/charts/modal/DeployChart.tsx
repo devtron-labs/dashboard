@@ -234,6 +234,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     valuesOverride: obj,
                     valuesOverrideYaml: textRef,
                     appName,
+                    gitRepoURL:''
                 }
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },

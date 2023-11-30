@@ -90,7 +90,10 @@ export interface DeploymentAppSelectorType {
     handleDeploymentAppTypeSelection?: (event) => void
     isDeployChartView: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
-    appMetaInfoGitUrl?: string
+    allowedCustomBool: boolean
+    gitRepoURL?: string
+    envId: string
+    teamId?: string
 }
 
 export interface DeploymentAppRadioGroupType {
@@ -104,6 +107,8 @@ export interface DeploymentAppRadioGroupType {
 
 export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
     gitRepoURL?: Promise<void>
+    envId: string
+    teamId?: string
 }
 
 export interface ChartProjectSelectorType {
@@ -227,6 +232,7 @@ export interface ChartInstalledConfig {
     referenceValueKind: string
     valuesSchemaJson?: string
     deploymentAppType?: string
+    gitRepoURL?: string
 }
 
 export interface ChartValuesViewState {

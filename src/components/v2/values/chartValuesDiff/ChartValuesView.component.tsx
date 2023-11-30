@@ -55,6 +55,7 @@ import { DELETE_ACTION, repoType } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
+import {  validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -158,7 +159,10 @@ export const DeploymentAppSelector = ({
     handleDeploymentAppTypeSelection,
     isDeployChartView,
     allowedDeploymentTypes,
-    appMetaInfoGitUrl
+    allowedCustomBool,
+    gitRepoURL,
+    envId,
+    teamId
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
@@ -179,16 +183,14 @@ export const DeploymentAppSelector = ({
                     )}
                 </span>
             </div>
-            <div>
-                {true && (
-                    <div className="fs-14">
-                        Manifest are committed to
-                        <div>
-                            <a href="link">appMetaInfoGitUrl</a>
-                        </div>
+            {gitRepoURL && <div>
+                <div className="fs-14">
+                    Manifest are committed to
+                    <div>
+                        <a href="link">{gitRepoURL}</a>
                     </div>
-                )}
-            </div>
+                </div>
+            </div>}
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
@@ -205,10 +207,14 @@ export const DeploymentAppSelector = ({
                     handleOnChange={handleDeploymentAppTypeSelection}
                     allowedDeploymentTypes={allowedDeploymentTypes}
                 />
-                <GitOpsDrawer
-                    deploymentAppType={commonState.deploymentAppType}
-                    allowedDeploymentTypes={allowedDeploymentTypes}
-                />
+                {allowedCustomBool && (
+                    <GitOpsDrawer
+                        deploymentAppType={commonState.deploymentAppType}
+                        allowedDeploymentTypes={allowedDeploymentTypes}
+                        envId={envId}
+                        teamId={teamId}
+                    />
+                )}
             </div>
         </div>
     )
@@ -283,15 +289,12 @@ export const DeploymentAppRadioGroup = ({
     )
 }
 
-const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: gitOpsDrawerType): JSX.Element => {
+const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, envId, teamId}: gitOpsDrawerType): JSX.Element => {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
-    const [repoRadio, setRepoRadio] = useState(false)
     const [repoURL, setRepoURL] = useState("")
-
-    const payload = 
-
+    const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map());
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -306,16 +309,35 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
     const handleCloseButton = () => {
         setIsDeploymentAllowed(false)
         setGitOpsState(true)
+        if(selectedRepoType !== repoType.CONFIGURE) {
+            setSelectedRepoType(repoType.DEFAULT)
+        }
     }
 
     const handleRepoTextChange = (newRepoText: string) => {
         setRepoURL(newRepoText);
       };
 
+    const getPayload = () => {
+        const payload = {
+            gitRepoURL: repoURL,
+            environmentId: 1,
+            teamId: +teamId,
+        }
+        return payload
+    }
+
     const handleSaveButton = () => {
         setGitOpsState(true)
         setIsDeploymentAllowed(false)
-        setRepoRadio(true)
+        const payload = getPayload()
+        validateHelmAppGitOpsConfiguration(payload)
+            .then((response) => {               
+                setErrorInFetching(response.result.stageErrorMap)
+            })
+            .catch((error) => {
+                // setErrorState(true)
+            })
     }
 
     const toggleDrawer = () => {
@@ -342,7 +364,14 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
                                 </button>
                             </div>
                             <div className="ml-20 mt-10">
-                                <UserGitRepo setRepoURL={handleRepoTextChange} setSelectedRepoType={handleRepoTypeChange}/>
+                                <UserGitRepo
+                                    setRepoURL={handleRepoTextChange}
+                                    setSelectedRepoType={handleRepoTypeChange}
+                                    repoURL={repoURL}
+                                    selectedRepoType={selectedRepoType}
+                                    errorInFetching={errorInFetching}
+                                    isDeploymentAllowed={isDeploymentAllowed}
+                                />
                             </div>
                         </div>
                         <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
@@ -367,16 +396,19 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL}: g
                 </div>
             )}
             {gitOpsState ? (
-                <div
-                    className="form__input dashed mt-10 flex"
-                    style={{ height: '50px' }}
-                >
-                    <div className='mb-10'>
-                        <span className="">
+                <div className="form__input dashed mt-10 flex" style={{ height: '54px' }}>
+                    <div className="mb-10">
+                        <span>
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-16 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${repoRadio ? ( repoURL.length>0 ? repoURL : 'Auto-create repository') :  'Set GitOps repository'}`}</a>
+                        <a className="flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${
+                            selectedRepoType === repoType.CONFIGURE
+                                ? repoURL.length > 0
+                                    ? repoURL
+                                    : 'Auto-create repository'
+                                : 'Set GitOps repository'
+                        }`}</a>
                     </div>
                 </div>
             ) : null}

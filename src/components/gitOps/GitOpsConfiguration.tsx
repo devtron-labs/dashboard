@@ -131,6 +131,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 provider: GitProvider.GITHUB,
             },
             isFormEdited: false,
+            validationSkipped: false,
             isError: DefaultShortGitOps,
             validatedTime: '',
             validationError: [],
@@ -311,6 +312,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),
             bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId.replace(/\s/g, ''),
             bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
+            allowCustomRepository: this.state.selectedRepoType === repoType.CONFIGURE,
             active: true,
         }
         return payload
@@ -350,6 +352,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             saveLoading: false,
                             isFormEdited: false,
                             deleteRepoError: resp.deleteRepoFailed,
+                            validationSkipped: resp.validationSkipped,
                         })
                         this.fetchGitOpsConfigurationList()
                     } else {
@@ -359,6 +362,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             isFormEdited: false,
                             validationError: errorMap || [],
                             deleteRepoError: resp.deleteRepoFailed,
+                            validationSkipped: resp.validationSkipped,
                         })
                         toast.error('Configuration validation failed')
                     }
@@ -403,6 +407,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             isFormEdited: false,
                             validationError: errorMap || [],
                             deleteRepoError: resp.deleteRepoFailed,
+                            validationSkipped: resp.validationSkipped
                         })
                         toast.error('Configuration validation failed')
                     } else {
@@ -412,6 +417,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             validateLoading: false,
                             isFormEdited: false,
                             deleteRepoError: resp.deleteRepoFailed,
+                            validationSkipped: resp.validationSkipped
                         })
                         toast.success('Configuration validated')
                     }
@@ -448,10 +454,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     repoTypeChange() {
-        if(this.state.selectedRepoType === 'DEFAULT') {
-            this.setState({selectedRepoType: 'CONFIGURE'})
+        if(this.state.selectedRepoType === repoType.DEFAULT) {
+            this.setState({selectedRepoType: repoType.CONFIGURE})
         } else {
-            this.setState({selectedRepoType: 'DEFAULT'})
+            this.setState({selectedRepoType: repoType.DEFAULT})
         }
     }
 
@@ -746,7 +752,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 value={this.state.selectedRepoType}
                                 onChange={this.repoTypeChange}
                             >
-                                <div className="">
+                                <div>
                                     <RadioGroupItem value={repoType.DEFAULT}>Use default git repository git structure.</RadioGroupItem>
                                     <div className="ml-26">Repository will be created automatically with application name. Users can't change default repository</div>
                                 </div>

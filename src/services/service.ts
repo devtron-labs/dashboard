@@ -388,7 +388,7 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
                 return {
                     code: response.code,
                     status: response.status,
-                    result: { isInstalled: true, isConfigured: response.result.exists },
+                    result: { isInstalled: true, isConfigured: response.result.exists, allowCustomRepository: response.result.allowCustomRepository },
                 }
             }
         })

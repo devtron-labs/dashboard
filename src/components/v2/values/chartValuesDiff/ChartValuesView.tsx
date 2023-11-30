@@ -149,6 +149,7 @@ function ChartValuesView({
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
     const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
+    const [allowedCustomBool, setAllowedCustomBool] = useState<boolean>()
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -170,6 +171,7 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
+    const [gitRepoURL, setGitRepoURL] = useState('')
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
@@ -179,6 +181,7 @@ function ChartValuesView({
                     payload: true,
                 })
             }
+            setAllowedCustomBool(result.allowCustomRepository===true)
         } catch (error) {}
     }
 
@@ -502,6 +505,7 @@ function ChartValuesView({
                 chartName: _installedAppInfo.appStoreChartName,
                 version: _releaseInfo.deployedAppDetail.chartVersion,
                 deprecated: result?.deprecated,
+                gitRepoURL: result.gitRepoURL,
             }
 
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
@@ -880,6 +884,7 @@ function ChartValuesView({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
                     deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
+                    gitRepoURL: ''
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -1551,7 +1556,10 @@ function ChartValuesView({
                                     handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
                                     isDeployChartView={isDeployChartView}
                                     allowedDeploymentTypes={allowedDeploymentTypes}
-                                    // appMetaInfoGitUrl={appMetaInfoGitUrl}
+                                    allowedCustomBool={allowedCustomBool}
+                                    gitRepoURL={installedConfigFromParent.gitRepoURL}
+                                    envId={envId}
+                                    teamId='1'
                                 />
                             )}
                         {/**

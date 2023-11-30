@@ -62,6 +62,7 @@ export interface GitOpsState {
     deleteRepoError: boolean;
     isUrlValidationError: boolean;
     selectedRepoType: string;
+    validationSkipped: boolean
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> { 
