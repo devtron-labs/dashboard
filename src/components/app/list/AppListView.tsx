@@ -77,9 +77,9 @@ export class AppListView extends Component<AppListViewProps> {
 
     arrowIcon = (): string => {
         if (this.props.isAllExpandable) {
-            return this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90'
+            return this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-270'
         } else {
-            return 'cursor-not-allowed dc__flip-90'
+            return 'cursor-not-allowed dc__flip-270'
         }
     }
 
@@ -173,7 +173,7 @@ export class AppListView extends Component<AppListViewProps> {
                                             <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
                                             {len && (
                                                 <Arrow
-                                                    className="icon-dim-24 p-2 dc__flip-90 fcn-7 dc__show-second--icon"
+                                                    className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
                                                     onClick={this.expandEnv}
                                                     data-key={app.id}
                                                 />
