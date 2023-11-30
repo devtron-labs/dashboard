@@ -129,7 +129,7 @@ export default function Docker({ ...props }) {
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
     const additionalRegistryTitleTippyContent = () => {
         if (props.isHyperionMode) {
-            return
+            return null
         }
         return <p className="p-12 fs-13 fw-4 lh-20">{REGISTRY_TITLE_DESCRIPTION_CONTENT.additionalParagraphText}</p>
     }
