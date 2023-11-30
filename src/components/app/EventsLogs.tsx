@@ -245,7 +245,8 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails, no
         </div>}
         {nodeName && events.filter(event => event).length === 0 && <div className="flex" style={{ height: '100%', width: '100%' }}>
             {loading && <div style={{ width: '100%', textAlign: 'center' }}>
-                <Spinner loading></Spinner>
+                {/* @TODO: Uncomment this once the Spinner import is fixed */}
+                {/* <Spinner loading></Spinner> */}
                 <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
             </div>}
             {!loading && events.filter(event => event).length === 0 && <NoEvents />}
