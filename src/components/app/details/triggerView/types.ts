@@ -413,6 +413,7 @@ export enum PipelineType {
     CI_PIPELINE = 'CI_PIPELINE',
     CD_PIPELINE = 'CD_PIPELINE',
     WEBHOOK = 'WEBHOOK',
+    LINKED_CD = 'LINKED_CD',
 }
 
 export enum CIPipelineNodeType {
@@ -420,6 +421,7 @@ export enum CIPipelineNodeType {
     CI = 'CI',
     LINKED_CI = 'LINKED-CI',
     JOB_CI = 'JOB-CI',
+    LINKED_CD = 'LINKED_CD',
 }
 
 export enum WorkflowNodeType {
@@ -584,6 +586,7 @@ export interface PrePostDeployStageType {
     status: string
 }
 
+// Remove this and use from fe-common
 export interface CdPipeline {
     id: number
     environmentId: number
