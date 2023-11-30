@@ -641,7 +641,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     <div
                         className={configDiffView ? 'workflow__body' : 'workflow__body dc__border-n1 bc-n50 dc__overflow-scroll br-4'}
                     >
-                        {this.props.nodes.length === 0 ? (
+                        {this.props.nodes.length === 0 && this.props.isJobView ? (
                             this.emptyWorkflow()
                         ) : (
                             <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
