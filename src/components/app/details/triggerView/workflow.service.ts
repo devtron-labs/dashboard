@@ -156,7 +156,6 @@ export function processWorkflow(
     )
     const appName = workflow.appName
     let workflows = new Array<WorkflowType>()
-
     //populate workflows with CI and CD nodes, sourceNodes are inside CI nodes and PreCD and PostCD nodes are inside CD nodes
     workflow.workflows
         ?.sort((a, b) => a.id - b.id)
@@ -219,7 +218,6 @@ export function processWorkflow(
     if (dimensions.type == WorkflowDimensionType.TRIGGER) {
         workflows = workflows.filter((wf) => wf.nodes.length > 0)
     }
-
     addDimensions(workflows, workflowOffset, dimensions)
     return { appName, workflows, filteredCIPipelines }
 }
@@ -234,7 +232,6 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         if (workflow.nodes.length == 0) {
             return
         }
-
         const ciNode = workflow.nodes.find(
             (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK,
         )
@@ -443,7 +440,8 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             isRegex: ciMaterial?.isRegex,
             primaryBranchAfterRegex: ciMaterial?.source?.value,
             cipipelineId: ciMaterial?.id,
-            isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB
+            isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
+            isGitRequired: ciPipeline?.isGitRequired
         } as NodeAttr
     })
     let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()

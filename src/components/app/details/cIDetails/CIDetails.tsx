@@ -224,6 +224,8 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                                             hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                             fetchIdData={fetchBuildIdData}
                                             isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
+                                            pipeline={pipeline}
+
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -268,6 +270,7 @@ export const Details = ({
     appReleaseTags,
     hideImageTaggingHardDelete,
     fetchIdData,
+    pipeline
 }: BuildDetails) => {
     const isJobCard: boolean = isJobView || isJobCI
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
@@ -386,17 +389,19 @@ export const Details = ({
                                     Logs
                                 </NavLink>
                             </li>
-                            <li className="tab-list__tab">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link"
-                                    activeClassName="active"
-                                    to={`source-code`}
-                                    data-testid="source-code-link"
-                                >
-                                    Source
-                                </NavLink>
-                            </li>
+                            {isJobCI && pipeline.isGitRequired && (
+                                <li className="tab-list__tab">
+                                    <NavLink
+                                        replace
+                                        className="tab-list__tab-link"
+                                        activeClassName="active"
+                                        to={`source-code`}
+                                        data-testid="source-code-link"
+                                    >
+                                        Source
+                                    </NavLink>
+                                </li>
+                            )}
                             <li className="tab-list__tab">
                                 <NavLink
                                     replace

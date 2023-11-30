@@ -1,10 +1,10 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing, Toggle, CiPipelineSourceTypeOption } from '@devtron-labs/devtron-fe-common-lib'
-import { BuildType, WebhookCIProps } from '../ciPipeline/types'
+import { BuildType, CIPipelineBuildType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
@@ -13,12 +13,16 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 export function Build({
     showFormError,
     isAdvanced,
-    ciPipeline,
+    ciPipeline, 
     pageState,
     isSecurityModuleInstalled,
     setDockerConfigOverridden,
     isJobView,
     getPluginData,
+    setCIPipeline,
+    isJobCI,
+    isGitRequired,
+    setIsGitRequired
 }: BuildType) {
     const {
         formData,
@@ -26,6 +30,7 @@ export function Build({
         formDataErrorObj,
         setFormDataErrorObj,
     } = useContext(pipelineContext)
+
     const validationRules = new ValidationRules()
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
         const _formData = { ...formData }
@@ -169,23 +174,25 @@ export function Build({
             onWebhookConditionSelectorChange: onWebhookConditionSelectorChange,
             onWebhookConditionSelectorValueChange: onWebhookConditionSelectorValueChange,
         }
-
         return (
             <>
                 {isAdvanced && renderPipelineName()}
-                <SourceMaterials
-                    showError={showFormError}
-                    validationRules={validationRules}
-                    materials={formData.materials}
-                    selectSourceType={selectSourceType}
-                    handleSourceChange={handleSourceChange}
-                    includeWebhookEvents={true}
-                    ciPipelineSourceTypeOptions={formData.ciPipelineSourceTypeOptions}
-                    webhookData={_webhookData}
-                    canEditPipeline={formData.ciPipelineEditable}
-                    isAdvanced={isAdvanced}
-                    handleOnBlur={handleOnBlur}
-                />
+                {isJobCI && renderGitRepoToggle()}
+                {((isJobCI && isGitRequired) || !isJobCI) && (
+                    <SourceMaterials
+                        showError={showFormError}
+                        validationRules={validationRules}
+                        materials={formData.materials}
+                        selectSourceType={selectSourceType}
+                        handleSourceChange={handleSourceChange}
+                        includeWebhookEvents={true}
+                        ciPipelineSourceTypeOptions={formData.ciPipelineSourceTypeOptions}
+                        webhookData={_webhookData}
+                        canEditPipeline={formData.ciPipelineEditable}
+                        isAdvanced={isAdvanced}
+                        handleOnBlur={handleOnBlur}
+                    />
+                )}
             </>
         )
     }
@@ -220,6 +227,28 @@ export function Build({
                     </span>
                 )}
             </label>
+        )
+    }
+
+    const renderGitRepoToggle = () => {
+        return (
+            <div className="mb-16 dc__border-top-n1 pt-16">
+                <div className="fs-13 fw-6 cn-9 lh-20 flexbox dc__content-space dc__align-items-center">
+                    <div>Pull code from git respository</div>
+                    <div className="w-32 h-20">
+                        <Toggle
+                            selected={isGitRequired}
+                            onSelect={() => {
+                                setIsGitRequired(!isGitRequired)
+                                setCIPipeline({ ...ciPipeline, isGitRequired: !isGitRequired })
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="cn-7 fs-13 lh-18 fw-4">
+                    When enabled, Devtron pulls code from the git repository which can be used by tasks in this pipeline
+                </div>
+            </div>
         )
     }
 

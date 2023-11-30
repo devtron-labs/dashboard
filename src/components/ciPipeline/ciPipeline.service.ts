@@ -476,6 +476,8 @@ function parseCIResponse(
             ciPipeline: ciPipeline,
             form: {
                 name: ciPipeline.name,
+                pipelineType: ciPipeline.pipelineType,
+                isGitRequired: ciPipeline.isGitRequired,
                 triggerType: ciPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
                 materials: materials,
                 args: args.length ? args : [],

@@ -283,6 +283,7 @@ export interface CIPipelineDataType {
     environmentId?: any
     pipelineType?: string
     customTag?: CustomTagType
+    isGitRequired?: boolean
 }
 export interface CIPipelineState {
     code: number
@@ -367,6 +368,7 @@ export interface SourceMaterialsProps {
     isBranchRegex?: (material) => boolean
     isAdvanced?: boolean
     handleOnBlur?: (event) => void
+    isGitRequired?: boolean
 }
 
 export interface WebhookCIProps {
@@ -389,6 +391,10 @@ export interface BuildType {
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
     getPluginData: (_formData?: PipelineFormType) => void
+    setCIPipeline: React.Dispatch<React.SetStateAction<CIPipelineDataType>>
+    isJobCI?: boolean
+    isGitRequired?: boolean
+    setIsGitRequired?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface PreBuildType {

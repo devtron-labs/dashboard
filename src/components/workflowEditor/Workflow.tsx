@@ -145,17 +145,28 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             </g>
         )
     }
+    getPositionedNodes(nodes) {
+        let offsetx = 0
+        return nodes.reduce((newNodes, node) => {
+            node.x -= offsetx
+            newNodes.push(node)
+            if (node.type === WorkflowNodeType.GIT && node.isJobCI && !node.isGitRequired) {
+                newNodes.pop()
+                offsetx += node.width + 60
+            }
+            return newNodes
+        }, [])
+    }
 
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI)
         const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
         const _nodesData = this.getNodesData(ci?.id || webhook?.id || '')
-        const _nodes = _nodesData.nodes
-
+        const _nodes =this.getPositionedNodes( JSON.parse(JSON.stringify(_nodesData.nodes)))
         if (ci) {
             return _nodes.map((node: NodeAttr) => {
                 if (node.type == WorkflowNodeType.GIT) {
-                    return this.renderSourceNode(node, ci)
+                    return ((node.isJobCI && node.isGitRequired) || !node.isJobCI) && this.renderSourceNode(node, ci)
                 } else if (node.type == WorkflowNodeType.CI) {
                     return this.renderCINodes(node)
                 } else if (_nodesData.cdNamesList.length > 0) {
@@ -166,7 +177,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         </>
                     )
                 }
-
                 return this.renderCDNodes(node, ci.id, false)
             })
         } else if (webhook) {
@@ -374,13 +384,21 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     getEdges() {
-        return this.props.nodes.reduce((edgeList, node) => {
+        const nodes = JSON.parse(JSON.stringify(this.props.nodes))
+        let offsetx = 0
+        return nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                const endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const endNode = nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                node.x -= offsetx
+                endNode.x -= offsetx
                 edgeList.push({
                     startNode: node,
                     endNode: endNode,
                 })
+                if (node.type === WorkflowNodeType.GIT && node.isJobCI && !node.isGitRequired) {
+                    edgeList.pop()
+                    offsetx += node.width + 60
+                }
             })
             return edgeList
         }, [])
@@ -393,7 +411,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     renderEdgeList() {
         const edges = this.getEdges()
-        return this.getEdges().map((edgeNode) => {
+        return edges.map((edgeNode) => {
             if (ApprovalNodeEdge) {
                 return (
                     <ApprovalNodeEdge
@@ -405,7 +423,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     />
                 )
             }
-
             return (
                 <Edge
                     key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
