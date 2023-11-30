@@ -131,18 +131,16 @@ function NodeDetailComponent({
                     )
                 }
 
-                if (Array.isArray(result.ephemeralContainers)) {
-                    let ephemeralContainers = []
-                    result.ephemeralContainers?.forEach((_container) => {
-                        ephemeralContainers.push({
-                            name: _container.name,
-                            isInitContainer: false,
-                            isEphemeralContainer: true,
-                            isExternal: _container.isExternal,
-                        })
-                    })
-                    _resourceContainers.push(...ephemeralContainers)
-                }
+                _resourceContainers.push(
+                    ...result.ephemeralContainers?.map((_container) => ({
+                        name: _container.name,
+                        isInitContainer: false,
+                        isEphemeralContainer: true,
+                        isExternal: _container.isExternal,
+                    })),
+                )
+
+
             }
             setResourceContainers(_resourceContainers)
             if (isResourceBrowserView) {
