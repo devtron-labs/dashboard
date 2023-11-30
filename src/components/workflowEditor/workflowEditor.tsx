@@ -345,21 +345,23 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
-                <Route
-                    path={`${this.props.match.path}/empty-workflow`}
-                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                        return (
-                            <EmptyWorkflow
-                                match={match}
-                                history={history}
-                                location={location}
-                                name={this.state.appName}
-                                onClose={this.closeAddWorkflow}
-                                getWorkflows={this.getWorkflows}
-                            />
-                        )
-                    }}
-                />
+                {this.props.isJobView && (
+                    <Route
+                        path={`${this.props.match.path}/empty-workflow`}
+                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                            return (
+                                <EmptyWorkflow
+                                    match={match}
+                                    history={history}
+                                    location={location}
+                                    name={this.state.appName}
+                                    onClose={this.closeAddWorkflow}
+                                    getWorkflows={this.getWorkflows}
+                                />
+                            )
+                        }}
+                    />
+                )}
                 {!this.props.isJobView && (
                     <Route
                         path={[URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
