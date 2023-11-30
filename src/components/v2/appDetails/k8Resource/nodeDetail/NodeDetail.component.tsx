@@ -131,17 +131,19 @@ function NodeDetailComponent({
                     )
                 }
 
+            }
+
+            if (result?.ephemealContainers) {
                 _resourceContainers.push(
-                    ...result.ephemeralContainers?.map((_container) => ({
-                        name: _container?.name,
+                    ...result.ephemeralContainers.map((_container) => ({
+                        name: _container.name,
                         isInitContainer: false,
                         isEphemeralContainer: true,
-                        isExternal: _container?.isExternal,
+                        isExternal: _container.isExternal,
                     })),
                 )
-
-
             }
+
             setResourceContainers(_resourceContainers)
             if (isResourceBrowserView) {
                 setContainers(_resourceContainers ?? [])
