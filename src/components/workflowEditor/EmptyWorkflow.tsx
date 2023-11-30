@@ -52,7 +52,6 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
 
     const isNameValid = (): { errorMsg: string; isValid: boolean } => {
         const name = state.name
-        console.log('name', name)
         if (!name) {
             return {
                 errorMsg: NO_WORKFLOW_NAME,
@@ -77,10 +76,6 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
                 isValid: false,
             }
         }
-        console.log({
-            errorMsg: '',
-            isValid: true,
-        })
 
         return {
             errorMsg: '',
