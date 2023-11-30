@@ -352,7 +352,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDraftState = (): JSX.Element => {
-        if (name && isProtected && draftData?.draftId) {
+        if (title !== name ) {
             if (data.draftState === 1) {
                 return <i className="mr-10 cr-5">In draft</i>
             } else if (data.draftState === 4) {
