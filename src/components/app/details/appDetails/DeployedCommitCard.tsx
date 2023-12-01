@@ -11,6 +11,7 @@ import LoadingCard from './LoadingCard'
 const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifactId }: DeployedCommitCardType) => {
     const [commitId, setCommitId] = useState<string>(null)
     const [commitMessage, setCommitMessage] = useState<string>(null)
+    const [noValidCommit, setNoValidCommit] = useState<boolean>(false)
 
     useEffect(() => {
         if (envId && ciArtifactId) {
@@ -22,10 +23,14 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
             getCITriggerInfoModal(params, null)
                 .then((response) => {
                     const materials = response.result?.materials
-                    const lastCommit = materials[0]?.history[0]
-                    const shortenCommitId = lastCommit?.commit?.slice(0, 8)
-                    setCommitId(shortenCommitId)
-                    setCommitMessage(lastCommit?.message)
+                    if (materials && materials?.length > 0) {
+                        const lastCommit = materials[0]?.history[0]
+                        const shortenCommitId = lastCommit?.commit?.slice(0, 8)
+                        setCommitId(shortenCommitId)
+                        setCommitMessage(lastCommit?.message)
+                    } else {
+                        setNoValidCommit(true)
+                    }
                 })
                 .catch((error) => {
                     showError(error)
@@ -33,6 +38,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
         }
     }, [envId, ciArtifactId])
 
+    if(noValidCommit) return null
     if (cardLoading || !commitId) return <LoadingCard />
 
     return (
@@ -59,7 +65,9 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                         <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12 dc__ff-monospace">{commitId}</div>
                     </div>
                 </div>
-                <GitHub className="github-icon" />
+                <div className="dc__git-logo" />
+                {/* @TODO: This should be dynamic, dependent on the source */}
+                {/* <GitHub className="github-icon" /> */}
             </div>
             <div className="app-details-info-card__bottom-container dc__content-space">
                 <span className="app-details-info-card__bottom-container__message fs-12 fw-4">{commitMessage}</span>
