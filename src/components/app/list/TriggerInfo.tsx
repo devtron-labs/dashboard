@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { showError, Progressing, Drawer, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, ReleaseTag, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { getCITriggerInfoModal } from '../service'
 import { ViewType } from '../../../config'
 import close from '../../../assets/icons/ic-close.svg'
@@ -132,6 +132,14 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                         <Progressing pageLoader />
                     </div>
                 </div>
+            )
+        } else if (!this.state.materials?.length) {
+            body = (
+                <GenericEmptyState
+                    title="Data not available"
+                    subTitle="The data you are looking for is not available"
+                    classname="h-100 bcn-0"
+                />
             )
         } else {
             const selectedMaterial = this.state.materials.find((mat) => mat.isSelected)
