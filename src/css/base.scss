@@ -2749,6 +2749,10 @@ textarea,
     width: 80px !important;
 }
 
+.w-96 {
+    width: 96px;
+}
+
 .w-100px {
     width: 100px;
 }
@@ -2978,8 +2982,16 @@ textarea,
     height: 8px;
 }
 
+.h-10 {
+    height: 10px;
+}
+
 .h-12 {
     height: 12px;
+}
+
+.h-14 {
+    height: 14px;
 }
 
 .h-16 {
@@ -3116,6 +3128,10 @@ textarea,
 
 .h-380 {
     height: 380px !important;
+}
+
+.h-500 {
+    height: 500px !important;
 }
 
 // Minimum Height
@@ -3528,8 +3544,12 @@ textarea,
     transform: rotate(180deg);
 }
 
+.dc__flip-45 {
+    transform: rotate(45deg);
+}
+
 .dc__flip-90 {
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
 }
 
 .dc__flip-270 {
