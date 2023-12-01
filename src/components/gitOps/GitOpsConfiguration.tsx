@@ -122,6 +122,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             saveLoading: false,
             selectedRepoType: repoType.DEFAULT,
             validateLoading: false,
+            allowCustomGitRepo: false,
             providerTab: GitProvider.GITHUB,
             lastActiveGitOp: undefined,
             form: {
@@ -174,7 +175,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     },
                     isError: DefaultShortGitOps,
                     isFormEdited: false,
+                    allowCustomGitRepo: form.allowCustomRepository
                 })
+                if(this.state.allowCustomGitRepo) {
+                    this.setState({selectedRepoType: repoType.CONFIGURE})
+                }
             })
             .catch((error) => {
                 showError(error,true,true)

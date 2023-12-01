@@ -9,21 +9,18 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ValidateForm } from '../common/ValidateForm/ValidateForm';
 
 function UserGitRepo(props) {
-    const [selectedRepoType, setSelectedRepoTypeLocal] = useState(props.selectedRepoType || repoType.DEFAULT);
-    const [repoText, setRepoText] = useState(props.repoURL)
+    // const [repoURL, setRepoURL] = useState(props.repoURL)
 
     const repoTypeChange = () => {  
-        const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT;
-        setSelectedRepoTypeLocal(newRepoType);
+        const newRepoType = props.selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT;
         props.setSelectedRepoType(newRepoType);
     }
 
     const onChange = (event) => { 
-        setRepoText(event.target.value)
         props.setRepoURL(event.target.value)
     }
 
-    const inputUrlBox = () => {
+    const InputUrlBox = () => {
         return (
             <div className="mr-10 ml-26">
                 <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Git Repo URL</div>
@@ -31,7 +28,7 @@ function UserGitRepo(props) {
                     type="text"
                     autoComplete="off"
                     name="name"
-                    value={repoText}
+                    value={props.repoURL}
                     placeholder="Enter repository URL"
                     className="form__input"
                     onChange={(event) => onChange(event)}
@@ -52,25 +49,21 @@ function UserGitRepo(props) {
     }
 
     const onClickValidate = () => {
-
+        props.validateRepoURL()
     }
 
     return (
         <>
             <div>
                 <div className="form__row flex left">
-                    {props.isDeploymentAllowed ? (
-                        <div className="fw-6 cn-9 fs-14 mb-16">GitOps Configuration</div>
-                    ) : (
-                        <div className="fw-4 mb-8">
+                <div className="fw-4 mb-8">
                             Application Deployemnt states are saved as manifest in a Git repository. ArgoCD uses these
                             manifests to sync with your live Kubernetes cluster.
                         </div>
-                    )}
                     <RadioGroup
                         className="radio-group-no-border"
                         name="trigger-type"
-                        value={selectedRepoType}
+                        value={props.selectedRepoType}
                         onChange={repoTypeChange}
                     >
                         <div className="">
@@ -82,14 +75,15 @@ function UserGitRepo(props) {
                                 Commit manifest to a desired repository.
                             </RadioGroupItem>
                         </div>
-                        {/* <ValidateForm
+                        {props.displayValidation && <ValidateForm
                             id={1}
                             validationError={props.errorInFetching}
-                            configName={''}
+                            validationStatus={props.errorInFetching ? 'FAILURE' : 'SUCCESS'}
+                            configName='gitOps'
                             onClickValidate={onClickValidate}
-                        /> */}
+                        />}
                     </RadioGroup>
-                    {selectedRepoType === repoType.CONFIGURE && inputUrlBox()}
+                    {props.selectedRepoType === repoType.CONFIGURE && InputUrlBox()}
                 </div>
                 {renderInfoColorBar()}
                 <hr />

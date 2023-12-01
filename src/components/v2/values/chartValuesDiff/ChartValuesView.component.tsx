@@ -57,7 +57,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import {  validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { toast } from 'react-toastify'
 
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -232,16 +232,6 @@ const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: strin
       </Tippy>
   )
 }
-const renderInfoColorBar = () => {
-    return (
-        <InfoColourBar
-            message="GitOps repository is required to deploy using GitOps. Configure GitOps Repository"
-            classname="warn"
-            Icon={Warn}
-            iconClass="warning-icon"
-        />
-    )
-}
 
 export const DeploymentAppRadioGroup = ({
     isDisabled,
@@ -298,9 +288,6 @@ export const DeploymentAppRadioGroup = ({
                     </RadioGroupItem>
                 </ConditionalWrap>
             </RadioGroup>
-            {deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsNotConfigured && (
-                <div>{renderInfoColorBar()}</div>
-            )}
         </>
     )
 }
@@ -311,6 +298,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     const [gitOpsState, setGitOpsState] = useState(false)
     const [repoURL, setRepoURL] = useState("")
     const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map());
+    const [displayValidation, setDisplayValidation] = useState(false)
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -344,16 +332,48 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     }
 
     const handleSaveButton = () => {
+        if(selectedRepoType === repoType.DEFAULT) {
+            setIsDeploymentAllowed(false)
+            setRepoURL('')
+        }
         setGitOpsState(true)
-        setIsDeploymentAllowed(false)
         const payload = getPayload()
         validateHelmAppGitOpsConfiguration(payload)
-            .then((response) => {               
-                setErrorInFetching(response.result.stageErrorMap)
+            .then((response) => {
+                setTimeout(() => {
+                    if (response.result.stageErrorMap) {
+                        if (selectedRepoType !== repoType.DEFAULT) {
+                            setDisplayValidation(true)
+                        } else {
+                            setDisplayValidation(false)
+                        }
+                        setErrorInFetching(response.result.stageErrorMap)
+                    } else {
+                        setIsDeploymentAllowed(false)
+                    }
+                }, 10)
             })
-            .catch((error) => {
-                // setErrorState(true)
+            .catch((err) => {
+                toast.error(err)
             })
+    }
+
+    const validateRepoURL = () => {
+        const payload = getPayload()
+        validateHelmAppGitOpsConfiguration(payload).then((response) => {
+            setTimeout(() => {
+                if (response.result.stageErrorMap) {
+                    if (selectedRepoType !== repoType.DEFAULT) {
+                        setDisplayValidation(true)
+                    } else {
+                        setDisplayValidation(false)
+                    }
+                    setErrorInFetching(response.result.stageErrorMap)
+                } else {
+                    setIsDeploymentAllowed(false)
+                }
+            }, 10)
+        })
     }
 
     const toggleDrawer = () => {
@@ -364,7 +384,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         <>
             {isDeploymentAllowed && (
                 <div>
-                    <Drawer position="right" width="600px">
+                    <Drawer onEscape={handleCloseButton} position="right" width="600px">
                         <div className="cluster-form dc__position-rel h-100 bcn-0">
                             <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
@@ -387,6 +407,9 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                                     selectedRepoType={selectedRepoType}
                                     errorInFetching={errorInFetching}
                                     isDeploymentAllowed={isDeploymentAllowed}
+                                    validateRepoURL={validateRepoURL}
+                                    displayValidation={displayValidation}
+                                    setDisplayValidation={setDisplayValidation}
                                 />
                             </div>
                         </div>
@@ -418,12 +441,12 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-16 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${
+                        <a className="dc__ellipsis-right flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${
                             selectedRepoType === repoType.CONFIGURE
                                 ? repoURL.length > 0
                                     ? repoURL
-                                    : 'Auto-create repository'
-                                : 'Set GitOps repository'
+                                    : 'Set GitOps repository'
+                                : 'Auto-create repository'
                         }`}</a>
                     </div>
                 </div>

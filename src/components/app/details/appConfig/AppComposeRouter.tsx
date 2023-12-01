@@ -1,7 +1,7 @@
-import React, { lazy, Suspense } from 'react'
+import React, { lazy, Suspense, useState } from 'react'
 import { useRouteMatch, useHistory, Route, Switch } from 'react-router-dom'
 
-import { URLS } from '../../../../config'
+import { repoType, URLS } from '../../../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../../../common'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
@@ -63,6 +63,9 @@ export default function AppComposeRouter({
     filteredEnvIds
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
+    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
+    const [repoURL, setRepoURL] = useState("")
+
     const renderJobViewRoutes = (): JSX.Element => {
         return (
             <Switch>
@@ -131,6 +134,19 @@ export default function AppComposeRouter({
         )
     }
 
+    const UserGitRepoComponent = () => {
+        return (
+            <div className="fw-6 cn-9 fs-14 mb-16">
+                GitOps Configuration
+                <UserGitRepo
+                    setSelectedRepoType={setSelectedRepoType}
+                    selectedRepoType={selectedRepoType}
+                    repoURL={repoURL}
+                />
+            </div>
+        )
+    }
+
     const renderAppViewRoutes = (): JSX.Element => {
         return (
             <Switch>
@@ -180,7 +196,7 @@ export default function AppComposeRouter({
                 )}
                 {
                     <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
-                        <div>this is new component</div>
+                            <UserGitRepoComponent/>
                     </Route>
                 }
                 {isUnlocked.workflowEditor && ConfigProtectionView && (
