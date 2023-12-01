@@ -133,7 +133,7 @@ function NodeDetailComponent({
 
             }
 
-            if (result?.ephemealContainers) {
+            if (result?.ephemeralContainers) {
                 _resourceContainers.push(
                     ...result.ephemeralContainers.map((_container) => ({
                         name: _container.name,
