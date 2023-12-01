@@ -18,8 +18,12 @@
 }
 /* End: Container height fixes */
 
-.helm-details{
-  display: flex;
-  flex-direction: column;
-  flex: 1
+.helm-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.app-info-bg-gradient {
+    background: linear-gradient(to top, #ffffff 0, #ffffff 50px, var(--window-bg) 50px);
 }

@@ -18,7 +18,7 @@ export default function AppGroupAppFilter() {
         groupFilterOptions,
         selectedGroupFilter,
         setSelectedGroupFilter,
-        filterParentType
+        filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const [appFilterAppInput, setAppFilterAppInput] = useState('')
     const [appFilterGroupInput, setAppFilterGroupInput] = useState('')
