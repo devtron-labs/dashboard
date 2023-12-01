@@ -218,12 +218,14 @@ export function SourceInfo({
                         isVirtualEnvironment={isVirtualEnvironment}
                         refetchDeploymentStatus={refetchDeploymentStatus}
                     />
-                    <DeployedCommitCard
-                        cardLoading={cardLoading}
-                        showCommitInfoDrawer={onClickShowCommitInfo}
-                        envId={envId}
-                        ciArtifactId={ciArtifactId}
-                    />
+                    {appDetails?.dataSource !== 'EXTERNAL' && (
+                        <DeployedCommitCard
+                            cardLoading={cardLoading}
+                            showCommitInfoDrawer={onClickShowCommitInfo}
+                            envId={envId}
+                            ciArtifactId={ciArtifactId}
+                        />
+                    )}
                     <SecurityVulnerabilityCard
                         cardLoading={cardLoading}
                         severityCount={severityCount}
