@@ -118,9 +118,6 @@ function EnvironmentStatusComponent({
     }
 
     const renderLastUpdatedBlock = () => {
-        // Don't show deployment status or last updated for EA mode
-        if (appDetails?.appType === AppType.EXTERNAL_HELM_CHART) return null
-
         if (appDetails?.appType === AppType.DEVTRON_HELM_CHART && appDetails?.lastDeployedTime) {
             if (appDetails?.deploymentAppType === DeploymentAppTypes.HELM) {
                 return (
