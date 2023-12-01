@@ -23,7 +23,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
             getCITriggerInfoModal(params, null)
                 .then((response) => {
                     const materials = response.result?.materials
-                    if (materials && materials?.length > 0) {
+                    if (materials && materials.length > 0) {
                         const lastCommit = materials[0]?.history[0]
                         const shortenCommitId = lastCommit?.commit?.slice(0, 8)
                         setCommitId(shortenCommitId)
