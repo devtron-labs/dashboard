@@ -1,0 +1,8 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon/ic-grid-view">
+<path id="Rectangle 10" d="M4 8C4 5.79086 5.79086 4 8 4H16V16H4V8Z" fill="#ABCFF3"/>
+<path id="Rectangle 12" d="M4 16H16V28H8C5.79086 28 4 26.2091 4 24V16Z" fill="#72ACE6"/>
+<path id="Rectangle 13" d="M16 16H28V24C28 26.2091 26.2091 28 24 28H16V16Z" fill="#3989D9"/>
+<path id="Rectangle 11" d="M16 4H24C26.2091 4 28 5.79086 28 8V16H16V4Z" fill="#72ACE6"/>
+</g>
+</svg>
