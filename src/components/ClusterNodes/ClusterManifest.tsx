@@ -19,7 +19,8 @@ export default function ClusterManifest({
     setManifestData,
     errorMessage,
     setManifestAvailable,
-    selectTerminalTab
+    selectTerminalTab,
+    hideManagedFields,
 }: ClusterManifestType) {
     const [defaultManifest, setDefaultManifest] = useState('')
     const [manifestValue, setManifest] = useState('')

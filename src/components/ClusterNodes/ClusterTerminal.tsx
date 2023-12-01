@@ -99,6 +99,7 @@ export default function ClusterTerminal({
     const [manifestErrors, setManifestErrors] = useState<string[]>()
     const [debugMode, setDebugMode] = useState<boolean>(false)
     const [isManifestAvailable, setManifestAvailable] = useState<boolean>()
+    const [hideManagedFields, setHideManagedFields] = useState<boolean>(true)
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
@@ -627,6 +628,10 @@ export default function ClusterTerminal({
         setTerminalCleared(!terminalCleared)
     }
 
+    const handleToggleManagedFields = () => {
+        setHideManagedFields(!hideManagedFields)
+    }
+
     const renderRegisterLinkMatcher = (terminal) => {
         const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
         terminal.registerLinkMatcher(linkMatcherRegex, (_event, text) => {
@@ -704,6 +709,7 @@ export default function ClusterTerminal({
                             errorMessage={manifestErrors}
                             setManifestAvailable={setManifestAvailable}
                             selectTerminalTab={selectTerminalTab}
+                            hideManagedFields={hideManagedFields}
                         />
                     </div>
                 )}
@@ -821,9 +827,9 @@ export default function ClusterTerminal({
             <div className="pt-6 pb-6 pl-8 pr-8 top">
                 <Checkbox
                     rootClassName="mb-0-imp h-20"
-                    isChecked
+                    isChecked={hideManagedFields}
                     value={CHECKBOX_VALUE.CHECKED}
-                    onChange={()=>{}}
+                    onChange={handleToggleManagedFields}
                 >
                     <span className="mr-5 cn-9 fs-12" data-testid="hide-pods-managed-fields">
                         Hide Managed Fields
