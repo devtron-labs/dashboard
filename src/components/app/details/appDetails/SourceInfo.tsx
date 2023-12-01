@@ -1,5 +1,4 @@
-//@ts-nocheck
-
+// @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { URLS } from '../../../../config'

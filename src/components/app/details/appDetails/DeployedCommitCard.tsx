@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
+// import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { DeployedCommitCardType } from './appDetails.type'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
@@ -34,11 +34,12 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                 })
                 .catch((error) => {
                     showError(error)
+                    setNoValidCommit(true)
                 })
         }
     }, [envId, ciArtifactId])
 
-    if(noValidCommit) return null
+    if (noValidCommit) return null
     if (cardLoading || !commitId) return <LoadingCard />
 
     return (
