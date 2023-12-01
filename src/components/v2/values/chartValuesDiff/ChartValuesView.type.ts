@@ -94,6 +94,7 @@ export interface DeploymentAppSelectorType {
     gitRepoURL?: string
     envId: string
     teamId?: string
+    dispatch: React.Dispatch<ChartValuesViewAction>
 }
 
 export interface DeploymentAppRadioGroupType {
@@ -109,6 +110,8 @@ export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
     gitRepoURL?: Promise<void>
     envId: string
     teamId?: string
+    commonState: ChartValuesViewState
+    dispatch: React.Dispatch<ChartValuesViewAction>
 }
 
 export interface ChartProjectSelectorType {
@@ -232,7 +235,6 @@ export interface ChartInstalledConfig {
     referenceValueKind: string
     valuesSchemaJson?: string
     deploymentAppType?: string
-    gitRepoURL?: string
 }
 
 export interface ChartValuesViewState {
@@ -291,6 +293,7 @@ export interface ChartValuesViewState {
     formValidationError: Record<string, boolean>
     showNoGitOpsWarning: boolean
     deploymentAppType: string
+    gitRepoURL: string
 }
 
 export enum ChartValuesViewActionTypes {
@@ -343,6 +346,7 @@ export enum ChartValuesViewActionTypes {
     multipleOptions = 'multipleOptions',
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
+    gitRepoURL = 'gitRepoURL'
 }
 
 

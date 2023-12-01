@@ -7,10 +7,10 @@ import React, { useState } from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ValidateForm } from '../common/ValidateForm/ValidateForm';
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 
 function UserGitRepo(props) {
-    // const [repoURL, setRepoURL] = useState(props.repoURL)
-
     const repoTypeChange = () => {  
         const newRepoType = props.selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT;
         props.setSelectedRepoType(newRepoType);
@@ -18,6 +18,17 @@ function UserGitRepo(props) {
 
     const onChange = (event) => { 
         props.setRepoURL(event.target.value)
+    }
+
+    const renderValidationErrorLabel = (message?: string): JSX.Element => {
+        return (
+            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
+                <div className="error-label-icon">
+                    <Error className="icon-dim-16" />
+                </div>
+                <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
+            </div>
+        )
     }
 
     const InputUrlBox = () => {
@@ -33,6 +44,7 @@ function UserGitRepo(props) {
                     className="form__input"
                     onChange={(event) => onChange(event)}
                 />
+                {/* {props.warningError && renderValidationErrorLabel()} */}
             </div>
         )
     }

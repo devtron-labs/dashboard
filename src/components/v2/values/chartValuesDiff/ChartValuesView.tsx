@@ -165,13 +165,13 @@ function ChartValuesView({
             installedConfigFromParent,
             chartVersionsDataFromParent,
         ),
-    )
+    )   
 
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
-    const [gitRepoURL, setGitRepoURL] = useState('')
+
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
@@ -507,7 +507,6 @@ function ChartValuesView({
                 deprecated: result?.deprecated,
                 gitRepoURL: result.gitRepoURL,
             }
-
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
             getAndUpdateSchemaValue(
@@ -607,7 +606,7 @@ function ChartValuesView({
                 // ends
 
                 // helm app OR external helm app delete initiated
-                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedAppInfo)) {
+                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedApInfo)) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                     init && init()
                     history.push( `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
@@ -884,8 +883,8 @@ function ChartValuesView({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
                     deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
-                    gitRepoURL: ''
-                }
+                    gitRepoURL: commonState.gitRepoURL.gitRepoURL
+                }             
                 res = await installChart(payload)
             } else if (isCreateValueView) {
                 const payload = {
@@ -1557,9 +1556,9 @@ function ChartValuesView({
                                     isDeployChartView={isDeployChartView}
                                     allowedDeploymentTypes={allowedDeploymentTypes}
                                     allowedCustomBool={allowedCustomBool}
-                                    gitRepoURL={installedConfigFromParent.gitRepoURL}
-                                    envId={envId}
-                                    teamId='1'
+                                    envId={commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0}
+                                    teamId={commonState.selectedProject.value}
+                                    dispatch={dispatch}
                                 />
                             )}
                         {/**

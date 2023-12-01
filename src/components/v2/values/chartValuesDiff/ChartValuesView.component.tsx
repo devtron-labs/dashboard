@@ -23,7 +23,7 @@ import {
     ConditionalWrap,
     DeploymentAppTypes,
     Drawer,
-    InfoColourBar,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -57,12 +57,11 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import {  validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
-import { toast } from 'react-toastify'
-
+import { type } from 'os'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
-const isGitOpsNotConfigured=true
+
 export const ChartEnvironmentSelector = ({
     isExternal,
     isDeployChartView,
@@ -165,7 +164,8 @@ export const DeploymentAppSelector = ({
     allowedCustomBool,
     gitRepoURL,
     envId,
-    teamId
+    teamId,
+    dispatch
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
@@ -216,6 +216,8 @@ export const DeploymentAppSelector = ({
                         allowedDeploymentTypes={allowedDeploymentTypes}
                         envId={envId}
                         teamId={teamId}
+                        commonState={commonState}
+                        dispatch={dispatch}
                     />
                 )}
             </div>
@@ -292,13 +294,14 @@ export const DeploymentAppRadioGroup = ({
     )
 }
 
-const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, envId, teamId}: gitOpsDrawerType): JSX.Element => {
+const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, envId, teamId, commonState, dispatch}: gitOpsDrawerType): JSX.Element => {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
     const [repoURL, setRepoURL] = useState("")
     const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map());
     const [displayValidation, setDisplayValidation] = useState(false)
+    const [warningError, setWaringEmpty] = useState(false)
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -320,12 +323,16 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
 
     const handleRepoTextChange = (newRepoText: string) => {
         setRepoURL(newRepoText);
+        dispatch({
+            type: ChartValuesViewActionTypes.gitRepoURL,
+            payload: { gitRepoURL: newRepoText },
+        })
       };
 
     const getPayload = () => {
         const payload = {
             gitRepoURL: repoURL,
-            environmentId: 1,
+            environmentId: +envId,
             teamId: +teamId,
         }
         return payload
@@ -335,6 +342,9 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         if(selectedRepoType === repoType.DEFAULT) {
             setIsDeploymentAllowed(false)
             setRepoURL('')
+        }
+        if(repoURL.length === 0) {
+            setWaringEmpty(true)
         }
         setGitOpsState(true)
         const payload = getPayload()
@@ -354,7 +364,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                 }, 10)
             })
             .catch((err) => {
-                toast.error(err)
+                // showError(err)
             })
     }
 
@@ -362,7 +372,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         const payload = getPayload()
         validateHelmAppGitOpsConfiguration(payload).then((response) => {
             setTimeout(() => {
-                if (response.result.stageErrorMap) {
+                if (response.result.stageErrorMap.length>0) {
                     if (selectedRepoType !== repoType.DEFAULT) {
                         setDisplayValidation(true)
                     } else {
@@ -410,6 +420,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                                     validateRepoURL={validateRepoURL}
                                     displayValidation={displayValidation}
                                     setDisplayValidation={setDisplayValidation}
+                                    warningError={warningError}
                                 />
                             </div>
                         </div>
