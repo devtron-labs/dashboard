@@ -94,9 +94,12 @@ export interface AppComposeRouterProps {
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
     isBaseConfigProtected?: boolean
-    reloadEnvironments:()=> void
+    reloadEnvironments: () => void
     configProtectionData: any[]
     filteredEnvIds?: string
+    handleSaveButton: () => void
+    repositoryURL?: string
+    setRepositoryURL?: () => void
 }
 
 export interface EnvironmentOverridesProps {

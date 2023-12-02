@@ -58,6 +58,11 @@ export const getTeamList = (): Promise<TeamList> => {
     })
 }
 
+export function gitOpsConfigDevtron(appID: number, request): Promise<ResponseType>{
+    const URL = `${Routes.GITOPS_DEVTRON_APP}/${appID}`
+    return post(URL, request)
+}
+
 export const getUserTeams = (): Promise<any> => {
     const URL = `${Routes.TEAM_USER}`
     return get(URL)
