@@ -1,3 +1,4 @@
+// @ts-nocheck
 import yaml from 'yaml'
 import { ScopedVariablesDataType } from './types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'

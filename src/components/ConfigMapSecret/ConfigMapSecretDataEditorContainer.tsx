@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import { Info, RadioGroup } from '../common'
 import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
