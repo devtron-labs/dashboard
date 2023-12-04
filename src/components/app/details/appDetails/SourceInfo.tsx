@@ -1,5 +1,4 @@
-//@ts-nocheck
-
+// @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { URLS } from '../../../../config'
@@ -66,8 +65,8 @@ export function SourceInfo({
     }
 
     const getScannedStatus = async () => {
-        const {appId, ciArtifactId} = appDetails
-        if(!appId || !ciArtifactId) return
+        const { appId, ciArtifactId } = appDetails
+        if (!appId) return
 
         try {
             const {
@@ -246,12 +245,14 @@ export function SourceInfo({
                         isVirtualEnvironment={isVirtualEnvironment}
                         refetchDeploymentStatus={refetchDeploymentStatus}
                     />
-                    <DeployedCommitCard
-                        cardLoading={cardLoading}
-                        showCommitInfoDrawer={onClickShowCommitInfo}
-                        envId={envId}
-                        ciArtifactId={ciArtifactId}
-                    />
+                    {appDetails?.dataSource !== 'EXTERNAL' && (
+                        <DeployedCommitCard
+                            cardLoading={cardLoading}
+                            showCommitInfoDrawer={onClickShowCommitInfo}
+                            envId={envId}
+                            ciArtifactId={ciArtifactId}
+                        />
+                    )}
                     {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
                         <SecurityVulnerabilityCard
                             cardLoading={cardLoading}
