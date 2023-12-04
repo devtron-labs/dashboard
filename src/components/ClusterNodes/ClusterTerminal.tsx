@@ -180,6 +180,7 @@ export default function ClusterTerminal({
                             }
                             const namespace = result.namespace
                             setNamespace(namespace ? { label: namespace, value: namespace } : defaultNameSpace)
+                            setHideManagedFields(true)
                             setManifestButtonState(EditModeType.NON_EDIT)
                             terminalAccessIdRef.current = result.terminalAccessId
                             socketConnecting()
@@ -338,6 +339,7 @@ export default function ClusterTerminal({
     function getNewSession() {
         if (!terminalAccessIdRef.current) return
         setSocketConnection(SocketConnectionType.CONNECTING)
+        // It might be that we dont have resourceData.
         getClusterData(
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
                 selectedTerminalType.value
