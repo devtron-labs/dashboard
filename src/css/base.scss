@@ -2986,6 +2986,10 @@ textarea,
     height: 8px;
 }
 
+.h-10 {
+    height: 10px;
+}
+
 .h-12 {
     height: 12px;
 }
@@ -3128,6 +3132,10 @@ textarea,
 
 .h-380 {
     height: 380px !important;
+}
+
+.h-500 {
+    height: 500px !important;
 }
 
 // Minimum Height
@@ -3546,6 +3554,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+}
+
+.dc__flip-45 {
+    transform: rotate(45deg);
 }
 
 .dc__flip-90 {
