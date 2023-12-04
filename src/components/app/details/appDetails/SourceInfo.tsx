@@ -66,8 +66,6 @@ export function SourceInfo({
 
     const getScannedStatus = async () => {
         const { appId, ciArtifactId } = appDetails
-        if (!appId) return
-
         try {
             const {
                 result: { scanEnabled, scanned },
@@ -85,10 +83,10 @@ export function SourceInfo({
     }
 
     useEffect(() => {
-        if (appDetails?.ciArtifactId) {
+        if (appDetails?.ciArtifactId && appDetails?.appId) {
             getScannedStatus()
         }
-    }, [appDetails?.ciArtifactId])
+    }, [appDetails?.ciArtifactId, appDetails?.appId])
 
     const onClickShowCommitInfo = (): void => {
         showCommitInfo(true)
