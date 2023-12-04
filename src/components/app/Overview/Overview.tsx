@@ -443,7 +443,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
                         <RadioGroup.Radio value={OVERVIEW_TABS.JOB_PIPELINES}>Job Pipelines</RadioGroup.Radio>
                     </RadioGroup>
-                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
+                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>
                 </div>
             )
         } else if (isHelmChart) {
@@ -468,7 +468,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
                         <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
                     </RadioGroup>
-                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
+                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>
                 </div>
             )
         }
