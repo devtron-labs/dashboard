@@ -11,6 +11,7 @@ import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { defaultManifestErrorText, manifestCommentsRegex } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { getTrimmedManifestData } from '../v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
 
 export default function ClusterManifest({
     terminalAccessId,
@@ -22,6 +23,9 @@ export default function ClusterManifest({
     selectTerminalTab,
     hideManagedFields,
 }: ClusterManifestType) {
+    // Manifest data with managed fields
+    const [originalManifest, setOriginalManifest] = useState('')
+    // Manifest data that we would be comparing with the edited manifest
     const [defaultManifest, setDefaultManifest] = useState('')
     const [manifestValue, setManifest] = useState('')
     const [loading, setLoading] = useState<boolean>(true)
@@ -33,8 +37,10 @@ export default function ClusterManifest({
             getClusterManifest(terminalAccessId)
                 .then((response) => {
                     const _manifest = YAML.stringify(response.result?.manifest)
-                    setDefaultManifest(_manifest)
-                    setManifest(_manifest)
+                    setOriginalManifest(_manifest)
+                    const trimmedManifest = YAML.stringify(getTrimmedManifestData(response.result?.manifest))
+                    setDefaultManifest(trimmedManifest)
+                    setManifest(trimmedManifest)
                     setLoading(false)
                     setManifestAvailable(true)
                 })
@@ -52,6 +58,7 @@ export default function ClusterManifest({
         }
     }, [terminalAccessId])
 
+    // NOTE: Check if we can replace this useEffect since manifestMode changes on events.
     useEffect(() => {
         const regex = manifestCommentsRegex
         if (manifestMode === EditModeType.NON_EDIT) {
@@ -79,6 +86,23 @@ export default function ClusterManifest({
             }
         }
     }, [manifestMode])
+
+    const displayManifest = (() => {
+        if (manifestMode === EditModeType.NON_EDIT) {
+            if (hideManagedFields) {
+                return defaultManifest
+            }
+            return originalManifest
+        }
+
+        return manifestValue
+    })()
+
+    const handleEditorChange = (value: string) => {
+        if (manifestMode !== EditModeType.NON_EDIT) {
+            setManifest(value)
+        }
+    }
 
     const switchToEditMode = (): void => {
         setManifestMode(EditModeType.EDIT)
@@ -112,10 +136,10 @@ export default function ClusterManifest({
                             defaultValue={defaultManifest}
                             theme="vs-dark--dt"
                             height="100%"
-                            value={manifestValue}
+                            value={displayManifest}
                             mode={MODES.YAML}
                             noParsing
-                            onChange={setManifest}
+                            onChange={handleEditorChange}
                             readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
                             diffView={manifestMode === EditModeType.REVIEW}
                         />

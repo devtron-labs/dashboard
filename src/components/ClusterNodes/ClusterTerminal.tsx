@@ -821,23 +821,20 @@ export default function ClusterTerminal({
         }
     }
 
-    // TODO: Move into common component for deployment
-    const renderHideManagedFields = () => {
-        return (
-            <div className="pt-6 pb-6 pl-8 pr-8 top">
-                <Checkbox
-                    rootClassName="mb-0-imp h-20"
-                    isChecked={hideManagedFields}
-                    value={CHECKBOX_VALUE.CHECKED}
-                    onChange={handleToggleManagedFields}
-                >
-                    <span className="mr-5 cn-9 fs-12" data-testid="hide-pods-managed-fields">
-                        Hide Managed Fields
-                    </span>
-                </Checkbox>
-            </div>
-        )
-    }
+    const renderHideManagedFields = () => (
+        <div className="pt-6 pb-6 pl-12 pr-8 top">
+            <Checkbox
+                rootClassName="mb-0-imp h-18"
+                isChecked={hideManagedFields}
+                value={CHECKBOX_VALUE.CHECKED}
+                onChange={handleToggleManagedFields}
+            >
+                <span className="mr-5 cn-9 fs-12 lh-18" data-testid="hide-pods-managed-fields">
+                    Hide Managed Fields
+                </span>
+            </Checkbox>
+        </div>
+    )
 
     const closeManifetsPopup = (isClose: boolean): void => {
         setManifestButtonState(EditModeType.REVIEW)
@@ -846,6 +843,8 @@ export default function ClusterTerminal({
     }
 
     const hideShell: boolean = !(connectTerminal && isPodCreated && !selectedTabIndex)
+    const showManagedFieldsCheckbox: boolean =
+        selectedTabIndex === 2 && isManifestAvailable && manifestButtonState === EditModeType.NON_EDIT
 
     const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
     const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
@@ -975,7 +974,7 @@ export default function ClusterTerminal({
                 buttonSelectionState: manifestButtonState,
                 setManifestButtonState: setManifestButtonState,
             },
-            ...(selectedTabIndex === 2 && isManifestAvailable
+            ...(showManagedFieldsCheckbox
                 ? [
                       {
                           type: TerminalWrapperType.CUSTOM_COMPONENT,
