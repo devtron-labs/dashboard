@@ -57,6 +57,10 @@ import {
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
     ValueContainer,
+    NoParamsNoEnvContext,
+    NoParamsWithEnvContext,
+    ParamsNoEnvContext,
+    ParamsAndEnvContext,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -120,20 +124,22 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
 
             if (_envList.length > 0) {
-                let _envId
-                if (!params.envId && _envList.length === 1) {
-                    _envId = _envList[0].environmentId
-                } else if (
-                    !params.envId &&
-                    environmentId &&
-                    _envList.map((env) => env.environmentId).includes(environmentId)
-                ) {
-                    _envId = environmentId
-                } else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
-                    _envId = _envList[0].environmentId
+                let selector
+                if (!params.envId && !environmentId) {
+                    selector = new NoParamsNoEnvContext()
+                } else if (!params.envId && environmentId) {
+                    selector = new NoParamsWithEnvContext()
+                } else if (params.envId && !environmentId) {
+                    selector = new ParamsNoEnvContext()
+                } else if (params.envId && environmentId) {
+                    selector = new ParamsAndEnvContext()
                 }
-                if (_envId) {
-                    const newUrl = getAppDetailsURL(params.appId, _envId)
+
+                const selectedEnvId = selector.resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId)
+
+                // Set the URL and push to navigation stack
+                if (selectedEnvId) {
+                    const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
                     push(newUrl)
                 } else {
                     setEnvironmentId(null)
@@ -141,9 +147,8 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
             } else {
                 setEnvironmentId(null)
             }
+            // Return the filtered and sorted environment list
             return _envList
-        } else {
-            setEnvironmentId(null)
         }
         return []
     }, [filteredEnvIds, otherEnvsResult])
@@ -561,7 +566,7 @@ export const Details: React.FC<DetailsType> = ({
     ) {
         return (
             <>
-            {environments?.length > 0 && (
+                {environments?.length > 0 && (
                     <div className="flex left ml-20 mt-16">
                         <EnvSelector
                             environments={environments}
