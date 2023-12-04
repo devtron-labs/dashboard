@@ -62,8 +62,6 @@ export default function AppComposeRouter({
     configProtectionData,
     filteredEnvIds,
     handleSaveButton,
-    // repositoryURL,
-    // setRepositoryURL
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);

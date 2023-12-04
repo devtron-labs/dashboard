@@ -369,7 +369,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
-                        toast.error('Configuration validation failed')
+                        {this.state.selectedRepoType === repoType.DEFAULT && toast.error('Configuration validation failed')}
                     }
                 })
                 .catch((error) => {
@@ -569,14 +569,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         }
                     />
 
-                    <ValidateForm
+                    {this.state.selectedRepoType === repoType.DEFAULT && <ValidateForm
                         id={this.state.form.id}
                         onClickValidate={() => this.validateGitOps(this.state.providerTab)}
                         validationError={this.state.validationError}
                         validationStatus={this.state.validationStatus}
                         configName="gitops "
                         warning={this.state.deleteRepoError ? warning : ''}
-                    />
+                    />}
 
                     <CustomInput
                         autoComplete="off"

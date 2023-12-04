@@ -432,8 +432,6 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                             configProtectionData={state.configProtectionData}
                             filteredEnvIds={filteredEnvIds}
                             handleSaveButton={handleSaveButton}
-                            // repoURL={repositoryURL}
-                            // setRepositoryURL={setRepositoryURL}
                         />
                     </div>
                 </div>

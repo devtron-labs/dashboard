@@ -1557,7 +1557,8 @@ function ChartValuesView({
                                     allowedDeploymentTypes={allowedDeploymentTypes}
                                     allowedCustomBool={allowedCustomBool}
                                     envId={commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0}
-                                    teamId={commonState.selectedProject.value}
+                                    teamId={1}
+                                    gitRepoURL={installedConfigFromParent['gitRepoURL']}
                                     dispatch={dispatch}
                                 />
                             )}

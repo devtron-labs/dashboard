@@ -66,7 +66,7 @@ function ValidateSuccess({ onClickValidate, warning }) {
     </div>
 }
 
-function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false, warning }) {
+function ValidateFailure({ formId, validationError, onClickValidate, validatedTime = "", isChartRepo = false, warning, showValidate }) {
     return <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
         <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
             <div className="flex">
@@ -77,7 +77,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
             </div>
             {isChartRepo && <a onClick={() => onClickValidate()} className="fw-6 onlink pointer dc__link ">VALIDATE</a>}
             {
-                !isChartRepo && formId && renderOnClickValidate(onClickValidate)
+                !isChartRepo && formId && showValidate && renderOnClickValidate(onClickValidate)
             }
         </div>
         <div className="flex left config_failure-actions en-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1">
@@ -101,7 +101,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
     </div>
 }
 
-export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName, warning = "" }) {
+export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName, warning = "" , showValidate=true}) {
     return (
         <div className="mt-16">
             {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER}
@@ -110,7 +110,7 @@ export function ValidateForm({ id, onClickValidate, validationError, isChartRepo
             {validationStatus === VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
             {validationStatus === VALIDATION_STATUS.FAILURE &&
-                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} warning={warning} />}
+                <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} warning={warning} showValidate={showValidate}/>}
             {validationStatus === VALIDATION_STATUS.SUCCESS &&
                 <ValidateSuccess onClickValidate={onClickValidate} warning={warning} />}
         </div>
