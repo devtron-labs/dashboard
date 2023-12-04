@@ -31,6 +31,7 @@ import { getCMSecret, getConfigMapList, getSecretList } from './service'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
+import { followCursor } from 'tippy.js'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
@@ -382,6 +383,7 @@ export function ConfigMapSecretContainer({
                     <Tippy
                         theme={TippyTheme.black}
                         followCursor={true}
+                        plugins= {[followCursor]}
                         arrow={true}
                         animation="shift-toward-subtle"
                         placement='top'
