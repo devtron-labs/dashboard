@@ -60,20 +60,12 @@ function ChartListPopUp({
         setShowAddPopUp(!showAddPopUp)
     }
 
-    const onClickAddSource = (e) => {
-        if (serverMode === SERVER_MODE.EA_ONLY) {
-            history.push(URLS.GLOBAL_CONFIG_CHART)
-        } else {
-            toggleAddPopUp(e)
-        }
-    }
-
     const renderChartListHeaders = () => {
         return (
             <div className="pt-12 pb-12 pl-16 flex dc__content-space dc__border-bottom fw-6">
                 <span>Helm chart sources</span>
                 <div className="flex">
-                    <div className="flex cb-5 fw-6 cursor mr-12" onClick={onClickAddSource}>
+                    <div className="flex cb-5 fw-6 cursor mr-12" onClick={toggleAddPopUp}>
                         <Add className="icon-dim-20 fcb-5 mr-8" />
                         Add
                     </div>
