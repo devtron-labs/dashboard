@@ -4,7 +4,7 @@ import {
     mapByKey,
     sortOptionsByLabel,
 } from '../../common'
-import { showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConditionalWrap, InfoColourBar, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -624,7 +624,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                         </aside>
                     </div>
                 ) : (
-                    <Progressing pageLoader />
+                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
                 )}
             </div>
             {showDeployModal ? (
