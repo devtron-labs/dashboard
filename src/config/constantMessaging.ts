@@ -55,6 +55,7 @@ export const REPO_NAME_VALIDATION = 'Repository name is not valid; Invalid chara
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
 export const DEPLOY_IMAGE_EXTERNALSOURCE = 'Deploy image from external source'
+export const CHANGE_TO_EXTERNAL_SOURCE = 'Change to external source'
 export const EDIT_DEPLOYMENT_PIPELINE = 'Edit deployment pipeline'
 export const CREATE_DEPLOYMENT_PIPELINE = 'Create deployment pipeline'
 export const ERROR_MESSAGE_FOR_VALIDATION =
@@ -233,8 +234,8 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'Pipeline trigger history, details and logs will be available here.',
     },
     CI_BUILD_HISTORY_LINKED_PIPELINE: {
-        TITLE: 'This is a Linked CI Pipelined',
-        SUBTITLE: 'This is a Linked CI Pipelined',
+        TITLE: 'This is a Linked CI Pipeline',
+        SUBTITLE: 'This is a Linked CI Pipeline',
     },
     CI_BUILD_HISTORY_NO_PIPELINE: {
         TITLE: 'No pipeline selected',
