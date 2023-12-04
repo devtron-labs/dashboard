@@ -348,6 +348,7 @@ function DockerForm({
         },
         onValidation,
     )
+    const history = useHistory()
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
     const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false)
@@ -845,6 +846,9 @@ function DockerForm({
     const onClickHideManageModal = (): void => {
         setManageModal(false)
     }
+    const handleChartStoreRedirection = (): void => { 
+        history.push(ChartStoreRedirectionUrl)
+    }
 
     const handleOCIRegistryStorageAction = (e, key ) => {
         e.stopPropagation()
@@ -1198,7 +1202,8 @@ function DockerForm({
                                     disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
                                 }
                             >
-                                Use as chart repository (Pull helm charts and show in&nbsp;<a href={ChartStoreRedirectionUrl}>chart store</a>)
+                                Use as chart repository (Pull helm charts and show in
+                                <span className="ml-4 dc__link cursor" onClick={handleChartStoreRedirection}>chart store</span>.)
                             </Checkbox>
                         </div>
                     </ConditionalWrap>
