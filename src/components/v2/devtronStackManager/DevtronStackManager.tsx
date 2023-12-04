@@ -5,7 +5,7 @@ import {
     ErrorBoundary,
     useInterval,
 } from '../../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
@@ -523,7 +523,7 @@ export default function DevtronStackManager({
                 handleBreadcrumbClick={handleBreadcrumbClick}
             />
             {stackDetails.isLoading ? (
-                <Progressing pageLoader />
+                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
             ) : stackDetails.errorStatusCode > 0 ? (
                 <div className="flex">
                     <ErrorScreenManager code={stackDetails.errorStatusCode} />
