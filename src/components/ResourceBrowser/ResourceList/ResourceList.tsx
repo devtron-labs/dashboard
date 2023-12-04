@@ -16,6 +16,7 @@ import {
     useBreadcrumb,
     ErrorScreenManager,
     Reload,
+    DevtronProgressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import {
@@ -1044,7 +1045,7 @@ export default function ResourceList() {
         } else if ((loader && !selectedCluster?.value) || clusterLoader) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
-                    <Progressing pageLoader />
+                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
             )
         } else if (!selectedCluster?.value) {
