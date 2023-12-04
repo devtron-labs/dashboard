@@ -1,6 +1,6 @@
 //@ts-nocheck
 
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
@@ -11,7 +11,7 @@ import { Nodes, SourceInfoType } from '../../types'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { ConditionalWrap, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
@@ -20,6 +20,7 @@ import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
+import { getLastExecutionByArtifactId } from '../../../../services/service'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -45,6 +46,7 @@ export function SourceInfo({
     ciArtifactId,
     setErrorsList,
 }: SourceInfoType) {
+    const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
@@ -62,6 +64,32 @@ export function SourceInfo({
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message
     }
+
+    const getScannedStatus = async () => {
+        const {appId, ciArtifactId} = appDetails
+        if(!appId || !ciArtifactId) return
+
+        try {
+            const {
+                result: { scanEnabled, scanned },
+            } = await getLastExecutionByArtifactId(appId, ciArtifactId)
+            if (scanEnabled && scanned) {
+                // If scanEnabled and scanned is true, then show the vulnerabilities card
+                setShowVulnerabilitiesCard(true)
+            } else {
+                setShowVulnerabilitiesCard(false)
+            }
+        } catch (error) {
+            setShowVulnerabilitiesCard(false)
+            showError(error)
+        }
+    }
+
+    useEffect(() => {
+        if (appDetails?.ciArtifactId) {
+            getScannedStatus()
+        }
+    }, [appDetails?.ciArtifactId])
 
     const onClickShowCommitInfo = (): void => {
         showCommitInfo(true)
@@ -224,11 +252,13 @@ export function SourceInfo({
                         envId={envId}
                         ciArtifactId={ciArtifactId}
                     />
-                    <SecurityVulnerabilityCard
-                        cardLoading={cardLoading}
-                        severityCount={severityCount}
-                        showVulnerabilitiesModal={showVulnerabilitiesModal}
-                    />
+                    {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
+                        <SecurityVulnerabilityCard
+                            cardLoading={cardLoading}
+                            severityCount={severityCount}
+                            showVulnerabilitiesModal={showVulnerabilitiesModal}
+                        />
+                    )}
                     <div className="flex right ml-auto">
                         {appDetails?.appStoreChartId && (
                             <>
