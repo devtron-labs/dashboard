@@ -132,8 +132,10 @@ export function ConfigMapSecretContainer({
     }
     
     useEffect(() => {
-        if (title !== '' && title === name) getData()
-    }, [])
+         if (title !== '' && title === name) {
+            getData()
+        }
+     }, [])
 
     const getData = async () => {
         try {
@@ -229,10 +231,10 @@ export function ConfigMapSecretContainer({
         }
     }
 
-    const getURL = (urlTo: string = ''): string => {
+    const redirectURL = (urlTo: string = '') => {
         const componentTypeName = componentType === 'secret' ? 'secrets' : 'configmap'
         const urlPrefix = match.url.split(componentTypeName)[0]
-        return `${urlPrefix}${componentTypeName}/${urlTo}`
+          history.push(`${urlPrefix}${componentTypeName}/${urlTo}`)
     }
 
     const updateCollapsed = (_collapsed?: boolean): void => {
@@ -241,20 +243,20 @@ export function ConfigMapSecretContainer({
             if (name === 'create') {
                 toggleDraftComments(null)
                 setDraftData(null)
-                return history.push(getURL())
+                return redirectURL()
             }
-            return history.push(getURL('create'))
+            return redirectURL('create')
         } else {
             //Redirect and Open existing config map & secret
             if (name === title) {
                 toggleDraftComments(null)
                 setDraftData(null)
-                return history.push(getURL())
+                return redirectURL()
             } else {
                 getData()
-                return history.push(getURL(title))
+                return redirectURL(title)
             }
-        }
+        } 
     }
 
     const handleTabSelection = (index: number): void => {
@@ -389,13 +391,14 @@ export function ConfigMapSecretContainer({
                     </Tippy>
                 )}
             >
+                <div className={`${showBlurEffect ? 'cursor-not-allowed' : 'cursor'}`}>
                 <section
                     className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
-                        reduceOpacity || showBlurEffect ? 'dc__blur-1_5' : ''
+                        reduceOpacity || showBlurEffect ? 'dc__disable-click dc__blur-1_5' : ''
                     }`}
                 >
                     <article
-                        className={`${showBlurEffect ? 'cursor-not-allowed' : 'cursor'} dc__configuration-list pr-16 pl-16 mb-16`}
+                        className="dc__configuration-list pr-16 pl-16 mb-16"
                         onClick={handleCMSecretClick}
                         data-testid="click-to-add-configmaps-secret"
                     >
@@ -430,6 +433,7 @@ export function ConfigMapSecretContainer({
 
                     {!isLoader ? renderDetails() : null}
                 </section>
+                </div>
             </ConditionalWrap>
         </>
     )
