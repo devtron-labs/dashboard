@@ -385,7 +385,7 @@ export function ConfigMapSecretContainer({
                         arrow={true}
                         animation="shift-toward-subtle"
                         placement='top'
-                        content={`Collapse open ${componentType === 'secret' ? ' Secret' : ' ConfigMap'} first`}
+                        content={`Collapse opened ${componentType === 'secret' ? ' Secret' : ' ConfigMap'} first`}
                     >
                         <div>{children}</div>
                     </Tippy>
