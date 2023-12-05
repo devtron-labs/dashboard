@@ -678,10 +678,10 @@ export function ProtectedConfigMapSecretDetails({
 }
 
 export const convertToValidValue = (k: any): string => {
-     if (k !== false && k !== true && k !== '' && Number(isNaN(k))) {
-         return Number(k).toString()
-     }
-     return k.toString()
+     if (typeof k !== 'string' && k !== false && k !== true && k !== '') {
+        return Number(k).toString()
+    }
+    return k.toString()
 }
 
 export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
