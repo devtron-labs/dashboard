@@ -130,12 +130,11 @@ const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedTyp
 const WorkerStatus = React.memo(
     ({ message, podStatus, stage, name, finishedOn }: WorkerStatusType): JSX.Element | null => {
         if (!message && !podStatus) return null
-
-        // check if finishedOn time is one hour old
-        const isAnHourOld = moment(finishedOn).isBefore(moment().subtract(1, 'hours'))
-
+        const timeoutValue = window._env_.DEFAULT_TIMEOUT
+        // check if finishedOn time is timed out or not
+        const isTimedOut = moment(finishedOn).isBefore(moment().subtract(timeoutValue, 'seconds'))
         // finishedOn is 0001-01-01T00:00:00Z when the worker is still running
-        const showLink = finishedOn === ZERO_TIME_STRING || !isAnHourOld
+        const showLink = finishedOn === ZERO_TIME_STRING || !isTimedOut
 
         return (
             <>
