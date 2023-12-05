@@ -58,6 +58,10 @@
     justify-content: flex-start !important;
 }
 
+.flex-justify-end {
+    justify-content: flex-end !important;
+}
+
 .flex-justify-center {
     justify-content: center;
 }
@@ -108,7 +112,7 @@ $style in $margins {
 }
 
 // font-size from 10-24
-@for $i from 10 through 40 {
+@for $i from 8 through 40 {
     .fs-#{$i} {
         font-size: 0px + $i;
     }

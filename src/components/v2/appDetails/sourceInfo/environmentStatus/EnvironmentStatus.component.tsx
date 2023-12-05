@@ -118,28 +118,28 @@ function EnvironmentStatusComponent({
     }
 
     const renderLastUpdatedBlock = () => {
-        if (
-            appDetails?.deploymentAppType === DeploymentAppTypes.HELM &&
-            appDetails?.appType === AppType.DEVTRON_HELM_CHART &&
-            appDetails?.lastDeployedTime
-        ) {
-            return (
-                <LastUpdatedCard
-                    deploymentTriggerTime={appDetails?.lastDeployedTime}
-                    triggeredBy={appDetails?.lastDeployedBy}
-                    cardLoading={cardLoading}
-                />
-            )
+        if (appDetails?.appType === AppType.DEVTRON_HELM_CHART && appDetails?.lastDeployedTime) {
+            if (appDetails?.deploymentAppType === DeploymentAppTypes.HELM) {
+                return (
+                    <LastUpdatedCard
+                        deploymentTriggerTime={appDetails?.lastDeployedTime}
+                        triggeredBy={appDetails?.lastDeployedBy}
+                        cardLoading={cardLoading}
+                    />
+                )
+            } else {
+                return (
+                    <DeploymentStatusCard
+                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        cardLoading={cardLoading}
+                        hideDetails={false}
+                        refetchDeploymentStatus={refetchDeploymentStatus}
+                        isVirtualEnvironment={isVirtualEnvironment}
+                    />
+                )
+            }
         }
-        return (
-            <DeploymentStatusCard
-                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                cardLoading={cardLoading}
-                hideDetails={false}
-                refetchDeploymentStatus={refetchDeploymentStatus}
-                isVirtualEnvironment={isVirtualEnvironment}
-            />
-        )
+        return null
     }
 
     const renderChartUsedBlock = () => {
