@@ -135,7 +135,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
-    const [skippedResources, setSkippedResources] = useState<ResponseRowType[]>([])
     
     // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
     const handledLocation = useRef(false)
@@ -1010,7 +1009,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const changeBranch = (value): void => {
         const appIds = []
-        const _skippedResources = []
+        const skippedResources = []
         const appNameMap = new Map()
 
         filteredWorkflows.forEach((wf) => {
@@ -1024,7 +1023,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         appNameMap.set(wf.appId, wf.name)
                     }
                     else {
-                        _skippedResources.push({
+                        skippedResources.push({
                             appId: wf.appId,
                             appName: wf.name,
                             statusText: SKIPPED_RESOURCES_STATUS_TEXT,
@@ -1037,13 +1036,21 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         })
 
-        if (!appIds.length && !_skippedResources.length) {
+        if (!appIds.length && !skippedResources.length) {
             toast.error('No valid application present')
             return
         }
-        
-        setSkippedResources(_skippedResources)
         setIsBranchChangeLoading(true)
+
+        if (!appIds.length) {
+            updateResponseListData(skippedResources)
+            setIsBranchChangeLoading(false)
+            setCDLoading(false)
+            setCILoading(false)
+            preventBodyScroll(true)
+            return
+        }
+
         triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
                 const _responseList = []
@@ -1057,14 +1064,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         message: res.message,
                     })
                 })
-                updateResponseListData(_responseList)
+                updateResponseListData([..._responseList, ...skippedResources])
                 setCDLoading(false)
                 setCILoading(false)
-                preventBodyScroll(false)
+                preventBodyScroll(true)
             })
             .catch((error) => {
                 showError(error)
-                setSkippedResources([])
             })
             .finally(() => {
                 setIsBranchChangeLoading(false)
@@ -1187,7 +1193,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCDLoading(false)
         setShowBulkCDModal(false)
         setResponseList([])
-        setSkippedResources([])
 
         history.push({
             search: '',
@@ -1207,7 +1212,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCILoading(false)
         setShowBulkCIModal(false)
         setResponseList([])
-        setSkippedResources([])
     }
 
     const onShowBulkCIModal = () => {
@@ -1227,7 +1231,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBranchChangeLoading(false)
         setShowBulkSourceChangeModal(false)
         setResponseList([])
-        setSkippedResources([])
+        preventBodyScroll(false)
     }
 
     const onShowChangeSourceModal = () => {
@@ -1346,10 +1350,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         promiseList: any[],
         triggeredAppList: { appId: number; envId?: number; appName: string }[],
         type: WorkflowNodeType,
+        skippedResources: ResponseRowType[] = [],
     ): void => {
+        const _responseList = skippedResources
         if (promiseList.length) {
             Promise.allSettled(promiseList).then((responses: any) => {
-                const _responseList = []
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
                         const statusType = filterStatusType(
@@ -1421,10 +1426,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
         } else {
             setCDLoading(false)
-            setShowBulkCDModal(false)
             setCILoading(false)
-            setShowBulkCIModal(false)
-            setResponseList([])
+            if (!skippedResources.length) {
+                setShowBulkCDModal(false)
+                setShowBulkCIModal(false)
+                setResponseList([])
+            }
+            else {
+                updateResponseListData(_responseList)
+            }
         }
     }
 
@@ -1448,7 +1458,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setCILoading(true)
         let node
-        const _skippedResources = []
+        const skippedResources = []
         const nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
         for (const _wf of filteredWorkflows) {
@@ -1461,8 +1471,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                     nodeList.push(node)
                 }
-                else if (node && !isBuildAndBranchTriggerAllowed(node)){
-                    _skippedResources.push({
+                else if (node && !isBuildAndBranchTriggerAllowed(node)) {
+                    // skipped can never be in appsToRetry
+                    skippedResources.push({
                         appId: _wf.appId,
                         appName: _wf.name,
                         statusText: SKIPPED_RESOURCES_STATUS_TEXT,
@@ -1512,17 +1523,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
 
-        if (!_CITriggerPromiseList.length && !appsToRetry && !_skippedResources.length) {
+        if (!_CITriggerPromiseList.length && !skippedResources.length) {
             toast.error('No valid CI pipeline found')
             setCDLoading(false)
             setCILoading(false)
             return
         }
-        if (!appsToRetry) {
-            setSkippedResources(_skippedResources)
-        }
 
-        handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI)
+        handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI, skippedResources)
     }
 
     // Would only set data no need to get data related to materials from it, we will get that in bulk trigger
@@ -1853,7 +1861,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 webhookPayloads={webhookPayloads}
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}
-                responseList={[...responseList, ...skippedResources]}
+                responseList={responseList}
                 isLoading={isCILoading}
                 setLoading={setCILoading}
             />
@@ -1868,7 +1876,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return (
             <BulkSourceChange
                 closePopup={hideChangeSourceModal}
-                responseList={[...responseList, ...skippedResources]}
+                responseList={responseList}
                 changeBranch={changeBranch}
                 loading={isBranchChangeLoading}
                 selectedAppCount={selectedAppList.length}

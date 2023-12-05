@@ -50,7 +50,8 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
         setShowResponseModal(responseList.length > 0)
     }, [responseList])
 
-    const updateBranch = () => {
+    const updateBranch = (e: React.MouseEvent) => {
+        e.stopPropagation()
         if (branchName.length === 0) {
             setInputError('This is required')
             return
@@ -138,7 +139,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
             <div className="dc__window-bg h-100 bcn-0 bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
                 {renderHeaderSection()}
                 {showResponseModal ? (
-                    <SourceUpdateResponseModal closePopup={closePopup} isLoading={false} responseList={responseList}/>
+                    <SourceUpdateResponseModal closePopup={closePopup} isLoading={loading} responseList={responseList}/>
                 ) : (
                     <>
                         {renderInfoBar()}
