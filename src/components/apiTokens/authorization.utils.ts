@@ -33,8 +33,8 @@ export const getDateInMilliseconds = (days) => {
 }
 
 export const getSelectedEnvironments = (permission) => {
-    if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-       return getSelectedPermissionValues(permission.environment)
+    if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
+        return getSelectedPermissionValues(permission.environment)
     } else {
         let allFutureCluster = {}
         let envList = ''
@@ -83,25 +83,36 @@ export const createUserPermissionPayload = (
                     (permission) =>
                         permission.team?.value && permission.environment.length && permission.entityName.length,
                 )
-                .map((permission) => ({
-                    ...permission,
-                    action: permission.action.value,
-                    team: permission.team.value,
-                    environment: getSelectedEnvironments(permission),
-                    entityName: getSelectedPermissionValues(permission.entityName),
-                })),
-                ...k8sPermission.map((permission) => ({
-                    ...permission,
-                    entity: EntityTypes.CLUSTER,
-                    action: permission.action.value,
-                    cluster: permission.cluster.label,
-                    group: permission.group.value === '*' ? '' : permission.group.value, 
-                    kind: permission.kind.value === '*' ? '' : permission.kind.label,
-                    namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
-                    resource: permission.resource.find((entity) => entity.value === '*')
+                .map((permission) => {
+                    const payload = {
+                        ...permission,
+                        action: permission.action.value,
+                        team: permission.team.value,
+                        environment: getSelectedEnvironments(permission),
+                        entityName: getSelectedPermissionValues(permission.entityName),
+                        entity: permission.entity,
+                        ...(permission.entity === EntityTypes.JOB && {
+                            workflow: permission.workflow?.length
+                                ? permission.workflow.find((workflow) => workflow.value === '*')
+                                    ? ''
+                                    : permission.workflow.map((workflow) => workflow.value).join(',')
+                                : '',
+                        }),
+                    }
+                    return payload
+                }),
+            ...k8sPermission.map((permission) => ({
+                ...permission,
+                entity: EntityTypes.CLUSTER,
+                action: permission.action.value,
+                cluster: permission.cluster.label,
+                group: permission.group.value === '*' ? '' : permission.group.value,
+                kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                resource: permission.resource.find((entity) => entity.value === '*')
                     ? ''
-                    : permission.resource.map((entity) => entity.value).join(',')
-                }))
+                    : permission.resource.map((entity) => entity.value).join(','),
+            })),
         ],
         superAdmin: isSuperAdminAccess,
     }
