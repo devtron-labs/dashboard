@@ -677,8 +677,8 @@ export function ProtectedConfigMapSecretDetails({
     return selectedTab === 2 ? renderDiffView() : renderForm()
 }
 
-export const convertToValidValue = (k: any): string => {
-     if (typeof k !== 'string' && k !== false && k !== true && k !== '') {
+export const convertToValidValue = (k: any): string => {  
+     if (k !== false && k !== true && k !== '' && !isNaN(Number(k))) {
         return Number(k).toString()
     }
     return k.toString()
