@@ -197,6 +197,7 @@ export function ConfigMapSecretContainer({
                 } else {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
+                    redirectURLToInitial()
                 }
             } else if (
                 cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED &&
@@ -209,6 +210,7 @@ export function ConfigMapSecretContainer({
                 } else if (_draftData.value.result.draftState === 2) {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
+                    redirectURLToInitial()
                 }
             }
             if (
@@ -232,7 +234,7 @@ export function ConfigMapSecretContainer({
         }
     }
 
-    const redirectURL = (urlTo: string = '') => {
+    const redirectURLToInitial = (urlTo: string = '') => {
         const componentTypeName = componentType === 'secret' ? 'secrets' : 'configmap'
         const urlPrefix = match.url.split(componentTypeName)[0]
           history.push(`${urlPrefix}${componentTypeName}/${urlTo}`)
@@ -244,18 +246,18 @@ export function ConfigMapSecretContainer({
             if (name === 'create') {
                 toggleDraftComments(null)
                 setDraftData(null)
-                return redirectURL()
+                return redirectURLToInitial()
             }
-            return redirectURL('create')
+            return redirectURLToInitial('create')
         } else {
             //Redirect and Open existing config map & secret
             if (name === title) {
                 toggleDraftComments(null)
                 setDraftData(null)
-                return redirectURL()
+                return redirectURLToInitial()
             } else {
                 getData()
-                return redirectURL(title)
+                return redirectURLToInitial(title)
             }
         } 
     }
