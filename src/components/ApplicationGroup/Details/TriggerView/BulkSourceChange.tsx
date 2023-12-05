@@ -5,7 +5,7 @@ import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import SourceUpdateResponseModal from './SourceUpdateResponseModal'
 import { BulkSourceChangeProps } from './types'
 
-export default function BulkSourceChange({ closePopup, responseList, changeBranch, loading, selectedAppCount, skippedResources=[] }: BulkSourceChangeProps) {
+export default function BulkSourceChange({ closePopup, responseList, changeBranch, loading, selectedAppCount }: BulkSourceChangeProps) {
     const sourceChangeDetailRef = useRef<HTMLDivElement>(null)
 
     const [showResponseModal, setShowResponseModal] = useState(false)
@@ -47,7 +47,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
     }, [outsideClickHandler])
 
     useEffect(() => {
-        setShowResponseModal(responseList.length > 0 || skippedResources.length > 0)
+        setShowResponseModal(responseList.length > 0)
     }, [responseList])
 
     const updateBranch = () => {
@@ -138,7 +138,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
             <div className="dc__window-bg h-100 bcn-0 bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
                 {renderHeaderSection()}
                 {showResponseModal ? (
-                    <SourceUpdateResponseModal closePopup={closePopup} isLoading={false} responseList={responseList} skippedResources={skippedResources}/>
+                    <SourceUpdateResponseModal closePopup={closePopup} isLoading={false} responseList={responseList}/>
                 ) : (
                     <>
                         {renderInfoBar()}
