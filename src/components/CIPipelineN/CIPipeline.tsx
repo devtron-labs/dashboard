@@ -70,6 +70,7 @@ export default function CIPipeline({
     deleteWorkflow,
     isJobView,
     isJobCI,
+    changeCIPayload,
 }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
@@ -577,6 +578,7 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
+            changeCIPayload,
         )
             .then((response) => {
                 if (response) {

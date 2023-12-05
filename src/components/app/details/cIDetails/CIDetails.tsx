@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { showError, Progressing, Reload, GenericEmptyState, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails, getArtifactForJobCi } from '../../service'
+import { getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails, getArtifactForJobCi, getCIPipelines } from '../../service'
 import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -23,6 +23,7 @@ import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
+import { PipelineType } from '../triggerView/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -46,7 +47,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const [initDataLoading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
-                getCIPipelines(+appId, filteredEnvIds),
+                getCIPipelines(+appId, filteredEnvIds, showError),
                 getModuleInfo(ModuleNameMap.SECURITY),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
@@ -147,14 +148,19 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
 
     if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
-    } else if (!buildId && triggerHistory.size > 0) {
+    } else if (pipelineId && !buildId && triggerHistory.size > 0) {
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], appId, pipelineId }))
     }
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
-        (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
-    ) // external pipelines not visible in dropdown
+        (pipeline) => pipeline.pipelineType !== 'EXTERNAL' && pipeline.pipelineType !== PipelineType.LINKED_CD,
+    ) // external and LINKED_CD pipelines not visible in dropdown
     const selectedPipelineExist = !pipelineId || pipelines.find((pipeline) => pipeline.id === +pipelineId)
-    if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist)) {
+
+    if (!pipelines.length && pipelineId) {
+        // reason is un-required params like logs were leaking
+        replace(generatePath(path, { appId }))
+    }
+    else if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist && pipelines.length)) {
         replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
