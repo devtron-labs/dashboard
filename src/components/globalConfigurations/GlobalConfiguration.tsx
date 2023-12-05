@@ -40,6 +40,7 @@ const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
+const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -384,6 +385,14 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
+                    {CatalogFramework && <NavLink
+                        to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                        key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                        activeClassName="active-route"
+                    >
+                        <div className="flexbox flex-justify">Catalog Framework</div>
+                    </NavLink>}
+
                     {window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -566,6 +575,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            {CatalogFramework && (
+                <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {PluginsPolicy && (
