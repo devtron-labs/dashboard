@@ -61,7 +61,6 @@ export default function AppComposeRouter({
     reloadEnvironments,
     configProtectionData,
     filteredEnvIds,
-    handleSaveButton,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
@@ -131,29 +130,6 @@ export default function AppComposeRouter({
                     />,
                 ]}
             </Switch>
-        )
-    }
-
-    const UserGitRepoComponent = (): JSX.Element => {
-        return (
-            <div className="fw-6 cn-9 fs-14 mb-16">
-                GitOps Configuration
-                <UserGitRepo
-                    setSelectedRepoType={setSelectedRepoType}
-                    selectedRepoType={selectedRepoType}
-                    repoURL={''}
-                />
-                <div>
-                    <button
-                        data-testid="save_cluster_list_button_after_selection"
-                        className="cta h-36 lh-36"
-                        type="button"
-                        onClick={handleSaveButton}
-                    >
-                        Save
-                    </button>
-                </div>
-            </div>
         )
     }
 

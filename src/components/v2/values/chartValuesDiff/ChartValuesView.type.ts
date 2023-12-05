@@ -346,7 +346,7 @@ export enum ChartValuesViewActionTypes {
     multipleOptions = 'multipleOptions',
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
-    gitRepoURL = 'gitRepoURL'
+    setGitRepoURL = 'setGitRepoURL'
 }
 
 

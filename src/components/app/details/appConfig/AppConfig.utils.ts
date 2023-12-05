@@ -152,14 +152,6 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 isProtectionAllowed: true,
             },
             {
-                title: 'Git Ops Configuration',
-                href: `/app/${appId}/edit/gitOpsConfig`,
-                stage: STAGE_NAME.GIT_OPS_CONFIG,
-                isLocked: !isUnlocked.gitOpsConfig,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-            },
-            {
                 title: 'Workflow Editor',
                 href: `/app/${appId}/edit/workflow`,
                 stage: 'WORKFLOW',

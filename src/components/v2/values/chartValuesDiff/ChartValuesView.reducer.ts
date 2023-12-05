@@ -173,7 +173,7 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
           return { ...state, showNoGitOpsWarning: action.payload }
         case ChartValuesViewActionTypes.selectedDeploymentApp:
             return {...state, deploymentAppType: action.payload}
-        case ChartValuesViewActionTypes.gitRepoURL:
+        case ChartValuesViewActionTypes.setGitRepoURL:
             return {...state, gitRepoURL: action.payload}
         default:
             return state

@@ -359,14 +359,6 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
             : ''
     }
 
-    function handleSaveButton() {
-        gitOpsConfigDevtron(+appId, repositoryURL).then((response)=>{
-            console.log(response)
-        }).catch((err)=>{
-            showError(err)
-        })
-    }
-
     function toggleRepoSelectionTippy() {
         setShowCannotDeleteTooltip(!showCannotDeleteTooltip)
     }
@@ -431,7 +423,6 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                             reloadEnvironments={reloadEnvironments}
                             configProtectionData={state.configProtectionData}
                             filteredEnvIds={filteredEnvIds}
-                            handleSaveButton={handleSaveButton}
                         />
                     </div>
                 </div>

@@ -45,7 +45,6 @@ export interface AppStageUnlockedType {
     deploymentTemplate: boolean
     workflowEditor: boolean
     configmap: boolean
-    gitOpsConfig: boolean
     secret: boolean
     envOverride: boolean
 }
@@ -98,7 +97,6 @@ export interface AppComposeRouterProps {
     reloadEnvironments: () => void
     configProtectionData: any[]
     filteredEnvIds?: string
-    handleSaveButton: () => void
     repositoryURL?: string
     setRepositoryURL?: () => void
 }

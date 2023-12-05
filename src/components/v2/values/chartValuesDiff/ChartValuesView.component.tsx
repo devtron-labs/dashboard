@@ -330,7 +330,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     const handleRepoTextChange = (newRepoText: string) => {
         setRepoURL(newRepoText);
         dispatch({
-            type: ChartValuesViewActionTypes.gitRepoURL,
+            type: ChartValuesViewActionTypes.setGitRepoURL,
             payload: { gitRepoURL: newRepoText },
         })
       };
