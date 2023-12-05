@@ -301,7 +301,7 @@ export function K8SResourceList({
                 ref={resourceListRef}
                 className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, syncError)}
             >
-                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div className="h-42 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
                             key={columnName}
@@ -309,14 +309,16 @@ export function K8SResourceList({
                                 columnName === 'name'
                                     ? `${
                                           fixedNodeNameColumn
-                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
+                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom'
                                               : ''
                                       } w-350 pl-20`
                                     : 'w-150'
                             }`}
                             onClick={() => handleColumnSort(columnName)}
                         >
-                           <span className="dc__inline-block dc__ellipsis-right mw-85px ">{columnName}</span> 
+                            <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
+                                <span className="dc__inline-block dc__ellipsis-right mw-85px ">{columnName}</span>
+                            </Tippy>
                             {renderSortDirection(columnName)}
                         </div>
                     ))}
