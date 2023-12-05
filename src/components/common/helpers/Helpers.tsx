@@ -953,6 +953,7 @@ export function createClusterEnvGroup<T>(
                       value: obj[optionValue ? optionValue : optionLabel],
                       description: obj['description'],
                       isVirtualEnvironment: obj['isVirtualEnvironment'],
+                      isClusterCdActive: obj['isClusterCdActive'],
                   }
                 : obj,
         )
