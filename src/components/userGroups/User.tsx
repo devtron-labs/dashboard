@@ -61,6 +61,7 @@ export default function UserForm({
     id = null,
     userData = null,
     index,
+    email_id=null,
     updateCallback,
     deleteCallback,
     createCallback,
@@ -117,45 +118,49 @@ export default function UserForm({
     }
 
     function isFormComplete(): boolean {
-        let isComplete: boolean = true;
+        let isComplete: boolean = true
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
-                isComplete = false;
-                curr.entityNameError = 'Applications are mandatory';
+                isComplete = false
+                curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
             }
             if (curr.team && curr.environment.length === 0) {
-                isComplete = false;
-                curr.environmentError = 'Environments are mandatory';
+                isComplete = false
+                curr.environmentError = 'Environments are mandatory'
             }
-            agg.push(curr);
-            return agg;
-        }, []);
+            if (curr.team && curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
+                isComplete = false
+                curr.workflowError = 'Worflows are mandatory'
+            }
+            agg.push(curr)
+            return agg
+        }, [])
 
         if (!isComplete) {
-            setDirectPermission(tempPermissions);
+            setDirectPermission(tempPermissions)
         }
 
-        return isComplete;
+        return isComplete
     }
 
     function getSelectedEnvironments(permission) {
-        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
             return permission.environment.find((env) => env.value === '*')
                 ? ''
-                : permission.environment.map((env) => env.value).join(',');
+                : permission.environment.map((env) => env.value).join(',')
         } else {
-            let allFutureCluster = {};
-            let envList = '';
+            let allFutureCluster = {}
+            let envList = ''
             permission.environment.forEach((element) => {
                 if (element.clusterName === '' && element.value.startsWith('#')) {
-                    const clusterName = element.value.substring(1);
-                    allFutureCluster[clusterName] = true;
-                    envList += (envList !== '' ? ',' : '') + clusterName + '__*';
+                    const clusterName = element.value.substring(1)
+                    allFutureCluster[clusterName] = true
+                    envList += (envList !== '' ? ',' : '') + clusterName + '__*'
                 } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                    envList += (envList !== '' ? ',' : '') + element.value;
+                    envList += (envList !== '' ? ',' : '') + element.value
                 }
-            });
-            return envList;
+            })
+            return envList
         }
     }
 
@@ -174,45 +179,53 @@ export default function UserForm({
             groups: userGroups.map((group) => group.value),
             roleFilters: [
                 ...directPermission
-                    .filter(
-                        (permission) =>
-                            permission.team?.value && permission.environment.length && permission.entityName.length,
-                    )
-                    .map((permission) => ({
-                        ...permission,
-                        action: permission.action.configApprover
-                            ? `${permission.action.value},configApprover`
-                            : permission.action.value,
-                        team: permission.team.value,
-                        environment: getSelectedEnvironments(permission),
-                        entityName: permission.entityName.find((entity) => entity.value === '*')
-                            ? ''
-                            : permission.entityName.map((entity) => entity.value).join(','),
-                        entity: EntityTypes.DIRECT
-
-                    })),
-                    ...k8sPermission.map((permission) => ({
-                        ...permission,
-                        entity: EntityTypes.CLUSTER,
-                        action: permission.action.value,
-                        cluster: permission.cluster.label,
-                        group: permission.group.value === '*' ? '' : permission.group.value,
-                        kind: permission.kind.value === '*' ? '' : permission.kind.label,
-                        namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
-                        resource: permission.resource.find((entity) => entity.value === '*')
+                    .filter((permission) => {
+                        return permission.team?.value && permission.environment.length && permission.entityName.length
+                    })
+                    .map((permission) => {
+                        const payload = {
+                            ...permission,
+                            action: permission.action.configApprover
+                                ? `${permission.action.value},configApprover`
+                                : permission.action.value,
+                            team: permission.team.value,
+                            environment: getSelectedEnvironments(permission),
+                            entityName: permission.entityName.find((entity) => entity.value === '*')
+                                ? ''
+                                : permission.entityName.map((entity) => entity.value).join(','),
+                            entity: permission.entity,
+                            ...(permission.entity === EntityTypes.JOB && {
+                                workflow: permission.workflow?.length
+                                    ? permission.workflow.find((workflow) => workflow.value === '*')
+                                        ? ''
+                                        : permission.workflow.map((workflow) => workflow.value).join(',')
+                                    : '',
+                            }),
+                        }
+                        return payload
+                    }),
+                ...k8sPermission.map((permission) => ({
+                    ...permission,
+                    entity: EntityTypes.CLUSTER,
+                    action: permission.action.value,
+                    cluster: permission.cluster.label,
+                    group: permission.group.value === '*' ? '' : permission.group.value,
+                    kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                    namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                    resource: permission.resource.find((entity) => entity.value === '*')
                         ? ''
-                        : permission.resource.map((entity) => entity.value).join(',')
-                    }))
+                        : permission.resource.map((entity) => entity.value).join(','),
+                })),
             ],
             superAdmin: localSuperAdmin === 'SUPERADMIN',
-        };
+        }
         if (serverMode !== SERVER_MODE.EA_ONLY) {
             payload.roleFilters.push({
                 ...chartPermission,
                 team: '',
                 environment: '',
                 entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
-            });
+            })
             if (chartPermission.action != ActionTypes.VIEW) {
                 payload.roleFilters.push({
                     ...ViewChartGroupPermission,
@@ -309,12 +322,13 @@ export default function UserForm({
         setSubmitting(true);
         try {
             await deleteUser(id);
-            deleteCallback(index);
+            deleteCallback(email_id);
             toast.success('User deleted');
         } catch (err) {
             showError(err);
         } finally {
             setSubmitting(false);
+            setDeleteConfirmationModal(false)
         }
     }
 
