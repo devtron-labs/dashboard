@@ -369,6 +369,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
+                        toast.success('Configuration validated and saved successfully')
                         {this.state.selectedRepoType === repoType.DEFAULT && toast.error('Configuration validation failed')}
                     }
                 })
