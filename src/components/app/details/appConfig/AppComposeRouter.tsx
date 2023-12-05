@@ -63,7 +63,6 @@ export default function AppComposeRouter({
     filteredEnvIds,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
-    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
 
     const renderJobViewRoutes = (): JSX.Element => {
         return (

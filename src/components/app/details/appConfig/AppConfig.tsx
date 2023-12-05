@@ -19,7 +19,7 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList, gitOpsConfigDevtron } from '../../../../services/service'
+import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ProtectedIcon } from '../../../../assets/icons/ic-shield-protect-fill.svg'
@@ -55,7 +55,6 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
     const [userRole, setUserRole] = useState<UserRoleType>()
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
     const [showRepoOnDelete, setShowRepoOnDelete] = useState('')
-    const [repositoryURL, setRepositoryURL] = useState('')
 
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,

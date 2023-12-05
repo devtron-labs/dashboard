@@ -7,7 +7,6 @@ import React from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ValidateForm } from '../common/ValidateForm/ValidateForm';
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 
 function UserGitRepo(props) {
@@ -23,17 +22,6 @@ function UserGitRepo(props) {
         props.setRepoURL(event.target.value)
     }
 
-    const renderValidationErrorLabel = (message?: string): JSX.Element => {
-        return (
-            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-                <div className="error-label-icon">
-                    <Error className="icon-dim-16" />
-                </div>
-                <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
-            </div>
-        )
-    }
-
     const InputUrlBox = () => {
         return (
             <div className="mr-10 ml-26">
@@ -47,7 +35,6 @@ function UserGitRepo(props) {
                     className="form__input"
                     onChange={(event) => onChange(event)}
                 />
-                {/* {props.warningError && renderValidationErrorLabel()} */}
             </div>
         )
     }
