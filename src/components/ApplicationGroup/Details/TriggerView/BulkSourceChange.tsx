@@ -3,8 +3,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import SourceUpdateResponseModal from './SourceUpdateResponseModal'
+import { BulkSourceChangeProps } from './types'
 
-export default function BulkSourceChange({ closePopup, responseList, changeBranch, loading, selectedAppCount }) {
+export default function BulkSourceChange({ closePopup, responseList, changeBranch, loading, selectedAppCount, skippedResources=[] }: BulkSourceChangeProps) {
     const sourceChangeDetailRef = useRef<HTMLDivElement>(null)
 
     const [showResponseModal, setShowResponseModal] = useState(false)
@@ -46,7 +47,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
     }, [outsideClickHandler])
 
     useEffect(() => {
-        setShowResponseModal(responseList.length > 0)
+        setShowResponseModal(responseList.length > 0 || skippedResources.length > 0)
     }, [responseList])
 
     const updateBranch = () => {
@@ -137,7 +138,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
             <div className="dc__window-bg h-100 bcn-0 bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
                 {renderHeaderSection()}
                 {showResponseModal ? (
-                    <SourceUpdateResponseModal closePopup={closePopup} isLoading={false} responseList={responseList} />
+                    <SourceUpdateResponseModal closePopup={closePopup} isLoading={false} responseList={responseList} skippedResources={skippedResources}/>
                 ) : (
                     <>
                         {renderInfoBar()}

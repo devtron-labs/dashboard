@@ -57,6 +57,8 @@ import {
     BULK_CD_RESPONSE_STATUS_TEXT,
     BULK_VIRTUAL_RESPONSE_STATUS,
     GetBranchChangeStatus,
+    SKIPPED_RESOURCES_STATUS_TEXT,
+    SKIPPED_RESOURCES_MESSAGE,
 } from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -133,6 +135,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
+    // TODO: Add types
+    const [skippedResources, setSkippedResources] = useState([])
     
     // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
     const handledLocation = useRef(false)
@@ -1003,6 +1007,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const changeBranch = (value): void => {
         const appIds = []
+        const _skippedResources = []
         const appNameMap = new Map()
 
         filteredWorkflows.forEach((wf) => {
@@ -1012,15 +1017,25 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 )
                 if (_ciNode) {
                     // Need to add check for webhook if its source type is git
-                    if (!_ciNode.isLinkedCI && !_ciNode.isLinkedCD) {
+                    if (!_ciNode.isLinkedCI && !_ciNode.isLinkedCD && _ciNode.type !== WorkflowNodeType.WEBHOOK) {
                         appIds.push(wf.appId)
                         appNameMap.set(wf.appId, wf.name)
+                    }
+                    else {
+                        _skippedResources.push({
+                            appId: wf.appId,
+                            appName: wf.name,
+                            statusText: SKIPPED_RESOURCES_STATUS_TEXT,
+                            status: GetBranchChangeStatus(BulkResponseStatus.SKIP),
+                            envId: +envId,
+                            message: SKIPPED_RESOURCES_MESSAGE,
+                        })
                     }
                 }
             }
         })
 
-        if (!appIds.length) {
+        if (!appIds.length && !_skippedResources.length) {
             toast.error('No valid application present')
             return
         }
@@ -1040,6 +1055,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     })
                 })
                 updateResponseListData(_responseList)
+                setSkippedResources(_skippedResources)
                 setCDLoading(false)
                 setCILoading(false)
                 preventBodyScroll(false)
@@ -1168,6 +1184,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCDLoading(false)
         setShowBulkCDModal(false)
         setResponseList([])
+        setSkippedResources([])
 
         history.push({
             search: '',
@@ -1187,6 +1204,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCILoading(false)
         setShowBulkCIModal(false)
         setResponseList([])
+        setSkippedResources([])
     }
 
     const onShowBulkCIModal = () => {
@@ -1206,6 +1224,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBranchChangeLoading(false)
         setShowBulkSourceChangeModal(false)
         setResponseList([])
+        setSkippedResources([])
     }
 
     const onShowChangeSourceModal = () => {
@@ -1403,6 +1422,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setCILoading(false)
             setShowBulkCIModal(false)
             setResponseList([])
+            setSkippedResources([])
         }
     }
 
@@ -1832,6 +1852,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             <BulkSourceChange
                 closePopup={hideChangeSourceModal}
                 responseList={responseList}
+                skippedResources={skippedResources}
                 changeBranch={changeBranch}
                 loading={isBranchChangeLoading}
                 selectedAppCount={selectedAppList.length}
