@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {
+    AppStatus,
     showError,
     Progressing,
     ErrorScreenManager,
@@ -45,7 +46,6 @@ import {
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
-import AppStatus from '../AppStatus'
 import { AppListColumnSort } from '../types'
 
 export default function HelmAppList({

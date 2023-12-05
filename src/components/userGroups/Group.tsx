@@ -65,7 +65,7 @@ export default function GroupForm({
     }
 
     function getSelectedEnvironments(permission) {
-        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
             return permission.environment.find((env) => env.value === '*')
                 ? ''
                 : permission.environment.map((env) => env.value).join(',')
@@ -104,17 +104,28 @@ export default function GroupForm({
                         (permission) =>
                             permission.team?.value && permission.environment.length && permission.entityName.length,
                     )
-                    .map((permission) => ({
-                        ...permission,
-                        action: permission.action.configApprover
-                            ? `${permission.action.value},configApprover`
-                            : permission.action.value,
-                        team: permission.team.value,
-                        environment: getSelectedEnvironments(permission),
-                        entityName: permission.entityName.find((entity) => entity.value === '*')
-                            ? ''
-                            : permission.entityName.map((entity) => entity.value).join(','),
-                    })),
+                    .map((permission) => {
+                        const payload = {
+                            ...permission,
+                            action: permission.action.configApprover
+                                ? `${permission.action.value},configApprover`
+                                : permission.action.value,
+                            team: permission.team.value,
+                            environment: getSelectedEnvironments(permission),
+                            entityName: permission.entityName.find((entity) => entity.value === '*')
+                                ? ''
+                                : permission.entityName.map((entity) => entity.value).join(','),
+                            entity: permission.entity,
+                            ...(permission.entity === EntityTypes.JOB && {
+                                workflow: permission.workflow?.length
+                                    ? permission.workflow.find((workflow) => workflow.value === '*')
+                                        ? ''
+                                        : permission.workflow.map((workflow) => workflow.value).join(',')
+                                    : '',
+                            }),
+                        }
+                        return payload
+                    }),
                 ...k8sPermission.map((permission) => ({
                     ...permission,
                     entity: EntityTypes.CLUSTER,
