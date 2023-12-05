@@ -204,11 +204,6 @@ export default function AppComposeRouter({
                         <ExternalLinks isAppConfigView={true} userRole={userRole} />
                     </Route>
                 )}
-                {
-                    <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
-                            <UserGitRepoComponent/>
-                    </Route>
-                }
                 {isUnlocked.workflowEditor && ConfigProtectionView && (
                     <Route path={`${path}/${URLS.APP_CONFIG_PROTECTION}`}>
                         <ConfigProtectionView

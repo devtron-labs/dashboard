@@ -49,8 +49,7 @@ export default function BuildCD({
     parentPipelineId,
     isWebhookCD,
     dockerRegistries,
-    envIds,
-    noGitOpsModuleInstalledAndConfigured
+    envIds
 }) {
     const {
         formData,
@@ -688,7 +687,6 @@ export default function BuildCD({
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
-                    !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
                 {isAdvanced && ManualApproval && (

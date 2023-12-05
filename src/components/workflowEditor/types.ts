@@ -49,7 +49,6 @@ export interface WorkflowEditState {
     showNoGitOpsWarningPopup?: boolean
     cdLink?: string
     noGitOpsConfiguration?: boolean
-    noGitOpsModuleInstalledAndConfigured?: boolean
     envToShowWebhookTippy?: number
     showOpenCIPipelineBanner?: boolean
     filteredCIPipelines?: any[]

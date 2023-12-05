@@ -69,7 +69,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             showNoGitOpsWarningPopup: false,
             cdLink: '',
             noGitOpsConfiguration: false,
-            noGitOpsModuleInstalledAndConfigured:false,
             showOpenCIPipelineBanner:
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
             envToShowWebhookTippy: -1,
@@ -178,9 +177,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
             if (result.isInstalled && !result.isConfigured) {
                 this.setState({ noGitOpsConfiguration: true })
-            }
-            if (!result.isInstalled || !result.isConfigured) {
-                this.setState({ noGitOpsModuleInstalledAndConfigured: true })
             }
         } catch (error) {}
     }
@@ -420,7 +416,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
-                                    noGitOpsModuleInstalledAndConfigured={this.state.noGitOpsModuleInstalledAndConfigured}
                                     isLastNode={
                                         this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
                                     }
@@ -630,7 +625,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     renderWorkflows() {
-        console.log('here worlflow')
         return this.state.workflows.map((wf) => {
             return (
                 <Workflow

@@ -1074,7 +1074,6 @@ export default function NewCDPipeline({
                                     isWebhookCD={isWebhookCD}
                                     dockerRegistries={dockerRegistries}
                                     envIds={envIds}
-                                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
