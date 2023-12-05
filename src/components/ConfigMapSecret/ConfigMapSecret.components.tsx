@@ -678,7 +678,7 @@ export function ProtectedConfigMapSecretDetails({
 }
 
 export const convertToValidValue = (k: any): string => {
-    if (k !== false && k !== true && k !== '' && !isNaN(Number(k))) {
+     if (k !== false && k !== true && k !== '' && Number(isNaN(k))) {
         return Number(k).toString()
     }
     return k.toString()
