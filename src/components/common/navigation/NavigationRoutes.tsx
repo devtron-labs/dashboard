@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { getLoginInfo, showError, Progressing, Host, Reload, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { getLoginInfo, showError, Host, Reload, useAsync, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { ErrorBoundary, AppContext } from '../../common'
 import Navigation from './Navigation'
@@ -296,7 +296,7 @@ export default function NavigationRoutes() {
     if (pageState === ViewType.LOADING || loginLoader) {
         return (
             <div className="full-height-width">
-                <Progressing pageLoader />
+                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
             </div>
         )
     } else if (pageState === ViewType.ERROR) {
@@ -344,7 +344,9 @@ export default function NavigationRoutes() {
                                 pageOverflowEnabled ? '' : 'main__overflow-disabled'
                             }`}
                         >
-                            <Suspense fallback={<Progressing pageLoader />}>
+                            <Suspense
+                                fallback={<DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />}
+                            >
                                 <ErrorBoundary>
                                     <Switch>
                                         <Route
@@ -371,7 +373,11 @@ export default function NavigationRoutes() {
                                             <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
                                                 <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                             </Route>,
-                                            <Route key={URLS.CHARTS} path={URLS.CHARTS} render={() => <Charts isSuperAdmin={isSuperAdmin} />} />,
+                                            <Route
+                                                key={URLS.CHARTS}
+                                                path={URLS.CHARTS}
+                                                render={() => <Charts isSuperAdmin={isSuperAdmin} />}
+                                            />,
                                             <Route
                                                 key={URLS.DEPLOYMENT_GROUPS}
                                                 path={URLS.DEPLOYMENT_GROUPS}
@@ -403,7 +409,7 @@ export default function NavigationRoutes() {
                                                 />
                                             </Route>,
                                         ]}
-                                        {isSuperAdmin && !window._env_.K8S_CLIENT && (
+                                        {!window._env_.K8S_CLIENT && (
                                             <Route path={URLS.JOB}>
                                                 <AppContext.Provider value={contextValue}>
                                                     <Jobs />
