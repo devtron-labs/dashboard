@@ -92,6 +92,11 @@ export const BULK_CI_MESSAGING = {
         title: 'Cache will be generated for this pipeline run',
         subTitle: 'Cache will be used in future runs to reduce build time.',
     },
+    linkedCD: {
+        title: (envName: string) => `Syncs images deployed on ${envName}`,
+        subTitle: (envName: string) =>
+            `Nothing to build. Images deployed on ${envName} will be available for deployment`,
+    }
 }
 
 export const BULK_CD_MESSAGING = {
