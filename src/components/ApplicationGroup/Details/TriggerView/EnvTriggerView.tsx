@@ -266,6 +266,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setPageViewType(ViewType.ERROR)
         }
     }
+
     const processFilteredData = (_filteredWorkflows: WorkflowType[]): void => {
         const _selectedAppList = []
         let _preNodeExist, _postNodeExist
