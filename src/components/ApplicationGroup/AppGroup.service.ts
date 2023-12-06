@@ -74,32 +74,31 @@ export const getWorkflows = (envID: string, appIds: string): Promise<WorkflowsRe
         getCIConfig(envID, appIds),
         getCDConfig(envID, appIds),
         getExternalCIList(envID, appIds),
-    ])
-        .then(([workflow, ciConfig, cdConfig, externalCIConfig]) => {
-            if (workflow.result) {
-                const _ciConfigMap = new Map<number, CiPipelineResult>()
-                for (const _ciConfig of ciConfig.result) {
-                    _ciConfigMap.set(_ciConfig.appId, _ciConfig)
-                }
-                for (const workflowResult of workflow.result.workflows) {
-                    const processWorkflowData = processWorkflow(
-                        {
-                            ...workflowResult,
-                            workflows: [workflowResult],
-                        } as WorkflowResult,
-                        _ciConfigMap.get(workflowResult.appId),
-                        cdConfig.result as CdPipelineResult,
-                        externalCIConfig.result,
-                        WorkflowTrigger,
-                        WorkflowTrigger.workflow,
-                        filterChildAndSiblingCD(envID),
-                    )
-                    _workflows.push(...processWorkflowData.workflows)
-                    _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
-                }
-            }
-            return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
-        })
+    ]).then(([workflow, ciConfig, cdConfig, externalCIConfig]) => {
+        const _ciConfigMap = new Map<number, CiPipelineResult>()
+        for (const _ciConfig of ciConfig.result) {
+            _ciConfigMap.set(_ciConfig.appId, _ciConfig)
+        }
+        if (workflow?.result?.workflows){
+        for (const workflowResult of workflow.result.workflows) {
+            const processWorkflowData = processWorkflow(
+                {
+                    ...workflowResult,
+                    workflows: [workflowResult],
+                } as WorkflowResult,
+                _ciConfigMap.get(workflowResult.appId),
+                cdConfig.result as CdPipelineResult,
+                externalCIConfig.result,
+                WorkflowTrigger,
+                WorkflowTrigger.workflow,
+                filterChildAndSiblingCD(envID),
+            )
+            _workflows.push(...processWorkflowData.workflows)
+            _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
+        }
+    }
+        return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
+    })
 }
 
 export const getCIConfigList = (envID: string, appIds: string): Promise<CIConfigListType> => {
