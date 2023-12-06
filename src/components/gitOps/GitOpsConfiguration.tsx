@@ -352,7 +352,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         this.props.handleChecklistUpdate('gitOps')
                         toast.success('Configuration validated and saved successfully')
                         this.setState({
-                            validationStatus: VALIDATION_STATUS.SUCCESS,
+                            validationStatus: !resp.validationSkipped ? VALIDATION_STATUS.SUCCESS : '',
                             saveLoading: false,
                             isFormEdited: false,
                             deleteRepoError: resp.deleteRepoFailed,
@@ -361,15 +361,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         this.fetchGitOpsConfigurationList()
                     } else {
                         this.setState({
-                            validationStatus: VALIDATION_STATUS.FAILURE,
+                            validationStatus: !resp.validationSkipped ? VALIDATION_STATUS.FAILURE : '', 
                             saveLoading: false,
                             isFormEdited: false,
                             validationError: errorMap || [],
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
-                        toast.success('Configuration validated and saved successfully')
                         {this.state.selectedRepoType === repoType.DEFAULT && toast.error('Configuration validation failed')}
+                        {this.state.selectedRepoType === repoType.CONFIGURE && toast.success('Configuration validated and saved successfully')}
                     }
                 })
                 .catch((error) => {
