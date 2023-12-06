@@ -47,6 +47,7 @@ export interface AppStageUnlockedType {
     configmap: boolean
     secret: boolean
     envOverride: boolean
+    gitOpsConfig: boolean
 }
 
 export interface CustomNavItemsType {
@@ -57,6 +58,7 @@ export interface CustomNavItemsType {
     supportDocumentURL: string
     flowCompletionPercent: number
     currentStep: number
+    required?: boolean
     isProtectionAllowed?: boolean
 }
 
@@ -97,9 +99,7 @@ export interface AppComposeRouterProps {
     reloadEnvironments: () => void
     configProtectionData: any[]
     filteredEnvIds?: string
-    handleSaveButton: () => void
-    repositoryURL?: string
-    setRepositoryURL?: () => void
+    isGitOpsConfigurationRequired?: boolean
 }
 
 export interface EnvironmentOverridesProps {

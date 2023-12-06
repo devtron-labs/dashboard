@@ -68,6 +68,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             envToShowWebhookTippy: -1,
             filteredCIPipelines: [],
             envIds: [],
+            isGitOpsRepoNotConfigured: false,
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -143,7 +144,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     view: ViewType.FORM,
                     envToShowWebhookTippy: -1,
                     filteredCIPipelines: result.filteredCIPipelines,
-                    envIds: _envIds
+                    envIds: _envIds,
+                    isGitOpsRepoNotConfigured: result.isGitOpsRepoNotConfigured,
                 })
             })
             .catch((errors) => {
@@ -374,6 +376,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     isLastNode={
                                         this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
                                     }
+                                    isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
                                 />
                             )
                         }}
@@ -573,7 +576,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     renderWorkflows() {
-        console.log('here worlflow')
         return this.state.workflows.map((wf) => {
             return (
                 <Workflow

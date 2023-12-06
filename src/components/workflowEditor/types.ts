@@ -33,6 +33,7 @@ export interface WorkflowEditState {
     showOpenCIPipelineBanner?: boolean
     filteredCIPipelines?: any[]
     envIds?: number[]
+    isGitOpsRepoNotConfigured?: boolean
 }
 
 export interface WorkflowEditProps
@@ -70,6 +71,13 @@ export interface PipelineSelectProps {
 
 export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
+}
+
+
+export interface NoGitOpsRepoConfiguredWarningType {
+    closePopup: () => void
+    appId: number
+    text:string
 }
 
 export interface CDNodeProps{

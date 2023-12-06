@@ -470,7 +470,8 @@ export default function DeploymentConfig({
 
             if (!isCiPipeline) {
                 const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.DEPLOYMENT_TEMPLATE)
-                history.push(navItems[stageIndex + 1].href)
+                const nextStageIndex = navItems.findIndex((item, index) => index > stageIndex && item.required)
+                history.push(navItems[nextStageIndex].href)
             }
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)

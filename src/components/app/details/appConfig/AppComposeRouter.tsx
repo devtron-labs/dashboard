@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useState } from 'react'
 import { useRouteMatch, useHistory, Route, Switch } from 'react-router-dom'
 
-import { repoType, URLS } from '../../../../config'
+import { URLS } from '../../../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../../../common'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
@@ -10,7 +10,6 @@ import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import SecretList from '../../../ConfigMapSecret/Secret/SecretList'
 import ConfigMapList from '../../../ConfigMapSecret/ConfigMap/ConfigMapList'
 import './appConfig.scss'
-import UserGitRepo from '../../../gitOps/UserGitRepo'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -18,6 +17,7 @@ const DeploymentConfig = lazy(() => import('../../../deploymentConfig/Deployment
 const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'))
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
+const UserGitRepoConfiguration = lazy(() => import('../../../gitOps/UserGitRepConfiguration'))
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
@@ -61,12 +61,9 @@ export default function AppComposeRouter({
     reloadEnvironments,
     configProtectionData,
     filteredEnvIds,
-    handleSaveButton,
-    // repositoryURL,
-    // setRepositoryURL
+    isGitOpsConfigurationRequired
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
-    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
 
     const renderJobViewRoutes = (): JSX.Element => {
         return (
@@ -104,13 +101,6 @@ export default function AppComposeRouter({
                         )}
                     />,
                     <Route
-                        key={`${path}/${URLS.GIT_OPS_CONFIG}`}
-                        path={`${path}/${URLS.GIT_OPS_CONFIG}`}
-                        render={()=>(
-                            <UserGitRepo setRepoURL={path} />
-                        )}        
-                    />,
-                    <Route
                         key={`${path}/${URLS.APP_CM_CONFIG}`}
                         path={`${path}/${URLS.APP_CM_CONFIG}`}
                         render={(props) => <ConfigMapList isJobView={isJobView} isProtected={false} />}
@@ -133,29 +123,6 @@ export default function AppComposeRouter({
                     />,
                 ]}
             </Switch>
-        )
-    }
-
-    const UserGitRepoComponent = (): JSX.Element => {
-        return (
-            <div className="fw-6 cn-9 fs-14 mb-16">
-                GitOps Configuration
-                <UserGitRepo
-                    setSelectedRepoType={setSelectedRepoType}
-                    selectedRepoType={selectedRepoType}
-                    repoURL={''}
-                />
-                <div>
-                    <button
-                        data-testid="save_cluster_list_button_after_selection"
-                        className="cta h-36 lh-36"
-                        type="button"
-                        onClick={handleSaveButton}
-                    >
-                        Save
-                    </button>
-                </div>
-            </div>
         )
     }
 
@@ -206,11 +173,15 @@ export default function AppComposeRouter({
                         <ExternalLinks isAppConfigView={true} userRole={userRole} />
                     </Route>
                 )}
-                {
+                {isGitOpsConfigurationRequired && (
                     <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
-                            <UserGitRepoComponent/>
+                        <UserGitRepoConfiguration
+                            respondOnSuccess={respondOnSuccess}
+                            appId={+appId}
+                            navItems={navItems}
+                        />
                     </Route>
-                }
+                )}
                 {isUnlocked.workflowEditor && ConfigProtectionView && (
                     <Route path={`${path}/${URLS.APP_CONFIG_PROTECTION}`}>
                         <ConfigProtectionView

@@ -14,6 +14,7 @@ import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
+import { GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
 
 import {
     Progressing,
@@ -56,8 +57,7 @@ import { DELETE_ACTION, repoType } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
-import {  validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
-import { type } from 'os'
+import { validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -242,8 +242,11 @@ export const DeploymentAppRadioGroup = ({
     allowedDeploymentTypes,
     rootClassName,
     isFromCDPipeline,
+    isGitOpsRepoNotConfigured,
+    gitOtpsRepoConfigInfoBar,
 }: DeploymentAppRadioGroupType): JSX.Element => {
-
+    const gitOpsNotCongiguredText =
+        allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
     return (
         <>
             <RadioGroup
@@ -290,6 +293,11 @@ export const DeploymentAppRadioGroup = ({
                     </RadioGroupItem>
                 </ConditionalWrap>
             </RadioGroup>
+            {deploymentAppType === DeploymentAppTypes.GITOPS &&
+                isGitOpsRepoNotConfigured &&
+                !window._env_.HIDE_GITOPS_OR_HELM_OPTION && (
+                    <div className="mt-16">{gitOtpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
+                )}
         </>
     )
 }
@@ -301,7 +309,6 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     const [repoURL, setRepoURL] = useState("")
     const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map());
     const [displayValidation, setDisplayValidation] = useState(false)
-    const [warningError, setWaringEmpty] = useState(false)
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -342,9 +349,6 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         if(selectedRepoType === repoType.DEFAULT) {
             setIsDeploymentAllowed(false)
             setRepoURL('')
-        }
-        if(repoURL.length === 0) {
-            setWaringEmpty(true)
         }
         setGitOpsState(true)
         const payload = getPayload()
@@ -409,18 +413,16 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                                     <Close className="icon-dim-24" />
                                 </button>
                             </div>
-                            <div className="ml-20 mt-10">
+                            <div className="mr-20">
                                 <UserGitRepo
                                     setRepoURL={handleRepoTextChange}
                                     setSelectedRepoType={handleRepoTypeChange}
                                     repoURL={repoURL}
                                     selectedRepoType={selectedRepoType}
                                     errorInFetching={errorInFetching}
-                                    isDeploymentAllowed={isDeploymentAllowed}
                                     validateRepoURL={validateRepoURL}
                                     displayValidation={displayValidation}
                                     setDisplayValidation={setDisplayValidation}
-                                    warningError={warningError}
                                 />
                             </div>
                         </div>

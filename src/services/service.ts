@@ -1,4 +1,4 @@
-import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash, UserGitOpsRepoResponse } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import moment from 'moment'
 import {
@@ -58,9 +58,14 @@ export const getTeamList = (): Promise<TeamList> => {
     })
 }
 
-export function gitOpsConfigDevtron(appID: number, request): Promise<ResponseType>{
-    const URL = `${Routes.GITOPS_DEVTRON_APP}/${appID}`
-    return post(URL, request)
+export function gitOpsConfigDevtron(payload): Promise<ResponseType> {
+    const URL = `${Routes.GITOPS_DEVTRON_APP}`
+    return post(URL, payload)
+}
+
+export function getGitOpsRepoConfig(appId: number): Promise<UserGitOpsRepoResponse> {
+    const URL = `${Routes.GITOPS_DEVTRON_APP}/${appId}`
+    return get(URL)
 }
 
 export const getUserTeams = (): Promise<any> => {

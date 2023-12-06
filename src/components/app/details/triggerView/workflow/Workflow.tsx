@@ -214,6 +214,9 @@ export class Workflow extends Component<WorkflowProps> {
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
                 isVirtualEnvironment={node.isVirtualEnvironment}
+                isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
+                deploymentAppType={node.deploymentAppType}
+
             />
         )
     }
@@ -225,6 +228,7 @@ export class Workflow extends Component<WorkflowProps> {
                 x={node.x}
                 y={node.y}
                 environmentId={node.environmentId}
+                environmentName={node.environmentName}
                 description={node.description}
                 type={node.type}
                 stageIndex={node.stageIndex}
@@ -242,6 +246,8 @@ export class Workflow extends Component<WorkflowProps> {
                 match={this.props.match}
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
+                isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
+                deploymentAppType={node.deploymentAppType}
             />
         )
     }
