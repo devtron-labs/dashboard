@@ -61,9 +61,9 @@ export function K8SResourceList({
     const [pageSize, setPageSize] = useState(100)
     const resourceListRef = useRef<HTMLDivElement>(null)
     const showPaginatedView = resourceList?.data?.length >= 100
-    const [sortColumn, setSortColumn] = useState<string | null>(null);
-    const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
-
+    const [sortColumn, setSortColumn] = useState<string>(resourceList?.headers.includes('name') ? 'name' : 'namespace');
+    const [sortOrder, setSortOrder] = useState<string>(OrderBy.DESC)
+    
     useEffect(() => {
         if (resourceList?.headers.length) {
             /**
