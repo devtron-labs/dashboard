@@ -1,25 +1,27 @@
-import {
-    InfoColourBar,
-    RadioGroup,
-    RadioGroupItem,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { ValidateForm } from '../common/ValidateForm/ValidateForm';
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
+import { ValidateForm } from '../common/ValidateForm/ValidateForm'
 
-function UserGitRepo(props) {
-    const repoTypeChange = () => {  
-        const newRepoType = props.selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT;
-        props.setSelectedRepoType(newRepoType);
-        if(props.displayValidation) {
-            props.setDisplayValidation(false)
+function UserGitRepo({
+    selectedRepoType,
+    setSelectedRepoType,
+    setRepoURL,
+    repoURL,
+    displayValidation,
+    errorInFetching,
+}) {
+    const repoTypeChange = () => {
+        const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
+        setSelectedRepoType(newRepoType)
+        if (displayValidation) {
+            setSelectedRepoType(false)
         }
     }
 
-    const onChange = (event) => { 
-        props.setRepoURL(event.target.value)
+    const onChange = (event) => {
+        setRepoURL(event.target.value)
     }
 
     const InputUrlBox = () => {
@@ -30,7 +32,7 @@ function UserGitRepo(props) {
                     type="text"
                     autoComplete="off"
                     name="name"
-                    value={props.repoURL}
+                    value={repoURL}
                     placeholder="Enter repository URL"
                     className="form__input"
                     onChange={(event) => onChange(event)}
@@ -61,7 +63,7 @@ function UserGitRepo(props) {
                     <RadioGroup
                         className="radio-group-no-border pt-12 pb-16"
                         name="trigger-type"
-                        value={props.selectedRepoType}
+                        value={selectedRepoType}
                         onChange={repoTypeChange}
                     >
                         <div className="pt-12">
@@ -74,11 +76,11 @@ function UserGitRepo(props) {
                             </RadioGroupItem>
                         </div>
                         <div className="ml-26">
-                            {props.displayValidation && (
+                            {displayValidation && (
                                 <ValidateForm
                                     id={1}
-                                    validationError={props.errorInFetching}
-                                    validationStatus={props.errorInFetching ? 'FAILURE' : 'SUCCESS'}
+                                    validationError={errorInFetching}
+                                    validationStatus={errorInFetching ? 'FAILURE' : 'SUCCESS'}
                                     configName="gitOps"
                                     showValidate={false}
                                     onClickValidate={() => {}}
@@ -86,7 +88,7 @@ function UserGitRepo(props) {
                             )}
                         </div>
                     </RadioGroup>
-                    {props.selectedRepoType === repoType.CONFIGURE && InputUrlBox()}
+                    {selectedRepoType === repoType.CONFIGURE && InputUrlBox()}
                 </div>
                 {renderInfoColorBar()}
             </div>

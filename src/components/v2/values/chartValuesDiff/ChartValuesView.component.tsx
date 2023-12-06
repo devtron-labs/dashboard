@@ -314,7 +314,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         }
     }, [deploymentAppType, allowedDeploymentTypes])
 
-    const handleRepoTypeChange = (newRepoType) => {
+    const handleRepoTypeChange = (newRepoType: string) => {
         setSelectedRepoType(newRepoType);
     };
 
@@ -355,22 +355,16 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         const payload = getPayload()
         validateHelmAppGitOpsConfiguration(payload)
             .then((response) => {
-                setTimeout(() => {
-                    if (Object.values(response.result.stageErrorMap).length) {
-                        if (selectedRepoType !== repoType.DEFAULT) {
-                            setDisplayValidation(true)
-                        } else {
-                            setDisplayValidation(false)
-                        }
-                        setErrorInFetching(response.result.stageErrorMap)
-                    } else {
-                        setDisplayValidation(false)
-                        setIsDeploymentAllowed(false)
-                    }
-                }, 10)
+                if (Object.values(response.result.stageErrorMap).length) {
+                    setDisplayValidation(selectedRepoType !== repoType.DEFAULT)
+                    setErrorInFetching(response.result.stageErrorMap)
+                } else {
+                    setDisplayValidation(false)
+                    setIsDeploymentAllowed(false)
+                }
             })
             .catch((err) => {
-                if(selectedRepoType === repoType.CONFIGURE) {
+                if (selectedRepoType === repoType.CONFIGURE) {
                     showError(err)
                 }
             })
@@ -407,7 +401,6 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                                     selectedRepoType={selectedRepoType}
                                     errorInFetching={errorInFetching}
                                     displayValidation={displayValidation}
-                                    setDisplayValidation={setDisplayValidation}
                                 />
                             </div>
                         </div>

@@ -100,13 +100,6 @@ export default function AppComposeRouter({
                         )}
                     />,
                     <Route
-                        key={`${path}/${URLS.GIT_OPS_CONFIG}`}
-                        path={`${path}/${URLS.GIT_OPS_CONFIG}`}
-                        render={()=>(
-                            <UserGitRepo setRepoURL={path} />
-                        )}        
-                    />,
-                    <Route
                         key={`${path}/${URLS.APP_CM_CONFIG}`}
                         path={`${path}/${URLS.APP_CM_CONFIG}`}
                         render={(props) => <ConfigMapList isJobView={isJobView} isProtected={false} />}
