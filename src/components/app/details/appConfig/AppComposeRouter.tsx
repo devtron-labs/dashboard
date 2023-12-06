@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState } from 'react'
+import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch } from 'react-router-dom'
 
 import { URLS } from '../../../../config'

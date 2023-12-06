@@ -1,8 +1,4 @@
-import {
-    InfoColourBar,
-    RadioGroup,
-    RadioGroupItem,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
