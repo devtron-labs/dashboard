@@ -27,6 +27,5 @@ export const validateGitOpsConfiguration = (request: any):Promise<any> => {
 }
 
 export const validateHelmAppGitOpsConfiguration = (request: any): Promise<any> => {
-  const URL = `${Routes.GITOPOS_HELM_VALIDATE}`
-  return post(URL, request);
+  return post(`${Routes.GITOPOS_HELM_VALIDATE}`, request);
 }

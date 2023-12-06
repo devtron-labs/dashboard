@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react'
+import React, { Component } from 'react'
 import { ViewType, DOCUMENTATION, repoType } from '../../config'
 import {
     GitOpsState,
@@ -32,7 +32,6 @@ import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
-import UserGitRepo from './UserGitRepo'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
@@ -369,7 +368,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
-                        toast.error('Configuration validation failed')
+                        toast.success('Configuration validated and saved successfully')
+                        {this.state.selectedRepoType === repoType.DEFAULT && toast.error('Configuration validation failed')}
                     }
                 })
                 .catch((error) => {
@@ -569,14 +569,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         }
                     />
 
-                    <ValidateForm
+                    {this.state.selectedRepoType === repoType.DEFAULT && <ValidateForm
                         id={this.state.form.id}
                         onClickValidate={() => this.validateGitOps(this.state.providerTab)}
                         validationError={this.state.validationError}
                         validationStatus={this.state.validationStatus}
                         configName="gitops "
                         warning={this.state.deleteRepoError ? warning : ''}
-                    />
+                    />}
 
                     <CustomInput
                         autoComplete="off"

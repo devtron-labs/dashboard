@@ -2540,6 +2540,12 @@ textarea,
     }
 }
 
+.info-icon-n5 {
+    circle {
+        fill: var(--N500);
+    }
+}
+
 .info-icon-n6 {
     circle {
         fill: var(--N600);
@@ -2982,6 +2988,10 @@ textarea,
     height: 8px;
 }
 
+.h-10 {
+    height: 10px;
+}
+
 .h-12 {
     height: 12px;
 }
@@ -3126,6 +3136,10 @@ textarea,
     height: 380px !important;
 }
 
+.h-500 {
+    height: 500px !important;
+}
+
 // Minimum Height
 .mh-28 {
     min-height: 28px;
@@ -3188,6 +3202,10 @@ textarea,
 }
 
 .mxh-210 {
+    max-height: 210px;
+}
+
+.mxh-250 {
     max-height: 210px;
 }
 
@@ -3534,6 +3552,10 @@ textarea,
 
 .dc__flip-180 {
     transform: rotate(180deg);
+}
+
+.dc__flip-45 {
+    transform: rotate(45deg);
 }
 
 .dc__flip-90 {

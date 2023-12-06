@@ -40,6 +40,7 @@ import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning
 import './cdPipeline.scss'
 import { toast } from 'react-toastify'
 import {
+    CHANGE_TO_EXTERNAL_SOURCE,
     CREATE_DEPLOYMENT_PIPELINE,
     DEPLOY_IMAGE_EXTERNALSOURCE,
     EDIT_DEPLOYMENT_PIPELINE,
@@ -60,6 +61,7 @@ import {
     gitOpsRepoNotConfiguredWithEnforcedEnv,
     gitOpsRepoNotConfiguredWithOptionsHidden,
 } from '../gitOps/constants'
+import { NewCDPipelineProps } from './types'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -77,6 +79,7 @@ export default function NewCDPipeline({
     envIds,
     isLastNode,
     noGitOpsModuleInstalledAndConfigured,
+    changeCIPayload,
     isGitOpsRepoNotConfigured
 }) {
     const isCdPipeline = true
@@ -87,7 +90,6 @@ export default function NewCDPipeline({
     const noStrategyAvailable = useRef(false)
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
-    const [ savedCustomTagPattern, setSavedCustomTagPattern ] = useState<string>('')
     const [gitOpsRepoConfiguredWarning, setGitOpsRepoConfiguredWarning] = useState<{ show: boolean; text: string }>({
         show: false,
         text: '',
@@ -147,6 +149,7 @@ export default function NewCDPipeline({
         generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
+    const [savedCustomTagPattern, setSavedCustomTagPattern] = useState<string>('')
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
@@ -600,6 +603,11 @@ export default function NewCDPipeline({
                     : formData.triggerType // In case of virtual environment trigger type will always be manual
         }
 
+        // Its not allowed to switch from external to external
+        if (changeCIPayload?.switchFromCiPipelineId) {
+            pipeline['switchFromCiPipelineId'] = changeCIPayload.switchFromCiPipelineId
+        }
+
         const request = {
             appId: +appId,
         }
@@ -768,7 +776,7 @@ export default function NewCDPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         if (
-            !formDataErrorObj.buildStage.isValid ||
+            !formDataErrorObj.buildStage.isValid || 
             !formDataErrorObj.preBuildStage.isValid ||
             !formDataErrorObj.postBuildStage.isValid
         ) {
@@ -868,7 +876,8 @@ export default function NewCDPipeline({
                 }
             })
             .catch((error: ServerErrors) => {
-                if (!force && error.code != 403) {
+                // 412 is for linked pipeline and 403 is for RBAC
+                if (!force && error.code != 403 && error.code != 412) {
                     setForceDeleteDialogData(error)
                     hideDeleteModal()
                     setDeleteDialog(deleteDialogType.showForceDeleteDialog)
@@ -1120,7 +1129,6 @@ export default function NewCDPipeline({
                                     isWebhookCD={isWebhookCD}
                                     dockerRegistries={dockerRegistries}
                                     envIds={envIds}
-                                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                 />
                             </Route>
@@ -1136,6 +1144,8 @@ export default function NewCDPipeline({
         let title;
         if (isWebhookCD && workflowId === '0') {
             title = DEPLOY_IMAGE_EXTERNALSOURCE;
+        } else if (isWebhookCD && changeCIPayload) {
+            title = CHANGE_TO_EXTERNAL_SOURCE
         } else if (cdPipelineId) {
             title = EDIT_DEPLOYMENT_PIPELINE;
         } else {

@@ -7,7 +7,6 @@ import React from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ValidateForm } from '../common/ValidateForm/ValidateForm';
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 import { UserGitRepoProps } from './gitops.type';
 
@@ -15,6 +14,9 @@ function UserGitRepo(props: UserGitRepoProps) {
     const repoTypeChange = () => {
         const newRepoType = props.selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
         props.setSelectedRepoType(newRepoType)
+        if(props.displayValidation) {
+            props.setDisplayValidation(false)
+        }
     }
 
     const onChange = (event) => {
@@ -59,10 +61,6 @@ function UserGitRepo(props: UserGitRepoProps) {
         )
     }
 
-    const onClickValidate = () => {
-        props.validateRepoURL()
-    }
-
     return (
             <div className="pt-16 pl-20">
                 <div className="form__row flex left">
@@ -82,7 +80,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                                 Repository will be created automatically using application name
                             </div>
                         </div>
-                        <div>
+                        <div className="pt-12">
                             <RadioGroupItem value={repoType.CONFIGURE}>
                                 Commit manifest to a desired repository.
                             </RadioGroupItem>

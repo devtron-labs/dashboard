@@ -18,7 +18,7 @@ import {
     ToastBody3 as UpdateToast,
     ErrorBoundary,
 } from './components/common'
-import { showError, Progressing, BreadcrumbStore, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import * as serviceWorker from './serviceWorker'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
@@ -207,7 +207,7 @@ export default function App() {
         <Suspense fallback={null}>
             {validating ? (
                 <div className="full-height-width">
-                    <Progressing pageLoader />
+                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
                 </div>
             ) : (
                 <>

@@ -34,7 +34,6 @@ export const URLS = {
     APP_CONFIG: 'edit',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
-    APP_GITOPS_CONFIG: 'gitops-config',
     APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
     APP_DEPLOYMENT_CONFIG: 'deployment-template',
     APP_WORKFLOW_CONFIG: 'workflow',
@@ -51,6 +50,7 @@ export const URLS = {
     AUTHENTICATE: '/auth/login',
     BULK_EDITS: '/bulk-edits',
     DEPLOYMENT_GROUPS: '/deployment-groups',
+    LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
     GIT_OPS_CONFIG: '/gitops/config',
@@ -84,7 +84,6 @@ export const URLS = {
     STACK_MANAGER_ABOUT: '/stack-manager/about',
     STACK_MANAGER_ABOUT_RELEASES: '/stack-manager/about/releases',
     DEPLOYMENT_HISTORY_CONFIGURATIONS: '/configuration',
-    CLUSTER_LIST: '/clusters',
     NODES_LIST: '/nodes',
     NODE_DETAILS: '/node-details',
     CHART: '/chart',

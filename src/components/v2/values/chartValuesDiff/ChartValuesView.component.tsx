@@ -167,6 +167,7 @@ export const DeploymentAppSelector = ({
     teamId,
     dispatch
 }: DeploymentAppSelectorType): JSX.Element => {
+    
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
             <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
@@ -186,17 +187,22 @@ export const DeploymentAppSelector = ({
                     )}
                 </span>
             </div>
-            {gitRepoURL && <div>
-                <div className="fs-14">
-                    Manifest are committed to
-                    <div>
-                        <a href="link">{gitRepoURL}</a>
+            {gitRepoURL && (
+                <div className="pt-12">
+                    <div className="fs-14">
+                        Manifests are committed to
+                        <div>
+                            <a className="dc__ellipsis-right cursor" href="link">
+                                {gitRepoURL}
+                            </a>
+                        </div>
                     </div>
+                    <hr />
                 </div>
-            </div>}
+            )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100 fw-4">
+        <div className="form__row form__row--w-100 fw-4 pt-16">
             <div className="form__row">
                 <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
@@ -323,7 +329,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     const handleCloseButton = () => {
         setIsDeploymentAllowed(false)
         setGitOpsState(true)
-        if(selectedRepoType !== repoType.CONFIGURE) {
+        if (selectedRepoType !== repoType.CONFIGURE) {
             setSelectedRepoType(repoType.DEFAULT)
         }
     }
@@ -331,7 +337,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     const handleRepoTextChange = (newRepoText: string) => {
         setRepoURL(newRepoText);
         dispatch({
-            type: ChartValuesViewActionTypes.gitRepoURL,
+            type: ChartValuesViewActionTypes.setGitRepoURL,
             payload: { gitRepoURL: newRepoText },
         })
       };
@@ -355,7 +361,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         validateHelmAppGitOpsConfiguration(payload)
             .then((response) => {
                 setTimeout(() => {
-                    if (response.result.stageErrorMap) {
+                    if (Object.values(response.result.stageErrorMap).length) {
                         if (selectedRepoType !== repoType.DEFAULT) {
                             setDisplayValidation(true)
                         } else {
@@ -363,31 +369,16 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                         }
                         setErrorInFetching(response.result.stageErrorMap)
                     } else {
+                        setDisplayValidation(false)
                         setIsDeploymentAllowed(false)
                     }
                 }, 10)
             })
             .catch((err) => {
-                // showError(err)
-            })
-    }
-
-    const validateRepoURL = () => {
-        const payload = getPayload()
-        validateHelmAppGitOpsConfiguration(payload).then((response) => {
-            setTimeout(() => {
-                if (response.result.stageErrorMap.length>0) {
-                    if (selectedRepoType !== repoType.DEFAULT) {
-                        setDisplayValidation(true)
-                    } else {
-                        setDisplayValidation(false)
-                    }
-                    setErrorInFetching(response.result.stageErrorMap)
-                } else {
-                    setIsDeploymentAllowed(false)
+                if(selectedRepoType === repoType.CONFIGURE) {
+                    showError(err)
                 }
-            }, 10)
-        })
+            })
     }
 
     const toggleDrawer = () => {
@@ -398,7 +389,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         <>
             {isDeploymentAllowed && (
                 <div>
-                    <Drawer onEscape={handleCloseButton} position="right" width="600px">
+                    <Drawer onEscape={handleCloseButton} position="right" width="800px">
                         <div className="cluster-form dc__position-rel h-100 bcn-0">
                             <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
@@ -420,7 +411,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                                     repoURL={repoURL}
                                     selectedRepoType={selectedRepoType}
                                     errorInFetching={errorInFetching}
-                                    validateRepoURL={validateRepoURL}
+                                    isDeploymentAllowed={isDeploymentAllowed}
                                     displayValidation={displayValidation}
                                     setDisplayValidation={setDisplayValidation}
                                 />

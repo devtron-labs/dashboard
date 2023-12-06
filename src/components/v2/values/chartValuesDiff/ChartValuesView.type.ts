@@ -91,9 +91,9 @@ export interface DeploymentAppSelectorType {
     isDeployChartView: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
     allowedCustomBool: boolean
-    gitRepoURL?: string
+    gitRepoURL: boolean
     envId: string
-    teamId?: string
+    teamId?: number
     dispatch: React.Dispatch<ChartValuesViewAction>
 }
 
@@ -111,7 +111,7 @@ export interface DeploymentAppRadioGroupType {
 export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
     gitRepoURL?: Promise<void>
     envId: string
-    teamId?: string
+    teamId?: number
     commonState: ChartValuesViewState
     dispatch: React.Dispatch<ChartValuesViewAction>
 }
@@ -348,7 +348,7 @@ export enum ChartValuesViewActionTypes {
     multipleOptions = 'multipleOptions',
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
-    gitRepoURL = 'gitRepoURL'
+    setGitRepoURL = 'setGitRepoURL'
 }
 
 

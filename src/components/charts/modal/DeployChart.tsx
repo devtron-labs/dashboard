@@ -223,7 +223,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 onHide(true)
             } else {
                 let payload = {
-                    teamId: selectedProject.value ,
+                    teamId: selectedProject.value,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
                     environmentId: serverMode == SERVER_MODE.FULL ? selectedEnvironment.value : 0,
@@ -234,7 +234,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     valuesOverride: obj,
                     valuesOverrideYaml: textRef,
                     appName,
-                    gitRepoURL:'Default'
+                    gitRepoURL: 'Default',
                 }
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },

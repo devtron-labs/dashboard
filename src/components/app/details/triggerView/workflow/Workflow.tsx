@@ -14,6 +14,7 @@ import { Checkbox, CHECKBOX_VALUE, DeploymentNodeType, noop } from '@devtron-lab
 import { TriggerViewContext } from '../config'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
+const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 
 export class Workflow extends Component<WorkflowProps> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
@@ -95,6 +96,21 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     renderCINodes(node: NodeAttr) {
+        if (node.isLinkedCD && LinkedCDNode) {
+            return (
+                <LinkedCDNode
+                    key={`linked-cd-${node.id}`}
+                    x={node.x}
+                    y={node.y}
+                    width={node.width}
+                    height={node.height}
+                    configDiffView={false}
+                    title={node.title}
+                    readOnly
+                />
+            )
+        }
+
         if (node.isLinkedCI) {
             return (
                 <TriggerLinkedCINode
@@ -308,15 +324,16 @@ export class Workflow extends Component<WorkflowProps> {
         const isExternalCiWorkflow = this.props.nodes.some(
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
+
         return (
             <div
-                className={`workflow workflow--trigger mb-20 ${this.props.isSelected ? 'eb-5' : ''}`}
-                style={{ minWidth: `${this.props.width}px` }}
+                className="workflow--trigger flexbox-col mb-16 dc__gap-6"
+                style={{ minWidth: 'auto' }}
             >
-                <div className="workflow__header">
+                <div className="bcn-0 cn-9 fs-13 fw-6 lh-20">
                     {this.props.fromAppGrouping ? (
                         <Checkbox
-                            rootClassName="fs-13 fw-6 mb-0 app-group-checkbox"
+                            rootClassName="mb-0 app-group-checkbox"
                             isChecked={this.props.isSelected}
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={this.handleWorkflowSelection}
@@ -325,13 +342,13 @@ export class Workflow extends Component<WorkflowProps> {
                             {this.props.name}
                         </Checkbox>
                     ) : (
-                        <span data-testid="workflow-heading" className="workflow__name">
+                        <span data-testid="workflow-heading" className="m-0">
                             {this.props.name}
                         </span>
                     )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
-                <div className="workflow__body">
+                <div className={`workflow__body bc-n50 dc__overflow-scroll dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2': ''}`}>
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}
                         {this.renderNodes()}
