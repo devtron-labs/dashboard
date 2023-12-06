@@ -116,7 +116,6 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
                             displayValidation={displayValidation}
                             errorInFetching={errorInFetching}
                             setDisplayValidation={setDisplayValidation}
-                            validateRepoURL={() => {}}
                         />
                     ) : (
                         renderSavedGitOpsRepoState(gitOpsRepoURL)

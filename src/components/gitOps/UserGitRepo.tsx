@@ -63,43 +63,46 @@ function UserGitRepo(props: UserGitRepoProps) {
     }
 
     return (
-            <div className="pt-16 pl-20">
-                <div className="form__row flex left">
-                    <div className="fw-4 fs-13 fcn-9">
-                        Application Deployemnt states are saved as manifest in a Git repository. ArgoCD uses these
-                        manifests to sync with your live Kubernetes cluster.
+        <div className="pt-16 pl-20">
+            <div className="form__row flex left">
+                <div className="fw-4 fs-13 fcn-9">
+                    Application Deployemnt states are saved as manifest in a Git repository. ArgoCD uses these manifests
+                    to sync with your live Kubernetes cluster.
+                </div>
+                <RadioGroup
+                    className="radio-group-no-border mt-16"
+                    name="trigger-type"
+                    value={props.selectedRepoType}
+                    onChange={repoTypeChange}
+                >
+                    <div>
+                        <RadioGroupItem value={repoType.DEFAULT}>Auto-create repository</RadioGroupItem>
+                        <div className="ml-26 cn-7 fs-12 fw-4">
+                            Repository will be created automatically using application name
+                        </div>
                     </div>
-                    <RadioGroup
-                        className="radio-group-no-border mt-16"
-                        name="trigger-type"
-                        value={props.selectedRepoType}
-                        onChange={repoTypeChange}
-                    >
-                        <div className="mb-12">
-                            <RadioGroupItem value={repoType.DEFAULT}>Auto-create repository</RadioGroupItem>
-                            <div className="ml-26 cn-7 fs-12 fw-4">
-                                Repository will be created automatically using application name
-                            </div>
-                        </div>
-                        <div className="pt-12">
-                            <RadioGroupItem value={repoType.CONFIGURE}>
-                                Commit manifest to a desired repository.
-                            </RadioGroupItem>
-                        </div>
+                    <div className="pt-12">
+                        <RadioGroupItem value={repoType.CONFIGURE}>
+                            Commit manifest to a desired repository.
+                        </RadioGroupItem>
+                    </div>
+                    <div className="ml-26">
                         {props.displayValidation && (
                             <ValidateForm
                                 id={1}
                                 validationError={props.errorInFetching}
                                 validationStatus={props.errorInFetching ? 'FAILURE' : 'SUCCESS'}
                                 configName="gitOps"
-                                onClickValidate={()=>{}}
+                                showValidate={false}
+                                onClickValidate={() => {}}
                             />
                         )}
-                    </RadioGroup>
-                    {props.selectedRepoType === repoType.CONFIGURE && InputUrlBox()}
-                </div>
-                {renderInfoColorBar()}
+                    </div>
+                </RadioGroup>
+                {props.selectedRepoType === repoType.CONFIGURE && InputUrlBox()}
             </div>
+            {renderInfoColorBar()}
+        </div>
     )
 }
 
