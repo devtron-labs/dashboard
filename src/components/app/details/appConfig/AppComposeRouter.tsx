@@ -1,7 +1,7 @@
-import React, { lazy, Suspense, useState } from 'react'
+import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch } from 'react-router-dom'
 
-import { repoType, URLS } from '../../../../config'
+import { URLS } from '../../../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../../../common'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
@@ -10,7 +10,6 @@ import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import SecretList from '../../../ConfigMapSecret/Secret/SecretList'
 import ConfigMapList from '../../../ConfigMapSecret/ConfigMap/ConfigMapList'
 import './appConfig.scss'
-import UserGitRepo from '../../../gitOps/UserGitRepo'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))

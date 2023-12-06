@@ -306,7 +306,6 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     const [repoURL, setRepoURL] = useState("")
     const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map());
     const [displayValidation, setDisplayValidation] = useState(false)
-    const [warningError, setWaringEmpty] = useState(false)
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -347,9 +346,6 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
         if(selectedRepoType === repoType.DEFAULT) {
             setIsDeploymentAllowed(false)
             setRepoURL('')
-        }
-        if(repoURL.length === 0) {
-            setWaringEmpty(true)
         }
         setGitOpsState(true)
         const payload = getPayload()
