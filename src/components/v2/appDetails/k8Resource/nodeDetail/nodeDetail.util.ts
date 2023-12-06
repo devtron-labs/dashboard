@@ -398,10 +398,9 @@ export const getTrimmedManifestData = (
 ): ManifestData | string => {
     if (manifestData[MANIFEST_KEY_FIELDS.METADATA]) {
         const { [MANIFEST_KEY_FIELDS.MANAGED_FIELDS]: _, ...metadata } = manifestData[MANIFEST_KEY_FIELDS.METADATA]
+        const trimmedManifestData = {...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata}
 
-        return returnAsString
-            ? JSON.stringify({ ...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata })
-            : { ...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata }
+        return returnAsString ? JSON.stringify(trimmedManifestData) : trimmedManifestData
     }
 
     return returnAsString ? JSON.stringify(manifestData) : manifestData
