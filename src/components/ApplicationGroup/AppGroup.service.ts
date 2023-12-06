@@ -79,24 +79,24 @@ export const getWorkflows = (envID: string, appIds: string): Promise<WorkflowsRe
         for (const _ciConfig of ciConfig.result) {
             _ciConfigMap.set(_ciConfig.appId, _ciConfig)
         }
-        if (workflow?.result?.workflows){
-        for (const workflowResult of workflow.result.workflows) {
-            const processWorkflowData = processWorkflow(
-                {
-                    ...workflowResult,
-                    workflows: [workflowResult],
-                } as WorkflowResult,
-                _ciConfigMap.get(workflowResult.appId),
-                cdConfig.result as CdPipelineResult,
-                externalCIConfig.result,
-                WorkflowTrigger,
-                WorkflowTrigger.workflow,
-                filterChildAndSiblingCD(envID),
-            )
-            _workflows.push(...processWorkflowData.workflows)
-            _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
+        if (workflow?.result?.workflows) {
+            for (const workflowResult of workflow.result.workflows) {
+                const processWorkflowData = processWorkflow(
+                    {
+                        ...workflowResult,
+                        workflows: [workflowResult],
+                    } as WorkflowResult,
+                    _ciConfigMap.get(workflowResult.appId),
+                    cdConfig.result as CdPipelineResult,
+                    externalCIConfig.result,
+                    WorkflowTrigger,
+                    WorkflowTrigger.workflow,
+                    filterChildAndSiblingCD(envID),
+                )
+                _workflows.push(...processWorkflowData.workflows)
+                _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
+            }
         }
-    }
         return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
     })
 }
