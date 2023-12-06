@@ -100,6 +100,7 @@ export interface DeploymentStatusDetailsBreakdownDataType {
     deploymentStatusBreakdown: {
         DEPLOYMENT_INITIATED: DeploymentStatusDetailRow
         GIT_COMMIT?: DeploymentStatusDetailRow
+        ARGOCD_SYNC?: DeploymentStatusDetailRow
         KUBECTL_APPLY?: DeploymentStatusDetailRow
         APP_HEALTH?: DeploymentStatusDetailRow
         HELM_PACKAGE_GENERATED?: DeploymentStatusDetailRow
