@@ -238,37 +238,36 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
-            if(_workflows){
-            if (showCIModal) {
-                _workflows.forEach((wf) =>
-                    wf.nodes.forEach((n) => {
-                        if (+n.id === selectedCINode.id) {
-                            workflows.forEach((sw) =>
-                                sw.nodes.forEach((sn) => {
-                                    if (+sn.id === selectedCINode.id) {
-                                        n.inputMaterialList = sn.inputMaterialList
-                                    }
-                                }),
-                            )
-                        }
-                    }),
-                )
+            if (_workflows) {
+                if (showCIModal) {
+                    _workflows.forEach((wf) =>
+                        wf.nodes.forEach((n) => {
+                            if (+n.id === selectedCINode.id) {
+                                workflows.forEach((sw) =>
+                                    sw.nodes.forEach((sn) => {
+                                        if (+sn.id === selectedCINode.id) {
+                                            n.inputMaterialList = sn.inputMaterialList
+                                        }
+                                    }),
+                                )
+                            }
+                        }),
+                    )
+                }
+                preserveSelection(_workflows)
+                setWorkflows(_workflows)
+                setFilteredCIPipelines(filteredCIPipelines)
+                setErrorCode(0)
+                setPageViewType(ViewType.FORM)
+                getWorkflowStatusData(_workflows)
+                processFilteredData(_workflows)
+            } else {
+                setPageViewType(ViewType.FORM)
             }
-            preserveSelection(_workflows)
-            setWorkflows(_workflows)
-            setFilteredCIPipelines(filteredCIPipelines)
-            setErrorCode(0)
-            
-            getWorkflowStatusData(_workflows)
-            processFilteredData(_workflows)
-        }
         } catch (error) {
             showError(error)
             setErrorCode(error['code'])
             setPageViewType(ViewType.ERROR)
-        }
-        finally{
-            setPageViewType(ViewType.FORM)
         }
     }
 
