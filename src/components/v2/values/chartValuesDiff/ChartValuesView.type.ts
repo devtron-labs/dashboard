@@ -104,6 +104,8 @@ export interface DeploymentAppRadioGroupType {
     allowedDeploymentTypes?: DeploymentAppTypes[]
     rootClassName?: string
     isFromCDPipeline?: boolean
+    isGitOpsRepoNotConfigured?: boolean
+    gitOtpsRepoConfigInfoBar?: (content:string) => JSX.Element
 }
 
 export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {

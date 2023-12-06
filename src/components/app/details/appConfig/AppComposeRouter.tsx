@@ -17,6 +17,7 @@ const DeploymentConfig = lazy(() => import('../../../deploymentConfig/Deployment
 const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'))
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
+const UserGitRepoConfiguration = lazy(() => import('../../../gitOps/UserGitRepConfiguration'))
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
@@ -60,6 +61,7 @@ export default function AppComposeRouter({
     reloadEnvironments,
     configProtectionData,
     filteredEnvIds,
+    isGitOpsConfigurationRequired
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -169,6 +171,15 @@ export default function AppComposeRouter({
                 {canShowExternalLinks && (
                     <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
                         <ExternalLinks isAppConfigView={true} userRole={userRole} />
+                    </Route>
+                )}
+                {isGitOpsConfigurationRequired && (
+                    <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
+                        <UserGitRepoConfiguration
+                            respondOnSuccess={respondOnSuccess}
+                            appId={+appId}
+                            navItems={navItems}
+                        />
                     </Route>
                 )}
                 {isUnlocked.workflowEditor && ConfigProtectionView && (

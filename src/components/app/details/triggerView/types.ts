@@ -237,6 +237,12 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     description: string
     index?: number
     isVirtualEnvironment?: boolean
+    isGitOpsRepoNotConfigured?: boolean
+    deploymentAppType: DeploymentAppTypes
+}
+
+export interface TriggerCDNodeState {
+    showGitOpsRepoConfiguredWarning: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -247,6 +253,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     status: string
     id: string
     environmentId: string
+    environmentName: string
     title: string
     triggerType: string
     colourCode: string
@@ -258,6 +265,11 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     fromAppGrouping: boolean
     description: string
     index?: number
+    isGitOpsRepoNotConfigured?: boolean
+    deploymentAppType: DeploymentAppTypes
+}
+export interface TriggerPrePostCDNodeState {
+    showGitOpsRepoConfiguredWarning: boolean
 }
 
 export interface TriggerEdgeType {
@@ -461,6 +473,7 @@ export interface Workflow {
 export interface WorkflowResult {
     appId: number
     appName: string
+    isGitOpsRepoNotConfigured: boolean
     workflows: Workflow[]
 }
 //End Workflow Response
@@ -616,6 +629,7 @@ export interface CdPipeline {
     helmPackageName?: string
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType
+    isGitOpsRepoNotConfigured?: boolean
 }
 
 export interface CdPipelineResult {

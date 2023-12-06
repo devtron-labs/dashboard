@@ -69,11 +69,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             showNoGitOpsWarningPopup: false,
             cdLink: '',
             noGitOpsConfiguration: false,
+            noGitOpsModuleInstalledAndConfigured:false,
             showOpenCIPipelineBanner:
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
             envToShowWebhookTippy: -1,
             filteredCIPipelines: [],
             envIds: [],
+            isGitOpsRepoNotConfigured: false,
             showWorkflowOptionsModal: false,
             cachedCDConfigResponse: {
                 pipelines: [],
@@ -151,6 +153,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     envToShowWebhookTippy: -1,
                     filteredCIPipelines: result.filteredCIPipelines,
                     envIds: _envIds,
+                    isGitOpsRepoNotConfigured: result.isGitOpsRepoNotConfigured,
                     cachedCDConfigResponse: result.cachedCDConfigResponse ?? {
                         pipelines: [],
                         appId: 0,
@@ -177,6 +180,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
             if (result.isInstalled && !result.isConfigured) {
                 this.setState({ noGitOpsConfiguration: true })
+            }
+            if (!result.isInstalled || !result.isConfigured) {
+                this.setState({ noGitOpsModuleInstalledAndConfigured: true })
             }
         } catch (error) {}
     }
@@ -416,9 +422,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
+                                    noGitOpsModuleInstalledAndConfigured={this.state.noGitOpsModuleInstalledAndConfigured}
                                     isLastNode={
                                         this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
                                     }
+                                    isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
                                     changeCIPayload={this.state.changeCIPayload}
                                 />
                             )

@@ -49,10 +49,12 @@ export interface WorkflowEditState {
     showNoGitOpsWarningPopup?: boolean
     cdLink?: string
     noGitOpsConfiguration?: boolean
+    noGitOpsModuleInstalledAndConfigured?: boolean
     envToShowWebhookTippy?: number
     showOpenCIPipelineBanner?: boolean
     filteredCIPipelines?: any[]
     envIds?: number[]
+    isGitOpsRepoNotConfigured?: boolean
     showWorkflowOptionsModal: boolean
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
@@ -106,7 +108,13 @@ export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
 }
 
-export interface CDNodeProps {
+
+export interface NoGitOpsRepoConfiguredWarningType {
+    closePopup: () => void
+    appId: number
+    text:string
+}
+export interface CDNodeProps{
     id: string
     deploymentStrategy: string
     triggerType: string

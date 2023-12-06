@@ -55,6 +55,12 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
 import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
+import NoGitOpsRepoConfiguredWarning from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import {
+    gitOpsRepoNotConfigured,
+    gitOpsRepoNotConfiguredWithEnforcedEnv,
+    gitOpsRepoNotConfiguredWithOptionsHidden,
+} from '../gitOps/constants'
 import { NewCDPipelineProps } from './types'
 
 export enum deleteDialogType {
@@ -72,8 +78,10 @@ export default function NewCDPipeline({
     refreshParentWorkflows,
     envIds,
     isLastNode,
+    noGitOpsModuleInstalledAndConfigured,
     changeCIPayload,
-}: NewCDPipelineProps) {
+    isGitOpsRepoNotConfigured
+}) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
     const validationRules = new ValidationRules()
@@ -82,7 +90,11 @@ export default function NewCDPipeline({
     const noStrategyAvailable = useRef(false)
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
-    
+    const [gitOpsRepoConfiguredWarning, setGitOpsRepoConfiguredWarning] = useState<{ show: boolean; text: string }>({
+        show: false,
+        text: '',
+    })
+
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string
         workflowId: string
@@ -251,6 +263,10 @@ export default function NewCDPipeline({
                 setErrorCode(error.code)
                 setPageState(ViewType.ERROR)
             })
+    }
+
+    const handleShowGitOpsRepoConfiguredWarning = () => {
+        setGitOpsRepoConfiguredWarning({show:false, text:''})
     }
 
     const getEnvCDPipelineName = (form) => {
@@ -709,8 +725,47 @@ export default function NewCDPipeline({
         }
         setFormDataErrorObj(_formDataErrorObj)
     }
+    
+    const checkForGitOpsRepoNotConfigured = () => {
+        const isHelmEnforced =
+            formData.allowedDeploymentTypes.length === 1 &&
+            formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
+
+        const gitOpsRepoNotConfiguredAndOptionsHidden =
+            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+            !noGitOpsModuleInstalledAndConfigured &&
+            !isHelmEnforced &&
+            isGitOpsRepoNotConfigured
+
+        if (gitOpsRepoNotConfiguredAndOptionsHidden)
+            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfiguredWithOptionsHidden })
+        const isGitOpsRepoNotConfiguredAndOptionsVisible =
+            formData.deploymentAppType === DeploymentAppTypes.GITOPS &&
+            isGitOpsRepoNotConfigured &&
+            !window._env_.HIDE_GITOPS_OR_HELM_OPTION
+
+        const isGitOpsRepoNotConfiguredAndGitopsEnforced =
+            isGitOpsRepoNotConfiguredAndOptionsVisible && formData.allowedDeploymentTypes.length == 1
+
+        if (isGitOpsRepoNotConfiguredAndOptionsVisible)
+            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
+        if (isGitOpsRepoNotConfiguredAndGitopsEnforced)
+            setGitOpsRepoConfiguredWarning({
+                show: true,
+                text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
+            })
+
+        if (
+            gitOpsRepoNotConfiguredAndOptionsHidden ||
+            isGitOpsRepoNotConfiguredAndGitopsEnforced ||
+            isGitOpsRepoNotConfiguredAndOptionsVisible
+        )
+            return true
+        return false
+    }
 
     const savePipeline = () => {
+        if(checkForGitOpsRepoNotConfigured())return
         const isUnique = checkUniqueness(formData, true)
         if (!isUnique) {
             toast.error('All task names must be unique')
@@ -1074,6 +1129,8 @@ export default function NewCDPipeline({
                                     isWebhookCD={isWebhookCD}
                                     dockerRegistries={dockerRegistries}
                                     envIds={envIds}
+                                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -1134,6 +1191,13 @@ export default function NewCDPipeline({
                             )}
                         </div>
                     </>
+                )}
+                {gitOpsRepoConfiguredWarning.show && (
+                    <NoGitOpsRepoConfiguredWarning
+                        closePopup={handleShowGitOpsRepoConfiguredWarning}
+                        appId={+appId}
+                        text={gitOpsRepoConfiguredWarning.text}
+                    />
                 )}
                 {cdPipelineId && showDeleteModal && renderDeleteCDModal()}
             </div>

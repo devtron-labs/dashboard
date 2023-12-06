@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router'
+import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type';
 export type GitOpsFieldKeyType = "host" | "username" | "token" | "gitHubOrgId" | "azureProjectName" | "gitLabGroupId"  | "bitBucketWorkspaceId" | "bitBucketProjectKey";
 export type GitOpsOrganisationIdType = "gitHubOrgId" | "gitLabGroupId" | "azureProjectName" | "bitBucketWorkspaceId" | "bitBucketProjectKey";
 export type GitProviderType = "GITHUB" | "GITLAB" | "AZURE_DEVOPS" | "BITBUCKET_CLOUD";
@@ -68,4 +69,19 @@ export interface GitOpsState {
 
 export interface GitOpsProps extends RouteComponentProps<{}> { 
     handleChecklistUpdate: (string) => void
+}
+
+export interface UserGitRepoConfigurationProps {
+    respondOnSuccess: () => void
+    appId: number
+    navItems: CustomNavItemsType[]
+}
+export interface UserGitRepoProps {
+    setRepoURL: (string) => void
+    setSelectedRepoType: (string) => void
+    repoURL: string
+    selectedRepoType: string
+    errorInFetching: Map<string, any>
+    displayValidation: boolean
+    setDisplayValidation: React.Dispatch<React.SetStateAction<boolean>>
 }
