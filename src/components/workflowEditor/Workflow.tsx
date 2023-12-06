@@ -495,6 +495,26 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
     }
 
+    handleNewJobRedirection = () => {
+        this.props.history.push(
+            `${URLS.JOB}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+        )
+    }
+
+    emptyWorkflow = () => (
+        <div className="fs-12 cn-7 pt-16 pb-16 pr-16 pl-16">
+            <div
+                className="text-center lh-18 bc-n50 flexbox-col dc__align-items-center bw-1 en-2 dashed h-100 dc__content-center br-4 pt-16 pb-16 cursor"
+                onClick={this.handleNewJobRedirection}
+            >
+                <div className="fw-6 mb-4 w-300">Add job pipeline to this workflow</div>
+                <div className="fw-4 w-300">
+                    Job pipeline enables you to execute a series of tasks manually or automatically
+                </div>
+            </div>
+        </div>
+    )
+
     renderChangeCITooltip = (isChangeCIEnabled: boolean) => {
         if (isChangeCIEnabled) {
             return CHANGE_CI_TOOLTIP.TITLE
@@ -566,7 +586,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                             <div className="flexbox dc__align-items-center dc__gap-8">
                                 <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon" />
 
-                                <Tippy
+                                {!this.props.isJobView && ( <Tippy
                                     content="Edit workflow name"
                                     placement="top"
                                     arrow={false}
@@ -581,6 +601,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                         </button>
                                     </Link>
                                 </Tippy>
+                                )}
 
                                 {!!this.props.handleChangeCI && LinkedCDNode && !this.props.isJobView && (
                                     <Tippy
@@ -620,10 +641,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     <div
                         className={configDiffView ? 'workflow__body' : 'workflow__body dc__border-n1 bc-n50 dc__overflow-scroll br-4'}
                     >
-                        <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
-                            {this.renderEdgeList()}
-                            {this.renderNodes()}
-                        </svg>
+                        {this.props.nodes.length === 0 && this.props.isJobView ? (
+                            this.emptyWorkflow()
+                        ) : (
+                            <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
+                                {this.renderEdgeList()}
+                                {this.renderNodes()}
+                            </svg>
+                        )}
                         {!configDiffView && (
                             <PipelineSelect
                                 workflowId={this.props.id}

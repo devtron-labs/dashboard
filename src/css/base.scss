@@ -2540,6 +2540,12 @@ textarea,
     }
 }
 
+.info-icon-n5 {
+    circle {
+        fill: var(--N500);
+    }
+}
+
 .info-icon-n6 {
     circle {
         fill: var(--N600);
@@ -3196,6 +3202,10 @@ textarea,
 }
 
 .mxh-210 {
+    max-height: 210px;
+}
+
+.mxh-250 {
     max-height: 210px;
 }
 

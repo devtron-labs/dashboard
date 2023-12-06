@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom'
 import { ReactComponent as Expand } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ExpandedRowProps, Job, JobCIPipeline } from '../Types'
-import AppStatus from '../../app/AppStatus'
 import './ExpandedRow.scss'
 import { URLS } from '../../../config'
 import { environmentName } from '../Utils'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+import { AppStatus } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ExpandedRow(props: ExpandedRowProps) {
     const handleEditJob = () => {
