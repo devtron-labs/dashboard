@@ -238,6 +238,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
+            if(_workflows){
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
@@ -257,13 +258,17 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setWorkflows(_workflows)
             setFilteredCIPipelines(filteredCIPipelines)
             setErrorCode(0)
-            setPageViewType(ViewType.FORM)
+            
             getWorkflowStatusData(_workflows)
             processFilteredData(_workflows)
+        }
         } catch (error) {
             showError(error)
             setErrorCode(error['code'])
             setPageViewType(ViewType.ERROR)
+        }
+        finally{
+            setPageViewType(ViewType.FORM)
         }
     }
 
