@@ -114,14 +114,6 @@ export interface NoGitOpsRepoConfiguredWarningType {
     appId: number
     text:string
 }
-
-
-export interface NoGitOpsRepoConfiguredWarningType {
-    closePopup: () => void
-    appId: number
-    text:string
-}
-
 export interface CDNodeProps{
     id: string
     deploymentStrategy: string

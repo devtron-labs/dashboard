@@ -16,6 +16,16 @@ export enum STAGE_NAME {
 
 export type StageNames = keyof typeof STAGE_NAME | 'WORKFLOW' | 'CONFIGMAP' | 'SECRETS' | 'ENV_OVERRIDE'
 
+export enum DEVTRON_APPS_STEPS {
+    GITOPS_CONFIG = 5,
+    NO_GITOS_CONFIG = 4,
+}
+
+export enum DEFAULT_LANDING_STAGE {
+    JOB_VIEW = 2,
+    DEVTRON_APPS = 5,
+}
+
 export interface AppConfigProps {
     appName: string
     isJobView?: boolean

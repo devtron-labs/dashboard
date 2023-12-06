@@ -22,7 +22,7 @@ export default function NoGitOpsRepoConfiguredWarning({ closePopup, appId, text 
                     <p className="fs-14 fw-4 cn-9">{text}</p>
                 </div>
                 <div className="flex right confirmation-dialog__button-group">
-                    <button type="button" tabIndex={3} className="cta cancel sso__warn-button" onClick={closePopup}>
+                    <button type="button" className="cta cancel sso__warn-button" onClick={closePopup}>
                         Cancel
                     </button>
                     <NavLink

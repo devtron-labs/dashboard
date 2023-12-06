@@ -633,7 +633,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     renderWorkflows() {
-        console.log('here worlflow')
         return this.state.workflows.map((wf) => {
             return (
                 <Workflow

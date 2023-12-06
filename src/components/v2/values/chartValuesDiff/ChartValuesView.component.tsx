@@ -59,7 +59,6 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -242,16 +241,6 @@ const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: strin
           </div>
       </Tippy>
   )
-}
-const renderInfoColorBar = () => {
-    return (
-        <InfoColourBar
-            message="GitOps repository is required to deploy using GitOps. Configure GitOps Repository"
-            classname="warn"
-            Icon={Warn}
-            iconClass="warning-icon"
-        />
-    )
 }
 
 export const DeploymentAppRadioGroup = ({

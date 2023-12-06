@@ -36,6 +36,8 @@ import {
     CustomNavItemsType,
     StageNames,
     STAGE_NAME,
+    DEVTRON_APPS_STEPS,
+    DEFAULT_LANDING_STAGE,
 } from './appConfig.type'
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
@@ -95,16 +97,9 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                 : { result: null },
         ])
             .then(([configStatusRes, workflowRes, envResult, configProtectionsResp]) => {
-                const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
-                let { navItems } = getNavItems(configs, appId, isJobView,configStatusRes.result)
-                let index = navItems.findIndex((item) => item.isLocked)
-                if (index < 0) {
-                    index = isJobView ? 2 : 5
-                }
-                
-                let redirectUrl = navItems[index - 1].href
-                let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
-                let isCDPipeline = isCDPipelineCreated(configStatusRes.result)
+                const { navItems, isCDPipeline, isCiPipeline, configs, lastConfiguredStage, redirectUrl } =
+                    processConfigStatusData(configStatusRes.result)
+
                 const envProtectMap: Record<number, boolean> = {}
                 if (configProtectionsResp.result) {
                     for (const config of configProtectionsResp.result) {
@@ -167,6 +162,18 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
         return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJobView)
     }
 
+    const processConfigStatusData = (configStatusRes) => {
+        const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes)
+        const { navItems } = getNavItems(configs, appId, isJobView, configStatusRes)
+        let index = navItems.findIndex((item) => item.isLocked)
+        if (index < 0) {
+            index = isJobView ? DEFAULT_LANDING_STAGE.JOB_VIEW : DEFAULT_LANDING_STAGE.DEVTRON_APPS
+        }
+        const redirectUrl = navItems[index - 1].href
+        const isCiPipeline = isCIPipelineCreated(configStatusRes)
+        const isCDPipeline = isCDPipelineCreated(configStatusRes)
+        return { navItems, redirectUrl, isCiPipeline, isCDPipeline, lastConfiguredStage, configs }
+    }
     async function deleteAppHandler() {
         deleteApp(appId)
             .then((response) => {
@@ -230,16 +237,8 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
     function respondOnSuccess() {
         getAppConfigStatus(+appId, isJobView)
             .then((configStatusRes) => {
-                const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
-                let { navItems } = getNavItems(configs, appId, isJobView, configStatusRes.result)
-                let index = navItems.findIndex((item) => item.isLocked)
-                if (index < 0) {
-                    index = isJobView ? 2 : 5
-                }
-                let redirectUrl = navItems[index - 1].href
-                let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
-                let isCDPipeline = isCDPipelineCreated(configStatusRes.result)
-
+                const { navItems, isCDPipeline, isCiPipeline, configs, lastConfiguredStage, redirectUrl } =
+                    processConfigStatusData(configStatusRes.result)
                 setState((state) => ({
                     ...state,
                     isUnlocked: configs,
@@ -480,7 +479,10 @@ function Navigation({
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
     const isGitOpsConfigurationRequired = navItems.find((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)?.required
-    const totalSteps = isGitOpsConfigurationRequired ? 5 : 4
+    const totalSteps = isGitOpsConfigurationRequired
+        ? DEVTRON_APPS_STEPS.GITOPS_CONFIG
+        : DEVTRON_APPS_STEPS.NO_GITOS_CONFIG
+
     return (
         <>
             {!hideConfigHelp && (
