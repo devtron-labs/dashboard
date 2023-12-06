@@ -15,7 +15,6 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
     const [isEditable, setIsEditable] = useState(false)
     const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map())
     const [displayValidation, setDisplayValidation] = useState(false)
-    const [warningError, setWaringEmpty] = useState(false)
     const [loading, setLoading] = useState(false)
     const history = useHistory()
 
@@ -105,7 +104,6 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
     }
 
     return (
-        <>
             <div className="w-100 h-100 bcn-0 pt-16 flexbox-col">
                 <div className="w-960">
                     <div className="fs-16 fcn-9 fw-6 ml-20 mb-8">GitOps Configuration</div>
@@ -138,6 +136,5 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
                     </div>
                 )}
             </div>
-        </>
     )
 }

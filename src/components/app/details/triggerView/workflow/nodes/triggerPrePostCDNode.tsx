@@ -62,7 +62,9 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
 
     handleShowGitOpsRepoConfiguredWarning = (): void => {
         this.gitOpsRepoWarningCondition &&
-            this.setState({ showGitOpsRepoConfiguredWarning: !this.state.showGitOpsRepoConfiguredWarning })
+            this.setState((prevState) => ({
+                showGitOpsRepoConfiguredWarning: !prevState.showGitOpsRepoConfiguredWarning,
+            }))
     }
 
     renderCardContent() {
@@ -125,8 +127,17 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
     }
 
     render() {
-        return <foreignObject className="data-hj-whitelist" x={this.props.x} y={this.props.y} width={this.props.width} height={this.props.height} style={{ overflow: 'visible' }}>
-            {this.renderCardContent()}
-        </foreignObject>
+        return (
+            <foreignObject
+                className="data-hj-whitelist"
+                x={this.props.x}
+                y={this.props.y}
+                width={this.props.width}
+                height={this.props.height}
+                style={{ overflow: 'visible' }}
+            >
+                {this.renderCardContent()}
+            </foreignObject>
+        )
     }
 }

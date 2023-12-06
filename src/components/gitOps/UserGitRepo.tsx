@@ -64,7 +64,6 @@ function UserGitRepo(props: UserGitRepoProps) {
     }
 
     return (
-        <>
             <div className="pt-16 pl-20">
                 <div className="form__row flex left">
                     <div className="fw-4 fs-13 fcn-9">
@@ -102,7 +101,6 @@ function UserGitRepo(props: UserGitRepoProps) {
                 </div>
                 {renderInfoColorBar()}
             </div>
-        </>
     )
 }
 

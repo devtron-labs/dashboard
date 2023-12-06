@@ -75,10 +75,12 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                 </div>
             )
     }
-    
+
     handleShowGitOpsRepoConfiguredWarning = (): void => {
         this.gitOpsRepoWarningCondition &&
-            this.setState({ showGitOpsRepoConfiguredWarning: !this.state.showGitOpsRepoConfiguredWarning })
+            this.setState((prevState) => ({
+                showGitOpsRepoConfiguredWarning: !prevState.showGitOpsRepoConfiguredWarning,
+            }))
     }
 
     renderCardContent() {
