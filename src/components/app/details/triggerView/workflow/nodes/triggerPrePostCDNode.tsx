@@ -66,6 +66,12 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 showGitOpsRepoConfiguredWarning: !prevState.showGitOpsRepoConfiguredWarning,
             }))
     }
+    
+    handleImageSelection = (event, context): void => {
+        event.stopPropagation()
+        !this.gitOpsRepoWarningCondition && context.onClickCDMaterial(this.props.id, this.props.type)
+        this.handleShowGitOpsRepoConfiguredWarning()
+    }
 
     renderCardContent() {
         let status = this.props.status ? this.props.status.toLocaleLowerCase() : ''
@@ -102,10 +108,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                                         className="workflow-node__deploy-btn"
                                         data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
                                         onClick={(event) => {
-                                            event.stopPropagation()
-                                            !this.gitOpsRepoWarningCondition &&
-                                                context.onClickCDMaterial(this.props.id, this.props.type)
-                                            this.handleShowGitOpsRepoConfiguredWarning()
+                                            this.handleImageSelection(event, context)
                                         }}
                                     >
                                         Select Image

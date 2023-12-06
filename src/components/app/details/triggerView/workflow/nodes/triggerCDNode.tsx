@@ -83,6 +83,18 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             }))
     }
 
+    handleRollbackClick = (context): void => {
+        !this.gitOpsRepoWarningCondition && context.onClickRollbackMaterial(+this.props.id)
+        this.handleShowGitOpsRepoConfiguredWarning()
+    }
+
+    handleImageSelection = (event, context): void => {
+        event.stopPropagation()
+        !this.gitOpsRepoWarningCondition &&
+            context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
+        this.handleShowGitOpsRepoConfiguredWarning()
+    }
+
     renderCardContent() {
         return (
             <TriggerViewContext.Consumer>
@@ -124,9 +136,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                                                 data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
                                                 className="workflow-node__rollback-btn"
                                                 onClick={(event) => {
-                                                    !this.gitOpsRepoWarningCondition &&
-                                                        context.onClickRollbackMaterial(+this.props.id)
-                                                    this.handleShowGitOpsRepoConfiguredWarning()
+                                                    this.handleRollbackClick(context)
                                                 }}
                                             >
                                                 <Rollback className="icon-dim-20 dc__vertical-align-middle" />
@@ -137,13 +147,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                                         data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
                                         className="workflow-node__deploy-btn"
                                         onClick={(event) => {
-                                            event.stopPropagation()
-                                            !this.gitOpsRepoWarningCondition &&
-                                                context.onClickCDMaterial(
-                                                    this.props.id,
-                                                    DeploymentNodeType[this.props.type],
-                                                )
-                                            this.handleShowGitOpsRepoConfiguredWarning()
+                                            this.handleImageSelection(event,context)
                                         }}
                                     >
                                         Select Image

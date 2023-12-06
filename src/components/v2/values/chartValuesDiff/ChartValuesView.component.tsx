@@ -63,7 +63,6 @@ import { validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.servi
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
-const isGitOpsNotConfigured=true
 export const ChartEnvironmentSelector = ({
     isExternal,
     isDeployChartView,
