@@ -55,7 +55,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             isConnectedViaProxy: false,
             isConnectedViaSSHTunnel: false,
         }
-        this.initialise =  this.initialise.bind(this)
+        this.initialise = this.initialise.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
         this.setTlsConnectionFalse = this.setTlsConnectionFalse.bind(this)
         this.toggleShowAddCluster = this.toggleShowAddCluster.bind(this)
