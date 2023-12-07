@@ -1,29 +1,30 @@
-import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg';
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
-import React, { Component } from 'react';
-import './customInput.css';
+import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
+import React, { Component } from 'react'
+import './customInput.css'
 
 export interface CustomInputProps {
-    label: any;
-    type?: 'text' | 'number';
-    value: string | number;
-    labelClassName?: string;
-    autoFocus?: boolean;
-    placeholder?: string;
-    disabled?: boolean;
-    error?: string;
-    helperText?: string;
-    name?: string;
-    tabIndex?: number;
-    autoComplete: string;
-    showLink?: boolean;
-    link?: string;
-    linkText?: string;
-    onChange: (...args) => void;
-    onBlur?: (e) => void;
-    onFocus?: (e) => void;
-    dataTestid?:string;
+    label: any
+    type?: 'text' | 'number'
+    value: string | number
+    labelClassName?: string
+    autoFocus?: boolean
+    placeholder?: string
+    disabled?: boolean
+    error?: string
+    helperText?: string
+    name?: string
+    tabIndex?: number
+    autoComplete?: string
+    showLink?: boolean
+    link?: string
+    linkText?: string
+    onChange: (...args) => void
+    onBlur?: (e) => void
+    onFocus?: (e) => void
+    dataTestid?: string
 }
+//Need to replace this with a common component
 
 export class CustomInput extends Component<CustomInputProps, any> {
     gitCreate = () => {
@@ -58,7 +59,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
                     type={type}
                     data-testid={this.props.dataTestid}
                     autoFocus={this.props.autoFocus}
-                    autoComplete={this.props.autoComplete}
+                    autoComplete={this.props.autoComplete ? this.props.autoComplete : 'off'}
                     tabIndex={this.props.tabIndex}
                     name={this.props.name}
                     placeholder={this.props.placeholder}
@@ -78,14 +79,14 @@ export class CustomInput extends Component<CustomInputProps, any> {
                         {this.props.error}
                     </div>
                 )}
-                {this.props.helperText ? (
+                {this.props.helperText && (
                     <>
                         <div className="form__text-field-info">
                             <Info className="form__icon form__icon--info" />
                             <p className="sentence-case">{this.props.helperText}</p>
                         </div>
                     </>
-                ) : null}
+                )}
             </div>
         )
     }

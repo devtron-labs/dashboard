@@ -11,8 +11,8 @@ import {
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
-import { CustomInput, handleOnBlur, handleOnFocus, parsePassword } from '../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { handleOnFocus, parsePassword } from '../common'
+import { showError, Progressing, ErrorScreenManager, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
@@ -220,6 +220,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             //After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must dissapear
             isUrlValidationError: key === 'host' ? false : this.state.isUrlValidationError,
         })
+    }
+
+    onBlur = (event, key: GitOpsFieldKeyType): void => {
+
+        if(key === "token" && !event.target.value && this.state.form.id ){
+                event.target.value = DEFAULT_SECRET_PLACEHOLDER
+        }
+        this.setState({
+            form: {
+                ...this.state.form,
+                [key]: event.target.value.trim(),
+            }
+        })
+            
     }
 
     requiredFieldCheck(formValueType: string): string {
@@ -458,6 +472,21 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 </div>
             )
         }
+
+        const getGitOpsLabel = () => {
+            return (
+                <>
+                    <span className="dc__required-field">
+                        {this.state.providerTab === GitProvider.AZURE_DEVOPS
+                            ? ' Azure DevOps Organisation Url'
+                            : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                            ? 'Bitbucket Host'
+                            : 'Git Host'}
+                    </span>&nbsp;(Use https://)
+                </>
+            )
+        }
+
         return (
             <section className="global-configuration__component flex-1">
                 <h2 className="form__title" data-testid="gitops-heading">
@@ -555,20 +584,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         configName="gitops "
                         warning={this.state.deleteRepoError ? warning : ''}
                     />
-
                     <CustomInput
-                        autoComplete="off"
                         value={this.state.form.host}
                         onChange={(event) => this.handleChange(event, 'host')}
                         name="Enter host"
                         error={this.state.isError.host}
-                        label={
-                            this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                ? 'Azure DevOps Organisation Url* (Use https://)'
-                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                ? 'Bitbucket Host* (Use https://)'
-                                : 'Git Host* (Use https://)'
-                        }
+                        label={getGitOpsLabel()}
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                         dataTestid={
@@ -578,6 +599,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 ? 'gitops-bitbucket-host-url-textbox'
                                 : 'gitops-github-gitlab-host-url-textbox'
                         }
+                        onBlur={(event) => this.onBlur(event, 'host')}
                     />
                     {this.state.isUrlValidationError && this.state.form.host.length ? (
                         <div className="flex fs-12 left pt-4">
@@ -605,24 +627,24 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <div className="mt-16 ">
                         {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
                             <CustomInput
-                                autoComplete="off"
+                                name="Enter workspace ID"
                                 value={this.state.form.bitBucketWorkspaceId}
                                 onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
                                 showLink={true}
                                 link={GitLink.BITBUCKET_WORKSPACE}
                                 linkText={'(How to create workspace in bitbucket?)'}
-                                name="Enter workspace ID"
                                 error={this.state.isError.bitBucketWorkspaceId}
                                 label={'Bitbucket Workspace ID*'}
                                 tabIndex={1}
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                                 dataTestid="gitops-bitbucket-workspace-id-textbox"
+                                onBlur={(event) => this.onBlur(event, 'bitBucketWorkspaceId')}
                             />
                         )}
                     </div>
                     <div className="mt-16">
                         <CustomInput
-                            autoComplete="off"
+                            name="Group ID"
                             value={this.state.form[key]}
                             tabIndex={2}
                             error={this.state.isError[key]}
@@ -643,6 +665,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     ? 'gitops-gitlab-group-id-textbox'
                                     : 'gitops-github-organisation-name-textbox'
                             }
+                            onBlur={(event) => this.onBlur(event, key)}
                         />
                     </div>
                     {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
@@ -662,7 +685,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <div className="form__row--two-third gitops__id mb-20 fs-13">
                         <div>
                             <CustomInput
-                                autoComplete="off"
                                 value={this.state.form.username}
                                 onChange={(event) => this.handleChange(event, 'username')}
                                 name="Enter username"
@@ -687,6 +709,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         ? 'gitops-gitlab-username-textbox'
                                         : 'gitops-github-username-textbox'
                                 }
+                                onBlur={(event) => this.onBlur(event, 'username')}
                             />
                         </div>
                         <div>
@@ -696,7 +719,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 name="Enter token"
                                 tabIndex={4}
                                 error={this.state.isError.token}
-                                onBlur={this.state.form.id && handleOnBlur}
                                 onFocus={handleOnFocus}
                                 label={
                                     <>
@@ -723,6 +745,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         ? 'gitops-gitlab-pat-textbox'
                                         : 'gitops-github-pat-textbox'
                                 }
+                                onBlur={(event) => this.onBlur(event, 'token')}
                             />
                         </div>
                     </div>

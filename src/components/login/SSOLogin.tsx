@@ -558,7 +558,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             return <Progressing pageLoader />
         } else if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="global-configuration__component flex h-100">
+                <div className="dc__align-reload-center">
                     <ErrorScreenManager code={this.state.statusCode} />
                 </div>
             )

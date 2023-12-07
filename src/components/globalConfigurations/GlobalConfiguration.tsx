@@ -446,13 +446,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
                     return (
-                        <div className="flexbox">
-                            <ClusterList
-                                {...props}
-                                serverMode={serverMode}
-                                isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
-                            />
-                        </div>
+                        <ClusterList
+                            {...props}
+                            serverMode={serverMode}
+                            isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
+                        />
                     )
                 }}
             />
@@ -462,14 +460,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_HOST_URL}
                     render={(props) => {
                         return (
-                            <div className="flexbox">
-                                <HostURLConfiguration
-                                    {...props}
-                                    isSuperAdmin={isSuperAdmin}
-                                    refreshGlobalConfig={getHostURLConfig}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                />
-                            </div>
+                            <HostURLConfiguration
+                                {...props}
+                                isSuperAdmin={isSuperAdmin}
+                                refreshGlobalConfig={getHostURLConfig}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                            />
                         )
                     }}
                 />,
@@ -477,33 +473,21 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     key={URLS.GLOBAL_CONFIG_GITOPS}
                     path={URLS.GLOBAL_CONFIG_GITOPS}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                            </div>
-                        )
+                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_PROJECT}
                     path={URLS.GLOBAL_CONFIG_PROJECT}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <Project {...props} isSuperAdmin={isSuperAdmin} />
-                            </div>
-                        )
+                        return <Project {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_GIT}
                     path={URLS.GLOBAL_CONFIG_GIT}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                            </div>
-                        )
+                        return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
                 <Route
@@ -511,13 +495,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                     render={(props) => {
                         return (
-                            <div className="flexbox">
-                                <Docker
-                                    {...props}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                    isSuperAdmin={isSuperAdmin}
-                                />
-                            </div>
+                            <Docker
+                                {...props}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                                isSuperAdmin={isSuperAdmin}
+                            />
                         )
                     }}
                 />,
