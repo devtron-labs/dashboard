@@ -82,6 +82,75 @@
             }
         }
     }
+    .app-compose-with-gitops-config__nav {
+        padding: 16px 12px 0;
+        border-right: solid 1px #d6dbdf;
+        background: white;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 110px repeat(7, 32px) 54px 1fr auto;
+        overflow: hidden;
+
+        &.hide-app-config-help {
+            grid-template-rows: repeat(7, 32px) 54px 1fr auto;
+
+            &.hide-external-links {
+                grid-template-rows: repeat(7, 32px) 1fr auto;
+            }
+        }
+
+        &.config-protection__side-nav {
+            grid-template-rows: 110px repeat(7, 32px) 54px 32px 1fr auto;
+            
+                &.hide-external-links {
+                    grid-template-rows: 110px repeat(7, 32px) 54px 1fr auto;
+                }
+            
+                &.hide-app-config-help {
+                    grid-template-rows: repeat(7, 32px) 54px 32px 1fr auto;
+            
+                    &.hide-external-links {
+                        grid-template-rows: repeat(7, 32px) 54px 1fr auto;
+                    }
+            }
+        }
+
+        .help-container {
+            background-color: #f3f0ff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            height: 100px;
+
+            .progress-container {
+                background-color: #ffffff;
+                margin: 5px 0 10px 0;
+                font-size: 12px;
+
+                .progress-tracker {
+                    background-color: #1dad70;
+                    height: 4px;
+                    width: 1%;
+                }
+            }
+
+            .font-weight-600 {
+                font-weight: 600;
+            }
+
+            .need-help {
+                color: var(--B500);
+            }
+        }
+
+        .cta-delete-app {
+            bottom: 0;
+
+            .cta.delete {
+                width: calc(100% - 8px);
+            }
+        }
+    }
 
     .app-compose__main {
         overflow: auto;
