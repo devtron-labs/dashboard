@@ -351,6 +351,7 @@ export interface ClusterManifestType {
     errorMessage?: string[]
     setManifestAvailable: (isManifestAvailable: boolean) => void
     selectTerminalTab: () => void
+    hideManagedFields: boolean
 }
 
 export interface ClusterEditManifestType {

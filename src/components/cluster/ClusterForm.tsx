@@ -148,6 +148,7 @@ export default function ClusterForm({
         [clusterId],
         !window._env_.K8S_CLIENT,
     )
+
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -208,7 +209,7 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: (id && KubectlConnectionRadio) && isConnectedViaProxyTemp,
+                required: KubectlConnectionRadio && isConnectedViaProxyTemp,
                 validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             sshTunnelUser: {
@@ -427,10 +428,11 @@ export default function ClusterForm({
             },
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
-                userName: prometheusToggleEnabled ? state.userName.value : '',
-                password: prometheusToggleEnabled ? state.password.value : '',
+                userName: prometheusToggleEnabled && state.authType.value === AuthenticationType.BASIC ? state.userName.value : '',
+                password: prometheusToggleEnabled && state.authType.value === AuthenticationType.BASIC ? state.password.value : '',
                 tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
+                isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
             },
         }
     }

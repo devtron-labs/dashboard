@@ -23,9 +23,9 @@ import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
-import { MANIFEST_KEY_FIELDS } from '../../../../../../config/constants'
 import { MODES } from '../../../../../../config'
 import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
+import { getTrimmedManifestData } from '../nodeDetail.util'
 
 function ManifestComponent({
     selectedTab,
@@ -138,7 +138,7 @@ function ManifestComponent({
             toggleManagedFields(false)
             const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
-                setTrimedManifestEditorData(trimManifestData(jsonManifestData))
+                setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
             }
         }
     }, [isEditmode])
@@ -152,26 +152,15 @@ function ManifestComponent({
     useEffect(() => {
         setTrimedManifestEditorData(activeManifestEditorData)
         if (activeTab === 'Live manifest') {
-            let jsonManifestData = YAML.parse(activeManifestEditorData)
+            const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
                 toggleManagedFields(true)
                 if (hideManagedFields) {
-                    setTrimedManifestEditorData(trimManifestData(jsonManifestData))
+                    setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                 }
             }
         }
     }, [activeManifestEditorData, hideManagedFields, activeTab])
-
-    //For External
-    const trimManifestData = (jsonManifestData: object): string => {
-        const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
-            if (key === MANIFEST_KEY_FIELDS.METADATA) {
-                value[MANIFEST_KEY_FIELDS.MANAGED_FIELDS] = undefined
-            }
-            return value
-        })
-        return _trimedManifestData
-    }
 
     const handleEditorValueChange = (codeEditorData: string) => {
         if (activeTab === 'Live manifest' && isEditmode) {

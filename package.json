@@ -51,7 +51,8 @@
         "xterm-addon-search": "^0.9.0",
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
-        "yamljs": "^0.3.0"
+        "yamljs": "^0.3.0",
+        "tippy.js": "^6.3.7"
     },
     "scripts": {
         "lint": "eslint src/**/*.tsx",
