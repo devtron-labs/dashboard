@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { DevtronProgressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
@@ -191,7 +191,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     }
 
     if (loading) {
-        return <Progressing pageLoader />
+        return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
     }
 
     return (

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../config'
 import { Pagination, handleUTCTime } from '../../common'
 import { Link } from 'react-router-dom'
@@ -19,7 +19,6 @@ import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../conf
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
-import AppStatus from '../AppStatus'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import cluster from 'cluster'
 export class AppListView extends Component<AppListViewProps> {
@@ -78,9 +77,9 @@ export class AppListView extends Component<AppListViewProps> {
 
     arrowIcon = (): string => {
         if (this.props.isAllExpandable) {
-            return this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90'
+            return this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-270'
         } else {
-            return 'cursor-not-allowed dc__flip-90'
+            return 'cursor-not-allowed dc__flip-270'
         }
     }
 
@@ -174,7 +173,7 @@ export class AppListView extends Component<AppListViewProps> {
                                             <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
                                             {len && (
                                                 <Arrow
-                                                    className="icon-dim-24 p-2 dc__flip-90 fcn-7 dc__show-second--icon"
+                                                    className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
                                                     onClick={this.expandEnv}
                                                     data-key={app.id}
                                                 />
