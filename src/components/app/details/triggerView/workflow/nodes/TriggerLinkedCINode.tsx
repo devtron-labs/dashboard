@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import link from '../../../../../../assets/icons/ic-link.svg';
+import { ReactComponent as ICLinkedCINode } from '../../../../../../assets/icons/ic-node-build-linked.svg'
 import { TriggerStatus } from '../../../../config';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -89,7 +90,8 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                         <div className="dc__ellipsis-left">{this.props.title}</div>
                     </Tippy>
                 </div>
-                <div data-testid="ci-trigger-build-linked" className="workflow-node__icon-common ml-8 workflow-node__CI-linked-icon"/>
+
+                <ICLinkedCINode className="icon-dim-20"  data-testid="ci-trigger-build-linked" />
             </div>
             {this.renderStatus()}
         </div>

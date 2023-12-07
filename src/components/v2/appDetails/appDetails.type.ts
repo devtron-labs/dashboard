@@ -154,7 +154,6 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 }
 
-
 export interface AppDetails {
     appId: number
     appName: string
@@ -194,6 +193,7 @@ export interface AppDetails {
     isVirtualEnvironment?: boolean
     imageTag?: string
     helmPackageName?: string
+    chartAvatar?: string
 }
 
 interface MaterialInfo {

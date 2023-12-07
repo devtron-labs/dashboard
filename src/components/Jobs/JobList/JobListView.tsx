@@ -1,12 +1,11 @@
 import React from 'react'
-import { ErrorScreenManager, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, ErrorScreenManager, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Pagination } from '../../common'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { OrderBy, SortBy } from '../../app/list/types'
-import AppStatus from '../../app/AppStatus'
 import { Job, JobListViewProps } from '../Types'
 import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
@@ -48,9 +47,9 @@ export default function JobListView(props: JobListViewProps) {
 
     const arrowIcon = (): string => {
         if (props.isAllExpandable) {
-            return props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90'
+            return props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-270'
         } else {
-            return 'cursor-not-allowed dc__flip-90'
+            return 'cursor-not-allowed dc__flip-270'
         }
     }
 
@@ -75,7 +74,7 @@ export default function JobListView(props: JobListViewProps) {
                                 </div>
                                 {len && (
                                     <Arrow
-                                        className="icon-dim-24 p-2 dc__flip-90 fcn-7 dc__show-second--icon"
+                                        className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
                                         onClick={expandEnv}
                                         data-key={job.id}
                                     />

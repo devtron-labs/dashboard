@@ -1,14 +1,12 @@
 import moment from 'moment'
 import { Nodes, NodeType, AggregationKeys, AggregatedNodes, PodMetadatum } from '../../types'
 import { getVersionArr, handleUTCTime, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common'
-import React, { Component } from 'react'
+import React from 'react'
 import { components } from 'react-select'
-import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import {
     ChartTypes,
     AppMetricsTabType,
-    SecurityVulnerabilititesProps,
     StatusType,
     StatusTypes,
     DeploymentStatusDetailsBreakdownDataType,
@@ -129,29 +127,6 @@ export function aggregateNodes(nodes: any[], podMetadata: PodMetadatum[]): Aggre
         },
         { nodes: {}, aggregation: {}, statusCount: {}, nodeStatusCount: {}, aggregatorStatusCount: {} },
     )
-}
-
-export class SecurityVulnerabilitites extends Component<SecurityVulnerabilititesProps> {
-    render() {
-        const { critical = 0, moderate = 0, low = 0 } = this.props.severityCount
-        const total = critical + moderate + low
-        if (total !== 0) {
-            return (
-                <div className="security-vulnerabilities cursor" onClick={this.props.onClick}>
-                    <div>
-                        <Bug className="icon-dim-20 dc__vertical-align-middle mr-8 fcy-7" />
-                        {total} Security Vulnerabilities
-                        <span className="security-vulnerabilities__count">
-                            {critical ? `${critical} critical, ` : ``}
-                            {moderate ? `${moderate} moderate, ` : ``}
-                            {low ? `${low} low` : ``}
-                        </span>
-                    </div>
-                    <div className="cb-5">Details</div>
-                </div>
-            )
-        } else return <span></span>
-    }
 }
 
 export function DropdownIndicator(props) {
@@ -864,4 +839,47 @@ export const ValueContainerImage = (props) => {
 export const validateMomentDate = (date: string, format: string): string => {
     if (!date || date === ZERO_TIME_STRING) return '--'
     return moment(date, format).fromNow()
+}
+
+class EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        throw new Error('This method should be overridden by concrete classes.')
+    }
+}
+
+export class NoParamsNoEnvContext extends EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        return _envList[0].environmentId
+    }
+}
+
+export class NoParamsWithEnvContext extends EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        if (environmentId && _envList.map((env) => env.environmentId).includes(environmentId)) {
+            return environmentId
+        }
+        return _envList[0].environmentId
+    }
+}
+
+export class ParamsNoEnvContext extends EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
+            return +params.envId
+        }
+        return _envList[0].environmentId
+    }
+}
+
+export class ParamsAndEnvContext extends EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
+            // If environmentId is present and different from params.envContext, set environmentId
+            if (environmentId && +environmentId !== +params.envId) {
+                setEnvironmentId(+params.envId)
+            }
+            return +params.envId
+        }
+        return _envList[0].environmentId
+    }
 }

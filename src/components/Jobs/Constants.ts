@@ -42,7 +42,6 @@ export const JOB_LIST_HEADERS = {
     RUN_IN_ENVIRONMENT: 'RUN IN ENVIRONMENT'
 }
 
-export const YET_TO_RUN = 'Yet to run'
 export const JOBLIST_EMPTY_STATE_MESSAGING = {
     createJob: 'Create your first job',
     createJobInfoText:

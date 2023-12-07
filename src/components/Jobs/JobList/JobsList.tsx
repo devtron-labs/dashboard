@@ -3,11 +3,11 @@ import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-rou
 import { URLS } from '../../../config'
 import {
     ErrorScreenManager,
-    Progressing,
     showError,
     stopPropagation,
     ServerErrors,
     useAsync,
+    DevtronProgressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Filter, FilterOption } from '../../common'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
@@ -331,8 +331,8 @@ export default function JobsList() {
     return (
         <div className="jobs-view-container">
             {dataStateType === JobListViewType.LOADING && (
-                <div className="dc__loading-wrapper">
-                    <Progressing pageLoader />
+                <div className="w-100 h-100vh">
+                    <DevtronProgressing parentClasses="h-100 w-100 flex bcn-0" classes="icon-dim-80"/>
                 </div>
             )}
             {dataStateType === JobListViewType.ERROR && (
