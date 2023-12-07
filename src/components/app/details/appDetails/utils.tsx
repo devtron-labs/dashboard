@@ -504,6 +504,11 @@ export const processDeploymentStatusDetailsData = (
 
     // data when timelines is available
     if (data?.timelines?.length) {
+        // TO Support legacy data have to make sure that if ARGOCD_SYNC is not available then we fill it with dummy values
+        const isArgoCDAvailable = data.timelines.some((timeline) =>
+            timeline['status'].includes(TIMELINE_STATUS.ARGOCD_SYNC),
+        )
+
         for (let index = data.timelines.length - 1; index >= 0; index--) {
             const element = data.timelines[index]
             if (element['status'] === TIMELINE_STATUS.HEALTHY || element['status'] === TIMELINE_STATUS.DEGRADED) {
@@ -607,10 +612,6 @@ export const processDeploymentStatusDetailsData = (
                             })
                     }
 
-                    // TO Support legacy data have to make sure that if ARGOCD_SYNC is not available then we fill it with dummy values
-                    const isArgoCDAvailable = data?.timelines?.some((timeline) =>
-                        timeline['status'].includes(TIMELINE_STATUS.ARGOCD_SYNC),
-                    )
                     if (!isArgoCDAvailable) {
                         deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
                         deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
