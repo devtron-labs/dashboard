@@ -555,14 +555,16 @@ function DockerForm({
                 .replace(/^oci?:\/\//, '')
                 .replace(/^docker?:\/\//, '')
                 .replace(/^http?:\/\//, ''),
-            ...(selectedDockerRegistryType.value === RegistryType.ECR
+            ...(selectedDockerRegistryType.value === RegistryType.ECR &&
+            registryStorageType !== RegistryStorageType.OCI_PUBLIC
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value?.trim(),
                       awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value),
                       awsRegion: awsRegion,
                   }
                 : {}),
-            ...(selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY ||
+            ...((selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY &&
+                registryStorageType !== RegistryStorageType.OCI_PUBLIC) ||
             selectedDockerRegistryType.value === RegistryType.GCR
                 ? {
                       username: trimmedUsername,
@@ -572,15 +574,17 @@ function DockerForm({
                               : `'${parsePassword(customState.password.value)}'`,
                   }
                 : {}),
-            ...(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
-            selectedDockerRegistryType.value === RegistryType.ACR ||
-            selectedDockerRegistryType.value === RegistryType.QUAY
+            ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
+            (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
+                selectedDockerRegistryType.value === RegistryType.ACR ||
+                selectedDockerRegistryType.value === RegistryType.QUAY)
                 ? {
                       username: trimmedUsername,
                       password: parsePassword(customState.password.value),
                   }
                 : {}),
-            ...(selectedDockerRegistryType.value === RegistryType.OTHER
+            ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
+            selectedDockerRegistryType.value === RegistryType.OTHER
                 ? {
                       username: trimmedUsername,
                       password: parsePassword(customState.password.value),
@@ -692,31 +696,28 @@ function DockerForm({
 
      function onValidation() {
         if (selectedDockerRegistryType.value === RegistryType.ECR) {
-            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
-                if (
-                    (!isIAMAuthType &&
-                        (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
-                    !customState.registryUrl.value
-                ) {
-                    setCustomState((st) => ({
-                        ...st,
-                        awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
-                        awsSecretAccessKey: {
-                            ...st.awsSecretAccessKey,
-                            error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
-                        },
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                    }))
-                    return
-                }
-            } else {
-                if (!customState.registryUrl.value) {
-                    setCustomState((st) => ({
-                        ...st,
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                    }))
-                    return
-                }
+            if ( registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                (!isIAMAuthType &&
+                    (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
+                !customState.registryUrl.value
+            ) {
+                setCustomState((st) => ({
+                    ...st,
+                    awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
+                    awsSecretAccessKey: {
+                        ...st.awsSecretAccessKey,
+                        error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
+                    },
+                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                }))
+                return
+            }
+            if (!customState.registryUrl.value) {
+                setCustomState((st) => ({
+                    ...st,
+                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                }))
+                return
             }
         } else if (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB) {
             if (
@@ -729,6 +730,13 @@ function DockerForm({
                     password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
                 }))
                 return
+            } 
+            if (!customState.registryUrl.value) {
+                setCustomState((st) => ({
+                    ...st,
+                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                }))
+                return
             }
         } else if (
             selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY ||
@@ -736,27 +744,27 @@ function DockerForm({
         ) {
             const isValidJsonFile = isValidJson(customState.password.value) || id
             const isValidJsonStr = isValidJsonFile ? '' : 'Invalid JSON'
-            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
-                if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
-                    setCustomState((st) => ({
-                        ...st,
-                        username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                        password: {
-                            ...st.password,
-                            error: id || st.password.value ? isValidJsonStr : 'Mandatory',
-                        },
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                    }))
-                    return
-                }
-            } else {
-                if (!customState.registryUrl.value) {
-                    setCustomState((st) => ({
-                        ...st,
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                    }))
-                    return
-                }
+            if (
+                registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile)
+            ) {
+                setCustomState((st) => ({
+                    ...st,
+                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                    password: {
+                        ...st.password,
+                        error: id || st.password.value ? isValidJsonStr : 'Mandatory',
+                    },
+                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                }))
+                return
+            }
+            if (!customState.registryUrl.value) {
+                setCustomState((st) => ({
+                    ...st,
+                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                }))
+                return
             }
         } else if (
             selectedDockerRegistryType.value === RegistryType.ACR ||
@@ -1740,18 +1748,19 @@ function DockerForm({
                             className="cta flex h-36 delete dc__m-auto ml-0"
                             data-testid="delete-container-registry"
                             type="button"
+                            disabled={loading}
                             onClick={() => toggleConfirmation(true)}
                         >
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
-                    <button className="cta flex h-36 mr-16 cancel" type="button" onClick={setToggleCollapse}>
+                    <button className="cta flex h-36 mr-16 cancel" type="button" onClick={setToggleCollapse} disabled={loading || deleting}>
                         Cancel
                     </button>
                     <button
                         className="cta flex h-36"
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || deleting}
                         data-testid="container-registry-save-button"
                     >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
