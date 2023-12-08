@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
-import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, ConfirmationDialog, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
@@ -191,6 +191,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         })
     }
 
+    onBlurURL = (event): void => {
+        this.setState({
+            ssoConfig: {
+                ...this.state.ssoConfig,
+                url: event.target.value.trim(),
+            },
+        })
+    }
     toggleWarningModal(): void {
         this.setState({ showToggling: !this.state.showToggling, saveLoading: false })
     }
@@ -622,12 +630,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     <label className="form__row mr-24 ml-24 mb-24">
                         <span className="form__label">URL*</span>
-                        <input
-                            type="text"
-                            className="form__input"
+                        <CustomInput
                             value={this.state.ssoConfig.url || process.env.REACT_APP_ORCHESTRATOR_ROOT}
                             onChange={this.handleURLChange}
                             data-testid="sso-url-input"
+                            name="sso-url"
+                            onBlur={this.onBlurURL}
                         />
                         {this.state.isError.url && <div className="form__error">{this.state.isError.url}</div>}
                         <div className="flex left fw-4 pt-4">

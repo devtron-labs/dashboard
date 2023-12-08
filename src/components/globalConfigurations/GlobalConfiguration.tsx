@@ -23,7 +23,7 @@ import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { BodyType } from './globalConfiguration.type'
+import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -685,15 +685,16 @@ export function ProtectedInput({
     value,
     error,
     onChange,
-    label,
-    type = 'text',
+    label= '',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-}) {
+    onBlur= (e) => {},
+    isRequiredField = false,
+}: ProtectedInputType) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -701,7 +702,7 @@ export function ProtectedInput({
 
     return (
         <div className="flex column left top ">
-            <label htmlFor="" className={`form__label ${labelClassName}`}>
+            <label htmlFor="" className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}>
                 {label}
             </label>
             <div className="dc__position-rel w-100">
@@ -718,6 +719,7 @@ export function ProtectedInput({
                     }}
                     value={value}
                     disabled={disabled}
+                    onBlur={onBlur}
                 />
                 <ShowHide
                     className="protected-input__toggle"
