@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { SyntheticEvent, useContext, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { Modal } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../PageHeader'
@@ -17,7 +17,10 @@ export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
     const { serverMode } = useContext(mainContext)
     const [showCreateSelectionModal, setShowCreateSelectionModal] = useState(false)
 
-    const handleCreateButton = () => {
+    const handleCreateButton = (e?: SyntheticEvent) => {
+        // This is added to prevent the further propagation of the event
+        // It was causing issues with the react select dropdown
+        e?.stopPropagation()
         setShowCreateSelectionModal((prevState) => !prevState)
     }
 
