@@ -256,26 +256,6 @@ function CreateAPIToken({
             <div className="bcn-0">
                 <div className="pb-20">
                     <div>
-                        {/* <label className="form__row w-400">
-                            <span className="form__label dc__required-field">Name</span>
-                            <input
-                                tabIndex={1}
-                                placeholder="Name"
-                                data-testid="api-token-name-textbox"
-                                className="form__input"
-                                name="name"
-                                value={formData.name}
-                                onChange={onChangeHandler}
-                                autoFocus
-                                autoComplete="off"
-                            />
-                            {formDataErrorObj.invalidName && (
-                                <span className="form__error">
-                                    <Error className="form__icon form__icon--error" />
-                                    {formDataErrorObj.invalidaNameMessage}
-                                </span>
-                            )} */}
-                        {/* </label> */}
                         <CustomInput
                             tabIndex={1}
                             placeholder="Name"
