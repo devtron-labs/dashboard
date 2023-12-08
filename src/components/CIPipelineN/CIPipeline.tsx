@@ -366,7 +366,7 @@ export default function CIPipeline({
                 }
                 setPresetPlugins(_presetPlugin)
                 setSharedPlugins(_sharedPlugin)
-                getMandatoryPluginData(_formData, [..._presetPlugin, ..._sharedPlugin], true)
+                getMandatoryPluginData(_formData, [..._presetPlugin, ..._sharedPlugin])
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -385,7 +385,6 @@ export default function CIPipeline({
     const getMandatoryPluginData = (
         _formData: PipelineFormType,
         pluginList: PluginDetailType[],
-        referPrevState: boolean = false,
     ): void => {
         if (!isJobCard && processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
@@ -401,11 +400,7 @@ export default function CIPipeline({
                 processPluginData(_formData, pluginList, appId, ciPipelineId, branchName)
                     .then((response: MandatoryPluginDataType) => {
                         setMandatoryPluginData(response)
-                        if (referPrevState) {
-                            setFormData((prevForm) => prepareFormData({ ...prevForm }, response?.pluginData ?? []))
-                        } else {
-                            setFormData(prepareFormData(_formData, response?.pluginData ?? []))
-                        }
+                        setFormData((prevForm) => prepareFormData({ ...prevForm }, response?.pluginData ?? []))
                     })
                     .catch((error: ServerErrors) => {
                         showError(error)
