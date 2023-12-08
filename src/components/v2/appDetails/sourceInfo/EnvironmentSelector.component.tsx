@@ -132,7 +132,9 @@ function EnvironmentSelectorComponent({
                 showNonCascadeDeleteDialog(false)
                 showForceDeleteDialog(false)
                 toast.success('Deletion initiated successfully.')
-                _init()
+                if (typeof _init === 'function') {
+                    _init()
+                }
             } else if (
                 deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
                 !response.result.deleteResponse?.clusterReachable
