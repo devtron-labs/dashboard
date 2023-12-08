@@ -16,7 +16,6 @@ export function Build({
     ciPipeline,
     pageState,
     isSecurityModuleInstalled,
-    setDockerConfigOverridden,
     isJobView,
     getPluginData,
 }: BuildType) {
@@ -265,7 +264,6 @@ export function Build({
                     {isSecurityModuleInstalled && renderScanner()}
                     <AdvancedConfigOptions
                         ciPipeline={ciPipeline}
-                        setDockerConfigOverridden={setDockerConfigOverridden}
                     />
                 </>
             )}
