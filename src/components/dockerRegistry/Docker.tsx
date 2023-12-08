@@ -44,6 +44,7 @@ import {
     RegistryType,
     EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT,
     URLS,
+    PATTERNS,
 } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -64,6 +65,7 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { SwitchTransition } from 'react-transition-group'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 
@@ -322,18 +324,15 @@ function DockerForm({
       },
     ...rest
 }) {
+    const re = PATTERNS.APP_NAME
+    const regExp = new RegExp(re)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
-            id: { value: id, error: '' },
             registryType: { value: registryType || 'ecr', error: '' },
             advanceSelect: { value: connection || CERTTYPE.SECURE, error: '' },
             certInput: { value: cert || '', error: '' },
         },
         {
-            id: {
-                required: true,
-                validator: { error: 'Do not use "/" ', regex: /^[^/]+$/ },
-            },
             registryType: {
                 required: true,
                 validator: { error: 'Type is required', regex: /^.*$/ },
@@ -361,6 +360,7 @@ function DockerForm({
             : password
 
     const [customState, setCustomState] = useState({
+        id: { value: id, error: '' },
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: {
             value: id && !awsSecretAccessKey ? DEFAULT_SECRET_PLACEHOLDER : awsSecretAccessKey,
@@ -372,8 +372,29 @@ function DockerForm({
             value: id && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
             error: '',
         },
-        repositoryList: { value: repositoryList.join(',') || '', error: '' },
+        repositoryList: {
+            value: repositoryList.join(', ') || '',
+            error: '',
+        },
     })
+    const customStateValidator = {
+        id: [
+            { error: 'Name is required', regex: /^(?=.*).{1,}$/ },
+            {
+                error: "Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use 'spaces'",
+                regex: regExp,
+            },
+            { error: 'Minimum 3 and Maximum 30 characters required', regex: /^.{3,30}$/ }
+        ],
+        registryUrl: [{ error: "Registry URL is required; Do not use 'spaces'", regex: /^(?=.*).{1,}$/ }],
+        repositoryList: [
+            { error: "Registry List is required", regex: /^(?=.*).{1,}$/ },
+            { error: "Do not use 'spaces' or ',' at the start or at the end; new lines are not allowed", regex: /^(?!.*[\s,]$)(?!^[\s,]).*?(?<!\s)$/ },
+            { error: "Use only one 'space' after ','", regex: /^(?!.*,\s{2,}).*/ },
+            { error: "Consecutive ',' are not allowed", regex: /^(?!.*,{2,}).*/ },
+            { error: "Repository name cannot be empty and must be separated by ','", regex: /^(?!.*,\s{1,},).*/ }
+        ],
+    }
 
     const clusterlistMap = new Map()
 
@@ -443,24 +464,36 @@ function DockerForm({
                 ? `${URLS.CHARTS_DISCOVER}?registryId=${id}`
                 : URLS.CHARTS_DISCOVER
       
-    function customHandleChange(e) {
-        setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
+    const customHandleChange = (e): void => {
+        updateWithCustomStateValidation(e.target.name, e.target.value)
+    }
+
+    const updateWithCustomStateValidation = (name: string, value: any): Boolean => { 
+        let errorMessage: string = ''
+        customStateValidator[name]?.forEach((validator) => {
+            if (!validator.regex.test(value)) {
+                errorMessage = validator.error
+                return
+            }
+        })
+        setCustomState((st) => ({ ...st, [name]: { value, error: errorMessage } }))
+        return !!errorMessage
     }
 
     const handleRegistryTypeChange = (selectedRegistry) => {
         setSelectedDockerRegistryType(selectedRegistry)
         setCustomState((st) => ({
             ...st,
-            username: { value: selectedRegistry.id.defaultValue, error: '' },
             registryUrl: { value: selectedRegistry.defaultRegistryURL, error: '' },
+            username: { value: selectedRegistry.id.defaultValue, error: '' },
+            password: { value: selectedRegistry.password.defaultValue, error: '' },
+            awsAccessKeyId: { value: "", error: '' },
+            awsSecretAccessKey: { value: "", error: '' },
         }))
     }
 
     const handleRepositoryListChange = (e) => {
-        setCustomState((st) => ({
-            ...st,
-            repositoryList: { value: e.target?.value || '', error: '' },
-        }))
+        updateWithCustomStateValidation("repositoryList", e.target.value)
     }
 
     const onECRAuthTypeChange = (e) => {
@@ -527,7 +560,7 @@ function DockerForm({
                 ? { CHART: OCIRegistryConfigConstants.PULL }
                 : OCIRegistryStorageConfig
         return {
-            id: state.id.value,
+            id: customState.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
             isDefault:
@@ -547,7 +580,10 @@ function DockerForm({
                 (registryStorageType === RegistryStorageType.OCI_PUBLIC ||
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL)
-                    ? customState.repositoryList?.value.split(',') || []
+                    ? customState.repositoryList?.value
+                        .trim()
+                        .replace(', ', ',')
+                        .split(',') || []
                     : null,
             registryUrl: customState.registryUrl.value
                 ?.trim()
@@ -694,133 +730,115 @@ function DockerForm({
         }
     }
 
-     function onValidation() {
-        if (selectedDockerRegistryType.value === RegistryType.ECR) {
-            if ( registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                (!isIAMAuthType &&
-                    (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
-                !customState.registryUrl.value
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
-                    awsSecretAccessKey: {
-                        ...st.awsSecretAccessKey,
-                        error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
-                    },
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }))
-                return
-            }
-            if (!customState.registryUrl.value) {
-                setCustomState((st) => ({
-                    ...st,
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }))
-                return
-            }
-        } else if (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB) {
-            if (
-                registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                (!customState.username.value || !(customState.password.value || id))
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
-                }))
-                return
-            } 
-            if (!customState.registryUrl.value) {
-                setCustomState((st) => ({
-                    ...st,
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }))
-                return
-            }
-        } else if (
-            selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY ||
-            selectedDockerRegistryType.value === RegistryType.GCR
-        ) {
-            const isValidJsonFile = isValidJson(customState.password.value) || id
-            const isValidJsonStr = isValidJsonFile ? '' : 'Invalid JSON'
-            if (
-                registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile)
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: {
-                        ...st.password,
-                        error: id || st.password.value ? isValidJsonStr : 'Mandatory',
-                    },
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }))
-                return
-            }
-            if (!customState.registryUrl.value) {
-                setCustomState((st) => ({
-                    ...st,
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }))
-                return
-            }
-        } else if (
-            selectedDockerRegistryType.value === RegistryType.ACR ||
-            selectedDockerRegistryType.value === RegistryType.QUAY ||
-            selectedDockerRegistryType.value === RegistryType.OTHER
-        ) {
-            let error = false
-            if (registryStorageType !== RegistryStorageType.OCI_PUBLIC) {
+    function onValidation() {
+        // Custom state validation for Registry Id
+        if (!id && updateWithCustomStateValidation("id", customState.id.value)) {
+            return
+        } else if (!customState.id.value ) {
+            setCustomState((st) => ({
+                ...st,
+                id: { ...st.id, error: 'Name is required' },
+            }))
+            return
+        } else if (customState.id.value.includes("/")) {
+            setCustomState((st) => ({
+                ...st,
+                id: { ...st.id, error: 'Do not use "/"' },
+            }))
+            return
+        }
+
+        // Custom state validation for Registry URL
+        if (updateWithCustomStateValidation("registryUrl",customState.registryUrl.value)) {
+            return
+        }
+        switch (selectedDockerRegistryType.value) {
+            case RegistryType.ECR:
+                if (registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    (!isIAMAuthType &&
+                        (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id)))
+                ) {
+                    setCustomState((st) => ({
+                        ...st,
+                        awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
+                        awsSecretAccessKey: {
+                            ...st.awsSecretAccessKey,
+                            error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
+                        },
+                    }))
+                    return
+                }
+                break;
+            case RegistryType.DOCKER_HUB:
                 if (
-                    !customState.username.value ||
-                    !(customState.password.value || id) ||
-                    !customState.registryUrl.value
+                    registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    (!customState.username.value || !(customState.password.value || id))
                 ) {
                     setCustomState((st) => ({
                         ...st,
                         username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                         password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                     }))
-                    error = true
-                }
-            } else {
-                if (!customState.registryUrl.value) {
+                    return
+                } 
+                break
+            case RegistryType.ARTIFACT_REGISTRY:
+            case RegistryType.GCR:
+                const isValidJsonFile = isValidJson(customState.password.value) || id
+                const isValidJsonStr = isValidJsonFile ? '' : 'Invalid JSON'
+                if (
+                    registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile)
+                ) {
                     setCustomState((st) => ({
                         ...st,
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                        username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                        password: {
+                            ...st.password,
+                            error: id || st.password.value ? isValidJsonStr : 'Mandatory',
+                        },
+                    }))
+                    return
+                }
+                break
+            case RegistryType.ACR:
+            case RegistryType.QUAY:
+            case RegistryType.OTHER:
+                let error = false
+                if (
+                    registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    (!customState.username.value || !(customState.password.value || id))
+                ) {
+                    setCustomState((st) => ({
+                        ...st,
+                        username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                        password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
                     }))
                     error = true
                 }
-            }
 
-            if (
-                selectedDockerRegistryType.value === RegistryType.OTHER &&
-                state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT
-            ) {
-                if (state.certInput.value === '') {
-                    if (!toggleCollapsedAdvancedRegistry) {
-                        setToggleCollapsedAdvancedRegistry(not)
+                if (
+                    selectedDockerRegistryType.value === RegistryType.OTHER &&
+                    state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT
+                ) {
+                    if (state.certInput.value === '') {
+                        if (!toggleCollapsedAdvancedRegistry) {
+                            setToggleCollapsedAdvancedRegistry(not)
+                        }
+                        setCertInputError('Mandatory')
+                        error = true
+                    } else {
+                        setCertInputError('')
                     }
-                    setCertInputError('Mandatory')
-                    error = true
-                } else {
-                    setCertInputError('')
                 }
-            }
-            if (error) {
-                return
-            }
+                if (error) {
+                    return
+                }
+                break
         }
         if (selectedDockerRegistryType.value !== RegistryType.GCR) {
             if (showHelmPull || registryStorageType === RegistryStorageType.OCI_PUBLIC) {
-                setCustomState((st) => ({
-                    ...st,
-                    repositoryList: { ...st.repositoryList, error: st.repositoryList?.value ? '' : 'Mandatory' },
-                }))
-                if (customState.repositoryList?.value === '') {
+                if (updateWithCustomStateValidation("repositoryList", customState.repositoryList.value)) {
                     return
                 }
             }
@@ -1236,7 +1254,7 @@ function DockerForm({
                         className="form__textarea"
                         name="repositoryList"
                         autoFocus={true}
-                        value={customState.repositoryList?.value.trim()}
+                        value={customState.repositoryList?.value}
                         autoComplete="off"
                         tabIndex={3}
                         onChange={handleRepositoryListChange}
@@ -1630,11 +1648,11 @@ function DockerForm({
                             labelClassName="dc__required-field"
                             name="id"
                             autoFocus={true}
-                            value={state.id.value}
+                            value={customState.id.value}
                             autoComplete="off"
-                            error={state.id.error}
+                            error={customState.id.error}
                             tabIndex={1}
-                            onChange={handleOnChange}
+                            onChange={customHandleChange}
                             label="Name"
                             disabled={!!id}
                             placeholder="e.g. Registry name"
