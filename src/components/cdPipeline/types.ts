@@ -12,3 +12,26 @@ export interface NewCDPipelineProps {
     isLastNode: any
     changeCIPayload?: ChangeCIPayloadType
 }
+
+export enum DeleteDialogType {
+    showForceDeleteDialog = 'showForceDeleteDialog',
+    showNonCascadeDeleteDialog = 'showNonCascadeDeleteDialog',
+    showNormalDeleteDialog = 'showNormalDeleteDialog',
+}
+
+export interface ForceDeleteMessageType {
+    forceDeleteDialogMessage: string
+    forceDeleteDialogTitle: string
+}
+
+export interface DeleteCDNodeProps {
+    deleteDialog: DeleteDialogType
+    setDeleteDialog: React.Dispatch<React.SetStateAction<DeleteDialogType>>
+    clusterName: string
+    appName: string
+    hideDeleteModal: () => void
+    deleteCD: (force: boolean, cascadeDelete: boolean) => void
+    deploymentAppType: string
+    forceDeleteData: ForceDeleteMessageType
+    deleteTitleName: string
+}
