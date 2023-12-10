@@ -24,6 +24,7 @@ import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.s
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType } from './globalConfiguration.type'
+import CodeEditor from '../CodeEditor/CodeEditor'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -40,6 +41,7 @@ const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
+const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -421,6 +423,15 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Filter condition</div>
                         </NavLink>
                     )}
+                    {LockConfiguration && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Lock Deployment config</div>
+                        </NavLink>
+                    )}
                 </>
             )}
         </div>
@@ -583,6 +594,14 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <FilterConditions isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
+            {LockConfiguration && (
+                <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
+                    <LockConfiguration
+                        isSuperAdmin={isSuperAdmin}
+                        CodeEditor={CodeEditor}
+                    />
+                </Route>
+            )}
             <Redirect to={defaultRoute()} />
         </Switch>
     )
@@ -611,10 +630,18 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
 function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...props }) {
     const handleToggle = () => {
         if (!isButtonDisabled) {
-            onSelect(!enabled);
+            onSelect(!enabled)
         }
-    };
-    return <Toggle dataTestId="toggle-button" {...props} onSelect={handleToggle} selected={enabled} disabled={isButtonDisabled} />
+    }
+    return (
+        <Toggle
+            dataTestId="toggle-button"
+            {...props}
+            onSelect={handleToggle}
+            selected={enabled}
+            disabled={isButtonDisabled}
+        />
+    )
 }
 
 function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
