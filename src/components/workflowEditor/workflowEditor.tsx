@@ -416,9 +416,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
-                                    isLastNode={
-                                        this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
-                                    }
                                     changeCIPayload={this.state.changeCIPayload}
                                 />
                             )

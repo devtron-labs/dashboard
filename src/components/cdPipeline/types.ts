@@ -9,7 +9,6 @@ export interface NewCDPipelineProps {
     getWorkflows: any
     refreshParentWorkflows: any
     envIds: any
-    isLastNode: any
     changeCIPayload?: ChangeCIPayloadType
 }
 

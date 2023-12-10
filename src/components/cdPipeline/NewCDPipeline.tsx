@@ -1,6 +1,5 @@
 import {
     BuildStageVariable,
-    ConditionalWrap,
     DeploymentAppTypes,
     Drawer,
     ErrorScreenManager,
@@ -47,7 +46,6 @@ import {
     TOAST_INFO,
 } from '../../config/constantMessaging'
 import { PipelineType } from '../app/details/triggerView/types'
-import Tippy from '@tippyjs/react'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
@@ -63,7 +61,6 @@ export default function NewCDPipeline({
     getWorkflows,
     refreshParentWorkflows,
     envIds,
-    isLastNode,
     changeCIPayload,
 }: NewCDPipelineProps) {
     const isCdPipeline = true
@@ -867,28 +864,15 @@ export default function NewCDPipeline({
 
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
-            const canDeletePipeline = isLastNode
-            const message =
-                !canDeletePipeline ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
             return (
-                <ConditionalWrap
-                    condition={!canDeletePipeline}
-                    wrap={(children) => (
-                        <Tippy className="default-tt" content={message}>
-                            <div>{children}</div>
-                        </Tippy>
-                    )}
+                <button
+                    data-testid="ci-delete-pipeline-button"
+                    type="button"
+                    className={`cta cta--workflow delete mr-16`}
+                    onClick={openDeleteModal}
                 >
-                    <button
-                        data-testid="ci-delete-pipeline-button"
-                        type="button"
-                        className={`cta cta--workflow delete mr-16`}
-                        disabled={!canDeletePipeline}
-                        onClick={openDeleteModal}
-                    >
-                        Delete Pipeline
-                    </button>
-                </ConditionalWrap>
+                    Delete Pipeline
+                </button>
             )
         } else if (!isAdvanced) {
             return (
