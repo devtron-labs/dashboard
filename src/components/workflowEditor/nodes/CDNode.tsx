@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as ICDelete } from '../../../assets/icons/ic-delete-interactive.svg'
 import Tippy from '@tippyjs/react'
 import { CDNodeProps, CDNodeState } from '../types'
 import { toast } from 'react-toastify'
@@ -31,6 +32,12 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
     onClickHideDeletePipelinePopup = () => {
         this.setState({ showDeletePipelinePopup: false })
+    }
+
+    deleteCDNode = (e: React.MouseEvent) => {
+        e.preventDefault()
+        // TODO: Implement deleteCDNode
+        console.log('deleteCDNode');
     }
 
     renderReadOnlyCard() {
@@ -114,8 +121,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 {this.props.triggerType}
                             </div>
                         )}
-                        <div className="workflow-node__title flex">
-                            <div className="workflow-node__full-width-minus-Icon">
+                        <div className="workflow-node__title h-100 workflow-node__title--no-margin flex">
+                            <div className="workflow-node__full-width-minus-Icon p-12">
                                 <span className="workflow-node__text-light">
                                     {this.props.deploymentAppDeleteRequest ? (
                                         <div className="cr-5">
@@ -128,36 +135,52 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 </span>
                                 {envDescriptionTippy(this.props.environmentName, this.props.description)}
                             </div>
+
+                            {/*TODO: Look into these css later */}
                             <div
-                                className={`workflow-node__icon-common ${
+                                className={`workflow-node__icon-common pt-12 pb-12 mr-12 ${
                                     this.props.isVirtualEnvironment
                                         ? 'workflow-node__CD-rocket-icon'
                                         : 'workflow-node__CD-icon dc__flip'
                                 }`}
-                            ></div>
+                            />
+
+                            <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
+                                <Tippy
+                                    placement="right"
+                                    className="default-tt"
+                                    content={
+                                        <span className="add-cd-btn-tippy">
+                                            {this.props.addNewPipelineBlocked
+                                                ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                                : 'Add deployment pipeline'}
+                                        </span>
+                                    }
+                                >
+                                    <div className="flex h-100 w-100 dc__border-bottom-n1--important">
+                                        <button
+                                            type="button"
+                                            className="flex h-100 w-100 p-0 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
+                                            disabled={this.props.addNewPipelineBlocked}
+                                        >
+                                            <Add className="icon-dim-12" />
+                                        </button>
+                                    </div>
+                                </Tippy>
+
+                                <Tippy placement="right" content="Delete pipeline" className="default-tt">
+                                    <button
+                                        type="button"
+                                        className="flex h-100 w-100 dc__hover-b500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
+                                        onClick={this.deleteCDNode}
+                                    >
+                                        <ICDelete className="icon-dim-12" />
+                                    </button>
+                                </Tippy>
+                            </div>
                         </div>
                     </div>
                 </Link>
-
-                <button className="workflow-node__add-cd-btn" data-testid="cd-add-deployment-pipeline-button">
-                    <Tippy
-                        className="default-tt workflow-node__add-cd-btn-tippy"
-                        arrow={false}
-                        placement="top"
-                        content={
-                            <span className="add-cd-btn-tippy">
-                                {this.props.addNewPipelineBlocked
-                                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                                    : 'Add deployment pipeline'}
-                            </span>
-                        }
-                    >
-                        <Add
-                            className={`icon-dim-18 fcb-5 ${this.props.addNewPipelineBlocked ? 'dc__disabled' : ''}`}
-                            onClick={this.onClickAddNode}
-                        />
-                    </Tippy>
-                </button>
                 {this.state.showDeletePipelinePopup && this.renderConfirmationModal()}
             </>
         )

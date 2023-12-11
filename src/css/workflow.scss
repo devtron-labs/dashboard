@@ -265,6 +265,46 @@
     text-overflow: ellipsis;
     overflow: hidden;
     text-align: left;
+
+    &--no-margin {
+        margin: 0px;
+    }
+
+    &--top-right-rad-8 {
+        border-top-right-radius: 8px;
+    }
+
+    &--bottom-right-rad-8 {
+        border-bottom-right-radius: 8px;
+    }
+
+    &--add-cd-icon {
+        fill: var(--N600);
+        path {
+            fill: var(--N600);
+        }
+
+        &:hover {
+            fill: var(--N0);
+            path {
+                fill: var(--N0);
+            }
+        }
+    }
+
+    &--delete-cd-icon {
+        stroke: var(--N600);
+        path {
+            stroke: var(--N600);
+        }
+
+        &:hover {
+            stroke: var(--N0);
+            path {
+                stroke: var(--N0);
+            }
+        }
+    }
 }
 
 .workflow-node__text-light {
