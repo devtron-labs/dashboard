@@ -45,6 +45,7 @@ import {
     EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT,
     URLS,
     PATTERNS,
+    OCIRegistryStorageActionType,
 } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -65,7 +66,6 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { SwitchTransition } from 'react-transition-group'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 
@@ -379,20 +379,20 @@ function DockerForm({
     })
     const customStateValidator = {
         id: [
-            { error: 'Name is required', regex: /^(?=.*).{1,}$/ },
+            { error: 'Name is required', regex: /^(?=.*).+$/ },
             {
                 error: "Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use 'spaces'",
                 regex: regExp,
             },
             { error: 'Minimum 3 and Maximum 30 characters required', regex: /^.{3,30}$/ }
         ],
-        registryUrl: [{ error: "Registry URL is required; Do not use 'spaces'", regex: /^(?=.*).{1,}$/ }],
+        registryUrl: [{ error: "Registry URL is required; Do not use 'spaces'", regex: /^(?=.*).+$/ }],
         repositoryList: [
-            { error: "Registry List is required", regex: /^(?=.*).{1,}$/ },
+            { error: "Registry List is required", regex: /^(?=.*).+$/ },
             { error: "Do not use 'spaces' or ',' at the start or at the end; new lines are not allowed", regex: /^(?!.*[\s,]$)(?!^[\s,]).*?(?<!\s)$/ },
             { error: "Use only one 'space' after ','", regex: /^(?!.*,\s{2,}).*/ },
             { error: "Consecutive ',' are not allowed", regex: /^(?!.*,{2,}).*/ },
-            { error: "Repository name cannot be empty and must be separated by ','", regex: /^(?!.*,\s{1,},).*/ }
+            { error: "Repository name cannot be empty and must be separated by ','", regex: /^(?!.*,\s+,).*/ }
         ],
     }
 
@@ -468,12 +468,11 @@ function DockerForm({
         updateWithCustomStateValidation(e.target.name, e.target.value)
     }
 
-    const updateWithCustomStateValidation = (name: string, value: any): Boolean => { 
+    const updateWithCustomStateValidation = (name: string, value: any): boolean => { 
         let errorMessage: string = ''
         customStateValidator[name]?.forEach((validator) => {
             if (!validator.regex.test(value)) {
                 errorMessage = validator.error
-                return
             }
         })
         setCustomState((st) => ({ ...st, [name]: { value, error: errorMessage } }))
@@ -542,7 +541,7 @@ function DockerForm({
         return result[0].split('ecr.')[1]
     }
 
-    function isValidJson(inputString: string) {
+    function isValidJson(inputString: string): boolean {
         try {
             JSON.parse(inputString)
         } catch (e) {
@@ -660,8 +659,11 @@ function DockerForm({
     }
 
     async function onClickValidate() {
+        const isValidated = performCustomValidation()
+        if(!isValidated) {
+            return
+        }
         setValidationStatus(VALIDATION_STATUS.LOADER)
-       
         let payload = getRegistryPayload(awsRegion)
 
         let promise = validateContainerConfiguration(payload)
@@ -698,11 +700,6 @@ function DockerForm({
             if (!awsRegion) return
         }
 
-        if (registryStorageType === RegistryStorageType.OCI_PUBLIC || isHyperionMode) {
-            setOCIRegistryStorageConfig({
-                CHART: OCIRegistryConfigConstants.PULL,
-            })
-        }
         let payload = getRegistryPayload(awsRegion)
 
         const api = id ? updateRegistryConfig : saveRegistryConfig
@@ -730,27 +727,27 @@ function DockerForm({
         }
     }
 
-    function onValidation() {
+    const performCustomValidation = (): boolean => { 
         // Custom state validation for Registry Id
         if (!id && updateWithCustomStateValidation("id", customState.id.value)) {
-            return
+            return false
         } else if (!customState.id.value ) {
             setCustomState((st) => ({
                 ...st,
                 id: { ...st.id, error: 'Name is required' },
             }))
-            return
+            return false
         } else if (customState.id.value.includes("/")) {
             setCustomState((st) => ({
                 ...st,
                 id: { ...st.id, error: 'Do not use "/"' },
             }))
-            return
+            return false
         }
 
         // Custom state validation for Registry URL
         if (updateWithCustomStateValidation("registryUrl",customState.registryUrl.value)) {
-            return
+            return false
         }
         switch (selectedDockerRegistryType.value) {
             case RegistryType.ECR:
@@ -766,7 +763,7 @@ function DockerForm({
                             error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
                         },
                     }))
-                    return
+                    return false
                 }
                 break;
             case RegistryType.DOCKER_HUB:
@@ -779,13 +776,13 @@ function DockerForm({
                         username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                         password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
                     }))
-                    return
+                    return false
                 } 
                 break
             case RegistryType.ARTIFACT_REGISTRY:
             case RegistryType.GCR:
-                const isValidJsonFile = isValidJson(customState.password.value) || id
-                const isValidJsonStr = isValidJsonFile ? '' : 'Invalid JSON'
+                const isValidJsonFile: boolean = isValidJson(customState.password.value) || !!id
+                const isValidJsonStr: string = isValidJsonFile ? '' : 'Invalid JSON'
                 if (
                     registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                     (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile)
@@ -798,7 +795,7 @@ function DockerForm({
                             error: id || st.password.value ? isValidJsonStr : 'Mandatory',
                         },
                     }))
-                    return
+                    return false
                 }
                 break
             case RegistryType.ACR:
@@ -832,24 +829,34 @@ function DockerForm({
                     }
                 }
                 if (error) {
-                    return
+                    return false
                 }
                 break
         }
+        
+        // Default validation for OCI registries
         if (selectedDockerRegistryType.value !== RegistryType.GCR) {
             if (showHelmPull || registryStorageType === RegistryStorageType.OCI_PUBLIC) {
                 if (updateWithCustomStateValidation("repositoryList", customState.repositoryList.value)) {
-                    return
+                    return false
                 }
             }
             if (
                 registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                 !(isContainerStore || isOCIRegistryHelmPush || showHelmPull)
             ) {
-                return
+                return false
             }
         }
-        onSave()
+        return true
+    }
+
+    function onValidation() {
+        const isValidated = performCustomValidation()
+        // save on successfully validated
+        if (isValidated) {
+            onSave()
+        }
     }
 
     let advanceRegistryOptions = [
@@ -876,114 +883,72 @@ function DockerForm({
         history.push(ChartStoreRedirectionUrl)
     }
 
-    const handleOCIRegistryStorageAction = (e, key ) => {
+    const handleContainerStoreUpdateAction = (isContainerStore: boolean): void => {
+        if (!isContainerStore) {
+            delete OCIRegistryStorageConfig['CONTAINER']
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+            })
+        } else {
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+                CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+            })
+        }
+        setContainerStore(isContainerStore)
+    }
+
+    const handleOCIRegistryHelmPushAction = (isOCIRegistryHelmPush: boolean): void => {
+        if (!isOCIRegistryHelmPush && !showHelmPull) {
+            delete OCIRegistryStorageConfig['CHART']
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+            })
+        } else {
+            let _currentChartConfig: OCIRegistryStorageActionType = isOCIRegistryHelmPush ? OCIRegistryConfigConstants.PUSH : OCIRegistryConfigConstants.PULL
+            if (isOCIRegistryHelmPush && showHelmPull) {
+                _currentChartConfig = OCIRegistryConfigConstants.PULL_PUSH
+            }
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+                CHART: _currentChartConfig,
+            })
+        }
+        setOCIRegistryHelmPush(isOCIRegistryHelmPush)
+    }
+    
+    const handleOCIRegistryHelmPullAction = (showHelmPull: boolean): void => {
+        if (!isOCIRegistryHelmPush && !showHelmPull) {
+            delete OCIRegistryStorageConfig['CHART']
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+            })
+        } else {
+            let _currentChartConfig: OCIRegistryStorageActionType = showHelmPull ? OCIRegistryConfigConstants.PULL : OCIRegistryConfigConstants.PUSH
+            if (isOCIRegistryHelmPush && showHelmPull) {
+                _currentChartConfig = OCIRegistryConfigConstants.PULL_PUSH
+            }
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+                CHART: _currentChartConfig,
+            })
+        }
+        setListRepositories(showHelmPull)
+    }
+
+    const handleOCIRegistryStorageAction = (e, key) => {
         e.stopPropagation()
-        if (key === RepositoryAction.CONTAINER) {
-            setContainerStore(!isContainerStore)
-            if (isContainerStore) {
-                delete OCIRegistryStorageConfig['CONTAINER']
-            } else {
-                if (isOCIRegistryHelmPush && showHelmPull) {
-                    setOCIRegistryStorageConfig({
-                        CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    })
-                } else if (isOCIRegistryHelmPush && !showHelmPull) {
-                    setOCIRegistryStorageConfig({
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                        CHART: OCIRegistryConfigConstants.PUSH,
-                    })
-                } else if (showHelmPull && !isOCIRegistryHelmPush) {
-                    setOCIRegistryStorageConfig({
-                        CHART: OCIRegistryConfigConstants.PULL,
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    })
-                } else {
-                    setOCIRegistryStorageConfig({
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    })
-                }
-            }
+        switch (key) { 
+            case RepositoryAction.CONTAINER:
+                handleContainerStoreUpdateAction(!isContainerStore)
+                break
+            case RepositoryAction.CHART_PUSH:
+                handleOCIRegistryHelmPushAction(!isOCIRegistryHelmPush)
+                break
+            case RepositoryAction.CHART_PULL:
+                handleOCIRegistryHelmPullAction(!showHelmPull)
+                break
         }
-
-        if (key === RepositoryAction.CHART_PUSH) {
-            setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
-            if (isOCIRegistryHelmPush && showHelmPull && isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL,
-                })
-            } else if (isOCIRegistryHelmPush && !showHelmPull && isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else if (isOCIRegistryHelmPush && showHelmPull && !isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL,
-                })
-            } else if (isContainerStore && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL,
-                })
-            } else if (isContainerStore && !showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            } else if (showHelmPull && !isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            }
-            
-        }
-
-        if (key === RepositoryAction.CHART_PULL) {
-            setListRepositories(!showHelmPull)
-            if (isContainerStore && isOCIRegistryHelmPush && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            }
-
-            else if (isContainerStore && !isOCIRegistryHelmPush && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            }
-
-            else if (!isContainerStore && isOCIRegistryHelmPush && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            }
-       
-            else if (isContainerStore && isOCIRegistryHelmPush) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else if (isContainerStore && !isOCIRegistryHelmPush) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL,
-                })
-            } else if (isOCIRegistryHelmPush && !isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            }
-        }  
     }
 
     const registryOptions = (props) => {
