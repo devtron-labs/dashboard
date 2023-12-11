@@ -270,7 +270,6 @@ function CustomImageTags({
                     </div>
                     <div className="" style={{ width: '32px', height: '20px' }}>
                         <Toggle
-                            disabled={window._env_.FORCE_SECURITY_SCANNING && formData.enableCustomTag}
                             selected={formData.enableCustomTag}
                             onSelect={handleCustomTagToggle}
                             dataTestId="create-build-pipeline-custom-tag-enabled-toggle"

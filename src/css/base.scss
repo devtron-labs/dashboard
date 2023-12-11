@@ -2540,6 +2540,12 @@ textarea,
     }
 }
 
+.info-icon-n5 {
+    circle {
+        fill: var(--N500);
+    }
+}
+
 .info-icon-n6 {
     circle {
         fill: var(--N600);
@@ -2863,6 +2869,10 @@ textarea,
 
 .w-480 {
     width: 480px;
+}
+
+.w-500 {
+    width: 510px !important;
 }
 
 .w-505 {
@@ -3199,6 +3209,10 @@ textarea,
     max-height: 210px;
 }
 
+.mxh-250 {
+    max-height: 210px;
+}
+
 .mxh-300 {
     max-height: 300px;
 }
@@ -3381,6 +3395,10 @@ textarea,
     margin: 0 !important;
 }
 
+.m-8-imp {
+    margin: 8px !important;
+}
+
 .m-tb-20 {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -3418,6 +3436,10 @@ textarea,
 
 .mr-0-imp {
     margin-right: 0px !important;
+}
+
+.mr-6-imp {
+    margin-right: 6px !important;
 }
 
 .mr-8-imp {
@@ -3955,6 +3977,10 @@ textarea::placeholder {
 .fetch-more-loading-button svg {
     width: 100% !important;
     height: 100% !important;
+}
+
+.fs-11-imp{
+    font-size: 11px !important;
 }
 
 // Start: accouncement banner
