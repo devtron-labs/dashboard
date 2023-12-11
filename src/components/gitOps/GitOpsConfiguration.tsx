@@ -223,17 +223,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     onBlur = (event, key: GitOpsFieldKeyType): void => {
-
         if(key === "token" && !event.target.value && this.state.form.id ){
                 event.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
-        this.setState({
+        this.setState((prevState) => ({
             form: {
-                ...this.state.form,
+                ...prevState.form,
                 [key]: event.target.value.trim(),
             }
-        })
-            
+            }
+        ))
     }
 
     requiredFieldCheck(formValueType: string): string {

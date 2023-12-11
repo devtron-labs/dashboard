@@ -150,14 +150,14 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
 
     onBlur = (e) => {
         let newURL = e.target.value
-         console.log(e.target.value)
-         this.setState({
-             form: {
-                 ...this.state.form,
-                 value: newURL.trim()
-             },
-             isHostUrlValid: newURL?.length > 0
-         })
+         this.setState((prevState) =>(
+            {
+                form: {
+                    ...prevState.form,
+                    value: newURL.trim()
+                },
+            }
+         ))
      }
  
 

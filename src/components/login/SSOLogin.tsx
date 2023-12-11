@@ -192,12 +192,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     onBlurURL = (event): void => {
-        this.setState({
+        this.setState((prevState) => ({
             ssoConfig: {
-                ...this.state.ssoConfig,
+                ...prevState.ssoConfig,
                 url: event.target.value.trim(),
             },
-        })
+        }))
     }
     toggleWarningModal(): void {
         this.setState({ showToggling: !this.state.showToggling, saveLoading: false })

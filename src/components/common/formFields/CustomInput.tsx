@@ -3,6 +3,7 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import React, { Component } from 'react'
 import './customInput.css'
 
+//NOTE: Need to replace this with a common component
 export interface CustomInputProps {
     label: any
     type?: 'text' | 'number'
