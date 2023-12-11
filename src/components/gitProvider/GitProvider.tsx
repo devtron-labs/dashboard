@@ -615,7 +615,7 @@ function GitForm({
                         onBlur={handleOnBlur}
                     />
                 </div>
-                <div className="form__label">Authentication type*</div>
+                <div className="form__label dc__required-field">Authentication type</div>
                 <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`}>
                     {AuthType.map(({ label: Lable, value }, index) => (
                         <div
@@ -668,7 +668,8 @@ function GitForm({
                             onChange={customHandleChange}
                             name="username"
                             error={customState.username.error}
-                            label="Username*"
+                            label="Username"
+                            isRequiredField={true}
                         />
                         <div>
                             <CustomInput
@@ -679,7 +680,8 @@ function GitForm({
                                 onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}
-                                label="Password/Auth token*"
+                                label="Password/Auth token"
+                                isRequiredField={true}
                             />
                             <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
                                 <Warn className="icon-dim-16 mr-4 " />

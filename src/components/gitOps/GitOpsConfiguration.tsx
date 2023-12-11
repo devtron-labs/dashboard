@@ -638,11 +638,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 link={GitLink.BITBUCKET_WORKSPACE}
                                 linkText={'(How to create workspace in bitbucket?)'}
                                 error={this.state.isError.bitBucketWorkspaceId}
-                                label={'Bitbucket Workspace ID*'}
+                                label="Bitbucket Workspace ID"
                                 tabIndex={1}
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                                 dataTestid="gitops-bitbucket-workspace-id-textbox"
                                 onBlur={(event) => this.onBlur(event, 'bitBucketWorkspaceId')}
+                                isRequiredField={true}
                             />
                         )}
                     </div>
@@ -670,6 +671,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     : 'gitops-github-organisation-name-textbox'
                             }
                             onBlur={(event) => this.onBlur(event, key)}
+                            isRequiredField={true}
                         />
                     </div>
                     {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
@@ -696,12 +698,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 tabIndex={3}
                                 label={
                                     this.state.providerTab === GitProvider.GITLAB
-                                        ? 'GitLab Username*'
+                                        ? 'GitLab Username'
                                         : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                        ? 'Azure DevOps Username*'
+                                        ? 'Azure DevOps Username'
                                         : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                        ? 'Bitbucket Username*'
-                                        : 'GitHub Username*'
+                                        ? 'Bitbucket Username'
+                                        : 'GitHub Username'
                                 }
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
                                 dataTestid={
@@ -714,6 +716,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         : 'gitops-github-username-textbox'
                                 }
                                 onBlur={(event) => this.onBlur(event, 'username')}
+                                isRequiredField={true}
                             />
                         </div>
                         <div>
@@ -727,19 +730,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 label={
                                     <>
                                         {this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'Azure DevOps Access Token* '
-                                            : 'Personal Access Token* '}
-                                        <a
-                                            target="_blank"
-                                            href={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK}
-                                            className="cursor fs-13 onlink"
-                                        >
-                                            (Check permissions required for PAT)
-                                        </a>
+                                            ? 'Azure DevOps Access Token '
+                                            : 'Personal Access Token '}
                                     </>
                                 }
+                                showLink={true}
+                                link={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK}
+                                linkText={'(Check permissions required for PAT)'}
                                 labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
-                                autoComplete="off"
                                 dataTestid={
                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                         ? 'gitops-azure-pat-textbox'
@@ -750,6 +748,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         : 'gitops-github-pat-textbox'
                                 }
                                 onBlur={(event) => this.onBlur(event, 'token')}
+                                isRequiredField={true}
                             />
                         </div>
                     </div>

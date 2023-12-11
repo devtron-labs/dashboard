@@ -629,13 +629,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                     </div>
                     <label className="form__row mr-24 ml-24 mb-24">
-                        <span className="form__label">URL*</span>
                         <CustomInput
                             value={this.state.ssoConfig.url || process.env.REACT_APP_ORCHESTRATOR_ROOT}
                             onChange={this.handleURLChange}
                             data-testid="sso-url-input"
                             name="sso-url"
                             onBlur={this.onBlurURL}
+                            label="URL"
+                            isRequiredField={true}
                         />
                         {this.state.isError.url && <div className="form__error">{this.state.isError.url}</div>}
                         <div className="flex left fw-4 pt-4">

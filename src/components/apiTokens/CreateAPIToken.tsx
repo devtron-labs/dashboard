@@ -269,7 +269,7 @@ function CreateAPIToken({
                             labelClassName="mt-12"
                             onBlur={onBlur}
                             isRequiredField={true}
-
+                            rootClassName="mb-16"
                         />
                         <label className="form__row">
                             <span className="form__label">Description</span>
