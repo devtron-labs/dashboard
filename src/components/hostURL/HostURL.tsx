@@ -210,9 +210,8 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 value={this.state.form.value || window.location.origin}
                                 dataTestid="host"
                                 tabIndex={1}
-                                type="text"
-                                placeholder={'Enter Host URL'}
-                                onChange={(event) => this.handleChange(event)}
+                                placeholder="Enter Host URL"
+                                onChange={this.handleChange}
                                 data-testid="host-url-textbox"
                                 onBlur={this.onBlur}
                                 isRequiredField={true}

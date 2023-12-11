@@ -473,16 +473,21 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         const getGitOpsLabel = () => {
+            let label = ''
+            if (this.state.providerTab === GitProvider.AZURE_DEVOPS) {
+                label = 'Azure DevOps Organisation Url'
+            } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
+                label = 'Bitbucket Host'
+            } else {
+                label = 'Git Host'
+            }
+
             return (
-                <>
-                    <span className="dc__required-field">
-                        {this.state.providerTab === GitProvider.AZURE_DEVOPS
-                            ? ' Azure DevOps Organisation Url'
-                            : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                            ? 'Bitbucket Host'
-                            : 'Git Host'}
-                    </span>&nbsp;(Use https://)
-                </>
+                label?.length > 0 && (
+                    <>
+                        <span className="dc__required-field">{label} </span>&nbsp;(Use https://)
+                    </>
+                )
             )
         }
 
