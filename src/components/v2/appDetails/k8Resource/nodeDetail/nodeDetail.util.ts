@@ -9,9 +9,10 @@ import {
     SelectedResourceType,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
-import { NodeDetailTab } from './nodeDetail.type'
+import { ManifestData, NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
+import { MANIFEST_KEY_FIELDS } from '../../../../../config'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -386,4 +387,21 @@ export const selectStyles = {
         ...base,
         padding: '0 8px',
     }),
+}
+
+/**
+ * @description This function is used to trim the manifest data by removing the managed fields from the manifest data
+ */
+export const getTrimmedManifestData = (
+    manifestData: ManifestData,
+    returnAsString: boolean = false,
+): ManifestData | string => {
+    if (manifestData[MANIFEST_KEY_FIELDS.METADATA]) {
+        const { [MANIFEST_KEY_FIELDS.MANAGED_FIELDS]: _, ...metadata } = manifestData[MANIFEST_KEY_FIELDS.METADATA]
+        const trimmedManifestData = {...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata}
+
+        return returnAsString ? JSON.stringify(trimmedManifestData) : trimmedManifestData
+    }
+
+    return returnAsString ? JSON.stringify(manifestData) : manifestData
 }
