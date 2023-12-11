@@ -9,6 +9,7 @@ import {
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
     InfoColourBar,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
@@ -147,6 +148,19 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         )
     }
 
+    onBlur = (e) => {
+        let newURL = e.target.value
+         this.setState((prevState) =>(
+            {
+                form: {
+                    ...prevState.form,
+                    value: newURL.trim()
+                },
+            }
+         ))
+     }
+ 
+
     render() {
         if (!this.props.isSuperAdmin) {
             return (
@@ -159,17 +173,14 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             return <Progressing pageLoader />
         } else if (this.state.view === ViewType.ERROR) {
             return (
-                <section className="global-configuration__component flex">
+                <section className="dc__align-reload-center">
                     <ErrorScreenManager code={this.state.statusCode} />
                 </section>
             )
         }
         return (
             <>
-                <section
-                    className="global-configuration__component"
-                    data-testid="section-host-url"
-                >
+                <section className="global-configuration__component" data-testid="section-host-url">
                     <h2 className="form__title" data-testid="host-url-heading">
                         Host URL
                     </h2>
@@ -193,22 +204,18 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                             ? this.renderHostErrorMessage()
                             : ''}
                         <div className="pl-20 pr-20">
-                            <div className="flex column left top ">
-                                <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Host URL</div>
-                                <input
-                                    id="host"
-                                    value={this.state.form.value || window.location.origin}
-                                    autoFocus
-                                    tabIndex={1}
-                                    type="text"
-                                    className="form__input"
-                                    placeholder={'Enter Host URL'}
-                                    onChange={(event) => this.handleChange(event)}
-                                    autoComplete="off"
-                                    data-testid="host-url-textbox"
-                                    name="host-url"
-                                />
-                            </div>
+                            <CustomInput
+                                name="host-url"
+                                label="Host URL"
+                                value={this.state.form.value || window.location.origin}
+                                dataTestid="host"
+                                tabIndex={1}
+                                placeholder="Enter Host URL"
+                                onChange={this.handleChange}
+                                data-testid="host-url-textbox"
+                                onBlur={this.onBlur}
+                                isRequiredField={true}
+                            />
                             {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
                             <div className="hosturl__autodetection flex fs-12 left pt-4">
                                 <Warn className="icon-dim-16 mr-4 " />

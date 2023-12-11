@@ -27,7 +27,7 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import { ServerErrors, showError, RadioGroup, RadioGroupItem, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, RadioGroup, RadioGroupItem, TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { API_COMPONENTS } from '../../config/constantMessaging'
 
@@ -129,6 +129,13 @@ function CreateAPIToken({
                 invalidDescriptionMessage: descriptionValidation.message,
             })
         }
+    }
+
+    const onBlur = (event): void => {
+        setFormData({
+            ...formData,
+            [event.target.name]: event.target.value.trim(),
+        })
     }
 
     const onCustomDateChange = (event) => {
@@ -249,26 +256,21 @@ function CreateAPIToken({
             <div className="bcn-0">
                 <div className="pb-20">
                     <div>
-                        <label className="form__row w-400">
-                            <span className="form__label dc__required-field">Name</span>
-                            <input
-                                tabIndex={1}
-                                placeholder="Name"
-                                data-testid="api-token-name-textbox"
-                                className="form__input"
-                                name="name"
-                                value={formData.name}
-                                onChange={onChangeHandler}
-                                autoFocus
-                                autoComplete="off"
-                            />
-                            {formDataErrorObj.invalidName && (
-                                <span className="form__error">
-                                    <Error className="form__icon form__icon--error" />
-                                    {formDataErrorObj.invalidaNameMessage}
-                                </span>
-                            )}
-                        </label>
+                        <CustomInput
+                            tabIndex={1}
+                            placeholder="Name"
+                            data-testid="api-token-name-textbox"
+                            name="name"
+                            value={formData.name}
+                            onChange={onChangeHandler}
+                            autoFocus
+                            error={formDataErrorObj.invalidName && formDataErrorObj.invalidaNameMessage}
+                            label="Name"
+                            labelClassName="mt-12"
+                            onBlur={onBlur}
+                            isRequiredField={true}
+                            rootClassName="mb-16"
+                        />
                         <label className="form__row">
                             <span className="form__label">Description</span>
                             <textarea

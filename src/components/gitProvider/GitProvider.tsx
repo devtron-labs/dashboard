@@ -13,8 +13,9 @@ import {
     useEffectAfterMount,
     stopPropagation,
     useAsync,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
+import { List } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
 import { DropdownIndicator } from './gitProvider.util';
@@ -357,7 +358,7 @@ function GitForm({
     sshPrivateKey = '',
     ...props
 }) {
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+    const { state, handleOnChange, handleOnSubmit, handleOnBlur } = useForm(
         {
             name: { value: name, error: '' },
             url: { value: url, error: '' },
@@ -556,12 +557,13 @@ function GitForm({
                 <div className="mb-16">
                     <CustomInput
                         dataTestid="git-account-name-textbox"
-                        autoComplete="off"
                         value={state.name.value}
                         onChange={handleOnChange}
                         name="name"
                         error={state.name.error}
-                        label="Name*"
+                        label="Name"
+                        isRequiredField={true}
+                        onBlur={handleOnBlur}
                     />
                 </div>
                 <div className="form__row form__row--two-third">
@@ -571,7 +573,7 @@ function GitForm({
                             <ReactSelect
                                 name="host"
                                 value={gitHost.value}
-                                className="react-select--height-44 fs-13 bcn-0"
+                                className="react-select--height-44 fs-13 bcn-0 mb-12"
                                 classNamePrefix="select-git-account-host"
                                 placeholder="Select git host"
                                 isMulti={false}
@@ -604,15 +606,16 @@ function GitForm({
                     </div>
                     <CustomInput
                         dataTestid="git-account-host-url-textbox"
-                        autoComplete="off"
                         value={state.url.value}
                         onChange={handleOnChange}
                         name="url"
                         error={state.url.error}
-                        label="URL*"
+                        label="URL"
+                        isRequiredField={true}
+                        onBlur={handleOnBlur}
                     />
                 </div>
-                <div className="form__label">Authentication type*</div>
+                <div className="form__label dc__required-field">Authentication type</div>
                 <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`}>
                     {AuthType.map(({ label: Lable, value }, index) => (
                         <div
@@ -665,7 +668,8 @@ function GitForm({
                             onChange={customHandleChange}
                             name="username"
                             error={customState.username.error}
-                            label="Username*"
+                            label="Username"
+                            isRequiredField={true}
                         />
                         <div>
                             <CustomInput
@@ -676,7 +680,8 @@ function GitForm({
                                 onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}
-                                label="Password/Auth token*"
+                                label="Password/Auth token"
+                                isRequiredField={true}
                             />
                             <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
                                 <Warn className="icon-dim-16 mr-4 " />

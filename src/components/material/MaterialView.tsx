@@ -517,9 +517,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         )}
                     </div>
                     <div>
-                        <label className="form__label">Git Repo URL* (use {this.gitAuthType('host')})</label>
+                        <label className="form__label">Git Repo URL<span className="cr-5">* </span>(use {this.gitAuthType('host')})</label>
                         <CustomInput
                             name="Git Repo URL"
+                            type="text"
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
