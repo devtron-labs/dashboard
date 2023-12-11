@@ -198,7 +198,7 @@ function ChartForm({
         accessToken: { value: accessToken, error: '' },
     })
     const [secureWithTls, setSecureWithTls] = useState(false)
-    const { state, disable, handleOnChange, handleOnSubmit, handleOnBlur } = useForm(
+    const { state, handleOnChange, handleOnSubmit, handleOnBlur } = useForm(
         {
             name: { value: name, error: "" },
             url: { value: url, error: "" },
