@@ -207,6 +207,7 @@ export interface CIContainerRegistryConfigProps {
     currentRegistry: any
     handleOnChangeConfig: (e) => void
     isCDPipeline: boolean
+    handleOnBlur: (event) => void
 }
 
 export interface CIBuildArgType {

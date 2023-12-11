@@ -131,6 +131,19 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         [validationSchema],
     )
 
+    const handleOnBlur = useCallback(
+        (event) => {
+            setIsDirty(true)
+
+            const { name, value } = event.target
+            setState((prevState) => ({
+                ...prevState,
+                [name]: { value: value.trim() },
+            }))
+        },
+        [],
+    )
+
     const handleOnSubmit = (event) => {
         event.preventDefault()
         const newState = Object.keys(validationSchema).reduce((agg, curr) => {
@@ -143,7 +156,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
             setState({ ...newState })
         }
     }
-    return { state, disable, handleOnChange, handleOnSubmit }
+    return { state, disable, handleOnChange, handleOnBlur, handleOnSubmit }
 }
 
 export function mapByKey(arr: any[], id: string): Map<any, any> {
