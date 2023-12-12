@@ -358,7 +358,7 @@ function GitForm({
     sshPrivateKey = '',
     ...props
 }) {
-    const { state, handleOnChange, handleOnSubmit, handleOnBlur } = useForm(
+    const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: '' },
             url: { value: url, error: '' },
@@ -563,7 +563,6 @@ function GitForm({
                         error={state.name.error}
                         label="Name"
                         isRequiredField={true}
-                        // onBlur={handleOnBlur}
                     />
                 </div>
                 <div className="form__row form__row--two-third">
@@ -612,7 +611,6 @@ function GitForm({
                         error={state.url.error}
                         label="URL"
                         isRequiredField={true}
-                        // onBlur={handleOnBlur}
                     />
                 </div>
                 <div className="form__label dc__required-field">Authentication type</div>
@@ -676,12 +674,12 @@ function GitForm({
                                 dataTestid="git-account-user-auth-password"
                                 value={customState.password.value}
                                 onChange={customHandleChange}
-                                // onBlur={id && handleOnBlur}
                                 onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}
                                 label="Password/Auth token"
                                 isRequiredField={true}
+                                handleBlurChange={handleOnBlur}
                             />
                             <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
                                 <Warn className="icon-dim-16 mr-4 " />
