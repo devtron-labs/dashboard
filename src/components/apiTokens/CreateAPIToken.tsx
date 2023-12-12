@@ -131,13 +131,6 @@ function CreateAPIToken({
         }
     }
 
-    const onBlur = (event): void => {
-        setFormData({
-            ...formData,
-            [event.target.name]: event.target.value.trim(),
-        })
-    }
-
     const onCustomDateChange = (event) => {
         setCustomDate(event)
         setFormData({

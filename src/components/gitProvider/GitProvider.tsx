@@ -563,7 +563,6 @@ function GitForm({
                         error={state.name.error}
                         label="Name"
                         isRequiredField={true}
-                        // onBlur={handleOnBlur}
                     />
                 </div>
                 <div className="form__row form__row--two-third">
@@ -612,7 +611,6 @@ function GitForm({
                         error={state.url.error}
                         label="URL"
                         isRequiredField={true}
-                        // onBlur={handleOnBlur}
                     />
                 </div>
                 <div className="form__label dc__required-field">Authentication type</div>
@@ -676,7 +674,6 @@ function GitForm({
                                 dataTestid="git-account-user-auth-password"
                                 value={customState.password.value}
                                 onChange={customHandleChange}
-                                // onBlur={id && handleOnBlur}
                                 onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}

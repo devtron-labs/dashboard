@@ -227,15 +227,6 @@ function ChartForm({
 
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
 
-    const onBlur = (e) => {
-        setCustomState((state) => ({ 
-            ...state, 
-            [e.target.name]:  { 
-                ...state[e.target.name],
-                value: e.target.value.trim()
-             }
-         }))
-    }
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
     const [chartRepoType, setChartRepoType] = useState<string>(CHART_REPO_TYPE.PUBLIC)
@@ -384,7 +375,6 @@ function ChartForm({
                 disabled={!isEditable}
                 isRequiredField={true}
                 tabIndex={1}
-                // onBlur={handleOnBlur}
             />
         )
     }
@@ -447,7 +437,6 @@ function ChartForm({
                             error={customState.username.error}
                             label="Username"
                             labelClassName="mt-12"
-                            // onBlur={onBlur}
                             isRequiredField={true}
                         />
                         <ProtectedInput
@@ -458,7 +447,6 @@ function ChartForm({
                             error={customState.password.error}
                             label="Password"
                             labelClassName="mt-12"
-                            onBlur={onBlur}
                             isRequiredField={true}
                         />
                         <Checkbox

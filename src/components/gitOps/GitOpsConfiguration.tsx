@@ -226,14 +226,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         if(!event.target.value && this.state.form.id ){
                 event.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
-        // this.setState((prevState) => ({
-        //     form: {
-        //         ...prevState.form,
-        //         [key]: event.target.value.trim(),
-        //     }
-        //     }
-        // ))
-        
     }
 
     requiredFieldCheck(formValueType: string): string {
@@ -604,7 +596,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 ? 'gitops-bitbucket-host-url-textbox'
                                 : 'gitops-github-gitlab-host-url-textbox'
                         }
-                        // onBlur={(event) => this.onBlur(event, 'host')}
                     />
                     {this.state.isUrlValidationError && this.state.form.host.length ? (
                         <div className="flex fs-12 left pt-4">
@@ -670,7 +661,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     ? 'gitops-gitlab-group-id-textbox'
                                     : 'gitops-github-organisation-name-textbox'
                             }
-                            // onBlur={(event) => this.onBlur(event, key)}
                             isRequiredField={true}
                         />
                     </div>
@@ -715,7 +705,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         ? 'gitops-gitlab-username-textbox'
                                         : 'gitops-github-username-textbox'
                                 }
-                                // onBlur={(event) => this.onBlur(event, 'username')}
                                 isRequiredField={true}
                             />
                         </div>

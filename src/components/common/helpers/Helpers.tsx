@@ -131,14 +131,6 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         [validationSchema],
     )
 
-    const handleOnBlur = useCallback((event) => {
-        const { name, value } = event.target
-        setState((prevState) => ({
-            ...prevState,
-            [name]: { ...prevState[name], value: value.trim() },
-        }))
-    }, [])
-
     const handleOnSubmit = (event) => {
         event.preventDefault()
         const newState = Object.keys(validationSchema).reduce((agg, curr) => {
