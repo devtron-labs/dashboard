@@ -106,10 +106,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         this.handleHideDeleteModal()
                         this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNormalDeleteDialog)
+                        // Not added case of webhook since not possible
                         // TODO:
-                        // if (isWebhookCD) {
-                        //     refreshParentWorkflows()
-                        // }
                         // getWorkflows()
                     }
                 }

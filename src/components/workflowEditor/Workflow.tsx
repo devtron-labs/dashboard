@@ -34,6 +34,7 @@ import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interac
 import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
 import { ChangeCIPayloadType, SelectedNode } from './types'
 import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
+import { AddCDPositions } from '../common/edge/rectangularEdge'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
@@ -520,7 +521,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     onClickEdge={noop}
                     deleteEdge={noop}
                     onMouseOverEdge={noop}
-                />,
+                    addCDButtons={[AddCDPositions.RIGHT]}
+                />
             )
         }
         return edgeList
@@ -710,6 +712,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         {this.props.nodes.length === 0 && this.props.isJobView ? (
                             this.emptyWorkflow()
                         ) : (
+                            // TODO: Handle height in case of edit mode
                             <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                                 {this.renderEdgeList()}
                                 {this.renderNodes()}

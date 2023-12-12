@@ -12,12 +12,18 @@ interface Line {
 
 }
 
+export enum AddCDPositions {
+    LEFT = 'LEFT',
+    RIGHT = 'RIGHT',
+}
+
 interface EdgeProps {
     startNode: Point & { height: number, width: number };
     endNode: Point & { height: number, width: number };
     onClickEdge: (event: any) => void;
     deleteEdge: () => void;
     onMouseOverEdge: (startID: any, endID: any) => void;
+    addCDButtons?: AddCDPositions[]
 }
 
 interface LineDots {
@@ -111,9 +117,50 @@ export default class Edge extends Component<EdgeProps>{
     }
 
     render() {
-        return <g style={{ cursor: 'pointer' }} onClick={this.props.onClickEdge} className="edge-group" onMouseOver={() => this.props.onMouseOverEdge(this.props.startNode, this.props.endNode)} >
-            <path className="color-path" d={this.getPathEquation()} fill="transparent" stroke={nodeColors.strokeSolid} strokeWidth={2} />
-            <path d={this.getArrowEquation()} fill={nodeColors.arrowColor} />
-        </g>
+        const lineEquation = this.getPathEquation();
+        const arrowEquation = this.getArrowEquation();
+
+        return (
+            <>
+                <g
+                    style={{ cursor: 'pointer' }}
+                    onClick={this.props.onClickEdge}
+                    className="edge-group"
+                    onMouseOver={() => this.props.onMouseOverEdge(this.props.startNode, this.props.endNode)}
+                >
+                    <path
+                        className="color-path"
+                        d={lineEquation}
+                        fill="transparent"
+                        stroke={nodeColors.strokeSolid}
+                        strokeWidth={2}
+                    />
+                    <path d={arrowEquation} fill={nodeColors.arrowColor} />
+
+                    {this.props.addCDButtons.includes(AddCDPositions.RIGHT) && (
+                        // TODO: Add onClick, testid event
+                        <svg
+                            x={this.props.endNode.x - 10}
+                            y={this.props.endNode.y + this.props.endNode.height / 2 - 10}
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            data-testid={`add-cd-to-${AddCDPositions.RIGHT}`}
+                        >
+                            <rect width="20" height="20" rx="10" fill="#664BEE" className="add-cd-edge-btn"/>
+                            <path
+                                d="M6.5 10H13.5M10 6.5V13.5"
+                                stroke="white"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                    )}
+                </g>
+            </>
+        )
     }
 }

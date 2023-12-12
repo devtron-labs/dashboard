@@ -33,6 +33,10 @@
 
 .workflow--create {
     min-width: 840px;
+
+    .add-cd-edge-btn:hover {
+        fill: var(--V700)
+    }
 }
 
 .workflow--trigger {
