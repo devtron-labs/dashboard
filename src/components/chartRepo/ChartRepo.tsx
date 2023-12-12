@@ -384,7 +384,7 @@ function ChartForm({
                 disabled={!isEditable}
                 isRequiredField={true}
                 tabIndex={1}
-                onBlur={handleOnBlur}
+                // onBlur={handleOnBlur}
             />
         )
     }
@@ -441,14 +441,13 @@ function ChartForm({
                     <>
                         <CustomInput
                             dataTestid="add-chart-repo-username"
-                            autoComplete="off"
                             value={customState.username.value}
                             onChange={customHandleChange}
                             name="username"
                             error={customState.username.error}
                             label="Username"
                             labelClassName="mt-12"
-                            onBlur={onBlur}
+                            // onBlur={onBlur}
                             isRequiredField={true}
                         />
                         <ProtectedInput

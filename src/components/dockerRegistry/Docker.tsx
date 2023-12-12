@@ -19,10 +19,10 @@ import {
     RepositoryAction,
     ServerErrors,
     useAsync,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     useForm,
-    CustomInput,
     handleOnBlur,
     handleOnFocus,
     parsePassword,
@@ -1312,12 +1312,11 @@ function DockerForm({
                                         tabIndex={6}
                                         value={customState.awsSecretAccessKey.value}
                                         error={customState.awsSecretAccessKey.error}
-                                        onBlur={id && handleOnBlur}
+                                        // onBlur={id && handleOnBlur}
                                         onFocus={handleOnFocus}
                                         onChange={customHandleChange}
                                         label={selectedDockerRegistryType.password.label}
                                         placeholder={selectedDockerRegistryType.password.placeholder}
-                                        autoComplete="off"
                                     />
                                 </div>
                             </>
@@ -1360,7 +1359,7 @@ function DockerForm({
                                         value={customState.password.value}
                                         error={customState.password.error}
                                         onChange={customHandleChange}
-                                        onBlur={id && handleOnBlur}
+                                        // onBlur={id && handleOnBlur}
                                         onFocus={handleOnFocus}
                                         label={selectedDockerRegistryType.password.label}
                                         placeholder={
@@ -1442,7 +1441,7 @@ function DockerForm({
                                 value={customState.password.value}
                                 error={customState.password.error}
                                 onChange={customHandleChange}
-                                onBlur={id && handleOnBlur}
+                                // onBlur={id && handleOnBlur}
                                 onFocus={handleOnFocus}
                                 label={selectedDockerRegistryType.password.label}
                                 placeholder={
@@ -1580,7 +1579,6 @@ function DockerForm({
                             name="id"
                             autoFocus={true}
                             value={state.id.value}
-                            autoComplete="off"
                             error={state.id.error}
                             tabIndex={1}
                             onChange={handleOnChange}

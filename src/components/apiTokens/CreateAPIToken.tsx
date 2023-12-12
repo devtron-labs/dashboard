@@ -263,15 +263,12 @@ function CreateAPIToken({
                             name="name"
                             value={formData.name}
                             onChange={onChangeHandler}
-                            autoFocus
                             error={formDataErrorObj.invalidName && formDataErrorObj.invalidaNameMessage}
                             label="Name"
                             labelClassName="mt-12"
-                            onBlur={onBlur}
                             isRequiredField={true}
-                            rootClassName="mb-16"
                         />
-                        <label className="form__row">
+                        <label className="form__row mt-12">
                             <span className="form__label">Description</span>
                             <textarea
                                 tabIndex={1}
