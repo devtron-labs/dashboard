@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react'
-import { ChangeCIPayloadType, PipelineContext, SelectedNode, WorkflowEditProps, WorkflowEditState } from './types'
+import { AddPipelineType, ChangeCIPayloadType, PipelineContext, SelectedNode, WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import {
@@ -271,11 +271,20 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         parentPipelineType: string,
         parentPipelineId?: number | string,
         isWebhookCD?: boolean,
+        childPipelineId?: number | string,
+        addType?: AddPipelineType,
     ) => {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+        let LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${addType ? addType : AddPipelineType.PARALLEL}`
+        if (parentPipelineId) {
+            LINK = `${LINK}&parentPipelineId=${parentPipelineId}`
+        }
+        if (childPipelineId) {
+            LINK = `${LINK}&childPipelineId=${childPipelineId}`
+        }
+
         if (this.state.noGitOpsConfiguration) {
             this.setState({
                 showNoGitOpsWarningPopup: true,

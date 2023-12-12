@@ -32,7 +32,7 @@ import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
-import { ChangeCIPayloadType, SelectedNode } from './types'
+import { AddPipelineType, ChangeCIPayloadType, SelectedNode } from './types'
 import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
 import { AddCDPositions } from '../common/edge/rectangularEdge'
 
@@ -50,11 +50,13 @@ export interface WorkflowProps
     height: number | string
     showDeleteDialog: (workflowId: number) => void
     handleCDSelect: (
-        workflowId: string | number,
+        workflowId: number | string,
         ciPipelineId: number | string,
         parentPipelineType: string,
         parentPipelineId: number | string,
         isWebhookCD?: boolean,
+        childPipelineId?: number | string,
+        addType?: AddPipelineType,
     ) => void
     openEditWorkflow: (event, workflowId: number) => string
     handleCISelect: (workflowId: string | number, type: CIPipelineNodeType) => void
@@ -459,12 +461,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             .filter((edgeNode) => `${edgeNode.startNode.type}-${edgeNode.startNode.id}` === selectedNodeKey)
             .map((edgeNode) => edgeNode.endNode)
 
-        // Check do i need to create state for these variables
-        const renderedAddCDFromStart = false
         const edgeList = this.getEdges().map((edgeNode) => {
             // checking if edgeNode is same as selectedNode
             const currentNodeIdentifier = `${edgeNode.startNode.type}-${edgeNode.startNode.id}`
             const isSelectedEdge = selectedNodeKey === currentNodeIdentifier
+            const addCDButtons = isSelectedEdge ? [AddCDPositions.RIGHT] : []
 
             if (ApprovalNodeEdge) {
                 // The props that will be helpful are showAddCD
@@ -475,6 +476,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         endNode={edgeNode.endNode}
                         onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
                         edges={edges}
+                        shouldRenderAddRightCDButton={isSelectedEdge}
                     />
                 )
             }
@@ -487,17 +489,15 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     onClickEdge={noop}
                     deleteEdge={noop}
                     onMouseOverEdge={noop}
+                    addCDButtons={addCDButtons}
                 />
             )
         })
         // TODO: Add null checks for selectedNode and selectedNodeEndNodes
-        if (this.props.selectedNode && selectedNodeEndNodes?.length) {
+        if (this.props.selectedNode && selectedNodeEndNodes?.length > 0) {
             // Finding the startNode that as same key as selectedNode
             const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
-            const startNode = this.props.nodes.find((node) => {
-                return `${node.type}-${node.id}` === selectedNodeKey
-            })
-
+            const startNode = this.props.nodes.find((node) => `${node.type}-${node.id}` === selectedNodeKey)
             // Creating a dummy endNode
             // To create it, we need to find the endNode from startNode that has maximum y value
             // We will use this endNode to create a dummy edge.
@@ -513,6 +513,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             endNode = JSON.parse(JSON.stringify(endNode))
             endNode.y += WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
 
+            const addCDButtons =
+                selectedNodeEndNodes.length > 1 ? [AddCDPositions.LEFT, AddCDPositions.RIGHT] : [AddCDPositions.RIGHT]
+
             edgeList.push(
                 <Edge
                     key={`trigger-edge-${this.props.selectedNode.id}`}
@@ -521,8 +524,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     onClickEdge={noop}
                     deleteEdge={noop}
                     onMouseOverEdge={noop}
-                    addCDButtons={[AddCDPositions.RIGHT]}
-                />
+                    addCDButtons={addCDButtons}
+                />,
             )
         }
         return edgeList

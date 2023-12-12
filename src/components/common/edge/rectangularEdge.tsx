@@ -13,8 +13,8 @@ interface Line {
 }
 
 export enum AddCDPositions {
-    LEFT = 'LEFT',
-    RIGHT = 'RIGHT',
+    LEFT = 'left',
+    RIGHT = 'right',
 }
 
 interface EdgeProps {
@@ -116,51 +116,61 @@ export default class Edge extends Component<EdgeProps>{
         }
     }
 
+    renderCDButtons = (position: AddCDPositions): JSX.Element => {
+        const referenceNode = position === AddCDPositions.RIGHT ? this.props.endNode : this.props.startNode
+
+        if (this.props.addCDButtons?.includes(position)) {
+            return (
+                <svg
+                    x={referenceNode.x + (position === AddCDPositions.RIGHT ? - 20 - 5 : referenceNode.width + 5)}
+                    // Here 10 is the height of the button / 2
+                    y={referenceNode.y + referenceNode.height / 2 - 10}
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    data-testid={`add-cd-to-${position}`}
+                >
+                    <rect width="20" height="20" rx="10" fill="#664BEE" className="add-cd-edge-btn"/>
+                    <path
+                        d="M6.5 10H13.5M10 6.5V13.5"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                </svg>
+            )
+        }
+
+        return null
+    }
+
     render() {
         const lineEquation = this.getPathEquation();
         const arrowEquation = this.getArrowEquation();
 
         return (
-            <>
-                <g
-                    style={{ cursor: 'pointer' }}
-                    onClick={this.props.onClickEdge}
-                    className="edge-group"
-                    onMouseOver={() => this.props.onMouseOverEdge(this.props.startNode, this.props.endNode)}
-                >
-                    <path
-                        className="color-path"
-                        d={lineEquation}
-                        fill="transparent"
-                        stroke={nodeColors.strokeSolid}
-                        strokeWidth={2}
-                    />
+            <g
+                style={{ cursor: 'pointer' }}
+                onClick={this.props.onClickEdge}
+                className="edge-group"
+                onMouseOver={() => this.props.onMouseOverEdge(this.props.startNode, this.props.endNode)}
+            >
+                <path
+                    className="color-path"
+                    d={lineEquation}
+                    fill="transparent"
+                    stroke={nodeColors.strokeSolid}
+                    strokeWidth={2}
+                />
+                {!this.props.addCDButtons?.length && (
                     <path d={arrowEquation} fill={nodeColors.arrowColor} />
-
-                    {this.props.addCDButtons.includes(AddCDPositions.RIGHT) && (
-                        // TODO: Add onClick, testid event
-                        <svg
-                            x={this.props.endNode.x - 10}
-                            y={this.props.endNode.y + this.props.endNode.height / 2 - 10}
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-testid={`add-cd-to-${AddCDPositions.RIGHT}`}
-                        >
-                            <rect width="20" height="20" rx="10" fill="#664BEE" className="add-cd-edge-btn"/>
-                            <path
-                                d="M6.5 10H13.5M10 6.5V13.5"
-                                stroke="white"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                    )}
-                </g>
-            </>
+                )}
+                {this.renderCDButtons(AddCDPositions.LEFT)}
+                {this.renderCDButtons(AddCDPositions.RIGHT)}
+            </g>
         )
     }
 }

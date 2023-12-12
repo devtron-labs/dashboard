@@ -29,7 +29,7 @@ export interface ChangeCIPayloadType {
 }
 
 // TODO: Move it to common lib
-enum AddPipelineType {
+export enum AddPipelineType {
     SEQUENTIAL = 'SEQUENTIAL',
     PARALLEL = 'PARALLEL',
 }
@@ -144,7 +144,7 @@ export interface CDNodeProps {
     description: string
     isVirtualEnvironment?: boolean
     addNewPipelineBlocked?: boolean
-    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
+    handleSelectedNodeChange: (selectedNode: SelectedNode) => void
     isLastNode?: boolean
     appName?: string
     deploymentAppType?: DeploymentAppTypes
