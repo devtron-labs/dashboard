@@ -25,7 +25,7 @@ export interface ForceDeleteMessageType {
 
 export interface DeleteCDNodeProps {
     deleteDialog: DeleteDialogType
-    setDeleteDialog: React.Dispatch<React.SetStateAction<DeleteDialogType>>
+    setDeleteDialog: React.Dispatch<React.SetStateAction<DeleteDialogType>> | ((deleteDialog: DeleteDialogType) => void)
     clusterName: string
     appName: string
     hideDeleteModal: () => void

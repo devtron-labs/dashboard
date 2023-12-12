@@ -69,6 +69,7 @@ export interface WorkflowProps
     handleChangeCI?: (changeCIPayload: ChangeCIPayloadType) => void
     selectedNode?: SelectedNode
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
+    appName?: string
 }
 
 interface WorkflowState {
@@ -422,8 +423,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 isVirtualEnvironment={node.isVirtualEnvironment}
                 addNewPipelineBlocked={this.props.addNewPipelineBlocked}
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
+                appName={this.props.appName ?? ''}
                 // TODO: Check this logic
                 isLastNode={node.downstreams.length === 0}
+                deploymentAppType={node.deploymentAppType}
+                appId={this.props.match.params.appId}
             />
         )
     }

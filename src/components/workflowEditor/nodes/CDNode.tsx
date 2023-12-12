@@ -9,19 +9,30 @@ import {
     BUTTON_TEXT,
     CONFIRMATION_DIALOG_MESSAGING,
     ERR_MESSAGE_ARGOCD,
+    TOAST_INFO,
     VIEW_DELETION_STATUS,
 } from '../../../config/constantMessaging'
-import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, DeploymentAppTypes, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
 import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
 import { WorkflowNodeType } from '../../app/details/triggerView/types'
+import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
+import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types'
+import { CD_PATCH_ACTION } from '../../cdPipeline/cdPipeline.types'
+import { deleteCDPipeline } from '../../cdPipeline/cdPipeline.service'
+import { ForceDeleteDataType } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
         super(props)
+        // TODO: Check for their clear state
         this.state = {
             showDeletePipelinePopup: false,
+            showDeleteDialog: false,
+            deleteDialog: DeleteDialogType.showNormalDeleteDialog,
+            forceDeleteData: { forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' },
+            clusterName: '',
         }
     }
 
@@ -37,8 +48,82 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
     handleDeleteCDNode = (e: React.MouseEvent) => {
         e.preventDefault()
-        // TODO: Implement deleteCDNode
-        console.log('deleteCDNode')
+        this.setState({ showDeleteDialog: true })
+    }
+
+    handleDeleteDialogUpdate = (deleteDialog: DeleteDialogType) => {
+        this.setState({ deleteDialog })
+    }
+
+    handleForceDeleteDataUpdate = (forceDeleteData: ForceDeleteMessageType) => {
+        this.setState({ forceDeleteData })
+    }
+
+    handleClusterNameUpdate = (clusterName: string) => {
+        this.setState({ clusterName })
+    }
+
+    handleHideDeleteModal = () => {
+        this.setState({ showDeleteDialog: false })
+    }
+
+    parseErrorIntoForceDelete = (serverError) => {
+        const _forceDeleteData = { ...this.state.forceDeleteData }
+        this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                _forceDeleteData.forceDeleteDialogMessage = internalMessage
+                _forceDeleteData.forceDeleteDialogTitle = userMessage
+            })
+        }
+        this.handleForceDeleteDataUpdate(_forceDeleteData)
+    }
+
+    deleteCD = (force: boolean, cascadeDelete: boolean) => {
+        // TODO: Check for deployment app created case
+        const isPartialDelete = this.props.deploymentAppType === DeploymentAppTypes.GITOPS && !force
+        const payload = {
+            action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
+            appId: +this.props.appId,
+            pipeline: {
+                // Check this
+                id: +this.props.id.substring(4),
+            },
+        }
+        deleteCDPipeline(payload, force, cascadeDelete)
+            .then((response) => {
+                if (response.result) {
+                    if (
+                        cascadeDelete &&
+                        !response.result.deleteResponse?.clusterReachable &&
+                        !response.result.deleteResponse?.deleteInitiated
+                    ) {
+                        this.handleHideDeleteModal()
+                        this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
+                        this.handleDeleteDialogUpdate(DeleteDialogType.showNonCascadeDeleteDialog)
+                    } else {
+                        toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
+                        this.handleHideDeleteModal()
+                        this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
+                        this.handleDeleteDialogUpdate(DeleteDialogType.showNormalDeleteDialog)
+                        // TODO:
+                        // if (isWebhookCD) {
+                        //     refreshParentWorkflows()
+                        // }
+                        // getWorkflows()
+                    }
+                }
+            })
+            .catch((error: ServerErrors) => {
+                // 412 is for linked pipeline and 403 is for RBAC
+                if (!force && error.code != 403 && error.code != 412) {
+                    this.parseErrorIntoForceDelete(error)
+                    this.handleHideDeleteModal()
+                    this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
+                } else {
+                    showError(error)
+                }
+            })
     }
 
     renderReadOnlyCard() {
@@ -200,17 +285,34 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
     render() {
         return (
-            <foreignObject
-                className="data-hj-whitelist"
-                key={`cd-${this.props.id}`}
-                x={this.props.x}
-                y={this.props.y}
-                width={this.props.width}
-                height={this.props.height}
-                style={{ overflow: this.props.cdNamesList?.length > 0 ? 'scroll' : 'visible' }}
-            >
-                {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
-            </foreignObject>
+            <>
+                <foreignObject
+                    className="data-hj-whitelist"
+                    key={`cd-${this.props.id}`}
+                    x={this.props.x}
+                    y={this.props.y}
+                    width={this.props.width}
+                    height={this.props.height}
+                    style={{ overflow: this.props.cdNamesList?.length > 0 ? 'scroll' : 'visible' }}
+                >
+                    {this.props.cdNamesList?.length > 0 ? this.renderReadOnlyCard() : this.renderCardContent()}
+                </foreignObject>
+
+                {this.state.showDeleteDialog && (
+                    <DeleteCDNode
+                        deleteDialog={this.state.deleteDialog}
+                        setDeleteDialog={this.handleDeleteDialogUpdate}
+                        clusterName={this.state.clusterName}
+                        appName={this.props.appName}
+                        hideDeleteModal={this.handleHideDeleteModal}
+                        // TODO: Add env override update
+                        deleteCD={this.deleteCD}
+                        deploymentAppType={this.props.deploymentAppType ?? ''}
+                        forceDeleteData={this.state.forceDeleteData}
+                        deleteTitleName={this.props.title}
+                    />
+                )}
+            </>
         )
     }
 }

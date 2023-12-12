@@ -688,6 +688,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     handleChangeCI={this.handleChangeCI}
                     selectedNode={this.state.selectedNode}
                     handleSelectedNodeChange={this.handleSelectedNodeChange}
+                    appName={this.state.appName}
                 />
             )
         })

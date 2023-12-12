@@ -1,4 +1,4 @@
-import { FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import {
@@ -11,6 +11,7 @@ import {
 } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
+import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
 
 export enum DisableType {
     COMING_SOON = 'COMING SOON',
@@ -145,6 +146,9 @@ export interface CDNodeProps {
     addNewPipelineBlocked?: boolean
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     isLastNode?: boolean
+    appName?: string
+    deploymentAppType?: DeploymentAppTypes
+    appId?: string
 }
 
 export interface WebhookNodeProps {
@@ -171,6 +175,10 @@ export interface DeprecatedWarningModalType {
 
 export interface CDNodeState {
     showDeletePipelinePopup: boolean
+    showDeleteDialog: boolean
+    deleteDialog: DeleteDialogType
+    forceDeleteData: ForceDeleteMessageType
+    clusterName: string
 }
 
 export interface PipelineBuildStageType {
