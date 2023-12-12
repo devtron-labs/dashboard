@@ -198,7 +198,7 @@ function ChartForm({
         accessToken: { value: accessToken, error: '' },
     })
     const [secureWithTls, setSecureWithTls] = useState(false)
-    const { state, handleOnChange, handleOnSubmit, handleOnBlur } = useForm(
+    const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
             url: { value: url, error: "" },
@@ -374,7 +374,6 @@ function ChartForm({
                 placeholder={isNameField ? 'Enter Repository name' : 'Enter repo URL'}
                 disabled={!isEditable}
                 isRequiredField={true}
-                tabIndex={1}
             />
         )
     }
