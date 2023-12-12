@@ -34,7 +34,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         this.setState({ showDeletePipelinePopup: false })
     }
 
-    deleteCDNode = (e: React.MouseEvent) => {
+    handleDeleteCDNode = (e: React.MouseEvent) => {
         e.preventDefault()
         // TODO: Implement deleteCDNode
         console.log('deleteCDNode');
@@ -58,7 +58,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         )
     }
 
-    onClickAddNode = (event: any) => {
+    handleAddNewNode = (event: any) => {
+        event.preventDefault()
         if (this.props.addNewPipelineBlocked) {
             return
         }
@@ -162,6 +163,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                             type="button"
                                             className="flex h-100 w-100 p-0 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
                                             disabled={this.props.addNewPipelineBlocked}
+                                            onClick={this.handleAddNewNode}
                                         >
                                             <Add className="icon-dim-12" />
                                         </button>
@@ -172,7 +174,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                     <button
                                         type="button"
                                         className="flex h-100 w-100 dc__hover-b500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
-                                        onClick={this.deleteCDNode}
+                                        onClick={this.handleDeleteCDNode}
                                     >
                                         <ICDelete className="icon-dim-12" />
                                     </button>

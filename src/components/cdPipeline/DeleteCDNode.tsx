@@ -15,7 +15,7 @@ export default function DeleteCDNode({
     deploymentAppType,
     forceDeleteData,
     deleteTitleName,
-}: DeleteCDNodeProps) {
+}: Readonly<DeleteCDNodeProps>) {
     const handleDeletePipeline = (deleteAction: DELETE_ACTION) => {
         switch (deleteAction) {
             case DELETE_ACTION.DELETE:

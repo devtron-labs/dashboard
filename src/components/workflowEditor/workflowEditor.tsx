@@ -27,6 +27,7 @@ import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
 import { CIPipelineNodeType, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
@@ -81,6 +82,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             },
             blackListedCI: {},
             changeCIPayload: null,
+            selectedNode: null,
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -364,6 +366,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         return ciNode?.downstreams?.length || 0
     }
 
+    handleClearSelectedNode = () => {
+        this.setState({ selectedNode: null })
+    }
+
     //TODO: dynamic routes for ci-pipeline
     renderRouter() {
         return (
@@ -565,7 +571,34 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
-    // TODO: Enhance this function as well
+    renderWorkflowControlButton = (): JSX.Element => {
+        if (this.props.isJobView) {
+            return this.renderNewJobPipelineButton()
+        }
+
+        if (this.state.selectedNode) {
+            return (
+                <div className="flex dc__border-radius-4-imp bcv-5 ev-5">
+                    <div className="flex pt-6 pb-6 pl-12 pr-12 dc__gap-8 h-100 fcn-0">
+                        <ICHelpOutline className="icon-dim-16" />
+                        <p className="cn-0 m-0 fs-13 fw-4 lh-20">Select a position to add pipeline</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        className="pt-6 pb-6 pl-12 pr-12 flex dc__gap-4 bcn-0 h-100 cn-9 fs-13 fw-4 lh-20 dc__hover-n50 dc__no-border dc__outline-none-imp dc__right-radius-4"
+                        onClick={this.handleClearSelectedNode}
+                    >
+                        <ICClose className="icon-dim-12 fcn-9" />
+                        Cancel
+                    </button>
+                </div>
+            )
+        }
+
+        return this.renderNewBuildPipelineButton()
+    }
+
     renderEmptyState() {
         return (
             <div className="create-here">
@@ -592,7 +625,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         </a>
                     )}
                 </p>
-                {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton()}
+                {this.renderWorkflowControlButton()}
             </div>
         )
     }
@@ -728,7 +761,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         </TippyCustomized>
                     </div>
 
-                    {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton()}
+                    {this.renderWorkflowControlButton()}
                 </div>
 
                 {this.renderRouter()}

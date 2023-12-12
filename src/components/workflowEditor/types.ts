@@ -6,6 +6,7 @@ import {
     CdPipelineResult,
     CiPipeline,
     NodeAttr,
+    WorkflowNodeType,
     WorkflowType,
 } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
@@ -24,6 +25,12 @@ export interface ChangeCIPayloadType {
     switchFromCiPipelineId?: number
     appId: number
     switchFromExternalCiPipelineId?: number
+}
+
+interface SelectedNode {
+    nodeType: WorkflowNodeType
+    id: string
+    // Maybe can set meta info here itself
 }
 
 export interface WorkflowEditState {
@@ -57,6 +64,7 @@ export interface WorkflowEditState {
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
     changeCIPayload: ChangeCIPayloadType
+    selectedNode: SelectedNode
 }
 
 export interface WorkflowEditProps

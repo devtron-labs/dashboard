@@ -152,6 +152,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
+    // The logic for rendering edges are: if there are few child nodes, then show parallel edge as well.
+    // In case of approval we have a special edge.
+    // In case there are more than one child nodes, then we will show add cd button thrice.
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI && !node.isLinkedCD)
         const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
