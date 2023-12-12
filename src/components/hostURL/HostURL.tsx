@@ -33,7 +33,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             isHostUrlValid: true,
             saveLoading: false,
         })
-        this.onSave = this.onSave.bind(this);
     }
 
     componentDidMount() {
@@ -79,18 +78,17 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         }
     }
 
-    handleChange(event): void {
-        let newURL = event.target.value
+    handleChange = (event): void => {
         this.setState({
             form: {
                 ...this.state.form,
-                value: newURL
+                value: event.target.value
             },
-            isHostUrlValid: newURL?.length > 0
+            isHostUrlValid: event.target.value?.length > 0
         })
     }
 
-    onSave(e: React.SyntheticEvent): void {
+    onSave = (e: React.SyntheticEvent): void => {
         e.preventDefault();
         if (!this.state.form.value.length) {
             toast.error("Some required fields are missing");
@@ -148,19 +146,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         )
     }
 
-    onBlur = (e) => {
-        let newURL = e.target.value
-         this.setState((prevState) =>(
-            {
-                form: {
-                    ...prevState.form,
-                    value: newURL.trim()
-                },
-            }
-         ))
-     }
- 
-
     render() {
         if (!this.props.isSuperAdmin) {
             return (
@@ -213,7 +198,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 placeholder="Enter Host URL"
                                 onChange={this.handleChange}
                                 data-testid="host-url-textbox"
-                                onBlur={this.onBlur}
                                 isRequiredField={true}
                             />
                             {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}

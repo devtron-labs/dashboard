@@ -634,7 +634,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             onChange={this.handleURLChange}
                             data-testid="sso-url-input"
                             name="sso-url"
-                            onBlur={this.onBlurURL}
                             label="URL"
                             isRequiredField={true}
                         />

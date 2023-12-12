@@ -105,7 +105,6 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                 <form className="white-card p-24 mb-16 dashed" onSubmit={this.saveProjectData}>
                     <div className="white-card__header"> {this.props.id ? 'Edit project' : 'Add Project'} </div>
                     <CustomInput
-                        type="text"
                         name="name"
                         value={this.props.name}
                         placeholder="e.g. My Project"
