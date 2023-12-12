@@ -35,6 +35,7 @@ import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
+import ReactGA from 'react-ga4'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog')
 const DependencyList = importComponentFromFELibrary('DependencyList')
@@ -79,6 +80,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     }
 
     const toggleUpdateDependencyModal = () => {
+        ReactGA.event({
+            category: 'Application Dependency',
+            action: 'Edit Dependency',
+            label: 'Edit Dependency',
+        })
+
         if (isUpdateDependencyModalOpen) {
             searchParams.delete(MODAL_STATE.key)
         } else {
@@ -481,6 +488,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             isUpdateModalOpen={isUpdateDependencyModalOpen}
                             toggleUpdateModalOpen={toggleUpdateDependencyModal}
                             toggleButtonDisabledState={setIsEditDependencyButtonDisabled}
+                            filteredEnvIds={filteredEnvIds}
                         />
                     ) : null,
             }
