@@ -358,7 +358,7 @@ function GitForm({
     sshPrivateKey = '',
     ...props
 }) {
-    const { state, handleOnChange, handleOnSubmit, handleOnBlur } = useForm(
+    const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: '' },
             url: { value: url, error: '' },

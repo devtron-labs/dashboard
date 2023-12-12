@@ -476,7 +476,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
 
             return (
-                label?.length > 0 && (
+                label.length > 0 && (
                     <>
                         <span className="dc__required-field">{label} </span>&nbsp;(Use https://)
                     </>

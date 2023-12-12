@@ -143,7 +143,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
             setState({ ...newState })
         }
     }
-    return { state, disable, handleOnChange, handleOnSubmit, handleOnBlur }
+    return { state, disable, handleOnChange, handleOnSubmit }
 }
 
 export function mapByKey(arr: any[], id: string): Map<any, any> {
