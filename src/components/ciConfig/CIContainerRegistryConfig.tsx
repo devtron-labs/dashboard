@@ -25,7 +25,6 @@ export default function CIContainerRegistryConfig({
     currentRegistry,
     handleOnChangeConfig,
     isCDPipeline,
-    handleOnBlur
 }: CIContainerRegistryConfigProps) {
     const [selectedRegistry, setSelectedRegistry] = useState(currentRegistry)
 
@@ -186,7 +185,6 @@ export default function CIContainerRegistryConfig({
                                 autoFocus={!configOverrideView}
                                 disabled={configOverrideView && !allowOverride}
                                 data-testid="container-repository-textbox"
-                                onBlur={handleOnBlur}
                             />
                     )}
                     {repository_name.error && <label className="form__error">{repository_name.error}</label>}

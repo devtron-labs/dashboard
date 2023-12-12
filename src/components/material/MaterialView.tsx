@@ -525,7 +525,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
                             data-testid={`git-repo-url-text-box`}
-                            onBlur={(event) => this.props.handleOnBlur(event, 'url')}
                         />
                         <span className="form__error">
                             {this.props.isError.url && (
@@ -729,7 +728,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 onChange={this.props.handlePathChange}
                                 data-testid="clone-directory-path"
                                 name="clone-directory-path"
-                                onBlur={(event) => this.props.handleOnBlur(event, 'checkoutPath')}
                             />
                         )}
                         <span className="form__error ml-35">
