@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react'
-import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
+import { ChangeCIPayloadType, PipelineContext, SelectedNode, WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import {
@@ -370,6 +370,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ selectedNode: null })
     }
 
+    handleSelectedNodeChange = (selectedNode: SelectedNode) => {
+        this.setState({ selectedNode })
+    }
+
     //TODO: dynamic routes for ci-pipeline
     renderRouter() {
         return (
@@ -682,6 +686,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     filteredCIPipelines={this.state.filteredCIPipelines}
                     addNewPipelineBlocked={!!this.props.filteredEnvIds}
                     handleChangeCI={this.handleChangeCI}
+                    selectedNode={this.state.selectedNode}
+                    handleSelectedNodeChange={this.handleSelectedNodeChange}
                 />
             )
         })
@@ -777,6 +783,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     render() {
+        // FIXME: A possible case while selecting position of CI Node, disable change ci button
         if (this.props.configStatus === AppConfigStatus.LOADING || this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }

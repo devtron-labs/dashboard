@@ -32,7 +32,7 @@ import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
-import { ChangeCIPayloadType } from './types'
+import { ChangeCIPayloadType, SelectedNode } from './types'
 import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
@@ -67,6 +67,8 @@ export interface WorkflowProps
     filteredCIPipelines?: any[]
     addNewPipelineBlocked?: boolean
     handleChangeCI?: (changeCIPayload: ChangeCIPayloadType) => void
+    selectedNode?: SelectedNode
+    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
 }
 
 interface WorkflowState {
@@ -145,9 +147,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     d="M520 56 L 580 56"
                     fill="transparent"
                     stroke="rgba(150,150,150)"
-                    stroke-width="2"
-                ></path>
-                <path d="M575 56 L 555 46 L 565 56 L 555 66 Z" fill="rgba(100,100,100)"></path>
+                    strokeWidth="2"
+                />
+                <path d="M575 56 L 555 46 L 565 56 L 555 66 Z" fill="rgba(100,100,100)" />
             </g>
         )
     }
@@ -155,6 +157,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     // The logic for rendering edges are: if there are few child nodes, then show parallel edge as well.
     // In case of approval we have a special edge.
     // In case there are more than one child nodes, then we will show add cd button thrice.
+    // AND renderAdditionalEdge would only work for cdWorkflowList that is CIConfigDiffView
     renderNodes() {
         const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI && !node.isLinkedCD)
         const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
@@ -418,6 +421,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 match={this.props.match}
                 isVirtualEnvironment={node.isVirtualEnvironment}
                 addNewPipelineBlocked={this.props.addNewPipelineBlocked}
+                handleSelectedNodeChange={this.props.handleSelectedNodeChange}
+                // TODO: Check this logic
+                isLastNode={node.downstreams.length === 0}
             />
         )
     }
@@ -442,8 +448,21 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     renderEdgeList() {
         const edges = this.getEdges()
-        return this.getEdges().map((edgeNode) => {
+        // TODO: Check if on prop change, the selectedNode is getting updated or not.
+        const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
+        const selectedNodeEndNodes = edges
+            .filter((edgeNode) => `${edgeNode.startNode.type}-${edgeNode.startNode.id}` === selectedNodeKey)
+            .map((edgeNode) => edgeNode.endNode)
+
+        // Check do i need to create state for these variables
+        const renderedAddCDFromStart = false
+        const edgeList = this.getEdges().map((edgeNode) => {
+            // checking if edgeNode is same as selectedNode
+            const currentNodeIdentifier = `${edgeNode.startNode.type}-${edgeNode.startNode.id}`
+            const isSelectedEdge = selectedNodeKey === currentNodeIdentifier
+
             if (ApprovalNodeEdge) {
+                // The props that will be helpful are showAddCD
                 return (
                     <ApprovalNodeEdge
                         key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
@@ -466,6 +485,41 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 />
             )
         })
+        // TODO: Add null checks for selectedNode and selectedNodeEndNodes
+        if (this.props.selectedNode && selectedNodeEndNodes?.length) {
+            // Finding the startNode that as same key as selectedNode
+            const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
+            const startNode = this.props.nodes.find((node) => {
+                return `${node.type}-${node.id}` === selectedNodeKey
+            })
+
+            // Creating a dummy endNode
+            // To create it, we need to find the endNode from startNode that has maximum y value
+            // We will use this endNode to create a dummy edge.
+            let endNode = null
+            let maxY = 0
+            startNode.downstreams.forEach((downStreamNodeId) => {
+                const node = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                if (node.y > maxY) {
+                    maxY = node.y
+                    endNode = node
+                }
+            })
+            endNode = JSON.parse(JSON.stringify(endNode))
+            endNode.y += WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
+
+            edgeList.push(
+                <Edge
+                    key={`trigger-edge-${this.props.selectedNode.id}`}
+                    startNode={startNode}
+                    endNode={endNode}
+                    onClickEdge={noop}
+                    deleteEdge={noop}
+                    onMouseOverEdge={noop}
+                />,
+            )
+        }
+        return edgeList
     }
 
     toggleShowDeleteDialog = () => {
@@ -589,21 +643,22 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                             <div className="flexbox dc__align-items-center dc__gap-8">
                                 <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon" />
 
-                                {!this.props.isJobView && ( <Tippy
-                                    content="Edit workflow name"
-                                    placement="top"
-                                    arrow={false}
-                                    className="default-tt"
-                                >
-                                    <Link to={this.props.openEditWorkflow(null, this.props.id)}>
-                                        <button
-                                            type="button"
-                                            className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex workflow-header-action-btn"
-                                        >
-                                            <ICEdit className="icon-dim-16" />
-                                        </button>
-                                    </Link>
-                                </Tippy>
+                                {!this.props.isJobView && (
+                                    <Tippy
+                                        content="Edit workflow name"
+                                        placement="top"
+                                        arrow={false}
+                                        className="default-tt"
+                                    >
+                                        <Link to={this.props.openEditWorkflow(null, this.props.id)}>
+                                            <button
+                                                type="button"
+                                                className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex workflow-header-action-btn"
+                                            >
+                                                <ICEdit className="icon-dim-16" />
+                                            </button>
+                                        </Link>
+                                    </Tippy>
                                 )}
 
                                 {!!this.props.handleChangeCI && LinkedCDNode && !this.props.isJobView && (
@@ -642,7 +697,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     </div>
                     {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                     <div
-                        className={configDiffView ? 'workflow__body' : 'workflow__body dc__border-n1 bc-n50 dc__overflow-scroll br-4'}
+                        className={
+                            configDiffView
+                                ? 'workflow__body'
+                                : 'workflow__body dc__border-n1 bc-n50 dc__overflow-scroll br-4'
+                        }
                     >
                         {this.props.nodes.length === 0 && this.props.isJobView ? (
                             this.emptyWorkflow()

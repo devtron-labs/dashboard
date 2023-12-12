@@ -27,10 +27,17 @@ export interface ChangeCIPayloadType {
     switchFromExternalCiPipelineId?: number
 }
 
-interface SelectedNode {
+// TODO: Move it to common lib
+enum AddPipelineType {
+    SEQUENTIAL = 'SEQUENTIAL',
+    PARALLEL = 'PARALLEL',
+}
+
+export interface SelectedNode {
     nodeType: WorkflowNodeType
     id: string
-    // Maybe can set meta info here itself
+    addType?: AddPipelineType
+    childPipelineId?: string
 }
 
 export interface WorkflowEditState {
@@ -136,6 +143,8 @@ export interface CDNodeProps {
     description: string
     isVirtualEnvironment?: boolean
     addNewPipelineBlocked?: boolean
+    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
+    isLastNode?: boolean
 }
 
 export interface WebhookNodeProps {

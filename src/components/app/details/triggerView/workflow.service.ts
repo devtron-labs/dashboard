@@ -294,6 +294,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
                     dimensions.type === WorkflowDimensionType.CREATE &&
                     node.parentPipelineType === PipelineType.WEBHOOK
                 ) {
+                    // Maybe need to manipulate it
                     node.x = node.x - 40
                 }
                 node.preNode && finalWorkflow.push(node.preNode)
@@ -324,6 +325,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         workflow.nodes = finalWorkflow
     })
 
+    // FIXME: This might be the key to solve scrolling workflows in case one scrolls, all other scrolls
     workflows.forEach((workflow) => (workflow.width = maxWorkflowWidth))
 }
 

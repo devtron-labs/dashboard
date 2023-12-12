@@ -15,6 +15,7 @@ import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
 import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
+import { WorkflowNodeType } from '../../app/details/triggerView/types'
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
@@ -37,7 +38,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     handleDeleteCDNode = (e: React.MouseEvent) => {
         e.preventDefault()
         // TODO: Implement deleteCDNode
-        console.log('deleteCDNode');
+        console.log('deleteCDNode')
     }
 
     renderReadOnlyCard() {
@@ -60,17 +61,26 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
     handleAddNewNode = (event: any) => {
         event.preventDefault()
+        event.stopPropagation()
+
+        if (this.props.deploymentAppDeleteRequest) {
+            toast.error(ERR_MESSAGE_ARGOCD)
+        }
+
         if (this.props.addNewPipelineBlocked) {
             return
         }
-        if (this.props.deploymentAppDeleteRequest) {
-            toast.error(ERR_MESSAGE_ARGOCD)
-        } else {
-            event.stopPropagation()
-            let { top, left } = event.target.getBoundingClientRect()
-            top = top + 25
-            this.props.toggleCDMenu()
+
+        if (!this.props.isLastNode && this.props.handleSelectedNodeChange) {
+            this.props.handleSelectedNodeChange({
+                nodeType: WorkflowNodeType.CD,
+                id: this.props.id.substring(4),
+            })
+            return
         }
+        let { top, left } = event.target.getBoundingClientRect()
+        top = top + 25
+        this.props.toggleCDMenu()
     }
 
     getAppDetailsURL(): string {
@@ -173,7 +183,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 <Tippy placement="right" content="Delete pipeline" className="default-tt">
                                     <button
                                         type="button"
-                                        className="flex h-100 w-100 dc__hover-b500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
+                                        className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
                                         onClick={this.handleDeleteCDNode}
                                     >
                                         <ICDelete className="icon-dim-12" />
