@@ -9,11 +9,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
-import {
-    buildClusterVsNamespace,
-    getArgoInstalledExternalApps,
-    ArgoAppListResult,
-} from './AppListService'
+import { buildClusterVsNamespace, getArgoInstalledExternalApps, ArgoAppListResult } from './AppListService'
 import { Pagination, LazyImage } from '../../common'
 import { URLS } from '../../../config'
 import { AppListViewType } from '../config'
@@ -86,23 +82,22 @@ export default function ExternalArgoList({
     useEffect(() => {
         updateDataSyncing(true)
         setDataStateType(AppListViewType.LOADING)
-            getArgoInstalledExternalApps(clusterIdsCsv, appStatus)
-                .then((argoAppsListResponse) => {
-                    let res = argoAppsListResponse.result
-                    setArgoAppsList(res)
-                    setDataStateType(AppListViewType.LIST)
-                    _getExternalHelmApps()
-                })
-                .catch((errors: ServerErrors) => {
-                    showError(errors)
-                    setDataStateType(AppListViewType.ERROR)
-                    setErrorResponseCode(errors.code)
-                })
-                .finally(() => {
-                    updateDataSyncing(false)
-                    setFetchingExternalAppsState(false)
-                })
-        
+        getArgoInstalledExternalApps(clusterIdsCsv, appStatus)
+            .then((argoAppsListResponse) => {
+                let res = argoAppsListResponse.result
+                setArgoAppsList(res)
+                setDataStateType(AppListViewType.LIST)
+                _getExternalHelmApps()
+            })
+            .catch((errors: ServerErrors) => {
+                showError(errors)
+                setDataStateType(AppListViewType.ERROR)
+                setErrorResponseCode(errors.code)
+            })
+            .finally(() => {
+                updateDataSyncing(false)
+                setFetchingExternalAppsState(false)
+            })
     }, [clusterIdsCsv, appStatus, syncListData])
 
     // reset data
@@ -193,21 +188,21 @@ export default function ExternalArgoList({
             <div className="app-list__header">
                 <div className="app-list__cell--icon"></div>
                 <div className="app-list__cell app-list__cell--name">
-                <button className="app-list__cell-header flex" onClick={sortByAppName}>
-                    {APP_LIST_HEADERS.AppName}
-                    {sortBy == SortBy.APP_NAME ? (
-                        <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
-                    ) : (
-                        <span className="sort-col dc__opacity-0_5 ml-4"></span>
-                    )}
-                </button>
+                    <button className="app-list__cell-header flex" onClick={sortByAppName}>
+                        {APP_LIST_HEADERS.AppName}
+                        {sortBy == SortBy.APP_NAME ? (
+                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
+                        ) : (
+                            <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                        )}
+                    </button>
                 </div>
                 {isArgoInstalled && (
                     <div className="app-list__cell app-list__cell--app_status">
                         <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
                     </div>
                 )}
-                 <div className="app-list__cell app-list__cell--env">
+                <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy
                         className="default-tt"
@@ -229,7 +224,7 @@ export default function ExternalArgoList({
         )
     }
 
-    const renderHelmAppLink = (app: ArgoAppListResult): JSX.Element => {
+    const renderArgoAppLink = (app: ArgoAppListResult): JSX.Element => {
         return (
             <Link key={app.appName} to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
                 <div className="app-list__cell--icon">
@@ -247,7 +242,7 @@ export default function ExternalArgoList({
                         <AppStatus appStatus={app.appStatus} />
                     </div>
                 )}
-                 <div className="app-list__cell app-list__cell--env">
+                <div className="app-list__cell app-list__cell--env">
                     <p
                         className="dc__truncate-text  m-0"
                         data-testid={`${app.clusterName + '__' + app.namespace}-environment`}
@@ -271,13 +266,12 @@ export default function ExternalArgoList({
 
     function renderApplicationList() {
         return (
-            <div data-testid="helm-app-list-container">
+            <div data-testid="external-argo-list-container">
                 {filteredArgoAppsList.length > 0 && renderHeaders()}
 
                 {filteredArgoAppsList
                     .slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size)
-                    .map((app) => renderHelmAppLink(app))}
-
+                    .map((app) => renderArgoAppLink(app))}
             </div>
         )
     }
@@ -377,11 +371,7 @@ export default function ExternalArgoList({
 
     function renderFullModeApplicationListContainer() {
         if (filteredArgoAppsList.length == 0) {
-            return (
-                <>
-                    {renderNoApplicationState()}
-                </>
-            )
+            return renderNoApplicationState()
         } else {
             return renderApplicationList()
         }
