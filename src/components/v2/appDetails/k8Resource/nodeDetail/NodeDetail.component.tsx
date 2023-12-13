@@ -295,7 +295,7 @@ function NodeDetailComponent({
                                 )
                             })}
                     </div>
-                    {selectedTabName === NodeDetailTab.TERMINAL && !isExternalApp && (
+                    {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border"></div>
                             <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
