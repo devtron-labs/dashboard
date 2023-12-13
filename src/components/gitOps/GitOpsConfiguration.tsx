@@ -223,8 +223,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     handleOnBlur = (event): void => {
-        if(!event.target.value && this.state.form.id ){
-                event.target.value = DEFAULT_SECRET_PLACEHOLDER
+        if (!event.target.value && this.state.form.id) {
+            this.setState({
+                form: {
+                    ...this.state.form,
+                    token: DEFAULT_SECRET_PLACEHOLDER,
+                },
+            })
         }
     }
 
