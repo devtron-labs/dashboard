@@ -1,5 +1,5 @@
 import React, { useContext, useRef } from 'react'
-import { InfoColourBar, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, InfoColourBar, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { BASIC_FIELDS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { validateBasicView } from '../DeploymentConfig.utils'
 import { BasicFieldErrorObj, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
@@ -172,15 +172,13 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                         <div className="row-container mb-16">
                             {renderLabel('Port', 'Port for the container', true)}
                             <div>
-                                <input
-                                    type="text"
+                                <CustomInput
                                     name={BASIC_FIELDS.PORT}
                                     value={currentBasicFieldValues?.[BASIC_FIELDS.PORT]}
-                                    className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    rootClassName="w-200-imp br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     data-testid="containerport-textbox"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
-                                    autoComplete="off"
                                 />
                                 {currentBasicFieldValuesErrorObj?.port &&
                                     !currentBasicFieldValuesErrorObj.port.isValid && (
@@ -264,7 +262,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                         <div className="row-container mb-8">
                             {renderLabel('CPU', 'CPU available to the application', true)}
                             <div>
-                                <input
+                                <CustomInput
                                     type="text"
                                     data-testid="resources-cpu-textbox"
                                     name={BASIC_FIELDS.RESOURCES_CPU}
@@ -273,10 +271,9 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                             BASIC_FIELDS.CPU
                                         ]
                                     }
-                                    className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    rootClassName="w-200-imp br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
-                                    autoComplete="off"
                                 />
                                 {currentBasicFieldValuesErrorObj?.cpu && !currentBasicFieldValuesErrorObj.cpu.isValid && (
                                     <span className="flexbox cr-5 fw-5 fs-11 flexbox">
@@ -289,7 +286,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                         <div className="row-container mb-16">
                             {renderLabel('Memory', 'Memory available to the application', true)}
                             <div>
-                                <input
+                                <CustomInput
                                     data-testid="resources-memory-textbox"
                                     type="text"
                                     name={BASIC_FIELDS.RESOURCES_MEMORY}
@@ -298,7 +295,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                             BASIC_FIELDS.MEMORY
                                         ]
                                     }
-                                    className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    rootClassName="w-200-imp br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
                                     autoComplete="off"
