@@ -154,8 +154,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         }
 
         if (this.props.isLastNode) {
-            let { top, left } = event.target.getBoundingClientRect()
-            top = top + 25
             this.props.toggleCDMenu()
         } else {
             this.props.handleSelectedNodeChange({

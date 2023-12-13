@@ -61,16 +61,16 @@ export class CINode extends Component<CINodeProps> {
 
     renderNodeIcon = (isJobCard: boolean) => {
         if (this.props.showPluginWarning) {
-            return <Warning className="icon-dim-18 warning-icon-y7 pt-12 pb-12 mr-12" />
+            return <Warning className="icon-dim-18 warning-icon-y7 mr-12" />
         }
 
         if (this.props.isLinkedCI) {
-            return <ICLinkedCINode className="icon-dim-20 pt-12 pb-12 mr-12" />
+            return <ICLinkedCINode className="icon-dim-20 mr-12" />
         }
 
         return (
             <div
-                className={`workflow-node__icon-common pt-12 pb-12 mr-12 ${
+                className={`workflow-node__icon-common mr-12 ${
                     isJobCard ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
                 }`}
             />

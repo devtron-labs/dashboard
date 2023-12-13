@@ -290,6 +290,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 }}
                 hideWebhookTippy={this.props.hideWebhookTippy}
                 addNewPipelineBlocked={this.props.addNewPipelineBlocked}
+                handleSelectedNodeChange={this.props.handleSelectedNodeChange}
+                selectedNode={this.props.selectedNode}
+                isLastNode={node.downstreams.length === 0}
             />
         )
     }

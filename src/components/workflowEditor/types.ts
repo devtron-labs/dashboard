@@ -165,6 +165,9 @@ export interface WebhookNodeProps {
     toggleCDMenu?: () => void
     hideWebhookTippy?: () => void
     addNewPipelineBlocked?: boolean
+    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
+    selectedNode?: SelectedNode
+    isLastNode?: boolean
 }
 
 export interface WebhookTippyType {
