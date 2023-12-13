@@ -2795,6 +2795,10 @@ textarea,
     width: 200px;
 }
 
+.w-200-imp {
+    width: 200px !important;
+}
+
 .w-204 {
     width: 204px;
 }
@@ -2872,7 +2876,7 @@ textarea,
 }
 
 .w-500 {
-    width: 510px !important;
+    width: 500px !important;
 }
 
 .w-505 {
@@ -3324,6 +3328,10 @@ textarea,
     padding-left: 28px !important;
 }
 
+.pt-5-imp{
+    padding-top: 5px !important;
+}
+
 .pt-40 {
     padding-top: 40px;
 }
@@ -3364,6 +3372,10 @@ textarea,
 
 .pt-4-imp {
     padding-top: 4px !important;
+}
+
+.pt-5-imp{
+    padding-bottom: 5px !important;
 }
 
 .pb-6-imp {

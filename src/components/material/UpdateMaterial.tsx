@@ -174,6 +174,16 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         })
     }
 
+    handleOnBlur = (event, key) => {
+        this.setState((prevState) => ({
+            material: {
+                ...prevState.material,
+                checkoutPath: key === 'checkout_path' ? event.target.value.trim() : prevState.material.checkoutPath,
+                material: key === 'url' ? event.target.value.trim() : prevState.material.url,
+            },
+        }))
+    }
+
     toggleCollapse(event): void {
         this.setState({
             isCollapsed: !this.state.isCollapsed,
@@ -270,6 +280,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                 setRepo={this.props.setRepo}
                 isJobView={this.props.isJobView}
+                handleOnBlur={this.handleOnBlur}
             />
         )
     }
