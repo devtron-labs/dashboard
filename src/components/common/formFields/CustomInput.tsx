@@ -81,12 +81,10 @@ export class CustomInput extends Component<CustomInputProps, any> {
                     </div>
                 )}
                 {this.props.helperText && (
-                    <>
-                        <div className="form__text-field-info">
-                            <Info className="form__icon form__icon--info" />
-                            <p className="sentence-case">{this.props.helperText}</p>
-                        </div>
-                    </>
+                    <div className="form__text-field-info">
+                        <Info className="form__icon form__icon--info" />
+                        <p className="sentence-case">{this.props.helperText}</p>
+                    </div>
                 )}
             </div>
         )
