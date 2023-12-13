@@ -679,7 +679,7 @@ function GitForm({
                                 error={customState.password.error}
                                 label="Password/Auth token"
                                 isRequiredField={true}
-                                handleOnBlur={handleOnBlur}
+                                handleOnBlur={id && handleOnBlur}
                             />
                             <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
                                 <Warn className="icon-dim-16 mr-4 " />

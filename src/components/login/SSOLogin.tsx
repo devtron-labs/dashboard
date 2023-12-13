@@ -628,8 +628,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             name="sso-url"
                             label="URL"
                             isRequiredField={true}
+                            error={this.state.isError.url}
                         />
-                        {this.state.isError.url && <div className="form__error">{this.state.isError.url}</div>}
                         <div className="flex left fw-4 pt-4">
                             <Warn className="icon-dim-16 mr-4 " />
                             <div className="">Click to use:</div>
