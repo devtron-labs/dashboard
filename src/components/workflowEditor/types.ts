@@ -1,4 +1,4 @@
-import { DeploymentAppTypes, FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, DeploymentAppTypes, FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import {
@@ -40,6 +40,13 @@ export interface SelectedNode {
     id: string
 }
 
+export interface WorkflowPositionState {
+    // would be combination of node type and id
+    nodes: CommonNodeAttr[]
+    maxY: number
+    selectedWorkflowId: number
+}
+
 export interface WorkflowEditState {
     view: string
     code: number
@@ -72,6 +79,7 @@ export interface WorkflowEditState {
     blackListedCI: BlackListedCI
     changeCIPayload: ChangeCIPayloadType
     selectedNode: SelectedNode
+    workflowPositionState: WorkflowPositionState
 }
 
 export interface WorkflowEditProps
@@ -310,4 +318,3 @@ export interface WorkflowOptionsModalProps {
     workflows?: WorkflowType[]
     getWorkflows?: () => void
 }
-    

@@ -11,6 +11,7 @@ import {
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'
@@ -41,6 +42,7 @@ import Tippy from '@tippyjs/react'
 import EmptyWorkflow from './EmptyWorkflow'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
+import { WorkflowCreate } from '../app/details/triggerView/config'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
@@ -83,6 +85,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             blackListedCI: {},
             changeCIPayload: null,
             selectedNode: null,
+            workflowPositionState: null,
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -158,6 +161,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         appId: 0,
                     },
                     blackListedCI: result.blackListedCI ?? {},
+                    // TODO: Maybe just need to clear selectedNode here
+                    selectedNode: null,
+                    workflowPositionState: null,
                 })
             })
             .catch((errors) => {
@@ -277,7 +283,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
-        let LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${addType ? addType : AddPipelineType.PARALLEL}`
+        let LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+            URLS.APP_WORKFLOW_CONFIG
+        }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${
+            addType ?? AddPipelineType.PARALLEL
+        }`
         if (parentPipelineId) {
             LINK = `${LINK}&parentPipelineId=${parentPipelineId}`
         }
@@ -376,11 +386,116 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     handleClearSelectedNode = () => {
-        this.setState({ selectedNode: null })
+        this.handleSelectedNodeChange(null)
     }
 
+    // TODO: Move to util
+    getAllChildDownstreams = (node: CommonNodeAttr, workflow: any): { downstreamNodes: CommonNodeAttr[] } => {
+        let downstreamNodes = []
+        // Not using downstreamNodes since they get deleted in service itself
+        if (node?.downstreams?.length) {
+            node.downstreams.forEach((downstreamData) => {
+                // separating id and type from downstreamData by splitting on -
+                const [type, id] = downstreamData.split('-')
+                const _node = workflow.nodes?.find((wfNode) => String(wfNode.id) === id && wfNode.type === type)
+                if (_node) {
+                    const { downstreamNodes: _downstreamNodes } = this.getAllChildDownstreams(_node, workflow)
+                    downstreamNodes = [...downstreamNodes, ..._downstreamNodes]
+                }
+            })
+        }
+        return { downstreamNodes: [...downstreamNodes, node] }
+    }
+
+    getMaxYFromFirstLevelDownstream = (node: CommonNodeAttr, workflow: any): number => {
+        let maxY = 0
+        if (node?.downstreams?.length) {
+            node.downstreams.forEach((downstreamData) => {
+                const [type, id] = downstreamData.split('-')
+                const _node = workflow.nodes?.find((wfNode) => String(wfNode.id) === id && wfNode.type === type)
+                if (_node) {
+                    maxY = Math.max(maxY, _node.y)
+                }
+            })
+        }
+        return maxY
+    }
+
+    // TODO: Look into why have to parse id into String in few cases
     handleSelectedNodeChange = (selectedNode: SelectedNode) => {
-        this.setState({ selectedNode })
+        // If selectedNode is null, then remove bufferNodes
+        // else find the workflow in which the selectedNode is present and add bufferNodes
+        // bufferNodes are nodes which are have y greater than the selectedNode and are not present in downstream of selectedNode and the subsequent downstreams of the downstreams.
+        // So basically they are nodes in which we have to add buffer height
+        // and compute the maximum y of the bufferNodes and if there are downstreams > 1 then also for maxY, we will check maxY using node.y and depth
+        if (selectedNode) {
+            // would check if selectedNode.type and selectedNode.id is same as node.id and node.type
+            const _wf = this.state.workflows.find((wf) =>
+                wf.nodes.find(
+                    (wfNode) => String(wfNode.id) === String(selectedNode.id) && wfNode.type === selectedNode.nodeType,
+                ),
+            )
+            const _node = _wf?.nodes.find(
+                (wfNode) => String(wfNode.id) === String(selectedNode.id) && wfNode.type === selectedNode.nodeType,
+            )
+            if (_node) {
+                const { downstreamNodes } = this.getAllChildDownstreams(_node, _wf)
+                const firstLevelDownstreamMaxY = this.getMaxYFromFirstLevelDownstream(_node, _wf)
+                const bufferNodes = []
+                if (downstreamNodes.length > 0) {
+                    _wf.nodes.forEach((wfNode) => {
+                        if (
+                            wfNode.y > _node.y &&
+                            wfNode.type !== WorkflowNodeType.GIT &&
+                            !downstreamNodes.find(
+                                (downstreamNode) =>
+                                    String(downstreamNode.id) === String(wfNode.id) &&
+                                    downstreamNode.type === wfNode.type,
+                            )
+                        ) {
+                            bufferNodes.push(wfNode)
+                        }
+                    })
+                }
+
+                // It is the starting point of the invisible node that acts as source for parallel edge
+                const dummyNodeY = WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
+                const parallelEdgeY =
+                    downstreamNodes?.length > 0
+                        ? firstLevelDownstreamMaxY +
+                          dummyNodeY +
+                          WorkflowCreate.cDNodeSizes.nodeHeight +
+                          WorkflowCreate.workflow.offsetY
+                        : 0
+                const bufferNodeMaxY = Math.max(
+                    ...bufferNodes.map(
+                        (node) =>
+                            node.y +
+                            dummyNodeY +
+                            WorkflowCreate.cDNodeSizes.nodeHeight +
+                            WorkflowCreate.workflow.offsetY,
+                    ),
+                    0,
+                )
+                const maxY = Math.max(bufferNodeMaxY, parallelEdgeY)
+
+                this.setState({
+                    selectedNode: {
+                        ...selectedNode,
+                    },
+                    workflowPositionState: {
+                        nodes: bufferNodes,
+                        maxY,
+                        selectedWorkflowId: _wf.id,
+                    },
+                })
+            }
+        } else {
+            this.setState({
+                selectedNode: null,
+                workflowPositionState: null,
+            })
+        }
     }
 
     //TODO: dynamic routes for ci-pipeline
@@ -700,6 +815,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     appName={this.state.appName}
                     getWorkflows={this.getWorkflows}
                     reloadEnvironments={this.props.reloadEnvironments}
+                    workflowPositionState={this.state.workflowPositionState}
                 />
             )
         })

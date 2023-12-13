@@ -27,12 +27,12 @@ import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
-import { AddPipelineType, ChangeCIPayloadType, SelectedNode } from './types'
+import { AddPipelineType, ChangeCIPayloadType, SelectedNode, WorkflowPositionState } from './types'
 import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
 import { AddCDPositions } from '../common/edge/rectangularEdge'
 
@@ -75,6 +75,7 @@ export interface WorkflowProps
     appName?: string
     getWorkflows?: () => void
     reloadEnvironments?: () => void
+    workflowPositionState?: WorkflowPositionState
 }
 
 interface WorkflowState {
@@ -98,8 +99,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         this.setState({ top, left })
     }
 
-    getNodesData = (nodeId: string) => {
-        const _nodes = [...this.props.nodes]
+    getNodesData = ({ nodeId, nodesWithBufferHeight }: { nodeId: string; nodesWithBufferHeight: CommonNodeAttr[] }) => {
+        const _nodes = [...nodesWithBufferHeight]
         const _cdNamesList = this.props.cdWorkflowList?.find((_cwf) => _cwf.ciPipelineId === +nodeId)?.cdPipelines || []
 
         if (_cdNamesList?.length > 0) {
@@ -164,11 +165,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     // In case of approval we have a special edge.
     // In case there are more than one child nodes, then we will show add cd button thrice.
     // AND renderAdditionalEdge would only work for cdWorkflowList that is CIConfigDiffView
-    renderNodes() {
-        const ci = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI && !node.isLinkedCD)
-        const webhook = this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
-        const linkedCD = this.props.nodes.find((node) => node.isLinkedCD)
-        const _nodesData = this.getNodesData(ci?.id || webhook?.id || linkedCD?.id || '')
+    renderNodes({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
+        const ci = nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.CI && !node.isLinkedCD)
+        const webhook = nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.WEBHOOK)
+        const linkedCD = nodesWithBufferHeight.find((node) => node.isLinkedCD)
+        const _nodesData = this.getNodesData({
+            nodeId: ci?.id || webhook?.id || linkedCD?.id || '',
+            nodesWithBufferHeight,
+        })
         const _nodes = _nodesData.nodes
 
         if (linkedCD) {
@@ -452,10 +456,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
-    getEdges() {
-        return this.props.nodes.reduce((edgeList, node) => {
+    getEdges({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
+        return nodesWithBufferHeight.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                const endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const endNode = nodesWithBufferHeight.find((val) => val.type + '-' + val.id == downStreamNodeId)
                 edgeList.push({
                     startNode: node,
                     endNode: endNode,
@@ -465,23 +469,28 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }, [])
     }
 
-    onClickNodeEdge = (nodeId: number) => {
-        const ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
+    onClickNodeEdge = ({
+        nodeId,
+        nodesWithBufferHeight,
+    }: {
+        nodeId: number
+        nodesWithBufferHeight: CommonNodeAttr[]
+    }) => {
+        const ciPipeline = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)
         this.props.history.push(`workflow/${this.props.id}/ci-pipeline/${+ciPipeline?.id}/cd-pipeline/${nodeId}`)
     }
 
-    renderEdgeList() {
-        const edges = this.getEdges()
-        // TODO: Check if on prop change, the selectedNode is getting updated or not.
+    renderEdgeList({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
+        const edges = this.getEdges({ nodesWithBufferHeight })
         const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
         const selectedNodeEndNodes = edges
             .filter((edgeNode) => `${edgeNode.startNode.type}-${edgeNode.startNode.id}` === selectedNodeKey)
             .map((edgeNode) => edgeNode.endNode)
         // Hoping only one CIPipeline is present in one workflow
-        const workflowCIPipelineId = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI)?.id ?? 0
-        const isWebhookCD = !!this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
+        const workflowCIPipelineId = nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.CI)?.id ?? 0
+        const isWebhookCD = !!nodesWithBufferHeight.find((node) => node.type == WorkflowNodeType.WEBHOOK)
 
-        const edgeList = this.getEdges().map((edgeNode) => {
+        const edgeList = this.getEdges({ nodesWithBufferHeight }).map((edgeNode) => {
             // checking if edgeNode is same as selectedNode
             const currentNodeIdentifier = `${edgeNode.startNode.type}-${edgeNode.startNode.id}`
             const isSelectedEdge = selectedNodeKey === currentNodeIdentifier
@@ -494,7 +503,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                         startNode={edgeNode.startNode}
                         endNode={edgeNode.endNode}
-                        onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
+                        onClickEdge={() => this.onClickNodeEdge({ nodeId: edgeNode.endNode.id, nodesWithBufferHeight })}
                         edges={edges}
                         addCDButtons={addCDButtons}
                         handleCDSelect={this.props.handleCDSelect}
@@ -525,14 +534,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         if (this.props.selectedNode && selectedNodeEndNodes?.length > 0) {
             // Finding the startNode that as same key as selectedNode
             const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
-            const startNode = this.props.nodes.find((node) => `${node.type}-${node.id}` === selectedNodeKey)
+            const startNode = nodesWithBufferHeight.find((node) => `${node.type}-${node.id}` === selectedNodeKey)
             // Creating a dummy endNode
             // To create it, we need to find the endNode from startNode that has maximum y value
             // We will use this endNode to create a dummy edge.
             let endNode = null
             let maxY = 0
             startNode.downstreams.forEach((downStreamNodeId) => {
-                const node = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const node = nodesWithBufferHeight.find((val) => val.type + '-' + val.id == downStreamNodeId)
                 if (node.y > maxY) {
                     maxY = node.y
                     endNode = node
@@ -546,22 +555,21 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
             if (ApprovalNodeEdge) {
                 edgeList.push(
-                        <ApprovalNodeEdge
-                            key={`trigger-edge-${this.props.selectedNode.id}-dummy-node`}
-                            startNode={startNode}
-                            edges={edges}
-                            endNode={endNode}
-                            onClickEdge={noop}
-                            addCDButtons={addCDButtons}
-                            handleCDSelect={this.props.handleCDSelect}
-                            workflowId={this.props.id}
-                            ciPipelineId={workflowCIPipelineId}
-                            isParallelEdge
-                            isWebhookCD={isWebhookCD}
-                        />
+                    <ApprovalNodeEdge
+                        key={`trigger-edge-${this.props.selectedNode.id}-dummy-node`}
+                        startNode={startNode}
+                        edges={edges}
+                        endNode={endNode}
+                        onClickEdge={noop}
+                        addCDButtons={addCDButtons}
+                        handleCDSelect={this.props.handleCDSelect}
+                        workflowId={this.props.id}
+                        ciPipelineId={workflowCIPipelineId}
+                        isParallelEdge
+                        isWebhookCD={isWebhookCD}
+                    />,
                 )
-            }
-            else {
+            } else {
                 edgeList.push(
                     <Edge
                         key={`trigger-edge-${this.props.selectedNode.id}-dummy-node`}
@@ -587,18 +595,18 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         this.props.showDeleteDialog(this.props.id)
     }
 
-    handleCIChange = () => {
+    handleCIChange = ({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) => {
         const payload: ChangeCIPayloadType = {
             appWorkflowId: Number(this.props.id),
             appId: Number(this.props.match.params.appId),
         }
 
-        const switchFromCiPipelineId = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)?.id
+        const switchFromCiPipelineId = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)?.id
 
         if (switchFromCiPipelineId) {
             payload.switchFromCiPipelineId = Number(switchFromCiPipelineId)
         } else {
-            const externalCiPipelineId = this.props.nodes.find(
+            const externalCiPipelineId = nodesWithBufferHeight.find(
                 (nd) => nd.isExternalCI && nd.type === WorkflowNodeType.WEBHOOK,
             )?.id
             if (externalCiPipelineId) {
@@ -608,8 +616,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         this.props.handleChangeCI?.(payload)
     }
 
-    renderWebhookTippyContent() {
-        const webhookNode = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
+    renderWebhookTippyContent({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
+        const webhookNode = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.WEBHOOK)
         return <WebhookTippyCard link={this.openWebhookDetails(webhookNode)} hideTippy={this.props.hideWebhookTippy} />
     }
 
@@ -647,12 +655,39 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
+    getNodesWithBufferHeight = (): CommonNodeAttr[] => {
+        if (this.props.workflowPositionState?.selectedWorkflowId !== this.props.id) {
+            return this.props.nodes
+        }
+
+        const originalNodes = JSON.parse(JSON.stringify(this.props.nodes))
+        const bufferHeight = WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
+        const bufferNodes = this.props.workflowPositionState?.nodes ?? []
+        // would traverse through nodes if type and id matches with bufferNodes then would add bufferHeight to y
+        const nodesWithBufferHeight = originalNodes?.map((originalNode) => {
+            const bufferNode = bufferNodes.find(
+                (bufferNode) => bufferNode.type === originalNode.type && bufferNode.id === originalNode.id,
+            )
+            if (bufferNode) {
+                originalNode.y += bufferHeight
+            }
+            return originalNode
+        })
+        return nodesWithBufferHeight
+    }
+
     renderWorkflow() {
+        const parallelEdgeMaxY =
+            this.props.workflowPositionState?.selectedWorkflowId === this.props.id
+                ? this.props.workflowPositionState?.maxY
+                : 0
+        // This variable can be converted into some sort of manipulatedNodes array
+        const nodesWithBufferHeight = this.getNodesWithBufferHeight() ?? []
         let ciPipelineId = 0
-        let ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
+        const ciPipeline = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
-        const isExternalCiWorkflow = this.props.nodes.some(
+        const isExternalCiWorkflow = nodesWithBufferHeight.some(
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
 
@@ -667,7 +702,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     <Tippy
                         placement="top-start"
                         arrow={true}
-                        render={this.renderWebhookTippyContent}
+                        // TODO: Move this Tippy into a separate block/component so we get rid of arrow function
+                        render={() => this.renderWebhookTippyContent({ nodesWithBufferHeight })}
                         showOnCreate={true}
                         interactive
                         onClickOutside={this.props.hideWebhookTippy}
@@ -735,7 +771,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                                 className={`p-0 dc__no-background dc__no-border dc__outline-none-imp flex workflow-header-action-btn ${
                                                     !isChangeCIEnabled ? 'dc__disabled' : ''
                                                 }`}
-                                                onClick={this.handleCIChange}
+                                                // TODO: Move this Action bar into a separate block/component so we get rid of arrow function
+                                                onClick={() => this.handleCIChange({ nodesWithBufferHeight })}
                                                 disabled={!isChangeCIEnabled}
                                             >
                                                 <ICInput className="icon-dim-16" />
@@ -764,13 +801,17 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                 : 'workflow__body dc__border-n1 bc-n50 dc__overflow-scroll br-4'
                         }
                     >
-                        {this.props.nodes.length === 0 && this.props.isJobView ? (
+                        {nodesWithBufferHeight.length === 0 && this.props.isJobView ? (
                             this.emptyWorkflow()
                         ) : (
-                            // TODO: Handle height in case of edit mode
-                            <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
-                                {this.renderEdgeList()}
-                                {this.renderNodes()}
+                            <svg
+                                x={this.props.startX}
+                                y={0}
+                                height={Math.max(Number(this.props.height), parallelEdgeMaxY)}
+                                width={this.props.width}
+                            >
+                                {this.renderEdgeList({ nodesWithBufferHeight })}
+                                {this.renderNodes({ nodesWithBufferHeight })}
                             </svg>
                         )}
                         {!configDiffView && (
