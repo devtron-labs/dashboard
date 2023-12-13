@@ -227,7 +227,7 @@ export const generateEphemeralUrl = (
     if (isResourceBrowserView) {
         url += `?identifier=${params.clusterId}`
     } else if (appType === AppType.EXTERNAL_ARGO_APP) {
-        url += `?identifier=2&clusterId=${params.clusterId}&appType=2&isArgo=true`
+        url += `?identifier=${params.clusterId}&clusterId=${params.clusterId}&appType=2&isArgo=true`
     }else {
         url += `?identifier=${appIds}&appType=${appType === AppType.DEVTRON_APP ? '0' : '1'}`
     }
