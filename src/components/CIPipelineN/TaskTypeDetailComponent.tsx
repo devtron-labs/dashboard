@@ -12,6 +12,7 @@ import {
     RadioGroupItem,
     MountPath,
     ScriptType,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -294,11 +295,9 @@ export function TaskTypeDetailComponent() {
                                 contentDescription={TaskFieldDescription.MOUNTCODEAT}
                             />
                             <div style={{ width: '80% !important' }}>
-                                <input
-                                    className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                    autoComplete="off"
+                                <CustomInput
+                                    rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     placeholder="Eg. /directory/filename"
-                                    type="text"
                                     name="storeScriptAt"
                                     onChange={(e) => handleCustomChange(e, 'storeScriptAt')}
                                     value={
@@ -322,10 +321,9 @@ export function TaskTypeDetailComponent() {
                         taskField={'Command'}
                         contentDescription={TaskFieldDescription.COMMAND}
                     />
-                    <input
-                        style={{ width: '80% !important' }}
+                    <CustomInput
                         data-testid="custom-script-container-image-command-textbox"
-                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                         autoComplete="off"
                         placeholder="Eg. “echo”"
                         type="text"
@@ -335,23 +333,22 @@ export function TaskTypeDetailComponent() {
                                 TaskFieldLabel.COMMAND
                             ]
                         }
+                        name='command'
                     />
                 </div>
                 <div className="row-container mb-12">
                     <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
-                    <input
+                    <CustomInput
                         data-testid="custom-script-container-image-args-textbox"
-                        style={{ width: '80% !important' }}
-                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                        autoComplete="off"
+                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                         placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
-                        type="text"
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
                         value={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
                                 TaskFieldLabel.ARGS
                             ]
                         }
+                        name="args"
                     />
                 </div>
                 <MultiplePort />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ConditionalWrap, Progressing, ResizableTextarea, TippyTheme, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, CustomInput, Progressing, ResizableTextarea, TippyTheme, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -58,14 +58,11 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                 <div className="form__field">
                     <label>
                         {keyLabel}
-                        <input
+                        <CustomInput
+                            name="key"
                             data-testid={`secrets-gui-key-textbox-${index}`}
-                            type="text"
-                            autoComplete="off"
-                            placeholder=""
                             value={k}
                             onChange={(e) => onChange(index, e.target.value, v)}
-                            className="form__input"
                             disabled={typeof onChange !== 'function'}
                         />
                         {keyError ? <span className="form__error">{keyError}</span> : <div />}
@@ -83,12 +80,10 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                             data-testid="Configmap-gui-value-textbox"
                         />
                     ) : (
-                        <input
-                            type="text"
-                            autoComplete="off"
+                        <CustomInput
+                            name="value"
                             value={v}
                             onChange={(e) => onChange(index, k, e.target.value)}
-                            className="form__input"
                             disabled={typeof onChange !== 'function'}
                         />
                     )}
