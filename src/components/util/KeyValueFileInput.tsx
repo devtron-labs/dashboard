@@ -24,7 +24,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
             />
             <div className="mb-16">
                 <CustomInput
-                    label="Key (Filename)*"
+                    label="Key (Filename)"
                     labelClassName="dc__bold"
                     value={props.fileName}
                     placeholder="Enter the filename"
@@ -33,11 +33,12 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
                         props.handleChange(props.index, 'fileName', event.target.value)
                     }}
                     name="fileName"
+                    isRequiredField={true}
                 />
             </div>
             <div className="mb-16">
                 <CustomInput
-                    label="Name (Secret key)*"
+                    label="Name (Secret key)"
                     labelClassName="dc__bold"
                     value={props.name}
                     placeholder="Enter the secret key"
@@ -46,6 +47,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
                         props.handleChange(props.index, 'name', event.target.value)
                     }}
                     name="secret-key"
+                    isRequiredField={true}
                 />
             </div>
             <div className="mb-16">

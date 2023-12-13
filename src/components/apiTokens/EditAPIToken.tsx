@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { showError, Progressing, InfoColourBar, RadioGroup, RadioGroupItem, copyToClipboard, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, InfoColourBar, RadioGroup, RadioGroupItem, copyToClipboard, CustomInput, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
@@ -263,11 +263,10 @@ function EditAPIToken({
                                 label="Name"
                                 data-testid="api-token-name-textbox"
                                 value={editData.name}
-                                disabled={true} 
+                                disabled={true}
                                 name="name"
-                                onChange={function (e: any): void {
-                                    throw new Error('Function not implemented.')
-                                } }                            />
+                                onChange={noop}
+                            />
                         </label>
                         <label className="form__row">
                             <span className="form__label">Description</span>
