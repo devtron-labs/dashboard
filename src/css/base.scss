@@ -2540,6 +2540,12 @@ textarea,
     }
 }
 
+.info-icon-n5 {
+    circle {
+        fill: var(--N500);
+    }
+}
+
 .info-icon-n6 {
     circle {
         fill: var(--N600);
@@ -2865,6 +2871,10 @@ textarea,
     width: 480px;
 }
 
+.w-500 {
+    width: 510px !important;
+}
+
 .w-505 {
     width: 510px !important;
 }
@@ -2982,8 +2992,16 @@ textarea,
     height: 8px;
 }
 
+.h-10 {
+    height: 10px;
+}
+
 .h-12 {
     height: 12px;
+}
+
+.h-14 {
+    height: 14px;
 }
 
 .h-16 {
@@ -3122,6 +3140,10 @@ textarea,
     height: 380px !important;
 }
 
+.h-500 {
+    height: 500px !important;
+}
+
 // Minimum Height
 .mh-28 {
     min-height: 28px;
@@ -3184,6 +3206,10 @@ textarea,
 }
 
 .mxh-210 {
+    max-height: 210px;
+}
+
+.mxh-250 {
     max-height: 210px;
 }
 
@@ -3369,6 +3395,10 @@ textarea,
     margin: 0 !important;
 }
 
+.m-8-imp {
+    margin: 8px !important;
+}
+
 .m-tb-20 {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -3406,6 +3436,10 @@ textarea,
 
 .mr-0-imp {
     margin-right: 0px !important;
+}
+
+.mr-6-imp {
+    margin-right: 6px !important;
 }
 
 .mr-8-imp {
@@ -3532,8 +3566,12 @@ textarea,
     transform: rotate(180deg);
 }
 
+.dc__flip-45 {
+    transform: rotate(45deg);
+}
+
 .dc__flip-90 {
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
 }
 
 .dc__flip-270 {
@@ -3939,6 +3977,10 @@ textarea::placeholder {
 .fetch-more-loading-button svg {
     width: 100% !important;
     height: 100% !important;
+}
+
+.fs-11-imp{
+    font-size: 11px !important;
 }
 
 // Start: accouncement banner

@@ -24,6 +24,8 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     isFirstTrigger: boolean
     isCacheAvailable: boolean
     isLinkedCI: boolean
+    isLinkedCD: boolean
+    title: string
     isJobCI: boolean
     isWebhookCI: boolean
     parentAppId: number
@@ -281,6 +283,7 @@ interface CIPipeline {
     id: number
     parentCiPipeline: number
     parentAppId: number
+    pipelineType?: string
 }
 export interface CIConfigListType {
     pipelineList: CIPipeline[]

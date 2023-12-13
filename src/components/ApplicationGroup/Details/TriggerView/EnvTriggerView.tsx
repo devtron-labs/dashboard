@@ -1002,12 +1002,29 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const changeBranch = (value): void => {
-        let appIds = []
-        let appNameMap = new Map()
-        selectedAppList.map((app) => {
-            appIds.push(app.id)
-            appNameMap.set(app.id, app.name)
+        const appIds = []
+        const appNameMap = new Map()
+
+        filteredWorkflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _ciNode = wf.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                )
+                if (_ciNode) {
+                    // Need to add check for webhook if its source type is git
+                    if (!_ciNode.isLinkedCI && !_ciNode.isLinkedCD) {
+                        appIds.push(wf.appId)
+                        appNameMap.set(wf.appId, wf.name)
+                    }
+                }
+            }
         })
+
+        if (!appIds.length) {
+            toast.error('No valid application present')
+            return
+        }
+
         setIsBranchChangeLoading(true)
         triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
@@ -1402,7 +1419,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
-        if (isCILoading) return
+        if (isCILoading) {
+            return
+        }
+
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setCILoading(true)
         let node
@@ -1413,7 +1433,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 node = _wf.nodes.find((node) => {
                     return node.type === WorkflowNodeType.CI
                 })
-                if (node && !node.isLinkedCI) {
+                // Maybe we dont need to push webhook as well
+                if (node && !node.isLinkedCI && !node.isLinkedCD) {
                     triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                     nodeList.push(node)
                 }
@@ -1458,6 +1479,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
+        if (!_CITriggerPromiseList.length) {
+            toast.error('No valid CI pipeline found')
+            setCDLoading(false)
+            setCILoading(false)
+            return
+        }
         handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI)
     }
 
@@ -1538,9 +1565,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const getWarningMessage = (_ciNode): string => {
+        if (_ciNode.isLinkedCD) {
+            return 'Uses another environment as image source'
+        }
+
         if (_ciNode.isLinkedCI) {
             return 'Has linked build pipeline'
-        } else if (_ciNode.type === WorkflowNodeType.WEBHOOK) {
+        }
+
+        if (_ciNode.type === WorkflowNodeType.WEBHOOK) {
             return 'Has webhook build pipeline'
         }
     }
@@ -1594,7 +1627,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     if (!_ciNode[MATERIAL_TYPE.inputMaterialList]) {
                         _ciNode[MATERIAL_TYPE.inputMaterialList] = []
                     }
-                    if (!_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK) {
+                    if (!_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK && !_ciNode.isLinkedCD) {
                         const gitMaterials = new Map<number, string[]>()
                         for (const _inputMaterial of _ciNode.inputMaterialList) {
                             gitMaterials[_inputMaterial.gitMaterialId] = [
@@ -1618,13 +1651,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         isFirstTrigger: _ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED,
                         isCacheAvailable: _ciNode.storageConfigured,
                         isLinkedCI: _ciNode.isLinkedCI,
+                        isLinkedCD: _ciNode.isLinkedCD,
+                        title: _ciNode.title,
                         isWebhookCI: _ciNode.type === WorkflowNodeType.WEBHOOK,
                         parentAppId: _ciNode.parentAppId,
                         parentCIPipelineId: _ciNode.parentCiPipeline,
                         material: _ciNode.inputMaterialList,
                         warningMessage: getWarningMessage(_ciNode),
                         errorMessage: getErrorMessage(wf.appId, _ciNode),
-                        hideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI,
+                        hideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI || _ciNode.isLinkedCD,
                         filteredCIPipelines: filteredCIPipelines.get(wf.appId),
                         isJobCI: !!_ciNode.isJobCI,
                     })
@@ -2055,7 +2090,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
     return (
         <div
-            className="svg-wrapper-trigger app-group-trigger-view-container"
+            className="svg-wrapper-trigger app-group-trigger-view-container bcn-0"
             style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}
         >
             <div className="flex left mb-14">
