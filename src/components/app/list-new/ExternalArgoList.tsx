@@ -84,8 +84,7 @@ export default function ExternalArgoList({
         setDataStateType(AppListViewType.LOADING)
         getArgoInstalledExternalApps(clusterIdsCsv, appStatus)
             .then((argoAppsListResponse) => {
-                let res = argoAppsListResponse.result
-                setArgoAppsList(res)
+                setArgoAppsList(argoAppsListResponse.result)
                 setDataStateType(AppListViewType.LIST)
                 _getExternalHelmApps()
             })
@@ -125,9 +124,9 @@ export default function ExternalArgoList({
     }
 
     function handleFilteration() {
-        let _search = payloadParsedFromUrl.appNameSearch
-        let _sortBy = payloadParsedFromUrl.sortBy
-        let _sortOrder = payloadParsedFromUrl.sortOrder
+        const _search = payloadParsedFromUrl.appNameSearch
+        const _sortBy = payloadParsedFromUrl.sortBy
+        const _sortOrder = payloadParsedFromUrl.sortOrder
         let _filteredArgoAppsList = [...(argoAppsList || [])]
 
         // handle search
@@ -276,17 +275,6 @@ export default function ExternalArgoList({
         )
     }
 
-    function renderAllCheckModal() {
-        return (
-            <div
-                style={{ width: '600px', margin: 'auto', marginTop: '20px' }}
-                className="bcn-0 pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
-            >
-                <AllCheckModal />
-            </div>
-        )
-    }
-
     function askToSelectClusterId() {
         return (
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
@@ -364,9 +352,7 @@ export default function ExternalArgoList({
             return askToClearFilters()
         } else if (!clusterIdsCsv) {
             return askToSelectClusterId()
-        } else {
-            return renderAllCheckModal()
-        }
+        } 
     }
 
     function renderFullModeApplicationListContainer() {
