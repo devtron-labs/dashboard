@@ -7,6 +7,7 @@ import {
     TippyTheme,
     RadioGroup,
     RadioGroupItem,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -140,12 +141,12 @@ export default function ConfigureLinkAction({
             </div>
             <div className="configure-link-action-content">
                 <div className="link-name">
-                    <input
+                    <CustomInput
                         name={LinkValidationKeys.name}
                         placeholder="Link name"
                         value={link.name}
                         onChange={onNameChange}
-                        onBlur={validateAndUpdateLinksData}
+                        handleBlurChange={validateAndUpdateLinksData}
                         data-testid="external-link-name-input"
                     />
                     {link.invalidName && getErrorLabel('name')}
