@@ -496,7 +496,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         endNode={edgeNode.endNode}
                         onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
                         edges={edges}
-                        shouldRenderAddRightCDButton={isSelectedEdge}
+                        addCDButtons={addCDButtons}
                         handleCDSelect={this.props.handleCDSelect}
                         ciPipelineId={workflowCIPipelineId}
                         workflowId={this.props.id}
@@ -544,23 +544,41 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             const addCDButtons =
                 selectedNodeEndNodes.length > 1 ? [AddCDPositions.LEFT, AddCDPositions.RIGHT] : [AddCDPositions.RIGHT]
 
-            // TODO: Add approval edge if present
-            edgeList.push(
-                <Edge
-                    key={`trigger-edge-${this.props.selectedNode.id}`}
-                    startNode={startNode}
-                    endNode={endNode}
-                    onClickEdge={noop}
-                    deleteEdge={noop}
-                    onMouseOverEdge={noop}
-                    addCDButtons={addCDButtons}
-                    handleCDSelect={this.props.handleCDSelect}
-                    workflowId={this.props.id}
-                    ciPipelineId={workflowCIPipelineId}
-                    isParallelEdge
-                    isWebhookCD={isWebhookCD}
-                />,
-            )
+            if (ApprovalNodeEdge) {
+                edgeList.push(
+                        <ApprovalNodeEdge
+                            key={`trigger-edge-${this.props.selectedNode.id}-dummy-node`}
+                            startNode={startNode}
+                            edges={edges}
+                            endNode={endNode}
+                            onClickEdge={noop}
+                            addCDButtons={addCDButtons}
+                            handleCDSelect={this.props.handleCDSelect}
+                            workflowId={this.props.id}
+                            ciPipelineId={workflowCIPipelineId}
+                            isParallelEdge
+                            isWebhookCD={isWebhookCD}
+                        />
+                )
+            }
+            else {
+                edgeList.push(
+                    <Edge
+                        key={`trigger-edge-${this.props.selectedNode.id}-dummy-node`}
+                        startNode={startNode}
+                        endNode={endNode}
+                        onClickEdge={noop}
+                        deleteEdge={noop}
+                        onMouseOverEdge={noop}
+                        addCDButtons={addCDButtons}
+                        handleCDSelect={this.props.handleCDSelect}
+                        workflowId={this.props.id}
+                        ciPipelineId={workflowCIPipelineId}
+                        isParallelEdge
+                        isWebhookCD={isWebhookCD}
+                    />,
+                )
+            }
         }
         return edgeList
     }
