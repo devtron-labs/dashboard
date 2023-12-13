@@ -4,7 +4,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
 function OutputDirectoryPath() {
     const {
@@ -55,13 +54,14 @@ function OutputDirectoryPath() {
             {formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.map((elm, index) => {
                 return (
                     <div className="custom-script__output-directory pl-220 mt-8" key={`output-directory-${index}`}>
-                        <CustomInput
+                        <input
                             data-testid="output-directory-path-add-path-textbox"
-                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            autoComplete="off"
                             placeholder="Enter directory path"
+                            type="text"
                             value={elm}
                             onChange={(e) => handleStoreArtifact(e, index)}
-                            name="directory-path"
                         />
                         <Close
                             className="icon-dim-24 pointer mt-6 ml-6"

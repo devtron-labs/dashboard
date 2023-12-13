@@ -89,7 +89,6 @@ export interface MaterialViewProps {
     toggleRepoSelectionTippy?: () => void
     setRepo?: React.Dispatch<React.SetStateAction<string>>
     isJobView?: boolean
-    handleOnBlur: (event, key) => void
 }
 
 export interface MaterialViewState {

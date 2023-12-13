@@ -125,16 +125,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         });
     }
 
-    handleOnBlur = (event, key: 'checkoutPath' | 'url') => {
-        this.setState((prevState) => ({
-            material: {
-                ...prevState.material,
-                checkoutPath: key === 'checkoutPath' ? event.target.value.trim() : prevState.material.checkoutPath,
-                material: key === 'url' ? event.target.value.trim() : prevState.material.url,
-            },
-        }))
-    }
-
     handleFileChange(event) {
         this.setState({
             material: {
@@ -255,7 +245,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                 reload = {this.props.reload}
                 isJobView={this.props.isJobView}
-                handleOnBlur={this.handleOnBlur}
             />
         </>
     }
