@@ -80,18 +80,21 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     }
 
     const toggleUpdateDependencyModal = () => {
-        ReactGA.event({
-            category: 'Application Dependency',
-            action: 'Edit Dependency',
-            label: 'Edit Dependency',
-        })
-
         if (isUpdateDependencyModalOpen) {
             searchParams.delete(MODAL_STATE.key)
         } else {
             searchParams.set(MODAL_STATE.key, MODAL_STATE.value)
         }
         history.replace({ search: searchParams.toString() })
+    }
+
+    const handleEditDependencyClick = () => {
+        ReactGA.event({
+            category: 'Application Dependency',
+            action: 'Edit Dependency click',
+            label: 'Edit Dependency click',
+        })
+        toggleUpdateDependencyModal()
     }
 
     useEffect(() => {
@@ -515,7 +518,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             <button
                                 type="button"
                                 className={`cta flex h-28 dc__gap-4 ${isEditDependencyButtonDisabled ? 'disabled-opacity' : ''}`}
-                                onClick={isEditDependencyButtonDisabled ? noop : toggleUpdateDependencyModal}
+                                onClick={isEditDependencyButtonDisabled ? noop : handleEditDependencyClick}
                             >
                                 <EditIcon className="mw-14 icon-dim-14 scn-0 dc__no-svg-fill" />
                                 Edit Dependency
