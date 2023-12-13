@@ -222,7 +222,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         })
     }
 
-    handleBlurChange = (event): void => {
+    handleOnBlur = (event): void => {
         if(!event.target.value && this.state.form.id ){
                 event.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
@@ -476,11 +476,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
 
             return (
-                label.length > 0 && (
-                    <>
-                        <span className="dc__required-field">{label} </span>&nbsp;(Use https://)
-                    </>
-                )
+                <>
+                    <span className="dc__required-field">{label} </span>&nbsp;(Use https://)
+                </>
             )
         }
 
@@ -623,7 +621,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <div className="mt-16 ">
                         {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
                             <CustomInput
-                                name="Enter workspace ID"
+                                name="workspaceID"
                                 value={this.state.form.bitBucketWorkspaceId}
                                 onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
                                 showLink={true}
@@ -640,7 +638,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     </div>
                     <div className="mt-16">
                         <CustomInput
-                            name="Group ID"
+                            name="groupID"
                             value={this.state.form[key]}
                             tabIndex={2}
                             error={this.state.isError[key]}
@@ -737,7 +735,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         : 'gitops-github-pat-textbox'
                                 }
                                 isRequiredField={true}
-                                handleBlurChange={this.handleBlurChange}
+                                handleOnBlur={this.handleOnBlur}
                             />
                         </div>
                     </div>
