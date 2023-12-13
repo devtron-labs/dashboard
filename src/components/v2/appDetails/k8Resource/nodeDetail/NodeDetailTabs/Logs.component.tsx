@@ -708,7 +708,7 @@ function LogsComponent({
                     </div>
                 )}
 
-            {podContainerOptions.containerOptions.filter((_co) => _co.selected).length == 0 && (
+            {podContainerOptions.containerOptions.filter((_co) => _co.selected).length === 0 && (
                 <div className="no-pod no-pod--container ">
                     <MessageUI
                         icon={MsgUIType.MULTI_CONTAINER}
@@ -718,6 +718,7 @@ function LogsComponent({
                                 : 'No container'
                         }`}
                         size={32}
+                        minHeight={isResourceBrowserView ? 'calc(100vh - 155px)' : ''}
                     />
                 </div>
             )}

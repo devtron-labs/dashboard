@@ -47,7 +47,6 @@ interface customEnv {
     ANNOUNCEMENT_BANNER_MSG?: string
     LOGIN_PAGE_IMAGE?: string
     LOGIN_PAGE_IMAGE_BG?: string
-    DEFAULT_TIMEOUT: string
 }
 declare global {
     interface Window {
@@ -153,7 +152,6 @@ if (!window || !window._env_) {
         ANNOUNCEMENT_BANNER_MSG: '',
         LOGIN_PAGE_IMAGE: '',
         LOGIN_PAGE_IMAGE_BG: '',
-        DEFAULT_TIMEOUT: '3600'
     }
 }
 
