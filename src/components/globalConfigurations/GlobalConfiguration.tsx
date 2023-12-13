@@ -639,6 +639,53 @@ function handleError(error: any): any[] {
     return error
 }
 
+//NOTE: Need to replace with common custominput component
+export function CustomInput({
+    name,
+    value,
+    error,
+    onChange,
+    onBlur = (e) => {},
+    onFocus = (e) => {},
+    label,
+    type = 'text',
+    disabled = false,
+    autoComplete = 'off',
+    labelClassName = '',
+    placeholder = '',
+    tabIndex = 1,
+    dataTestid = '',
+}) {
+    return (
+        <div className="flex column left top">
+            <label className={`form__label ${labelClassName}`}>{label}</label>
+            <input
+                data-testid={dataTestid}
+                type={type}
+                name={name}
+                autoComplete="off"
+                className="form__input"
+                onChange={(e) => {
+                    e.persist()
+                    onChange(e)
+                }}
+                onBlur={onBlur}
+                onFocus={onFocus}
+                placeholder={placeholder}
+                value={value}
+                disabled={disabled}
+                tabIndex={tabIndex}
+            />
+            {handleError(error).map((err) => (
+                <div className="form__error">
+                    <FormError className="form__icon form__icon--error" />
+                    {err}
+                </div>
+            ))}
+        </div>
+    )
+}
+
 export function ProtectedInput({
     name,
     value,

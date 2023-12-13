@@ -9,7 +9,7 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIContainerRegistryConfigProps } from './types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { CustomInput, InfoColourBar, REGISTRY_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, REGISTRY_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function CIContainerRegistryConfig({
     appId,
@@ -168,8 +168,10 @@ export default function CIContainerRegistryConfig({
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">{ciConfig?.dockerRepository}</span>
                     ) : (
-                            <CustomInput
+                            <input
                                 tabIndex={2}
+                                type="text"
+                                className="form__input"
                                 placeholder={
                                     (selectedRegistry &&
                                         REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
@@ -183,6 +185,7 @@ export default function CIContainerRegistryConfig({
                                 }
                                 onChange={handleOnChangeConfig}
                                 autoFocus={!configOverrideView}
+                                autoComplete={'off'}
                                 disabled={configOverrideView && !allowOverride}
                                 data-testid="container-repository-textbox"
                             />

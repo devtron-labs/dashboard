@@ -4,7 +4,7 @@ import { RadioGroup } from '../common'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
-import { CustomInput, PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
+import { PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
@@ -100,13 +100,12 @@ export function TaskDetailComponent() {
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
                     <div>
-                        <CustomInput
-                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                        <input
+                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
-                            name="task-name"
                         />
                         {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name &&
                             !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name.isValid && (
@@ -121,14 +120,13 @@ export function TaskDetailComponent() {
                 </div>
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
-                    <CustomInput
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                    <input
+                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         data-testid="preBuild-task-description-textbox"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
                         placeholder="Enter task description"
-                        name="task-description"
                     />
                 </div>
 

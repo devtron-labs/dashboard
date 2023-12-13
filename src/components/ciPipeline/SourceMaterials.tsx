@@ -11,7 +11,7 @@ import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { CustomInput, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import Tippy from '@tippyjs/react'
 
@@ -201,24 +201,27 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
 
                                 {isBranchFixed && (
                                     <div className="w-50 ml-8 left">
-                                        <CustomInput
-                                            label="Branch Name"
-                                            name="branchName"
-                                            placeholder="Eg. main"
-                                            type="text"
-                                            data-testid={`build-pipeline-branch-name-textbox${index}`}
-                                            disabled={!props.handleSourceChange}
-                                            value={mat.value}
-                                            onChange={(event) => {
-                                                props?.handleSourceChange(
-                                                    event,
-                                                    mat.gitMaterialId,
-                                                    SourceTypeMap.BranchFixed,
-                                                )
-                                            }}
-                                            handleOnBlur={onBlur}
-                                            isRequiredField={true}
-                                        />
+                                        <div>
+                                            <label className="form__label mb-6 dc__required-field">Branch Name</label>
+                                            <input
+                                                className="form__input"
+                                                autoComplete="off"
+                                                placeholder="Eg. main"
+                                                type="text"
+                                                data-testid={`build-pipeline-branch-name-textbox${index}`}
+                                                disabled={!props.handleSourceChange}
+                                                value={mat.value}
+                                                onChange={(event) => {
+                                                    props?.handleSourceChange(
+                                                        event,
+                                                        mat.gitMaterialId,
+                                                        SourceTypeMap.BranchFixed,
+                                                    )
+                                                }}
+                                                autoFocus={true}
+                                                onBlur={onBlur}
+                                            />
+                                        </div>
                                         {errorObj && !errorObj.isValid ? (
                                             <span className="form__error ci-error ">
                                                 <img src={error} className="form__icon" />
@@ -232,9 +235,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
 
                                 {isBranchRegex && (
                                     <div className="w-50 ml-8">
-                                        <CustomInput
-                                            label="Branch Regex"
-                                            name="branchRegex"
+                                        <label className="form__label mb-6 dc__required-field">Branch Regex</label>
+                                        <input
+                                            className="form__input"
+                                            autoComplete="off"
                                             placeholder="Eg. feature.*"
                                             type="text"
                                             data-testid={`build-pipeline-branch-name-textbox${index}`}
@@ -247,6 +251,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                     SourceTypeMap.BranchRegex,
                                                 )
                                             }}
+                                            autoFocus={true}
                                         />
                                         {errorObj && !errorObj.isValid ? (
                                             <span
