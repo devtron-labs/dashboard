@@ -138,7 +138,7 @@ function CustomImageTags({
                     name="image_tag"
                     autoComplete="off"
                     autoFocus={true}
-                    data-testid="container-repository-textbox"
+                    data-testid="custom-image-tag-textarea"
                     value={formData.customTag?.tagPattern}
                     onChange={onChangeCustomInput}
                     draggable={false}
