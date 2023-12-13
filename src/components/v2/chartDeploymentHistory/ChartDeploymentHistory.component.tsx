@@ -292,21 +292,21 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    {installedAppInfo ? 
-                                        <div
-                                            className={`dc__app-summary__icon icon-dim-22 ${
-                                                deployment?.status &&
-                                                installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS || installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
-                                                    ? deployment?.status.toLowerCase()
-                                                    : ''
-                                            } ${
-                                                installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
-                                                    ? helmDeploymentStatus
-                                                    : ''
-                                            }`}
-                                        ></div> : ''}
+                                    <div
+                                        className={`dc__app-summary__icon icon-dim-22 ${
+                                            (deployment?.status &&
+                                                installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) ||
+                                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+                                                ? deployment?.status.toLowerCase()
+                                                : ''
+                                        } ${
+                                            deployment?.status
+                                                ? helmDeploymentStatus
+                                                : ''
+                                        }`}
+                                    ></div>
                                     <div className="flex column left dc__ellipsis-right">
-                                        <div className="cn-9 fs-14" data-testid = "chart-deployment-time">
+                                        <div className="cn-9 fs-14" data-testid="chart-deployment-time">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
                                                 Moment12HourFormat,
                                             )}

@@ -152,11 +152,12 @@ export default function ChartValuesEditor({
 
 
     useEffect(() => {
-        if (
+        const ExternalModeCondition = chartValuesList.length > 0 && isExternalApp
+        const FullModeCondition =
             !manifestView &&
             chartValuesList.length > 0 &&
             (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
-        ) {
+        if (ExternalModeCondition || FullModeCondition) {
             const deployedChartValues = [],
                 defaultChartValues = [],
                 presetChartValues = []

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { Moment12HourFormat, URLS } from '../../../config'
+import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
@@ -11,6 +11,7 @@ import {
     stopPropagation,
     useAsync,
     getRandomColor,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { EditableTextArea, RadioGroup, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
@@ -32,17 +33,22 @@ import { editApp } from '../service'
 import { getAppConfig, getGitProviderIcon } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
-import { OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
+import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
+const Catalog = importComponentFromFELibrary('Catalog')
+const DependencyList = importComponentFromFELibrary('DependencyList')
 
 type AvailableTabs = typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
-    const location = useLocation();
+    const location = useLocation()
     const history = useHistory()
     const searchParams = new URLSearchParams(location.search)
     const activeTab = searchParams.get(TAB_SEARCH_KEY) as AvailableTabs
+    const isUpdateDependencyModalOpen =
+        activeTab === OVERVIEW_TABS.DEPENDENCIES && searchParams.get(MODAL_STATE.key) === MODAL_STATE.value
     const config = getAppConfig(appType)
     const isJobOverview = appType === 'job'
     const isHelmChart = appType === 'helm-chart'
@@ -58,7 +64,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
+    // Added this state to handle the disabled and hidden state basis the loading of the dependency list inside DependencyList component
+    const [isEditDependencyButtonDisabled, setIsEditDependencyButtonDisabled] = useState(false)
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
+    const [, isArgoInstalled] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD), [])
     const resourceName = config.resourceName
 
     let _moment: moment.Moment
@@ -66,6 +75,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
 
     const setActiveTab = (selectedTab: AvailableTabs) => {
         searchParams.set(TAB_SEARCH_KEY, selectedTab)
+        history.replace({ search: searchParams.toString() })
+    }
+
+    const toggleUpdateDependencyModal = () => {
+        if (isUpdateDependencyModalOpen) {
+            searchParams.delete(MODAL_STATE.key)
+        } else {
+            searchParams.set(MODAL_STATE.key, MODAL_STATE.value)
+        }
         history.replace({ search: searchParams.toString() })
     }
 
@@ -407,6 +425,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderAppDescription() {
         return (
             <div>
+                {Catalog && <Catalog resourceId={appId} resourceType={appType} />}
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin={true}
@@ -443,7 +462,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
                         <RadioGroup.Radio value={OVERVIEW_TABS.JOB_PIPELINES}>Job Pipelines</RadioGroup.Radio>
                     </RadioGroup>
-                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
+                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>
                 </div>
             )
         } else if (isHelmChart) {
@@ -452,23 +471,50 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             const contentToRender = {
                 [OVERVIEW_TABS.ABOUT]: renderAppDescription,
                 [OVERVIEW_TABS.ENVIRONMENTS]: () => <EnvironmentList appId={+appId} filteredEnvIds={filteredEnvIds} />,
+                [OVERVIEW_TABS.DEPENDENCIES]: () =>
+                    DependencyList ? (
+                        <DependencyList
+                            resourceId={+appId}
+                            resourceType={appType}
+                            isArgoInstalled={isArgoInstalled}
+                            resourceName={appMetaInfo.appName}
+                            isUpdateModalOpen={isUpdateDependencyModalOpen}
+                            toggleUpdateModalOpen={toggleUpdateDependencyModal}
+                            toggleButtonDisabledState={setIsEditDependencyButtonDisabled}
+                        />
+                    ) : null,
             }
 
             return (
                 <div className="app-overview-wrapper flexbox-col dc__gap-12">
-                    <RadioGroup
-                        className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
-                        name="overview-tabs"
-                        initialTab={activeTab}
-                        disabled={false}
-                        onChange={(e) => {
-                            setActiveTab(e.target.value)
-                        }}
-                    >
-                        <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
-                        <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
-                    </RadioGroup>
-                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]()}</div>
+                    <div className="flex flex-justify dc__gap-8">
+                        <RadioGroup
+                            className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                            name="overview-tabs"
+                            initialTab={activeTab}
+                            disabled={false}
+                            onChange={(e) => {
+                                setActiveTab(e.target.value)
+                            }}
+                        >
+                            <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
+                            <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
+                            {DependencyList && (
+                                <RadioGroup.Radio value={OVERVIEW_TABS.DEPENDENCIES}>Dependencies</RadioGroup.Radio>
+                            )}
+                        </RadioGroup>
+                        {activeTab === OVERVIEW_TABS.DEPENDENCIES && (
+                            <button
+                                type="button"
+                                className={`cta flex h-28 dc__gap-4 ${isEditDependencyButtonDisabled ? 'disabled-opacity' : ''}`}
+                                onClick={isEditDependencyButtonDisabled ? noop : toggleUpdateDependencyModal}
+                            >
+                                <EditIcon className="mw-14 icon-dim-14 scn-0 dc__no-svg-fill" />
+                                Edit Dependency
+                            </button>
+                        )}
+                    </div>
+                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>
                 </div>
             )
         }

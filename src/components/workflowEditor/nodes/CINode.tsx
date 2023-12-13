@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { NodeAttr } from '../../app/details/triggerView/types'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
+import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
 import link from '../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
@@ -50,6 +51,13 @@ export class CINode extends Component<CINodeProps> {
         if (this.props.showPluginWarning) {
             return <Warning className="icon-dim-18 warning-icon-y7" />
         }
+
+        if (this.props.isLinkedCI) {
+            return (
+                <ICLinkedCINode className="icon-dim-20" />
+            )
+        }
+
         return (
             <div
                 className={`workflow-node__icon-common ${

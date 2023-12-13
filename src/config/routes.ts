@@ -52,6 +52,7 @@ export const URLS = {
     AUTHENTICATE: '/auth/login',
     BULK_EDITS: '/bulk-edits',
     DEPLOYMENT_GROUPS: '/deployment-groups',
+    LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
     GLOBAL_CONFIG: '/global-config',
@@ -84,7 +85,6 @@ export const URLS = {
     STACK_MANAGER_ABOUT: '/stack-manager/about',
     STACK_MANAGER_ABOUT_RELEASES: '/stack-manager/about/releases',
     DEPLOYMENT_HISTORY_CONFIGURATIONS: '/configuration',
-    CLUSTER_LIST: '/clusters',
     NODES_LIST: '/nodes',
     NODE_DETAILS: '/node-details',
     CHART: '/chart',

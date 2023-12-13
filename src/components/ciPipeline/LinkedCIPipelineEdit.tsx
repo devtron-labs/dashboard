@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 import { ValidationRules } from './validationRules'
 import { ButtonWithLoader } from '../common/formFields/ButtonWithLoader'
 import { Info } from '../common/icons/Icons'
-import { getAppListMin, getCIConfig } from '../../services/service'
+import { getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import './ciPipeline.scss'
@@ -122,7 +122,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             workflowId: +this.props.match.params.workflowId,
             name: this.state.form.name,
         }
-        saveLinkedCIPipeline(parentCIPipeline, params)
+        saveLinkedCIPipeline(parentCIPipeline, params, this.props.changeCIPayload)
             .then((response) => {
                 if (response) {
                     toast.success('Saved Successfully ')

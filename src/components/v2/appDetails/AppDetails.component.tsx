@@ -5,7 +5,6 @@ import { AppStreamData, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
-import SyncErrorComponent from './SyncError.component'
 import { importComponentFromFELibrary, useEventSource } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import NodeTreeDetailTab from './NodeTreeDetailTab'
@@ -187,7 +186,7 @@ const AppDetailsComponent = ({
 
     return (
         <div className="helm-details" data-testid="app-details-wrapper">
-            <div>
+            <div className="app-info-bg-gradient">
                 <EnvironmentSelectorComponent
                     isExternalApp={isExternalApp}
                     _init={_init}
@@ -209,7 +208,6 @@ const AppDetailsComponent = ({
                 )}
             </div>
 
-            <SyncErrorComponent appStreamData={streamData} />
             {!appDetails.deploymentAppDeleteRequest && !isExternalArgoApp && (
                 <AppLevelExternalLinks
                     helmAppDetails={appDetails}

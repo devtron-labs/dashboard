@@ -101,12 +101,6 @@ function NodeDetailComponent({
         }
     }, [loadingResources, params.node, params.namespace])
 
-    const isExternalEphemeralContainer = (cmds: string[], name: string): boolean => {
-        const matchingCmd = `sh ${name}-devtron.sh`
-        const internal = cmds?.find((cmd) => cmd.includes(matchingCmd))
-        return !internal
-    }
-
     const getContainersFromManifest = async () => {
         try {
             const { result } = await getManifestResource(
@@ -138,30 +132,19 @@ function NodeDetailComponent({
                     )
                 }
 
-                if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
-                    const ephemeralContainerStatusMap = new Map<string, string[]>()
-                    result.manifest.spec.ephemeralContainers.forEach((con) => {
-                        ephemeralContainerStatusMap.set(con.name, con.command as string[])
-                    })
-                    let ephemeralContainers = []
-                    result.manifest.status.ephemeralContainerStatuses?.forEach((_container) => {
-                        //con.state contains three states running,waiting and terminated
-                        // at any point of time only one state will be there
-                        if (_container.state.running) {
-                            ephemeralContainers.push({
-                                name: _container.name,
-                                isInitContainer: false,
-                                isEphemeralContainer: true,
-                                isExternal: isExternalEphemeralContainer(
-                                    ephemeralContainerStatusMap.get(_container.name),
-                                    _container.name,
-                                ),
-                            })
-                        }
-                    })
-                    _resourceContainers.push(...ephemeralContainers)
-                }
             }
+
+            if (result?.ephemeralContainers) {
+                _resourceContainers.push(
+                    ...result.ephemeralContainers.map((_container) => ({
+                        name: _container.name,
+                        isInitContainer: false,
+                        isEphemeralContainer: true,
+                        isExternal: _container.isExternal,
+                    })),
+                )
+            }
+
             setResourceContainers(_resourceContainers)
             if (isResourceBrowserView) {
                 setContainers(_resourceContainers ?? [])
@@ -280,7 +263,7 @@ function NodeDetailComponent({
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space">
                 <div className="flex left">
                     <div data-testid="app-resource-containor-header" className="flex left">
@@ -441,7 +424,7 @@ function NodeDetailComponent({
                     removeTabByIdentifier={removeTabByIdentifier}
                 />
             )}
-        </React.Fragment>
+        </>
     )
 }
 
