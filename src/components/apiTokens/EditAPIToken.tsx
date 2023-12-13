@@ -263,7 +263,9 @@ function EditAPIToken({
                                 label="Name"
                                 data-testid="api-token-name-textbox"
                                 value={editData.name}
-                                disabled={true} name={''} onChange={function (e: any): void {
+                                disabled={true} 
+                                name="name"
+                                onChange={function (e: any): void {
                                     throw new Error('Function not implemented.')
                                 } }                            />
                         </label>
