@@ -392,6 +392,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     this.props.handleCDSelect(this.props.id, node.id, 'ci-pipeline', node.id)
                 }}
                 history={this.props.history}
+                handleSelectedNodeChange={this.props.handleSelectedNodeChange}
+                selectedNode={this.props.selectedNode}
+                id={node.id}
+                isLastNode={node.downstreams.length === 0}
+                deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
             />
         )
     }
@@ -429,6 +434,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 isVirtualEnvironment={node.isVirtualEnvironment}
                 addNewPipelineBlocked={this.props.addNewPipelineBlocked}
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
+                selectedNode={this.props.selectedNode}
                 appName={this.props.appName ?? ''}
                 // TODO: Check this logic
                 isLastNode={node.downstreams.length === 0}
@@ -436,7 +442,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 appId={this.props.match.params.appId}
                 getWorkflows={this.props.getWorkflows}
                 reloadEnvironments={this.props.reloadEnvironments}
-                selectedNode={this.props.selectedNode}
             />
         )
     }

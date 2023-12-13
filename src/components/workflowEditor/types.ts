@@ -34,6 +34,7 @@ export enum AddPipelineType {
     PARALLEL = 'PARALLEL',
 }
 
+// TODO: Move to common
 export interface SelectedNode {
     nodeType: WorkflowNodeType
     id: string
