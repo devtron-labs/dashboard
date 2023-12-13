@@ -174,7 +174,12 @@ function NavItem({ serverMode }) {
             isAvailableInDesktop: true,
         },
         { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container/ OCI Registry', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        {
+            name: serverMode === SERVER_MODE.EA_ONLY ? 'OCI Registry' : 'Container/ OCI Registry',
+            href: URLS.GLOBAL_CONFIG_DOCKER,
+            component: Docker,
+            isAvailableInEA: true,
+        },
     ]
 
     const ConfigOptional = [
@@ -384,7 +389,7 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {window._env_.ENABLE_SCOPED_VARIABLES && (
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -499,6 +504,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                                 {...props}
                                 handleChecklistUpdate={handleChecklistUpdate}
                                 isSuperAdmin={isSuperAdmin}
+                                isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
                             />
                         )
                     }}
@@ -545,7 +551,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
+            {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>
