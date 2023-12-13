@@ -157,8 +157,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             let { top, left } = event.target.getBoundingClientRect()
             top = top + 25
             this.props.toggleCDMenu()
-        }
-        else {
+        } else {
             this.props.handleSelectedNodeChange({
                 nodeType: WorkflowNodeType.CD,
                 id: this.props.id.substring(4),
@@ -201,6 +200,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     renderCardContent() {
+        const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
+        const currentNodeKey = `${WorkflowNodeType.CD}-${this.props.id.substring(4)}`
         return (
             <>
                 <Link to={this.props.to} onClick={this.onClickNodeCard} className="dc__no-decor">
@@ -239,40 +240,42 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 }`}
                             />
 
-                            <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
-                                <Tippy
-                                    placement="right"
-                                    className="default-tt"
-                                    content={
-                                        <span className="add-cd-btn-tippy">
-                                            {this.props.addNewPipelineBlocked
-                                                ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                                                : 'Add deployment pipeline'}
-                                        </span>
-                                    }
-                                >
-                                    <div className="flex h-100 w-100 dc__border-bottom-n1--important">
+                            {selectedNodeKey !== currentNodeKey && (
+                                <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
+                                    <Tippy
+                                        placement="right"
+                                        className="default-tt"
+                                        content={
+                                            <span className="add-cd-btn-tippy">
+                                                {this.props.addNewPipelineBlocked
+                                                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                                    : 'Add deployment pipeline'}
+                                            </span>
+                                        }
+                                    >
+                                        <div className="flex h-100 w-100 dc__border-bottom-n1--important">
+                                            <button
+                                                type="button"
+                                                className="flex h-100 w-100 p-0 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
+                                                disabled={this.props.addNewPipelineBlocked}
+                                                onClick={this.handleAddNewNode}
+                                            >
+                                                <Add className="icon-dim-12" />
+                                            </button>
+                                        </div>
+                                    </Tippy>
+
+                                    <Tippy placement="right" content="Delete pipeline" className="default-tt">
                                         <button
                                             type="button"
-                                            className="flex h-100 w-100 p-0 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--add-cd-icon dc__hover-b500  pt-4 pb-4 pl-6 pr-6 workflow-node__title--top-right-rad-8"
-                                            disabled={this.props.addNewPipelineBlocked}
-                                            onClick={this.handleAddNewNode}
+                                            className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
+                                            onClick={this.handleDeleteCDNode}
                                         >
-                                            <Add className="icon-dim-12" />
+                                            <ICDelete className="icon-dim-12" />
                                         </button>
-                                    </div>
-                                </Tippy>
-
-                                <Tippy placement="right" content="Delete pipeline" className="default-tt">
-                                    <button
-                                        type="button"
-                                        className="flex h-100 w-100 dc__hover-r500 workflow-node__title--bottom-right-rad-8 pt-4 pb-4 pl-6 pr-6 dc__outline-none-imp bcn-0 dc__no-border workflow-node__title--delete-cd-icon"
-                                        onClick={this.handleDeleteCDNode}
-                                    >
-                                        <ICDelete className="icon-dim-12" />
-                                    </button>
-                                </Tippy>
-                            </div>
+                                    </Tippy>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </Link>

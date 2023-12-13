@@ -436,6 +436,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 appId={this.props.match.params.appId}
                 getWorkflows={this.props.getWorkflows}
                 reloadEnvironments={this.props.reloadEnvironments}
+                selectedNode={this.props.selectedNode}
             />
         )
     }

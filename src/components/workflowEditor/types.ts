@@ -150,6 +150,7 @@ export interface CDNodeProps {
     appId?: string
     getWorkflows?: () => void
     reloadEnvironments?: () => void
+    selectedNode?: SelectedNode
 }
 
 export interface WebhookNodeProps {
