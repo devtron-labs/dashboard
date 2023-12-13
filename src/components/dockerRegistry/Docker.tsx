@@ -1350,7 +1350,6 @@ function DockerForm({
                                         onChange={customHandleChange}
                                         label={selectedDockerRegistryType.password.label}
                                         placeholder={selectedDockerRegistryType.password.placeholder}
-                                        autoComplete="off"
                                     />
                                 </div>
                             </>
@@ -1612,9 +1611,7 @@ function DockerForm({
                             dataTestid="container-registry-name"
                             labelClassName="dc__required-field"
                             name="id"
-                            autoFocus={true}
                             value={customState.id.value}
-                            autoComplete="off"
                             error={customState.id.error}
                             tabIndex={1}
                             onChange={customHandleChange}

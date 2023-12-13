@@ -10,6 +10,7 @@ import {
     TippyTheme,
     stopPropagation,
     CHECKBOX_VALUE,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
@@ -417,7 +418,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 </div>
                 <div className="form__row form-row__material" data-testid="add-git-repository-form">
                     <div className="">
-                        <label className="form__label">Git Account*</label>
+                        <label className="form__label dc__required-field">Git Account</label>
                         <ReactSelect
                             classNamePrefix="material-view__select-project"
                             className="m-0"
@@ -517,12 +518,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         )}
                     </div>
                     <div>
-                        <label className="form__label">Git Repo URL* (use {this.gitAuthType('host')})</label>
-                        <input
-                            className="form__input"
-                            autoComplete={'off'}
-                            autoFocus
-                            name="Git Repo URL*"
+                        <label className="form__label">Git Repo URL<span className="cr-5">* </span>(use {this.gitAuthType('host')})</label>
+                        <CustomInput
+                            name="Git Repo URL"
                             type="text"
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
