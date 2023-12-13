@@ -368,6 +368,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 envList={this.props.envList}
                 filteredCIPipelines={this.props.filteredCIPipelines}
                 addNewPipelineBlocked={this.props.addNewPipelineBlocked}
+                handleSelectedNodeChange={this.props.handleSelectedNodeChange}
+                selectedNode={this.props.selectedNode}
+                isLastNode={node.downstreams.length === 0}
             />
         )
     }

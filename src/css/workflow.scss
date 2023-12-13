@@ -29,6 +29,10 @@
     padding: 2px 8px;
     font-weight: 600;
     background-color: var(--N100);
+
+    &--include-add-cd {
+        right: 32px !important;
+    }
 }
 
 .workflow--create {
