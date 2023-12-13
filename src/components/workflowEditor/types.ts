@@ -83,6 +83,7 @@ export interface WorkflowEditProps
     envList?: any[]
     ciPipelines?: any[]
     filteredEnvIds?: string
+    reloadEnvironments?: () => void
 }
 
 export interface AddWorkflowState {
@@ -147,6 +148,8 @@ export interface CDNodeProps {
     appName?: string
     deploymentAppType?: DeploymentAppTypes
     appId?: string
+    getWorkflows?: () => void
+    reloadEnvironments?: () => void
 }
 
 export interface WebhookNodeProps {

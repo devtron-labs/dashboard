@@ -73,6 +73,8 @@ export interface WorkflowProps
     selectedNode?: SelectedNode
     handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
     appName?: string
+    getWorkflows?: () => void
+    reloadEnvironments?: () => void
 }
 
 interface WorkflowState {
@@ -432,6 +434,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 isLastNode={node.downstreams.length === 0}
                 deploymentAppType={node.deploymentAppType}
                 appId={this.props.match.params.appId}
+                getWorkflows={this.props.getWorkflows}
+                reloadEnvironments={this.props.reloadEnvironments}
             />
         )
     }

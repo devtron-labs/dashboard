@@ -21,7 +21,6 @@ import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
 import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types'
 import { CD_PATCH_ACTION } from '../../cdPipeline/cdPipeline.types'
 import { deleteCDPipeline } from '../../cdPipeline/cdPipeline.service'
-import { ForceDeleteDataType } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
@@ -106,9 +105,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         this.handleHideDeleteModal()
                         this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNormalDeleteDialog)
-                        // Not added case of webhook since not possible
-                        // TODO:
-                        // getWorkflows()
+                        this.props.getWorkflows?.()
+                        this.props.reloadEnvironments?.()
                     }
                 }
             })
