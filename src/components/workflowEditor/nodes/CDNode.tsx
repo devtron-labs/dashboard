@@ -146,24 +146,26 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         event.preventDefault()
         event.stopPropagation()
 
-        if (this.props.deploymentAppDeleteRequest) {
-            toast.error(ERR_MESSAGE_ARGOCD)
-        }
-
         if (this.props.addNewPipelineBlocked) {
             return
         }
 
-        if (!this.props.isLastNode && this.props.handleSelectedNodeChange) {
+        if (this.props.deploymentAppDeleteRequest) {
+            toast.error(ERR_MESSAGE_ARGOCD)
+            return
+        }
+
+        if (this.props.isLastNode) {
+            let { top, left } = event.target.getBoundingClientRect()
+            top = top + 25
+            this.props.toggleCDMenu()
+        }
+        else {
             this.props.handleSelectedNodeChange({
                 nodeType: WorkflowNodeType.CD,
                 id: this.props.id.substring(4),
             })
-            return
         }
-        let { top, left } = event.target.getBoundingClientRect()
-        top = top + 25
-        this.props.toggleCDMenu()
     }
 
     getAppDetailsURL(): string {

@@ -400,6 +400,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }
 
         return (
+            // Check if addType sequential is needed here?
             <CDNode
                 key={node.id}
                 x={node.x}
@@ -460,6 +461,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const selectedNodeEndNodes = edges
             .filter((edgeNode) => `${edgeNode.startNode.type}-${edgeNode.startNode.id}` === selectedNodeKey)
             .map((edgeNode) => edgeNode.endNode)
+        // Hoping only one CIPipeline is present in one workflow
+        const workflowCIPipelineId = this.props.nodes.find((node) => node.type == WorkflowNodeType.CI)?.id ?? 0
+        const isWebhookCD = !!this.props.nodes.find((node) => node.type == WorkflowNodeType.WEBHOOK)
 
         const edgeList = this.getEdges().map((edgeNode) => {
             // checking if edgeNode is same as selectedNode
@@ -477,6 +481,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
                         edges={edges}
                         shouldRenderAddRightCDButton={isSelectedEdge}
+                        handleCDSelect={this.props.handleCDSelect}
+                        ciPipelineId={workflowCIPipelineId}
+                        workflowId={this.props.id}
+                        isWebhookCD={isWebhookCD}
                     />
                 )
             }
@@ -490,6 +498,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     deleteEdge={noop}
                     onMouseOverEdge={noop}
                     addCDButtons={addCDButtons}
+                    handleCDSelect={this.props.handleCDSelect}
+                    ciPipelineId={workflowCIPipelineId}
+                    workflowId={this.props.id}
+                    isWebhookCD={isWebhookCD}
                 />
             )
         })
@@ -516,6 +528,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             const addCDButtons =
                 selectedNodeEndNodes.length > 1 ? [AddCDPositions.LEFT, AddCDPositions.RIGHT] : [AddCDPositions.RIGHT]
 
+            // TODO: Add approval edge if present
             edgeList.push(
                 <Edge
                     key={`trigger-edge-${this.props.selectedNode.id}`}
@@ -525,6 +538,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     deleteEdge={noop}
                     onMouseOverEdge={noop}
                     addCDButtons={addCDButtons}
+                    handleCDSelect={this.props.handleCDSelect}
+                    workflowId={this.props.id}
+                    ciPipelineId={workflowCIPipelineId}
+                    isParallelEdge
+                    isWebhookCD={isWebhookCD}
                 />,
             )
         }

@@ -71,6 +71,8 @@ export default function NewCDPipeline({
     const noStrategyAvailable = useRef(false)
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
+    const addType = urlParams.get('appType')
+    const childPipelineId = urlParams.get('childPipelineId')
     
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string
@@ -580,6 +582,12 @@ export default function NewCDPipeline({
         if (changeCIPayload?.switchFromCiPipelineId) {
             pipeline['switchFromCiPipelineId'] = changeCIPayload.switchFromCiPipelineId
         }
+        if (childPipelineId) {
+            pipeline['childPipelineId'] = +childPipelineId
+        }
+
+        pipeline['addType'] = addType
+
 
         const request = {
             appId: +appId,

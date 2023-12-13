@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { nodeColors } from './colors';
+import { AddPipelineType } from '../../workflowEditor/types';
+import { PipelineType, WorkflowNodeType } from '../../app/details/triggerView/types';
 
 interface Point {
     x: number;
@@ -18,12 +20,26 @@ export enum AddCDPositions {
 }
 
 interface EdgeProps {
-    startNode: Point & { height: number, width: number };
-    endNode: Point & { height: number, width: number };
+    // type should not be any but WorkflowNodeType, but node type is something else have to look into it
+    startNode: Point & { height: number, width: number, type?: any, id?: number | string };
+    endNode: Point & { height: number, width: number, type?: any, id?: number | string };
     onClickEdge: (event: any) => void;
     deleteEdge: () => void;
     onMouseOverEdge: (startID: any, endID: any) => void;
     addCDButtons?: AddCDPositions[]
+    handleCDSelect?: (
+        workflowId: number | string,
+        ciPipelineId: number | string,
+        parentPipelineType: string,
+        parentPipelineId: number | string,
+        isWebhookCD?: boolean,
+        childPipelineId?: number | string,
+        addType?: AddPipelineType,
+    ) => void
+    workflowId?: number | string
+    ciPipelineId?: number | string
+    isWebhookCD?: boolean
+    isParallelEdge?: boolean
 }
 
 interface LineDots {
@@ -116,6 +132,41 @@ export default class Edge extends Component<EdgeProps>{
         }
     }
 
+    getPipelineType = () => {
+        if (this.props.isWebhookCD) {
+            return PipelineType.WEBHOOK
+        }
+
+        if (this.props.startNode.type === WorkflowNodeType.CI) {
+            return PipelineType.CI_PIPELINE
+        }
+
+        return PipelineType.CD_PIPELINE
+    }
+
+    handleAddCD = (position: AddCDPositions) => {
+        if (!this.props.handleCDSelect) {
+            return
+        }
+        const { handleCDSelect, startNode, endNode, workflowId, ciPipelineId, isWebhookCD } = this.props
+        const pipelineType = this.getPipelineType()
+        
+        if (this.props.isParallelEdge && position === AddCDPositions.RIGHT) {
+            handleCDSelect(workflowId, ciPipelineId, pipelineType, startNode.id, isWebhookCD, null, AddPipelineType.PARALLEL)
+            return
+        }
+        
+        if (position === AddCDPositions.LEFT) {
+            handleCDSelect(workflowId, ciPipelineId, pipelineType, startNode.id, isWebhookCD, null, AddPipelineType.SEQUENTIAL)
+            return
+        }
+
+        if (position === AddCDPositions.RIGHT) {
+            handleCDSelect(workflowId, ciPipelineId, pipelineType, startNode.id, isWebhookCD, endNode.id, AddPipelineType.SEQUENTIAL)
+            return
+        }
+    }
+
     renderCDButtons = (position: AddCDPositions): JSX.Element => {
         const referenceNode = position === AddCDPositions.RIGHT ? this.props.endNode : this.props.startNode
 
@@ -131,6 +182,8 @@ export default class Edge extends Component<EdgeProps>{
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     data-testid={`add-cd-to-${position}`}
+                    // TODO: Migrate it into different component
+                    onClick={() => this.handleAddCD(position)}
                 >
                     <rect width="20" height="20" rx="10" fill="#664BEE" className="add-cd-edge-btn"/>
                     <path

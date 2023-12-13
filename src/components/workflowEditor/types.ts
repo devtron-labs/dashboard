@@ -37,8 +37,6 @@ export enum AddPipelineType {
 export interface SelectedNode {
     nodeType: WorkflowNodeType
     id: string
-    addType?: AddPipelineType
-    childPipelineId?: string
 }
 
 export interface WorkflowEditState {
