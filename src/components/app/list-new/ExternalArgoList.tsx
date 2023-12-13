@@ -5,6 +5,7 @@ import {
     ErrorScreenManager,
     ServerErrors,
     GenericEmptyState,
+    AppStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
@@ -30,7 +31,6 @@ import {
     ClearFiltersLabel,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
 } from './Constants'
-import AppStatus from '../AppStatus'
 import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
 import { ExternalArgoListType } from '../types'
 import Tippy from '@tippyjs/react'
