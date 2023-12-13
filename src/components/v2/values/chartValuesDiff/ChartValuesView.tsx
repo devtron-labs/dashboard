@@ -883,7 +883,7 @@ function ChartValuesView({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
                     deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
-                    gitRepoURL: commonState.gitRepoURL.gitRepoURL
+                    gitRepoURL: commonState.gitRepoURL.gitRepoURL || 'Default',
                 }             
                 res = await installChart(payload)
             } else if (isCreateValueView) {

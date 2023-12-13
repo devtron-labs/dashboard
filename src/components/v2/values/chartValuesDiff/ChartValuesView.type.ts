@@ -111,9 +111,11 @@ export interface DeploymentAppRadioGroupType {
 export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
     gitRepoURL?: Promise<void>
     envId: string
-    teamId?: number
+    teamId: number
     commonState: ChartValuesViewState
     dispatch: React.Dispatch<ChartValuesViewAction>
+    visibleRepoURL: string
+    setVisibleRepoURL: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface ChartProjectSelectorType {

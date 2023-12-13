@@ -168,6 +168,7 @@ export const DeploymentAppSelector = ({
     teamId,
     dispatch
 }: DeploymentAppSelectorType): JSX.Element => {
+    const [visibleRepoURL, setVisibleRepoURL] = useState<string>("")
     
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
@@ -225,6 +226,8 @@ export const DeploymentAppSelector = ({
                         teamId={teamId}
                         commonState={commonState}
                         dispatch={dispatch}
+                        visibleRepoURL={visibleRepoURL}
+                        setVisibleRepoURL={setVisibleRepoURL}
                     />
                 )}
             </div>
@@ -309,7 +312,17 @@ export const DeploymentAppRadioGroup = ({
     )
 }
 
-const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, envId, teamId, commonState, dispatch}: gitOpsDrawerType): JSX.Element => {
+const GitOpsDrawer = ({
+    deploymentAppType, 
+    allowedDeploymentTypes, 
+    gitRepoURL, 
+    envId, 
+    teamId, 
+    commonState, 
+    dispatch, 
+    visibleRepoURL, 
+    setVisibleRepoURL
+}: gitOpsDrawerType): JSX.Element => {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
@@ -320,6 +333,9 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
             setIsDeploymentAllowed(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1)
+            setRepoURL('')
+        } else {
+            setGitOpsState(false)
         }
     }, [deploymentAppType, allowedDeploymentTypes])
 
@@ -345,7 +361,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
 
     const getPayload = () => {
         const payload = {
-            gitRepoURL: repoURL,
+            gitRepoURL: selectedRepoType === repoType.DEFAULT ? 'Default' : repoURL.trim(),
             environmentId: +envId,
             teamId: +teamId,
         }
@@ -353,25 +369,25 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
     }
 
     const handleSaveButton = () => {
-        if(selectedRepoType === repoType.DEFAULT) {
-            setIsDeploymentAllowed(false)
-            setRepoURL('')
-        }
         setGitOpsState(true)
         const payload = getPayload()
         validateHelmAppGitOpsConfiguration(payload)
             .then((response) => {
                 if (Object.values(response.result.stageErrorMap).length) {
-                    setDisplayValidation(selectedRepoType !== repoType.DEFAULT)
+                    setDisplayValidation(true)
                     setErrorInFetching(response.result.stageErrorMap)
-                } else {
-                    setDisplayValidation(false)
-                    setIsDeploymentAllowed(false)
+                    return
                 }
+                setErrorInFetching(new Map())
+                setDisplayValidation(false)
+                setIsDeploymentAllowed(false)
+                setVisibleRepoURL(selectedRepoType === repoType.DEFAULT ? repoType.DEFAULT : repoURL)
             })
             .catch((err) => {
-                if (selectedRepoType === repoType.CONFIGURE) {
-                    showError(err)
+                showError(err)
+            }).finally(() => {
+                if(selectedRepoType === repoType.DEFAULT) {
+                    setRepoURL("")
                 }
             })
     }
@@ -432,7 +448,8 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                     </Drawer>
                 </div>
             )}
-            {gitOpsState ? (
+            
+            {gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1 ? (
                 <div className="form__input dashed mt-10 flex" style={{ height: '54px' }}>
                     <div className="mb-10">
                         <span>
@@ -440,11 +457,7 @@ const GitOpsDrawer = ({deploymentAppType, allowedDeploymentTypes, gitRepoURL, en
                             <EditIcon className="icon-dim-16 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
                         <a className="dc__ellipsis-right flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${
-                            selectedRepoType === repoType.CONFIGURE
-                                ? repoURL.length > 0
-                                    ? repoURL
-                                    : 'Set GitOps repository'
-                                : 'Auto-create repository'
+                            visibleRepoURL.length > 0 ? (visibleRepoURL === repoType.DEFAULT ? 'Auto-create repository' : visibleRepoURL) : 'Set GitOps repository'
                         }`}</a>
                     </div>
                 </div>

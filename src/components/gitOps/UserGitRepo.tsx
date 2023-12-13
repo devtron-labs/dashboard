@@ -1,5 +1,5 @@
 import { InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
+import React, { useState } from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ValidateForm } from '../common/ValidateForm/ValidateForm';
@@ -8,6 +8,7 @@ import { UserGitRepoProps } from './gitops.type';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 
 function UserGitRepo(props: UserGitRepoProps) {
+
     const repoTypeChange = () => {
         const newRepoType = props.selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
         props.setSelectedRepoType(newRepoType)
