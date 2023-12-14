@@ -604,7 +604,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
-        isLast: isLast
+        isLast: isLast,
+        deploymentAppCreated: cdPipeline?.deploymentAppCreated,
     } as NodeAttr
     stageIndex++
 
