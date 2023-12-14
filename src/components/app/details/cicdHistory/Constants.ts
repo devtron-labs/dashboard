@@ -22,3 +22,6 @@ export const HISTORY_LABEL = {
 }
 
 export const WORKER_POD_BASE_URL = '/resource-browser/1/devtron-ci/pod/k8sEmptyGroup'
+
+export const TIMEOUT_VALUE = '12' // in hours
+

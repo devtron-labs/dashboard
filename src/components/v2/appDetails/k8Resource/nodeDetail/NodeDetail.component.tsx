@@ -102,12 +102,13 @@ function NodeDetailComponent({
 
     const getContainersFromManifest = async () => {
         try {
+            const nullCaseName = (isResourceBrowserView && params.nodeType==='pod') ? params.node: ""
             const { result } = await getManifestResource(
                 appDetails,
-                params.podName,
+                params.node,
                 params.nodeType,
                 isResourceBrowserView,
-                selectedResource,
+                {...selectedResource, name: selectedResource.name ? selectedResource.name : nullCaseName },
             )
             const _resourceContainers = []
             if (result?.manifest?.spec) {
