@@ -177,20 +177,21 @@ const ProgressingStatus = React.memo(
 
         async function abortRunning() {
             setAborting(true)
-            const {errors} = await abort(abortError.status)
-            setAborting(false)
-            if (errors) {
-                setAbortConfirmation(false)
-                setAbortError({
-                    status: true,
-                    message:errors[0].userMessage,
-                })
-            } else {
+            try {
+                await abort(abortError.status)
                 toast.success('Build Aborted')
                 setAbortConfirmation(false)
                 setAbortError({
                     status: false,
                     message: '',
+                })
+            } catch (error) {
+                const errors = error['errors']
+                setAborting(false)
+                setAbortConfirmation(false)
+                setAbortError({
+                    status: true,
+                    message: errors[0].userMessage,
                 })
             }
         }
