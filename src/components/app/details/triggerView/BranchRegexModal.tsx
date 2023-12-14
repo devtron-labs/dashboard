@@ -13,7 +13,6 @@ import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ButtonWithLoader } from '../../../common'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { error } from 'console'
 
 export default function BranchRegexModal({
     material,
