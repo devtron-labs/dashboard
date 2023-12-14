@@ -101,7 +101,6 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
                 <div className="form__row">
                     <CustomInput
                         labelClassName="dc__required-field"
-                        autoComplete="off"
                         name="branch_name"
                         disabled={false}
                         value={branchName}
