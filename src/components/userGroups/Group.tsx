@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { deepEqual } from '../common'
-import { showError, Progressing, DeleteDialog, ResizableTextarea } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, DeleteDialog, ResizableTextarea, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { saveGroup, deleteGroup } from './userGroup.service'
 
 import {
@@ -191,13 +191,16 @@ export default function GroupForm({
         <div className="user-form">
             <label className="form__label">Group name*</label>
             {name.error && <label className="form__error">{name.error}</label>}
-            <input
+            <CustomInput
+                name="permission-group-name-textbox"
+                label="Group name"
                 type="text"
-                className="form__input mb-16"
+                rootClassName="mb-16"
                 disabled={!!id}
                 value={name.value}
                 data-testid="permission-group-name-textbox"
                 onChange={(e) => setName({ value: e.target.value, error: '' })}
+                error={name.error}
             />
             <label htmlFor="" className="form__label">
                 Description

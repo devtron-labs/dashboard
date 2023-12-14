@@ -110,6 +110,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                         placeholder="e.g. My Project"
                         onChange={this.handleActionChange}
                         error={!isValid.name && errorMessage.name}
+                        autoFocus={true}
                     />
                     <div className="form__buttons mt-16">
                         <button

@@ -22,6 +22,7 @@ import {
     multiSelectStyles,
     MultiValueRemove,
     Option,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export function DropdownIndicator(props) {
@@ -405,15 +406,14 @@ function ManageRegistry({
                             Icon={InfoIcon}
                             iconClass="icon-dim-20"
                         />
-                        <input
+                        <CustomInput
                             tabIndex={2}
                             placeholder="Enter image pull secret seperated by comma"
-                            className="form__input mt-8"
+                            rootClassName="mt-8"
                             name={CredentialType.NAME}
                             value={credentialValue}
                             onChange={onClickSpecifyImagePullSecret}
                             autoFocus
-                            autoComplete="off"
                         />
 
                         {errorValidation && (
