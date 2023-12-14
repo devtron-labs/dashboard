@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
-import { AddCDPositions, WorkflowNodeType, PipelineType, AddPipelineType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AddCDPositions,
+    WorkflowNodeType,
+    PipelineType,
+    AddPipelineType,
+    AddCDButton,
+    Point,
+    EdgeNodeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { nodeColors } from './colors'
-
-interface Point {
-    x: number
-    y: number
-}
 
 interface Line {
     startNode: Point
@@ -14,8 +17,8 @@ interface Line {
 
 interface EdgeProps {
     // type should not be any but WorkflowNodeType, but node type is something else have to look into it
-    startNode: Point & { height: number; width: number; type?: any; id?: number | string }
-    endNode: Point & { height: number; width: number; type?: any; id?: number | string }
+    startNode: Point & EdgeNodeType
+    endNode: Point & EdgeNodeType
     onClickEdge: (event: any) => void
     deleteEdge: () => void
     onMouseOverEdge: (startID: any, endID: any) => void
@@ -42,49 +45,6 @@ interface LineDots {
     lineEndY: number
     midPointX: number
     midPointY: number
-}
-
-interface AddCDButtonProps {
-    position: AddCDPositions
-    addCDButtons: AddCDPositions[]
-    endNode: Point & { height: number; width: number; type?: any; id?: number | string }
-    startNode: Point & { height: number; width: number; type?: any; id?: number | string }
-    handleAddCD: (position: AddCDPositions) => void
-}
-
-function AddCDButton({ position, addCDButtons, endNode, startNode, handleAddCD }: Readonly<AddCDButtonProps>) {
-    const referenceNode = position === AddCDPositions.RIGHT ? endNode : startNode
-    const handleAddCDClick = () => {
-        handleAddCD(position)
-    }
-
-    if (addCDButtons?.includes(position)) {
-        return (
-            <svg
-                x={referenceNode.x + (position === AddCDPositions.RIGHT ? -20 - 5 : referenceNode.width + 5)}
-                // Here 10 is the height of the button / 2
-                y={referenceNode.y + referenceNode.height / 2 - 10}
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                data-testid={`add-cd-to-${position}`}
-                onClick={handleAddCDClick}
-            >
-                <rect width="20" height="20" rx="10" fill="#664BEE" className="add-cd-edge-btn" />
-                <path
-                    d="M6.5 10H13.5M10 6.5V13.5"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                />
-            </svg>
-        )
-    }
-
-    return null
 }
 
 export default class Edge extends Component<EdgeProps> {
@@ -192,44 +152,13 @@ export default class Edge extends Component<EdgeProps> {
         }
         const { handleCDSelect, startNode, endNode, workflowId, ciPipelineId, isWebhookCD } = this.props
         const pipelineType = this.getPipelineType()
+        const addPipelineType =
+            this.props.isParallelEdge && position === AddCDPositions.RIGHT
+                ? AddPipelineType.PARALLEL
+                : AddPipelineType.SEQUENTIAL
+        const endNodeId = !this.props.isParallelEdge && position === AddCDPositions.RIGHT ? endNode.id : null
 
-        if (this.props.isParallelEdge && position === AddCDPositions.RIGHT) {
-            handleCDSelect(
-                workflowId,
-                ciPipelineId,
-                pipelineType,
-                startNode.id,
-                isWebhookCD,
-                null,
-                AddPipelineType.PARALLEL,
-            )
-            return
-        }
-
-        if (position === AddCDPositions.LEFT) {
-            handleCDSelect(
-                workflowId,
-                ciPipelineId,
-                pipelineType,
-                startNode.id,
-                isWebhookCD,
-                null,
-                AddPipelineType.SEQUENTIAL,
-            )
-            return
-        }
-
-        if (position === AddCDPositions.RIGHT) {
-            handleCDSelect(
-                workflowId,
-                ciPipelineId,
-                pipelineType,
-                startNode.id,
-                isWebhookCD,
-                endNode.id,
-                AddPipelineType.SEQUENTIAL,
-            )
-        }
+        handleCDSelect(workflowId, ciPipelineId, pipelineType, startNode.id, isWebhookCD, endNodeId, addPipelineType)
     }
 
     render() {
@@ -238,9 +167,8 @@ export default class Edge extends Component<EdgeProps> {
 
         return (
             <g
-                style={{ cursor: 'pointer' }}
                 onClick={this.props.onClickEdge}
-                className="edge-group"
+                className="edge-group cursor"
                 onMouseOver={() => this.props.onMouseOverEdge(this.props.startNode, this.props.endNode)}
             >
                 <path
