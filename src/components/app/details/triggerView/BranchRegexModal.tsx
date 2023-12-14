@@ -101,7 +101,7 @@ export default function BranchRegexModal({
         onShowCIModal()
     }
 
-    const renderErrorMessage = (regexValue) => {
+    const getErrorMessage = (regexValue) => {
         if (regexValue.value && regexValue.isInvalid) {
             return BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
         } else if (!regexValue.value) {
@@ -161,7 +161,7 @@ export default function BranchRegexModal({
                                         value={_regexValue.value}
                                         onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
                                         autoFocus
-                                        error={renderErrorMessage(_regexValue)}
+                                        error={getErrorMessage(_regexValue)}
                                     />
                                 </div>
                             </div>

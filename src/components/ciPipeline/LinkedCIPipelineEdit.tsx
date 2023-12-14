@@ -272,7 +272,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     loadAppListOptions = (inputValue: string) => appListOptions(inputValue, false)
 
-    renderErrorMessage = () => {
+    getErrorMessage = () => {
         if (this.state.form.name && !this.state.isValid.name) {
             return DUPLICATE_PIPELINE_NAME_VALIDATION
         } else if (!this.state.form.name) {
@@ -322,7 +322,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                                 onChange={this.handleName}
                                 data-testid="pipeline-name-for-linked"
                                 isRequiredField={true}
-                                error={this.renderErrorMessage()}
+                                error={this.getErrorMessage()}
                             />
                         </label>
                     ) : null}
