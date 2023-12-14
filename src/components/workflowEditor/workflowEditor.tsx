@@ -11,12 +11,11 @@ import {
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
-    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
-import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
+import { getAllChildDownstreams, getCreateWorkflows, getMaxYFromFirstLevelDownstream } from '../app/details/triggerView/workflow.service'
 import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
 import CIPipeline from '../CIPipelineN/CIPipeline'
@@ -161,7 +160,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         appId: 0,
                     },
                     blackListedCI: result.blackListedCI ?? {},
-                    // TODO: Maybe just need to clear selectedNode here
                     selectedNode: null,
                     workflowPositionState: null,
                 })
@@ -389,38 +387,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.handleSelectedNodeChange(null)
     }
 
-    // TODO: Move to util
-    getAllChildDownstreams = (node: CommonNodeAttr, workflow: any): { downstreamNodes: CommonNodeAttr[] } => {
-        let downstreamNodes = []
-        // Not using downstreamNodes since they get deleted in service itself
-        if (node?.downstreams?.length) {
-            node.downstreams.forEach((downstreamData) => {
-                // separating id and type from downstreamData by splitting on -
-                const [type, id] = downstreamData.split('-')
-                const _node = workflow.nodes?.find((wfNode) => String(wfNode.id) === id && wfNode.type === type)
-                if (_node) {
-                    const { downstreamNodes: _downstreamNodes } = this.getAllChildDownstreams(_node, workflow)
-                    downstreamNodes = [...downstreamNodes, ..._downstreamNodes]
-                }
-            })
-        }
-        return { downstreamNodes: [...downstreamNodes, node] }
-    }
-
-    getMaxYFromFirstLevelDownstream = (node: CommonNodeAttr, workflow: any): number => {
-        let maxY = 0
-        if (node?.downstreams?.length) {
-            node.downstreams.forEach((downstreamData) => {
-                const [type, id] = downstreamData.split('-')
-                const _node = workflow.nodes?.find((wfNode) => String(wfNode.id) === id && wfNode.type === type)
-                if (_node) {
-                    maxY = Math.max(maxY, _node.y)
-                }
-            })
-        }
-        return maxY
-    }
-
     // TODO: Look into why have to parse id into String in few cases
     handleSelectedNodeChange = (selectedNode: SelectedNode) => {
         // If selectedNode is null, then remove bufferNodes
@@ -439,8 +405,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 (wfNode) => String(wfNode.id) === String(selectedNode.id) && wfNode.type === selectedNode.nodeType,
             )
             if (_node) {
-                const { downstreamNodes } = this.getAllChildDownstreams(_node, _wf)
-                const firstLevelDownstreamMaxY = this.getMaxYFromFirstLevelDownstream(_node, _wf)
+                const { downstreamNodes } = getAllChildDownstreams(_node, _wf)
+                const firstLevelDownstreamMaxY = getMaxYFromFirstLevelDownstream(_node, _wf)
                 const bufferNodes = []
                 if (downstreamNodes.length > 0) {
                     _wf.nodes.forEach((wfNode) => {

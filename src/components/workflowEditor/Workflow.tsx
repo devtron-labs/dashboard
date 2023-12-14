@@ -446,7 +446,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 appName={this.props.appName ?? ''}
-                // TODO: Check this logic
+                // Get this line reviewed
                 isLastNode={node.downstreams.length === 0}
                 deploymentAppType={node.deploymentAppType}
                 appId={this.props.match.params.appId}
@@ -530,10 +530,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 />
             )
         })
-        // TODO: Add null checks for selectedNode and selectedNodeEndNodes
+
         if (this.props.selectedNode && selectedNodeEndNodes?.length > 0) {
             // Finding the startNode that as same key as selectedNode
-            const selectedNodeKey = `${this.props.selectedNode?.nodeType}-${this.props.selectedNode?.id}`
+            const selectedNodeKey = `${this.props.selectedNode.nodeType}-${this.props.selectedNode.id}`
             const startNode = nodesWithBufferHeight.find((node) => `${node.type}-${node.id}` === selectedNodeKey)
             // Creating a dummy endNode
             // To create it, we need to find the endNode from startNode that has maximum y value

@@ -16,7 +16,7 @@ import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../..
 import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
-import { TriggerTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, TriggerTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { BlackListedCI } from '../../../workflowEditor/types'
 
@@ -676,4 +676,35 @@ function getCINodeHeight(dimensionType: WorkflowDimensionType, pipeline: CiPipel
         return WorkflowTrigger.externalCINodeSizes?.nodeHeight ?? 0 //external CI
     }
     return WorkflowTrigger.cINodeSizes.nodeHeight
+}
+
+export function getAllChildDownstreams(node: CommonNodeAttr, workflow: any): { downstreamNodes: CommonNodeAttr[] } {
+    let downstreamNodes = []
+    // Not using downstreamNodes since they get deleted in service itself
+    if (node?.downstreams?.length) {
+        node.downstreams.forEach((downstreamData) => {
+            // separating id and type from downstreamData by splitting on -
+            const [type, id] = downstreamData.split('-')
+            const _node = workflow.nodes?.find((wfNode) => String(wfNode.id) === id && wfNode.type === type)
+            if (_node) {
+                const { downstreamNodes: _downstreamNodes } = getAllChildDownstreams(_node, workflow)
+                downstreamNodes = [...downstreamNodes, ..._downstreamNodes]
+            }
+        })
+    }
+    return { downstreamNodes: [...downstreamNodes, node] }
+}
+
+export function getMaxYFromFirstLevelDownstream(node: CommonNodeAttr, workflow: any): number {
+    let maxY = 0
+    if (node?.downstreams?.length) {
+        node.downstreams.forEach((downstreamData) => {
+            const [type, id] = downstreamData.split('-')
+            const _node = workflow.nodes?.find((wfNode) => String(wfNode.id) === id && wfNode.type === type)
+            if (_node) {
+                maxY = Math.max(maxY, _node.y)
+            }
+        })
+    }
+    return maxY
 }
