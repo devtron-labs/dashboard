@@ -98,7 +98,10 @@ export const TriggerDetails = React.memo(
 const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedType): JSX.Element => {
     return (
         <div className="flex column left dc__min-width-fit-content">
-            <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`} data-testid="deployment-status-text">
+            <div
+                className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}
+                data-testid="deployment-status-text"
+            >
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
             </div>
             <div className="flex left">
@@ -170,7 +173,7 @@ const ProgressingStatus = React.memo(
         }>()
         let abort = null
         if (type === HistoryComponentType.CI) {
-            abort = (isForceAbort:boolean) => cancelCiTrigger({ pipelineId, workflowId: buildId },isForceAbort)
+            abort = (isForceAbort: boolean) => cancelCiTrigger({ pipelineId, workflowId: buildId }, isForceAbort)
         } else if (stage !== 'DEPLOY') {
             abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
         }
@@ -186,20 +189,24 @@ const ProgressingStatus = React.memo(
                     message: '',
                 })
             } catch (error) {
-                const errors = error['errors']
                 setAborting(false)
                 setAbortConfirmation(false)
-                setAbortError({
-                    status: true,
-                    message: errors[0].userMessage,
-                })
+                if (error['code'] === 400) {
+                    console.error('here')
+                    const errors = error['errors']
+                    console.log(errors, errors[0].userMessage, 'here2')
+                    setAbortError({
+                        status: true,
+                        message: errors[0].userMessage,
+                    })
+                }
             }
         }
 
         const toggleAbortConfiguration = (): void => {
             setAbortConfirmation(not)
         }
-        const closeForceAbortModal= (): void=> {
+        const closeForceAbortModal = (): void => {
             setAbortError({
                 status: false,
                 message: '',
@@ -209,9 +216,7 @@ const ProgressingStatus = React.memo(
             <>
                 <div className="flex left mb-24">
                     <div className="dc__min-width-fit-content">
-                        <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
-                            In progress
-                        </div>
+                        <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>In progress</div>
                     </div>
 
                     {abort && (
@@ -252,11 +257,9 @@ const ProgressingStatus = React.memo(
                 {abortError.status && (
                     <ConfirmationDialog>
                         <ConfirmationDialog.Icon src={warn} />
-                        <ConfirmationDialog.Body
-                            title="Could not abort build!"
-                        />
-                        <div className='w-100 bc-n50 h-36 flexbox dc__align-items-center'>
-                            <span className='pl-12'>Error: {abortError.message}</span>
+                        <ConfirmationDialog.Body title="Could not abort build!" />
+                        <div className="w-100 bc-n50 h-36 flexbox dc__align-items-center">
+                            <span className="pl-12">Error: {abortError.message}</span>
                         </div>
                         <div className="fs-13 fw-6 pt-12 cn-7 lh-1-54">
                             <span>Please try to force abort</span>
@@ -287,7 +290,7 @@ const CurrentStatus = React.memo(
             )
         } else {
             return (
-                <div className={`flex left ${ isJobView ? "mb-24" : ""}`}>
+                <div className={`flex left ${isJobView ? 'mb-24' : ''}`}>
                     <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
                     <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
