@@ -31,12 +31,14 @@ import {
     noop,
     WorkflowNodeType,
     PipelineType,
+    AddPipelineType,
+    SelectedNode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
-import { AddPipelineType, ChangeCIPayloadType, SelectedNode, WorkflowPositionState } from './types'
+import { ChangeCIPayloadType, WorkflowPositionState } from './types'
 import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')

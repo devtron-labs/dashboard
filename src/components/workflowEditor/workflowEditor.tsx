@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react'
-import { AddPipelineType, ChangeCIPayloadType, PipelineContext, SelectedNode, WorkflowEditProps, WorkflowEditState } from './types'
+import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import {
@@ -13,6 +13,8 @@ import {
     TippyTheme,
     WorkflowNodeType,
     PipelineType,
+    AddPipelineType,
+    SelectedNode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'

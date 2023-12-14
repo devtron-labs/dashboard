@@ -6,7 +6,7 @@ import {
     StepType,
     TaskErrorObj,
     VariableType,
-    WorkflowNodeType,
+    SelectedNode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -34,18 +34,6 @@ export interface ChangeCIPayloadType {
     switchFromCiPipelineId?: number
     appId: number
     switchFromExternalCiPipelineId?: number
-}
-
-// TODO: Move it to common lib
-export enum AddPipelineType {
-    SEQUENTIAL = 'SEQUENTIAL',
-    PARALLEL = 'PARALLEL',
-}
-
-// TODO: Move to common
-export interface SelectedNode {
-    nodeType: WorkflowNodeType
-    id: string
 }
 
 export interface WorkflowPositionState {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { WorkflowNodeType, SelectedNode } from '@devtron-labs/devtron-fe-common-lib'
 import { NodeAttr } from '../../app/details/triggerView/types'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
@@ -8,7 +8,6 @@ import link from '../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
-import { SelectedNode } from '../types'
 
 export interface CINodeProps {
     x: number
