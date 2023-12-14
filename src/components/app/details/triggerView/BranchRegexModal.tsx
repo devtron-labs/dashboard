@@ -95,15 +95,6 @@ export default function BranchRegexModal({
         )
     }
 
-    const renderValidationErrorLabel = (message: string): JSX.Element => {
-        return (
-            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6 ml-36">
-                <Error className="icon-dim-16" />
-                <div className="ml-4 cr-5">{message}</div>
-            </div>
-        )
-    }
-
     const onClickBackArrow = (): void => {
         onCloseBranchRegexModal()
         onShowCIModal()
@@ -151,22 +142,23 @@ export default function BranchRegexModal({
                                         </div>
                                     </span>
                                 </div>
-                                <CustomInput
-                                    name="name"
-                                    data-testid={`branch-name-matching-regex-textbox${index}`}
-                                    tabIndex={index}
-                                    placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
-                                    rootClassName="ml-36 w-95-imp"
-                                    value={_regexValue.value}
-                                    onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
-                                    autoFocus
-                                    error={
-                                        _regexValue.value &&
-                                        _regexValue.isInvalid &&
-                                        renderValidationErrorLabel(BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName) &&
-                                        REQUIRED_FIELD_MSG
-                                    }
-                                />
+                                <div className="ml-36-imp">
+                                    <CustomInput
+                                        name="name"
+                                        data-testid={`branch-name-matching-regex-textbox${index}`}
+                                        tabIndex={index}
+                                        placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
+                                        rootClassName="w-95-imp"
+                                        value={_regexValue.value}
+                                        onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
+                                        autoFocus
+                                        error={
+                                            _regexValue.value && _regexValue.isInvalid
+                                                ? BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
+                                                : REQUIRED_FIELD_MSG
+                                        }
+                                    />
+                                </div>
                             </div>
                         )
                     )
