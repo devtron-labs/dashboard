@@ -160,11 +160,13 @@ export default function BranchRegexModal({
                                     value={_regexValue.value}
                                     onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
                                     autoFocus
+                                    error={
+                                        _regexValue.value &&
+                                        _regexValue.isInvalid &&
+                                        renderValidationErrorLabel(BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName) &&
+                                        REQUIRED_FIELD_MSG
+                                    }
                                 />
-                                {_regexValue.value &&
-                                    _regexValue.isInvalid &&
-                                    renderValidationErrorLabel(BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName)}
-                                {!_regexValue.value && renderValidationErrorLabel(REQUIRED_FIELD_MSG)}
                             </div>
                         )
                     )

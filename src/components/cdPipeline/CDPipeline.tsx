@@ -1594,13 +1594,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     isRequiredField={true}
                     value={this.state.pipelineConfig.name}
                     onChange={this.handlePipelineName}
+                    error={
+                        !this.state.errorForm.pipelineNameError.isValid &&
+                        this.state.errorForm.pipelineNameError.message
+                    }
                 />
-                {!this.state.errorForm.pipelineNameError.isValid && (
-                    <span className="form__error">
-                        <img src={error} className="form__icon" />
-                        {this.state.errorForm.pipelineNameError.message}
-                    </span>
-                )}
             </div>
         )
     }

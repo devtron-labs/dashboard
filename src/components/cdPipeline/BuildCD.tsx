@@ -382,14 +382,12 @@ export default function BuildCD({
                             disabled={!namespaceEditable}
                             value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
                             onChange={handleNamespaceChange}
+                            error={
+                                !formDataErrorObj.nameSpaceError.isValid &&
+                                !isVirtualEnvironment &&
+                                formDataErrorObj.nameSpaceError.message
+                            }
                         />
-
-                        {!formDataErrorObj.nameSpaceError.isValid && !isVirtualEnvironment ? (
-                            <span className="form__error">
-                                <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                {formDataErrorObj.nameSpaceError.message}
-                            </span>
-                        ) : null}
                     </div>
                 </div>
                 {renderNamespaceInfo(namespaceEditable)}
