@@ -73,6 +73,7 @@ export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps
     environments: AppEnvironment[]
     isProtected: boolean
     reloadEnvironments: () => void
+    isSuperAdmin: boolean
 }
 
 export interface DeploymentChartVersionType {
@@ -114,6 +115,11 @@ export interface DeploymentConfigFormCTAProps {
     reload: () => void
     isValues?: boolean
     convertVariables?: boolean
+    openLockedDiffDrawer: () => void
+    isSuperAdmin: boolean,
+    showLockedDiffForApproval: boolean
+    setShowLockedDiffForApproval: (show: boolean) => void
+    checkForLockedChanges: (saveEligibleChanges:boolean) => any
 }
 
 export interface CompareWithDropdownProps {
@@ -370,6 +376,7 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     isDraftOverriden: boolean
     unableToParseYaml: boolean
     selectedCompareOption: DeploymentChartOptionType
+    showLockedTemplateDiff: boolean
 }
 
 export enum DeploymentConfigStateActionTypes {
@@ -404,6 +411,7 @@ export enum DeploymentConfigStateActionTypes {
     toggleDialog = 'toggleDialog',
     reset = 'reset',
     toggleSaveChangesModal = 'toggleSaveChangesModal',
+    toggleShowLockedTemplateDiff= 'toggleShowLockedTemplateDiff',
     allDrafts = 'allDrafts',
     publishedState = 'publishedState',
     toggleDraftComments = 'toggleDraftComments',

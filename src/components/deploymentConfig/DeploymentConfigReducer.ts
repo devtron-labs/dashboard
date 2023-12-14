@@ -54,6 +54,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     groupedOptionsDataOverride:[],
     convertVariables: false,
     convertVariablesOverride: false,
+    showLockedTemplateDiff: false,
 }
 
 export const deploymentConfigReducer = (
@@ -127,6 +128,8 @@ export const deploymentConfigReducer = (
             return { ...initDeploymentConfigState }
         case DeploymentConfigStateActionTypes.toggleSaveChangesModal:
             return { ...state, showSaveChangsModal: !state.showSaveChangsModal }
+        case DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff:
+            return { ...state, showLockedTemplateDiff: action.payload }
         case DeploymentConfigStateActionTypes.allDrafts:
             return { ...state, allDrafts: action.payload }
         case DeploymentConfigStateActionTypes.toggleDraftComments:
@@ -150,7 +153,7 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.manifestDataLHS:
             return { ...state, manifestDataLHS: action.payload }
         case DeploymentConfigStateActionTypes.groupedOptionsData:
-            return { ...state, groupedOptionsData: action.payload }   
+            return { ...state, groupedOptionsData: action.payload }
         case DeploymentConfigStateActionTypes.isValuesOverride:
             return { ...state, isValuesOverride: action.payload }
         case DeploymentConfigStateActionTypes.manifestDataLHSOverride:

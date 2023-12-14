@@ -25,15 +25,20 @@ export default function DeploymentConfigFormCTA({
     reload,
     isValues,
     convertVariables,
+    openLockedDiffDrawer,
+    isSuperAdmin,
+    setShowLockedDiffForApproval,
+    showLockedDiffForApproval,
+    checkForLockedChanges
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
     const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
     const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
-
     const getCTATippyContent = () => {
         if (isApprovalPending) {
             if (!hasAccess) {
@@ -53,6 +58,15 @@ export default function DeploymentConfigFormCTA({
             </Tippy>
         )
     }
+    
+    const checkForLockedChangesForApproval = async () => {
+        const res = await checkForLockedChanges(true)
+        res.result.isLockConfigError = false
+        if (res.result.isLockConfigError && isApprovalPending && !approveDisabled && !isSuperAdmin) {
+            setShowLockedDiffForApproval(true)
+            openLockedDiffDrawer()
+        }
+    }
 
     const renderButton = () => {
         return (
@@ -65,6 +79,7 @@ export default function DeploymentConfigFormCTA({
                         _disabled || approveDisabled ? 'disabled' : ''
                     }`}
                     type={_disabled || isApprovalPending ? 'button' : 'submit'}
+                    onClick={checkForLockedChangesForApproval}
                     data-testid={`${
                         !isEnvOverride && !isCiPipeline
                             ? 'base-deployment-template-save-and-next-button'
@@ -191,6 +206,21 @@ export default function DeploymentConfigFormCTA({
             return 'h-64'
         }
     }
+    
+    function approveRequestTippy(children) {
+        return (
+            <ApproveRequestTippy
+                draftId={state.latestDraft.draftId}
+                draftVersionId={state.latestDraft.draftVersionId}
+                resourceName="deployment template"
+                reload={reload}
+                openLockedDiffDrawer={openLockedDiffDrawer}
+                setShowLockedDiffForApproval={setShowLockedDiffForApproval}
+            >
+                <span>{children}</span>
+            </ApproveRequestTippy>
+        )
+    }
 
     return _selectedChart ? (
         <div
@@ -203,14 +233,9 @@ export default function DeploymentConfigFormCTA({
             {!isPublishedMode && (
                 <>
                     {isApprovalPending && state.latestDraft?.canApprove && !approveDisabled && ApproveRequestTippy ? (
-                        <ApproveRequestTippy
-                            draftId={state.latestDraft.draftId}
-                            draftVersionId={state.latestDraft.draftVersionId}
-                            resourceName="deployment template"
-                            reload={reload}
-                        >
+                        <ConditionalWrap condition={!showLockedDiffForApproval} wrap={approveRequestTippy}>
                             {renderButton()}
-                        </ApproveRequestTippy>
+                        </ConditionalWrap>
                     ) : (
                         renderButton()
                     )}

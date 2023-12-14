@@ -61,6 +61,10 @@ export const updateDeploymentTemplate = (request, abortSignal) => {
     })
 }
 
+export const getLockedConfigProtected = (request) => {
+    return post('draft/config/lock/validate', request)
+}
+
 export const saveDeploymentTemplate = (request, abortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE}`
     return post(URL, request)
