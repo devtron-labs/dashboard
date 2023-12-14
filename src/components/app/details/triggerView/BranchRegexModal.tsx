@@ -13,6 +13,7 @@ import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ButtonWithLoader } from '../../../common'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { error } from 'console'
 
 export default function BranchRegexModal({
     material,
@@ -100,6 +101,14 @@ export default function BranchRegexModal({
         onShowCIModal()
     }
 
+    const renderErrorMessage = (regexValue) => {
+        if (regexValue.value && regexValue.isInvalid) {
+            return BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
+        } else if (!regexValue.value) {
+            return REQUIRED_FIELD_MSG
+        } else return ''
+    }
+
     return (
         <>
             {renderBranchRegexMaterialHeader()}
@@ -152,13 +161,7 @@ export default function BranchRegexModal({
                                         value={_regexValue.value}
                                         onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
                                         autoFocus
-                                        error={
-                                            _regexValue.value && _regexValue.isInvalid
-                                                ? BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
-                                                : !_regexValue.value
-                                                ? REQUIRED_FIELD_MSG
-                                                : ''
-                                        }
+                                        error={renderErrorMessage(_regexValue)}
                                     />
                                 </div>
                             </div>
