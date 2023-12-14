@@ -155,7 +155,9 @@ export default function BranchRegexModal({
                                         error={
                                             _regexValue.value && _regexValue.isInvalid
                                                 ? BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
-                                                : REQUIRED_FIELD_MSG
+                                                : !_regexValue.value
+                                                ? REQUIRED_FIELD_MSG
+                                                : ''
                                         }
                                     />
                                 </div>
