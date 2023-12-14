@@ -273,10 +273,10 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     loadAppListOptions = (inputValue: string) => appListOptions(inputValue, false)
 
     getErrorMessage = () => {
-        if (this.state.form.name && !this.state.isValid.name) {
+        if (!this.state.form.name) {
+            return REQUIRED_FIELD_MSG
+        } else if (!this.state.isValid.name) {
             return DUPLICATE_PIPELINE_NAME_VALIDATION
-        } else if (!this.state.form.name) {
-            REQUIRED_FIELD_MSG
         } else return ''
     }
 

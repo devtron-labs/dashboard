@@ -6,7 +6,6 @@ import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbuc
 import { SourceTypeMap } from '../../../../config'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { BranchRegexModalProps } from './types'
 import { TriggerViewContext } from './config'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
@@ -101,10 +100,10 @@ export default function BranchRegexModal({
     }
 
     const getErrorMessage = (regexValue) => {
-        if (regexValue.value && regexValue.isInvalid) {
-            return BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
-        } else if (!regexValue.value) {
+        if (!regexValue.value) {
             return REQUIRED_FIELD_MSG
+        } else if (regexValue.isInvalid) {
+            return BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
         } else return ''
     }
 
