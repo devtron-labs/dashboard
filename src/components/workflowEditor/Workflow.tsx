@@ -422,7 +422,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }
 
         return (
-            // Check if addType sequential is needed here?
             <CDNode
                 key={node.id}
                 x={node.x}
@@ -451,8 +450,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 appName={this.props.appName ?? ''}
-                // Get this line reviewed
-                isLastNode={node.downstreams.length === 0}
+                // Since we only have this correct for CDNodes so using it here only
+                isLastNode={node.isLast}
                 deploymentAppType={node.deploymentAppType}
                 appId={this.props.match.params.appId}
                 getWorkflows={this.props.getWorkflows}
