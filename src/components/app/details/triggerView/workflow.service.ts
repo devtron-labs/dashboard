@@ -8,14 +8,13 @@ import {
     CiPipelineResult,
     Workflow,
     WorkflowResult,
-    PipelineType,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
-import { CommonNodeAttr, TriggerTypeMap, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, TriggerTypeMap, WorkflowNodeType, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { BlackListedCI } from '../../../workflowEditor/types'
 

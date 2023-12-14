@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload, GenericEmptyState, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, GenericEmptyState, useAsync, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import { getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails, getArtifactForJobCi, getCIPipelines } from '../../service'
 import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
@@ -23,7 +23,6 @@ import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
-import { PipelineType } from '../triggerView/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])

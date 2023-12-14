@@ -16,7 +16,6 @@ import { RouteComponentProps } from 'react-router'
 import {
     CIPipelineNodeType,
     NodeAttr,
-    PipelineType,
 } from '../../components/app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
@@ -26,7 +25,13 @@ import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
-import { CommonNodeAttr, AddCDPositions, noop, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CommonNodeAttr,
+    AddCDPositions,
+    noop,
+    WorkflowNodeType,
+    PipelineType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'

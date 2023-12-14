@@ -16,6 +16,7 @@ import {
     TaskErrorObj,
     FilterConditionsListType,
     CDMaterialResponseType,
+    PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
@@ -407,13 +408,6 @@ export interface TriggerViewResponse {
 export interface ApplicationConditionResponse {
     type: string
     message: string
-}
-
-export enum PipelineType {
-    CI_PIPELINE = 'CI_PIPELINE',
-    CD_PIPELINE = 'CD_PIPELINE',
-    WEBHOOK = 'WEBHOOK',
-    LINKED_CD = 'LINKED_CD',
 }
 
 export enum CIPipelineNodeType {

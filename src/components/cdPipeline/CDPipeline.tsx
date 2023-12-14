@@ -28,6 +28,7 @@ import {
     TippyTheme,
     sortCallback,
     DeploymentAppTypes,
+    PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -61,7 +62,6 @@ import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionalWrap, createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
-import { PipelineType } from '../app/details/triggerView/types'
 import {
     DEPLOY_IMAGE_EXTERNALSOURCE,
     EDIT_DEPLOYMENT_PIPELINE,

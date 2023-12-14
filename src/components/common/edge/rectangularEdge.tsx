@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
+import { AddCDPositions, WorkflowNodeType, PipelineType, } from '@devtron-labs/devtron-fe-common-lib'
 import { nodeColors } from './colors'
 import { AddPipelineType } from '../../workflowEditor/types'
-import { PipelineType } from '../../app/details/triggerView/types'
-import { AddCDPositions, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 interface Point {
     x: number

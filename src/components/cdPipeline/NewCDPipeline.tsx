@@ -10,6 +10,7 @@ import {
     showError,
     VariableType,
     VisibleModal,
+    PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -45,7 +46,6 @@ import {
     MULTI_REQUIRED_FIELDS_MSG,
     TOAST_INFO,
 } from '../../config/constantMessaging'
-import { PipelineType } from '../app/details/triggerView/types'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
