@@ -804,6 +804,7 @@ export default function NewCDPipeline({
                         const form = { ...formData }
                         form.clusterName = response.result.deleteResponse?.clusterName
                         setFormData(form)
+                        openDeleteModal()
                         setDeleteDialog(deleteDialogType.showNonCascadeDeleteDialog)
                     } else {
                         toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
@@ -823,8 +824,9 @@ export default function NewCDPipeline({
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
                 if (!force && error.code != 403 && error.code != 412) {
-                    setForceDeleteDialogData(error)
                     hideDeleteModal()
+                    setForceDeleteDialogData(error)
+                    openDeleteModal()
                     setDeleteDialog(deleteDialogType.showForceDeleteDialog)
                 } else {
                     showError(error)
