@@ -314,3 +314,9 @@ export interface WorkflowOptionsModalProps {
     workflows?: WorkflowType[]
     getWorkflows?: () => void
 }
+
+export interface ToggleCDSelectButtonProps {
+    addNewPipelineBlocked: boolean
+    onClickAddNode: (event: any) => void
+    testId: string
+}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { WorkflowNodeType, SelectedNode } from '@devtron-labs/devtron-fe-common-lib'
+import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { NodeAttr } from '../../app/details/triggerView/types'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
 import link from '../../../assets/icons/ic-link.svg'
@@ -153,31 +153,11 @@ export class CINode extends Component<CINodeProps> {
                         {this.renderNodeIcon(isJobCard)}
 
                         {!this.props.isJobView && selectedNodeKey !== currentNodeKey && (
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={
-                                    <span style={{ display: 'block', width: '145px' }}>
-                                        {this.props.addNewPipelineBlocked
-                                            ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                                            : 'Add deployment pipeline'}
-                                    </span>
-                                }
-                            >
-                                <button
-                                    className="flex h-100 pl-6 pr-6 pt-0 pb-0 dc__outline-none-imp bcn-0 dc__no-border dc__hover-b500 pt-4 pb-4 pl-6 pr-6 dc__border-left-n1--important workflow-node__title--top-right-rad-8 workflow-node__title--bottom-right-rad-8 workflow-node__title--add-cd-icon"
-                                    data-testid={`ci-add-deployment-pipeline-button-${this.props.title}`}
-                                    type="button"
-                                    onClick={this.onClickAddNode}
-                                >
-                                    <Add
-                                        className={`icon-dim-12 fcn-6 ${
-                                            this.props.addNewPipelineBlocked ? 'dc__disabled' : ''
-                                        }`}
-                                    />
-                                </button>
-                            </Tippy>
+                            <ToggleCDSelectButton
+                                addNewPipelineBlocked={this.props.addNewPipelineBlocked}
+                                onClickAddNode={this.onClickAddNode}
+                                testId={`ci-add-deployment-pipeline-button-${this.props.title}`}
+                            />
                         )}
                     </div>
                 </div>
