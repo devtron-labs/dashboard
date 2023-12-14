@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { nodeColors } from './colors'
 import { AddPipelineType } from '../../workflowEditor/types'
-import { PipelineType, WorkflowNodeType } from '../../app/details/triggerView/types'
+import { PipelineType } from '../../app/details/triggerView/types'
+import { AddCDPositions, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 interface Point {
     x: number
@@ -11,12 +12,6 @@ interface Point {
 interface Line {
     startNode: Point
     endNode: Point
-}
-
-// TODO: Use from common
-export enum AddCDPositions {
-    LEFT = 'left',
-    RIGHT = 'right',
 }
 
 interface EdgeProps {

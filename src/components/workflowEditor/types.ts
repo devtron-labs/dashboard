@@ -1,4 +1,13 @@
-import { CommonNodeAttr, DeploymentAppTypes, FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CommonNodeAttr,
+    DeploymentAppTypes,
+    FormType,
+    OptionType,
+    StepType,
+    TaskErrorObj,
+    VariableType,
+    WorkflowNodeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import {
@@ -6,7 +15,6 @@ import {
     CdPipelineResult,
     CiPipeline,
     NodeAttr,
-    WorkflowNodeType,
     WorkflowType,
 } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
@@ -212,7 +220,7 @@ export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType>
     postBuildStage?: PipelineBuildStageType
     defaultTag?: string[]
     customTag?: CustomTagType
-    enableCustomTag?: boolean;
+    enableCustomTag?: boolean
     customTagStage?: string
 }
 

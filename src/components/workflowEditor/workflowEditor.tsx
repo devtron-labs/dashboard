@@ -11,6 +11,7 @@ import {
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
+    WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'
@@ -30,7 +31,7 @@ import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
-import { CIPipelineNodeType, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
+import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'

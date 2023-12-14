@@ -1,11 +1,11 @@
-import Tippy from '@tippyjs/react'
 import React from 'react'
+import Tippy from '@tippyjs/react'
+import { WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ConditionalWrap } from '../../common'
 import { WebhookNodeProps } from '../types'
-import { WorkflowNodeType } from '../../app/details/triggerView/types'
 
 export function WebhookNode({
     x,

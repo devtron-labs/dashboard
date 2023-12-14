@@ -5,14 +5,13 @@ import {
     WorkflowResult,
     NodeAttr,
     PipelineType,
-    WorkflowNodeType,
     CiPipeline,
 } from '../app/details/triggerView/types'
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
-import { get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, ResponseType, trash, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppGroupList,
     CIConfigListType,

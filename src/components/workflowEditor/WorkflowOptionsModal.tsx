@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { VisibleModal, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal, showError, stopPropagation, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import selectWorkflowSource from '../../assets/img/select-image-source.png'
 import changeCI from '../../assets/img/change-source.png'
 import {
@@ -14,7 +14,7 @@ import {
 } from './workflowEditor.constants'
 import SourceTypeCard from './SourceTypeCard'
 import { ChangeCIPayloadType, DisableType, WorkflowOptionsModalProps } from './types'
-import { CIPipelineNodeType, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
+import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
 import { importComponentFromFELibrary } from '../common'
 import { saveCDPipeline } from '../cdPipeline/cdPipeline.service'
 import { TriggerType } from '../../config'

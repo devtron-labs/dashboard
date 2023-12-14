@@ -424,15 +424,6 @@ export enum CIPipelineNodeType {
     LINKED_CD = 'LINKED_CD',
 }
 
-export enum WorkflowNodeType {
-    GIT = 'GIT',
-    CI = 'CI',
-    WEBHOOK = 'WEBHOOK',
-    PRE_CD = 'PRECD',
-    CD = 'CD',
-    POST_CD = 'POSTCD',
-}
-
 export interface Task {
     name?: string
     type?: string

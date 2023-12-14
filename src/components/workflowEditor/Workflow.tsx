@@ -17,7 +17,6 @@ import {
     CIPipelineNodeType,
     NodeAttr,
     PipelineType,
-    WorkflowNodeType,
 } from '../../components/app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
@@ -27,14 +26,13 @@ import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
-import { CommonNodeAttr, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, AddCDPositions, noop, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
 import { AddPipelineType, ChangeCIPayloadType, SelectedNode, WorkflowPositionState } from './types'
 import { CHANGE_CI_TOOLTIP } from './workflowEditor.constants'
-import { AddCDPositions } from '../common/edge/rectangularEdge'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { NodeAttr, WorkflowNodeType } from '../../app/details/triggerView/types'
+import { WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { NodeAttr } from '../../app/details/triggerView/types'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'

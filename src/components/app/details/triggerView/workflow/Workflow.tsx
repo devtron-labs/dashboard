@@ -6,11 +6,11 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType, TriggerViewContextType } from '../types'
+import { WorkflowProps, NodeAttr, PipelineType, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
-import { Checkbox, CHECKBOX_VALUE, DeploymentNodeType, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, DeploymentNodeType, noop, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerViewContext } from '../config'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')

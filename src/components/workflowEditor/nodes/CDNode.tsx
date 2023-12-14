@@ -12,11 +12,10 @@ import {
     TOAST_INFO,
     VIEW_DELETION_STATUS,
 } from '../../../config/constantMessaging'
-import { ConfirmationDialog, DeploymentAppTypes, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, DeploymentAppTypes, ServerErrors, showError, WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
 import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
-import { WorkflowNodeType } from '../../app/details/triggerView/types'
 import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
 import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types'
 import { CD_PATCH_ACTION } from '../../cdPipeline/cdPipeline.types'

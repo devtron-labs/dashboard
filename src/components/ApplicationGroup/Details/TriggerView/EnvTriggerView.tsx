@@ -15,6 +15,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     VisibleModal,
+    WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -24,7 +25,6 @@ import {
     CIMaterialRouterProps,
     MATERIAL_TYPE,
     NodeAttr,
-    WorkflowNodeType,
     WorkflowType,
 } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
