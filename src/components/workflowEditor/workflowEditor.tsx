@@ -400,14 +400,19 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         // and compute the maximum y of the bufferNodes and if there are downstreams > 1 then also for maxY, we will check maxY using node.y and depth
         if (selectedNode) {
             // would check if selectedNode.type and selectedNode.id is same as node.id and node.type
-            const _wf = this.state.workflows.find((wf) =>
-                wf.nodes.find(
-                    (wfNode) => String(wfNode.id) === String(selectedNode.id) && wfNode.type === selectedNode.nodeType,
-                ),
-            )
-            const _node = _wf?.nodes.find(
-                (wfNode) => String(wfNode.id) === String(selectedNode.id) && wfNode.type === selectedNode.nodeType,
-            )
+            let _wf = null
+            let _node = null
+            this.state.workflows.forEach((wf) => {
+                if (!_wf) {
+                    _node = wf.nodes?.find(
+                        (wfNode) =>
+                            String(wfNode.id) === String(selectedNode.id) && wfNode.type === selectedNode.nodeType,
+                    )
+                    if (_node) {
+                        _wf = wf
+                    }
+                }
+            })
             if (_node) {
                 const { downstreamNodes } = getAllChildDownstreams(_node, _wf)
                 const firstLevelDownstreamMaxY = getMaxYFromFirstLevelDownstream(_node, _wf)
