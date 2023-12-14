@@ -7,6 +7,7 @@ import {
     showError,
     Progressing,
     multiSelectStyles,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineBuildType, CIPipelineProps, LinkedCIPipelineState } from './types'
 import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
@@ -304,14 +305,14 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     {this.renderCIPipelinesDropdown(null)}
                     {this.state.form.parentCIPipelineId ? (
                         <label className="form__row">
-                            <span className="form__label dc__required-field">Name</span>
-                            <input
-                                className="form__input"
+                            <CustomInput
+                                name="name"
+                                label="Name"
                                 placeholder="Enter pipeline name"
-                                type="text"
                                 value={this.state.form.name}
                                 onChange={this.handleName}
                                 data-testid="pipeline-name-for-linked"
+                                isRequiredField={true}
                             />
                             {!this.state.isValid.name ? (
                                 <span className="form__error">

@@ -12,6 +12,7 @@ import {
     ServerErrors,
     RadioGroup,
     RadioGroupItem,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -235,16 +236,24 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
             return <div style={{ minHeight: "380px" }} className="flex"><Progressing pageLoader /></div>
         }
         else {
-            return <>
-                <label className="form__row">
-                    <span className="form__label dc__required-field">Pipeline Name</span>
-                    <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text"
-                        value={this.state.ciPipeline.name} />
-                </label>
-                {this.renderTriggerType()}
-                {this.renderMaterials()}
-                {this.renderDeleteCIModal()}
-            </>
+            return (
+                <>
+                    <label className="form__row">
+                        <CustomInput
+                            name="name"
+                            label="Pipeline Name"
+                            disabled={!!this.state.ciPipeline.id}
+                            placeholder="Name"
+                            value={this.state.ciPipeline.name}
+                            onChange={() => { }}
+                            isRequiredField={true}
+                        />
+                    </label>
+                    {this.renderTriggerType()}
+                    {this.renderMaterials()}
+                    {this.renderDeleteCIModal()}
+                </>
+            )
         }
     }
 

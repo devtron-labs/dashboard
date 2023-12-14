@@ -28,6 +28,7 @@ import {
     TippyTheme,
     sortCallback,
     DeploymentAppTypes,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -1514,10 +1515,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {renderVirtualEnvironmentInfo()}
                     </div>
                     <div className="flex-1 ml-8">
-                        <span className="form__label">Namespace</span>
-                        <input
-                            className="form__input"
-                            autoComplete="off"
+                        <CustomInput
+                            name="namespace"
+                            label="Namespace"
                             placeholder={getNamespaceplaceholder()}
                             data-testid="cd-pipeline-namespace-textbox"
                             type="text"
@@ -1585,14 +1585,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderPipelineNameInput = () => {
         return (
             <div className="form__row">
-                <label className="form__label dc__required-field">Pipeline Name</label>
-                <input
-                    className="form__input"
-                    autoComplete="off"
+                <CustomInput
+                    name="pipelineName"
+                    label="Pipeline Name"
                     disabled={!!this.state.pipelineConfig.id}
                     data-testid="advance-pipeline-name-textbox"
                     placeholder="Pipeline name"
-                    type="text"
+                    isRequiredField={true}
                     value={this.state.pipelineConfig.name}
                     onChange={this.handlePipelineName}
                 />

@@ -12,6 +12,7 @@ import { TriggerViewContext } from './config'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ButtonWithLoader } from '../../../common'
+import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function BranchRegexModal({
     material,
@@ -150,16 +151,14 @@ export default function BranchRegexModal({
                                         </div>
                                     </span>
                                 </div>
-                                <input
+                                <CustomInput
+                                    name="name"
                                     data-testid={`branch-name-matching-regex-textbox${index}`}
                                     tabIndex={index}
                                     placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
-                                    className="form__input ml-36 w-95"
-                                    name="name"
+                                    rootClassName="ml-36 w-95-imp"
                                     value={_regexValue.value}
                                     onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
-                                    autoFocus
-                                    autoComplete="off"
                                 />
                                 {_regexValue.value &&
                                     _regexValue.isInvalid &&

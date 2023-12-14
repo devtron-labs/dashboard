@@ -25,6 +25,7 @@ import {
     TippyTheme,
     OptionType,
     Progressing,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
@@ -479,10 +480,9 @@ export default function CIDockerFileConfig({
                                         {selectedMaterial?.checkoutPath}
                                     </span>
                                 </Tippy>
-                                <input
+                                <CustomInput
                                     tabIndex={4}
-                                    type="text"
-                                    className="form__input file-name"
+                                    rootClassName="file-name"
                                     data-testid="dockerfile-path-text-box"
                                     placeholder="Dockerfile"
                                     name="dockerfile"
@@ -633,10 +633,10 @@ export default function CIDockerFileConfig({
                                         onChange={handleBuildContextCheckoutPathChange}
                                         isDisabled={configOverrideView && !allowOverride}
                                     />
-                                    <input
+                                    <CustomInput
                                         tabIndex={4}
                                         type="text"
-                                        className="form__input file-name"
+                                        rootClassName="file-name"
                                         data-testid="build-context-path-text-box"
                                         placeholder="Project Path"
                                         name="buildContext"
@@ -646,7 +646,6 @@ export default function CIDockerFileConfig({
                                                 : formState.buildContext.value
                                         }
                                         onChange={handleOnChangeConfig}
-                                        autoComplete="off"
                                         autoFocus={!configOverrideView}
                                         disabled={configOverrideView && !allowOverride}
                                     />

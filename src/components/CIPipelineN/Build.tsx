@@ -3,7 +3,7 @@ import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle, CiPipelineSourceTypeOption } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, Toggle, CiPipelineSourceTypeOption, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
@@ -202,9 +202,9 @@ export function Build({
     const renderPipelineName = () => {
         return (
             <label className="form__row">
-                <span className="form__label dc__required-field">Pipeline Name</span>
-                <input
-                    className="form__input"
+                <CustomInput
+                    name="name"
+                    label="Pipeline Name"
                     data-testid="build-pipeline-name-textbox"
                     autoComplete="off"
                     disabled={!!ciPipeline?.id}
@@ -212,6 +212,7 @@ export function Build({
                     type="text"
                     value={formData.name}
                     onChange={handlePipelineName}
+                    isRequiredField={true}
                 />
                 {formDataErrorObj.name && !formDataErrorObj.name.isValid && (
                     <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
