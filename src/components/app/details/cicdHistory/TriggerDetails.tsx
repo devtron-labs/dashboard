@@ -62,7 +62,7 @@ export const TriggerDetails = React.memo(
         artifact,
         environmentName,
         isJobView,
-        name,
+        workerPodName,
     }: TriggerDetailsType): JSX.Element => {
         return (
             <div className="trigger-details">
@@ -90,7 +90,7 @@ export const TriggerDetails = React.memo(
                         stage={stage}
                         type={type}
                         isJobView={isJobView}
-                        name={name}
+                        workerPodName={workerPodName}
                     />
                 </div>
             </div>
@@ -128,7 +128,7 @@ const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedTyp
 })
 
 const WorkerStatus = React.memo(
-    ({ message, podStatus, stage, name, finishedOn }: WorkerStatusType): JSX.Element | null => {
+    ({ message, podStatus, stage, workerPodName, finishedOn }: WorkerStatusType): JSX.Element | null => {
         if (!message && !podStatus) return null
         // check if finishedOn time is timed out or not
         const isTimedOut = moment(finishedOn).isBefore(moment().subtract(TIMEOUT_VALUE, 'hours'))
@@ -143,7 +143,7 @@ const WorkerStatus = React.memo(
                         {stage === 'DEPLOY' ? (
                             <div className="mr-10">Message</div>
                         ) : showLink ? (
-                            <NavLink to={`${WORKER_POD_BASE_URL}/${name}/logs`} className="anchor">
+                            <NavLink to={`${WORKER_POD_BASE_URL}/${workerPodName}/logs`} className="anchor">
                                 <div className="mr-10">Worker</div>
                             </NavLink>
                         ) : (
@@ -173,7 +173,7 @@ const WorkerStatus = React.memo(
 })
 
 const ProgressingStatus = React.memo(
-    ({ status, message, podStatus, stage, type, finishedOn, name }: ProgressingStatusType): JSX.Element => {
+    ({ status, message, podStatus, stage, type, finishedOn, workerPodName }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
         const { buildId, triggerId, pipelineId } = useParams<{
@@ -223,7 +223,7 @@ const ProgressingStatus = React.memo(
                         podStatus={podStatus}
                         stage={stage}
                         finishedOn={finishedOn}
-                        name={name}
+                        workerPodName={workerPodName}
                     />
                 </div>
                 {abortConfirmation && (
@@ -266,7 +266,7 @@ const CurrentStatus = React.memo(
         stage,
         type,
         isJobView,
-        name,
+        workerPodName,
     }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
@@ -277,7 +277,7 @@ const CurrentStatus = React.memo(
                     stage={stage}
                     type={type}
                     finishedOn={finishedOn}
-                    name={name}
+                    workerPodName={workerPodName}
                 />
             )
         } else {
@@ -289,7 +289,7 @@ const CurrentStatus = React.memo(
                         podStatus={podStatus}
                         stage={stage}
                         finishedOn={finishedOn}
-                        name={name}
+                        workerPodName={workerPodName}
                     />
                 </div>
             )

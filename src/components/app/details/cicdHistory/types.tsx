@@ -206,7 +206,7 @@ export interface TriggerDetailsType {
     artifact?: string
     environmentName?: string
     isJobView?: boolean
-    name?: string
+    workerPodName?: string
 }
 
 export interface TriggerDetailsStatusIconType {
@@ -224,7 +224,7 @@ export interface WorkerStatusType {
     podStatus: string
     stage: DeploymentStageType
     finishedOn?: string
-    name?: string
+    workerPodName?: string
 }
 export interface ProgressingStatusType {
     status: string
@@ -233,7 +233,7 @@ export interface ProgressingStatusType {
     stage: DeploymentStageType
     type: HistoryComponentType
     finishedOn?: string
-    name?: string
+    workerPodName?: string
 }
 
 export interface CurrentStatusType {
@@ -245,7 +245,7 @@ export interface CurrentStatusType {
     stage: DeploymentStageType
     type: HistoryComponentType
     isJobView?: boolean
-    name?: string
+    workerPodName?: string
 }
 
 export interface StartDetailsType {
