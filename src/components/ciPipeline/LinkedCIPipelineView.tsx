@@ -13,6 +13,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     CustomInput,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -245,7 +246,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                             disabled={!!this.state.ciPipeline.id}
                             placeholder="Name"
                             value={this.state.ciPipeline.name}
-                            onChange={() => { }}
+                            onChange={noop}
                             isRequiredField={true}
                         />
                     </label>
