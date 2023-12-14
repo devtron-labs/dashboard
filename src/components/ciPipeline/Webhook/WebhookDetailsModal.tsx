@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ButtonWithLoader } from '../../common'
-import { showError, Progressing, Drawer, InfoColourBar, Reload, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, InfoColourBar, Reload, copyToClipboard, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -31,6 +31,7 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import CodeEditor from '../../CodeEditor/CodeEditor'
+import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 
 export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
@@ -357,10 +358,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                             <Question className="icon-dim-16 ml-6" />
                         </Tippy>
                     </div>
-                    <input
-                        type="text"
+                    <CustomInput
+                        name="api-token"
                         placeholder="Enter API token"
-                        className="bcn-0 dc__no-border form__input"
+                        rootClassName="bcn-0 dc__no-border"
                         onChange={handleTokenChange}
                         value={tryoutAPIToken}
                     />
@@ -443,19 +444,13 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             <div>
                 <div className="mt-16">
                     <div className="mb-8 dc__required-field">Token name</div>
-                    <input
-                        type="text"
-                        className="form__input"
+                    <CustomInput
+                        name="token-name"
                         value={tokenName}
                         onChange={handleTokenNameChange}
                         disabled={!!generatedAPIToken}
+                        error={showTokenNameError && GENERATE_TOKEN_NAME_VALIDATION}
                     />
-                    {showTokenNameError && (
-                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                            <span>Token name is required to generate token</span>
-                        </span>
-                    )}
                     {generatedAPIToken && renderSelectedToken('Generated', generatedAPIToken)}
                 </div>
                 {!generatedAPIToken && (
