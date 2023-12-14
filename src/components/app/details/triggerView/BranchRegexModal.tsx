@@ -159,6 +159,7 @@ export default function BranchRegexModal({
                                     rootClassName="ml-36 w-95-imp"
                                     value={_regexValue.value}
                                     onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
+                                    autoFocus
                                 />
                                 {_regexValue.value &&
                                     _regexValue.isInvalid &&
