@@ -911,7 +911,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     render() {
-        // FIXME: A possible case while selecting position of CI Node, disable change ci button
         if (this.props.configStatus === AppConfigStatus.LOADING || this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }

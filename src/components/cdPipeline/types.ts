@@ -33,4 +33,6 @@ export interface DeleteCDNodeProps {
     deploymentAppType: string
     forceDeleteData: ForceDeleteMessageType
     deleteTitleName: string
+    isLoading?: boolean
+    showConfirmationBar?: boolean
 }

@@ -59,7 +59,7 @@ interface AddCDButtonProps {
     handleAddCD: (position: AddCDPositions) => void
 }
 
-function AddCDButton({ position, addCDButtons, endNode, startNode, handleAddCD }: AddCDButtonProps) {
+function AddCDButton({ position, addCDButtons, endNode, startNode, handleAddCD }: Readonly<AddCDButtonProps>) {
     const referenceNode = position === AddCDPositions.RIGHT ? endNode : startNode
     const handleAddCDClick = () => {
         handleAddCD(position)

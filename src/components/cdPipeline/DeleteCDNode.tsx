@@ -1,10 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
 
-// TODO: Add logic for confirmation dialog
 export default function DeleteCDNode({
     deleteDialog,
     setDeleteDialog,
@@ -15,7 +14,17 @@ export default function DeleteCDNode({
     deploymentAppType,
     forceDeleteData,
     deleteTitleName,
+    isLoading,
+    showConfirmationBar,
 }: Readonly<DeleteCDNodeProps>) {
+    const [deleteInput, setDeleteInput] = useState<string>('')
+    const confirmationText = 'Delete'
+    const deleteTitle = showConfirmationBar ? `Delete Pipeline for '${deleteTitleName}' ?` : `Delete '${deleteTitleName}' ?`
+
+    const handleDeleteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDeleteInput(e.target.value)
+    }
+
     const handleDeletePipeline = (deleteAction: DELETE_ACTION) => {
         switch (deleteAction) {
             case DELETE_ACTION.DELETE:
@@ -67,10 +76,24 @@ export default function DeleteCDNode({
 
     return (
         <DeleteDialog
-            title={`Delete '${deleteTitleName}' ?`}
+            title={deleteTitle}
             description={`Are you sure you want to delete this CD Pipeline from '${appName}' ?`}
             delete={handleDeleteCDNode}
             closeDelete={hideDeleteModal}
-        />
+            apiCallInProgress={isLoading}
+            disabled={deleteInput !== confirmationText}
+        >
+            {showConfirmationBar && (
+                <input
+                    type="text"
+                    disabled={isLoading}
+                    className="form__input mt-12"
+                    data-testId="delete-dialog-input"
+                    placeholder="Type Delete to confirm"
+                    value={deleteInput}
+                    onChange={handleDeleteInputChange}
+                />
+            )}
+        </DeleteDialog>
     )
 }

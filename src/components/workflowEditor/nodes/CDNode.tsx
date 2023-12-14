@@ -25,13 +25,13 @@ import { deleteCDPipeline } from '../../cdPipeline/cdPipeline.service'
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
         super(props)
-        // TODO: Check for their clear state
         this.state = {
             showDeletePipelinePopup: false,
             showDeleteDialog: false,
             deleteDialog: DeleteDialogType.showNormalDeleteDialog,
             forceDeleteData: { forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' },
             clusterName: '',
+            deleteInProgress: false,
         }
     }
 
@@ -85,10 +85,10 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
             appId: +this.props.appId,
             pipeline: {
-                // Check this
                 id: +this.props.id.substring(4),
             },
         }
+        this.setState({ deleteInProgress: true })
         deleteCDPipeline(payload, force, cascadeDelete)
             .then((response) => {
                 if (response.result) {
@@ -116,9 +116,11 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     this.parseErrorIntoForceDelete(error)
                     this.handleHideDeleteModal()
                     this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
-                } else {
-                    showError(error)
                 }
+                showError(error)
+            })
+            .finally(() => {
+                this.setState({ deleteInProgress: false })
             })
     }
 
@@ -304,11 +306,12 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         clusterName={this.state.clusterName}
                         appName={this.props.appName}
                         hideDeleteModal={this.handleHideDeleteModal}
-                        // TODO: Add env override update
                         deleteCD={this.deleteCD}
                         deploymentAppType={this.props.deploymentAppType ?? ''}
                         forceDeleteData={this.state.forceDeleteData}
-                        deleteTitleName={this.props.title}
+                        deleteTitleName={this.props.environmentName}
+                        isLoading={this.state.deleteInProgress}
+                        showConfirmationBar
                     />
                 )}
             </>

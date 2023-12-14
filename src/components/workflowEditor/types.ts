@@ -41,7 +41,6 @@ export interface SelectedNode {
 }
 
 export interface WorkflowPositionState {
-    // would be combination of node type and id
     nodes: CommonNodeAttr[]
     maxY: number
     selectedWorkflowId: number
@@ -193,6 +192,7 @@ export interface CDNodeState {
     deleteDialog: DeleteDialogType
     forceDeleteData: ForceDeleteMessageType
     clusterName: string
+    deleteInProgress: boolean
 }
 
 export interface PipelineBuildStageType {

@@ -105,85 +105,83 @@ export class CINode extends Component<CINodeProps> {
         const currentNodeKey = `${WorkflowNodeType.CI}-${this.props.id ?? ''}`
 
         return (
-            <>
-                <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
-                    <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
-                        {this.props.linkedCount > 0 && (
-                            <Tippy className="default-tt" arrow placement="bottom" content={this.props.linkedCount}>
-                                <span
-                                    className={`link-count ${
-                                        !this.props.isJobView && selectedNodeKey !== currentNodeKey
-                                            ? 'link-count--include-add-cd'
-                                            : ''
-                                    }`}
-                                    data-testid="linked-symbol"
-                                >
-                                    <img src={link} className="icon-dim-12 mr-5" alt="" />
-                                    {this.props.linkedCount}
-                                </span>
+            <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
+                <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
+                    {this.props.linkedCount > 0 && (
+                        <Tippy className="default-tt" arrow placement="bottom" content={this.props.linkedCount}>
+                            <span
+                                className={`link-count ${
+                                    !this.props.isJobView && selectedNodeKey !== currentNodeKey
+                                        ? 'link-count--include-add-cd'
+                                        : ''
+                                }`}
+                                data-testid="linked-symbol"
+                            >
+                                <img src={link} className="icon-dim-12 mr-5" alt="" />
+                                {this.props.linkedCount}
+                            </span>
+                        </Tippy>
+                    )}
+                    <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
+                        {this.props.triggerType}
+                    </div>
+                    {/* TODO: Recheck style */}
+                    <div className="workflow-node__title flex workflow-node__title--no-margin h-100">
+                        <div className="workflow-node__full-width-minus-Icon p-12">
+                            <span className="workflow-node__text-light" data-testid="linked-indication-name">
+                                {!this.props.isJobView && pipeline}
+                            </span>
+                            <Tippy
+                                className="default-tt"
+                                arrow={true}
+                                placement="bottom"
+                                content={this.props.title}
+                            >
+                                <div className="dc__ellipsis-left">{this.props.title}</div>
                             </Tippy>
-                        )}
-                        <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
-                            {this.props.triggerType}
-                        </div>
-                        {/* TODO: Recheck style */}
-                        <div className="workflow-node__title flex workflow-node__title--no-margin h-100">
-                            <div className="workflow-node__full-width-minus-Icon p-12">
-                                <span className="workflow-node__text-light" data-testid="linked-indication-name">
-                                    {!this.props.isJobView && pipeline}
-                                </span>
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={true}
-                                    placement="bottom"
-                                    content={this.props.title}
-                                >
-                                    <div className="dc__ellipsis-left">{this.props.title}</div>
-                                </Tippy>
-                                {this.props.isJobView && (
-                                    <>
-                                        <span className="fw-4 fs-11">
-                                            Env: {env ? env.environment_name : DEFAULT_ENV}
-                                        </span>
-                                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">
-                                            {!env && '(Default)'}
-                                        </span>
-                                    </>
-                                )}
-                            </div>
-                            {this.renderNodeIcon(isJobCard)}
-
-                            {!this.props.isJobView && selectedNodeKey !== currentNodeKey && (
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="top"
-                                    content={
-                                        <span style={{ display: 'block', width: '145px' }}>
-                                            {this.props.addNewPipelineBlocked
-                                                ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
-                                                : 'Add deployment pipeline'}
-                                        </span>
-                                    }
-                                >
-                                    <button
-                                        className="flex h-100 pl-6 pr-6 pt-0 pb-0 dc__outline-none-imp bcn-0 dc__no-border dc__hover-b500 pt-4 pb-4 pl-6 pr-6 dc__border-left-n1--important workflow-node__title--top-right-rad-8 workflow-node__title--bottom-right-rad-8 workflow-node__title--add-cd-icon"
-                                        data-testid={`ci-add-deployment-pipeline-button-${this.props.title}`}
-                                        type="button"
-                                        onClick={this.onClickAddNode}
-                                    >
-                                        <Add
-                                            className={`icon-dim-12 fcn-6 ${
-                                                this.props.addNewPipelineBlocked ? 'dc__disabled' : ''
-                                            }`}
-                                        />
-                                    </button>
-                                </Tippy>
+                            {this.props.isJobView && (
+                                <>
+                                    <span className="fw-4 fs-11">
+                                        Env: {env ? env.environment_name : DEFAULT_ENV}
+                                    </span>
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">
+                                        {!env && '(Default)'}
+                                    </span>
+                                </>
                             )}
                         </div>
+                        {this.renderNodeIcon(isJobCard)}
+
+                        {!this.props.isJobView && selectedNodeKey !== currentNodeKey && (
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={
+                                    <span style={{ display: 'block', width: '145px' }}>
+                                        {this.props.addNewPipelineBlocked
+                                            ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                            : 'Add deployment pipeline'}
+                                    </span>
+                                }
+                            >
+                                <button
+                                    className="flex h-100 pl-6 pr-6 pt-0 pb-0 dc__outline-none-imp bcn-0 dc__no-border dc__hover-b500 pt-4 pb-4 pl-6 pr-6 dc__border-left-n1--important workflow-node__title--top-right-rad-8 workflow-node__title--bottom-right-rad-8 workflow-node__title--add-cd-icon"
+                                    data-testid={`ci-add-deployment-pipeline-button-${this.props.title}`}
+                                    type="button"
+                                    onClick={this.onClickAddNode}
+                                >
+                                    <Add
+                                        className={`icon-dim-12 fcn-6 ${
+                                            this.props.addNewPipelineBlocked ? 'dc__disabled' : ''
+                                        }`}
+                                    />
+                                </button>
+                            </Tippy>
+                        )}
                     </div>
-                </Link>
-            </>
+                </div>
+            </Link>
         )
     }
 
