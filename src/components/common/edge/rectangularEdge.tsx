@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import {
     AddCDPositions,
-    WorkflowNodeType,
-    PipelineType,
     AddPipelineType,
     AddCDButton,
     Point,
     EdgeNodeType,
+    EdgeEndNodeType,
+    handleAddCD,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { nodeColors } from './colors'
 
@@ -18,7 +18,7 @@ interface Line {
 interface EdgeProps {
     // type should not be any but WorkflowNodeType, but node type is something else have to look into it
     startNode: Point & EdgeNodeType
-    endNode: Point & EdgeNodeType
+    endNode: Point & EdgeEndNodeType
     onClickEdge: (event: any) => void
     deleteEdge: () => void
     onMouseOverEdge: (startID: any, endID: any) => void
@@ -134,31 +134,17 @@ export default class Edge extends Component<EdgeProps> {
         }
     }
 
-    getPipelineType = () => {
-        if (this.props.isWebhookCD) {
-            return PipelineType.WEBHOOK
-        }
-
-        if (this.props.startNode.type === WorkflowNodeType.CI) {
-            return PipelineType.CI_PIPELINE
-        }
-
-        return PipelineType.CD_PIPELINE
-    }
-
-    handleAddCD = (position: AddCDPositions) => {
-        if (!this.props.handleCDSelect) {
-            return
-        }
-        const { handleCDSelect, startNode, endNode, workflowId, ciPipelineId, isWebhookCD } = this.props
-        const pipelineType = this.getPipelineType()
-        const addPipelineType =
-            this.props.isParallelEdge && position === AddCDPositions.RIGHT
-                ? AddPipelineType.PARALLEL
-                : AddPipelineType.SEQUENTIAL
-        const endNodeId = !this.props.isParallelEdge && position === AddCDPositions.RIGHT ? endNode.id : null
-
-        handleCDSelect(workflowId, ciPipelineId, pipelineType, startNode.id, isWebhookCD, endNodeId, addPipelineType)
+    handleAddCDClick = (position: AddCDPositions) => {
+        handleAddCD({
+            position,
+            handleCDSelect: this.props.handleCDSelect,
+            startNode: this.props.startNode,
+            endNode: this.props.endNode,
+            workflowId: this.props.workflowId,
+            ciPipelineId: this.props.ciPipelineId,
+            isWebhookCD: this.props.isWebhookCD,
+            isParallelEdge: this.props.isParallelEdge,
+        })
     }
 
     render() {
@@ -184,14 +170,14 @@ export default class Edge extends Component<EdgeProps> {
                     addCDButtons={this.props.addCDButtons}
                     endNode={this.props.endNode}
                     startNode={this.props.startNode}
-                    handleAddCD={this.handleAddCD}
+                    handleAddCD={this.handleAddCDClick}
                 />
                 <AddCDButton
                     position={AddCDPositions.RIGHT}
                     addCDButtons={this.props.addCDButtons}
                     endNode={this.props.endNode}
                     startNode={this.props.startNode}
-                    handleAddCD={this.handleAddCD}
+                    handleAddCD={this.handleAddCDClick}
                 />
             </g>
         )

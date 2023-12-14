@@ -90,18 +90,16 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         deleteCDPipeline(payload, force, cascadeDelete)
             .then((response) => {
                 if (response.result) {
+                    this.handleHideDeleteModal()
+                    this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
                     if (
                         cascadeDelete &&
                         !response.result.deleteResponse?.clusterReachable &&
                         !response.result.deleteResponse?.deleteInitiated
                     ) {
-                        this.handleHideDeleteModal()
-                        this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNonCascadeDeleteDialog)
                     } else {
                         toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
-                        this.handleHideDeleteModal()
-                        this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNormalDeleteDialog)
                         this.props.getWorkflows?.()
                         this.props.reloadEnvironments?.()
