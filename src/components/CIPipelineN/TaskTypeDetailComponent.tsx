@@ -382,9 +382,9 @@ export function TaskTypeDetailComponent() {
                     <div className="mb-12">
                         <div className="row-container">
                             <div className="fw-6 fs-13 lh-32 cn-7 "></div>
-                            <input
-                                style={{ width: '80% !important' }}
-                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            <CustomInput
+                                name="mountCodeToContainerPath"
+                                rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
                                 data-testid="script-mount-container-textbox"
                                 placeholder="Eg file/folder"
@@ -438,37 +438,6 @@ export function TaskTypeDetailComponent() {
                 <OutputDirectoryPath />
             </>
         )
-    }
-
-    const renderDockerScript = () => {
-        if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.DOCKERFILE) {
-            return (
-                <>
-                    <div className="row-container mb-12">
-                        <div className="fw-6 fs-13 lh-32 cn-7 ">Docker path *</div>{' '}
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="form__input bcn-1 w-80"
-                            autoComplete="off"
-                            placeholder="Enter Mount script path"
-                            type="text"
-                        />
-                    </div>
-                    <div className="row-container mb-12">
-                        <Tippy className="default-tt" arrow={false} content="Path where script should be mounted">
-                            <div className="fw-6 fs-13 lh-32 cn-7 ">Mount script at *</div>
-                        </Tippy>
-                        <input
-                            style={{ width: '80% !important' }}
-                            className="form__input bcn-1 w-80"
-                            autoComplete="off"
-                            placeholder="Enter Mount script path"
-                            type="text"
-                        />
-                    </div>
-                </>
-            )
-        }
     }
 
     if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) {
