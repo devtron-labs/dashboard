@@ -133,7 +133,7 @@ const WorkerStatus = React.memo(
         // check if finishedOn time is timed out or not
         const isTimedOut = moment(finishedOn).isBefore(moment().subtract(TIMEOUT_VALUE, 'hours'))
         // finishedOn is 0001-01-01T00:00:00Z when the worker is still running
-        const showLink = true || finishedOn === ZERO_TIME_STRING || !isTimedOut
+        const showLink = finishedOn === ZERO_TIME_STRING || !isTimedOut
 
         return (
             <>
