@@ -18,7 +18,6 @@ export default function DeleteCDNode({
     showConfirmationBar,
 }: Readonly<DeleteCDNodeProps>) {
     const [deleteInput, setDeleteInput] = useState<string>('')
-    const confirmationText = 'Delete'
     const deleteTitle = showConfirmationBar ? `Delete Pipeline for '${deleteTitleName}' ?` : `Delete '${deleteTitleName}' ?`
 
     const handleDeleteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +80,7 @@ export default function DeleteCDNode({
             delete={handleDeleteCDNode}
             closeDelete={hideDeleteModal}
             apiCallInProgress={isLoading}
-            disabled={showConfirmationBar && deleteInput !== confirmationText}
+            disabled={showConfirmationBar && deleteInput !== deleteTitleName}
         >
             {showConfirmationBar && (
                 <input
@@ -89,7 +88,7 @@ export default function DeleteCDNode({
                     disabled={isLoading}
                     className="form__input mt-12"
                     data-testId="delete-dialog-input"
-                    placeholder="Type Delete to confirm"
+                    placeholder={`Please type ${deleteTitleName} to confirm`}
                     value={deleteInput}
                     onChange={handleDeleteInputChange}
                 />
