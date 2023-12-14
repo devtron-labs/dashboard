@@ -81,7 +81,7 @@ export default function DeleteCDNode({
             delete={handleDeleteCDNode}
             closeDelete={hideDeleteModal}
             apiCallInProgress={isLoading}
-            disabled={deleteInput !== confirmationText}
+            disabled={showConfirmationBar && deleteInput !== confirmationText}
         >
             {showConfirmationBar && (
                 <input
