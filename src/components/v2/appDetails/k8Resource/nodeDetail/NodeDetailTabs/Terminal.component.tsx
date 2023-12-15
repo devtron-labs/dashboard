@@ -12,7 +12,7 @@ import {
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import {AppType, TerminalComponentProps, Options, K8sResourcePayloadAppType} from '../../../appDetails.type'
+import {AppType, TerminalComponentProps, Options} from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import {TerminalSelectionListDataType} from './terminal/terminal.type'
@@ -160,7 +160,7 @@ function TerminalComponent({
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
             return (
-                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${getAppTypeCount(appDetails)}`
+                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${getAppTypeCount(appDetails.appType)}`
             )
         }
         return url

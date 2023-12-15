@@ -381,9 +381,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         if (_currentTab === AppListConstants.AppTabs.DEVTRON_APPS) {
             url = buildDevtronAppListUrl()
         } else if (_currentTab === AppListConstants.AppTabs.ARGO_APPS) {
-            buildArgoAppListUrl()
+            url = buildArgoAppListUrl()
         } else {
-            buildHelmAppListUrl()
+            url = buildHelmAppListUrl()
         }
         return `${url}${queryStr ? `?${queryStr}` : location.search}`
     }

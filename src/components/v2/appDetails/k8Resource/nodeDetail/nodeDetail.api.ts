@@ -1,6 +1,6 @@
 import { Routes } from '../../../../../config';
 import { DeploymentAppTypes, post, put, trash } from '@devtron-labs/devtron-fe-common-lib';
-import { AppDetails, AppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
+import { AppDetails, AppType, AppTypeCount, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
 import { ParamsType } from './nodeDetail.type';
 import { getAppTypeCount } from './nodeDetail.util';
 
@@ -101,7 +101,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 name: selectedResource.name,
             },
         },
-        appType: getAppTypeCount(appDetails),
+        appType: getAppTypeCount(appDetails.appType),
         deploymentType:
             appDetails.deploymentAppType === DeploymentAppTypes.HELM
                 ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
@@ -175,12 +175,9 @@ export const getLogsURL = (
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else if (ad.appType === AppType.EXTERNAL_ARGO_APP) {
-        logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${selectedNamespace}&isArgo=true`
+        logsURL += `&clusterId=${ad.clusterId}&appType=${AppTypeCount.EXTERNAL_ARGO_APP}&namespace=${selectedNamespace}&isArgo=true`
     } else {
-        const appType =
-            ad.appType === AppType.DEVTRON_APP
-                ? K8sResourcePayloadAppType.DEVTRON_APP
-                : K8sResourcePayloadAppType.HELM_APP
+        const appType = getAppTypeCount(ad.appType)
         const deploymentType =
             ad.deploymentAppType === DeploymentAppTypes.HELM
                 ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
@@ -211,11 +208,9 @@ const getEphemeralURL = (isResourceBrowserView: boolean, params: ParamsType, app
     if (isResourceBrowserView) {
         url += `?identifier=${params.clusterId}`
     } else if (appType === AppType.EXTERNAL_ARGO_APP) {
-        url += `?identifier=${params.clusterId}&clusterId=${params.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&isArgo=true`
+        url += `?identifier=${params.clusterId}&clusterId=${params.clusterId}&appType=${AppTypeCount.EXTERNAL_ARGO_APP}&isArgo=true`
     } else {
-        url += `?identifier=${appIds}&appType=${
-            appType === AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
-        }`
+        url += `?identifier=${appIds}&appType=${getAppTypeCount(appType)}`
     }
     return url
 }
