@@ -73,18 +73,18 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [appCount, setAppCount] = useState(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
 
-    // on page load
-    useEffect(() => {
-        const getCurrentTab = (): string => {
-            if (params.appType === AppListConstants.AppType.DEVTRON_APPS) {
-                return AppListConstants.AppTabs.DEVTRON_APPS
-            } else if (isExternalArgo) {
-                return AppListConstants.AppTabs.ARGO_APPS
-            } else {
-                return AppListConstants.AppTabs.HELM_APPS
-            }
+    const getCurrentTab = (): string => {
+        if (params.appType === AppListConstants.AppType.DEVTRON_APPS) {
+            return AppListConstants.AppTabs.DEVTRON_APPS
+        } else if (isExternalArgo) {
+            return AppListConstants.AppTabs.ARGO_APPS
+        } else {
+            return AppListConstants.AppTabs.HELM_APPS
         }
-        
+    }
+
+    // on page load
+    useEffect(() => {   
         setCurrentTab(getCurrentTab())
 
         // set search data
@@ -375,17 +375,18 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setDataSyncing(loading)
     }
 
-    const getAppListURL = (queryStr?: string, selectedAppTab?: string): string => {
+    const getAppListURL = (queryStr?: string, selectedAppTab?: string): void => {
         let url = ''
-        const _currentTab = selectedAppTab || currentTab
+        const _currentTab = selectedAppTab ? selectedAppTab : currentTab
         if (_currentTab === AppListConstants.AppTabs.DEVTRON_APPS) {
             url = buildDevtronAppListUrl()
         } else if (_currentTab === AppListConstants.AppTabs.ARGO_APPS) {
             url = buildArgoAppListUrl()
-        } else {
+        } else if (_currentTab === AppListConstants.AppTabs.HELM_APPS) {
             url = buildHelmAppListUrl()
         }
-        return `${url}${queryStr ? `?${queryStr}` : location.search}`
+
+        history.push(`${url}${queryStr ? `?${queryStr}` : ''}`)
     }
 
     const handleAppSearchOperation = (_searchString: string): void => {
@@ -406,7 +407,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         }
 
         let queryStr = queryString.stringify(query)
-        history.push(getAppListURL(queryStr))
+        getAppListURL(queryStr)
     }
 
     /**
@@ -503,7 +504,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['offset'] = 0
         query['hOffset'] = 0
         let queryStr = queryString.stringify(query)
-        history.push(getAppListURL(queryStr, selectedAppTab))
+        getAppListURL(queryStr, selectedAppTab)
     }
 
     const removeFilter = (filter, filterType: string): void => {
@@ -546,7 +547,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
             if (query[queryParamType] == '') delete query[queryParamType]
             let queryStr = queryString.stringify(query)
-            history.push(getAppListURL(queryStr))
+            getAppListURL(queryStr)
         }
     }
 
@@ -570,7 +571,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setSearchString('')
 
         let queryStr = queryString.stringify(query)
-        history.push(getAppListURL(queryStr))
+        getAppListURL(queryStr)
     }
 
     const sortApplicationList = (key: string): void => {
@@ -583,14 +584,23 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['orderBy'] = key
         query['sortOrder'] = query['sortOrder'] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC
         let queryStr = queryString.stringify(query)
-        history.push(getAppListURL(queryStr))
+        getAppListURL(queryStr)
     }
 
     function changeAppTab(appTabType) {
         if (appTabType == currentTab) {
             return
         }
-        history.push(getAppListURL())
+        const getChangeAppTabURL = () => {
+            if (appTabType === AppListConstants.AppTabs.DEVTRON_APPS) {
+                return buildDevtronAppListUrl()
+            } else if (appTabType === AppListConstants.AppTabs.ARGO_APPS) {
+                return buildArgoAppListUrl()
+            } else {
+                return buildHelmAppListUrl()
+            }
+        }
+        history.push(`${getChangeAppTabURL()}${location.search}`)
         setCurrentTab(appTabType)
     }
 
