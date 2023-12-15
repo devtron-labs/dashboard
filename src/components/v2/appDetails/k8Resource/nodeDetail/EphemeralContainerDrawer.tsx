@@ -402,11 +402,13 @@ function EphemeralContainerDrawer({
         )
     }
 
+    const selectedResourceName = appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName )?.namespace
+
     const onSave = () => {
         setLoader(true)
         setShowEphemeralContainerDrawer(true)     
         let payload: ResponsePayload = {
-            namespace: isResourceBrowserView ? selectedNamespaceByClickingPod :  appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName )?.namespace,
+            namespace: isResourceBrowserView ? selectedNamespaceByClickingPod : selectedResourceName, 
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
             podName: isResourceBrowserView ? params.node : params.podName,
         }

@@ -57,12 +57,14 @@ function TerminalComponent({
     const nodeName = isResourceBrowserView ? params.node : params.podName
 
     function Option(props) {
+        
       const { selectProps, data, style } = props
       const getPayload = (containerName: string) => {
+        const selectedResourceName = appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName )?.namespace
         let payload: ResponsePayload = {
           namespace: isResourceBrowserView
           ? selectedResource.namespace
-          : appDetails.namespace,
+          : selectedResourceName,
       clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
       podName: isResourceBrowserView ? params.node : params.podName,
             basicData: {
