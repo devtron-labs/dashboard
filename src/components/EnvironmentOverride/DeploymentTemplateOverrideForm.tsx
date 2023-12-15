@@ -726,7 +726,7 @@ export default function DeploymentTemplateOverrideForm({
                     latestDraft={state.latestDraft}
                     reload={reload}
                     closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
-                    showAsModal={state.showLockedTemplateDiff ? false : true}
+                    showAsModal={!state.showLockedTemplateDiff}
                 />
             )}
             {DeleteOverrideDraftModal && state.showDeleteOverrideDraftModal && (

@@ -856,7 +856,6 @@ export default function DeploymentConfig({
                 convertVariables={state.convertVariables}
                 setConvertVariables={setConvertVariables}
                 groupedData={state.groupedOptionsData}
-                lockedKeysArray={lockedKeysArray}
             />
         )
     }
@@ -952,7 +951,7 @@ export default function DeploymentConfig({
                     {state.showConfirmation && (
                         <SaveConfirmationDialog
                             onSave={save}
-                            showAsModal={state.showLockedTemplateDiff ? false : true}
+                            showAsModal={!state.showLockedTemplateDiff}
                             closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
                         />
                     )}
@@ -977,7 +976,7 @@ export default function DeploymentConfig({
                             latestDraft={state.latestDraft}
                             reload={initialise}
                             closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
-                            showAsModal={state.showLockedTemplateDiff ? false : true}
+                            showAsModal={!state.showLockedTemplateDiff}
                             saveChangesCheckbox={saveChangesCheckbox}
                         />
                     )}
