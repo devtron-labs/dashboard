@@ -390,7 +390,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
         let queryStr = queryString.stringify(query)
         let url = `${
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : currentTab == AppListConstants.AppTabs.ARGO_APPS  ? buildArgoAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS
+                ? buildDevtronAppListUrl()
+                : currentTab == AppListConstants.AppTabs.ARGO_APPS
+                ? buildArgoAppListUrl()
+                : buildHelmAppListUrl()
         }?${queryStr}`
         history.push(url)
     }
@@ -492,7 +496,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         let queryStr = queryString.stringify(query)
         let _currentTab = selectedAppTab || currentTab
         let url = `${
-            _currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : currentTab == AppListConstants.AppTabs.ARGO_APPS  ? buildArgoAppListUrl() : buildHelmAppListUrl()
+            _currentTab == AppListConstants.AppTabs.DEVTRON_APPS
+                ? buildDevtronAppListUrl()
+                : currentTab == AppListConstants.AppTabs.ARGO_APPS
+                ? buildArgoAppListUrl()
+                : buildHelmAppListUrl()
         }?${queryStr}`
         history.push(url)
     }
@@ -538,7 +546,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             if (query[queryParamType] == '') delete query[queryParamType]
             let queryStr = queryString.stringify(query)
             let url = `${
-                currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : currentTab == AppListConstants.AppTabs.ARGO_APPS  ? buildArgoAppListUrl() : buildHelmAppListUrl()
+                currentTab == AppListConstants.AppTabs.DEVTRON_APPS
+                    ? buildDevtronAppListUrl()
+                    : currentTab == AppListConstants.AppTabs.ARGO_APPS
+                    ? buildArgoAppListUrl()
+                    : buildHelmAppListUrl()
             }?${queryStr}`
             history.push(url)
         }
@@ -565,7 +577,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
         let queryStr = queryString.stringify(query)
         let url = `${
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : currentTab == AppListConstants.AppTabs.ARGO_APPS  ? buildArgoAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS
+                ? buildDevtronAppListUrl()
+                : currentTab == AppListConstants.AppTabs.ARGO_APPS
+                ? buildArgoAppListUrl()
+                : buildHelmAppListUrl()
         }?${queryStr}`
         history.push(url)
     }
@@ -581,7 +597,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['sortOrder'] = query['sortOrder'] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC
         let queryStr = queryString.stringify(query)
         let url = `${
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : currentTab == AppListConstants.AppTabs.ARGO_APPS  ? buildArgoAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS
+                ? buildDevtronAppListUrl()
+                : currentTab == AppListConstants.AppTabs.ARGO_APPS
+                ? buildArgoAppListUrl()
+                : buildHelmAppListUrl()
         }?${queryStr}`
         history.push(url)
     }

@@ -55,18 +55,17 @@ function TerminalComponent({
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
     const appDetails = IndexStore.getAppDetails()
     const nodeName = isResourceBrowserView ? params.node : params.podName
-
+    const selectedNamespace = appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName)?.namespace
+    
     function Option(props) {
-        
       const { selectProps, data, style } = props
       const getPayload = (containerName: string) => {
-        const selectedResourceName = appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName )?.namespace
         let payload: ResponsePayload = {
-          namespace: isResourceBrowserView
-          ? selectedResource.namespace
-          : selectedResourceName,
-      clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-      podName: isResourceBrowserView ? params.node : params.podName,
+            namespace: isResourceBrowserView
+                ? selectedResource.namespace
+                : selectedNamespace,
+            clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
+            podName: isResourceBrowserView ? params.node : params.podName,
             basicData: {
                 containerName: containerName,
             },
@@ -148,7 +147,6 @@ function TerminalComponent({
                       appDetails.appName,
                   )
         const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
-        const selectedNamespace = appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName)?.namespace
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
@@ -162,7 +160,15 @@ function TerminalComponent({
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${appDetails.appType === AppType.DEVTRON_APP ?  K8sResourcePayloadAppType.DEVTRON_APP : appDetails.appType === AppType.EXTERNAL_ARGO_APP ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP : K8sResourcePayloadAppType.HELM_APP}`
+            return (
+                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${
+                    appDetails.appType === AppType.DEVTRON_APP
+                        ? K8sResourcePayloadAppType.DEVTRON_APP
+                        : appDetails.appType === AppType.EXTERNAL_ARGO_APP
+                        ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
+                        : K8sResourcePayloadAppType.HELM_APP
+                }`
+            )
         }
         return url
     }

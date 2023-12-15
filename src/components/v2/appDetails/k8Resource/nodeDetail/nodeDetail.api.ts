@@ -20,7 +20,8 @@ export const getManifestResource = (
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
-    const url = Routes.MANIFEST + ((ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView) ? '?isArgo=true' : '')
+    const url =
+        Routes.MANIFEST + (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView ? '?isArgo=true' : '')
     return post(url, requestData)
 }
 
@@ -167,13 +168,14 @@ export const getLogsURL = (
     namespace?: string,
 ) => {
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
+    const selectedNamespace = ad.resourceTree?.nodes?.find((nd) => nd.name === podName || nd.name === nodeName )?.namespace
+
     const appId =
         ad.appType === AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
             : getAppId(ad.clusterId, ad.namespace, applicationObject)
 
     let logsURL = `${window.location.protocol}//${window.location.host}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
-    const selectedNamespace = ad.resourceTree?.nodes?.find((nd) => nd.name === podName || nd.name === nodeName )?.namespace
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else if (ad.appType === AppType.EXTERNAL_ARGO_APP) {
