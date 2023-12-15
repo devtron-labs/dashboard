@@ -355,7 +355,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setDataSyncing(loading)
     }
 
-    const getAppListURL = (queryStr?: string, selectedAppTab?: string): void => {
+    const updateAppListURL = (queryStr?: string, selectedAppTab?: string): void => {
         let url = ''
         const _currentTab = selectedAppTab ? selectedAppTab : currentTab
         if (_currentTab === AppListConstants.AppTabs.DEVTRON_APPS) {
@@ -387,7 +387,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         }
 
         let queryStr = queryString.stringify(query)
-        getAppListURL(queryStr)
+        updateAppListURL(queryStr)
     }
 
     /**
@@ -484,7 +484,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['offset'] = 0
         query['hOffset'] = 0
         let queryStr = queryString.stringify(query)
-        getAppListURL(queryStr, selectedAppTab)
+        updateAppListURL(queryStr, selectedAppTab)
     }
 
     const removeFilter = (filter, filterType: string): void => {
@@ -527,7 +527,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
             if (query[queryParamType] == '') delete query[queryParamType]
             let queryStr = queryString.stringify(query)
-            getAppListURL(queryStr)
+            updateAppListURL(queryStr)
         }
     }
 
@@ -551,7 +551,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setSearchString('')
 
         let queryStr = queryString.stringify(query)
-        getAppListURL(queryStr)
+        updateAppListURL(queryStr)
     }
 
     const sortApplicationList = (key: string): void => {
@@ -564,7 +564,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['orderBy'] = key
         query['sortOrder'] = query['sortOrder'] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC
         let queryStr = queryString.stringify(query)
-        getAppListURL(queryStr)
+        updateAppListURL(queryStr)
     }
 
     function changeAppTab(appTabType) {

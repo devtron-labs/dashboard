@@ -27,7 +27,7 @@ export enum AppType {
     EXTERNAL_ARGO_APP = 'external_argo_app'
 }
 
-export enum AppTypeCount {
+export enum K8sResourcePayloadAppType {
     DEVTRON_APP = 0,
     HELM_APP = 1,
     EXTERNAL_ARGO_APP = 2

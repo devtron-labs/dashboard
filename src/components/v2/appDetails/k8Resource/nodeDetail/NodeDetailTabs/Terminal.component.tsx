@@ -5,7 +5,7 @@ import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
 import { getCustomOptionSelectionStyle } from '../../../../common/ReactSelect.utils'
 import {
-    getAppTypeCount,
+    getK8sResourcePayloadAppType,
     getContainerSelectStyles,
     getGroupedContainerOptions,
     getShellSelectStyles,
@@ -160,7 +160,7 @@ function TerminalComponent({
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
             return (
-                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${getAppTypeCount(appDetails.appType)}`
+                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
             )
         }
         return url
