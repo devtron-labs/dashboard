@@ -18,7 +18,7 @@ export interface AppListResponse extends ResponseType {
 
 interface AppsListResult {
     clusterIds: number[]
-    applicationType: string //DEVTRON-CHART-STORE, DEVTRON-APP ,HELM-APP
+    applicationType: string 
     errored: boolean
     errorMsg: string
     helmApps: HelmApp[]

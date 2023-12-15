@@ -1,6 +1,6 @@
 import { getNamespaceListMin as getNamespaceList, getAppFilters } from '../../../services/service';
 import {Routes, SERVER_MODE} from '../../../config';
-import {get, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
+import {get} from '@devtron-labs/devtron-fe-common-lib';
 import { EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
 import { APP_STATUS } from '../config';
 import { getProjectList } from '../../project/service';
@@ -154,7 +154,7 @@ export const getNamespaces = (clusterIdCsv : string, clusterVsNamespaceMap : Map
 }
 
 export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string) : Promise<AppListResponse> => {
-    let url = `${Routes.CHART_INSTALLED}`
+    let url = Routes.CHART_INSTALLED
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
     }
@@ -172,7 +172,7 @@ export const getArgoInstalledExternalApps = (clusterIdsCsv: string, appStatuses?
     if (appStatuses) {
         url = `${url}${clusterIdsCsv ? '&' : '?'}appStatuses=${appStatuses}`
     }
-    return get(url);
+    return get(url)
 }
 
 const sortByLabel = (a, b) => {

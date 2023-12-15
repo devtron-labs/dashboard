@@ -48,7 +48,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [syncListData, setSyncListData] = useState<boolean>()
-    const [projectMap, setProjectMap] = useState(new Map());
+    const [projectMap, setProjectMap] = useState(new Map())
 
     // check for external argoCD app
     const isExternalArgo = location.pathname === `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
@@ -371,6 +371,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setDataSyncing(loading)
     }
 
+    const getAppListURL = (queryStr?: string, selectedAppTab?: string): string => {
+        let url = ''
+        const _currentTab = selectedAppTab || currentTab
+        if (_currentTab === AppListConstants.AppTabs.DEVTRON_APPS) {
+            url = buildDevtronAppListUrl()
+        } else if (_currentTab === AppListConstants.AppTabs.ARGO_APPS) {
+            buildArgoAppListUrl()
+        } else {
+            buildHelmAppListUrl()
+        }
+        return `${url}${queryStr ? `?${queryStr}` : ''}`
+    }
+
     const handleAppSearchOperation = (_searchString: string): void => {
         let qs = queryString.parse(location.search)
         let keys = Object.keys(qs)
@@ -389,14 +402,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         }
 
         let queryStr = queryString.stringify(query)
-        let url = `${
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS
-                ? buildDevtronAppListUrl()
-                : currentTab == AppListConstants.AppTabs.ARGO_APPS
-                ? buildArgoAppListUrl()
-                : buildHelmAppListUrl()
-        }?${queryStr}`
-        history.push(url)
+        history.push(getAppListURL(queryStr))
     }
 
     /**
@@ -412,7 +418,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         filterType: string,
         query: Record<string, string>,
     ): string => {
-
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
@@ -494,15 +499,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['offset'] = 0
         query['hOffset'] = 0
         let queryStr = queryString.stringify(query)
-        let _currentTab = selectedAppTab || currentTab
-        let url = `${
-            _currentTab == AppListConstants.AppTabs.DEVTRON_APPS
-                ? buildDevtronAppListUrl()
-                : currentTab == AppListConstants.AppTabs.ARGO_APPS
-                ? buildArgoAppListUrl()
-                : buildHelmAppListUrl()
-        }?${queryStr}`
-        history.push(url)
+        history.push(getAppListURL(queryStr, selectedAppTab))
     }
 
     const removeFilter = (filter, filterType: string): void => {
@@ -545,14 +542,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
             if (query[queryParamType] == '') delete query[queryParamType]
             let queryStr = queryString.stringify(query)
-            let url = `${
-                currentTab == AppListConstants.AppTabs.DEVTRON_APPS
-                    ? buildDevtronAppListUrl()
-                    : currentTab == AppListConstants.AppTabs.ARGO_APPS
-                    ? buildArgoAppListUrl()
-                    : buildHelmAppListUrl()
-            }?${queryStr}`
-            history.push(url)
+            history.push(getAppListURL(queryStr))
         }
     }
 
@@ -576,14 +566,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setSearchString('')
 
         let queryStr = queryString.stringify(query)
-        let url = `${
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS
-                ? buildDevtronAppListUrl()
-                : currentTab == AppListConstants.AppTabs.ARGO_APPS
-                ? buildArgoAppListUrl()
-                : buildHelmAppListUrl()
-        }?${queryStr}`
-        history.push(url)
+        history.push(getAppListURL(queryStr))
     }
 
     const sortApplicationList = (key: string): void => {
@@ -596,14 +579,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['orderBy'] = key
         query['sortOrder'] = query['sortOrder'] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC
         let queryStr = queryString.stringify(query)
-        let url = `${
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS
-                ? buildDevtronAppListUrl()
-                : currentTab == AppListConstants.AppTabs.ARGO_APPS
-                ? buildArgoAppListUrl()
-                : buildHelmAppListUrl()
-        }?${queryStr}`
-        history.push(url)
+        history.push(getAppListURL(queryStr))
     }
 
     function changeAppTab(appTabType) {
@@ -714,7 +690,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     function renderMasterFilters() {
         let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
-        const appStatusFilters = (params.appType === AppListConstants.AppType.HELM_APPS) ? masterFilters.appStatus.slice(0,masterFilters.appStatus.length - 1) : masterFilters.appStatus
+        const appStatusFilters =
+            params.appType === AppListConstants.AppType.HELM_APPS
+                ? masterFilters.appStatus.slice(0, masterFilters.appStatus.length - 1)
+                : masterFilters.appStatus
         const showExportCsvButton =
             userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
             currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
@@ -732,7 +711,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             autoComplete="off"
                             value={searchString}
                             placeholder={`${
-                                currentTab == AppListConstants.AppTabs.DEVTRON_APPS
+                                currentTab === AppListConstants.AppTabs.DEVTRON_APPS
                                     ? 'Search by app name'
                                     : 'Search by app or chart name'
                             }`}
@@ -928,7 +907,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         <li className="tab-list__tab">
                             <a
                                 className={`tab-list__tab-link ${
-                                    currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
+                                    currentTab === AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
                                 }`}
                                 onClick={() => changeAppTab(AppListConstants.AppTabs.DEVTRON_APPS)}
                             >
@@ -939,7 +918,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     <li className="tab-list__tab">
                         <a
                             className={`tab-list__tab-link ${
-                                currentTab == AppListConstants.AppTabs.HELM_APPS ? 'active' : ''
+                                currentTab === AppListConstants.AppTabs.HELM_APPS ? 'active' : ''
                             }`}
                             onClick={() => changeAppTab(AppListConstants.AppTabs.HELM_APPS)}
                             data-testid="helm-app-list-button"
@@ -950,7 +929,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     <li className="tab-list__tab">
                         <a
                             className={`tab-list__tab-link ${
-                                currentTab == AppListConstants.AppTabs.ARGO_APPS ? 'active' : ''
+                                currentTab === AppListConstants.AppTabs.ARGO_APPS ? 'active' : ''
                             }`}
                             onClick={() => changeAppTab(AppListConstants.AppTabs.ARGO_APPS)}
                             data-testid="helm-app-list-button"
@@ -1020,100 +999,103 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         )
     }
 
-    return (
-        <div>
-            {dataStateType === AppListViewType.ERROR ? (
-                <div className="h-100 flex">
-                    <ErrorScreenManager code={errorResponseCode} />
+    const renderAppListBody = () => {
+        if (dataStateType === AppListViewType.LOADING) {
+            return (
+                <div className="dc__height-reduce-172">
+                    <Progressing pageLoader />
                 </div>
-            ) : (
+            )
+        }
+        if (params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.FULL) {
+            return (
+                <DevtronAppListContainer
+                    payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                    environmentClusterList={environmentClusterListRes}
+                    clearAllFilters={removeAllFilters}
+                    sortApplicationList={sortApplicationList}
+                    appListCount={appListCount}
+                    isSuperAdmin={isSuperAdmin}
+                    openDevtronAppCreateModel={openDevtronAppCreateModel}
+                    setAppCount={setAppCount}
+                    updateDataSyncing={updateDataSyncing}
+                    isArgoInstalled={isArgoInstalled}
+                />
+            )
+        } else if (params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.EA_ONLY) {
+            return (
+                <div style={{ height: 'calc(100vh - 250px)' }}>
+                    <EAEmptyState
+                        title="Create, build, deploy and debug custom apps"
+                        msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
+                        stateType={EAEmptyStateType.DEVTRONAPPS}
+                        knowMoreLink={DOCUMENTATION.HOME_PAGE}
+                    />
+                </div>
+            )
+        } else if (params.appType === AppListConstants.AppType.HELM_APPS) {
+            return (
                 <>
-                    <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
-                    {renderMasterFilters()}
-                    {renderAppliedFilters()}
-                    {renderAppTabs()}
-                    {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
-                    {dataStateType === AppListViewType.LOADING && (
-                        <div className="dc__height-reduce-172">
-                            <Progressing pageLoader />
+                    <HelmAppList
+                        serverMode={serverMode}
+                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                        sortApplicationList={sortApplicationList}
+                        clearAllFilters={removeAllFilters}
+                        fetchingExternalApps={fetchingExternalApps}
+                        setFetchingExternalAppsState={setFetchingExternalAppsState}
+                        updateDataSyncing={updateDataSyncing}
+                        setShowPulsatingDotState={setShowPulsatingDotState}
+                        masterFilters={masterFilters}
+                        syncListData={syncListData}
+                        isArgoInstalled={isArgoInstalled}
+                    />
+                    {fetchingExternalApps && (
+                        <div className="mt-16">
+                            <Progressing size={32} />
                         </div>
                     )}
-                    {dataStateType === AppListViewType.LIST && (
-                        <>
-                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
-                                serverMode === SERVER_MODE.FULL && (
-                                    <DevtronAppListContainer
-                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                        environmentClusterList={environmentClusterListRes}
-                                        clearAllFilters={removeAllFilters}
-                                        sortApplicationList={sortApplicationList}
-                                        appListCount={appListCount}
-                                        isSuperAdmin={isSuperAdmin}
-                                        openDevtronAppCreateModel={openDevtronAppCreateModel}
-                                        setAppCount={setAppCount}
-                                        updateDataSyncing={updateDataSyncing}
-                                        isArgoInstalled={isArgoInstalled}
-                                    />
-                                )}
-                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
-                                serverMode === SERVER_MODE.EA_ONLY && (
-                                    <div style={{ height: 'calc(100vh - 250px)' }}>
-                                        <EAEmptyState
-                                            title="Create, build, deploy and debug custom apps"
-                                            msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
-                                            stateType={EAEmptyStateType.DEVTRONAPPS}
-                                            knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                                        />
-                                    </div>
-                                )}
-                            {params.appType === AppListConstants.AppType.HELM_APPS && (
-                                <>
-                                    <HelmAppList
-                                        serverMode={serverMode}
-                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                        sortApplicationList={sortApplicationList}
-                                        clearAllFilters={removeAllFilters}
-                                        fetchingExternalApps={fetchingExternalApps}
-                                        setFetchingExternalAppsState={setFetchingExternalAppsState}
-                                        updateDataSyncing={updateDataSyncing}
-                                        setShowPulsatingDotState={setShowPulsatingDotState}
-                                        masterFilters={masterFilters}
-                                        syncListData={syncListData}
-                                        isArgoInstalled={isArgoInstalled}
-                                    />
-                                    {fetchingExternalApps && (
-                                        <div className="mt-16">
-                                            <Progressing size={32} />
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                             {params.appType === AppListConstants.AppType.ARGO_APPS && (
-                                <>
-                                    <ExternalArgoList
-                                        serverMode={serverMode}
-                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                        sortApplicationList={sortApplicationList}
-                                        clearAllFilters={removeAllFilters}
-                                        fetchingExternalApps={fetchingExternalApps}
-                                        setFetchingExternalAppsState={setFetchingExternalAppsState}
-                                        updateDataSyncing={updateDataSyncing}
-                                        setShowPulsatingDotState={setShowPulsatingDotState}
-                                        masterFilters={masterFilters}
-                                        syncListData={syncListData}
-                                        isArgoInstalled={isArgoInstalled}
-                                    />
-                                    {fetchingExternalApps && (
-                                        <div className="mt-16">
-                                            <Progressing size={32} />
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        </>
+                </>
+            )
+        } else if (params.appType === AppListConstants.AppType.ARGO_APPS) {
+            return (
+                <>
+                    <ExternalArgoList
+                        serverMode={serverMode}
+                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                        sortApplicationList={sortApplicationList}
+                        clearAllFilters={removeAllFilters}
+                        fetchingExternalApps={fetchingExternalApps}
+                        setFetchingExternalAppsState={setFetchingExternalAppsState}
+                        updateDataSyncing={updateDataSyncing}
+                        setShowPulsatingDotState={setShowPulsatingDotState}
+                        masterFilters={masterFilters}
+                        syncListData={syncListData}
+                        isArgoInstalled={isArgoInstalled}
+                    />
+                    {fetchingExternalApps && (
+                        <div className="mt-16">
+                            <Progressing size={32} />
+                        </div>
                     )}
                 </>
-            )}
+            )
+        }
+    }
+
+    if (dataStateType === AppListViewType.ERROR) {
+        return <div className="h-100 flex">
+            <ErrorScreenManager code={errorResponseCode} />
         </div>
+    }
+
+    return (
+        <>
+            <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
+            {renderMasterFilters()}
+            {renderAppliedFilters()}
+            {renderAppTabs()}
+            {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
+            {renderAppListBody()}
+        </>
     )
 }

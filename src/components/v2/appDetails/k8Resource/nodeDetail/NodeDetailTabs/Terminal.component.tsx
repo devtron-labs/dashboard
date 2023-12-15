@@ -60,18 +60,16 @@ function TerminalComponent({
     function Option(props) {
       const { selectProps, data, style } = props
       const getPayload = (containerName: string) => {
-        let payload: ResponsePayload = {
-            namespace: isResourceBrowserView
-                ? selectedResource.namespace
-                : selectedNamespace,
-            clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-            podName: isResourceBrowserView ? params.node : params.podName,
-            basicData: {
-                containerName: containerName,
-            },
-        }
-        return payload
-    }
+          let payload: ResponsePayload = {
+              namespace: isResourceBrowserView ? selectedResource.namespace : selectedNamespace,
+              clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
+              podName: isResourceBrowserView ? params.node : params.podName,
+              basicData: {
+                  containerName: containerName,
+              },
+          }
+          return payload
+      }
 
       const deleteEphemeralContainer = (containerName: string) => {
           deleteEphemeralUrl(
@@ -137,6 +135,16 @@ function TerminalComponent({
       return getOption()
   }
 
+  const getAppTypeCount = () => {
+      if (appDetails.appType === AppType.DEVTRON_APP) {
+        return  K8sResourcePayloadAppType.DEVTRON_APP
+      } else if (appDetails.appType === AppType.EXTERNAL_ARGO_APP) {
+         return K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
+      } else {
+         return K8sResourcePayloadAppType.HELM_APP
+      }
+  }
+
     const generateSessionURL = () => {
         const appId =
             appDetails.appType == AppType.DEVTRON_APP
@@ -161,13 +169,7 @@ function TerminalComponent({
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
             return (
-                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${
-                    appDetails.appType === AppType.DEVTRON_APP
-                        ? K8sResourcePayloadAppType.DEVTRON_APP
-                        : appDetails.appType === AppType.EXTERNAL_ARGO_APP
-                        ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
-                        : K8sResourcePayloadAppType.HELM_APP
-                }`
+                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${getAppTypeCount()}`
             )
         }
         return url
