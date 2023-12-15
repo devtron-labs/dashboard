@@ -50,10 +50,7 @@ function ExternalArgoAppDetail({ appName, clusterId, isExternalApp, namespace }:
         isAPICallInProgress = true
         getArgoAppDetail(appName, clusterId, namespace)
             .then((appDetailResponse) => {
-                IndexStore.publishAppDetails(
-                    appDetailResponse.result,
-                    AppType.EXTERNAL_ARGO_APP,
-                )
+                IndexStore.publishAppDetails(appDetailResponse.result, AppType.EXTERNAL_ARGO_APP)
                 setErrorResponseCode(undefined)
                 setIsLoading(false)
             })
@@ -65,30 +62,27 @@ function ExternalArgoAppDetail({ appName, clusterId, isExternalApp, namespace }:
             })
     }
 
+    if (isLoading) {
+        return (
+            <div className="dc__loading-wrapper">
+                <Progressing pageLoader />
+            </div>
+        )
+    } else if (errorResponseCode) {
+        return (
+            <div className="dc__loading-wrapper">
+                <ErrorScreenManager code={errorResponseCode} />
+            </div>
+        )
+    }
+
     return (
-        <>
-            {isLoading && (
-                <div className="dc__loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
-            )}
-
-            {!isLoading && errorResponseCode && (
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={errorResponseCode} />
-                </div>
-            )}
-
-            {!isLoading && !errorResponseCode && (
-                <AppDetailsComponent
-                    isExternalApp={isExternalApp}
-                    loadingDetails={false}
-                    _init={_init}
-                    loadingResourceTree={false}
-                    appType={AppType.EXTERNAL_ARGO_APP}
-                />
-            )}
-        </>
+        <AppDetailsComponent
+            isExternalApp={isExternalApp}
+            loadingDetails={false}
+            _init={_init}
+            loadingResourceTree={false}
+        />
     )
 }
 

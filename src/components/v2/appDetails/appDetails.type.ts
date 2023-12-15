@@ -524,3 +524,11 @@ export interface NodeComponentProps {
     isDevtronApp?:boolean
     isExternalApp?: boolean
 }
+export interface AppDetailsComponentType{
+    externalLinks?: ExternalLink[]
+    monitoringTools?: OptionTypeWithIcon[]
+    isExternalApp: boolean
+    _init?: () => void
+    loadingDetails: boolean
+    loadingResourceTree: boolean
+}

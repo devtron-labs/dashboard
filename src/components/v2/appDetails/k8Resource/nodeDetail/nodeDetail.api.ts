@@ -208,6 +208,20 @@ export const createResource = (
     return post(Routes.CREATE_RESOURCE, requestData)
 }
 
+const getEphemeralURL = (isResourceBrowserView: boolean, params: ParamsType, appType: string, appIds: string) => {
+    let url: string = Routes.EPHEMERAL_CONTAINERS
+    if (isResourceBrowserView) {
+        url += `?identifier=${params.clusterId}`
+    } else if (appType === AppType.EXTERNAL_ARGO_APP) {
+        url += `?identifier=${params.clusterId}&clusterId=${params.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&isArgo=true`
+    } else {
+        url += `?identifier=${appIds}&appType=${
+            appType === AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
+        }`
+    }
+    return url
+}
+
 export const generateEphemeralUrl = (
     requestData,
     clusterId: number,
@@ -223,15 +237,8 @@ export const generateEphemeralUrl = (
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
-    let url: string = Routes.EPHEMERAL_CONTAINERS
-    if (isResourceBrowserView) {
-        url += `?identifier=${params.clusterId}`
-    } else if (appType === AppType.EXTERNAL_ARGO_APP) {
-        url += `?identifier=${params.clusterId}&clusterId=${params.clusterId}&appType=2&isArgo=true`
-    }else {
-        url += `?identifier=${appIds}&appType=${appType === AppType.DEVTRON_APP ? '0' : '1'}`
-    }
 
+    let url = getEphemeralURL(isResourceBrowserView, params, appType, appIds)
     return post(url, requestData)
 }
 
@@ -251,14 +258,6 @@ export const deleteEphemeralUrl = (
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
 
-    let url: string = Routes.EPHEMERAL_CONTAINERS
-    const appTypes = appType === AppType.DEVTRON_APP ? '0' : appType === AppType.EXTERNAL_ARGO_APP ? '2' : '1'
-    if (isResourceBrowserView) {
-        url += `?identifier=${params.clusterId}`
-    } else if (appType === AppType.EXTERNAL_ARGO_APP) {
-        url += `?clusterId=${params.clusterId}`
-    } else {
-        url += `?identifier=${appIds}&appType=${appTypes}`
-    }
+    let url = getEphemeralURL(isResourceBrowserView, params, appType, appIds)
     return trash(url, requestData)
 }

@@ -11,10 +11,13 @@ import ChartValuesView from '../v2/values/chartValuesDiff/ChartValuesView'
 export default function ExternalApps() {
     const params = useParams<{ appId: string; appName: string }>()
     const { path } = useRouteMatch()
-    const redirectURL = `${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`
     return (
         <React.Fragment>
-            <EAHeaderComponent title={AppListConstants.AppTabs.HELM_APPS} redirectURL={redirectURL} appType={AppListConstants.AppType.HELM_APPS}/>
+            <EAHeaderComponent
+                title={AppListConstants.AppTabs.HELM_APPS}
+                redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
+                appType={AppListConstants.AppType.HELM_APPS}
+            />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DETAILS}`}>

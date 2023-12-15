@@ -10,7 +10,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
-import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService'
+import { buildClusterVsNamespace, getDevtronInstalledHelmApps } from './AppListService'
 import { Pagination, LazyImage, handleUTCTime } from '../../common'
 import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
@@ -47,6 +47,7 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { AppListColumnSort } from '../types'
+import { AppListResponse, HelmApp } from './AppListType'
 
 export default function HelmAppList({
     serverMode,

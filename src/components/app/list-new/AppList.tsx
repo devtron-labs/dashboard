@@ -50,7 +50,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [syncListData, setSyncListData] = useState<boolean>()
     const [projectMap, setProjectMap] = useState(new Map());
 
-    // Is argoCD external app
+    // check for external argoCD app
     const isExternalArgo = location.pathname === `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
 
     // API master data

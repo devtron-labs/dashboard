@@ -59,16 +59,18 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                 ) : (
                     ''
                 )}
-                {!isExternalArgoApp && <span
-                    data-testid="delete-resource-button"
-                    className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                    onClick={(e) => {
-                        setShowDeleteConfirmation(true)
-                    }}
-                >
-                    <span>Delete</span>
-                    <Trash className="icon-dim-20 scr-5" />
-                </span>}
+                {!isExternalArgoApp && (
+                    <span
+                        data-testid="delete-resource-button"
+                        className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
+                        onClick={(e) => {
+                            setShowDeleteConfirmation(true)
+                        }}
+                    >
+                        <span>Delete</span>
+                        <Trash className="icon-dim-20 scr-5" />
+                    </span>
+                )}
             </div>
         )
     }

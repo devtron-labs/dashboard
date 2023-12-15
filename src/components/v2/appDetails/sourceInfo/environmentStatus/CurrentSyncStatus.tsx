@@ -1,9 +1,8 @@
-import Tippy from '@tippyjs/react'
 import React from 'react'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
 
 function CurrentSyncStatus({ status, loadingResourceTree }) {
-
     const renderStatusBlock = () => {
         return (
             <div className="app-status-card bcn-0 mr-12 br-8 p-16 cursor  ">
@@ -36,7 +35,7 @@ function CurrentSyncStatus({ status, loadingResourceTree }) {
             </div>
         )
     }
-    return <div>{renderStatusBlock}</div>
+    return renderStatusBlock()
 }
 
 export default CurrentSyncStatus

@@ -1,7 +1,7 @@
 import {get, post, put, trash, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
 import {Routes} from '../../config';
-import {HelmApp, AppEnvironmentDetail} from '../app/list-new/AppListService';
 import {ResourceTree} from '../v2/appDetails/appDetails.type';
+import { AppEnvironmentDetail, HelmApp } from '../app/list-new/AppListType';
 
 export interface ReleaseInfoResponse extends ResponseType {
     result?: ReleaseAndInstalledAppInfo
@@ -120,8 +120,7 @@ export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
 }
 
 export const getArgoAppDetail = (appName: string, clusterId: string, namespace: string) => {
-    let url = `${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`
-    return get(url);
+    return get(`${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`);
 }
 
 export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {

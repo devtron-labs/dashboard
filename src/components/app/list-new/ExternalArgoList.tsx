@@ -9,7 +9,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
-import { buildClusterVsNamespace, getArgoInstalledExternalApps, ArgoAppListResult } from './AppListService'
+import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
 import { Pagination, LazyImage } from '../../common'
 import { URLS } from '../../../config'
 import { AppListViewType } from '../config'
@@ -17,7 +17,6 @@ import { Link } from 'react-router-dom'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import { Empty } from '../list/emptyView/Empty'
-import { AllCheckModal } from '../../checkList/AllCheckModal'
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import '../list/list.scss'
@@ -31,6 +30,7 @@ import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
 import { ExternalArgoListType } from '../types'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
+import { ArgoAppListResult } from './AppListType'
 
 export default function ExternalArgoList({
     payloadParsedFromUrl,
@@ -61,7 +61,7 @@ export default function ExternalArgoList({
         init()
     }, [])
 
-    // it means filter/sorting has been applied
+    // filtering/sorting has been applied
     useEffect(() => {
         if (dataStateType === AppListViewType.LIST) {
             if (clusterIdsCsv === _getClusterIdsFromRequestUrl() && appStatus === _getAppStatusFromRequestUrl()) {
@@ -72,7 +72,7 @@ export default function ExternalArgoList({
         }
     }, [payloadParsedFromUrl])
 
-    // on data rendering first time
+    // Mount on data rendering first time
     useEffect(() => {
         if (dataStateType == AppListViewType.LIST) {
             handleFilteration()
@@ -174,7 +174,7 @@ export default function ExternalArgoList({
     }
 
     function _buildAppDetailUrl(app: ArgoAppListResult) {
-        return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/cluster/${app.clusterId}/app/${app.appName}/namespace/${app.namespace}`
+        return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
     }
 
     function sortByAppName(e) {
@@ -223,7 +223,7 @@ export default function ExternalArgoList({
         )
     }
 
-    const renderArgoAppLink = (app: ArgoAppListResult): JSX.Element => {
+    const renderArgoListRow = (app: ArgoAppListResult): JSX.Element => {
         return (
             <Link key={app.appName} to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
                 <div className="app-list__cell--icon">
@@ -266,11 +266,10 @@ export default function ExternalArgoList({
     function renderApplicationList() {
         return (
             <div data-testid="external-argo-list-container">
-                {filteredArgoAppsList.length > 0 && renderHeaders()}
-
+                {renderHeaders()}
                 {filteredArgoAppsList
                     .slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size)
-                    .map((app) => renderArgoAppLink(app))}
+                    .map((app) => renderArgoListRow(app))}
             </div>
         )
     }
@@ -352,11 +351,11 @@ export default function ExternalArgoList({
             return askToClearFilters()
         } else if (!clusterIdsCsv) {
             return askToSelectClusterId()
-        } 
+        }
     }
 
     function renderFullModeApplicationListContainer() {
-        if (filteredArgoAppsList.length == 0) {
+        if (filteredArgoAppsList.length === 0) {
             return renderNoApplicationState()
         } else {
             return renderApplicationList()
@@ -396,21 +395,21 @@ export default function ExternalArgoList({
 
     return (
         <>
-            {dataStateType == AppListViewType.LOADING && (
+            {dataStateType === AppListViewType.LOADING && (
                 <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
             )}
-            {dataStateType == AppListViewType.ERROR && (
+            {dataStateType === AppListViewType.ERROR && (
                 <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}
-            {dataStateType == AppListViewType.LIST && (
-                <div>
+            {dataStateType === AppListViewType.LIST && (
+                <>
                     {renderFullModeApplicationListContainer()}
                     {renderPagination()}
-                </div>
+                </>
             )}
         </>
     )

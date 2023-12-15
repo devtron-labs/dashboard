@@ -441,7 +441,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </div>
                             </div>
                         </div>
-                        {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
+                        {params.nodeType === NodeType.Service.toLowerCase() &&
+                            node.kind !== 'Endpoints' &&
+                            node.kind !== 'EndpointSlice' && (
                                 <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
                                     {portNumberPlaceHolder(node)}
                                     {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
@@ -488,13 +490,13 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         )}
                         {node?.kind !== NodeType.Containers &&
-                        node?.kind !== 'Endpoints' &&
-                        node?.kind !== 'EndpointSlice' &&
-                        !isExternalApp ? (
-                            <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
-                                <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
-                            </div>
-                        ) : null}
+                            node?.kind !== 'Endpoints' &&
+                            node?.kind !== 'EndpointSlice' &&
+                            !isExternalApp && (
+                                <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
+                                    <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
+                                </div>
+                            )}
                     </div>
 
                     {node.childNodes?.length > 0 && _isSelected && (

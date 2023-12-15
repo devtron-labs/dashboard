@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
-import { AppStreamData, AppType } from './appDetails.type'
+import { AppDetailsComponentType, AppStreamData, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
@@ -37,16 +37,7 @@ const AppDetailsComponent = ({
     _init,
     loadingDetails,
     loadingResourceTree,
-    appType
-}: {
-    externalLinks?: ExternalLink[]
-    monitoringTools?: OptionTypeWithIcon[]
-    isExternalApp: boolean
-    _init?: () => void
-    loadingDetails: boolean
-    loadingResourceTree: boolean
-    appType?: string
-}) => {
+}: AppDetailsComponentType) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())

@@ -11,7 +11,7 @@ import { ConditionalWrap } from '../../../common'
 import './NodeTreeTabList.scss'
 import ReactGA from 'react-ga4'
 
-export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef, appType }: NodeTreeTabListProps) {
+export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
     const { push } = useHistory()
     const [applicationObjectTabs] = useSharedState(
@@ -107,7 +107,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
         >
             <ul className="tab-list">
                 {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
-                    return (                       
+                    return (
                         <li key={index + 'tab'} id={`${nodeType}_${tab.name}`} className="flex left dc__ellipsis-right">
                             <ConditionalWrap
                                 condition={
@@ -126,7 +126,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                         </Tippy>
                                     )
                                 }}
-                            > 
+                            >
                                 <div className="flex">
                                     <div
                                         className={`${
