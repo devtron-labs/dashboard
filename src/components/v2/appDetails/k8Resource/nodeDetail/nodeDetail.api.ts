@@ -2,6 +2,7 @@ import { Routes } from '../../../../../config';
 import { DeploymentAppTypes, post, put, trash } from '@devtron-labs/devtron-fe-common-lib';
 import { AppDetails, AppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
 import { ParamsType } from './nodeDetail.type';
+import { getAppTypeCount } from './nodeDetail.util';
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
@@ -100,12 +101,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 name: selectedResource.name,
             },
         },
-        appType:
-            appDetails.appType === AppType.DEVTRON_APP
-                ? K8sResourcePayloadAppType.DEVTRON_APP
-                : appDetails.appType === AppType.EXTERNAL_ARGO_APP
-                ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
-                : K8sResourcePayloadAppType.HELM_APP,
+        appType: getAppTypeCount(appDetails),
         deploymentType:
             appDetails.deploymentAppType === DeploymentAppTypes.HELM
                 ? K8sResourcePayloadDeploymentType.HELM_INSTALLED

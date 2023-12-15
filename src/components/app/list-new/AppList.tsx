@@ -385,7 +385,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         } else {
             buildHelmAppListUrl()
         }
-        return `${url}${queryStr ? `?${queryStr}` : ''}`
+        return `${url}${queryStr ? `?${queryStr}` : location.search}`
     }
 
     const handleAppSearchOperation = (_searchString: string): void => {
@@ -590,13 +590,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         if (appTabType == currentTab) {
             return
         }
-        let url =
-            appTabType === AppListConstants.AppTabs.DEVTRON_APPS
-                ? `${buildDevtronAppListUrl()}${location.search}`
-                : appTabType === AppListConstants.AppTabs.HELM_APPS
-                ? `${buildHelmAppListUrl()}${location.search}`
-                : `${buildArgoAppListUrl()}${location.search}`
-        history.push(url)
+        history.push(getAppListURL())
         setCurrentTab(appTabType)
     }
 

@@ -1,5 +1,7 @@
 import {
+    AppType,
     EnvType,
+    K8sResourcePayloadAppType,
     LogState,
     NodeType,
     Options,
@@ -404,4 +406,14 @@ export const getTrimmedManifestData = (
     }
 
     return returnAsString ? JSON.stringify(manifestData) : manifestData
+}
+
+export const getAppTypeCount = (appDetails) => {
+    if (appDetails.appType === AppType.DEVTRON_APP) {
+      return  K8sResourcePayloadAppType.DEVTRON_APP
+    } else if (appDetails.appType === AppType.EXTERNAL_ARGO_APP) {
+       return K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
+    } else {
+       return K8sResourcePayloadAppType.HELM_APP
+    }
 }

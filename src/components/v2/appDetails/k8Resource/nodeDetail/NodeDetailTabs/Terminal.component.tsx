@@ -5,6 +5,7 @@ import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
 import { getCustomOptionSelectionStyle } from '../../../../common/ReactSelect.utils'
 import {
+    getAppTypeCount,
     getContainerSelectStyles,
     getGroupedContainerOptions,
     getShellSelectStyles,
@@ -135,16 +136,6 @@ function TerminalComponent({
       return getOption()
   }
 
-  const getAppTypeCount = () => {
-      if (appDetails.appType === AppType.DEVTRON_APP) {
-        return  K8sResourcePayloadAppType.DEVTRON_APP
-      } else if (appDetails.appType === AppType.EXTERNAL_ARGO_APP) {
-         return K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
-      } else {
-         return K8sResourcePayloadAppType.HELM_APP
-      }
-  }
-
     const generateSessionURL = () => {
         const appId =
             appDetails.appType == AppType.DEVTRON_APP
@@ -169,7 +160,7 @@ function TerminalComponent({
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
             return (
-                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${getAppTypeCount()}`
+                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${getAppTypeCount(appDetails)}`
             )
         }
         return url
