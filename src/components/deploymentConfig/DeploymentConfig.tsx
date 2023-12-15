@@ -1,4 +1,4 @@
-import React, { Reducer, createContext, useContext, useEffect, useReducer } from 'react'
+import React, { Reducer, createContext, useContext, useEffect, useReducer, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import {
@@ -7,6 +7,7 @@ import {
     saveDeploymentTemplate,
     getDeploymentManisfest,
     getOptions,
+    getLockedConfigProtected,
 } from './service'
 import { getChartReferences } from '../../services/service'
 import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'
@@ -27,6 +28,8 @@ import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/Devtro
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
     getBasicFieldValue,
+    getLockedJSON,
+    getUnlockedJSON,
     groupDataByType,
     handleConfigProtectionError,
     isBasicValueChanged,
@@ -42,7 +45,9 @@ import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigTo
 import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
+import CodeEditor from '../CodeEditor/CodeEditor'
 
+const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
@@ -58,10 +63,19 @@ export default function DeploymentConfig({
     environments,
     isProtected,
     reloadEnvironments,
+    isSuperAdmin
 }: DeploymentConfigProps) {
     const history = useHistory()
     const { appId } = useParams<{ appId: string }>()
     const { currentServerInfo } = useContext(mainContext)
+    const [saveChangesCheckbox, setSaveChangesCheckbox] = useState(false)
+    const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
+    const [lockedKeysArray, setLockedKeysArray] = useState<{ config: string[]; allowed: boolean }>({
+        config: [],
+        allowed: false,
+    })
+    const [lockedOverride, setLockedOverride] = useState({})
+
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
         deploymentConfigReducer,
         initDeploymentConfigState,
@@ -419,8 +433,33 @@ export default function DeploymentConfig({
         }
     }
 
-    async function handleSubmit(e) {
+    const closeLockedDiffDrawerWithChildModal = () => {
+        state.showConfirmation && closeConfirmationDialog()
+        state.showSaveChangsModal && toggleSaveChangesModal()
+        dispatch({
+            type: DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff,
+            payload: false,
+        })
+    }
+
+    const openLockedDiffDrawer = () => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff,
+            payload: true,
+        })
+    }
+
+    const handleSaveChanges = (e) => {
         e.preventDefault()
+        if (isSuperAdmin) {
+            handleSubmit()
+            return
+        } else {
+            save()
+        }
+    }
+
+    async function handleSubmit() {
         if (!obj) {
             toast.error(error)
             return
@@ -447,15 +486,52 @@ export default function DeploymentConfig({
         }
     }
 
-    async function save() {
+    const checkForLockedChanges = async (saveEligibleChanges: boolean) => {
+        const data = prepareDataToSave()
+        const action = data['id'] > 0 ? 2 : 1
+        const requestPayload = {
+            appId: Number(appId),
+            envId: -1,
+            action,
+            data: JSON.stringify({ ...data, saveEligibleChanges }),
+        }
+        return await getLockedConfigProtected(requestPayload)
+    }
+
+    async function save(saveEligibleChanges: boolean = false) {
         dispatch({
             type: DeploymentConfigStateActionTypes.loading,
             payload: true,
         })
         try {
-            const requestBody = prepareDataToSave(true)
-            const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
-            await api(requestBody, baseDeploymentAbortController.signal)
+            let res
+            const requestBody = prepareDataToSave(true, saveEligibleChanges)
+            const api = isProtected
+                ? checkForLockedChanges
+                : state.chartConfig.id
+                ? updateDeploymentTemplate
+                : saveDeploymentTemplate
+            if (isProtected) {
+                res = await checkForLockedChanges(saveEligibleChanges)
+            } else {
+                res = await api(requestBody, baseDeploymentAbortController.signal)
+            }
+            // set the lockedOverride
+            if (res.result.isLockConfigError && !saveEligibleChanges) {
+                setLockedOverride(res.result?.lockedOverride)
+                openLockedDiffDrawer()
+                return
+            } else if (isProtected) {
+                toggleSaveChangesModal()
+                return
+            }
+            if (state.chartConfig.id) {
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.showConfirmation,
+                    payload: true,
+                })
+            }
+
             reloadEnvironments()
             fetchDeploymentTemplate()
             respondOnSuccess()
@@ -481,8 +557,11 @@ export default function DeploymentConfig({
         } finally {
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
-                payload: { loading: false, showConfirmation: false },
+                payload: { loading: false },
             })
+            if (saveEligibleChanges) {
+                closeLockedDiffDrawerWithChildModal()
+            }
         }
     }
 
@@ -641,20 +720,52 @@ export default function DeploymentConfig({
 
     const toggleSaveChangesModal = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
+        setSaveChangesCheckbox(!saveChangesCheckbox)
+
+    }
+
+    const closeConfirmationDialog = () => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.showConfirmation,
+            payload: false,
+        })
+        setSaveChangesCheckbox(!saveChangesCheckbox)
+
+    }
+    const handleChangeCheckbox = () => {
+        if (!saveChangesCheckbox) {
+            setSaveChangesCheckbox(!saveChangesCheckbox)
+            handleSubmit()
+        } else {
+            state.showSaveChangsModal && toggleSaveChangesModal()
+            state.showConfirmation && closeConfirmationDialog()
+        }
     }
 
     const toggleDraftComments = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDraftComments })
     }
 
-    const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
+    const prepareDataToSave = (skipReadmeAndSchema?: boolean, saveEligibleChanges?: boolean) => {
+        let valuesOverride = obj
+        if(state.showLockedTemplateDiff) {
+            // if locked keys 
+            // @TODO: pass correct params
+            if(!lockedKeysArray.allowed) {
+                valuesOverride = YAML.parse(YAML.stringify(getUnlockedJSON(lockedOverride, lockedKeysArray.config)))
+            } else {
+                // if allowed keys
+                valuesOverride = YAML.parse(YAML.stringify(getLockedJSON(lockedOverride, lockedKeysArray.config)))
+            }
+        }
         const requestData = {
             ...(state.chartConfig.chartRefId === state.selectedChart.id ? state.chartConfig : {}),
             appId: +appId,
             chartRefId: state.selectedChart.id,
-            valuesOverride: obj,
+            valuesOverride,
             defaultAppOverride: state.template,
             isAppMetricsEnabled: state.isAppMetricsEnabled,
+            saveEligibleChanges,
         }
         if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
             requestData.isBasicViewLocked = state.isBasicLocked
@@ -755,7 +866,7 @@ export default function DeploymentConfig({
             className={`white-card__deployment-config p-0 bcn-0 ${state.openComparison ? 'comparison-view' : ''} ${
                 state.showReadme ? 'readme-view' : ''
             }`}
-            onSubmit={handleSubmit}
+            onSubmit={(e) => handleSaveChanges(e)}
         >
             <div className="variables-widget-position">
                 <FloatingVariablesSuggestions zIndex={100} appId={appId} />
@@ -784,6 +895,11 @@ export default function DeploymentConfig({
                 reload={initialise}
                 isValues={state.isValues}
                 convertVariables={state.convertVariables}
+                isSuperAdmin={isSuperAdmin}
+                openLockedDiffDrawer={openLockedDiffDrawer}
+                setShowLockedDiffForApproval={setShowLockedDiffForApproval}
+                showLockedDiffForApproval={showLockedDiffForApproval}
+                checkForLockedChanges={checkForLockedChanges}
             />
         </form>
     )
@@ -797,7 +913,6 @@ export default function DeploymentConfig({
         changeEditorMode: changeEditorMode,
         reloadEnvironments: reloadEnvironments,
     })
-
     return (
         <DeploymentConfigContext.Provider value={getValueForContext()}>
             <div
@@ -828,8 +943,28 @@ export default function DeploymentConfig({
                         convertVariables={state.convertVariables}
                         setConvertVariables={setConvertVariables}
                         componentType={3}
+                        setShowLockedDiffForApproval={setShowLockedDiffForApproval}
+                        setLockedKeysArray={setLockedKeysArray}
+                        lockedKeysArray={lockedKeysArray.config}
                     />
                     {renderValuesView()}
+                    {state.showConfirmation && (
+                        <SaveConfirmationDialog
+                            onSave={save}
+                            showAsModal={!state.showLockedTemplateDiff}
+                            closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
+                        />
+                    )}
+                    {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (
+                        <DeploymentTemplateLockedDiff
+                            CodeEditor={CodeEditor}
+                            closeModal={closeLockedDiffDrawerWithChildModal}
+                            handleChangeCheckbox={handleChangeCheckbox}
+                            saveChangesCheckbox={saveChangesCheckbox}
+                            showLockedDiffForApproval={showLockedDiffForApproval}
+                            onSave={save}
+                        />
+                    )}
                     {SaveChangesModal && state.showSaveChangsModal && (
                         <SaveChangesModal
                             appId={Number(appId)}
@@ -840,9 +975,11 @@ export default function DeploymentConfig({
                             toggleModal={toggleSaveChangesModal}
                             latestDraft={state.latestDraft}
                             reload={initialise}
+                            closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
+                            showAsModal={!state.showLockedTemplateDiff}
+                            saveChangesCheckbox={saveChangesCheckbox}
                         />
                     )}
-                    {state.showConfirmation && <SaveConfirmationDialog save={save} />}
                 </div>
                 {DraftComments && state.showComments && (
                     <DraftComments

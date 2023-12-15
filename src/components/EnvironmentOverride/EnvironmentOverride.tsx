@@ -16,6 +16,7 @@ export default function EnvironmentOverride({
     environments,
     reloadEnvironments,
     envName,
+    isSuperAdmin,
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
@@ -110,9 +111,10 @@ export default function EnvironmentOverride({
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
+                            isSuperAdmin={isSuperAdmin}
                         />
                     </Route>
-                    <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
+                    <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapList
                             key={`config-map-${params.appId}-${params.envId}`}
                             isOverrideView={true}
@@ -125,7 +127,7 @@ export default function EnvironmentOverride({
                             clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
                         />
                     </Route>
-                    <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
+                    <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <SecretList
                             key={`secret-${params.appId}-${params.envId}`}
                             isOverrideView={true}

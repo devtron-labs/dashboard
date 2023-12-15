@@ -14,22 +14,29 @@ import DeploymentTemplateOptionsTab from '../deploymentConfig/DeploymentTemplate
 import DeploymentTemplateEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateEditorView'
 import DeploymentConfigFormCTA from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigFormCTA'
 import { DeploymentConfigContext } from '../deploymentConfig/DeploymentConfig'
+import { getDeploymentManisfest, getLockedConfigProtected } from '../deploymentConfig/service'
 import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateView.component'
 import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
 import {
     getBasicFieldValue,
+    getLockedJSON,
+    getUnlockedJSON,
     handleConfigProtectionError,
     isBasicValueChanged,
     patchBasicData,
     updateTemplateFromBasicValue,
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
-import { getDeploymentManisfest } from '../deploymentConfig/service'
+import CodeEditor from '../CodeEditor/CodeEditor'
+
+
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
+const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
+
 
 export default function DeploymentTemplateOverrideForm({
     state,
@@ -52,10 +59,19 @@ export default function DeploymentTemplateOverrideForm({
     setManifestDataRHS,
     setManifestDataLHS,
     convertVariablesOverride,
+    isSuperAdmin
 }) {
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
+    const [saveChangesCheckbox, setSaveChangesCheckbox] = useState(false)
+    const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
+    const [hideLockedKeys, setHideLockedKeys] = useState(false)
+    const [lockedOverride, setLockedOverride] = useState({})
+    const [lockedKeysArray, setLockedKeysArray] = useState<{ config: string[]; allowed: boolean }>({
+        config: [],
+        allowed: false,
+    })
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -66,6 +82,7 @@ export default function DeploymentTemplateOverrideForm({
 
     const toggleSaveChangesModal = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
+        setSaveChangesCheckbox(!saveChangesCheckbox)
     }
 
     const toggleDeleteOverrideDraftModal = () => {
@@ -93,15 +110,27 @@ export default function DeploymentTemplateOverrideForm({
         })
     }
 
-    const prepareDataToSave = (envOverrideValuesWithBasic, includeInDraft?: boolean) => {
+    const prepareDataToSave = (envOverrideValuesWithBasic, includeInDraft?: boolean, saveEligibleChanges?: boolean) => {
+        let valuesOverride = envOverrideValuesWithBasic || obj || state.duplicate
+        if (state.showLockedTemplateDiff && saveEligibleChanges) {
+            // if locked keys
+            if (!lockedKeysArray.allowed) {
+                valuesOverride = YAML.parse(YAML.stringify(getUnlockedJSON(lockedOverride, lockedKeysArray.config)))
+            } else {
+                // if allowed keys
+                valuesOverride = YAML.parse(YAML.stringify(getLockedJSON(lockedOverride, lockedKeysArray.config)))
+            }
+        }
+
         const payload = {
             environmentId: +envId,
-            envOverrideValues: envOverrideValuesWithBasic || obj || state.duplicate,
+            envOverrideValues: valuesOverride,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
             isAppMetricsEnabled: state.latestDraft ? state.isAppMetricsEnabled : state.data.appMetrics,
             currentViewEditor: state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView,
             isBasicLocked: state.isBasicLocked,
+            saveEligibleChanges,
             ...(state.data.environmentConfig.id > 0
                 ? {
                       id: state.data.environmentConfig.id,
@@ -124,8 +153,22 @@ export default function DeploymentTemplateOverrideForm({
         return payload
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault()
+    const closeLockedDiffDrawerWithChildModal = () => {
+        state.showSaveChangsModal && toggleSaveChangesModal()
+        dispatch({
+            type: DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff,
+            payload: false,
+        })
+    }
+
+    const openLockedDiffDrawer = () => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff,
+            payload: true,
+        })
+    }
+
+    const checkForSaveAsDraft = () => {
         if (!obj && state.yamlMode) {
             toast.error(error)
             return
@@ -140,7 +183,41 @@ export default function DeploymentTemplateOverrideForm({
             toggleSaveChangesModal()
             return
         }
+        if (!isSuperAdmin) setSaveChangesCheckbox(!saveChangesCheckbox)
+    }
 
+    const handleSaveChanges = (e) => {
+        e.preventDefault()
+        if (isSuperAdmin) {
+            checkForSaveAsDraft()
+            return
+        } else {
+            handleSubmit()
+        }
+    }
+    const handleChangeCheckbox = () => {
+        if (!saveChangesCheckbox) {
+            checkForSaveAsDraft()
+        } else {
+            if (state.showSaveChangsModal) toggleSaveChangesModal()
+            else {
+                setSaveChangesCheckbox(!saveChangesCheckbox)
+            }
+        }
+    }
+
+    const checkForLockedChanges = async (saveEligibleChanges: boolean) => {
+        const data = prepareDataToSaveDraft()
+        const action = data['id'] > 0 ? 2 : 1
+        const requestPayload = {
+            appId: Number(appId),
+            envId: Number(envId),
+            action,
+            data: JSON.stringify({ ...data, saveEligibleChanges }),
+        }
+        return await getLockedConfigProtected(requestPayload)
+    }
+    const handleSubmit = async (saveEligibleChanges: boolean = false) => {
         const api =
             state.data.environmentConfig && state.data.environmentConfig.id > 0
                 ? updateDeploymentTemplate
@@ -149,8 +226,25 @@ export default function DeploymentTemplateOverrideForm({
             !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
 
         try {
+            let res
             dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
-            await api(+appId, +envId, prepareDataToSave(envOverrideValuesWithBasic))
+            if (isConfigProtectionEnabled) {
+                res = await checkForLockedChanges(saveChangesCheckbox)
+            } else
+                res = await api(
+                    +appId,
+                    +envId,
+                    prepareDataToSave(envOverrideValuesWithBasic, false, saveEligibleChanges),
+                )
+            if (res.result.isLockConfigError && !saveEligibleChanges) {
+                setLockedOverride(res.result?.lockedOverride)
+                openLockedDiffDrawer()
+                return
+            } else if (isConfigProtectionEnabled) {
+                toggleSaveChangesModal()
+                return
+            }
+
             if (envOverrideValuesWithBasic) {
                 editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
             }
@@ -174,6 +268,9 @@ export default function DeploymentTemplateOverrideForm({
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
         } finally {
+            if (saveEligibleChanges) {
+                closeLockedDiffDrawerWithChildModal()
+            }
             dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: false })
         }
     }
@@ -532,7 +629,9 @@ export default function DeploymentTemplateOverrideForm({
             className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
                 state.showReadme ? 'readme-view' : ''
             }`}
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+                handleSaveChanges(e)
+            }}
         >
             <div className="variables-widget-position">
                 <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
@@ -565,6 +664,11 @@ export default function DeploymentTemplateOverrideForm({
                 reload={reload}
                 isValues={isValuesOverride}
                 convertVariables={convertVariablesOverride}
+                openLockedDiffDrawer={openLockedDiffDrawer}
+                setShowLockedDiffForApproval={setShowLockedDiffForApproval}
+                isSuperAdmin={isSuperAdmin}
+                checkForLockedChanges={checkForLockedChanges}
+                showLockedDiffForApproval={showLockedDiffForApproval}
             />
         </form>
     )
@@ -603,6 +707,10 @@ export default function DeploymentTemplateOverrideForm({
                 convertVariables={convertVariablesOverride}
                 setConvertVariables={setConvertVariables}
                 componentType={3}
+                setShowLockedDiffForApproval={setShowLockedDiffForApproval}
+                hideLockedKeys={hideLockedKeys}
+                setHideLockedKeys={setHideLockedKeys}
+                setLockedKeysArray={setLockedKeysArray}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}
@@ -617,6 +725,8 @@ export default function DeploymentTemplateOverrideForm({
                     toggleModal={toggleSaveChangesModal}
                     latestDraft={state.latestDraft}
                     reload={reload}
+                    closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
+                    showAsModal={!state.showLockedTemplateDiff}
                 />
             )}
             {DeleteOverrideDraftModal && state.showDeleteOverrideDraftModal && (
@@ -629,6 +739,16 @@ export default function DeploymentTemplateOverrideForm({
                     toggleModal={toggleDeleteOverrideDraftModal}
                     latestDraft={state.latestDraft}
                     reload={reload}
+                />
+            )}
+            {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (
+                <DeploymentTemplateLockedDiff
+                    CodeEditor={CodeEditor}
+                    closeModal={closeLockedDiffDrawerWithChildModal}
+                    handleChangeCheckbox={handleChangeCheckbox}
+                    saveChangesCheckbox={saveChangesCheckbox}
+                    showLockedDiffForApproval={showLockedDiffForApproval}
+                    onSave={handleSubmit}
                 />
             )}
         </DeploymentConfigContext.Provider>

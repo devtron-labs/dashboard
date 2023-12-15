@@ -77,8 +77,15 @@ export interface AppEnvironment {
     latestCdWorkflowRunnerId?: number
 }
 
+export interface AppIdWorkflowNamesMapping {
+    appIdWorkflowNamesMapping: { [key: string]: string[] }
+}
+
 export interface AppOtherEnvironment extends ResponseType {
     result?: AppEnvironment[]
+}
+export interface AllWorkflows extends ResponseType {
+    result?: AppIdWorkflowNamesMapping
 }
 
 export interface LastExecutionResponseType {

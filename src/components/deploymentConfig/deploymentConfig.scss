@@ -508,3 +508,11 @@
         stroke: #fff;
     }
 }
+
+.position-bottom {
+    z-index: 23;
+    right: 0;
+    bottom: 0;
+    position: 'absolute';
+    box-shadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.20)'
+}

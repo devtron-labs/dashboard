@@ -9,7 +9,7 @@ import ApplicationRoute from './ApplicationRoutes'
 
 const getEnvConfigProtections = importComponentFromFELibrary('getEnvConfigProtections', null, 'function')
 
-export default function EnvConfig({ filteredAppIds, envName }: AppGroupDetailDefaultType) {
+export default function EnvConfig({ filteredAppIds, envName ,isSuperAdmin}: AppGroupDetailDefaultType) {
     const { envId, appId } = useParams<{ envId: string; appId: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -71,7 +71,13 @@ export default function EnvConfig({ filteredAppIds, envName }: AppGroupDetailDef
                 </div>
             </div>
             <div className="env-compose__main">
-                <EnvironmentOverride appList={envAppList} environments={[]} reloadEnvironments={noop} envName={envName}/>
+                <EnvironmentOverride
+                    appList={envAppList}
+                    environments={[]}
+                    reloadEnvironments={noop}
+                    envName={envName}
+                    isSuperAdmin={isSuperAdmin}
+                />
             </div>
         </div>
     )
