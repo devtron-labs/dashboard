@@ -1,5 +1,5 @@
 import React from 'react'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
@@ -12,6 +12,10 @@ export interface DeploymentObject {
     chartRepositoryId: number
     valuesOverrride: any
     defaultAppOverride: any
+}
+export interface ConfigKeysWithLockType{
+    config:string[],
+    allowed:boolean
 }
 
 export interface DeploymentConfigState {
@@ -116,10 +120,10 @@ export interface DeploymentConfigFormCTAProps {
     isValues?: boolean
     convertVariables?: boolean
     openLockedDiffDrawer: () => void
-    isSuperAdmin: boolean,
+    isSuperAdmin: boolean
     showLockedDiffForApproval: boolean
     setShowLockedDiffForApproval: (show: boolean) => void
-    checkForLockedChanges: (saveEligibleChanges:boolean) => any
+    checkForLockedChanges: (saveEligibleChanges: boolean) => Promise<ResponseType>
 }
 
 export interface CompareWithDropdownProps {
@@ -367,7 +371,7 @@ export interface DeploymentConfigStateType {
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
     publishedState: DeploymentConfigStateType
     draftValues: string
-    showSaveChangsModal: boolean
+    showSaveChangesModal: boolean
     allDrafts: any[]
     latestDraft: any
     showComments: boolean

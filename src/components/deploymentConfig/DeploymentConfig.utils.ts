@@ -204,7 +204,7 @@ export function getUnlockedJSON(json, jsonPathArray) {
         const pathsToRemove = JSONPath({ path: jsonPath, json: json, resultType: 'all' })
         return pathsToRemove.map((result) => ({ op: 'remove', path: result.pointer }))
     })
-    let newDocument = jsonpatch.applyPatch(json, patches).newDocument
+    const newDocument = jsonpatch.applyPatch(json, patches).newDocument
     removeEmptyValues(newDocument)
     return newDocument
 }
@@ -214,8 +214,8 @@ export function getLockedJSON(json, jsonPathArray: string[]) {
     jsonPathArray.forEach((jsonPath) => {
         const elements = JSONPath({ path: jsonPath, json: json, resultType: 'all' })
         elements.forEach((element) => {
-            let pathArray: string[] = JSONPath.toPathArray(element.path)
-            let lastPath = pathArray.pop()
+            const pathArray: string[] = JSONPath.toPathArray(element.path)
+            const lastPath = pathArray.pop()
             let current = resultJson
             for (let i = 0; i < pathArray.length; i++) {
                 let key = isNaN(Number(pathArray[i])) ? pathArray[i] : parseInt(pathArray[i])

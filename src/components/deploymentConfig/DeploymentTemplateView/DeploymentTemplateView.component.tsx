@@ -408,7 +408,7 @@ export const SuccessToastBody = ({ chartConfig }) => (
     </div>
 )
 
-export const SaveConfirmationDialog = ({ onSave, showAsModal ,closeLockedDiffDrawerWithChildModal}) => {
+export const SaveConfirmationDialog = ({ onSave, showAsModal, closeLockedDiffDrawerWithChildModal }) => {
     const { state, dispatch } = useContext(DeploymentConfigContext)
     const saveConfirmationContent = () => (
         <div
@@ -427,7 +427,7 @@ export const SaveConfirmationDialog = ({ onSave, showAsModal ,closeLockedDiffDra
                     data-testid="base-deployment-template-cancel-button"
                     type="button"
                     className="cta cancel"
-                    onClick={closeConfirmationDialog}
+                    onClick={closeLockedDiffDrawerWithChildModal}
                 >
                     Cancel
                 </button>
@@ -443,10 +443,6 @@ export const SaveConfirmationDialog = ({ onSave, showAsModal ,closeLockedDiffDra
         </div>
     )
 
-    const closeConfirmationDialog = () => {
-         closeLockedDiffDrawerWithChildModal()
-    }
-
     const getButtonState = () => {
         if (state.loading) {
             return <Progressing />
@@ -460,7 +456,7 @@ export const SaveConfirmationDialog = ({ onSave, showAsModal ,closeLockedDiffDra
     return (
         <>
             {showAsModal ? (
-                <VisibleModal className=''>{saveConfirmationContent()}</VisibleModal>
+                <VisibleModal className="">{saveConfirmationContent()}</VisibleModal>
             ) : (
                 saveConfirmationContent()
             )}

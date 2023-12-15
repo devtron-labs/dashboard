@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import YAML from 'yaml'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
-import { DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
+import { ConfigKeysWithLockType, DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { EDITOR_VIEW } from '../deploymentConfig/constants'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../config'
 import { createDeploymentTemplate, updateDeploymentTemplate } from './service'
@@ -64,11 +64,10 @@ export default function DeploymentTemplateOverrideForm({
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
-    const [saveChangesCheckbox, setSaveChangesCheckbox] = useState(false)
+    const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)
     const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
-    const [hideLockedKeys, setHideLockedKeys] = useState(false)
     const [lockedOverride, setLockedOverride] = useState({})
-    const [lockedKeysArray, setLockedKeysArray] = useState<{ config: string[]; allowed: boolean }>({
+    const [lockedConfigKeysWithLockType, setLockedConfigKeysWithLockType] = useState<ConfigKeysWithLockType>({
         config: [],
         allowed: false,
     })
@@ -82,7 +81,7 @@ export default function DeploymentTemplateOverrideForm({
 
     const toggleSaveChangesModal = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
-        setSaveChangesCheckbox(!saveChangesCheckbox)
+        setSaveEligibleChangesCb(!saveEligibleChangesCb)
     }
 
     const toggleDeleteOverrideDraftModal = () => {
@@ -114,11 +113,11 @@ export default function DeploymentTemplateOverrideForm({
         let valuesOverride = envOverrideValuesWithBasic || obj || state.duplicate
         if (state.showLockedTemplateDiff && saveEligibleChanges) {
             // if locked keys
-            if (!lockedKeysArray.allowed) {
-                valuesOverride = YAML.parse(YAML.stringify(getUnlockedJSON(lockedOverride, lockedKeysArray.config)))
+            if (!lockedConfigKeysWithLockType.allowed) {
+                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
             } else {
                 // if allowed keys
-                valuesOverride = YAML.parse(YAML.stringify(getLockedJSON(lockedOverride, lockedKeysArray.config)))
+                valuesOverride = getLockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
             }
         }
 
@@ -154,7 +153,11 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const closeLockedDiffDrawerWithChildModal = () => {
-        state.showSaveChangsModal && toggleSaveChangesModal()
+        state.showSaveChangesModal && toggleSaveChangesModal()
+        closeLockedDiffDrawer()
+    }
+
+    const closeLockedDiffDrawer = () => {
         dispatch({
             type: DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff,
             payload: false,
@@ -183,7 +186,7 @@ export default function DeploymentTemplateOverrideForm({
             toggleSaveChangesModal()
             return
         }
-        if (!isSuperAdmin) setSaveChangesCheckbox(!saveChangesCheckbox)
+        if (!isSuperAdmin) setSaveEligibleChangesCb(!saveEligibleChangesCb)
     }
 
     const handleSaveChanges = (e) => {
@@ -196,12 +199,12 @@ export default function DeploymentTemplateOverrideForm({
         }
     }
     const handleChangeCheckbox = () => {
-        if (!saveChangesCheckbox) {
+        if (!saveEligibleChangesCb) {
             checkForSaveAsDraft()
         } else {
-            if (state.showSaveChangsModal) toggleSaveChangesModal()
+            if (state.showSaveChangesModal) toggleSaveChangesModal()
             else {
-                setSaveChangesCheckbox(!saveChangesCheckbox)
+                setSaveEligibleChangesCb(!saveEligibleChangesCb)
             }
         }
     }
@@ -229,7 +232,7 @@ export default function DeploymentTemplateOverrideForm({
             let res
             dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
             if (isConfigProtectionEnabled) {
-                res = await checkForLockedChanges(saveChangesCheckbox)
+                res = await checkForLockedChanges(saveEligibleChangesCb)
             } else
                 res = await api(
                     +appId,
@@ -237,6 +240,7 @@ export default function DeploymentTemplateOverrideForm({
                     prepareDataToSave(envOverrideValuesWithBasic, false, saveEligibleChanges),
                 )
             if (res.result.isLockConfigError && !saveEligibleChanges) {
+                //checking if any locked changes and opening drawer to show eligible and locked ones
                 setLockedOverride(res.result?.lockedOverride)
                 openLockedDiffDrawer()
                 return
@@ -269,7 +273,8 @@ export default function DeploymentTemplateOverrideForm({
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
         } finally {
             if (saveEligibleChanges) {
-                closeLockedDiffDrawerWithChildModal()
+                //closing drawer if selected save eligible changes
+                closeLockedDiffDrawer()
             }
             dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: false })
         }
@@ -708,14 +713,12 @@ export default function DeploymentTemplateOverrideForm({
                 setConvertVariables={setConvertVariables}
                 componentType={3}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
-                hideLockedKeys={hideLockedKeys}
-                setHideLockedKeys={setHideLockedKeys}
-                setLockedKeysArray={setLockedKeysArray}
+                setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}
             {state.dialog && <DeleteOverrideDialog appId={appId} envId={envId} initialise={initialise} />}
-            {SaveChangesModal && state.showSaveChangsModal && (
+            {SaveChangesModal && state.showSaveChangesModal && (
                 <SaveChangesModal
                     appId={Number(appId)}
                     envId={Number(envId)}
@@ -746,9 +749,11 @@ export default function DeploymentTemplateOverrideForm({
                     CodeEditor={CodeEditor}
                     closeModal={closeLockedDiffDrawerWithChildModal}
                     handleChangeCheckbox={handleChangeCheckbox}
-                    saveChangesCheckbox={saveChangesCheckbox}
+                    saveEligibleChangesCb={saveEligibleChangesCb}
                     showLockedDiffForApproval={showLockedDiffForApproval}
                     onSave={handleSubmit}
+                    lockedOverride={lockedOverride}
+                    lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                 />
             )}
         </DeploymentConfigContext.Provider>

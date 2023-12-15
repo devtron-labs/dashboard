@@ -31,7 +31,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     dialog: false,
     latestAppChartRef: null,
     latestChartRef: null,
-    showSaveChangsModal: false,
+    showSaveChangesModal: false,
     allDrafts: [],
     latestDraft: null,
     draftValues: '',
@@ -127,7 +127,7 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.reset:
             return { ...initDeploymentConfigState }
         case DeploymentConfigStateActionTypes.toggleSaveChangesModal:
-            return { ...state, showSaveChangsModal: !state.showSaveChangsModal }
+            return { ...state, showSaveChangesModal: !state.showSaveChangesModal }
         case DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff:
             return { ...state, showLockedTemplateDiff: action.payload }
         case DeploymentConfigStateActionTypes.allDrafts:

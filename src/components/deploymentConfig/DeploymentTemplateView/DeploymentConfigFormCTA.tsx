@@ -60,11 +60,13 @@ export default function DeploymentConfigFormCTA({
     }
     
     const checkForLockedChangesForApproval = async () => {
-        const res = await checkForLockedChanges(true)
-        res.result.isLockConfigError = false
-        if (res.result.isLockConfigError && isApprovalPending && !approveDisabled && !isSuperAdmin) {
-            setShowLockedDiffForApproval(true)
-            openLockedDiffDrawer()
+        if (isApprovalPending && !approveDisabled && !isSuperAdmin) {
+            const res = await checkForLockedChanges(true)
+            res.result.isLockConfigError = false
+            if (res.result.isLockConfigError) {
+                setShowLockedDiffForApproval(true)
+                openLockedDiffDrawer()
+            }
         }
     }
 
