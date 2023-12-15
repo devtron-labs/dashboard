@@ -75,13 +75,17 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     // on page load
     useEffect(() => {
-        let _currentTab =
-            params.appType === AppListConstants.AppType.DEVTRON_APPS
-                ? AppListConstants.AppTabs.DEVTRON_APPS
-                : isExternalArgo
-                ? AppListConstants.AppTabs.ARGO_APPS
-                : AppListConstants.AppTabs.HELM_APPS
-        setCurrentTab(_currentTab)
+        const getCurrentTab = (): string => {
+            if (params.appType === AppListConstants.AppType.DEVTRON_APPS) {
+                return AppListConstants.AppTabs.DEVTRON_APPS
+            } else if (isExternalArgo) {
+                return AppListConstants.AppTabs.ARGO_APPS
+            } else {
+                return AppListConstants.AppTabs.HELM_APPS
+            }
+        }
+        
+        setCurrentTab(getCurrentTab())
 
         // set search data
         let searchQuery = location.search
@@ -103,7 +107,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
-                    applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab)
+                    applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, getCurrentTab())
                     getModuleInfo(ModuleNameMap.CICD) //To check the latest status and show user reload toast
                 }
             })
