@@ -102,13 +102,17 @@ function NodeDetailComponent({
 
     const getContainersFromManifest = async () => {
         try {
-            const nullCaseName = (isResourceBrowserView && params.nodeType==='pod') ? params.node: ""
+            const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? params.node : ''
             const { result } = await getManifestResource(
                 appDetails,
                 params.node,
                 params.nodeType,
                 isResourceBrowserView,
-                {...selectedResource, name: selectedResource.name ? selectedResource.name : nullCaseName },
+                {
+                    ...selectedResource,
+                    name: selectedResource.name ? selectedResource.name : nullCaseName,
+                    namespace: selectedResource.namespace ? selectedResource.namespace : 'devtron-ci',
+                },
             )
             const _resourceContainers = []
             if (result?.manifest?.spec) {
@@ -131,7 +135,6 @@ function NodeDetailComponent({
                         })),
                     )
                 }
-
             }
 
             if (result?.ephemeralContainers) {
@@ -154,8 +157,14 @@ function NodeDetailComponent({
                 setResourceDeleted(false)
             }
         } catch (err) {
+            // when resource is deleted
             if (Array.isArray(err['errors']) && err['errors'].some((_err) => _err.code === '404')) {
                 setResourceDeleted(true)
+                // when user is not authorized to view resource
+            } else if (err['code'] === 403) {
+                
+                setResourceDeleted(true)
+                showError(err)
             } else {
                 showError(err)
 
@@ -322,12 +331,13 @@ function NodeDetailComponent({
                         </>
                     )}
                 </div>
-                {isResourceBrowserView && (
-                    <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={toggleDeleteDialog}>
-                        <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
-                        {CLUSTER_NODE_ACTIONS_LABELS.delete}
-                    </span>
-                )}
+                {isResourceBrowserView &&
+                    !isResourceDeleted && ( // hide delete button if resource is deleted or user is not authorized
+                        <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={toggleDeleteDialog}>
+                            <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.delete}
+                        </span>
+                    )}
             </div>
             {renderPodTerminal()}
 

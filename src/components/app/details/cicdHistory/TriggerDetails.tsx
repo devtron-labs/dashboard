@@ -155,22 +155,23 @@ const WorkerStatus = React.memo(
                             </div>
                         )}
                     </div>
-                {message && (
-                    <Tippy
-                        theme={TippyTheme.black}
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom-start"
-                        animation="shift-toward-subtle"
-                        content={message}
-                    >
-                        <div className="fs-12 cn-7 dc__ellipsis-right__2nd-line">{message}</div>
-                    </Tippy>
-                )}
-            </div>
-        </>
-    )
-})
+                    {message && (
+                        <Tippy
+                            theme={TippyTheme.black}
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom-start"
+                            animation="shift-toward-subtle"
+                            content={message}
+                        >
+                            <div className="fs-12 cn-7 dc__ellipsis-right__2nd-line">{message}</div>
+                        </Tippy>
+                    )}
+                </div>
+            </>
+        )
+    },
+)
 
 const ProgressingStatus = React.memo(
     ({ status, message, podStatus, stage, type, finishedOn, workerPodName }: ProgressingStatusType): JSX.Element => {

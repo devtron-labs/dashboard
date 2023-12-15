@@ -173,7 +173,7 @@
     box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1);
 }
 
-.event-block > div {
+.event-block>div {
     display: inline-block;
     vertical-align: middle;
 }
@@ -187,7 +187,7 @@
     border-left: solid 6px white;
 }
 
-.event-labels > div {
+.event-labels>div {
     display: inline-block;
     vertical-align: middle;
     text-transform: capitalize;
@@ -246,9 +246,9 @@ table.pod__table td:last-child {
 }
 
 .no-pod {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
     width: 100%;
     height: 100%;
     flex-direction: column;
@@ -341,6 +341,7 @@ table.pod__table td:last-child {
         position: sticky;
         top: 0;
         background: white;
+
         &:hover {
             background: white;
         }
@@ -380,7 +381,7 @@ table.pod__table td:last-child {
             }
         }
 
-        & > div {
+        &>div {
             flex: 0 0 50%;
             justify-content: flex-start;
 
@@ -412,6 +413,7 @@ table.pod__table td:last-child {
     }
 
     &.detailed {
+
         .services-info,
         .status-info {
             flex-basis: 50%;
@@ -749,6 +751,7 @@ table.pod__table td:last-child {
     }
 
     .app-summary__status-name {
+
         &.f-healthy,
         &.f-scalingreplicasetdown {
             color: var(--green);
@@ -1245,11 +1248,11 @@ table.pod__table td:last-child {
             align-items: center;
             justify-items: start;
 
-            & > span:first-child {
+            &>span:first-child {
                 padding-left: 20px;
             }
 
-            & > span:last-child {
+            &>span:last-child {
                 padding-right: 20px;
             }
 
@@ -1390,7 +1393,7 @@ table.pod__table td:last-child {
             margin-bottom: 8px;
         }
 
-        & > div {
+        &>div {
             overflow: auto;
             position: relative;
         }
@@ -1817,18 +1820,22 @@ table.resource-tree {
 .app-details-info-card {
     .app-summary__status-name {
         text-transform: none !important;
+
         &.f-succeeded {
             color: var(--green);
         }
+
         &.f-inprogress {
             color: #ff7e5b;
         }
+
         &.f-failed,
         &.f-timed_out,
         &.f-unable_to_fetch {
             color: var(--R500);
         }
     }
+
     .timer-icon {
         path {
             stroke: var(--N600);
@@ -1845,6 +1852,7 @@ table.resource-tree {
         left: 18px;
         width: 5px;
     }
+
     .deployment-status-breakdown-row {
         display: flex;
         align-items: center;
@@ -1881,6 +1889,7 @@ table.resource-tree {
         grid-template-columns: 150px 200px 150px auto;
         grid-column-gap: 16px;
     }
+
     .resource-list {
         .app-status-row {
             &:hover {
@@ -1895,7 +1904,7 @@ table.resource-tree {
     }
 }
 
-.deployment-approval-container + .deployment-status-breakdown-container {
+.deployment-approval-container+.deployment-status-breakdown-container {
     padding-top: 0px;
 }
 
