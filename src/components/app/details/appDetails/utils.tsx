@@ -14,7 +14,8 @@ import {
 } from './appDetails.type'
 import CreatableSelect from 'react-select/creatable'
 import { DayPickerRangeControllerPresets } from '../../../common'
-import { DEPLOYMENT_STATUS, TIMELINE_STATUS, ZERO_TIME_STRING } from '../../../../config'
+import { AppListConstants, DEPLOYMENT_STATUS, TIMELINE_STATUS, ZERO_TIME_STRING } from '../../../../config'
+import { isExternal } from 'util/types'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {

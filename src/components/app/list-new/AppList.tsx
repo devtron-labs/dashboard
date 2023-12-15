@@ -33,6 +33,7 @@ import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/H
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
 import ExternalArgoList from './ExternalArgoList'
+import { buildArgoAppListUrl, buildDevtronAppListUrl, buildHelmAppListUrl, getChangeAppTabURL, getCurrentTabName } from './list.utils'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -73,19 +74,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [appCount, setAppCount] = useState(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
 
-    const getCurrentTab = (): string => {
-        if (params.appType === AppListConstants.AppType.DEVTRON_APPS) {
-            return AppListConstants.AppTabs.DEVTRON_APPS
-        } else if (isExternalArgo) {
-            return AppListConstants.AppTabs.ARGO_APPS
-        } else {
-            return AppListConstants.AppTabs.HELM_APPS
-        }
-    }
 
     // on page load
     useEffect(() => {   
-        setCurrentTab(getCurrentTab())
+        setCurrentTab(getCurrentTabName(params.appType, isExternalArgo))
 
         // set search data
         let searchQuery = location.search
@@ -107,7 +99,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
-                    applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, getCurrentTab())
+                    applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, getCurrentTabName(params.appType, isExternalArgo))
                     getModuleInfo(ModuleNameMap.CICD) //To check the latest status and show user reload toast
                 }
             })
@@ -353,18 +345,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         return [...buildClusterVsNamespace(_namespaces.join(',')).keys()].join(',')
     }
 
-    const buildDevtronAppListUrl = (): string => {
-        return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}`
-    }
-
-    const buildHelmAppListUrl = (): string => {
-        return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
-    }
-
-    const buildArgoAppListUrl = (): string => {
-        return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
-    }
-
     function openDevtronAppCreateModel() {
         const _urlPrefix =
             currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
@@ -591,16 +571,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         if (appTabType == currentTab) {
             return
         }
-        const getChangeAppTabURL = () => {
-            if (appTabType === AppListConstants.AppTabs.DEVTRON_APPS) {
-                return buildDevtronAppListUrl()
-            } else if (appTabType === AppListConstants.AppTabs.ARGO_APPS) {
-                return buildArgoAppListUrl()
-            } else {
-                return buildHelmAppListUrl()
-            }
-        }
-        history.push(`${getChangeAppTabURL()}${location.search}`)
+        history.push(`${getChangeAppTabURL(appTabType)}${location.search}`)
         setCurrentTab(appTabType)
     }
 
