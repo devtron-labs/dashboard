@@ -244,7 +244,7 @@ function TerminalComponent({
 
     if (isDeleted || !selectedContainerName.length) {
         return (
-            <div>
+            showTerminal &&  <div>
                 <MessageUI
                     msg="This resource no longer exists"
                     size={32}
