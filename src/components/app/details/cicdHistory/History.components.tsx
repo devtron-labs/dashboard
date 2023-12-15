@@ -120,7 +120,7 @@ export const GitChanges = ({
         <div className="flex column left w-100 ">
             {ciMaterials?.map((ciMaterial, index) => {
                 const gitTrigger = gitTriggers[ciMaterial.id]
-                return gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) ? (
+                return (gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.data)) ? (
                     <div
                         key={`mat-${gitTrigger?.Commit}-${index}`}
                         className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mt-16 ml-16"
