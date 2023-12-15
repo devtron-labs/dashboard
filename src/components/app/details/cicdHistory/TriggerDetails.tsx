@@ -192,9 +192,8 @@ const ProgressingStatus = React.memo(
                 setAborting(false)
                 setAbortConfirmation(false)
                 if (error['code'] === 400) {
-                    console.error('here')
+                    // code 400 is for aborting a running build
                     const errors = error['errors']
-                    console.log(errors, errors[0].userMessage, 'here2')
                     setAbortError({
                         status: true,
                         message: errors[0].userMessage,
