@@ -45,10 +45,11 @@ export const Routes = {
 
     DEPLOYMENT_TEMPLATE: 'app/template',
     DEPLOYMENT_TEMPLATE_UPDATE: 'app/template/update',
-    LOCKED_CONFIG_PROTECTED:'draft/config/lock/validate',
+    LOCKED_CONFIG_PROTECTED: 'draft/config/lock/validate',
+    LOCKED_CONFIG_NON_PROTECTED: 'app/template/validate',
 
     DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
-    DEPLOYMENT_OPTIONS:'app/template/list',
+    DEPLOYMENT_OPTIONS: 'app/template/list',
 
     DEPLOYMENT_STRATEGY: 'app/cd-pipeline/strategies',
     ENVIRONMENT_CONFIG: 'app/env',
@@ -245,7 +246,7 @@ export const Routes = {
     PERMISSION: 'permission/check',
     SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
-    GVK: 'gvk'
+    GVK: 'gvk',
 }
 
 export const ViewType = {

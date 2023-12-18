@@ -123,7 +123,7 @@ export interface DeploymentConfigFormCTAProps {
     isSuperAdmin: boolean
     showLockedDiffForApproval: boolean
     setShowLockedDiffForApproval: (show: boolean) => void
-    checkForLockedChanges: (saveEligibleChanges: boolean) => Promise<ResponseType>
+    checkForProtectedLockedChanges: () => Promise<ResponseType>
 }
 
 export interface CompareWithDropdownProps {

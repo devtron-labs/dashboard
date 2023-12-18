@@ -29,7 +29,7 @@ export default function DeploymentConfigFormCTA({
     isSuperAdmin,
     setShowLockedDiffForApproval,
     showLockedDiffForApproval,
-    checkForLockedChanges
+    checkForProtectedLockedChanges
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
 
@@ -61,7 +61,7 @@ export default function DeploymentConfigFormCTA({
     
     const checkForLockedChangesForApproval = async () => {
         if (isApprovalPending && !approveDisabled && !isSuperAdmin) {
-            const res = await checkForLockedChanges(true)
+            const res = await checkForProtectedLockedChanges()
             res.result.isLockConfigError = false
             if (res.result.isLockConfigError) {
                 setShowLockedDiffForApproval(true)

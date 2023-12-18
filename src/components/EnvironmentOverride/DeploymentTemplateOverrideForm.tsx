@@ -14,7 +14,10 @@ import DeploymentTemplateOptionsTab from '../deploymentConfig/DeploymentTemplate
 import DeploymentTemplateEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateEditorView'
 import DeploymentConfigFormCTA from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigFormCTA'
 import { DeploymentConfigContext } from '../deploymentConfig/DeploymentConfig'
-import { getDeploymentManisfest, getLockedConfigProtected } from '../deploymentConfig/service'
+import {
+    getDeploymentManisfest,
+    getIfLockedConfigProtected,
+} from '../deploymentConfig/service'
 import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateView.component'
 import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
@@ -191,12 +194,7 @@ export default function DeploymentTemplateOverrideForm({
 
     const handleSaveChanges = (e) => {
         e.preventDefault()
-        if (isSuperAdmin) {
-            checkForSaveAsDraft()
-            return
-        } else {
-            handleSubmit()
-        }
+        handleSubmit(false)
     }
     const handleChangeCheckbox = () => {
         if (!saveEligibleChangesCb) {
@@ -209,16 +207,16 @@ export default function DeploymentTemplateOverrideForm({
         }
     }
 
-    const checkForLockedChanges = async (saveEligibleChanges: boolean) => {
+    const checkForProtectedLockedChanges = async () => {
         const data = prepareDataToSaveDraft()
         const action = data['id'] > 0 ? 2 : 1
         const requestPayload = {
             appId: Number(appId),
             envId: Number(envId),
             action,
-            data: JSON.stringify({ ...data, saveEligibleChanges }),
+            data: JSON.stringify (data),
         }
-        return await getLockedConfigProtected(requestPayload)
+        return await getIfLockedConfigProtected(requestPayload)
     }
     const handleSubmit = async (saveEligibleChanges: boolean = false) => {
         const api =
@@ -232,7 +230,7 @@ export default function DeploymentTemplateOverrideForm({
             let res
             dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
             if (isConfigProtectionEnabled) {
-                res = await checkForLockedChanges(saveEligibleChangesCb)
+                res = await checkForProtectedLockedChanges()
             } else
                 res = await api(
                     +appId,
@@ -672,7 +670,7 @@ export default function DeploymentTemplateOverrideForm({
                 openLockedDiffDrawer={openLockedDiffDrawer}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 isSuperAdmin={isSuperAdmin}
-                checkForLockedChanges={checkForLockedChanges}
+                checkForProtectedLockedChanges={checkForProtectedLockedChanges}
                 showLockedDiffForApproval={showLockedDiffForApproval}
             />
         </form>
