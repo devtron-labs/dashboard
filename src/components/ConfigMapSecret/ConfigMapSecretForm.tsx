@@ -914,19 +914,18 @@ export const ConfigMapSecretForm = React.memo(
             }
             return (
                 <div className="form__row">
-                    <label className="form__label">Name*</label>
-                    <input
+                    <CustomInput
+                        name="name"
+                        label="Name"
                         data-testid={`${componentType}-name-textbox`}
                         value={state.configName.value}
-                        autoComplete="off"
                         autoFocus
                         onChange={onConfigNameChange}
-                        onBlur={trimConfigMapName}
-                        type="text"
-                        className={`form__input`}
+                        handleOnBlur={trimConfigMapName}
                         placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
+                        isRequiredField={true}
+                        error={state.configName.error}
                     />
-                    {state.configName.error && <label className="form__error">{state.configName.error}</label>}
                 </div>
             )
         }
