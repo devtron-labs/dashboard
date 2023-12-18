@@ -803,3 +803,4 @@ export const SERVER_ERROR_CODES = {
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+export const CVE_ID_NOT_FOUND = 'CVE ID not found'

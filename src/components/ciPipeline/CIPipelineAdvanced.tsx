@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { RadioGroup, RadioGroupItem, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, RadioGroup, RadioGroupItem, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerType, SourceTypeMap } from '../../config'
 import { Trash, Page } from '../common'
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg'
@@ -156,16 +156,15 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         )}
                                     </div>
                                     <label className="form__row">
-                                        <span className="form__label dc__required-field">Stage Name</span>
-                                        <input
-                                            className="form__input"
-                                            autoComplete="off"
+                                        <CustomInput
+                                            name="stage-name"
+                                            label="Stage Name"
                                             placeholder="Enter stage name"
-                                            type="text"
                                             value={stage.name}
                                             onChange={(event) =>
                                                 this.props.handleChange(event, stage.id, key, index, 'name')
                                             }
+                                            isRequiredField={true}
                                         />
                                     </label>
                                     <label className="form__row">
@@ -190,12 +189,10 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         </div>
                                     </label>
                                     <label className="form__row">
-                                        <span className="form__label">Report directory path</span>
-                                        <input
-                                            className="form__input"
-                                            autoComplete="off"
+                                        <CustomInput
+                                            name="report-path"
+                                            label="Report directory path"
                                             placeholder="Enter report directory path"
-                                            type="text"
                                             value={stage.outputLocation}
                                             onChange={(event) =>
                                                 this.props.handleChange(event, stage.id, key, index, 'outputLocation')
@@ -234,16 +231,15 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         )}
                                     </div>
                                     <label className="form__row">
-                                        <span className="form__label dc__required-field">Stage Name</span>
-                                        <input
-                                            className="form__input"
-                                            autoComplete="off"
+                                        <CustomInput
+                                            name="stage-name"
+                                            label="Stage Name"
                                             placeholder="Enter stage name"
-                                            type="text"
                                             value={stage.name}
                                             onChange={(event) =>
                                                 this.props.handleChange(event, stage.id, key, index, 'name')
                                             }
+                                            isRequiredField={true}
                                         />
                                     </label>
                                     <label className="form__row">
@@ -268,12 +264,10 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         </div>
                                     </label>
                                     <label className="form__row">
-                                        <span className="form__label">Report directory path</span>
-                                        <input
-                                            className="form__input"
-                                            autoComplete="off"
+                                        <CustomInput
+                                            name="report-path"
+                                            label="Report directory path"
                                             placeholder="Enter directory path"
-                                            type="text"
                                             value={stage.outputLocation}
                                             onChange={(event) =>
                                                 this.props.handleChange(event, stage.id, key, index, 'outputLocation')
@@ -374,12 +368,10 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                                 }}
                                             />
                                             <div className="form__field">
-                                                <label className="form__label">Key</label>
-                                                <input
-                                                    className="form__input"
-                                                    autoComplete="off"
+                                                <CustomInput
+                                                    name="key"
+                                                    label="Key"
                                                     placeholder="Name"
-                                                    type="text"
                                                     value={arg.key}
                                                     onChange={(event) => {
                                                         this.props.handleDockerArgChange(event, index, 'key')
@@ -488,15 +480,14 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     }`}
                 >
                     <label className="form__row">
-                        <span className="form__label dc__required-field">Pipeline Name</span>
-                        <input
-                            className="form__input"
-                            autoComplete="off"
+                        <CustomInput
+                            name="pipeline-name"
+                            label="Pipeline Name"
                             disabled={!!this.props.ciPipeline.id}
                             placeholder="e.g. my-first-pipeline"
-                            type="text"
                             value={this.props.form.name}
                             onChange={this.props.handlePipelineName}
+                            isRequiredField={true}
                         />
                         {this.props.showError && !errorObj.isValid ? (
                             <span className="form__error">

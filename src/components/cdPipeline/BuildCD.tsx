@@ -334,7 +334,7 @@ export default function BuildCD({
             <>
                 <div className="form__row form__row--flex mt-12">
                     <div className="w-50 mr-8">
-                        <div className="form__label">Environment*</div>
+                        <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
                             menuPortalTarget={isAdvanced ? null : document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}

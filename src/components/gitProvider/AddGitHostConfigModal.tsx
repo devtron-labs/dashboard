@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { saveGitHost } from './gitProvider.service'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, showError } from '@devtron-labs/devtron-fe-common-lib'
 
 interface GitHostConfigModalProps {
     closeGitConfigModal: () => void;
@@ -57,9 +57,18 @@ export class GitHostConfigModal extends Component<GitHostConfigModalProps, GitHo
                     <Close className="icon-dim-20" />
                 </button>
             </div>
-            <div className="pb-6 pl-20 pr-20 dc__required-field">Git host name </div>
             <div className="pb-40 pl-20 pr-20">
-                <input className="form__input " type="text" name="app-name" autoComplete="off" value={this.state.name} onChange={this.handleFilterInput} placeholder="Enter name" autoFocus={true} tabIndex={1} />
+                  <CustomInput
+                        label="Git host name"
+                        name="app-name"
+                        autoComplete="off"
+                        value={this.state.name}
+                        onChange={this.handleFilterInput}
+                        placeholder="Enter name"
+                        autoFocus={true}
+                        tabIndex={1}
+                        isRequiredField={true}
+                    />
             </div>
             <div className="flex right pt-12 pb-12 pl-20 pr-20">
                 <button type="button" className="cta cancel mr-16" tabIndex={5} onClick={this.props.closeGitConfigModal} >Cancel</button>

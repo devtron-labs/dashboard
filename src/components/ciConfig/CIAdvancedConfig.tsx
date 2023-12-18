@@ -5,7 +5,7 @@ import { ReactComponent as Cross } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { CIAdvancedConfigProps } from './types'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import TargetPlatformSelector from './TargetPlatformSelector'
 
 export default function CIAdvancedConfig({
@@ -96,15 +96,13 @@ export default function CIAdvancedConfig({
                     args.map((arg, idx) => (
                         <div className="flexbox justify-space" key={`build-${idx}`}>
                             <div className="mt-8 w-100">
-                                <input
+                                <CustomInput
                                     data-testid={`build-pack-build-env-key${idx}`}
                                     name="arg-key"
-                                    className={`w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
+                                    rootClassName={`w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
                                         updateNotAllowed ? 'cursor-not-allowed' : ''
                                     }`}
-                                    autoComplete="off"
                                     placeholder="Key"
-                                    type="text"
                                     value={arg.k}
                                     data-id={idx}
                                     data-value={arg.v}
