@@ -63,20 +63,9 @@ import {
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
-import {
-    ClusterCapacityType,
-    ClusterDetail,
-    ClusterErrorType,
-    ClusterImageList,
-    ERROR_TYPE,
-} from '../../ClusterNodes/types'
+import { ClusterCapacityType, ClusterDetail, ClusterImageList } from '../../ClusterNodes/types'
 import { getHostURLConfiguration } from '../../../services/service'
-import {
-    clusterNamespaceList,
-    getClusterCapacity,
-    getClusterList,
-    getClusterListMin,
-} from '../../ClusterNodes/clusterNodes.service'
+import { clusterNamespaceList, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -85,6 +74,7 @@ import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
 import { createTaintsList } from '../../cluster/cluster.util'
 import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
+import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -699,6 +689,12 @@ export default function ResourceList() {
         setSelectedCluster(selected)
         getNamespaceList(selected.value)
 
+        if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
+            replace({
+                pathname: URLS.RESOURCE_BROWSER,
+            })
+            return
+        }
         if (!skipRedirection) {
             const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${
                 ALL_NAMESPACE_OPTION.value
