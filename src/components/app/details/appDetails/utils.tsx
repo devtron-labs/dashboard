@@ -519,6 +519,12 @@ export const processDeploymentStatusDetailsData = (
                 }
                 deploymentData.deploymentError = `Below resources did not become healthy within 10 mins. Resource status shown below was last fetched ${lastFetchedTime}. ${data.statusFetchCount} retries failed.`
             } else if (element['status'].includes(TIMELINE_STATUS.KUBECTL_APPLY)) {
+                if (!isArgoCDAvailable) {
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.time = element['statusTime']
+                }
+
                 if (element?.resourceDetails) {
                     deploymentPhases.forEach((phase) => {
                         for (let item of element.resourceDetails) {
@@ -585,12 +591,6 @@ export const processDeploymentStatusDetailsData = (
                                     message: item.message,
                                 }
                             })
-                    }
-
-                    if (!isArgoCDAvailable) {
-                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
-                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
-                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.time = element['statusTime']
                     }
                 } else if (element['status'] === TIMELINE_STATUS.KUBECTL_APPLY_SYNCED) {
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.resourceDetails = []
