@@ -211,15 +211,14 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                             <div className="mb-12">
                                 <div className="row-container mb-12">
                                     {renderLabel('Host', 'Host name')}
-                                    <input
+                                    <CustomInput
                                         type="text"
                                         data-testid="httprequests-routes-host-textbox"
                                         name={BASIC_FIELDS.HOST}
                                         value={currentBasicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
-                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         onChange={handleInputChange}
                                         readOnly={readOnly}
-                                        autoComplete="off"
                                     />
                                 </div>
                                 <div className="row-container mb-4">
@@ -238,16 +237,14 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     (path: string, index: number) => (
                                         <div className="row-container mb-4" key={`${BASIC_FIELDS.PATH}-${index}`}>
                                             <div />
-                                            <input
-                                                type="text"
+                                            <CustomInput
                                                 data-testid="httprequests-routes-path-textbox"
                                                 name={BASIC_FIELDS.PATH}
                                                 data-index={index}
                                                 value={path}
-                                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                                rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                                 onChange={handleInputChange}
                                                 readOnly={readOnly}
-                                                autoComplete="off"
                                             />
                                             <Close
                                                 className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
