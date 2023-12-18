@@ -218,7 +218,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                             />
                 </label>
                 <div>
-                    <label className="form__label">Project*
+                    <label className="form__label dc__required-field">Project
                         <Tippy className="default-tt" arrow={true} trigger={"click"}
                             interactive={true} placement="top" content="Required to control user Acccess">
                             <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />

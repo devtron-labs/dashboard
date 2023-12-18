@@ -178,6 +178,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         <label className="form__row">
                             <CustomInput
                                 name="configName "
+                                label="Configuration name"
                                 data-testid="add-smtp-configuration-name"
                                 ref={(node) => (this._configName = node)}
                                 value={this.state.form.configName}
@@ -205,7 +206,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             />
                         </label>
                         <label className="form__row">
-                            < CustomInput
+                            <CustomInput
                                 label="SMTP Port"
                                 data-testid="add-smtp-port"
                                 name="port"
@@ -219,10 +220,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             />
                         </label>
                         <div className="form__row">
-                            <label htmlFor="" className="form__label">
-                                SMTP Username*
-                            </label>
-                            < CustomInput
+                            <CustomInput
                                 label="SMTP Username"
                                 data-testid="add-smtp-username"
                                 name="authUser"
@@ -248,8 +246,8 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             />
                         </div>
                         <label className="form__row">
-                            <span className="form__label">Send email from*</span>
-                            < CustomInput
+                            <CustomInput
+                                label="Send email from"
                                 data-testid="add-smtp-send-email"
                                 type="email"
                                 name="fromEmail"

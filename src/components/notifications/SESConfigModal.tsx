@@ -288,8 +288,8 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             />
                         </label>
                         <label className="form__row">
-                            <span className="form__label">Secret Access Key*</span>
                             <CustomInput
+                                label="Secret Access Key"
                                 data-testid="add-ses-secret-access-key"
                                 type="text"
                                 name="app-name"
@@ -303,8 +303,8 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             />
                         </label>
                         <div className="form__row">
-                            <label htmlFor="" className="form__label">
-                                AWS Region*
+                            <label htmlFor="" className="form__label dc__reuired-field">
+                                AWS Region
                             </label>
                             <ReactSelect
                                 classNamePrefix="add-ses-aws-region"
