@@ -331,7 +331,6 @@ export default function CreateAppGroup({
                     <CustomInput
                         label="Name"
                         tabIndex={1}
-                        autoComplete="off"
                         placeholder="Enter filter name"
                         value={appGroupName}
                         name="name"

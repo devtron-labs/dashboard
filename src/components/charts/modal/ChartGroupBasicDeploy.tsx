@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DialogForm, DialogFormSubmit, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, DialogForm, DialogFormSubmit, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
@@ -8,6 +8,7 @@ import { Option } from '../../v2/common/ReactSelect.utils';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import ReactSelect from 'react-select';
 import { getEnvironmentListMin } from '../../../services/service';
+import { render } from 'react-dom';
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[];
@@ -192,38 +193,53 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
     }
 
     let listClassNames = "deploy-selected-chart__list";
-    if (showAppNames) { listClassNames = `${listClassNames} show` };
+    if (showAppNames) {
+        listClassNames = `${listClassNames} show`
+    }
+
+    const renderAdditionalErrorInfo = (suggestedName: string, index: number) => {
+       if (suggestedName) {
+           return (
+               <>
+                   . Suggested Name:
+                   <span className="anchor pointer" onClick={(e) => handleNameChange(index, suggestedName)}>
+                       {suggestedName}
+                   </span>
+               </>
+           )
+       }
+    }
+
     return (
         <div
             className={listClassNames}>
             {charts.map((chart, index) => {
-                if (chart.isEnabled) return <div key={index} className="form__row deploy-selected-chart__list-item">
-                    <img onError={handleImageError} src={chart.chartMetaData.icon || ""} alt="" className="dc__chart-grid-item__icon" />
-                    <div className="w-100">
-                        <span className="form__label form__label--lower">{chart.chartMetaData.chartRepoName}/{chart.chartMetaData.chartName}</span>
-                        <input autoComplete="off" className={`form__input ${chart?.name?.error ? 'form__input--error' : ''}`} type="text" data-testid={`chart-name-edit-input-${index}`} tabIndex={index + 1} value={chart.name.value}
-                            onChange={(event) => {
-                                handleNameChange(index, event.target.value)
-                            }} />
-                        <span className={`form__error`}>
-                            {chart.name.error &&
-                                <><Error className="form__icon form__icon--error" />
-                                    <>{chart.name.error}.
-                                    {chart.name.suggestedName &&
-                                            <> Suggested Name:
-                                        <span className="anchor pointer"
-                                                    onClick={(e) => handleNameChange(index, chart.name.suggestedName)}>
-                                                    {chart.name.suggestedName}
-                                                </span>
-                                            </>
-                                        }
-                                    </>
-                                    <br />
-                                </>
-                            }
-                        </span>
+                if (chart.isEnabled) return (
+                    <div key={index} className="form__row deploy-selected-chart__list-item">
+                        <img
+                            onError={handleImageError}
+                            src={chart.chartMetaData.icon || ''}
+                            alt=""
+                            className="dc__chart-grid-item__icon"
+                        />
+                        <div className="w-100">
+                            <CustomInput
+                                name="name"
+                                label={`${chart.chartMetaData.chartRepoName}/${chart.chartMetaData.chartName}`}
+                                labelClassName="form__label--lower"
+                                rootClassName={`form__input ${chart?.name?.error ? 'form__input--error' : ''}`}
+                                data-testid={`chart-name-edit-input-${index}`}
+                                tabIndex={index + 1}
+                                value={chart.name.value}
+                                onChange={(event) => {
+                                    handleNameChange(index, event.target.value)
+                                }}
+                                error={chart.name.error}
+                                additionalErrorInfo={renderAdditionalErrorInfo(chart.name.suggestedName, index)}
+                            />
+                        </div>
                     </div>
-                </div>
+                )
                 else return null
             })}
         </div>

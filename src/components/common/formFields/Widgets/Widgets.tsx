@@ -4,7 +4,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../../v2/common/ReactSelect.utils'
-import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../../helpers/Helpers'
 import {
     CheckboxWithTippyProps,
@@ -106,13 +106,13 @@ export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
                     maxLength={props.maxLength}
                 />
             ) : (
-                <input
+                <CustomInput
                     placeholder={props.placeholder && props.placeholder}
                     name={props.title?.replace(/\s/g, '_') || 'input_widget'}
-                    className="form__input h-32"
+                    rootClassName="h-32"
                     value={inputValue}
                     onChange={onValueChange}
-                    onBlur={onInputBlur}
+                    handleOnBlur={onInputBlur}
                     autoComplete="off"
                     required={props.isRequired}
                     {...(props.type === 'numberInput'

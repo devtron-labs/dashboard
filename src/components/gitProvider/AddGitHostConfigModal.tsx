@@ -61,7 +61,6 @@ export class GitHostConfigModal extends Component<GitHostConfigModalProps, GitHo
                   <CustomInput
                         label="Git host name"
                         name="app-name"
-                        autoComplete="off"
                         value={this.state.name}
                         onChange={this.handleFilterInput}
                         placeholder="Enter name"

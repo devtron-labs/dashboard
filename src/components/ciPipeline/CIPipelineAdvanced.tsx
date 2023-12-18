@@ -488,13 +488,8 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                             value={this.props.form.name}
                             onChange={this.props.handlePipelineName}
                             isRequiredField={true}
+                            error={this.props.showError && !errorObj.isValid  && this.props.validationRules.name(this.props.form.name).message}
                         />
-                        {this.props.showError && !errorObj.isValid ? (
-                            <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {this.props.validationRules.name(this.props.form.name).message}
-                            </span>
-                        ) : null}
                     </label>
                     {this.renderTriggerType()}
                     {this.renderMaterials()}
