@@ -11,7 +11,7 @@ import {
 } from './clusterNodes.service'
 import { GroupHeading, menuComponentForImage, Option } from '../../components/v2/common/ReactSelect.utils'
 import { clusterImageDescription, convertToOptionsList } from '../common'
-import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
 import { ClusterTerminalType, NodeTaintType } from './types'
@@ -99,6 +99,7 @@ export default function ClusterTerminal({
     const [manifestErrors, setManifestErrors] = useState<string[]>()
     const [debugMode, setDebugMode] = useState<boolean>(false)
     const [isManifestAvailable, setManifestAvailable] = useState<boolean>()
+    const [hideManagedFields, setHideManagedFields] = useState<boolean>(true)
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
@@ -179,6 +180,7 @@ export default function ClusterTerminal({
                             }
                             const namespace = result.namespace
                             setNamespace(namespace ? { label: namespace, value: namespace } : defaultNameSpace)
+                            setHideManagedFields(true)
                             setManifestButtonState(EditModeType.NON_EDIT)
                             terminalAccessIdRef.current = result.terminalAccessId
                             socketConnecting()
@@ -337,6 +339,7 @@ export default function ClusterTerminal({
     function getNewSession() {
         if (!terminalAccessIdRef.current) return
         setSocketConnection(SocketConnectionType.CONNECTING)
+        // It might be that we dont have resourceData.
         getClusterData(
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
                 selectedTerminalType.value
@@ -627,6 +630,10 @@ export default function ClusterTerminal({
         setTerminalCleared(!terminalCleared)
     }
 
+    const handleToggleManagedFields = () => {
+        setHideManagedFields(!hideManagedFields)
+    }
+
     const renderRegisterLinkMatcher = (terminal) => {
         const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
         terminal.registerLinkMatcher(linkMatcherRegex, (_event, text) => {
@@ -704,6 +711,7 @@ export default function ClusterTerminal({
                             errorMessage={manifestErrors}
                             setManifestAvailable={setManifestAvailable}
                             selectTerminalTab={selectTerminalTab}
+                            hideManagedFields={hideManagedFields}
                         />
                     </div>
                 )}
@@ -815,6 +823,21 @@ export default function ClusterTerminal({
         }
     }
 
+    const renderHideManagedFields = () => (
+        <div className="pt-6 pb-6 pl-12 pr-8 top">
+            <Checkbox
+                rootClassName="mb-0-imp h-18"
+                isChecked={hideManagedFields}
+                value={CHECKBOX_VALUE.CHECKED}
+                onChange={handleToggleManagedFields}
+            >
+                <span className="mr-5 cn-9 fs-12 lh-18" data-testid="hide-pods-managed-fields">
+                    Hide Managed Fields
+                </span>
+            </Checkbox>
+        </div>
+    )
+
     const closeManifetsPopup = (isClose: boolean): void => {
         setManifestButtonState(EditModeType.REVIEW)
         setManifestData('')
@@ -822,6 +845,8 @@ export default function ClusterTerminal({
     }
 
     const hideShell: boolean = !(connectTerminal && isPodCreated && !selectedTabIndex)
+    const showManagedFieldsCheckbox: boolean =
+        selectedTabIndex === 2 && isManifestAvailable && manifestButtonState === EditModeType.NON_EDIT
 
     const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
     const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
@@ -951,6 +976,14 @@ export default function ClusterTerminal({
                 buttonSelectionState: manifestButtonState,
                 setManifestButtonState: setManifestButtonState,
             },
+            ...(showManagedFieldsCheckbox
+                ? [
+                      {
+                          type: TerminalWrapperType.CUSTOM_COMPONENT,
+                          customComponent: renderHideManagedFields,
+                      },
+                  ]
+                : []),
         ],
         tabSwitcher: {
             terminalTabWrapper: terminalTabWrapper,

@@ -24,6 +24,7 @@
 .deployed,
 .synced,
 .sync.ok,
+.superseded ,
 .deploy-success {
     background-image: url('../assets/icons/appstatus/healthy.svg');
 }
@@ -73,8 +74,7 @@
 }
 
 .failed,
-.unabletofetch,
-.superseded {
+.unabletofetch {
     background-image: url('../assets/icons/appstatus/ic-appstatus-failed.svg');
 }
 

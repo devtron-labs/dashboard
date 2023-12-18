@@ -428,10 +428,11 @@ export default function ClusterForm({
             },
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
-                userName: prometheusToggleEnabled ? state.userName.value : '',
-                password: prometheusToggleEnabled ? state.password.value : '',
+                userName: prometheusToggleEnabled && state.authType.value === AuthenticationType.BASIC ? state.userName.value : '',
+                password: prometheusToggleEnabled && state.authType.value === AuthenticationType.BASIC ? state.password.value : '',
                 tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
+                isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
             },
         }
     }
