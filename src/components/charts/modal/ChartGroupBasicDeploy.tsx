@@ -3,12 +3,11 @@ import { CustomInput, DialogForm, DialogFormSubmit, showError } from '@devtron-l
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
-import { styles, smallMenuList, menuList, DropdownIndicator } from '../charts.util';
+import { styles, smallMenuList, menuList, DropdownIndicator, renderAdditionalErrorInfo } from '../charts.util';
 import { Option } from '../../v2/common/ReactSelect.utils';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import ReactSelect from 'react-select';
 import { getEnvironmentListMin } from '../../../services/service';
-import { render } from 'react-dom';
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[];
@@ -197,19 +196,6 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
         listClassNames = `${listClassNames} show`
     }
 
-    const renderAdditionalErrorInfo = (suggestedName: string, index: number) => {
-       if (suggestedName) {
-           return (
-               <>
-                   . Suggested Name:
-                   <span className="anchor pointer" onClick={(e) => handleNameChange(index, suggestedName)}>
-                       {suggestedName}
-                   </span>
-               </>
-           )
-       }
-    }
-
     return (
         <div
             className={listClassNames}>
@@ -235,7 +221,8 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
                                     handleNameChange(index, event.target.value)
                                 }}
                                 error={chart.name.error}
-                                additionalErrorInfo={renderAdditionalErrorInfo(chart.name.suggestedName, index)}
+                                isRequiredField={true}
+                                additionalErrorInfo={renderAdditionalErrorInfo(handleNameChange, chart.name.suggestedNam, index)}
                             />
                         </div>
                     </div>
