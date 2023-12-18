@@ -37,9 +37,11 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
+const CodeEditor = lazy(() => import('../CodeEditor/CodeEditor'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
+const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -174,7 +176,12 @@ function NavItem({ serverMode }) {
             isAvailableInDesktop: true,
         },
         { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container/ OCI Registry', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        {
+            name: serverMode === SERVER_MODE.EA_ONLY ? 'OCI Registry' : 'Container/ OCI Registry',
+            href: URLS.GLOBAL_CONFIG_DOCKER,
+            component: Docker,
+            isAvailableInEA: true,
+        },
     ]
 
     const ConfigOptional = [
@@ -384,7 +391,15 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {window._env_.ENABLE_SCOPED_VARIABLES && (
+                    {CatalogFramework && <NavLink
+                        to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                        key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                        activeClassName="active-route"
+                    >
+                        <div className="flexbox flex-justify">Catalog Framework</div>
+                    </NavLink>}
+
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES &&  (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -516,6 +531,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                                     {...props}
                                     handleChecklistUpdate={handleChecklistUpdate}
                                     isSuperAdmin={isSuperAdmin}
+                                    isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
                                 />
                             </div>
                         )
@@ -563,9 +579,14 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
+            {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            {CatalogFramework && (
+                <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
             {PluginsPolicy && (

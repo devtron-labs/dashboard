@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { showError, Progressing, Reload, GenericEmptyState, useAsync, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
-import { getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails, getArtifactForJobCi, getCIPipelines } from '../../service'
+import {
+    getCIPipelines,
+    getCIHistoricalStatus,
+    getTriggerHistory,
+    getArtifact,
+    getTagDetails,
+    getArtifactForJobCi,
+} from '../../service'
 import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -27,7 +34,7 @@ import { CIPipelineBuildType } from '../../../ciPipeline/types'
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
-export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: boolean, filteredEnvIds?: string }) {
+export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: boolean; filteredEnvIds?: string }) {
     const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string
@@ -163,7 +170,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
         replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
-        return { value: `${item.id}`, label: item.name, pipelineId: item.id, pipelineType: item.pipelineType}
+        return { value: `${item.id}`, label: item.name, pipelineId: item.id, pipelineType: item.pipelineType }
     })
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
@@ -378,6 +385,7 @@ export const Details = ({
                             artifact={triggerDetails.artifact}
                             environmentName={triggerDetails.environmentName}
                             isJobView={isJobView}
+                            workerPodName={triggerDetails.name}
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
