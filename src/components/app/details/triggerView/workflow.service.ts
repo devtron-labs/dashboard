@@ -14,7 +14,7 @@ import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../..
 import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
-import { CommonNodeAttr, TriggerTypeMap, WorkflowNodeType, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, TriggerTypeMap, WorkflowNodeType, PipelineType, DownstreamNodesEnvironmentsType } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { BlackListedCI } from '../../../workflowEditor/types'
 
@@ -348,10 +348,17 @@ function addDownstreams(workflows: WorkflowType[]) {
 
             if (!!parentNode) {
                 const _downstream = type + '-' + node.id
+                const environmentDetails: DownstreamNodesEnvironmentsType = {
+                    environmentId: node.environmentId,
+                    environmentName: node.environmentName,
+                }
+
                 if (parentNode.postNode) {
                     parentNode.postNode.downstreams.push(_downstream)
+                    parentNode.postNode.downstreamEnvironments?.push(environmentDetails)
                 } else {
                     parentNode.downstreams.push(_downstream)
+                    parentNode.downstreamEnvironments?.push(environmentDetails)
                 }
                 parentNode.downstreamNodes.push(node)
             }
@@ -453,6 +460,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             url: '',
             id: `${WorkflowNodeType.GIT}-${materialName}-${index}`,
             downstreams: [`${WorkflowNodeType.CI}-${ciPipeline.id}`],
+            downstreamEnvironments: [],
             type: WorkflowNodeType.GIT,
             icon: 'git',
             branch: getStaticCurrentBranchName(ciMaterial),
@@ -486,6 +494,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         type: WorkflowNodeType.CI,
         inputMaterialList: [],
         downstreams: [],
+        downstreamEnvironments: [],
         isExternalCI: ciPipeline.isExternal,
         // Can't rely on pipelineType for legacy pipelines, so using parentCiPipeline as well
         isLinkedCI: ciPipeline.pipelineType !== PipelineType.LINKED_CD && !!ciPipeline.parentCiPipeline,
@@ -517,6 +526,7 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
         type: WorkflowNodeType.WEBHOOK,
         inputMaterialList: [],
         downstreams: [],
+        downstreamEnvironments: [],
         isExternalCI: true,
         isLinkedCI: false,
         linkedCount: 0,
@@ -545,6 +555,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             activeIn: false,
             activeOut: false,
             downstreams: [`${WorkflowNodeType.CD}-${cdPipeline.id}`],
+            downstreamEnvironments: [],
             type: WorkflowNodeType.PRE_CD,
             status: cdPipeline.preDeployStage?.status || cdPipeline.preStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
@@ -581,6 +592,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         activeIn: false,
         activeOut: false,
         downstreams: cdDownstreams,
+        downstreamEnvironments: [],
         type: WorkflowNodeType.CD,
         status: DEFAULT_STATUS,
         triggerType: TriggerTypeMap[trigger],
@@ -624,6 +636,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             activeIn: false,
             activeOut: false,
             downstreams: [],
+            downstreamEnvironments: [],
             type: WorkflowNodeType.POST_CD,
             status: cdPipeline.postDeployStage?.status || cdPipeline.postStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],

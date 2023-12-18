@@ -474,6 +474,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }, [])
     }
 
+    getAddCDButtonTooltipContent = (node: NodeAttr): string => {
+        const environments = node.downstreamEnvironments?.map((env) => env.environmentName) ?? []
+        const environmentsString = environments.slice(0, 3).join('\n')
+        const moreEnvCount = environments.length - 3
+        const moreEnvString = moreEnvCount > 0 ? `\n+${moreEnvCount}` : ''
+        return `before pipelines\n${environmentsString} ${moreEnvString}`
+    }
+
     onClickNodeEdge = ({
         nodeId,
         nodesWithBufferHeight,
@@ -558,6 +566,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             const addCDButtons =
                 selectedNodeEndNodes.length > 1 ? [AddCDPositions.LEFT, AddCDPositions.RIGHT] : [AddCDPositions.RIGHT]
 
+            const leftTooltipContent = this.getAddCDButtonTooltipContent(startNode)
             if (ApprovalNodeEdge) {
                 edgeList.push(
                     <ApprovalNodeEdge
@@ -572,6 +581,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         ciPipelineId={workflowCIPipelineId}
                         isParallelEdge
                         isWebhookCD={isWebhookCD}
+                        leftTooltipContent={leftTooltipContent}
                     />,
                 )
             } else {
@@ -589,6 +599,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         ciPipelineId={workflowCIPipelineId}
                         isParallelEdge
                         isWebhookCD={isWebhookCD}
+                        leftTooltipContent={leftTooltipContent}
                     />,
                 )
             }
