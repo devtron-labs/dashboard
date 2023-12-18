@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { Select } from '../common';
-import { showError, Progressing, getTeamListMin as getProjectListMin, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, getTeamListMin as getProjectListMin, Drawer, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config/constants';
 import { toast } from 'react-toastify';
 import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service';
 import { ReactComponent as Help } from '../../assets/icons/ic-help-outline.svg';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 
 export interface SlackConfigModalProps {
     slackConfigId: number;
@@ -176,16 +177,19 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
         else body = <>
             <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
                 <label className="form__row">
-                    <span className="form__label">Slack Channel*</span>
-                    <input data-testid="add-slack-channel" className="form__input" type="text" name="app-name"
-                        value={this.state.form.configName} onChange={this.handleSlackChannelChange}
-                        onBlur={(event) => this.isValid(event, 'configName')}
-                        placeholder="channel name" autoFocus={true} tabIndex={1} />
-                    <span className="form__error">
-                        {!this.state.isValid.configName
-                            ? <><Error className="form__icon form__icon--error" />This is required field.<br /></>
-                            : null}
-                    </span>
+                        <CustomInput
+                            data-testid="add-slack-channel"
+                            label="Slack Channel"
+                            name="app-name"
+                            value={this.state.form.configName}
+                            onChange={this.handleSlackChannelChange}
+                            handleOnBlur={(event) => this.isValid(event, 'configName')}
+                            placeholder="channel name"
+                            autoFocus={true}
+                            tabIndex={1}
+                            isRequiredField={true}
+                            error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
+                        />
                 </label>
                 <label className="form__row">
                     <span className="form__label">Webhook URL*
@@ -200,15 +204,18 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                             <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
                         </Tippy>
                     </span>
-                    <input data-testid="add-webhook-url" className="form__input" type="text" name="app-name"
-                        value={this.state.form.webhookUrl}
-                        placeholder="Enter Incoming Webhook URL" tabIndex={2} onChange={this.handleWebhookUrlChange}
-                        onBlur={(event) => this.isValid(event, 'webhookUrl')} />
-                    <span className="form__error">
-                        {!this.state.isValid.webhookUrl
-                            ? <><Error className="form__icon form__icon--error" />This is a required field. <br /></>
-                            : null}
-                    </span>
+                           <CustomInput
+                                data-testid="add-webhook-url"
+                                type="text"
+                                name="app-name"
+                                value={this.state.form.webhookUrl}
+                                placeholder="Enter Incoming Webhook URL"
+                                tabIndex={2}
+                                onChange={this.handleWebhookUrlChange}
+                                handleOnBlur={(event) => this.isValid(event, 'webhookUrl')}
+                                isRequiredField={true }
+                                error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
+                            />
                 </label>
                 <div>
                     <label className="form__label">Project*

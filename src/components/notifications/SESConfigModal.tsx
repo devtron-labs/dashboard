@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { validateEmail } from '../common'
-import { showError, Progressing, Checkbox, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Checkbox, Drawer, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -11,6 +11,7 @@ import { multiSelectStyles, DropdownIndicator } from './notifications.util'
 import { Option } from '../v2/common/ReactSelect.utils'
 import awsRegionList from '../common/awsRegionList.json'
 import ReactSelect from 'react-select'
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export interface SESConfigModalProps {
     sesConfigId: number
@@ -256,75 +257,50 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                 <>
                     <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
                         <label className="form__row">
-                            <span className="form__label">Configuration Name*</span>
-                            <input
+                            <CustomInput
+                                label="Configuration Name"
                                 data-testid="add-ses-configuration-name"
                                 ref={(node) => (this._configName = node)}
-                                className="form__input"
-                                type="text"
                                 name="configname"
                                 value={this.state.form.configName}
                                 onChange={this.handleConfigNameChange}
-                                onBlur={(event) => this.handleBlur(event, 'configName')}
+                                handleOnBlur={(event) => this.handleBlur(event, 'configName')}
                                 placeholder="Configuration name"
                                 autoFocus={true}
                                 tabIndex={1}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.configName ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field <br />
-                                    </>
-                                ) : null}
-                            </span>
                         </label>
                         <label className="form__row">
-                            <span className="form__label">Access Key ID*</span>
-                            <input
+                            <CustomInput
                                 data-testid="add-ses-access-key"
-                                className="form__input"
+                                label="Access Key ID"
                                 type="text"
                                 name="app-name"
                                 value={this.state.form.accessKey}
                                 onChange={this.handleAccessKeyIDChange}
-                                onBlur={(event) => this.handleBlur(event, 'accessKey')}
+                                handleOnBlur={(event) => this.handleBlur(event, 'accessKey')}
                                 placeholder="Access Key ID"
                                 tabIndex={2}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.accessKey && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.accessKey ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field <br />
-                                    </>
-                                ) : null}
-                            </span>
                         </label>
                         <label className="form__row">
                             <span className="form__label">Secret Access Key*</span>
-                            <input
+                            <CustomInput
                                 data-testid="add-ses-secret-access-key"
-                                className="form__input"
                                 type="text"
                                 name="app-name"
                                 value={this.state.form.secretKey}
                                 onChange={this.handleSecretAccessKeyChange}
-                                onBlur={(event) => this.handleBlur(event, 'secretKey')}
+                                handleOnBlur={(event) => this.handleBlur(event, 'secretKey')}
                                 placeholder="Secret Access Key"
                                 tabIndex={3}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.secretKey && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.secretKey ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field <br />
-                                    </>
-                                ) : null}
-                            </span>
                         </label>
                         <div className="form__row">
                             <label htmlFor="" className="form__label">
@@ -365,28 +341,19 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             </span>
                         </div>
                         <label className="form__row">
-                            <span className="form__label">Send email from*</span>
-                            <input
+                            <CustomInput
+                                label="Send email from"
                                 data-testid="add-ses-send-email"
-                                className="form__input"
                                 type="email"
                                 name="app-name"
                                 value={this.state.form.fromEmail}
-                                onBlur={(event) => this.handleBlur(event, 'fromEmail')}
+                                handleOnBlur={(event) => this.handleBlur(event, 'fromEmail')}
                                 placeholder="Email"
                                 tabIndex={5}
                                 onChange={this.handleEmailChange}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.fromEmail && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.fromEmail ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field
-                                        <br />
-                                    </>
-                                ) : null}
-                            </span>
                             <span className="form__text-field-info">
                                 <Info className="form__icon form__icon--info" />
                                 This email must be verified with SES.
