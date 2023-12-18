@@ -160,7 +160,7 @@ function TerminalComponent({
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
             return (
-                url+`?${isExternalArgoApp ? 'isArgo=true&' : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
+                url+`?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
             )
         }
         return url

@@ -22,7 +22,7 @@ export const getManifestResource = (
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
     const url =
-        Routes.MANIFEST + (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView ? '?isArgo=true' : '')
+        Routes.MANIFEST + (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView ? `?externalArgoApplicationName=${ad.appName}` : '')
     return post(url, requestData)
 }
 
@@ -148,7 +148,7 @@ function getEventHelmApps(
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, nodeName, nodeType)
-    const url = Routes.EVENTS + ((ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView) ? '?isArgo=true' : '')
+    const url = Routes.EVENTS + ((ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView) ? `?externalArgoApplicationName=${ad.appName}` : '')
     return post(url, requestData)
 }
 
@@ -175,7 +175,7 @@ export const getLogsURL = (
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else if (ad.appType === AppType.EXTERNAL_ARGO_APP) {
-        logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${selectedNamespace}&isArgo=true`
+        logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${selectedNamespace}&externalArgoApplicationName=${ad.appName}`
     } else {
         const appType = getK8sResourcePayloadAppType(ad.appType)
         const deploymentType =
@@ -203,12 +203,12 @@ export const createResource = (
     return post(Routes.CREATE_RESOURCE, requestData)
 }
 
-const getEphemeralURL = (isResourceBrowserView: boolean, params: ParamsType, appType: string, appIds: string) => {
+const getEphemeralURL = (isResourceBrowserView: boolean, params: ParamsType, appType: string, appIds: string, appName: string) => {
     let url: string = Routes.EPHEMERAL_CONTAINERS
     if (isResourceBrowserView) {
         url += `?identifier=${params.clusterId}`
     } else if (appType === AppType.EXTERNAL_ARGO_APP) {
-        url += `?identifier=${params.clusterId}&clusterId=${params.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&isArgo=true`
+        url += `?identifier=${params.clusterId}&clusterId=${params.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&externalArgoApplicationName=${appName}`
     } else {
         url += `?identifier=${appIds}&appType=${getK8sResourcePayloadAppType(appType)}`
     }
@@ -231,7 +231,7 @@ export const generateEphemeralUrl = (
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
 
-    let url = getEphemeralURL(isResourceBrowserView, params, appType, appIds)
+    let url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
     return post(url, requestData)
 }
 
@@ -251,6 +251,6 @@ export const deleteEphemeralUrl = (
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
 
-    let url = getEphemeralURL(isResourceBrowserView, params, appType, appIds)
+    let url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
     return trash(url, requestData)
 }
