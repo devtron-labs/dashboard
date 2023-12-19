@@ -670,7 +670,7 @@ export default function ClusterForm({
                         value={state.url.value}
                         error={state.url.error}
                         onChange={handleOnChange}
-                        label={clusterLabel()}
+                        label={clusterLabel}
                         disabled={isDefaultCluster()}
                         placeholder="Enter server URL"
                         dataTestid="enter_server_url_input"
@@ -860,7 +860,7 @@ export default function ClusterForm({
                             />
                         </div>
                         <div className="form__row">
-                            <span className="form__label">Authentication Type*</span>
+                            <span className="form__label dc__required-field">Authentication Type</span>
                             <RadioGroup
                                 value={state.authType.value}
                                 name="authType"
