@@ -108,7 +108,6 @@ export function TaskDetailComponent() {
             <div>
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
-                    <div>
                         <CustomInput
                             rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                             data-testid="preBuild-task-name-textbox"
@@ -118,8 +117,6 @@ export function TaskDetailComponent() {
                             name="task-name"
                             error={renderTaskNameError()}
                         />
-
-                    </div>
                 </div>
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>

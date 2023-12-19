@@ -806,3 +806,4 @@ export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for t
 export const CVE_ID_NOT_FOUND = "CVE ID not found"
 export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"
 export const NO_HOST_URL = "Please enter host url"
+export const WEBHOOK_NO_API_TOKEN_ERROR = "API Token is required to execute webhook"

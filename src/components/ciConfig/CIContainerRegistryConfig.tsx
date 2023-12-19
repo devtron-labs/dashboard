@@ -187,7 +187,7 @@ export default function CIContainerRegistryConfig({
                             autoFocus={!configOverrideView}
                             disabled={configOverrideView && !allowOverride}
                             data-testid="container-repository-textbox"
-                            error={repository_name.error && repository_name.error}
+                            error={repository_name.error}
                         />
                     )}
                     {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
