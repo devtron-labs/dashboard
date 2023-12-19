@@ -804,6 +804,9 @@ export const processDeploymentStatusDetailsData = (
         } else if (data?.wfrStatus === 'Progressing') {
             deploymentData.deploymentStatus = DEPLOYMENT_STATUS.INPROGRESS
             deploymentData.deploymentStatusText = 'In progress'
+        } else if (data?.wfrStatus === 'TimedOut') {
+            deploymentData.deploymentStatus = DEPLOYMENT_STATUS.TIMED_OUT
+            deploymentData.deploymentStatusText = 'Timed out'
         }
     }
     return deploymentData
