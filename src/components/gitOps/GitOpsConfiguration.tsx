@@ -481,9 +481,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
 
             return (
-                <>
+                <div className="form__label fw-5 fs-13 mb-4 flex">
                     <span className="dc__required-field">{label} </span>&nbsp;(Use https://)
-                </>
+                </div>
             )
         }
 
@@ -589,7 +589,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         onChange={(event) => this.handleChange(event, 'host')}
                         name="Enter host"
                         error={this.state.isError.host}
-                        label={getGitOpsLabel()}
+                        label={getGitOpsLabel}
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                         dataTestid={
@@ -720,11 +720,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 error={this.state.isError.token}
                                 onFocus={handleOnFocus}
                                 label={
-                                    <>
-                                        {this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'Azure DevOps Access Token '
-                                            : 'Personal Access Token '}
-                                    </>
+                                    this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                        ? 'Azure DevOps Access Token '
+                                        : 'Personal Access Token '
                                 }
                                 showLink={true}
                                 link={DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK}
