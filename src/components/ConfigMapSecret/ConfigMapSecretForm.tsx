@@ -856,12 +856,13 @@ export const ConfigMapSecretForm = React.memo(
                             name="mountPath"
                             dataTestid={`${componentType}-volume-path-textbox`}
                             value={state.volumeMountPath.value}
-                            label="Volume mount path*"
+                            label="Volume mount path"
                             placeholder="/directory-path"
                             helperText="Keys are mounted as files to volume"
                             error={state.volumeMountPath.error}
                             onChange={onMountPathChange}
                             disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
+                            isRequiredField={true}
                         />
                     </div>
                     {renderSubPath()}
