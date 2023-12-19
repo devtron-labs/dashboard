@@ -36,6 +36,7 @@ interface EdgeProps {
     ciPipelineId?: number | string
     isWebhookCD?: boolean
     isParallelEdge?: boolean
+    leftTooltipContent?: string
 }
 
 interface LineDots {
@@ -171,6 +172,7 @@ export default class Edge extends Component<EdgeProps> {
                     endNode={this.props.endNode}
                     startNode={this.props.startNode}
                     handleAddCD={this.handleAddCDClick}
+                    tooltipContent={this.props.leftTooltipContent}
                 />
                 <AddCDButton
                     position={AddCDPositions.RIGHT}
