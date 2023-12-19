@@ -39,7 +39,8 @@ export default function TriggerResponseModal({
         )
     }
 
-    const handleRetryBuild = (): void => {
+    const handleRetryBuild = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         const appsToRetry: Record<string, boolean> = {}
         for (const response of responseList) {
             if (response.status === BulkResponseStatus.FAIL) {

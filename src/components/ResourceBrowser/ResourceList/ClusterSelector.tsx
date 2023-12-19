@@ -10,6 +10,7 @@ import {
     SIDEBAR_KEYS,
 } from '../Constants'
 import { ClusterOptionType } from '../Types'
+import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 
 interface ClusterSelectorType {
     onChange: ({ label, value }) => void
@@ -18,12 +19,16 @@ interface ClusterSelectorType {
 }
 
 export default function ClusterSelector({ onChange, clusterList, clusterId }: ClusterSelectorType) {
-    const defaultOption = clusterList.find((item) => item.value == clusterId)
+    let filteredClusterList = clusterList
+    if (window._env_.HIDE_DEFAULT_CLUSTER) {
+        filteredClusterList = clusterList.filter((item) => Number(item.value) !== DEFAULT_CLUSTER_ID)
+    }
+    const defaultOption = filteredClusterList.find((item) => item.value == clusterId)
 
     return (
         <ReactSelect
             classNamePrefix="cluster-select-header"
-            options={clusterList}
+            options={filteredClusterList}
             onChange={onChange}
             components={{
                 IndicatorSeparator: null,
