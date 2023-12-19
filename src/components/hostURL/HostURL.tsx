@@ -11,7 +11,7 @@ import {
     InfoColourBar,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../config';
+import { NO_HOST_URL, ViewType } from '../../config';
 import { toast } from 'react-toastify';
 import { getHostURLConfiguration } from '../../services/service';
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
@@ -199,8 +199,8 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 onChange={this.handleChange}
                                 data-testid="host-url-textbox"
                                 isRequiredField={true}
+                                error={!this.state.isHostUrlValid && NO_HOST_URL}
                             />
-                            {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
                             <div className="hosturl__autodetection flex fs-12 left pt-4">
                                 <Warn className="icon-dim-16 mr-4 " />
                                 Auto-detected from your browser:

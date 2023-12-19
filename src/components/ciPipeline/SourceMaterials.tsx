@@ -195,7 +195,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }}
                                         />
 
-                                        <div className="h-18"></div>
+                                        <div className="h-24"></div>
                                     </div>
                                 </ConditionalWrap>
 
@@ -203,6 +203,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                     <div className="w-50 ml-8 left">
                                         <CustomInput
                                             label="Branch Name"
+                                            rootClassName="h-40"
                                             name="branchName"
                                             placeholder="Eg. main"
                                             type="text"
@@ -218,15 +219,14 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }}
                                             handleOnBlur={onBlur}
                                             isRequiredField={true}
+                                            error={
+                                                errorObj &&
+                                                !errorObj.isValid &&
+                                                props.validationRules?.sourceValue(_materials[index].value).message
+                                            }
                                         />
-                                        {errorObj && !errorObj.isValid ? (
-                                            <span className="form__error ci-error ">
-                                                <img src={error} className="form__icon" />
-                                                {props.validationRules?.sourceValue(_materials[index].value).message}
-                                            </span>
-                                        ) : (
-                                            <div className="h-18"></div>
-                                        )}
+                                        {/* Note: In case Error is not shown added height*/}
+                                         {errorObj?.isValid && <div className="h-24"></div>} 
                                     </div>
                                 )}
 
@@ -247,18 +247,13 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                     SourceTypeMap.BranchRegex,
                                                 )
                                             }}
+                                            error={
+                                                errorObj && !errorObj.isValid
+                                                    && props.validationRules?.sourceValue(_materials[index].regex).message
+                                            }
                                         />
-                                        {errorObj && !errorObj.isValid ? (
-                                            <span
-                                                className="form__error ci-error "
-                                                data-testid="build-pipeline-validation-error-message"
-                                            >
-                                                <img src={error} className="form__icon" />
-                                                {props.validationRules?.sourceValue(_materials[index].regex).message}
-                                            </span>
-                                        ) : (
-                                            <div className="h-18"></div>
-                                        )}
+                                          {/* Note: In case Error is not shown */}
+                                        {errorObj?.isValid && <div className="h-24"></div>}
                                     </div>
                                 )}
                             </div>

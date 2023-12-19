@@ -304,14 +304,12 @@ export function TaskTypeDetailComponent() {
                                         formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
                                             .storeScriptAt
                                     }
+                                    error={
+                                        errorObj?.storeScriptAt &&
+                                        !errorObj.storeScriptAt.isValid &&
+                                        errorObj?.storeScriptAt.message
+                                    }
                                 />
-
-                                {errorObj?.storeScriptAt && !errorObj.storeScriptAt.isValid && (
-                                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                        <span>{errorObj?.storeScriptAt.message}</span>
-                                    </span>
-                                )}
                             </div>
                         </div>
                     </>
@@ -324,21 +322,20 @@ export function TaskTypeDetailComponent() {
                     <CustomInput
                         data-testid="custom-script-container-image-command-textbox"
                         rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                        autoComplete="off"
+                        name="command"
                         placeholder="Eg. “echo”"
-                        type="text"
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
                         value={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
                                 TaskFieldLabel.COMMAND
                             ]
                         }
-                        name='command'
                     />
                 </div>
                 <div className="row-container mb-12">
                     <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
                     <CustomInput
+                        name="args"
                         data-testid="custom-script-container-image-args-textbox"
                         rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                         placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
@@ -348,7 +345,6 @@ export function TaskTypeDetailComponent() {
                                 TaskFieldLabel.ARGS
                             ]
                         }
-                        name="args"
                     />
                 </div>
                 <MultiplePort />
@@ -385,24 +381,19 @@ export function TaskTypeDetailComponent() {
                             <CustomInput
                                 name="mountCodeToContainerPath"
                                 rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                autoComplete="off"
                                 data-testid="script-mount-container-textbox"
                                 placeholder="Eg file/folder"
-                                type="text"
                                 onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
                                 value={
                                     formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
                                         .mountCodeToContainerPath
                                 }
+                                error={
+                                    errorObj['mountCodeToContainerPath'] &&
+                                    !errorObj['mountCodeToContainerPath'].isValid &&
+                                    errorObj['mountCodeToContainerPath'].message
+                                }
                             />
-                        </div>
-                        <div className="pl-220">
-                            {errorObj['mountCodeToContainerPath'] && !errorObj['mountCodeToContainerPath'].isValid && (
-                                <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                    <span>{errorObj['mountCodeToContainerPath'].message}</span>
-                                </span>
-                            )}
                         </div>
                     </div>
                 )}

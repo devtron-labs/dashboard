@@ -393,6 +393,14 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         )
     }
 
+    renderGitRepoUrlLabel = (): JSX.Element => {
+        return (
+            <label className="form__label">
+                Git Repo URL<span className="cr-5">* </span>(use {this.gitAuthType('host')})
+            </label>
+        )
+    }
+
     renderForm() {
         const sortedProviders: any[] = this.props.providers
             ? sortObjectArrayAlphabetically(this.props.providers, 'name')
@@ -517,23 +525,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         )}
                     </div>
                     <div>
-                        <label className="form__label">Git Repo URL<span className="cr-5">* </span>(use {this.gitAuthType('host')})</label>
                         <CustomInput
+                            label={this.renderGitRepoUrlLabel}
                             name="Git Repo URL"
-                            type="text"
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
                             data-testid={`git-repo-url-text-box`}
+                            error={this.props.isError.url && this.props.isError.url}
                         />
-                        <span className="form__error">
-                            {this.props.isError.url && (
-                                <>
-                                    <img src={error} className="form__icon" />
-                                    {this.props.isError.url}
-                                </>
-                            )}
-                        </span>
                     </div>
                 </div>
                 {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
@@ -721,22 +721,18 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </Checkbox>
                         {this.props.isChecked && (
-                            <CustomInput
-                                rootClassName="ml-35 w-885"
-                                placeholder="e.g. /abc"
-                                value={this.props.material.checkoutPath}
-                                onChange={this.props.handlePathChange}
-                                data-testid="clone-directory-path"
-                                name="clone-directory-path"
-                            />
+                            <div className="ml-35">
+                                <CustomInput
+                                    rootClassName="w-885"
+                                    placeholder="e.g. /abc"
+                                    value={this.props.material.checkoutPath}
+                                    onChange={this.props.handlePathChange}
+                                    data-testid="clone-directory-path"
+                                    name="clone-directory-path"
+                                    error={this.props.isError.checkoutPath}
+                                />
+                            </div>
                         )}
-                        <span className="form__error ml-35">
-                            {this.props.isError.checkoutPath && (
-                                <>
-                                    <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}
-                                </>
-                            )}
-                        </span>
                     </div>
                     <div className="pt-16 ">
                         <Checkbox

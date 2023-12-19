@@ -57,15 +57,15 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                 )}
                 <div className="form__field">
                     <label>
-                        {keyLabel}
                         <CustomInput
                             name="key"
+                            label={keyLabel}
                             data-testid={`secrets-gui-key-textbox-${index}`}
                             value={k}
                             onChange={(e) => onChange(index, e.target.value, v)}
                             disabled={typeof onChange !== 'function'}
+                            error={keyError && keyError}
                         />
-                        {keyError ? <span className="form__error">{keyError}</span> : <div />}
                     </label>
                 </div>
                 <div className="form__field">
