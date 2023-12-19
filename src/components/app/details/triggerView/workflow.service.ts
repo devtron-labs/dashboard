@@ -10,6 +10,7 @@ import {
     WorkflowResult,
     PipelineType,
     WorkflowNodeType,
+    AddDimensionsToDownstreamDeploymentsParams,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
@@ -272,7 +273,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         ciNode.y = startY + workflowOffset.offsetY
 
         if ((ciNode.downstreamNodes?.length ?? 0) > 0) {
-            addDimensionsToDownstreamDeployments(ciNode.downstreamNodes, dimensions, ciNode.x, ciNode.y)
+            addDimensionsToDownstreamDeployments({downstreams: ciNode.downstreamNodes, dimensions,startX: ciNode.x,startY: ciNode.y})
         }
 
         const finalWorkflow = new Array<NodeAttr>()
@@ -360,16 +361,25 @@ function addDownstreams(workflows: WorkflowType[]) {
     })
 }
 
-function addDimensionsToDownstreamDeployments(
-    downstreams: Array<NodeAttr>,
-    dimensions: WorkflowDimensions,
-    startX: number,
-    startY: number,
-) {
-    let lastY = startY
+/**
+ * 
+ * @description This function is used to add dimensions to downstream deployments, we are recursively traversing the downstream deployments and adding dimensions to them, on each iteration we are updating the lastY coordinate which is used to calculate the Y coordinate of the next deployment, this value is going to be maximum Y coordinate we have encountered so far.
+ * @returns maximum Y coordinate we have encountered so far
+ */
+const addDimensionsToDownstreamDeployments = ({
+    downstreams,
+    dimensions,
+    startX,
+    startY,
+}: AddDimensionsToDownstreamDeploymentsParams): number => {
+    const cdNodesGap = dimensions.cDNodeSizes.nodeHeight + dimensions.cDNodeSizes.distanceY
+    // Shifting the Y coordinates here since, we are anyways adding cdNodesGap to maxY on start of each iteration and dont want to add that in the end of iteration
+    let maxY = startY - cdNodesGap
     for (let index = 0; index < downstreams.length; index++) {
         const element = downstreams[index]
-        let cdNodeY = lastY
+        maxY = maxY + cdNodesGap
+        const cdNodeY = maxY
+        // From here onwards For Y value we will only change maxY for next iteration and wont need to change current cdNodeY
         let cdNodeX = startX + dimensions.cDNodeSizes.nodeWidth + dimensions.cDNodeSizes.distanceX
 
         if (element.preNode) {
@@ -389,19 +399,11 @@ function addDimensionsToDownstreamDeployments(
             lastX = element.postNode.x
         }
 
-        lastY = cdNodeY + dimensions.cDNodeSizes.nodeHeight + dimensions.cDNodeSizes.distanceY
-
         if ((element.downstreamNodes?.length ?? 0) > 0) {
-            addDimensionsToDownstreamDeployments(element.downstreamNodes, dimensions, lastX, cdNodeY)
-            lastY =
-                element.downstreamNodes[element.downstreamNodes.length - 1].y +
-                dimensions.cDNodeSizes.nodeHeight +
-                dimensions.cDNodeSizes.distanceY
+            maxY = addDimensionsToDownstreamDeployments({downstreams: element.downstreamNodes, dimensions, startX: lastX, startY: cdNodeY})
         }
-
-        //for next iteration use Y coordinate of the last element in downstreamNodes as it will have maximum Y coordinate
-        startY = lastY
     }
+    return maxY
 }
 
 function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): WorkflowType {
