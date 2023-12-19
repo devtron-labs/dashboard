@@ -772,7 +772,7 @@ export default function NewCDPipeline({
 
     const setForceDeleteDialogData = (serverError) => {
         const _forceDeleteData = { ...forceDeleteData }
-        setDeleteDialog(deleteDialogType.showForceDeleteDialog)
+        setDeleteDialog(deleteDialogType.showNonCascadeDeleteDialog)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 _forceDeleteData.forceDeleteDialogMessage = internalMessage
@@ -820,13 +820,19 @@ export default function NewCDPipeline({
                         getWorkflows()
                     }
                 }
+                else if(response.errors){
+                    setDeleteDialog(deleteDialogType.showForceDeleteDialog)
+                    setForceDeleteData({
+                        forceDeleteDialogTitle: 'Something went wrong',
+                        forceDeleteDialogMessage: response.errors[0].userMessage,
+                    })
+                }
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
                 if (!force && error.code != 403 && error.code != 412) {
-                    hideDeleteModal()
                     setForceDeleteDialogData(error)
-                    openDeleteModal()
+                    hideDeleteModal()
                     setDeleteDialog(deleteDialogType.showForceDeleteDialog)
                 } else {
                     showError(error)
