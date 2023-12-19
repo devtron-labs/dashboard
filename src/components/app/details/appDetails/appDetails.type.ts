@@ -111,6 +111,10 @@ export interface DeploymentStatusDetailModalType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     streamData: AppStreamData
     isVirtualEnvironment: boolean
+    /**
+     * Loading state for the timeline data
+     */
+    isLoading: boolean
 }
 
 export interface ModuleConfigResponse extends ResponseType {
