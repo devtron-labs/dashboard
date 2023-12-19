@@ -77,8 +77,8 @@ export function DeploymentStatusDetailRow({
                         <div className="">
                             {deploymentDetailedData.deploymentStatusBreakdown[
                                 TIMELINE_STATUS.KUBECTL_APPLY
-                            ].kubeList?.map((items) => (
-                                <div className="flex left lh-20 mb-8">
+                            ].kubeList?.map((items, index) => (
+                                <div className="flex left lh-20 mb-8" key={`item-${index}`}>
                                     {renderIcon(items.icon)}
                                     <span className="ml-12">{items.message}</span>
                                 </div>
