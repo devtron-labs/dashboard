@@ -772,7 +772,7 @@ export default function NewCDPipeline({
 
     const setForceDeleteDialogData = (serverError) => {
         const _forceDeleteData = { ...forceDeleteData }
-        setDeleteDialog(deleteDialogType.showNonCascadeDeleteDialog)
+        setDeleteDialog(deleteDialogType.showForceDeleteDialog)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 _forceDeleteData.forceDeleteDialogMessage = internalMessage
