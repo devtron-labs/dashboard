@@ -4,6 +4,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
+import { ReactComponent as ICInfoFilled } from '../../../../assets/icons/ic-info-filled.svg'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { BulkResponseStatus } from '../../Constants'
 import { importComponentFromFELibrary } from '../../../common'
@@ -20,7 +21,9 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
     }
 
     const renderStatusIcon = (rowData: ResponseRowType): JSX.Element => {
-        if (rowData.status === BulkResponseStatus.UNAUTHORIZE) {
+        if (rowData.status === BulkResponseStatus.SKIP) {
+            return <ICInfoFilled className="mr-8 icon-dim-18" />
+        } else if (rowData.status === BulkResponseStatus.UNAUTHORIZE) {
             return <UnAuthorized className="mr-8 icon-dim-18 fcy-7" />
         } else if (rowData.status === BulkResponseStatus.PASS) {
             return <Success className="mr-8 icon-dim-18" />

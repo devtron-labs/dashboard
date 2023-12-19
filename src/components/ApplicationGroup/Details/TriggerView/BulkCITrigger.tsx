@@ -554,7 +554,8 @@ export default function BulkCITrigger({
         )
     }
 
-    const onClickStartBuild = (): void => {
+    const onClickStartBuild = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         onClickTriggerBulkCI(appIgnoreCache)
     }
 
