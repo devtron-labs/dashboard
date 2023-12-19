@@ -222,7 +222,7 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
                                 }}
                                 error={chart.name.error}
                                 isRequiredField={true}
-                                additionalErrorInfo={renderAdditionalErrorInfo(handleNameChange, chart.name.suggestedNam, index)}
+                                additionalErrorInfo={chart.name.error ? chart.name.error : 'no'}
                             />
                         </div>
                     </div>
