@@ -219,7 +219,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     type="text"
                                                     placeholder="Variable name"
                                                     value={variable.name}
-                                                    autoComplete="off"
                                                     name="name"
                                                     onChange={(e) => handleInputOutputValueChange(e, index)}
                                                     handleOnBlur={handleBlur}

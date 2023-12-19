@@ -1520,7 +1520,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             label="Namespace"
                             placeholder={getNamespaceplaceholder()}
                             data-testid="cd-pipeline-namespace-textbox"
-                            type="text"
                             disabled={!namespaceEditable}
                             value={
                                 selectedEnv && selectedEnv.namespace
@@ -1530,15 +1529,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             onChange={(event) => {
                                 this.handleNamespaceChange(event, selectedEnv)
                             }}
+                            error={
+                                !this.state.errorForm.nameSpaceError.isValid &&
+                                !this.state.pipelineConfig.isVirtualEnvironment &&
+                                this.state.errorForm.nameSpaceError.message
+                            }
                         />
-
-                        {!this.state.errorForm.nameSpaceError.isValid &&
-                        !this.state.pipelineConfig.isVirtualEnvironment ? (
-                            <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {this.state.errorForm.nameSpaceError.message}
-                            </span>
-                        ) : null}
                     </div>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}

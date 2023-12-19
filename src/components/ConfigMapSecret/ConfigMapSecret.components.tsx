@@ -64,7 +64,7 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                             value={k}
                             onChange={(e) => onChange(index, e.target.value, v)}
                             disabled={typeof onChange !== 'function'}
-                            error={keyError && keyError}
+                            error={keyError}
                         />
                     </label>
                 </div>
