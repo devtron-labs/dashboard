@@ -192,7 +192,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                         />
                 </label>
                 <label className="form__row">
-                    <span className="form__label">Webhook URL*
+                    <span className="form__label dc__required-field">Webhook URL
                         <Tippy className="default-tt" arrow={true} trigger={"click"}
                             interactive={true}
                             placement="top" content={

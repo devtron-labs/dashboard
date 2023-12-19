@@ -177,7 +177,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
                         <label className="form__row">
                             <CustomInput
-                                name="configName "
+                                name="configName"
                                 label="Configuration name"
                                 data-testid="add-smtp-configuration-name"
                                 ref={(node) => (this._configName = node)}
