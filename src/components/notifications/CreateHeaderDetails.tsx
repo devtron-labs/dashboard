@@ -23,7 +23,7 @@ export default function CreateHeaderDetails({
 
     return (
         <div className="flexbox mb-8">
-            <CustomInput
+            <CustomInput 
                 rootClassName="tag-input pt-4-imp pb-4-imp fs-13 dc__no-right-radius"
                 value={headerData?.["key"]}
                 name="key"

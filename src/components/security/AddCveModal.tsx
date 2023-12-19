@@ -3,7 +3,6 @@ import { showError, Progressing, VisibleModal, CustomInput } from '@devtron-labs
 import { getCVEPolicies } from './security.service';
 import { CVE_ID_NOT_FOUND, ViewType } from '../../config';
 import { VulnerabilityAction } from './security.types';
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 

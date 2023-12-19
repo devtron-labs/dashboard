@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { validateEmail } from '../common'
-import { showError, Progressing, Checkbox, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Checkbox, Drawer, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -8,6 +8,7 @@ import { toast } from 'react-toastify'
 import { ViewType } from '../../config/constants'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { SMTPConfigModalProps, SMTPConfigModalState } from './types'
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigModalState> {
     _configName
@@ -175,100 +176,62 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 <>
                     <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
                         <label className="form__row">
-                            <span className="form__label">Configuration Name*</span>
-                            <input
+                            <CustomInput
+                                name="configName "
+                                label="Configuration name"
                                 data-testid="add-smtp-configuration-name"
                                 ref={(node) => (this._configName = node)}
-                                className="form__input"
-                                type="text"
-                                name="configName"
                                 value={this.state.form.configName}
                                 onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
+                                handleOnBlur={this.handleBlur}
                                 placeholder="Configuration name"
                                 autoFocus={true}
                                 tabIndex={1}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.configName ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field <br />
-                                    </>
-                                ) : null}
-                            </span>
                         </label>
                         <label className="form__row">
-                            <span className="form__label">SMTP Host*</span>
-                            <input
+                            <CustomInput
                                 data-testid="add-smtp-host"
-                                className="form__input"
-                                type="text"
+                                label="SMTP Host"
                                 name="host"
                                 value={this.state.form.host}
                                 onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
+                                handleOnBlur={this.handleBlur}
                                 placeholder="Eg. smtp.gmail.com"
                                 tabIndex={2}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.host && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.host ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field <br />
-                                    </>
-                                ) : null}
-                            </span>
                         </label>
                         <label className="form__row">
-                            <span className="form__label">SMTP Port*</span>
-                            <input
+                            <CustomInput
+                                label="SMTP Port"
                                 data-testid="add-smtp-port"
-                                className="form__input"
-                                type="text"
                                 name="port"
                                 value={this.state.form.port}
                                 onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
+                                handleOnBlur={this.handleBlur}
                                 placeholder="Enter SMTP port"
                                 tabIndex={3}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.port && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.port ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field <br />
-                                    </>
-                                ) : null}
-                            </span>
                         </label>
                         <div className="form__row">
-                            <label htmlFor="" className="form__label">
-                                SMTP Username*
-                            </label>
-                            <input
+                            <CustomInput
+                                label="SMTP Username"
                                 data-testid="add-smtp-username"
-                                className="form__input"
-                                type="text"
                                 name="authUser"
                                 value={this.state.form.authUser}
                                 onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
+                                handleOnBlur={this.handleBlur}
                                 placeholder="Enter SMTP username"
                                 tabIndex={3}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.authUser && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.authUser ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field <br />
-                                    </>
-                                ) : null}
-                            </span>
                         </div>
                         <div className="form__row smtp-protected-input">
                             <ProtectedInput
@@ -283,28 +246,19 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             />
                         </div>
                         <label className="form__row">
-                            <span className="form__label">Send email from*</span>
-                            <input
+                            <CustomInput
+                                label="Send email from"
                                 data-testid="add-smtp-send-email"
-                                className="form__input"
                                 type="email"
                                 name="fromEmail"
                                 value={this.state.form.fromEmail}
                                 onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
+                                handleOnBlur={this.handleBlur}
                                 placeholder="Email"
                                 tabIndex={5}
-                                required
+                                isRequiredField={true}
+                                error={!this.state.isValid.fromEmail && REQUIRED_FIELD_MSG}
                             />
-                            <span className="form__error">
-                                {!this.state.isValid.fromEmail ? (
-                                    <>
-                                        <Error className="form__icon form__icon--error" />
-                                        This is a required field
-                                        <br />
-                                    </>
-                                ) : null}
-                            </span>
                         </label>
                     </div>
                     <div className="form__button-group-bottom flexbox flex-justify">
