@@ -532,7 +532,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
                             data-testid={`git-repo-url-text-box`}
-                            error={this.props.isError.url && this.props.isError.url}
+                            error={this.props.isError.url}
                         />
                     </div>
                 </div>
