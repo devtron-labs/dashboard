@@ -45,7 +45,13 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     handleDeleteCDNode = (e: React.MouseEvent) => {
+        e.stopPropagation()
         e.preventDefault()
+
+        if (this.props.deploymentAppDeleteRequest) {
+            this.onClickShowDeletePipelinePopup()
+            return
+        }
         this.setState({ showDeleteDialog: true })
     }
 
