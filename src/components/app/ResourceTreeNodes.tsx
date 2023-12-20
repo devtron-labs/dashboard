@@ -841,7 +841,7 @@ const PodPopup: React.FC<{appName: string, environmentName: string, name: string
 }
 
 export function NoPod({ selectMessage = "Select a pod to view events", style = {} }) {
-    return <div data-testid="no-pod" className="no-pod no-pod--pod" style={{ ...style }}>
+    return <div data-testid="no-pod" className="no-pod no-pod-list no-pod--pod" style={{ ...style }}>
         <PodIcon color="var(--N400)" style={{ width: '48px', height: '48px', marginBottom: '12px' }} />
         <p>{selectMessage}</p>
     </div>
