@@ -55,6 +55,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     convertVariables: false,
     convertVariablesOverride: false,
     showLockedTemplateDiff: false,
+    lockChangesLoading: false,
 }
 
 export const deploymentConfigReducer = (
@@ -86,6 +87,8 @@ export const deploymentConfigReducer = (
             return { ...state, tempFormData: action.payload }
         case DeploymentConfigStateActionTypes.chartConfigLoading:
             return { ...state, chartConfigLoading: action.payload }
+        case DeploymentConfigStateActionTypes.lockChangesLoading:
+            return { ...state, lockChangesLoading: action.payload}
         case DeploymentConfigStateActionTypes.showConfirmation:
             return { ...state, showConfirmation: action.payload }
         case DeploymentConfigStateActionTypes.showReadme:

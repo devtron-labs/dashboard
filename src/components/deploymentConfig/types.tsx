@@ -119,11 +119,12 @@ export interface DeploymentConfigFormCTAProps {
     reload: () => void
     isValues?: boolean
     convertVariables?: boolean
-    openLockedDiffDrawer: () => void
+    handleLockedDiffDrawer: (value: boolean) => void
     isSuperAdmin: boolean
     showLockedDiffForApproval: boolean
     setShowLockedDiffForApproval: (show: boolean) => void
     checkForProtectedLockedChanges: () => Promise<ResponseType>
+    setLockedOverride: (value: Object) => void
 }
 
 export interface CompareWithDropdownProps {
@@ -335,6 +336,7 @@ export interface DeploymentConfigStateType {
     isAppMetricsEnabled: boolean
     tempFormData: string
     chartConfigLoading: boolean
+    lockChangesLoading: boolean
     showConfirmation: boolean
     showReadme: boolean
     openComparison: boolean
@@ -415,7 +417,7 @@ export enum DeploymentConfigStateActionTypes {
     toggleDialog = 'toggleDialog',
     reset = 'reset',
     toggleSaveChangesModal = 'toggleSaveChangesModal',
-    toggleShowLockedTemplateDiff= 'toggleShowLockedTemplateDiff',
+    toggleShowLockedTemplateDiff = 'toggleShowLockedTemplateDiff',
     allDrafts = 'allDrafts',
     publishedState = 'publishedState',
     toggleDraftComments = 'toggleDraftComments',
@@ -436,6 +438,7 @@ export enum DeploymentConfigStateActionTypes {
     manifestDataLHSOverride = 'manifestDataLHSOverride',
     convertVariables = 'convertVariables',
     convertVariablesOverride = 'convertVariablesOverride',
+    lockChangesLoading = 'lockChangesLoading',
 }
 
 export interface DeploymentConfigStateAction {
