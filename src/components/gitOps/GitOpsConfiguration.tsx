@@ -487,12 +487,51 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             )
         }
 
-        const renderInputLabel = (label: string, link: string, linkText: string) => {
+        const getInputFieldlabelAndlink = (inputName): { label: string; link: string; linkText: string } => {
+            let fieldLable = {
+                label: '',
+                link: '',
+                linkText: '',
+            }
+            switch (inputName) {
+                case 'workspaceID':
+                    return {
+                        ...fieldLable,
+                        label: 'Bitbucket Workspace ID',
+                        link: GitLink.BITBUCKET_WORKSPACE,
+                        linkText: '(How to create workspace in bitbucket?)',
+                    }
+                case 'groupID':
+                    return {
+                        ...fieldLable,
+                        label: LinkAndLabelSpec[this.state.providerTab]['label'],
+                        link: LinkAndLabelSpec[this.state.providerTab]['link'],
+                        linkText: LinkAndLabelSpec[this.state.providerTab]['linkText'],
+                    }
+                case 'token': {
+                    return {
+                        ...fieldLable,
+                        label:
+                            this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                ? 'Azure DevOps Access Token '
+                                : 'Personal Access Token ',
+                        link: DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK,
+                        linkText: '(Check permissions required for PAT)',
+                    }
+                }
+            }
+        }
+
+        const renderInputLabel = (inputName: string) => {
             return (
                 <div className="flex">
-                    <span className="dc__required-field">{label}</span>&nbsp;
-                    <a target="_blank" href={link} className="cursor fs-13 onlink ml-4">
-                        {linkText}
+                    <span className="dc__required-field">{getInputFieldlabelAndlink(inputName).label}</span>&nbsp;
+                    <a
+                        target="_blank"
+                        href={getInputFieldlabelAndlink(inputName).link}
+                        className="cursor fs-13 onlink ml-4"
+                    >
+                        {getInputFieldlabelAndlink(inputName).linkText}
                     </a>
                 </div>
             )
@@ -638,13 +677,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
                             <CustomInput
                                 name="workspaceID"
-                                label={() =>
-                                    renderInputLabel(
-                                        'Bitbucket Workspace ID',
-                                        GitLink.BITBUCKET_WORKSPACE,
-                                        '(How to create workspace in bitbucket?)',
-                                    )
-                                }
+                                label={renderInputLabel.bind(this, 'workspaceID')}
                                 value={this.state.form.bitBucketWorkspaceId}
                                 onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
                                 error={this.state.isError.bitBucketWorkspaceId}
@@ -658,13 +691,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <div className="mt-16">
                         <CustomInput
                             name="groupID"
-                            label={() =>
-                                renderInputLabel(
-                                    LinkAndLabelSpec[this.state.providerTab]['label'],
-                                    LinkAndLabelSpec[this.state.providerTab]['link'],
-                                    LinkAndLabelSpec[this.state.providerTab]['linkText'],
-                                )
-                            }
+                            label={renderInputLabel.bind(this, 'groupID')}
                             value={this.state.form[key]}
                             tabIndex={2}
                             error={this.state.isError[key]}
@@ -730,16 +757,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         </div>
                         <div>
                             <CustomInput
-                                name="Enter token"
-                                label={() =>
-                                    renderInputLabel(
-                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'Azure DevOps Access Token '
-                                            : 'Personal Access Token ',
-                                        DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK,
-                                        '(Check permissions required for PAT)',
-                                    )
-                                }
+                                name="token"
+                                label={renderInputLabel.bind(this, 'token')}
                                 value={this.state.form.token}
                                 onChange={(event) => this.handleChange(event, 'token')}
                                 tabIndex={4}
