@@ -112,7 +112,7 @@ export const CI_CONFIG_FORM_VALIDATION = {
     dockerfile: {
         required: true,
         validator: {
-            error: 'Invalid Dockerfile Path',
+            error: 'Dockerfile is required',
             regex: PATTERNS.STRING,
         },
     },

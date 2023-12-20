@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { ConditionType, CustomInput, RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionType, RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
@@ -209,9 +209,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     width: type === PluginVariableType.OUTPUT ? '80%' : '100%',
                                                 }}
                                             >
-                                                <CustomInput
+                                                <input
                                                     data-testid={`custom-script-${type.toLowerCase()}-variable-add-variable-variable-name-textbox`}
-                                                    rootClassName={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 dc__no-bottom-border ${
+                                                    className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 dc__no-bottom-border ${
                                                         type === PluginVariableType.INPUT
                                                             ? 'dc__top-radius-4'
                                                             : 'dc__top-left-radius'
@@ -219,9 +219,10 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     type="text"
                                                     placeholder="Variable name"
                                                     value={variable.name}
+                                                    autoComplete="off"
                                                     name="name"
                                                     onChange={(e) => handleInputOutputValueChange(e, index)}
-                                                    handleOnBlur={handleBlur}
+                                                    onBlur={(e) => handleBlur()}
                                                 />
                                             </div>
 
@@ -295,16 +296,19 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                             </div>
                                         </div>
                                     )}
-                                    <CustomInput
+                                    <input
                                         data-testid={`custom-script-${type.toLowerCase()}-variable-add-description-textbox`}
-                                        rootClassName={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__bottom-radius-4 h-32 ${
+                                        style={{ width: '80% !important' }}
+                                        className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__bottom-radius-4 h-32 ${
                                             type === PluginVariableType.INPUT ? 'dc__no-top-border' : ''
                                         }`}
+                                        autoComplete="off"
                                         placeholder="Description"
+                                        type="text"
                                         value={variable.description}
                                         name="description"
                                         onChange={(e) => handleInputOutputValueChange(e, index)}
-                                        handleOnBlur={handleBlur}
+                                        onBlur={(e) => handleBlur()}
                                     />
                                 </div>
 

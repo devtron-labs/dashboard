@@ -737,7 +737,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     render() {
         if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="dc__align-reload-center">
+                <div className="global-configuration__component flex">
                     <ErrorScreenManager code={this.state.statusCode} />
                 </div>
             )

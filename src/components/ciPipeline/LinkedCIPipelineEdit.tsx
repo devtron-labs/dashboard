@@ -7,7 +7,6 @@ import {
     showError,
     Progressing,
     multiSelectStyles,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineBuildType, CIPipelineProps, LinkedCIPipelineState } from './types'
 import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
@@ -22,7 +21,6 @@ import './ciPipeline.scss'
 import { appListOptions, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
 import AsyncSelect from 'react-select/async'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
-import { DUPLICATE_PIPELINE_NAME_VALIDATION, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedCIPipelineState> {
     validationRules
@@ -272,14 +270,6 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     loadAppListOptions = (inputValue: string) => appListOptions(inputValue, false)
 
-    getErrorMessage = () => {
-        if (!this.state.form.name) {
-            return REQUIRED_FIELD_MSG
-        } else if (!this.state.isValid.name) {
-            return DUPLICATE_PIPELINE_NAME_VALIDATION
-        } else return ''
-    }
-
     renderCIPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -314,16 +304,21 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     {this.renderCIPipelinesDropdown(null)}
                     {this.state.form.parentCIPipelineId ? (
                         <label className="form__row">
-                            <CustomInput
-                                name="name"
-                                label="Name"
+                            <span className="form__label dc__required-field">Name</span>
+                            <input
+                                className="form__input"
                                 placeholder="Enter pipeline name"
+                                type="text"
                                 value={this.state.form.name}
                                 onChange={this.handleName}
                                 data-testid="pipeline-name-for-linked"
-                                isRequiredField={true}
-                                error={this.getErrorMessage()}
                             />
+                            {!this.state.isValid.name ? (
+                                <span className="form__error">
+                                    <img src={error} alt="" className="form__icon" />
+                                    You cannot use same name for pipeline within an app.
+                                </span>
+                            ) : null}
                         </label>
                     ) : null}
                 </>

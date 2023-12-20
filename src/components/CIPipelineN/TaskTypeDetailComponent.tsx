@@ -12,7 +12,6 @@ import {
     RadioGroupItem,
     MountPath,
     ScriptType,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -295,21 +294,25 @@ export function TaskTypeDetailComponent() {
                                 contentDescription={TaskFieldDescription.MOUNTCODEAT}
                             />
                             <div style={{ width: '80% !important' }}>
-                                <CustomInput
-                                    rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                                <input
+                                    className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    autoComplete="off"
                                     placeholder="Eg. /directory/filename"
+                                    type="text"
                                     name="storeScriptAt"
                                     onChange={(e) => handleCustomChange(e, 'storeScriptAt')}
                                     value={
                                         formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
                                             .storeScriptAt
                                     }
-                                    error={
-                                        errorObj?.storeScriptAt &&
-                                        !errorObj.storeScriptAt.isValid &&
-                                        errorObj?.storeScriptAt.message
-                                    }
                                 />
+
+                                {errorObj?.storeScriptAt && !errorObj.storeScriptAt.isValid && (
+                                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                        <span>{errorObj?.storeScriptAt.message}</span>
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </>
@@ -319,11 +322,13 @@ export function TaskTypeDetailComponent() {
                         taskField={'Command'}
                         contentDescription={TaskFieldDescription.COMMAND}
                     />
-                    <CustomInput
+                    <input
+                        style={{ width: '80% !important' }}
                         data-testid="custom-script-container-image-command-textbox"
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                        name="command"
+                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        autoComplete="off"
                         placeholder="Eg. “echo”"
+                        type="text"
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
                         value={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
@@ -334,11 +339,13 @@ export function TaskTypeDetailComponent() {
                 </div>
                 <div className="row-container mb-12">
                     <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
-                    <CustomInput
-                        name="args"
+                    <input
                         data-testid="custom-script-container-image-args-textbox"
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                        style={{ width: '80% !important' }}
+                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        autoComplete="off"
                         placeholder='Eg. "HOSTNAME", "KUBERNETES_PORT"'
+                        type="text"
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
                         value={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
@@ -378,22 +385,27 @@ export function TaskTypeDetailComponent() {
                     <div className="mb-12">
                         <div className="row-container">
                             <div className="fw-6 fs-13 lh-32 cn-7 "></div>
-                            <CustomInput
-                                name="mountCodeToContainerPath"
-                                rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            <input
+                                style={{ width: '80% !important' }}
+                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                autoComplete="off"
                                 data-testid="script-mount-container-textbox"
                                 placeholder="Eg file/folder"
+                                type="text"
                                 onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
                                 value={
                                     formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
                                         .mountCodeToContainerPath
                                 }
-                                error={
-                                    errorObj['mountCodeToContainerPath'] &&
-                                    !errorObj['mountCodeToContainerPath'].isValid &&
-                                    errorObj['mountCodeToContainerPath'].message
-                                }
                             />
+                        </div>
+                        <div className="pl-220">
+                            {errorObj['mountCodeToContainerPath'] && !errorObj['mountCodeToContainerPath'].isValid && (
+                                <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                    <span>{errorObj['mountCodeToContainerPath'].message}</span>
+                                </span>
+                            )}
                         </div>
                     </div>
                 )}
@@ -429,6 +441,37 @@ export function TaskTypeDetailComponent() {
                 <OutputDirectoryPath />
             </>
         )
+    }
+
+    const renderDockerScript = () => {
+        if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.DOCKERFILE) {
+            return (
+                <>
+                    <div className="row-container mb-12">
+                        <div className="fw-6 fs-13 lh-32 cn-7 ">Docker path *</div>{' '}
+                        <input
+                            style={{ width: '80% !important' }}
+                            className="form__input bcn-1 w-80"
+                            autoComplete="off"
+                            placeholder="Enter Mount script path"
+                            type="text"
+                        />
+                    </div>
+                    <div className="row-container mb-12">
+                        <Tippy className="default-tt" arrow={false} content="Path where script should be mounted">
+                            <div className="fw-6 fs-13 lh-32 cn-7 ">Mount script at *</div>
+                        </Tippy>
+                        <input
+                            style={{ width: '80% !important' }}
+                            className="form__input bcn-1 w-80"
+                            autoComplete="off"
+                            placeholder="Enter Mount script path"
+                            type="text"
+                        />
+                    </div>
+                </>
+            )
+        }
     }
 
     if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) {

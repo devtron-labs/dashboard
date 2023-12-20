@@ -22,9 +22,7 @@ import {
     multiSelectStyles,
     MultiValueRemove,
     Option,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export function DropdownIndicator(props) {
     return (
@@ -407,16 +405,23 @@ function ManageRegistry({
                             Icon={InfoIcon}
                             iconClass="icon-dim-20"
                         />
-                        <CustomInput
+                        <input
                             tabIndex={2}
                             placeholder="Enter image pull secret seperated by comma"
-                            rootClassName="mt-8"
+                            className="form__input mt-8"
                             name={CredentialType.NAME}
                             value={credentialValue}
                             onChange={onClickSpecifyImagePullSecret}
                             autoFocus
-                            error={errorValidation && REQUIRED_FIELD_MSG}
+                            autoComplete="off"
                         />
+
+                        {errorValidation && (
+                            <span className="form__error">
+                                <img src={error} alt="" className="form__icon" />
+                                This is a required Field
+                            </span>
+                        )}
                     </>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (

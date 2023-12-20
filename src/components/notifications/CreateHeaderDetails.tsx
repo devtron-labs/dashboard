@@ -1,7 +1,6 @@
 import React from 'react'
 import { ReactComponent as DeleteCross } from '../../assets/icons/ic-cross.svg'
 import { CreateHeaderDetailsType } from './types'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function CreateHeaderDetails({
     index,
@@ -23,16 +22,16 @@ export default function CreateHeaderDetails({
 
     return (
         <div className="flexbox mb-8">
-            <CustomInput 
-                rootClassName="tag-input pt-4-imp pb-4-imp fs-13 dc__no-right-radius"
+            <input
+                className="form__input tag-input pt-4-imp pb-4-imp fs-13 dc__no-right-radius"
                 value={headerData?.["key"]}
                 name="key"
                 onChange={handleInputChange}
                 placeholder="Enter key"
                 data-testid={`header-key-${index}`}
             />
-            <CustomInput
-                rootClassName="tag-input pt-4-imp pb-4-imp fs-13 dc__no-border-radius dc__no-right-border dc__no-left-border"
+            <input
+                className="form__input tag-input pt-4-imp pb-4-imp fs-13 dc__no-border-radius dc__no-right-border dc__no-left-border"
                 value={headerData?.["value"]}
                 name="value"
                 onChange={handleInputChange}

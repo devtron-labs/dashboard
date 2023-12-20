@@ -9,11 +9,10 @@ import {
     useAsync,
     RadioGroup, 
     RadioGroupItem,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useForm, getNonEditableChartRepoText } from '../common'
 import { toast } from 'react-toastify'
-import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
 import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, deleteChartRepo } from './chartRepo.service';
 import { getChartRepoList } from '../../services/service'
@@ -198,7 +197,7 @@ function ChartForm({
         accessToken: { value: accessToken, error: '' },
     })
     const [secureWithTls, setSecureWithTls] = useState(false)
-    const { state, handleOnChange, handleOnSubmit } = useForm(
+    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
             url: { value: url, error: "" },
@@ -226,7 +225,6 @@ function ChartForm({
         }, onClickSave);
 
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
-
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
     const [chartRepoType, setChartRepoType] = useState<string>(CHART_REPO_TYPE.PUBLIC)
@@ -364,16 +362,16 @@ function ChartForm({
     const renderChartInputElement = (field: string) => {
         const isNameField: boolean = field === 'name'
         return (
-            <CustomInput
-                dataTestid={isNameField ? 'add-chart-repo-name' : 'add-chart-repo-URL'}
-                value={isNameField ? state.name.value : state.url.value}
+                <CustomInput
+                dataTestid={isNameField ? "add-chart-repo-name" : "add-chart-repo-URL"}
+                autoComplete="off"
+                value={ isNameField ? state.name.value : state.url.value}
                 onChange={handleOnChange}
                 name={isNameField ? 'name' : 'url'}
                 error={isNameField ? state.name.error : state.url.error}
-                label={isNameField ? 'Name' : 'URL'}
+                label={isNameField ? 'Name*' : 'URL*'}
                 placeholder={isNameField ? 'Enter Repository name' : 'Enter repo URL'}
                 disabled={!isEditable}
-                isRequiredField={true}
             />
         )
     }
@@ -430,13 +428,13 @@ function ChartForm({
                     <>
                         <CustomInput
                             dataTestid="add-chart-repo-username"
+                            autoComplete="off"
                             value={customState.username.value}
                             onChange={customHandleChange}
                             name="username"
                             error={customState.username.error}
-                            label="Username"
+                            label="Username*"
                             labelClassName="mt-12"
-                            isRequiredField={true}
                         />
                         <ProtectedInput
                             dataTestid="add-chart-repo-password"
@@ -444,9 +442,8 @@ function ChartForm({
                             onChange={customHandleChange}
                             name="password"
                             error={customState.password.error}
-                            label="Password"
+                            label="Password*"
                             labelClassName="mt-12"
-                            isRequiredField={true}
                         />
                         <Checkbox
                             rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"

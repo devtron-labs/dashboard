@@ -10,7 +10,6 @@ import {
     TippyTheme,
     stopPropagation,
     CHECKBOX_VALUE,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
@@ -47,6 +46,7 @@ import {
     INCLUDE_EXCLUDE_PLACEHOLDER,
     USE_REGEX_TIPPY_CONTENT,
 } from './constants'
+import TippyHeadless from '@tippyjs/react/headless'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -393,14 +393,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         )
     }
 
-    renderGitRepoUrlLabel = (): JSX.Element => {
-        return (
-            <label className="form__label">
-                Git Repo URL<span className="cr-5">* </span>(use {this.gitAuthType('host')})
-            </label>
-        )
-    }
-
     renderForm() {
         const sortedProviders: any[] = this.props.providers
             ? sortObjectArrayAlphabetically(this.props.providers, 'name')
@@ -425,7 +417,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 </div>
                 <div className="form__row form-row__material" data-testid="add-git-repository-form">
                     <div className="">
-                        <label className="form__label dc__required-field">Git Account</label>
+                        <label className="form__label">Git Account*</label>
                         <ReactSelect
                             classNamePrefix="material-view__select-project"
                             className="m-0"
@@ -463,8 +455,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
                                             ) : null}
                                             {props.data.url.includes('gitlab') ||
-                                            props.data.url.includes('github') ||
-                                            props.data.url.includes('bitbucket') ? null : (
+                                                props.data.url.includes('github') ||
+                                                props.data.url.includes('bitbucket') ? null : (
                                                 <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
                                             )}
 
@@ -525,15 +517,26 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         )}
                     </div>
                     <div>
-                        <CustomInput
-                            label={this.renderGitRepoUrlLabel}
-                            name="Git Repo URL"
+                        <label className="form__label">Git Repo URL* (use {this.gitAuthType('host')})</label>
+                        <input
+                            className="form__input"
+                            autoComplete={'off'}
+                            autoFocus
+                            name="Git Repo URL*"
+                            type="text"
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
                             data-testid={`git-repo-url-text-box`}
-                            error={this.props.isError.url}
                         />
+                        <span className="form__error">
+                            {this.props.isError.url && (
+                                <>
+                                    <img src={error} className="form__icon" />
+                                    {this.props.isError.url}
+                                </>
+                            )}
+                        </span>
                     </div>
                 </div>
                 {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
@@ -555,9 +558,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
                             >
                                 <div className="ml-12">
-                                    <span data-testid="exclude-include-checkbox" className="mt-1 flex left">
-                                        Exclude specific file/folder in this repo
-                                    </span>
+                                    <span data-testid="exclude-include-checkbox" className="mt-1 flex left">Exclude specific file/folder in this repo</span>
                                 </div>
                             </Checkbox>
                             <span>
@@ -584,11 +585,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <p className="fw-4 fs-13 mb-0-imp">
                                         Enter file or folder paths to be included or excluded.
                                         <a
-                                            data-testid={`${
-                                                !this.props.isLearnHowClicked
-                                                    ? 'exclude-include-learn'
-                                                    : 'exclude-include-hide'
-                                            }`}
+                                            data-testid={`${!this.props.isLearnHowClicked ? "exclude-include-learn" : "exclude-include-hide"}`}
                                             className="dc__link ml-4 cursor"
                                             onClick={this.props.handleLearnHowClick}
                                             rel="noopener noreferer"
@@ -645,10 +642,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                         trigger="click"
                                                         interactive={true}
                                                     >
-                                                        <span
-                                                            data-testid="exclude-include-use-regex"
-                                                            className="dc__link cursor fs-13 fw-4 ml-8"
-                                                        >
+                                                        <span data-testid="exclude-include-use-regex" className="dc__link cursor fs-13 fw-4 ml-8">
                                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
                                                         </span>
                                                     </TippyCustomized>
@@ -697,9 +691,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         >
                             <div className="ml-12">
                                 {this.props.isJobView ? (
-                                    <span data-testid="set-checkout-path-checkbox" className="mb-4 mt-4 flex left">
-                                        Set checkout path
-                                    </span>
+                                    <span data-testid="set-checkout-path-checkbox" className="mb-4 mt-4 flex left">Set checkout path</span>
                                 ) : (
                                     <>
                                         <span className="mb-4 flex left" data-testid="set-clone-directory-checkbox">
@@ -721,18 +713,24 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </Checkbox>
                         {this.props.isChecked && (
-                            <div className="ml-35">
-                                <CustomInput
-                                    rootClassName="w-885"
-                                    placeholder="e.g. /abc"
-                                    value={this.props.material.checkoutPath}
-                                    onChange={this.props.handlePathChange}
-                                    data-testid="clone-directory-path"
-                                    name="clone-directory-path"
-                                    error={this.props.isError.checkoutPath}
-                                />
-                            </div>
+                            <input
+                                className="form__input ml-35 w-885"
+                                autoComplete={'off'}
+                                autoFocus
+                                type="text"
+                                placeholder="e.g. /abc"
+                                value={this.props.material.checkoutPath}
+                                onChange={this.props.handlePathChange}
+                                data-testid="clone-directory-path"
+                            />
                         )}
+                        <span className="form__error ml-35">
+                            {this.props.isError.checkoutPath && (
+                                <>
+                                    <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}
+                                </>
+                            )}
+                        </span>
                     </div>
                     <div className="pt-16 ">
                         <Checkbox

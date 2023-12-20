@@ -104,7 +104,7 @@ function CustomImageTags({
             <Tippy
                 content={
                     <div className="fs-12">
-                        {`{x}`} is an auto increasing number. It will increase by one on each {isCDBuild ? getCDStageTypeSelectorValue(formData.customTagStage).label : " build "} trigger.
+                        {`{x}`} is an auto increasing number. It will increase by one on each build trigger.
                     </div>
                 }
                 placement="top"
@@ -138,7 +138,7 @@ function CustomImageTags({
                     name="image_tag"
                     autoComplete="off"
                     autoFocus={true}
-                    data-testid="custom-image-tag-textarea"
+                    data-testid="container-repository-textbox"
                     value={formData.customTag?.tagPattern}
                     onChange={onChangeCustomInput}
                     draggable={false}
@@ -162,13 +162,10 @@ function CustomImageTags({
                         </div>
                     )}
                 </div>
-                {!isCDBuild && (
-                    <div className="mt-4 cn-7 fs-12 flex left">
-                        <Warning className="mr-4 icon-dim-16 image-tag-alert-icon" />
-                        Build will fail if resulting image tag has already been built
-                    </div>
-                )}
-
+                <div className="mt-4 cn-7 fs-12 flex left">
+                    <Warning className="mr-4 icon-dim-16 image-tag-alert-icon" />
+                    Build will fail if resulting image tag has already been built
+                </div>
                 <hr className="mt-12 mb-12" />
                 <div className="flex left cn-7">
                     Value of {renderCounterXTippy(`{x}`)} will be
@@ -183,8 +180,7 @@ function CustomImageTags({
                         onKeyPress={handleCounterKeyPress}
                         defaultValue={'0'}
                     />
-                    in the next {isCDBuild ? ' trigger of ' : ' build trigger '}
-                    {isCDBuild ? renderCustomTagStageOnCD() : null}
+                    in the next build trigger {isCDBuild ? renderCustomTagStageOnCD() : null}
                     {formDataErrorObj.counterX?.message.length > 0
                         ? renderInputErrorMessage(formDataErrorObj.counterX.message)
                         : null}
@@ -205,13 +201,14 @@ function CustomImageTags({
 
     const renderCustomTagCollapsedValue = () => {
         return (
-            <div className="white-card pl-12 pr-12 pt-8 pb-8 mt-12 mb-12 ml-54">
-                <div className="flex dc__content-space dc__ff-monospace">
-                    <div className="bcn-1 pl-8 pr-8 br-4 mb-4">{formData.customTag?.tagPattern}</div>
+            <div className="white-card pl-12 pr-12 pt-8 pb-8 dc__ff-monospace mt-12 mb-12 ml-54">
+                <div className="flex dc__content-space">
+                    <div>{formData.customTag?.tagPattern}</div>
                     <Edit className="icon-dim-20" onClick={toggleEditToShowCreateImageView} />
                 </div>
+                <hr className="mt-8 mb-8" />
                 <div className="dc__italic-font-style cn-7">
-                    {`{X}`} = {formData.customTag.counterX} in the next {!isCDBuild ? " build " : "" }  trigger
+                    {`{X}`} = {formData.customTag.counterX} in the next trigger
                     {isCDBuild && formData.customTagStage
                         ? ` of ${getCDStageTypeSelectorValue(formData.customTagStage).label}`
                         : ''}

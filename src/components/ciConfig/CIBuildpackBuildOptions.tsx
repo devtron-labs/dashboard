@@ -26,7 +26,7 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { stopPropagation, CIBuildType, TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, CIBuildType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
@@ -545,14 +545,16 @@ export default function CIBuildpackBuildOptions({
                             <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
                                 ./
                             </span>
-                            <CustomInput
+                            <input
                                 data-testid="build-pack-project-path-textbox"
                                 tabIndex={4}
-                                rootClassName="file-name"
+                                type="text"
+                                className="form__input file-name"
                                 placeholder="Project path"
                                 name="projectPath"
                                 value={projectPathVal === './' ? '' : projectPathVal}
                                 onChange={handleOnChangeConfig}
+                                autoComplete={'off'}
                                 disabled={configOverrideView && !allowOverride}
                             />
                         </div>

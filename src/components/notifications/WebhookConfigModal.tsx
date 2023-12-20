@@ -6,7 +6,6 @@ import {
     getTeamListMin as getProjectListMin,
     Drawer,
     copyToClipboard,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config/constants';
 import { toast } from 'react-toastify';
@@ -19,7 +18,6 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { WebhhookConfigModalState, WebhookConfigModalProps } from './types';
 import CreateHeaderDetails from './CreateHeaderDetails';
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 
 export class WebhookConfigModal extends Component<WebhookConfigModalProps, WebhhookConfigModalState> {
 
@@ -308,37 +306,32 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                 <div className="flex" style={{ height: 'calc(100vh - 120px' }}>
                     <div className="w-600 p-20 flex column dc__align-start dc__content-start dc__overflow-scroll" style={{ height: 'calc(100vh - 120px)' }}>
                         <label className="form__row w-100-imp">
-                            <CustomInput 
-                                label="Configuration name"
-                                data-testid="add-webhook-config-name"
-                                name="app-name"
-                                value={this.state.form.configName}
-                                onChange={this.handleWebhookConfigNameChange}
+                            <span className="form__label dc__required-field">Configuration name</span>
+                            <input data-testid="add-webhook-config-name" className="form__input" type="text" name="app-name"
+                                value={this.state.form.configName} onChange={this.handleWebhookConfigNameChange}
                                 data-field="configName"
-                                handleOnBlur={this.onBlur}
-                                placeholder="Enter name"
-                                autoFocus={true}
-                                tabIndex={1}
-                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
-                                isRequiredField={true}
-                            />
+                                onBlur={this.onBlur}
+                                placeholder="Enter name" autoFocus={true} tabIndex={1} />
+                            <span className="form__error" data-testid="webhook-config-name-error">
+                                {!this.state.isValid.configName
+                                    ? <><Error className="form__icon form__icon--error" />This is required field.<br /></>
+                                    : null}
+                            </span>
                         </label>
                         <label className="form__row w-100-imp">
-                            <CustomInput
-                                label="Webhook URL"
-                                type="text"
-                                name="app-name"
+                            <span className="form__label dc__required-field">Webhook URL
+                            </span>
+                            <input data-testid="add-webhook-url" className="form__input" type="text" name="app-name"
                                 value={this.state.form.webhookUrl}
                                 autoFocus={true}
-                                placeholder="Enter Incoming Webhook URL"
-                                tabIndex={2}
-                                onChange={this.handleWebhookUrlChange}
+                                placeholder="Enter Incoming Webhook URL" tabIndex={2} onChange={this.handleWebhookUrlChange}
                                 data-field="webhookUrl"
-                                handleOnBlur={this.onBlur}
-                                isRequiredField={true}
-                                error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
-                                data-testid="webhook-url-error"
-                            />
+                                onBlur={this.onBlur} />
+                            <span className="form__error" data-testid="webhook-url-error">
+                                {!this.state.isValid.webhookUrl
+                                    ? <><Error className="form__icon form__icon--error" />This is a required field. <br /></>
+                                    : null}
+                            </span>
                         </label>
                         <div className="form__row w-100-imp" >
                             <div className="flex ml-0 dc__content-space">

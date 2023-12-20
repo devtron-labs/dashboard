@@ -25,7 +25,6 @@ import {
     TippyTheme,
     OptionType,
     Progressing,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
@@ -476,13 +475,14 @@ export default function CIDockerFileConfig({
                                     placement="top"
                                     content={selectedMaterial?.checkoutPath}
                                 >
-                                    <span className="h-38 checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
                                         {selectedMaterial?.checkoutPath}
                                     </span>
                                 </Tippy>
-                                <CustomInput
+                                <input
                                     tabIndex={4}
-                                    rootClassName="file-name"
+                                    type="text"
+                                    className="form__input file-name"
                                     data-testid="dockerfile-path-text-box"
                                     placeholder="Dockerfile"
                                     name="dockerfile"
@@ -496,9 +496,11 @@ export default function CIDockerFileConfig({
                                     autoComplete={'off'}
                                     autoFocus={!configOverrideView}
                                     disabled={configOverrideView && !allowOverride}
-                                    error={formState.dockerfile.error}
                                 />
                             </div>
+                        )}
+                        {formState.dockerfile.error && (
+                            <label className="form__error">{formState.dockerfile.error}</label>
                         )}
                     </div>
                 </div>
@@ -631,10 +633,10 @@ export default function CIDockerFileConfig({
                                         onChange={handleBuildContextCheckoutPathChange}
                                         isDisabled={configOverrideView && !allowOverride}
                                     />
-                                    <CustomInput
+                                    <input
                                         tabIndex={4}
                                         type="text"
-                                        rootClassName="file-name"
+                                        className="form__input file-name"
                                         data-testid="build-context-path-text-box"
                                         placeholder="Project Path"
                                         name="buildContext"
@@ -644,6 +646,7 @@ export default function CIDockerFileConfig({
                                                 : formState.buildContext.value
                                         }
                                         onChange={handleOnChangeConfig}
+                                        autoComplete="off"
                                         autoFocus={!configOverrideView}
                                         disabled={configOverrideView && !allowOverride}
                                     />

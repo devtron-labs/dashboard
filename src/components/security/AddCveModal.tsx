@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { showError, Progressing, VisibleModal, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { getCVEPolicies } from './security.service';
-import { CVE_ID_NOT_FOUND, ViewType } from '../../config';
+import { ViewType } from '../../config';
 import { VulnerabilityAction } from './security.types';
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 
@@ -155,19 +156,12 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState>{
                 <form className="whitelist-cve" onSubmit={(event) => { event.preventDefault() }}>
                     <div className="whitelist-cve__cve-id ml-24 mr-24 mb-20">
                         <label className="dc__block flex-1 mb-5 mr-16 ">
-                            <CustomInput 
-                                    name="cve"
-                                    label="CVE ID"
-                                    ref={(node) => (this._inputRef = node)}
-                                    rootClassName="form__input"
-                                    autoFocus
-                                    tabIndex={1}
-                                    placeholder="Enter CVE ID"
-                                    value={this.state.cve}
-                                    onChange={this.handleCveChange}
-                                    isRequiredField={true}
-                                    error={this.state.cveError && CVE_ID_NOT_FOUND}
-                                />
+                            <span className="form__label">CVE ID</span>
+                            <input autoComplete="off" ref={node => this._inputRef = node} type="text" className="form__input" autoFocus tabIndex={1} placeholder="Enter CVE ID" value={this.state.cve} onChange={this.handleCveChange} />
+                            <span className="form__error">
+                                {this.state.cveError ? <><Error className="form__icon form__icon--error" /> CVE ID not found <br /></>
+                                    : null}
+                            </span>
                         </label>
                         {/* <button type="submit" className="cta mb-5" tabIndex={2} onClick={this.searchCVE}>Search</button> */}
                     </div>

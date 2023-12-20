@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
-import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { createWorkflow } from './service'
 import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -94,16 +94,23 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
                 closeOnESC={true}
             >
                 <label className="form__row" htmlFor="workflow-name">
-                    <CustomInput
+                    <span className="form__label dc__required-field">Workflow Name</span>
+                    <input
                         autoComplete="off"
-                        dataTestid="workflow-name"
+                        id="workflow-name"
+                        className="form__input"
+                        type="text"
                         name="workflow-name"
                         value={state.name}
                         placeholder="Eg. my-job-workflow"
                         onChange={handleWorkflowName}
-                        isRequiredField={true}
-                        error={state.showError && !isNameValid().isValid && isNameValid().errorMsg}
+                        required
                     />
+                    {state.showError && !isNameValid().isValid ? (
+                        <span className="form__error">
+                            <img src={error} alt="" className="form__icon" /> {isNameValid().errorMsg}
+                        </span>
+                    ) : null}
                 </label>
                 <div className="flexbox dc__gap-12">
                     <button

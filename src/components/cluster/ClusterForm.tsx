@@ -12,13 +12,13 @@ import {
     GenericEmptyState,
     ResizableTextarea,
     useAsync,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
 import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -654,6 +654,7 @@ export default function ClusterForm({
                 <div className="form__row">
                     <CustomInput
                         labelClassName="dc__required-field"
+                        autoComplete="off"
                         name="cluster_name"
                         disabled={isDefaultCluster()}
                         value={state.cluster_name.value}
@@ -666,11 +667,12 @@ export default function ClusterForm({
                 </div>
                 <div className="form__row mb-8-imp">
                     <CustomInput
+                        autoComplete="off"
                         name="url"
                         value={state.url.value}
                         error={state.url.error}
                         onChange={handleOnChange}
-                        label={clusterLabel}
+                        label={clusterLabel()}
                         disabled={isDefaultCluster()}
                         placeholder="Enter server URL"
                         dataTestid="enter_server_url_input"
@@ -852,6 +854,7 @@ export default function ClusterForm({
                         <div className="form__row">
                             <CustomInput
                                 labelClassName="dc__required-field"
+                                autoComplete="off"
                                 name="endpoint"
                                 value={state.endpoint.value}
                                 error={state.endpoint.error}
@@ -860,7 +863,7 @@ export default function ClusterForm({
                             />
                         </div>
                         <div className="form__row">
-                            <span className="form__label dc__required-field">Authentication Type</span>
+                            <span className="form__label">Authentication Type*</span>
                             <RadioGroup
                                 value={state.authType.value}
                                 name="authType"

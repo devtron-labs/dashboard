@@ -23,7 +23,7 @@ import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { BodyType, ProtectedInputType } from './globalConfiguration.type'
+import { BodyType } from './globalConfiguration.type'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -461,11 +461,13 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
                     return (
-                        <ClusterList
-                            {...props}
-                            serverMode={serverMode}
-                            isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
-                        />
+                        <div className="flexbox">
+                            <ClusterList
+                                {...props}
+                                serverMode={serverMode}
+                                isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
+                            />
+                        </div>
                     )
                 }}
             />
@@ -475,12 +477,14 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_HOST_URL}
                     render={(props) => {
                         return (
-                            <HostURLConfiguration
-                                {...props}
-                                isSuperAdmin={isSuperAdmin}
-                                refreshGlobalConfig={getHostURLConfig}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                            />
+                            <div className="flexbox">
+                                <HostURLConfiguration
+                                    {...props}
+                                    isSuperAdmin={isSuperAdmin}
+                                    refreshGlobalConfig={getHostURLConfig}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                />
+                            </div>
                         )
                     }}
                 />,
@@ -488,21 +492,33 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     key={URLS.GLOBAL_CONFIG_GITOPS}
                     path={URLS.GLOBAL_CONFIG_GITOPS}
                     render={(props) => {
-                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                        return (
+                            <div className="flexbox">
+                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                            </div>
+                        )
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_PROJECT}
                     path={URLS.GLOBAL_CONFIG_PROJECT}
                     render={(props) => {
-                        return <Project {...props} isSuperAdmin={isSuperAdmin} />
+                        return (
+                            <div className="flexbox">
+                                <Project {...props} isSuperAdmin={isSuperAdmin} />
+                            </div>
+                        )
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_GIT}
                     path={URLS.GLOBAL_CONFIG_GIT}
                     render={(props) => {
-                        return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
+                        return (
+                            <div className="flexbox">
+                                <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
+                            </div>
+                        )
                     }}
                 />,
                 <Route
@@ -510,12 +526,14 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                     render={(props) => {
                         return (
-                            <Docker
-                                {...props}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                                isSuperAdmin={isSuperAdmin}
-                                isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
-                            />
+                            <div className="flexbox">
+                                <Docker
+                                    {...props}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                    isSuperAdmin={isSuperAdmin}
+                                    isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
+                                />
+                            </div>
                         )
                     }}
                 />,
@@ -654,21 +672,66 @@ function handleError(error: any): any[] {
     return error
 }
 
+export function CustomInput({
+    name,
+    value,
+    error,
+    onChange,
+    onBlur = (e) => {},
+    onFocus = (e) => {},
+    label,
+    type = 'text',
+    disabled = false,
+    autoComplete = 'off',
+    labelClassName = '',
+    placeholder = '',
+    tabIndex = 1,
+    dataTestid = '',
+}) {
+    return (
+        <div className="flex column left top">
+            <label className={`form__label ${labelClassName}`}>{label}</label>
+            <input
+                data-testid={dataTestid}
+                type={type}
+                name={name}
+                autoComplete="off"
+                className="form__input"
+                onChange={(e) => {
+                    e.persist()
+                    onChange(e)
+                }}
+                onBlur={onBlur}
+                onFocus={onFocus}
+                placeholder={placeholder}
+                value={value}
+                disabled={disabled}
+                tabIndex={tabIndex}
+            />
+            {handleError(error).map((err) => (
+                <div className="form__error">
+                    <FormError className="form__icon form__icon--error" />
+                    {err}
+                </div>
+            ))}
+        </div>
+    )
+}
+
 export function ProtectedInput({
     name,
     value,
     error,
     onChange,
-    label= '',
+    label,
+    type = 'text',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-    onBlur= (e) => {},
-    isRequiredField = false,
-}: ProtectedInputType) {
+}) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -676,7 +739,7 @@ export function ProtectedInput({
 
     return (
         <div className="flex column left top ">
-            <label htmlFor="" className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}>
+            <label htmlFor="" className={`form__label ${labelClassName}`}>
                 {label}
             </label>
             <div className="dc__position-rel w-100">
@@ -693,7 +756,6 @@ export function ProtectedInput({
                     }}
                     value={value}
                     disabled={disabled}
-                    onBlur={onBlur}
                 />
                 <ShowHide
                     className="protected-input__toggle"

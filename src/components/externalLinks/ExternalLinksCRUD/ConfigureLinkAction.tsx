@@ -7,7 +7,6 @@ import {
     TippyTheme,
     RadioGroup,
     RadioGroupItem,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -22,7 +21,6 @@ import {
 import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import IdentifierSelector from './IdentifierSelector'
-import { CONFIGURE_LINK_NO_NAME } from '../../../config'
 
 export default function ConfigureLinkAction({
     isFullMode,
@@ -142,15 +140,15 @@ export default function ConfigureLinkAction({
             </div>
             <div className="configure-link-action-content">
                 <div className="link-name">
-                    <CustomInput
+                    <input
                         name={LinkValidationKeys.name}
                         placeholder="Link name"
                         value={link.name}
                         onChange={onNameChange}
-                        handleOnBlur={validateAndUpdateLinksData}
+                        onBlur={validateAndUpdateLinksData}
                         data-testid="external-link-name-input"
-                        error={link.invalidName && CONFIGURE_LINK_NO_NAME}
                     />
+                    {link.invalidName && getErrorLabel('name')}
                 </div>
                 <div className="link-text-area">
                     <textarea

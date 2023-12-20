@@ -1,5 +1,4 @@
 import {
-    CustomInput,
     DeploymentAppTypes,
     InfoColourBar,
     Progressing,
@@ -171,17 +170,23 @@ export default function BuildCD({
     const renderPipelineNameInput = () => {
         return (
             <div className="form__row">
-                <CustomInput
-                    name="pipeline-name"
-                    label="Pipeline Name"
+                <label className="form__label dc__required-field">Pipeline Name</label>
+                <input
+                    className="form__input"
+                    autoComplete="off"
                     disabled={!!cdPipelineId}
                     data-testid="advance-pipeline-name-textbox"
                     placeholder="Pipeline name"
+                    type="text"
                     value={formData.name}
                     onChange={handlePipelineName}
-                    isRequiredField={true}
-                    error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
                 />
+                {formDataErrorObj.name && !formDataErrorObj.name.isValid && (
+                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                        <span>{formDataErrorObj.name.message}</span>
+                    </span>
+                )}
             </div>
         )
     }
@@ -369,20 +374,24 @@ export default function BuildCD({
                         {renderVirtualEnvironmentInfo()}
                     </div>
                     <div className="flex-1 ml-8">
-                        <CustomInput
-                            name="namespace"
-                            label="Namespace"
+                        <span className="form__label">Namespace</span>
+                        <input
+                            className="form__input"
+                            autoComplete="off"
                             placeholder={getNamespaceplaceholder()}
                             data-testid="cd-pipeline-namespace-textbox"
+                            type="text"
                             disabled={!namespaceEditable}
                             value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
                             onChange={handleNamespaceChange}
-                            error={
-                                !formDataErrorObj.nameSpaceError.isValid &&
-                                !isVirtualEnvironment &&
-                                formDataErrorObj.nameSpaceError.message
-                            }
                         />
+
+                        {!formDataErrorObj.nameSpaceError.isValid && !isVirtualEnvironment ? (
+                            <span className="form__error">
+                                <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
+                                {formDataErrorObj.nameSpaceError.message}
+                            </span>
+                        ) : null}
                     </div>
                 </div>
                 {renderNamespaceInfo(namespaceEditable)}

@@ -7,7 +7,6 @@ import DeleteComponent from '../../util/DeleteComponent';
 import { deleteProject } from './service';
 import './project.scss'
 import { DeleteComponentsName, DC_PROJECT_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib';
 
 export interface ProjectProps {
     id: number;
@@ -104,35 +103,42 @@ export class Project extends Component<ProjectProps, ProjectState>  {
             <div>
                 <form className="white-card p-24 mb-16 dashed" onSubmit={this.saveProjectData}>
                     <div className="white-card__header"> {this.props.id ? 'Edit project' : 'Add Project'} </div>
-                    <CustomInput
-                        label="Project Name"
-                        name="name"
-                        value={this.props.name}
-                        placeholder="e.g. My Project"
-                        onChange={this.handleActionChange}
-                        autoFocus={true}
-                        data-testid="project-name-input"
-                        isRequiredField={true}
-                        error={!isValid.name && errorMessage.name}
-                    />
-                    <div className="form__buttons mt-16">
-                        <button
-                            data-testid="project-cancel-button"
-                            type="button"
-                            className="cta cancel mr-16"
-                            onClick={this.props.onCancel}
-                        >
-                            Cancel
-                        </button>
-                        <ButtonWithLoader
-                            type="submit"
-                            rootClassName="cta"
-                            loaderColor="#ffffff"
-                            isLoading={this.props.loadingData}
-                            dataTestId="project-save-button"
-                        >
-                            Save
-                        </ButtonWithLoader>
+                    <label className="form__row">
+                        <span className="form__label dc__required-field">Project name</span>
+                        <input
+                            type="text"
+                            autoComplete="off"
+                            name="name"
+                            value={this.props.name}
+                            placeholder="e.g. My Project"
+                            className="form__input"
+                            autoFocus
+                            onChange={this.handleActionChange}
+                        />
+                        {!isValid.name ? (
+                            <span className="form__error">
+                                <>
+                                    <Error className="form__icon form__icon--error" />
+                                    {errorMessage.name}
+                                </>
+                            </span>
+                        ) : null}
+                    </label>
+                    <div>
+                        <div className="form__buttons">
+                            <button data-testid="project-cancel-button" type="button" className="cta cancel mr-16" onClick={this.props.onCancel}>
+                                Cancel
+                            </button>
+                            <ButtonWithLoader
+                                type="submit"
+                                rootClassName="cta"
+                                loaderColor="#ffffff"
+                                isLoading={this.props.loadingData}
+                                dataTestId="project-save-button"
+                            >
+                                Save
+                            </ButtonWithLoader>
+                        </div>
                     </div>
                 </form>
             </div>
