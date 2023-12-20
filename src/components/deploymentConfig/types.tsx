@@ -457,3 +457,9 @@ export interface DropdownItemProps {
     index: number
     onClick: () => void
 }
+
+export interface SaveConfirmationDialogProps {
+    onSave: () => void
+    showAsModal: boolean
+    closeLockedDiffDrawerWithChildModal: () => void
+}
