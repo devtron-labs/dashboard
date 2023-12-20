@@ -77,6 +77,7 @@ export default function DeploymentConfig({
         allowed: false,
     })
     const [lockedOverride, setLockedOverride] = useState({})
+    const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
         deploymentConfigReducer,
         initDeploymentConfigState,
@@ -495,6 +496,7 @@ export default function DeploymentConfig({
                 res = await api(requestBody, baseDeploymentAbortController.signal)
             }
             if (res.result.isLockConfigError ) {
+                setDisableSaveEligibleChanges(res.result?.disableSaveEligibleChanges)
                 setLockedOverride(res.result?.lockedOverride)
                 handleLockedDiffDrawer(true)
                 return
@@ -971,6 +973,7 @@ export default function DeploymentConfig({
                             onSave={save}
                             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                             lockedOverride={lockedOverride}
+                            disableSaveEligibleChanges={disableSaveEligibleChanges}
                         />
                     )}
                     {SaveChangesModal && state.showSaveChangesModal && (

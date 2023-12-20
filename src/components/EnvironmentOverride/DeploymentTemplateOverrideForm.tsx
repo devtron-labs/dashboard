@@ -68,6 +68,7 @@ export default function DeploymentTemplateOverrideForm({
         config: [],
         allowed: false,
     })
+    const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -224,6 +225,7 @@ export default function DeploymentTemplateOverrideForm({
             if (res.result.isLockConfigError && !saveEligibleChanges) {
                 //checking if any locked changes and opening drawer to show eligible and locked ones
                 setLockedOverride(res.result?.lockedOverride)
+                setDisableSaveEligibleChanges(res.result?.disableSaveEligibleChanges)
                 handleLockedDiffDrawer(true)
                 return
             } else if (isConfigProtectionEnabled) {
@@ -739,6 +741,7 @@ export default function DeploymentTemplateOverrideForm({
                     onSave={handleSubmit}
                     lockedOverride={lockedOverride}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+                    disableSaveEligibleChanges={disableSaveEligibleChanges}
                 />
             )}
         </DeploymentConfigContext.Provider>
