@@ -2818,6 +2818,10 @@ textarea,
     width: 200px;
 }
 
+.w-200-imp {
+    width: 200px !important;
+}
+
 .w-204 {
     width: 204px;
 }
@@ -2895,7 +2899,7 @@ textarea,
 }
 
 .w-500 {
-    width: 510px !important;
+    width: 500px !important;
 }
 
 .w-505 {
@@ -2947,7 +2951,7 @@ textarea,
     width: 90%;
 }
 
-.w-95 {
+.w-95-imp {
     width: 95% !important;
 }
 
@@ -3065,6 +3069,10 @@ textarea,
 
 .h-36 {
     height: 36px !important;
+}
+
+.h-38 {
+    height: 38px;
 }
 
 .h-40 {
@@ -3347,6 +3355,10 @@ textarea,
     padding-left: 28px !important;
 }
 
+.pt-5-imp{
+    padding-top: 5px !important;
+}
+
 .pt-40 {
     padding-top: 40px;
 }
@@ -3387,6 +3399,10 @@ textarea,
 
 .pt-4-imp {
     padding-top: 4px !important;
+}
+
+.pb-5-imp{
+    padding-bottom: 5px !important;
 }
 
 .pb-6-imp {
@@ -3475,6 +3491,10 @@ textarea,
 
 .mt-120 {
     margin-top: 120px;
+}
+
+.ml-36-imp {
+    margin-left: 36px !important 
 }
 
 .ml-54 {
