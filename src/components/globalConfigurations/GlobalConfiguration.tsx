@@ -23,7 +23,7 @@ import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { BodyType } from './globalConfiguration.type'
+import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -37,9 +37,11 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
+const CodeEditor = lazy(() => import('../CodeEditor/CodeEditor'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
+const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -174,7 +176,12 @@ function NavItem({ serverMode }) {
             isAvailableInDesktop: true,
         },
         { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container/ OCI Registry', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        {
+            name: serverMode === SERVER_MODE.EA_ONLY ? 'OCI Registry' : 'Container/ OCI Registry',
+            href: URLS.GLOBAL_CONFIG_DOCKER,
+            component: Docker,
+            isAvailableInEA: true,
+        },
     ]
 
     const ConfigOptional = [
@@ -384,7 +391,15 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {window._env_.ENABLE_SCOPED_VARIABLES && (
+                    {CatalogFramework && <NavLink
+                        to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                        key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                        activeClassName="active-route"
+                    >
+                        <div className="flexbox flex-justify">Catalog Framework</div>
+                    </NavLink>}
+
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES &&  (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -446,13 +461,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
                     return (
-                        <div className="flexbox">
-                            <ClusterList
-                                {...props}
-                                serverMode={serverMode}
-                                isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
-                            />
-                        </div>
+                        <ClusterList
+                            {...props}
+                            serverMode={serverMode}
+                            isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
+                        />
                     )
                 }}
             />
@@ -462,14 +475,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_HOST_URL}
                     render={(props) => {
                         return (
-                            <div className="flexbox">
-                                <HostURLConfiguration
-                                    {...props}
-                                    isSuperAdmin={isSuperAdmin}
-                                    refreshGlobalConfig={getHostURLConfig}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                />
-                            </div>
+                            <HostURLConfiguration
+                                {...props}
+                                isSuperAdmin={isSuperAdmin}
+                                refreshGlobalConfig={getHostURLConfig}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                            />
                         )
                     }}
                 />,
@@ -477,33 +488,21 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     key={URLS.GLOBAL_CONFIG_GITOPS}
                     path={URLS.GLOBAL_CONFIG_GITOPS}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                            </div>
-                        )
+                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_PROJECT}
                     path={URLS.GLOBAL_CONFIG_PROJECT}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <Project {...props} isSuperAdmin={isSuperAdmin} />
-                            </div>
-                        )
+                        return <Project {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_GIT}
                     path={URLS.GLOBAL_CONFIG_GIT}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                            </div>
-                        )
+                        return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
                 <Route
@@ -511,13 +510,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                     render={(props) => {
                         return (
-                            <div className="flexbox">
-                                <Docker
-                                    {...props}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                    isSuperAdmin={isSuperAdmin}
-                                />
-                            </div>
+                            <Docker
+                                {...props}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                                isSuperAdmin={isSuperAdmin}
+                                isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
+                            />
                         )
                     }}
                 />,
@@ -563,9 +561,14 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
+            {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            {CatalogFramework && (
+                <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
             {PluginsPolicy && (
@@ -651,66 +654,21 @@ function handleError(error: any): any[] {
     return error
 }
 
-export function CustomInput({
-    name,
-    value,
-    error,
-    onChange,
-    onBlur = (e) => {},
-    onFocus = (e) => {},
-    label,
-    type = 'text',
-    disabled = false,
-    autoComplete = 'off',
-    labelClassName = '',
-    placeholder = '',
-    tabIndex = 1,
-    dataTestid = '',
-}) {
-    return (
-        <div className="flex column left top">
-            <label className={`form__label ${labelClassName}`}>{label}</label>
-            <input
-                data-testid={dataTestid}
-                type={type}
-                name={name}
-                autoComplete="off"
-                className="form__input"
-                onChange={(e) => {
-                    e.persist()
-                    onChange(e)
-                }}
-                onBlur={onBlur}
-                onFocus={onFocus}
-                placeholder={placeholder}
-                value={value}
-                disabled={disabled}
-                tabIndex={tabIndex}
-            />
-            {handleError(error).map((err) => (
-                <div className="form__error">
-                    <FormError className="form__icon form__icon--error" />
-                    {err}
-                </div>
-            ))}
-        </div>
-    )
-}
-
 export function ProtectedInput({
     name,
     value,
     error,
     onChange,
-    label,
-    type = 'text',
+    label= '',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-}) {
+    onBlur= (e) => {},
+    isRequiredField = false,
+}: ProtectedInputType) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -718,7 +676,7 @@ export function ProtectedInput({
 
     return (
         <div className="flex column left top ">
-            <label htmlFor="" className={`form__label ${labelClassName}`}>
+            <label htmlFor="" className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}>
                 {label}
             </label>
             <div className="dc__position-rel w-100">
@@ -735,6 +693,7 @@ export function ProtectedInput({
                     }}
                     value={value}
                     disabled={disabled}
+                    onBlur={onBlur}
                 />
                 <ShowHide
                     className="protected-input__toggle"
