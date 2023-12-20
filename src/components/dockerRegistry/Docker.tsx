@@ -1615,7 +1615,7 @@ function DockerForm({
                             label="Name"
                             disabled={!!id}
                             placeholder="e.g. Registry name"
-                            autoFocus={false}
+                            autoFocus={true}
                         />
                     </div>
                     <div className="form__row">
@@ -1634,7 +1634,6 @@ function DockerForm({
                                     !!(registryUrl || selectedDockerRegistryType.defaultRegistryURL))
                             }
                             placeholder={selectedDockerRegistryType.registryURL.placeholder}
-                            autoFocus={false}
                         />
                     </div>
                 </div>
