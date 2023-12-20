@@ -19,6 +19,7 @@ import {
     PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
+import { WorkflowDimensions } from './config'
 
 export interface CDMaterialProps extends RouteComponentProps<{}> {
     material?: CDMaterialType[]
@@ -709,4 +710,11 @@ export interface MaterialSourceProps {
     ciPipelineId?: number
     fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
+}
+
+export interface AddDimensionsToDownstreamDeploymentsParams {
+    downstreams: NodeAttr[],
+    dimensions: WorkflowDimensions,
+    startX: number,
+    startY: number,
 }
