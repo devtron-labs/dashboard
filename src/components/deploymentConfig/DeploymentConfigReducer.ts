@@ -31,7 +31,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     dialog: false,
     latestAppChartRef: null,
     latestChartRef: null,
-    showSaveChangsModal: false,
+    showSaveChangesModal: false,
     allDrafts: [],
     latestDraft: null,
     draftValues: '',
@@ -55,6 +55,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     convertVariables: false,
     convertVariablesOverride: false,
     showLockedTemplateDiff: false,
+    lockChangesLoading: false,
 }
 
 export const deploymentConfigReducer = (
@@ -86,6 +87,8 @@ export const deploymentConfigReducer = (
             return { ...state, tempFormData: action.payload }
         case DeploymentConfigStateActionTypes.chartConfigLoading:
             return { ...state, chartConfigLoading: action.payload }
+        case DeploymentConfigStateActionTypes.lockChangesLoading:
+            return { ...state, lockChangesLoading: action.payload}
         case DeploymentConfigStateActionTypes.showConfirmation:
             return { ...state, showConfirmation: action.payload }
         case DeploymentConfigStateActionTypes.showReadme:
@@ -127,7 +130,7 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.reset:
             return { ...initDeploymentConfigState }
         case DeploymentConfigStateActionTypes.toggleSaveChangesModal:
-            return { ...state, showSaveChangsModal: !state.showSaveChangsModal }
+            return { ...state, showSaveChangesModal: !state.showSaveChangesModal }
         case DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff:
             return { ...state, showLockedTemplateDiff: action.payload }
         case DeploymentConfigStateActionTypes.allDrafts:

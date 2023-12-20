@@ -5,7 +5,6 @@ import { BasicFieldErrorObj, DeploymentConfigStateAction, DeploymentConfigStateA
 import { ValidationRules } from './validationRules'
 import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { JSONPath } from 'jsonpath-plus'
 
 const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
 let templateFromBasicValue
@@ -187,46 +186,3 @@ export const getPosition = (isValues: boolean, isEnv: boolean, type: number) => 
     }
 }
 
-function removeEmptyValues(obj) {
-    for (let key in obj) {
-        if (obj[key] && typeof obj[key] === 'object') {
-            if (removeEmptyValues(obj[key])) {
-                delete obj[key]
-            }
-        } else if (obj[key] === '' || obj[key] === null || obj[key] === undefined) {
-            delete obj[key]
-        }
-    }
-    return Object.keys(obj).length === 0
-}
-export function getUnlockedJSON(json, jsonPathArray) {
-    const patches = jsonPathArray.flatMap((jsonPath) => {
-        const pathsToRemove = JSONPath({ path: jsonPath, json: json, resultType: 'all' })
-        return pathsToRemove.map((result) => ({ op: 'remove', path: result.pointer }))
-    })
-    let newDocument = jsonpatch.applyPatch(json, patches).newDocument
-    removeEmptyValues(newDocument)
-    return newDocument
-}
-
-export function getLockedJSON(json, jsonPathArray: string[]) {
-    let resultJson = {}
-    jsonPathArray.forEach((jsonPath) => {
-        const elements = JSONPath({ path: jsonPath, json: json, resultType: 'all' })
-        elements.forEach((element) => {
-            let pathArray: string[] = JSONPath.toPathArray(element.path)
-            let lastPath = pathArray.pop()
-            let current = resultJson
-            for (let i = 0; i < pathArray.length; i++) {
-                let key = isNaN(Number(pathArray[i])) ? pathArray[i] : parseInt(pathArray[i])
-                if (!current[key]) {
-                    current[key] = isNaN(Number(pathArray[i + 1])) ? {} : []
-                }
-                current = current[key]
-            }
-            let key = isNaN(Number(lastPath)) ? lastPath : parseInt(lastPath)
-            current[key] = element.value
-        })
-    })
-    return resultJson
-}

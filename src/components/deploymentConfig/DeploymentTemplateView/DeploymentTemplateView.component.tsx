@@ -16,6 +16,7 @@ import {
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
     DropdownItemProps,
+    SaveConfirmationDialogProps,
 } from '../types'
 import {
     DEPLOYMENT_TEMPLATE_LABELS_KEYS,
@@ -408,12 +409,16 @@ export const SuccessToastBody = ({ chartConfig }) => (
     </div>
 )
 
-export const SaveConfirmationDialog = ({ onSave, showAsModal ,closeLockedDiffDrawerWithChildModal}) => {
+export const SaveConfirmationDialog = ({
+    onSave,
+    showAsModal,
+    closeLockedDiffDrawerWithChildModal,
+}: SaveConfirmationDialogProps) => {
     const { state, dispatch } = useContext(DeploymentConfigContext)
     const saveConfirmationContent = () => (
         <div
             className={`modal__body flexbox-col dc__gap-12 bcn-0 w-400 pt-16 pb-16 pl-16 pr-16 dc__border ${
-                !showAsModal && 'position-bottom'
+                !showAsModal && 'position-bottom-right'
             }`}
         >
             <InfoIcon className="icon-dim-48" />
@@ -427,7 +432,7 @@ export const SaveConfirmationDialog = ({ onSave, showAsModal ,closeLockedDiffDra
                     data-testid="base-deployment-template-cancel-button"
                     type="button"
                     className="cta cancel"
-                    onClick={closeConfirmationDialog}
+                    onClick={closeLockedDiffDrawerWithChildModal}
                 >
                     Cancel
                 </button>
@@ -443,10 +448,6 @@ export const SaveConfirmationDialog = ({ onSave, showAsModal ,closeLockedDiffDra
         </div>
     )
 
-    const closeConfirmationDialog = () => {
-         closeLockedDiffDrawerWithChildModal()
-    }
-
     const getButtonState = () => {
         if (state.loading) {
             return <Progressing />
@@ -460,7 +461,7 @@ export const SaveConfirmationDialog = ({ onSave, showAsModal ,closeLockedDiffDra
     return (
         <>
             {showAsModal ? (
-                <VisibleModal className=''>{saveConfirmationContent()}</VisibleModal>
+                <VisibleModal className="">{saveConfirmationContent()}</VisibleModal>
             ) : (
                 saveConfirmationContent()
             )}

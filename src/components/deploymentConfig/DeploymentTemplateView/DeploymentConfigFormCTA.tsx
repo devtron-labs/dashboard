@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
-import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentConfigContextType, DeploymentConfigFormCTAProps } from '../types'
+import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentConfigContextType, DeploymentConfigFormCTAProps, DeploymentConfigStateActionTypes } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { DOCUMENTATION } from '../../../config'
 import Tippy from '@tippyjs/react'
@@ -25,14 +25,16 @@ export default function DeploymentConfigFormCTA({
     reload,
     isValues,
     convertVariables,
-    openLockedDiffDrawer,
+    handleLockedDiffDrawer,
     isSuperAdmin,
     setShowLockedDiffForApproval,
     showLockedDiffForApproval,
-    checkForLockedChanges
+    checkForProtectedLockedChanges,
+    setLockedOverride
 }: DeploymentConfigFormCTAProps) {
-    const { state, isConfigProtectionEnabled } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
-
+    const { state, isConfigProtectionEnabled, dispatch } =
+        useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const [approveChangesClicked, setApproveChangesClicked] = React.useState(false)
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
@@ -60,11 +62,27 @@ export default function DeploymentConfigFormCTA({
     }
     
     const checkForLockedChangesForApproval = async () => {
-        const res = await checkForLockedChanges(true)
-        res.result.isLockConfigError = false
-        if (res.result.isLockConfigError && isApprovalPending && !approveDisabled && !isSuperAdmin) {
-            setShowLockedDiffForApproval(true)
-            openLockedDiffDrawer()
+        setApproveChangesClicked(true)
+        if (isApprovalPending && !approveDisabled && !isSuperAdmin) {
+            try {
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.lockChangesLoading,
+                    payload: true,
+                })
+                const res = await checkForProtectedLockedChanges()
+                if (res.result.isLockConfigError) {
+                    setShowLockedDiffForApproval(true)
+                    setLockedOverride(res.result.lockedOverride)
+                    handleLockedDiffDrawer(true)
+                }
+            } catch (err) {
+                showError(err)
+            } finally {
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.lockChangesLoading,
+                    payload: false,
+                })
+            }
         }
     }
 
@@ -214,8 +232,6 @@ export default function DeploymentConfigFormCTA({
                 draftVersionId={state.latestDraft.draftVersionId}
                 resourceName="deployment template"
                 reload={reload}
-                openLockedDiffDrawer={openLockedDiffDrawer}
-                setShowLockedDiffForApproval={setShowLockedDiffForApproval}
             >
                 <span>{children}</span>
             </ApproveRequestTippy>
@@ -231,15 +247,20 @@ export default function DeploymentConfigFormCTA({
             {compareTab && !state.showReadme && <div className="w-50" />}
             {renderApplicationMetrics()}
             {!isPublishedMode && (
-                <>
-                    {isApprovalPending && state.latestDraft?.canApprove && !approveDisabled && ApproveRequestTippy ? (
-                        <ConditionalWrap condition={!showLockedDiffForApproval} wrap={approveRequestTippy}>
-                            {renderButton()}
-                        </ConditionalWrap>
-                    ) : (
-                        renderButton()
-                    )}
-                </>
+                <ConditionalWrap
+                    condition={
+                        !showLockedDiffForApproval &&
+                        !state.lockChangesLoading &&
+                        isApprovalPending &&
+                        state.latestDraft?.canApprove &&
+                        !approveDisabled &&
+                        ApproveRequestTippy &&
+                        approveChangesClicked
+                    }
+                    wrap={approveRequestTippy}
+                >
+                    {renderButton()}
+                </ConditionalWrap>
             )}
         </div>
     ) : null

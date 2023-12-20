@@ -61,8 +61,12 @@ export const updateDeploymentTemplate = (request, abortSignal) => {
     })
 }
 
-export const getLockedConfigProtected = (request) => {
-    return post('draft/config/lock/validate', request)
+export const getIfLockedConfigProtected = (request) => {
+    return post(Routes.LOCKED_CONFIG_PROTECTED, request)
+}
+
+export const getIfLockedConfigNonProtected = (request) => {
+    return post(Routes.LOCKED_CONFIG_NON_PROTECTED, request)
 }
 
 export const saveDeploymentTemplate = (request, abortSignal) => {
