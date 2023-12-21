@@ -310,7 +310,7 @@ export default function ResourceList() {
             !isTerminal &&
             !isNodes
         ) {
-            getResourceListData()
+            selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind && getResourceListData()
             setSearchText('')
             setSearchApplied(false)
         } else if (isNodes) {
@@ -634,7 +634,6 @@ export default function ResourceList() {
             setResourceListLoader(true)
             setResourceList(null)
             setFilteredResourceList([])
-
             const resourceListPayload: ResourceListPayloadType = {
                 clusterId: Number(clusterId),
                 k8sRequest: {
