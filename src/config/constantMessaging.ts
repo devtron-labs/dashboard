@@ -428,3 +428,6 @@ export const EPHEMERAL_CONTAINER = {
 export const NO_TASKS_CONFIGURED_ERROR = 'No tasks are configured in this job pipeline'
 
 export const FEATURE_DISABLED = 'This feature is disabled'
+
+export const DUPLICATE_PIPELINE_NAME_VALIDATION = "You cannot use same name for pipeline within an app."
+export const GENERATE_TOKEN_NAME_VALIDATION = "Token name is required to generate token"
