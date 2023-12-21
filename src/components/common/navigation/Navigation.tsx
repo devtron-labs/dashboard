@@ -14,7 +14,9 @@ import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-sec
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
-import NavSprite from '../../../assets/icons/navigation-sprite.svg'
+// TODO: Uncomment when removing christmas logo
+// import NavSprite from '../../../assets/icons/navigation-sprite.svg'
+import { ReactComponent as ChristmasLogo } from '../../../assets/icons/sidebar-dt-withhat.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
@@ -334,13 +336,16 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                <svg
+                                {/* TODO: Uncomment after new year */}
+                                {/* <svg
                                     className="devtron-logo"
                                     data-testid="click-on-devtron-app-logo"
                                     viewBox="0 0 40 40"
                                 >
                                     <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
-                                </svg>
+                                </svg> */}
+                                
+                                <ChristmasLogo className="icon-dim-40" />
                                 <div className="pl-12">
                                     <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
                                 </div>
