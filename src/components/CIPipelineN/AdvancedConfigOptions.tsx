@@ -27,6 +27,7 @@ export default function AdvancedConfigOptions({
         setFormDataErrorObj
     } = useContext(pipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
+    // TODO: Should be getting that from formData, redundant state
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
     const [parentState, setParentState] = useState<CIConfigParentState>({
         loadingState: ComponentStates.loading,
@@ -151,6 +152,7 @@ export default function AdvancedConfigOptions({
         setFormData(_form)
     }
 
+    // TODO: Move into separate component
     const renderDockerArgs = () => {
         return (
             <div>
@@ -256,6 +258,7 @@ export default function AdvancedConfigOptions({
                     setLoadingStateFromParent={setLoadingState}
                 />
 
+                {/* FIXME: Hidden after build without dockerfile and then delete override */}
                 {parentState?.loadingState === ComponentStates.loaded &&
                     parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE && (
                         <>

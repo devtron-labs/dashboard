@@ -342,9 +342,10 @@ export default function CIDockerFileConfig({
         )
     }
 
+    // TODO: Move this to a separate file
     const renderCIBuildTypeOptions = () => {
         return (
-            <div className="flex mb-16">
+            <div className="flex mb-16 bcv-5">
                 {CI_BUILD_TYPE_OPTIONS.map((option) => {
                     const isCurrentlySelected = ciBuildTypeOption === option.id
                     const showTick = canShowTick(option.id)
@@ -413,6 +414,7 @@ export default function CIDockerFileConfig({
         )
     }
 
+    // TODO: Needs to be two separate components and for build context and other options
     const renderSelfDockerfileBuildOption = () => {
         return (
             <div>

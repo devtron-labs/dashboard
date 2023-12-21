@@ -249,6 +249,7 @@ export default function CICreateDockerfileOption({
         })
     }
 
+    // TODO: Move this to a component
     const renderLanguageOptions = (editorData: TemplateDataType) => {
         return (
             <div className="flex">
@@ -452,6 +453,7 @@ export default function CICreateDockerfileOption({
                     ) : null}
                 </div>
             )}
+            {/* FIXME: Use it from BuildContext component - CODE DUPLICACY */}
             {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride ? isCollapsed : true) && (
                 <div className={`form-row__docker ${!configOverrideView || allowOverride ? 'ml-24' : ''}`}>
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>

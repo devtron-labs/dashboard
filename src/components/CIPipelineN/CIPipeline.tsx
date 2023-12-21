@@ -191,6 +191,7 @@ export default function CIPipeline({
         return _mandatoryPluginsMap
     }, [mandatoryPluginData])
 
+    // TODO: Move to async
     useEffect(() => {
         getInitialData()
         getGlobalVariables()
@@ -279,6 +280,7 @@ export default function CIPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
+    // TODO: Move to async
     const getInitialData = (): void => {
         setPageState(ViewType.LOADING)
         getSecurityModuleStatus()

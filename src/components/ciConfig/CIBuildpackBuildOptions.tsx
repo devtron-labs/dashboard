@@ -108,6 +108,7 @@ const menuListComponent = (props): JSX.Element => {
     )
 }
 
+// FIXME: Target this component first for refactoring
 export default function CIBuildpackBuildOptions({
     ciBuildConfig,
     sourceConfig,
