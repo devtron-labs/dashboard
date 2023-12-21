@@ -179,14 +179,12 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     data-testid="containerport-textbox"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
+                                    error={
+                                        currentBasicFieldValuesErrorObj?.port &&
+                                        !currentBasicFieldValuesErrorObj.port.isValid &&
+                                        currentBasicFieldValuesErrorObj.port.message
+                                    }
                                 />
-                                {currentBasicFieldValuesErrorObj?.port &&
-                                    !currentBasicFieldValuesErrorObj.port.isValid && (
-                                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                            <span>{currentBasicFieldValuesErrorObj.port.message}</span>
-                                        </span>
-                                    )}
                             </div>
                         </div>
                         <div
@@ -260,7 +258,6 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                             {renderLabel('CPU', 'CPU available to the application', true)}
                             <div>
                                 <CustomInput
-                                    type="text"
                                     data-testid="resources-cpu-textbox"
                                     name={BASIC_FIELDS.RESOURCES_CPU}
                                     value={
@@ -271,13 +268,12 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     rootClassName="w-200-imp br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
+                                    error={
+                                        currentBasicFieldValuesErrorObj?.cpu &&
+                                        !currentBasicFieldValuesErrorObj.cpu.isValid &&
+                                        currentBasicFieldValuesErrorObj.cpu.message
+                                    }
                                 />
-                                {currentBasicFieldValuesErrorObj?.cpu && !currentBasicFieldValuesErrorObj.cpu.isValid && (
-                                    <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                        <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                        <span>{currentBasicFieldValuesErrorObj.cpu.message}</span>
-                                    </span>
-                                )}
                             </div>
                         </div>
                         <div className="row-container mb-16">
@@ -285,7 +281,6 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                             <div>
                                 <CustomInput
                                     data-testid="resources-memory-textbox"
-                                    type="text"
                                     name={BASIC_FIELDS.RESOURCES_MEMORY}
                                     value={
                                         currentBasicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
@@ -295,15 +290,12 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     rootClassName="w-200-imp br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
-                                    autoComplete="off"
+                                    error={
+                                        currentBasicFieldValuesErrorObj?.memory &&
+                                        !currentBasicFieldValuesErrorObj.memory.isValid &&
+                                        currentBasicFieldValuesErrorObj.memory.message
+                                    }
                                 />
-                                {currentBasicFieldValuesErrorObj?.memory &&
-                                    !currentBasicFieldValuesErrorObj.memory.isValid && (
-                                        <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                            <span>{currentBasicFieldValuesErrorObj.memory.message}</span>
-                                        </span>
-                                    )}
                             </div>
                         </div>
                         <div className="fw-6 fs-14 cn-9 mb-8">Environment Variables</div>

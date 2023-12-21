@@ -189,20 +189,17 @@ export default function GroupForm({
     }
     return (
         <div className="user-form">
-            <label className="form__label">Group name*</label>
-            {name.error && <label className="form__error">{name.error}</label>}
             <CustomInput
                 name="permission-group-name-textbox"
                 label="Group name"
-                type="text"
-                rootClassName="mb-16"
                 disabled={!!id}
                 value={name.value}
                 data-testid="permission-group-name-textbox"
                 onChange={(e) => setName({ value: e.target.value, error: '' })}
+                isRequiredField={true}
                 error={name.error}
             />
-            <label htmlFor="" className="form__label">
+            <label htmlFor="" className="form__label mt-16">
                 Description
             </label>
             <ResizableTextarea

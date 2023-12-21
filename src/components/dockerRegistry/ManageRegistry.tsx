@@ -24,6 +24,7 @@ import {
     Option,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export function DropdownIndicator(props) {
     return (
@@ -414,14 +415,8 @@ function ManageRegistry({
                             value={credentialValue}
                             onChange={onClickSpecifyImagePullSecret}
                             autoFocus
+                            error={errorValidation && REQUIRED_FIELD_MSG}
                         />
-
-                        {errorValidation && (
-                            <span className="form__error">
-                                <img src={error} alt="" className="form__icon" />
-                                This is a required Field
-                            </span>
-                        )}
                     </>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (

@@ -105,12 +105,15 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                 <form className="white-card p-24 mb-16 dashed" onSubmit={this.saveProjectData}>
                     <div className="white-card__header"> {this.props.id ? 'Edit project' : 'Add Project'} </div>
                     <CustomInput
+                        label="Project Name"
                         name="name"
                         value={this.props.name}
                         placeholder="e.g. My Project"
                         onChange={this.handleActionChange}
-                        error={!isValid.name && errorMessage.name}
                         autoFocus={true}
+                        data-testid="project-name-input"
+                        isRequiredField={true}
+                        error={!isValid.name && errorMessage.name}
                     />
                     <div className="form__buttons mt-16">
                         <button

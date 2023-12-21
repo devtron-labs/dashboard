@@ -14,7 +14,7 @@ import './webhookDetails.scss'
 import ReactSelect, { components } from 'react-select'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
-import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES } from '../../../config'
+import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '../../apiTokens/service'
 import { useParams } from 'react-router-dom'
 import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
@@ -332,46 +332,47 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         }
     }
 
+    const renderWebhhokTokenLabel = (): JSX.Element => {
+        return (
+            <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
+                api-token
+                <Tippy
+                    className="default-white no-content-padding tippy-shadow w-300"
+                    arrow={false}
+                    placement="top"
+                    content={
+                        <>
+                            <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
+                                <Help className="icon-dim-20 mr-6 fcv-5" />
+                                <span className="fs-14 fw-6 cn-9">Why is API token required?</span>
+                            </div>
+                            <div className="fs-13 fw-4 cn-9 p-12">
+                                API token is required to allow requests from an external service. Use an API token with
+                                the permissions mentioned in the above section.
+                            </div>
+                        </>
+                    }
+                >
+                    <Question className="icon-dim-16 ml-6" />
+                </Tippy>
+            </div>
+        )
+    }
+
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
             <div className="mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
-                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
-                        api-token
-                        <Tippy
-                            className="default-white no-content-padding tippy-shadow w-300"
-                            arrow={false}
-                            placement="top"
-                            content={
-                                <>
-                                    <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
-                                        <Help className="icon-dim-20 mr-6 fcv-5" />
-                                        <span className="fs-14 fw-6 cn-9">Why is API token required?</span>
-                                    </div>
-                                    <div className="fs-13 fw-4 cn-9 p-12">
-                                        API token is required to allow requests from an external service. Use an API
-                                        token with the permissions mentioned in the above section.
-                                    </div>
-                                </>
-                            }
-                        >
-                            <Question className="icon-dim-16 ml-6" />
-                        </Tippy>
-                    </div>
                     <CustomInput
                         name="api-token"
+                        label={renderWebhhokTokenLabel}
                         placeholder="Enter API token"
                         rootClassName="bcn-0 dc__no-border"
                         onChange={handleTokenChange}
-                        value={tryoutAPIToken}
+                        value={tryoutAPIToken} 
+                        error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
                     />
                 </div>
-                {showTryoutAPITokenError && (
-                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                        <span>API Token is required to execute webhook</span>
-                    </span>
-                )}
             </div>
         )
     }
@@ -443,9 +444,9 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div>
                 <div className="mt-16">
-                    <div className="mb-8 dc__required-field">Token name</div>
                     <CustomInput
                         name="token-name"
+                        label="Token name"
                         value={tokenName}
                         onChange={handleTokenNameChange}
                         disabled={!!generatedAPIToken}

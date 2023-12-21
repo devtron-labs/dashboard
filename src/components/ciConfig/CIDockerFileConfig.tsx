@@ -476,7 +476,7 @@ export default function CIDockerFileConfig({
                                     placement="top"
                                     content={selectedMaterial?.checkoutPath}
                                 >
-                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                    <span className="h-38 checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
                                         {selectedMaterial?.checkoutPath}
                                     </span>
                                 </Tippy>
@@ -496,11 +496,9 @@ export default function CIDockerFileConfig({
                                     autoComplete={'off'}
                                     autoFocus={!configOverrideView}
                                     disabled={configOverrideView && !allowOverride}
+                                    error={formState.dockerfile.error}
                                 />
                             </div>
-                        )}
-                        {formState.dockerfile.error && (
-                            <label className="form__error">{formState.dockerfile.error}</label>
                         )}
                     </div>
                 </div>
