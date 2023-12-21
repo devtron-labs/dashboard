@@ -127,13 +127,18 @@ function EnvironmentSelectorComponent({
     async function deleteResourceAction(deleteAction: DELETE_ACTION) {
         try {
             const response = await getDeleteApplicationApi(deleteAction)
-            if (response.result.deleteResponse?.deleteInitiated) {
+            if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && response.result?.success)) {
                 setShowDeleteConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 showForceDeleteDialog(false)
                 toast.success('Deletion initiated successfully.')
-                _init()
-            } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                if (typeof _init === 'function') {
+                    _init()
+                }
+            } else if (
+                deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
+                !response.result.deleteResponse?.clusterReachable
+            ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
                 setShowDeleteConfirmation(false)
                 showNonCascadeDeleteDialog(true)

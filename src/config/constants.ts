@@ -329,7 +329,7 @@ export const DOCUMENTATION = {
     SECURITY: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/security-features`,
     GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops`,
     GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
-    GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/docker-registries`,
+    GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/container-registries`,
     GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
     GLOBAL_CONFIG_AUTH: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access`,
     GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
@@ -447,6 +447,13 @@ export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
     infoText:
         'A registry is used to store container images built by a build pipeline. The connected deployment pipeline then pulls the required image from the registry for deployment.',
     additionalParagraphText: 'You can also control which clusters have access to pull images from a registry.',
+    documentationLinkText: 'View documentation',
+}
+
+export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
+    heading: 'OCI Registry',
+    infoText:
+        'Devtron can pull helm charts stored in OCI Registry. Charts pulled from added OCI Registries are shown in Chart Store which can be used for deployment.',
     documentationLinkText: 'View documentation',
 }
 
@@ -798,3 +805,7 @@ export const SERVER_ERROR_CODES = {
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+export const CVE_ID_NOT_FOUND = "CVE ID not found"
+export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"
+export const NO_HOST_URL = "Please enter host url"
+export const WEBHOOK_NO_API_TOKEN_ERROR = "API Token is required to execute webhook"
