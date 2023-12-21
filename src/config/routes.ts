@@ -66,7 +66,6 @@ export const URLS = {
     GLOBAL_CONFIG_NOTIFIER: '/global-config/notifier',
     GLOBAL_CONFIG_NOTIFIER_ADD_NEW: '/global-config/notifier/edit',
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
-    GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     GLOBAL_CONFIG_EXTERNAL_LINKS: '/global-config/external-links',
     GLOBAL_CONFIG_CATALOG_FRAMEWORK: '/global-config/catalog-framework',
     GLOBAL_CONFIG_SCOPED_VARIABLES: '/global-config/scoped-variables',

@@ -1,6 +1,13 @@
 import React, { Component } from 'react'
-import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
-import { showError, Progressing, ErrorScreenManager, ConfirmationDialog, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, importComponentFromFELibrary } from '../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ConfirmationDialog,
+    CustomInput,
+    noop,
+} from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
@@ -18,10 +25,16 @@ import { ReactComponent as LDAP } from '../../assets/icons/ic-ldap.svg'
 import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import warn from '../../assets/icons/ic-warning.svg'
+
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import './login.scss'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
+import { AUTHORIZATION_CONFIG_TYPES } from './constants'
+
+const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
+const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
+const getAuthorizationGlobalConfig = importComponentFromFELibrary('getAuthorizationGlobalConfig', noop, 'function')
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -47,6 +60,13 @@ const ssoMap = {
     oidc: 'https://dexidp.io/docs/connectors/oidc/',
     openshift: 'https://dexidp.io/docs/connectors/openshift/',
 }
+
+/**
+ * List of providers for which the flow should be configured
+ *
+ * Note: Remove once ON for all providers
+ */
+const autoAssignPermissionsFlowActiveProviders = [SSOProvider.microsoft, SSOProvider.ldap]
 
 const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
     switch (SSOName) {
@@ -102,6 +122,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             configMap: SwitchItemValues.Configuration,
             showToggling: false,
             ssoConfig: undefined,
+            shouldAutoAssignPermissions: null,
             isError: {
                 url: '',
             },
@@ -116,14 +137,21 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     componentDidMount() {
-        getSSOConfigList()
-            .then((res) => {
-                let ssoConfig = res.result?.find((sso) => sso.active)
-                if (res.result && ssoConfig) {
+        Promise.all([getSSOConfigList(), getAuthorizationGlobalConfig()])
+            // keeping the existing type intact
+            .then(([ssoConfigListRes, authorizationGlobalConfig]: any) => {
+                let ssoConfig = ssoConfigListRes.result?.find((sso) => sso.active)
+                if (ssoConfigListRes.result && ssoConfig) {
                     this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig })
                 } else {
                     ssoConfig = sample['google']
                     this.setState({ sso: 'google', ssoConfig: this.parseResponse(ssoConfig) })
+                }
+                // Would be undefined for OSS
+                if (authorizationGlobalConfig) {
+                    this.setState({
+                        shouldAutoAssignPermissions: authorizationGlobalConfig[AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS],
+                    })
                 }
             })
             .then(() => {
@@ -160,10 +188,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     setConfig(response: any, newsso: any): void {
         const config = response.result?.config?.config
-        if ( config?.hasOwnProperty('clientID') && config?.clientID === '') {
+        if (config?.hasOwnProperty('clientID') && config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if ( config?.hasOwnProperty('clientSecret') && config?.clientSecret === '') {
+        if (config?.hasOwnProperty('clientSecret') && config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
         let newConfig: SSOConfigType
@@ -211,13 +239,67 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     checkConfigJson(ssoConfig) {
-        if (ssoConfig?.hasOwnProperty('clientID') && (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)) {
+        if (
+            ssoConfig?.hasOwnProperty('clientID') &&
+            (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)
+        ) {
             ssoConfig.clientID = ''
         }
-        if (ssoConfig?.hasOwnProperty('clientID') && (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)) {
+        if (
+            ssoConfig?.hasOwnProperty('clientID') &&
+            (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)
+        ) {
             ssoConfig.clientSecret = ''
         }
         return ssoConfig
+    }
+
+    _getSSOCreateOrUpdatePayload = (
+        configJSON,
+        { isAutoAssignPermissionFlowActive }: { isAutoAssignPermissionFlowActive: boolean },
+    ) => ({
+        id: this.state.ssoConfig?.id,
+        name: this.state.sso,
+        url: this.state.ssoConfig.url,
+        config: {
+            type: this.state.ssoConfig.config.type,
+            id: this.state.ssoConfig.config.id,
+            name: this.state.ssoConfig.config.name,
+            config: configJSON,
+        },
+        active: true,
+        ...(isAutoAssignPermissionFlowActive && {
+            globalAuthConfigType: this.state.shouldAutoAssignPermissions
+                ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
+                : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
+        }),
+    })
+
+    /**
+     * Parses the configuration for the SSO and returns the JSON config
+     */
+    _validateYaml = ({ isAutoAssignPermissionFlowActive }: { isAutoAssignPermissionFlowActive: boolean }) => {
+        let configJSON: any = {}
+        try {
+            configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config)
+            configJSON = this.checkConfigJson(configJSON)
+
+            if (
+                this.state.sso === SSOProvider.microsoft &&
+                isAutoAssignPermissionFlowActive &&
+                this.state.shouldAutoAssignPermissions &&
+                !configJSON.tenant
+            ) {
+                toast.error('"tenant" is required in configuration for auto-assigning permissions to users')
+                return { isValid: false }
+            }
+        } catch (error) {
+            // Invalid YAML, couldn't be parsed to JSON. Show error toast
+            toast.error('Invalid Yaml')
+            this.setState({ saveLoading: false })
+            return { isValid: false }
+        }
+        return { isValid: true, configJSON }
     }
 
     saveSSO(response): void {
@@ -242,30 +324,19 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         toast.success('Saved Successful')
     }
 
-    saveNewSSO(): void {
+    saveNewSSO(isAutoAssignPermissionFlowActive: boolean): void {
         this.setState({ saveLoading: true })
-        let configJSON: any = {}
-        try {
-            configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config)
-            configJSON = this.checkConfigJson(configJSON)
-        } catch (error) {
-            //Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+        const { isValid, configJSON } = this._validateYaml({
+            isAutoAssignPermissionFlowActive,
+        })
+
+        if (!isValid) {
             this.setState({ saveLoading: false })
+            return
         }
-        let payload = {
-            id: this.state.ssoConfig?.id,
-            name: this.state.sso,
-            url: this.state.ssoConfig.url,
-            config: {
-                type: this.state.ssoConfig.config.type,
-                id: this.state.ssoConfig.config.id,
-                name: this.state.ssoConfig.config.name,
-                config: configJSON,
-            },
-            active: true,
-        }
-        let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
+
+        const payload = this._getSSOCreateOrUpdatePayload(configJSON, { isAutoAssignPermissionFlowActive })
+        const promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
         promise
             .then((response) => {
                 this.saveSSO(response)
@@ -279,7 +350,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             })
     }
 
-    onLoginConfigSave(): void {
+    onLoginConfigSave(isAutoAssignPermissionFlowActive: boolean): void {
         if (!this.state.ssoConfig.url) {
             toast.error('Some required field are missing')
             return
@@ -287,38 +358,30 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.sso === OIDCType) {
             if (this.state.invalidYaml) {
-                toast.error("Invalid YAML")
+                toast.error('Invalid YAML')
                 return
             }
-            if (!this.state.ssoConfig.config.id || !this.state.ssoConfig.config.name || !this.state.ssoConfig.config.config) {
-                toast.error("Configuration must have id, name and config value")
+            if (
+                !this.state.ssoConfig.config.id ||
+                !this.state.ssoConfig.config.name ||
+                !this.state.ssoConfig.config.config
+            ) {
+                toast.error('Configuration must have id, name and config value')
                 return
             }
         }
 
         this.setState({ saveLoading: true })
-        let configJSON: any = {}
-        try {
-            configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config)
-            configJSON = this.checkConfigJson(configJSON)
-        } catch (error) {
-            //Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+        const { isValid, configJSON } = this._validateYaml({
+            isAutoAssignPermissionFlowActive,
+        })
+
+        if (!isValid) {
             this.setState({ saveLoading: false })
             return
         }
-        let payload = {
-            id: this.state.ssoConfig.id,
-            name: this.state.sso,
-            url: this.state.ssoConfig.url,
-            config: {
-                id: this.state.ssoConfig.config.id,
-                type: this.state.ssoConfig.config.type,
-                name: this.state.ssoConfig.config.name,
-                config: configJSON,
-            },
-            active: true,
-        }
+
+        const payload = this._getSSOCreateOrUpdatePayload(configJSON, { isAutoAssignPermissionFlowActive })
 
         //Create SSO
         if (!this.state.lastActiveSSO) {
@@ -351,33 +414,33 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     handleConfigChange(value: string): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return
         if (this.state.sso === OIDCType) {
-            let config:any
+            let config: any
             try {
                 config = yamlJsParser.parse(value)
             } catch (error) {
                 //Invalid YAML, couldn't be parsed to JSON. Show error toast
                 this.setState({
-                    invalidYaml: true
+                    invalidYaml: true,
                 })
                 return
             }
             this.setState({
-                invalidYaml: false
+                invalidYaml: false,
             })
-            let configValue:string = ""
+            let configValue: string = ''
             if (config?.config) {
                 configValue = yamlJsParser.stringify(config.config)
             }
             this.setState({
-                ssoConfig:{
+                ssoConfig: {
                     ...this.state.ssoConfig,
                     config: {
                         name: config?.name,
                         id: config?.id,
                         type: this.state.ssoConfig.config.type,
-                        config: configValue
-                    }
-                }
+                        config: configValue,
+                    },
+                },
             })
             return
         }
@@ -395,13 +458,19 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         })
     }
 
+    toggleAutoAssignPermissions = (shouldAutoAssignPermissions: boolean) => {
+        this.setState({
+            shouldAutoAssignPermissions,
+        })
+    }
+
     handleCodeEditorTab(value: string): void {
         this.setState({ configMap: value })
     }
 
     handleOnBlur(): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return
-        let newConfig:any
+        let newConfig: any
         try {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
         } catch (error) {
@@ -501,8 +570,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         value={codeEditorBody}
                         height={300}
                         mode="yaml"
-                        noParsing={this.state.sso==OIDCType}
-                        lineDecorationsWidth={(this.state.configMap === SwitchItemValues.Configuration) ? decorationWidth : 0}
+                        noParsing={this.state.sso == OIDCType}
+                        lineDecorationsWidth={
+                            this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0
+                        }
                         shebang={shebangHtml}
                         readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                         onChange={this.handleConfigChange}
@@ -563,6 +634,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 </div>
             )
         }
+
+        const isAutoAssignPermissionFlowActive = !!(
+            autoAssignPermissionsFlowActiveProviders.includes(this.state.sso as SSOProvider) && AutoAssignToggleTile
+        )
 
         return (
             <section className="global-configuration__component">
@@ -643,11 +718,20 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                     </label>
                     {this.renderSSOCodeEditor()}
+                    {isAutoAssignPermissionFlowActive && (
+                        <div className="mb-12 ml-24 mr-24">
+                            <AutoAssignToggleTile
+                                ssoType={this.state.sso}
+                                isSelected={this.state.shouldAutoAssignPermissions}
+                                onChange={this.toggleAutoAssignPermissions}
+                            />
+                        </div>
+                    )}
                     <div className="form__buttons mt-32 mr-24">
                         <button
                             onClick={(e) => {
                                 e.preventDefault()
-                                this.onLoginConfigSave()
+                                this.onLoginConfigSave(isAutoAssignPermissionFlowActive)
                             }}
                             tabIndex={5}
                             type="submit"
@@ -660,29 +744,22 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                 </div>
                 {this.state.showToggling ? (
-                    <ConfirmationDialog>
-                        <ConfirmationDialog.Icon src={warn} />
-                        <div className="modal__title sso__warn-title">
-                            Use '{this.state.sso}' instead of '{this.state.lastActiveSSO?.name}' for login?
-                        </div>
-                        <p className="fs-13 cn-7 lh-1-54">
-                            This will end all active user sessions. Users would have to login again using updated SSO
-                            service.
-                        </p>
+                    <ConfirmationDialog className="w-400">
+                        <WarningIcon className="icon-dim-48 mb-12 warning-icon-y5-imp" />
+                        {/* TODO: Remove unused CSS */}
+                        <ConfirmationDialog.Body
+                            title={`Use "${this.state.sso}" instead of "${this.state.lastActiveSSO?.name}" for login?`}
+                            subtitle="This will end all active user sessions. Users would have to login again using updated SSO service."
+                        />
                         <ConfirmationDialog.ButtonGroup>
-                            <button
-                                type="button"
-                                tabIndex={3}
-                                className="cta cancel sso__warn-button"
-                                onClick={this.toggleWarningModal}
-                            >
+                            <button type="button" className="cta cancel" onClick={this.toggleWarningModal}>
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="cta  sso__warn-button"
+                                className="cta"
                                 data-testid="confirm-sso-button"
-                                onClick={this.saveNewSSO}
+                                onClick={this.saveNewSSO.bind(this, isAutoAssignPermissionFlowActive)}
                             >
                                 Confirm
                             </button>

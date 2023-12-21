@@ -7,18 +7,22 @@ export interface SSOLogin {
 }
 
 export interface SSOLoginState {
-    view: string;
-    statusCode: number;
-    saveLoading: boolean;
-    sso: string; //lowercase
+    view: string
+    statusCode: number
+    saveLoading: boolean
+    sso: string //lowercase
     lastActiveSSO: undefined | SSOLogin
-    configMap: string;
-    showToggling: boolean;
-    ssoConfig: SSOConfigType;
+    configMap: string
+    showToggling: boolean
+    ssoConfig: SSOConfigType
     isError: {
-        url: string;
-    },
-    invalidYaml: boolean;
+        url: string
+    }
+    invalidYaml: boolean
+    /**
+     * Auto assign the permissions from the SSO provider, if true
+     */
+    shouldAutoAssignPermissions: boolean
 }
 
 export interface SSOConfigType {
