@@ -1,4 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
+import { SSOProvider } from "./constants";
 
 export interface SSOLogin {
     id: number;
@@ -23,6 +24,12 @@ export interface SSOLoginState {
      * Auto assign the permissions from the SSO provider, if true
      */
     shouldAutoAssignPermissions: boolean
+    /**
+     * If true, the confirmation modal for auto-assign permissions will be shown
+     * 
+     * Note: The modal is meant to be shown only when the toggle is changed to true
+     */
+    showAutoAssignConfirmationModal: boolean
 }
 
 export interface SSOConfigType {
@@ -46,7 +53,7 @@ export interface SSOLoginTabType {
     handleSSOClick: (e) => void;
     checked: boolean;
     lastActiveSSO: undefined | SSOLogin;
-    value: string;
+    value: SSOProvider
     SSOName: string
 }
 
