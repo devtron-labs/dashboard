@@ -774,6 +774,7 @@ export default function DeploymentConfig({
             valuesOverride,
             defaultAppOverride: state.template,
             isAppMetricsEnabled: state.isAppMetricsEnabled,
+            saveEligibleChanges: saveEligibleChangesCb
         }
         if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
             requestData.isBasicViewLocked = state.isBasicLocked

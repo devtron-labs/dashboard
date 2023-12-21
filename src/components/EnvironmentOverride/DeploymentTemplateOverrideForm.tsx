@@ -125,6 +125,7 @@ export default function DeploymentTemplateOverrideForm({
             isAppMetricsEnabled: state.latestDraft ? state.isAppMetricsEnabled : state.data.appMetrics,
             currentViewEditor: state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView,
             isBasicLocked: state.isBasicLocked,
+            saveEligibleChanges: saveEligibleChangesCb,
             ...(state.data.environmentConfig.id > 0
                 ? {
                       id: state.data.environmentConfig.id,
