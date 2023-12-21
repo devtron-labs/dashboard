@@ -28,6 +28,7 @@ import {
     TippyTheme,
     sortCallback,
     DeploymentAppTypes,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -1514,13 +1515,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {renderVirtualEnvironmentInfo()}
                     </div>
                     <div className="flex-1 ml-8">
-                        <span className="form__label">Namespace</span>
-                        <input
-                            className="form__input"
-                            autoComplete="off"
+                        <CustomInput
+                            name="namespace"
+                            label="Namespace"
                             placeholder={getNamespaceplaceholder()}
                             data-testid="cd-pipeline-namespace-textbox"
-                            type="text"
                             disabled={!namespaceEditable}
                             value={
                                 selectedEnv && selectedEnv.namespace
@@ -1530,15 +1529,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             onChange={(event) => {
                                 this.handleNamespaceChange(event, selectedEnv)
                             }}
+                            error={
+                                !this.state.errorForm.nameSpaceError.isValid &&
+                                !this.state.pipelineConfig.isVirtualEnvironment &&
+                                this.state.errorForm.nameSpaceError.message
+                            }
                         />
-
-                        {!this.state.errorForm.nameSpaceError.isValid &&
-                        !this.state.pipelineConfig.isVirtualEnvironment ? (
-                            <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {this.state.errorForm.nameSpaceError.message}
-                            </span>
-                        ) : null}
                     </div>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
@@ -1585,23 +1581,20 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderPipelineNameInput = () => {
         return (
             <div className="form__row">
-                <label className="form__label dc__required-field">Pipeline Name</label>
-                <input
-                    className="form__input"
-                    autoComplete="off"
+                <CustomInput
+                    name="pipelineName"
+                    label="Pipeline Name"
                     disabled={!!this.state.pipelineConfig.id}
                     data-testid="advance-pipeline-name-textbox"
                     placeholder="Pipeline name"
-                    type="text"
+                    isRequiredField={true}
                     value={this.state.pipelineConfig.name}
                     onChange={this.handlePipelineName}
+                    error={
+                        !this.state.errorForm.pipelineNameError.isValid &&
+                        this.state.errorForm.pipelineNameError.message
+                    }
                 />
-                {!this.state.errorForm.pipelineNameError.isValid && (
-                    <span className="form__error">
-                        <img src={error} className="form__icon" />
-                        {this.state.errorForm.pipelineNameError.message}
-                    </span>
-                )}
             </div>
         )
     }
