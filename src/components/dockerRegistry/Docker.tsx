@@ -1511,7 +1511,9 @@ function DockerForm({
                 )}
             </>
             )
-    }}
+        }
+    }
+    // For EA Mode GCR is not available as it is not OCI compliant
     const EA_MODE_REGISTRY_TYPE_MAP = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
     delete EA_MODE_REGISTRY_TYPE_MAP['gcr']
     return (
