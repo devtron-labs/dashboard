@@ -350,7 +350,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     const errorMap = resp.stageErrorMap
                     if (errorMap != null && Object.keys(errorMap).length == 0) {
                         this.props.handleChecklistUpdate('gitOps')
-                        toast.success('Configuration validated and saved successfully')
+                        toast.success('Configuration saved successfully')
                         this.setState({
                             validationStatus: !resp.validationSkipped ? VALIDATION_STATUS.SUCCESS : '',
                             saveLoading: false,
@@ -368,8 +368,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             deleteRepoError: resp.deleteRepoFailed,
                             validationSkipped: resp.validationSkipped,
                         })
-                        {this.state.selectedRepoType === repoType.DEFAULT && toast.error('Configuration validation failed')}
-                        {this.state.selectedRepoType === repoType.CONFIGURE && toast.success('Configuration validated and saved successfully')}
+                        {this.state.selectedRepoType === repoType.DEFAULT && toast.error('Configuration failed')}
+                        {this.state.selectedRepoType === repoType.CONFIGURE && toast.success('Configuration saved successfully')}
                     }
                 })
                 .catch((error) => {
@@ -568,15 +568,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 : 'organization'
                         }
                     />
-
-                    {this.state.selectedRepoType === repoType.DEFAULT && <ValidateForm
-                        id={this.state.form.id}
-                        onClickValidate={() => this.validateGitOps(this.state.providerTab)}
-                        validationError={this.state.validationError}
-                        validationStatus={this.state.validationStatus}
-                        configName="gitops "
-                        warning={this.state.deleteRepoError ? warning : ''}
-                    />}
 
                     <CustomInput
                         autoComplete="off"

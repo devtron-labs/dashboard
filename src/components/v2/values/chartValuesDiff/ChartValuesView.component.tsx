@@ -59,6 +59,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
+import { toast } from 'react-toastify'
 
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -384,7 +385,13 @@ const GitOpsDrawer = ({
                 setVisibleRepoURL(selectedRepoType === repoType.DEFAULT ? repoType.DEFAULT : repoURL)
             })
             .catch((err) => {
-                showError(err)
+                if (err instanceof TypeError && err.message.includes("Cannot convert undefined or null to object")) {
+                    toast.error("Change Configurations")
+                    setGitOpsState(false)
+                }
+                else {  
+                    showError(err)
+                }
             }).finally(() => {
                 if(selectedRepoType === repoType.DEFAULT) {
                     setRepoURL("")

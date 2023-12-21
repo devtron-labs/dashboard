@@ -38,7 +38,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                     type="text"
                     autoComplete="off"
                     name="name"
-                    value={props.repoURL}
+                    value={props.repoURL.trimEnd()}
                     placeholder="Enter repository URL"
                     className="form__input"
                     onChange={(event) => onChange(event)}
