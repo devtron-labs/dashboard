@@ -255,7 +255,7 @@ function EphemeralContainerDrawer({
                     <div>
                         <input
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 h-36"
-                            data-testid="preBuild-task-name-textbox"
+                            data-testid="ephemeral-container-name"
                             type="text"
                             onChange={handleContainerChange}
                             value={ephemeralForm.basicData.containerName}

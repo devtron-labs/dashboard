@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, showError, sortCallback, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, sortCallback, useAsync, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
 import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
@@ -12,7 +12,7 @@ import {
     FetchIdDataStatus,
 } from '../../../app/details/cicdHistory/types'
 import { Details } from '../../../app/details/cIDetails/CIDetails'
-import { CiPipeline, PipelineType } from '../../../app/details/triggerView/types'
+import { CiPipeline } from '../../../app/details/triggerView/types'
 import { getTriggerHistory } from '../../../app/service'
 import { asyncWrap, mapByKey, useInterval } from '../../../common'
 import { getCIConfigList } from '../../AppGroup.service'
