@@ -363,7 +363,6 @@ export const Details = ({
         )
     }
 
-    console.log('triggerDetails', triggerDetails)
 
     if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
     if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
