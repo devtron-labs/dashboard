@@ -363,6 +363,8 @@ export const Details = ({
         )
     }
 
+    console.log('triggerDetails', triggerDetails)
+
     if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
     if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
     if (triggerDetails.id !== +buildId) return null
@@ -386,7 +388,7 @@ export const Details = ({
                             artifact={triggerDetails.artifact}
                             environmentName={triggerDetails.environmentName}
                             isJobView={isJobView}
-                            workerPodName={triggerDetails.name}
+                            workerPodName={triggerDetails.podName}
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
