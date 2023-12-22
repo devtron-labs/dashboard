@@ -365,7 +365,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
                     <CustomInput
                         name="api-token"
-                        label={renderWebhhokTokenLabel}
+                        label={renderWebhhokTokenLabel()}
                         placeholder="Enter API token"
                         rootClassName="bcn-0 dc__no-border"
                         onChange={handleTokenChange}
