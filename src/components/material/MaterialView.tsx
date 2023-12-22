@@ -395,9 +395,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     renderGitRepoUrlLabel = (): JSX.Element => {
         return (
-            <label className="form__label">
+            <>
                 Git Repo URL<span className="cr-5">* </span>(use {this.gitAuthType('host')})
-            </label>
+            </>
         )
     }
 
