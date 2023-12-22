@@ -358,6 +358,7 @@ export default function UserGroupRoute() {
                             }}
                         />
                         <Route path={`${path}/users`}>
+                            {/* Page: Reloads */}
                             {AuthorizationGlobalConfigWrapper ? (
                                 <AuthorizationGlobalConfigWrapper
                                     Component={({ isAutoAssignFlowEnabled }) => (
@@ -375,7 +376,7 @@ export default function UserGroupRoute() {
                             )}
                         </Route>
                         <Route path={`${path}/groups`}>
-                            {/* {AuthorizationGlobalConfigWrapper ? (
+                            {AuthorizationGlobalConfigWrapper ? (
                                 <AuthorizationGlobalConfigWrapper
                                     Component={({ isAutoAssignFlowEnabled }) => (
                                         <UserGroupList
@@ -386,9 +387,9 @@ export default function UserGroupRoute() {
                                         />
                                     )}
                                 />
-                            ) : ( */}
+                            ) : (
                                 <UserGroupList type="group" reloadLists={reloadLists} renderHeaders={HeaderSection} />
-                            {/* )} */}
+                            )}
                         </Route>
                         <Route path={`${path}/${Routes.API_TOKEN}`}>
                             <ApiTokens />
