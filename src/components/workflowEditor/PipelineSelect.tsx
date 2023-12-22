@@ -6,8 +6,8 @@ import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
 // Not using this image anywhere when completely deprecated remove this image
 import webhook from '../../assets/img/webhook.svg'
 import ciJobIcon from '../../assets/icons/ic-job-node.svg'
-import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
-import { Modal } from '@devtron-labs/devtron-fe-common-lib'
+import { CIPipelineNodeType } from '../app/details/triggerView/types'
+import { Modal, PipelineType, } from '@devtron-labs/devtron-fe-common-lib'
 
 /**
  * @deprecated
