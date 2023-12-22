@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
+import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, lazy } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import {
@@ -31,6 +31,7 @@ import {
     createClusterEnvGroup,
 } from '../common'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import {
     getUserList,
     getGroupList,
@@ -87,6 +88,7 @@ import { getJobs } from '../Jobs/Service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
+const SSOLogin = lazy(() => import('../login/SSOLogin'))
 
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
@@ -134,7 +136,7 @@ export function useUserGroupContext() {
     return context
 }
 
-function HeaderSection(type: string) {
+function HeaderSection(type: 'user' | 'group') {
     const isUserPremissions = type === 'user'
 
     return (
@@ -157,6 +159,19 @@ function HeaderSection(type: string) {
                     Learn more about {isUserPremissions ? 'User permissions' : 'Permission groups'}
                 </a>
             </p>
+            <InfoColourBar
+                message={
+                    type === 'user'
+                        ? 'User permissions are being managed via Azure Active Directory. Direct permissions cannot be assigned to users.'
+                        : 'Users are being auto-assigned a permission group via SSO login. Please ensure Permission Groups are created on Devtron with same names as Groups on Azure Active Directory.'
+                }
+                classname="info_bar mb-16"
+                Icon={InfoIcon}
+                iconClass="icon-dim-20"
+                linkText="Learn more"
+                // TODO: update
+                redirectLink="https://www.devtron.ai"
+            />
         </div>
     )
 }
@@ -179,7 +194,7 @@ export default function UserGroupRoute() {
     )
     const [appsList, setAppsList] = useState(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState(new Map())
-    const [jobsList,setJobsList] = useState(new Map())
+    const [jobsList, setJobsList] = useState(new Map())
 
     useEffect(() => {
         if (!lists) return
@@ -229,7 +244,6 @@ export default function UserGroupRoute() {
             })
         }
     }
-
 
     async function fetchAppList(projectIds: number[]) {
         if (serverMode === SERVER_MODE.EA_ONLY) return
@@ -347,6 +361,12 @@ export default function UserGroupRoute() {
                     }}
                 >
                     <Switch>
+                        <Route
+                            path={`${path}/login-service`}
+                            render={(props) => {
+                                return <SSOLogin {...props} />
+                            }}
+                        />
                         <Route path={`${path}/users`}>
                             <UserGroupList type="user" reloadLists={reloadLists} renderHeaders={HeaderSection} />
                         </Route>
@@ -367,7 +387,7 @@ export default function UserGroupRoute() {
 const UserGroupList: React.FC<{
     type: 'user' | 'group'
     reloadLists: () => void
-    renderHeaders: (type: string) => JSX.Element
+    renderHeaders: (type: 'user' | 'group') => JSX.Element
 }> = ({ type, reloadLists, renderHeaders }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
@@ -865,17 +885,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     permission,
     handleDirectPermissionChange,
     index,
-    removeRow
+    removeRow,
 }) => {
-    const {
-        environmentsList,
-        projectsList,
-        appsList,
-        envClustersList,
-        appsListHelmApps,
-        customRoles,
-        jobsList
-    } = useUserGroupContext()
+    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles, jobsList } =
+        useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
@@ -906,7 +919,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
-
 
     const RoleValueContainer = ({
         children,
@@ -1067,7 +1079,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         if (permission.entity === EntityTypes.JOB && permission.entityName.length > 0) {
             setWorkflowsForJobs(permission)
         }
-                        
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
     useEffect(() => {
@@ -1419,8 +1430,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             GroupHeading: workflowGroupHeading,
                         }}
                         isDisabled={!permission.team}
-                        onChange={(value,actionMeta)=>{
-                            handleDirectPermissionChange(value,actionMeta,workflowList)
+                        onChange={(value, actionMeta) => {
+                            handleDirectPermissionChange(value, actionMeta, workflowList)
                         }}
                         inputValue={workflowInput}
                         onBlur={() => {
@@ -1486,7 +1497,7 @@ const workflowGroupHeading = (props) => {
     return <GroupHeading {...props} hideClusterName={true} />
 }
 
-const AppOption = ({props,permission}) => {
+const AppOption = ({ props, permission }) => {
     const { selectOption, data } = props
     return (
         <div
@@ -1659,7 +1670,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
 const ValueContainer = (props) => {
     let length = props.getValue().length
     let optionLength = props.options.length
-    if (props.selectProps.name === 'environment'||props.selectProps.name === 'workflow') {
+    if (props.selectProps.name === 'environment' || props.selectProps.name === 'workflow') {
         let _optionLength = 0
         props.options.forEach((option) => {
             _optionLength += option.options?.length

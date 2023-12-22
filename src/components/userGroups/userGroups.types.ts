@@ -130,6 +130,10 @@ export interface CreateGroup {
     name: string
     description: string
     roleFilters: APIRoleFilter[]
+    /**
+     * If true, the user will be assigned super admin role
+     */
+    superAdmin: boolean
 }
 
 export interface K8sPermissionFilter {
