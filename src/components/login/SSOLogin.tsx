@@ -1,5 +1,10 @@
 import React, { Component, createRef } from 'react'
-import { ButtonWithLoader, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, importComponentFromFELibrary } from '../common'
+import {
+    ButtonWithLoader,
+    DevtronSwitch as Switch,
+    DevtronSwitchItem as SwitchItem,
+    importComponentFromFELibrary,
+} from '../common'
 import {
     showError,
     Progressing,
@@ -30,7 +35,14 @@ import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg
 import './login.scss'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
-import { AUTHORIZATION_CONFIG_TYPES, SSOProvider, SwitchItemValues, autoAssignPermissionsFlowActiveProviders, ssoDocumentationMap, ssoProviderToDisplayNameMap } from './constants'
+import {
+    AUTHORIZATION_CONFIG_TYPES,
+    SSOProvider,
+    SwitchItemValues,
+    autoAssignPermissionsFlowActiveProviders,
+    ssoDocumentationMap,
+    ssoProviderToDisplayNameMap,
+} from './constants'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
@@ -79,8 +91,14 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
 }
 
 export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
-    // Ref to store the value from the API, used for showing the modal
+    /**
+     * Ref to store the value from the API, used for showing the modal
+     */
     savedShouldAutoAssignPermissionRef: React.MutableRefObject<SSOLoginState['showAutoAssignConfirmationModal']>
+    /**
+     * Whether the auto-assign flow should be active or not
+     */
+    isAutoAssignPermissionFlowActive: SSOLoginState['shouldAutoAssignPermissions'] = null
 
     constructor(props) {
         super(props)
@@ -230,9 +248,17 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return ssoConfig
     }
 
+    // The global auth config type needs to be updated irrespective of the SSO name check
+    _getGlobalAuthConfigType = () =>
+        !!AutoAssignToggleTile && {
+            globalAuthConfigType:
+                this.isAutoAssignPermissionFlowActive && this.state.shouldAutoAssignPermissions
+                    ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
+                    : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
+        }
+
     _getSSOCreateOrUpdatePayload = (
         configJSON,
-        { isAutoAssignPermissionFlowActive }: { isAutoAssignPermissionFlowActive: boolean },
     ) => ({
         id: this.state.ssoConfig?.id,
         name: this.state.sso,
@@ -244,17 +270,13 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             config: configJSON,
         },
         active: true,
-        ...(isAutoAssignPermissionFlowActive && {
-            globalAuthConfigType: this.state.shouldAutoAssignPermissions
-                ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
-                : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
-        }),
+        ...this._getGlobalAuthConfigType(),
     })
 
     /**
      * Parses the configuration for the SSO and returns the JSON config
      */
-    _validateYaml = ({ isAutoAssignPermissionFlowActive }: { isAutoAssignPermissionFlowActive: boolean }) => {
+    _validateYaml = () => {
         let configJSON: any = {}
         try {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config)
@@ -262,7 +284,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
             if (
                 this.state.sso === SSOProvider.microsoft &&
-                isAutoAssignPermissionFlowActive &&
+                this.isAutoAssignPermissionFlowActive &&
                 this.state.shouldAutoAssignPermissions &&
                 !configJSON.tenant
             ) {
@@ -286,7 +308,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             response.result.config.config.clientSecret = ''
         }
         this.setConfig(response, this.state.sso.toLowerCase())
-        let ssoConfig = response.result
+        const ssoConfig = response.result
+        const shouldAutoAssignPermissions =
+            this._getGlobalAuthConfigType()?.globalAuthConfigType ===
+            AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
         this.setState({
             view: ViewType.FORM,
             saveLoading: false,
@@ -296,22 +321,23 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 name: ssoConfig.name,
                 active: ssoConfig.active,
             },
+            shouldAutoAssignPermissions,
         })
+        // Updating the ref, in case the user updates the AD in same session
+        this.savedShouldAutoAssignPermissionRef.current = shouldAutoAssignPermissions
         toast.success('Saved Successful')
     }
 
-    saveNewSSO(isAutoAssignPermissionFlowActive: boolean): void {
+    saveNewSSO(): void {
         this.setState({ saveLoading: true })
-        const { isValid, configJSON } = this._validateYaml({
-            isAutoAssignPermissionFlowActive,
-        })
+        const { isValid, configJSON } = this._validateYaml()
 
         if (!isValid) {
             this.setState({ saveLoading: false })
             return
         }
 
-        const payload = this._getSSOCreateOrUpdatePayload(configJSON, { isAutoAssignPermissionFlowActive })
+        const payload = this._getSSOCreateOrUpdatePayload(configJSON)
         const promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
         promise
             .then((response) => {
@@ -329,7 +355,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     // FIXME: This is overlapping with saveNewSSO functionality and can be combined in future
-    onLoginConfigSave(isAutoAssignPermissionFlowActive: boolean) {
+    onLoginConfigSave = (e) => {
+        e.preventDefault()
+
         if (!this.state.ssoConfig.url) {
             toast.error('Some required field are missing')
             return
@@ -351,16 +379,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
 
         this.setState({ saveLoading: true })
-        const { isValid, configJSON } = this._validateYaml({
-            isAutoAssignPermissionFlowActive,
-        })
+        const { isValid, configJSON } = this._validateYaml()
 
         if (!isValid) {
             this.setState({ saveLoading: false })
             return
         }
 
-        const payload = this._getSSOCreateOrUpdatePayload(configJSON, { isAutoAssignPermissionFlowActive })
+        const payload = this._getSSOCreateOrUpdatePayload(configJSON)
 
         //Create SSO
         if (!this.state.lastActiveSSO) {
@@ -373,31 +399,30 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     this.setState({ saveLoading: false })
                 })
         }
-        //Update the same SSO
+        // Update the same SSO
         else if (this.state.lastActiveSSO) {
-            // If the SSO is unchanged, proceed with the update flow, else show the SSO Change Confirmation Modal
-            if (this.state.sso === this.state.lastActiveSSO?.name) {
-                // The modal for confirming the auto-assign permissions is opened only when the toggle is changed to true
-                if (
-                    isAutoAssignPermissionFlowActive &&
-                    this.state.shouldAutoAssignPermissions &&
-                    this.state.shouldAutoAssignPermissions !== this.savedShouldAutoAssignPermissionRef.current
-                ) {
-                    this.setState({
-                        showAutoAssignConfirmationModal: true,
-                        saveLoading: false,
+            // The modal for confirming the auto-assign permissions is opened only when the toggle is changed to true
+            if (
+                this.isAutoAssignPermissionFlowActive &&
+                this.state.shouldAutoAssignPermissions &&
+                this.state.shouldAutoAssignPermissions !== this.savedShouldAutoAssignPermissionRef.current
+            ) {
+                this.setState({
+                    showAutoAssignConfirmationModal: true,
+                    saveLoading: false,
+                })
+            } else if (this.state.sso === this.state.lastActiveSSO?.name) {
+                // If the SSO is unchanged, proceed with the update flow, else show the SSO Change Confirmation Modal
+
+                // Update the SSO Config
+                updateSSOList(payload)
+                    .then((response) => {
+                        this.saveSSO(response)
                     })
-                } else {
-                    // Update the SSO Config
-                    updateSSOList(payload)
-                        .then((response) => {
-                            this.saveSSO(response)
-                        })
-                        .catch((error) => {
-                            showError(error)
-                            this.setState({ saveLoading: false })
-                        })
-                }
+                    .catch((error) => {
+                        showError(error)
+                        this.setState({ saveLoading: false })
+                    })
             } else {
                 this.toggleWarningModal()
             }
@@ -619,7 +644,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             )
         }
 
-        const isAutoAssignPermissionFlowActive = !!(
+        this.isAutoAssignPermissionFlowActive = !!(
             autoAssignPermissionsFlowActiveProviders.includes(this.state.sso as SSOProvider) && AutoAssignToggleTile
         )
         // The assignment confirmation modal has precedence over SSO change confirmation modal
@@ -668,7 +693,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             </div>
                         </div>
                         <div className="mt-8 ml-32">
-                            <span className="fw-6">Help: </span>See documentation for&npsp;
+                            <span className="fw-6">Help: </span>See documentation for&nbsp;
                             <a
                                 rel="noreferrer noopener"
                                 href={`${ssoDocumentationMap[this.state.sso]}`}
@@ -702,7 +727,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         </div>
                     </label>
                     {this.renderSSOCodeEditor()}
-                    {isAutoAssignPermissionFlowActive && (
+                    {this.isAutoAssignPermissionFlowActive && (
                         <div className="mb-12 ml-24 mr-24">
                             <AutoAssignToggleTile
                                 ssoType={this.state.sso}
@@ -713,10 +738,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     )}
                     <div className="form__buttons mt-32 mr-24">
                         <button
-                            onClick={(e) => {
-                                e.preventDefault()
-                                this.onLoginConfigSave(isAutoAssignPermissionFlowActive)
-                            }}
+                            onClick={this.onLoginConfigSave}
                             tabIndex={5}
                             type="submit"
                             disabled={this.state.saveLoading}
@@ -753,7 +775,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 disabled={this.state.saveLoading}
                                 isLoading={this.state.saveLoading}
                                 loaderColor=""
-                                onClick={this.saveNewSSO.bind(this, isAutoAssignPermissionFlowActive)}
+                                onClick={this.saveNewSSO}
                             >
                                 Confirm
                             </ButtonWithLoader>
@@ -763,7 +785,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 {/* Confirmation modal for permission auto-assignment */}
                 {this.state.showAutoAssignConfirmationModal && (
                     <UserPermissionConfirmationModal
-                        handleSave={this.saveNewSSO.bind(this, isAutoAssignPermissionFlowActive)}
+                        handleSave={this.saveNewSSO}
                         handleCancel={this.handleAutoAssignConfirmationModalClose}
                         ssoType={this.state.sso}
                         isLoading={this.state.saveLoading}
