@@ -16,8 +16,10 @@ import {
     TaskErrorObj,
     FilterConditionsListType,
     CDMaterialResponseType,
+    PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
+import { WorkflowDimensions } from './config'
 
 export interface CDMaterialProps extends RouteComponentProps<{}> {
     material?: CDMaterialType[]
@@ -409,28 +411,12 @@ export interface ApplicationConditionResponse {
     message: string
 }
 
-export enum PipelineType {
-    CI_PIPELINE = 'CI_PIPELINE',
-    CD_PIPELINE = 'CD_PIPELINE',
-    WEBHOOK = 'WEBHOOK',
-    LINKED_CD = 'LINKED_CD',
-}
-
 export enum CIPipelineNodeType {
     EXTERNAL_CI = 'EXTERNAL-CI',
     CI = 'CI',
     LINKED_CI = 'LINKED-CI',
     JOB_CI = 'JOB-CI',
     LINKED_CD = 'LINKED_CD',
-}
-
-export enum WorkflowNodeType {
-    GIT = 'GIT',
-    CI = 'CI',
-    WEBHOOK = 'WEBHOOK',
-    PRE_CD = 'PRECD',
-    CD = 'CD',
-    POST_CD = 'POSTCD',
 }
 
 export interface Task {
@@ -724,4 +710,11 @@ export interface MaterialSourceProps {
     ciPipelineId?: number
     fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
+}
+
+export interface AddDimensionsToDownstreamDeploymentsParams {
+    downstreams: NodeAttr[],
+    dimensions: WorkflowDimensions,
+    startX: number,
+    startY: number,
 }
