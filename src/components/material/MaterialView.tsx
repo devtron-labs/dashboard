@@ -526,7 +526,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     </div>
                     <div>
                         <CustomInput
-                            label={this.renderGitRepoUrlLabel}
+                            label={this.renderGitRepoUrlLabel()}
                             name="Git Repo URL"
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
