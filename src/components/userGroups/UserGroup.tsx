@@ -88,6 +88,9 @@ import { getJobs } from '../Jobs/Service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
+const AuthorizationGlobalConfigWrapper = importComponentFromFELibrary('AuthorizationGlobalConfigWrapper')
+const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
+const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', noop, 'function')
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 
 const UserGroupContext = React.createContext<UserGroup>({
@@ -137,15 +140,15 @@ export function useUserGroupContext() {
 }
 
 function HeaderSection(type: 'user' | 'group') {
-    const isUserPremissions = type === 'user'
+    const isUserPermissions = type === 'user'
 
     return (
         <div data-testid={`${type}-auth-page-header`} className="auth-page__header pt-20">
             <h2 className="auth-page__header-title form__title">
-                {isUserPremissions ? 'User permissions' : 'Permission groups'}
+                {isUserPermissions ? 'User permissions' : 'Permission groups'}
             </h2>
             <p className="form__subtitle">
-                {isUserPremissions
+                {isUserPermissions
                     ? "Manage your organization's users and their permissions."
                     : 'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'}
                 &nbsp;
@@ -153,25 +156,12 @@ function HeaderSection(type: 'user' | 'group') {
                     data-testid={`${type}-auth-page-learn-more-link`}
                     className="dc__link"
                     rel="noreferrer noopener"
-                    href={isUserPremissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
+                    href={isUserPermissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
                     target="_blank"
                 >
-                    Learn more about {isUserPremissions ? 'User permissions' : 'Permission groups'}
+                    Learn more about {isUserPermissions ? 'User permissions' : 'Permission groups'}
                 </a>
             </p>
-            <InfoColourBar
-                message={
-                    type === 'user'
-                        ? 'User permissions are being managed via Azure Active Directory. Direct permissions cannot be assigned to users.'
-                        : 'Users are being auto-assigned a permission group via SSO login. Please ensure Permission Groups are created on Devtron with same names as Groups on Azure Active Directory.'
-                }
-                classname="info_bar mb-16"
-                Icon={InfoIcon}
-                iconClass="icon-dim-20"
-                linkText="Learn more"
-                // TODO: update
-                redirectLink="https://www.devtron.ai"
-            />
         </div>
     )
 }
@@ -368,10 +358,37 @@ export default function UserGroupRoute() {
                             }}
                         />
                         <Route path={`${path}/users`}>
-                            <UserGroupList type="user" reloadLists={reloadLists} renderHeaders={HeaderSection} />
+                            {AuthorizationGlobalConfigWrapper ? (
+                                <AuthorizationGlobalConfigWrapper
+                                    Component={({ isAutoAssignFlowEnabled }) => (
+                                        <UserGroupList
+                                            type="user"
+                                            reloadLists={reloadLists}
+                                            renderHeaders={HeaderSection}
+                                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                                            key="user"
+                                        />
+                                    )}
+                                />
+                            ) : (
+                                <UserGroupList type="user" reloadLists={reloadLists} renderHeaders={HeaderSection} />
+                            )}
                         </Route>
                         <Route path={`${path}/groups`}>
-                            <UserGroupList type="group" reloadLists={reloadLists} renderHeaders={HeaderSection} />
+                            {/* {AuthorizationGlobalConfigWrapper ? (
+                                <AuthorizationGlobalConfigWrapper
+                                    Component={({ isAutoAssignFlowEnabled }) => (
+                                        <UserGroupList
+                                            type="group"
+                                            reloadLists={reloadLists}
+                                            renderHeaders={HeaderSection}
+                                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                                        />
+                                    )}
+                                />
+                            ) : ( */}
+                                <UserGroupList type="group" reloadLists={reloadLists} renderHeaders={HeaderSection} />
+                            {/* )} */}
                         </Route>
                         <Route path={`${path}/${Routes.API_TOKEN}`}>
                             <ApiTokens />
@@ -388,7 +405,9 @@ const UserGroupList: React.FC<{
     type: 'user' | 'group'
     reloadLists: () => void
     renderHeaders: (type: 'user' | 'group') => JSX.Element
-}> = ({ type, reloadLists, renderHeaders }) => {
+    isAutoAssignFlowEnabled?: boolean
+}> = ({ type, reloadLists, renderHeaders, isAutoAssignFlowEnabled }) => {
+    console.log({isAutoAssignFlowEnabled})
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
     const result = (data && data['result']) || []
@@ -626,6 +645,7 @@ const UserGroupList: React.FC<{
                 className="auth-page__body-users__list-container"
             >
                 {renderHeaders(type)}
+                {type === 'group' && isAutoAssignFlowEnabled && <PermissionGroupInfoBar />}
                 {result.length > 0 && (
                     <div className="flex dc__content-space">
                         <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
@@ -667,6 +687,7 @@ const UserGroupList: React.FC<{
                         {...data}
                         type={type}
                         {...{ updateCallback, deleteCallback, createCallback, index }}
+                        isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                     />
                 ))}
                 {filteredAndSorted.length === 0 && result.length > 0 && (
@@ -687,6 +708,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     updateCallback,
     deleteCallback,
     createCallback,
+    isAutoAssignFlowEnabled,
 }) => {
     const [collapsed, setCollapsed] = useState(true)
     const [dataLoading, data, dataError, reloadData, setData] = useAsync(
@@ -773,7 +795,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
             </div>
             {!collapsed && data && !dataLoading && (
                 <div className="user-list__form w-100">
-                    {type === 'user' ? (
+                    {type === 'user' ? isAutoAssignFlowEnabled ? <UserPermissionsInfoBar /> : (
                         <UserForm
                             id={id}
                             userData={data.result}
