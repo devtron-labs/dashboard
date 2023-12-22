@@ -361,18 +361,16 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
-            <div className="mb-16">
-                <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
-                    {renderWebhhokTokenLabel()}
-                    <CustomInput
-                        name="api-token"
-                        placeholder="Enter API token"
-                        rootClassName="bcn-0 dc__no-border-imp w-100 h-32 p-0-imp"
-                        onChange={handleTokenChange}
-                        value={tryoutAPIToken} 
-                        error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
-                    />
-                </div>
+            <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-16">
+                {renderWebhhokTokenLabel()}
+                <CustomInput
+                    name="api-token"
+                    placeholder="Enter API token"
+                    rootClassName="bcn-0 dc__no-border-imp w-100 h-32 pt-5-imp p-0-8-imp"
+                    onChange={handleTokenChange}
+                    value={tryoutAPIToken}
+                    error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
+                />
             </div>
         )
     }
