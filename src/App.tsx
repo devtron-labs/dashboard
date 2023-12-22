@@ -17,6 +17,7 @@ import {
     ToastBody,
     ToastBody3 as UpdateToast,
     ErrorBoundary,
+    importComponentFromFELibrary,
 } from './components/common'
 import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import * as serviceWorker from './serviceWorker'
@@ -25,6 +26,7 @@ import { validateToken } from './services/service'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
+const ApprovedModal = importComponentFromFELibrary('ApprovedModal')
 
 toast.configure({
     autoClose: 3000,
@@ -87,6 +89,9 @@ export default function App() {
     useEffect(() => {
         async function validation() {
             try {
+                if (location.pathname.includes('approval')) {
+                    return
+                }
                 await validateToken()
                 defaultRedirection()
             } catch (err: any) {
@@ -106,7 +111,7 @@ export default function App() {
             }
         }
         // If not K8S_CLIENT then validateToken otherwise directly redirect
-        if (!window._env_.K8S_CLIENT) {
+        if (!window._env_.K8S_CLIENT) {     
             validation()
         } else {
             setValidating(false)
@@ -207,7 +212,7 @@ export default function App() {
         <Suspense fallback={null}>
             {validating ? (
                 <div className="full-height-width">
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
+                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
             ) : (
                 <>
@@ -220,6 +225,7 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
+                                    <Route path={`/approval`} component={ApprovedModal} />
                                     <Route path="/" render={() => <NavigationRoutes />} />
                                     <Redirect
                                         to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
