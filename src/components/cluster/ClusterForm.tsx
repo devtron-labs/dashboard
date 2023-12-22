@@ -670,7 +670,7 @@ export default function ClusterForm({
                         value={state.url.value}
                         error={state.url.error}
                         onChange={handleOnChange}
-                        label={clusterLabel}
+                        label={clusterLabel()}
                         disabled={isDefaultCluster()}
                         placeholder="Enter server URL"
                         dataTestid="enter_server_url_input"
