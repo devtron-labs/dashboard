@@ -362,7 +362,6 @@ export const Details = ({
         )
     }
 
-
     if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
     if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
     if (triggerDetails.id !== +buildId) return null
