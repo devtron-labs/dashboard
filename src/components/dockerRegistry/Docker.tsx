@@ -1511,8 +1511,10 @@ function DockerForm({
                 )}
             </>
             )
-    }}
-    const EA_MODE_REGISTRY_TYPE_MAP = REGISTRY_TYPE_MAP
+        }
+    }
+    // For EA Mode GCR is not available as it is not OCI compliant
+    const EA_MODE_REGISTRY_TYPE_MAP = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
     delete EA_MODE_REGISTRY_TYPE_MAP['gcr']
     return (
         <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off">
