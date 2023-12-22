@@ -15,6 +15,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     VisibleModal,
+    WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -24,7 +25,6 @@ import {
     CIMaterialRouterProps,
     MATERIAL_TYPE,
     NodeAttr,
-    WorkflowNodeType,
     WorkflowType,
 } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
@@ -57,6 +57,8 @@ import {
     BULK_CD_RESPONSE_STATUS_TEXT,
     BULK_VIRTUAL_RESPONSE_STATUS,
     GetBranchChangeStatus,
+    SKIPPED_RESOURCES_STATUS_TEXT,
+    SKIPPED_RESOURCES_MESSAGE,
 } from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -1001,8 +1003,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
+    const isBuildAndBranchTriggerAllowed = (node: NodeAttr): boolean => (
+        !node.isLinkedCI && !node.isLinkedCD && node.type !== WorkflowNodeType.WEBHOOK
+    )
+
     const changeBranch = (value): void => {
         const appIds = []
+        const skippedResources = []
         const appNameMap = new Map()
 
         filteredWorkflows.forEach((wf) => {
@@ -1011,21 +1018,39 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
                 )
                 if (_ciNode) {
-                    // Need to add check for webhook if its source type is git
-                    if (!_ciNode.isLinkedCI && !_ciNode.isLinkedCD) {
+                    if (isBuildAndBranchTriggerAllowed(_ciNode)) {
                         appIds.push(wf.appId)
                         appNameMap.set(wf.appId, wf.name)
+                    }
+                    else {
+                        skippedResources.push({
+                            appId: wf.appId,
+                            appName: wf.name,
+                            statusText: SKIPPED_RESOURCES_STATUS_TEXT,
+                            status: BulkResponseStatus.SKIP,
+                            envId: +envId,
+                            message: SKIPPED_RESOURCES_MESSAGE,
+                        })
                     }
                 }
             }
         })
 
-        if (!appIds.length) {
+        if (!appIds.length && !skippedResources.length) {
             toast.error('No valid application present')
             return
         }
-
         setIsBranchChangeLoading(true)
+
+        if (!appIds.length) {
+            updateResponseListData(skippedResources)
+            setIsBranchChangeLoading(false)
+            setCDLoading(false)
+            setCILoading(false)
+            preventBodyScroll(true)
+            return
+        }
+
         triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
                 const _responseList = []
@@ -1039,10 +1064,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         message: res.message,
                     })
                 })
-                updateResponseListData(_responseList)
+                updateResponseListData([..._responseList, ...skippedResources])
                 setCDLoading(false)
                 setCILoading(false)
-                preventBodyScroll(false)
+                preventBodyScroll(true)
             })
             .catch((error) => {
                 showError(error)
@@ -1206,6 +1231,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBranchChangeLoading(false)
         setShowBulkSourceChangeModal(false)
         setResponseList([])
+        preventBodyScroll(false)
     }
 
     const onShowChangeSourceModal = () => {
@@ -1324,10 +1350,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         promiseList: any[],
         triggeredAppList: { appId: number; envId?: number; appName: string }[],
         type: WorkflowNodeType,
+        skippedResources: ResponseRowType[] = [],
     ): void => {
+        const _responseList = skippedResources
         if (promiseList.length) {
             Promise.allSettled(promiseList).then((responses: any) => {
-                const _responseList = []
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
                         const statusType = filterStatusType(
@@ -1399,10 +1426,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
         } else {
             setCDLoading(false)
-            setShowBulkCDModal(false)
             setCILoading(false)
-            setShowBulkCIModal(false)
-            setResponseList([])
+            if (!skippedResources.length) {
+                setShowBulkCDModal(false)
+                setShowBulkCIModal(false)
+                setResponseList([])
+            }
+            else {
+                updateResponseListData(_responseList)
+            }
         }
     }
 
@@ -1426,17 +1458,28 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setCILoading(true)
         let node
+        const skippedResources = []
         const nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
         for (const _wf of filteredWorkflows) {
             if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
                 node = _wf.nodes.find((node) => {
-                    return node.type === WorkflowNodeType.CI
+                    return node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK
                 })
-                // Maybe we dont need to push webhook as well
-                if (node && !node.isLinkedCI && !node.isLinkedCD) {
+
+                if (node && isBuildAndBranchTriggerAllowed(node)) {
                     triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                     nodeList.push(node)
+                }
+                else if (node && !isBuildAndBranchTriggerAllowed(node)) {
+                    // skipped can never be in appsToRetry
+                    skippedResources.push({
+                        appId: _wf.appId,
+                        appName: _wf.name,
+                        statusText: SKIPPED_RESOURCES_STATUS_TEXT,
+                        status: BulkResponseStatus.SKIP,
+                        message: SKIPPED_RESOURCES_MESSAGE,
+                    })
                 }
             }
         }
@@ -1479,13 +1522,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
-        if (!_CITriggerPromiseList.length) {
+
+        if (!_CITriggerPromiseList.length && !skippedResources.length) {
             toast.error('No valid CI pipeline found')
             setCDLoading(false)
             setCILoading(false)
             return
         }
-        handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI)
+
+        handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI, skippedResources)
     }
 
     // Would only set data no need to get data related to materials from it, we will get that in bulk trigger

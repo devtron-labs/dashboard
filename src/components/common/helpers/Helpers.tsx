@@ -79,7 +79,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     )
 
     function validateField(name, value): string | string[] {
-        if (validationSchema[name].required) {
+        if (validationSchema[name]?.required) {
             if (!value) {
                 return 'This is a required field.'
             }
@@ -93,7 +93,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // single validator
-        let _validator = validationSchema[name].validator
+        let _validator = validationSchema[name]?.validator
         if (_validator && typeof _validator === 'object') {
             if (!_validateSingleValidator(_validator, value)) {
                 return _validator.error
@@ -101,7 +101,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // multiple validators
-        let _validators = validationSchema[name].validators
+        let _validators = validationSchema[name]?.validators
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
             let errors = []
             _validators.forEach((_validator) => {

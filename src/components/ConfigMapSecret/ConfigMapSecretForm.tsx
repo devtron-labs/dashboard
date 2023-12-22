@@ -11,7 +11,6 @@ import {
 } from './service'
 import { useParams } from 'react-router'
 import {
-    CustomInput,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
     importComponentFromFELibrary,
@@ -29,6 +28,7 @@ import {
     RadioGroupItem,
     DeleteDialog,
     ServerErrors,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
@@ -688,6 +688,7 @@ export const ConfigMapSecretForm = React.memo(
                     <div className="form__row form__row--flex">
                         <div className="w-50">
                             <CustomInput
+                                name="roleARN"
                                 dataTestid="enter-role-ARN"
                                 value={state.roleARN.value}
                                 autoComplete="off"
@@ -751,6 +752,7 @@ export const ConfigMapSecretForm = React.memo(
                     {state.isFilePermissionChecked && (
                         <div className="mb-16">
                             <CustomInput
+                                name="filePermission"
                                 value={state.filePermission.value}
                                 autoComplete="off"
                                 tabIndex={5}
@@ -825,8 +827,8 @@ export const ConfigMapSecretForm = React.memo(
                         state.isSubPathChecked && (
                             <div className="mb-16">
                                 <CustomInput
+                                    name="externalSubpathValues"
                                     value={state.externalSubpathValues.value}
-                                    autoComplete="off"
                                     tabIndex={5}
                                     label=""
                                     placeholder={'Enter keys (Eg. username,configs.json)'}
@@ -851,16 +853,16 @@ export const ConfigMapSecretForm = React.memo(
                 <>
                     <div className="form__row">
                         <CustomInput
+                            name="mountPath"
                             dataTestid={`${componentType}-volume-path-textbox`}
                             value={state.volumeMountPath.value}
-                            autoComplete="off"
-                            tabIndex={5}
-                            label="Volume mount path*"
+                            label="Volume mount path"
                             placeholder="/directory-path"
                             helperText="Keys are mounted as files to volume"
                             error={state.volumeMountPath.error}
                             onChange={onMountPathChange}
                             disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
+                            isRequiredField={true}
                         />
                     </div>
                     {renderSubPath()}
@@ -913,19 +915,18 @@ export const ConfigMapSecretForm = React.memo(
             }
             return (
                 <div className="form__row">
-                    <label className="form__label">Name*</label>
-                    <input
+                    <CustomInput
+                        name="name"
+                        label="Name"
                         data-testid={`${componentType}-name-textbox`}
                         value={state.configName.value}
-                        autoComplete="off"
                         autoFocus
                         onChange={onConfigNameChange}
-                        onBlur={trimConfigMapName}
-                        type="text"
-                        className={`form__input`}
+                        handleOnBlur={trimConfigMapName}
                         placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
+                        isRequiredField={true}
+                        error={state.configName.error}
                     />
-                    {state.configName.error && <label className="form__error">{state.configName.error}</label>}
                 </div>
             )
         }
