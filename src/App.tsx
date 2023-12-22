@@ -26,7 +26,7 @@ import { validateToken } from './services/service'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
-const ApprovedModal = importComponentFromFELibrary('ApprovedModal')
+const NotificationApprovalViaEmailComponent = importComponentFromFELibrary('NotificationApprovalViaEmailComponent')
 
 toast.configure({
     autoClose: 3000,
@@ -225,7 +225,7 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
-                                    <Route path={`/approval`} component={ApprovedModal} />
+                                    <Route path={`/approval`} component={NotificationApprovalViaEmailComponent} />
                                     <Route path="/" render={() => <NavigationRoutes />} />
                                     <Redirect
                                         to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
