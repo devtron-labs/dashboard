@@ -48,6 +48,7 @@ import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/Deplo
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
 import { getLockedJSON } from '@devtron-labs/devtron-fe-common-lib'
+import { getLockedJsonPathArray } from '../EnvironmentOverride/service'
 
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
@@ -454,10 +455,15 @@ export default function DeploymentConfig({
 
     const handleSaveChanges = (e) => {
         e.preventDefault()
+        console.log('id', state.chartConfig.id)
+
         if (isSuperAdmin) {
+            //is superadmin or is create flow
             openConfirmationOrSaveChangesModal()
         } else {
-            checkForLockedChanges()
+            if (!state.chartConfig.id) {
+                save()
+            } else checkForLockedChanges()
         }
     }
 
@@ -475,9 +481,6 @@ export default function DeploymentConfig({
         } else if (state.chartConfig.id) {
             //update flow, might have overridden
             handleConfirmationDialog(true)
-        } else {
-            //create flow
-            checkForLockedChanges()
         }
     }
 
@@ -488,16 +491,14 @@ export default function DeploymentConfig({
         })
         try {
             const requestBody = prepareDataToSave(true)
-            let res, api
-            if (isProtected) {
-                res = await checkForProtectedLockedChanges()
-            } else {
-                api=getIfLockedConfigNonProtected
-                res = await api(requestBody, baseDeploymentAbortController.signal)
-            }
-            if (res.result.isLockConfigError ) {
-                setDisableSaveEligibleChanges(res.result?.disableSaveEligibleChanges)
-                setLockedOverride(res.result?.lockedOverride)
+            const [lockedJSONPathResp, deploymentTemplateResp] = await Promise.all([
+                getLockedJsonPathArray(),
+                isProtected ? checkForProtectedLockedChanges() : getIfLockedConfigNonProtected(requestBody),
+            ])
+            setLockedConfigKeysWithLockType(lockedJSONPathResp.result)
+            if (deploymentTemplateResp.result.isLockConfigError) {
+                setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
+                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
                 handleLockedDiffDrawer(true)
                 return
             } else if (isProtected) {
@@ -505,7 +506,7 @@ export default function DeploymentConfig({
                 return
             }
             if (state.chartConfig.id) {
-               handleConfirmationDialog(true)
+                handleConfirmationDialog(true)
             }
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
@@ -519,7 +520,6 @@ export default function DeploymentConfig({
                 payload: false,
             })
         }
-
     }
 
     const checkForProtectedLockedChanges = async () => {
@@ -542,7 +542,17 @@ export default function DeploymentConfig({
         try {
             const requestBody = prepareDataToSave(true)
             const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
-            await api(requestBody, baseDeploymentAbortController.signal)
+            const [lockedJSONPathResp, deploymentTemplateResp] = await Promise.all([
+                getLockedJsonPathArray(),
+                api(requestBody, baseDeploymentAbortController.signal),
+            ])
+            setLockedConfigKeysWithLockType(lockedJSONPathResp.result)
+            if (deploymentTemplateResp.result.isLockConfigError) {
+                setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
+                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
+                handleLockedDiffDrawer(true)
+                return
+            }
             reloadEnvironments()
             fetchDeploymentTemplate()
             respondOnSuccess()
@@ -570,8 +580,7 @@ export default function DeploymentConfig({
                 type: DeploymentConfigStateActionTypes.loading,
                 payload: false,
             })
-            closeLockedDiffDrawerWithChildModal()
-
+            saveEligibleChangesCb && closeLockedDiffDrawerWithChildModal()
         }
     }
 
@@ -954,7 +963,6 @@ export default function DeploymentConfig({
                         setConvertVariables={setConvertVariables}
                         componentType={3}
                         setShowLockedDiffForApproval={setShowLockedDiffForApproval}
-                        setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
                     />
                     {renderValuesView()}
                     {state.showConfirmation && (

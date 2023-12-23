@@ -173,7 +173,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 })
             })
             .catch((error) => {
-                showError(error,true,true)
+                showError(error, true, true)
                 this.setState({ view: ViewType.ERROR, statusCode: error.code })
             })
     }
@@ -600,7 +600,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         onChange={(event) => this.handleChange(event, 'host')}
                         name="Enter host"
                         error={this.state.isError.host}
-                        label={getGitOpsLabel}
+                        label={getGitOpsLabel()}
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                         dataTestid={
