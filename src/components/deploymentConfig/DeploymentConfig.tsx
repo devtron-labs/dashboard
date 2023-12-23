@@ -457,13 +457,12 @@ export default function DeploymentConfig({
         e.preventDefault()
         console.log('id', state.chartConfig.id)
 
-        if (isSuperAdmin) {
+        if (!state.chartConfig.id) save()
+        else if (isSuperAdmin) {
             //is superadmin or is create flow
             openConfirmationOrSaveChangesModal()
         } else {
-            if (!state.chartConfig.id) {
-                save()
-            } else checkForLockedChanges()
+            checkForLockedChanges()
         }
     }
 
