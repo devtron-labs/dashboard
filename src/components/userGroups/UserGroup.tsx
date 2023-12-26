@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, lazy } from 'react'
-import { Switch, Route, Redirect } from 'react-router-dom'
+import { Switch, Route, Redirect, useLocation, useHistory } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import {
     showError,
@@ -31,7 +31,6 @@ import {
     createClusterEnvGroup,
 } from '../common'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import {
     getUserList,
     getGroupList,
@@ -86,11 +85,12 @@ import {
 } from '../../config/constantMessaging'
 import { getJobs } from '../Jobs/Service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { ADD_USER_EXPANDED_SEARCH_VALUE, EXPANDED_TILE_SEARCH_KEY } from './constants'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 const AuthorizationGlobalConfigWrapper = importComponentFromFELibrary('AuthorizationGlobalConfigWrapper')
 const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
-const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', noop, 'function')
+const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 
 const UserGroupContext = React.createContext<UserGroup>({
@@ -185,6 +185,8 @@ export default function UserGroupRoute() {
     const [appsList, setAppsList] = useState(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState(new Map())
     const [jobsList, setJobsList] = useState(new Map())
+    // For handling the auto assign flow for enterprise
+    const [isAutoAssignFlowEnabled, setIsAutoAssignFlowEnabled] = useState(false)
 
     useEffect(() => {
         if (!lists) return
@@ -358,38 +360,42 @@ export default function UserGroupRoute() {
                             }}
                         />
                         <Route path={`${path}/users`}>
-                            {/* Page: Reloads */}
-                            {AuthorizationGlobalConfigWrapper ? (
-                                <AuthorizationGlobalConfigWrapper
-                                    Component={({ isAutoAssignFlowEnabled }) => (
-                                        <UserGroupList
-                                            type="user"
-                                            reloadLists={reloadLists}
-                                            renderHeaders={HeaderSection}
-                                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
-                                            key="user"
-                                        />
-                                    )}
+                            <ConditionalWrap
+                                condition={!!AuthorizationGlobalConfigWrapper}
+                                wrap={(children) => (
+                                    <AuthorizationGlobalConfigWrapper
+                                        setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}
+                                    >
+                                        {children}
+                                    </AuthorizationGlobalConfigWrapper>
+                                )}
+                            >
+                                <UserGroupList
+                                    type="user"
+                                    reloadLists={reloadLists}
+                                    renderHeaders={HeaderSection}
+                                    isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                                 />
-                            ) : (
-                                <UserGroupList type="user" reloadLists={reloadLists} renderHeaders={HeaderSection} />
-                            )}
+                            </ConditionalWrap>
                         </Route>
                         <Route path={`${path}/groups`}>
-                            {AuthorizationGlobalConfigWrapper ? (
-                                <AuthorizationGlobalConfigWrapper
-                                    Component={({ isAutoAssignFlowEnabled }) => (
-                                        <UserGroupList
-                                            type="group"
-                                            reloadLists={reloadLists}
-                                            renderHeaders={HeaderSection}
-                                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
-                                        />
-                                    )}
+                            <ConditionalWrap
+                                condition={!!AuthorizationGlobalConfigWrapper}
+                                wrap={(children) => (
+                                    <AuthorizationGlobalConfigWrapper
+                                        setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}
+                                    >
+                                        {children}
+                                    </AuthorizationGlobalConfigWrapper>
+                                )}
+                            >
+                                <UserGroupList
+                                    type="group"
+                                    reloadLists={reloadLists}
+                                    renderHeaders={HeaderSection}
+                                    isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                                 />
-                            ) : (
-                                <UserGroupList type="group" reloadLists={reloadLists} renderHeaders={HeaderSection} />
-                            )}
+                            </ConditionalWrap>
                         </Route>
                         <Route path={`${path}/${Routes.API_TOKEN}`}>
                             <ApiTokens />
@@ -408,7 +414,6 @@ const UserGroupList: React.FC<{
     renderHeaders: (type: 'user' | 'group') => JSX.Element
     isAutoAssignFlowEnabled?: boolean
 }> = ({ type, reloadLists, renderHeaders, isAutoAssignFlowEnabled }) => {
-    console.log({isAutoAssignFlowEnabled})
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
     const result = (data && data['result']) || []
@@ -418,6 +423,20 @@ const UserGroupList: React.FC<{
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
     const { roles, customRoles } = useUserGroupContext()
+
+    const location = useLocation()
+    const history = useHistory()
+    const searchParams = new URLSearchParams(location.search)
+    const expandedTile = searchParams.get(EXPANDED_TILE_SEARCH_KEY) || ''
+
+    const updateCollapsedTile = (id?: string) => {
+        if (id) {
+            searchParams.set(EXPANDED_TILE_SEARCH_KEY, id)
+        } else {
+            searchParams.delete(EXPANDED_TILE_SEARCH_KEY)
+        }
+        history.replace({ search: searchParams.toString() })
+    }
 
     useEffect(() => {
         switch (keys.join(',').toLowerCase()) {
@@ -504,6 +523,7 @@ const UserGroupList: React.FC<{
         } else {
             setAddHash(getRandomString())
         }
+        updateCollapsedTile()
     }
 
     function processUsersDataToExport(result: CreateUser[]) {
@@ -671,14 +691,14 @@ const UserGroupList: React.FC<{
                         )}
                     </div>
                 )}
-
                 {!(filteredAndSorted.length === 0 && result.length > 0) && (
                     <AddUser
                         cancelCallback={cancelCallback}
                         key={addHash}
                         text={`Add ${type}`}
                         type={type}
-                        open={!result || result?.length === 0}
+                        collapsed={expandedTile !== ADD_USER_EXPANDED_SEARCH_VALUE && result?.length !== 0}
+                        setCollapsed={updateCollapsedTile}
                         {...{ createCallback, updateCallback, deleteCallback }}
                     />
                 )}
@@ -689,6 +709,8 @@ const UserGroupList: React.FC<{
                         type={type}
                         {...{ updateCallback, deleteCallback, createCallback, index }}
                         isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                        collapsed={expandedTile !== String(data.id)}
+                        setCollapsed={updateCollapsedTile}
                     />
                 ))}
                 {filteredAndSorted.length === 0 && result.length > 0 && (
@@ -710,8 +732,9 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     deleteCallback,
     createCallback,
     isAutoAssignFlowEnabled,
+    collapsed,
+    setCollapsed,
 }) => {
-    const [collapsed, setCollapsed] = useState(true)
     const [dataLoading, data, dataError, reloadData, setData] = useAsync(
         type === 'group' ? () => getGroupId(id) : () => getUserId(id),
         [id, type],
@@ -721,12 +744,12 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
 
     useEffect(() => {
         if (!dataError) return
-        setCollapsed(true)
+        setCollapsed()
         showError(dataError)
     }, [dataError])
 
     function cancelCallback(e) {
-        setCollapsed(not)
+        setCollapsed(collapsed ? String(id) : undefined)
     }
 
     function updateCallbackOverride(index, data) {
@@ -749,7 +772,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         if (isAdminOrSystemUser) {
             noop()
         } else {
-            setCollapsed(not)
+            setCollapsed(collapsed ? String(id) : undefined)
         }
     }
 
@@ -796,19 +819,23 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
             </div>
             {!collapsed && data && !dataLoading && (
                 <div className="user-list__form w-100">
-                    {type === 'user' ? isAutoAssignFlowEnabled ? <UserPermissionsInfoBar /> : (
-                        <UserForm
-                            id={id}
-                            userData={data.result}
-                            {...{
-                                updateCallback: updateCallbackOverride,
-                                deleteCallback,
-                                createCallback,
-                                index,
-                                email_id,
-                                cancelCallback,
-                            }}
-                        />
+                    {type === 'user' ? (
+                        isAutoAssignFlowEnabled ? (
+                            <UserPermissionGroupTable permissionGroups={data.result?.roleGroups ?? []} />
+                        ) : (
+                            <UserForm
+                                id={id}
+                                userData={data.result}
+                                {...{
+                                    updateCallback: updateCallbackOverride,
+                                    deleteCallback,
+                                    createCallback,
+                                    index,
+                                    email_id,
+                                    cancelCallback,
+                                }}
+                            />
+                        )
                     ) : (
                         <GroupForm
                             id={id}
@@ -831,28 +858,29 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
 interface AddUser {
     text: string
     type: 'user' | 'group'
-    open: boolean
     updateCallback: (...args) => void
     deleteCallback: (...args) => void
     createCallback: (...args) => void
     cancelCallback: (...args) => void
+    collapsed: boolean
+    setCollapsed: (id?: string) => void
 }
 const AddUser: React.FC<AddUser> = ({
     text = '',
     type = '',
-    open = false,
     updateCallback,
     deleteCallback,
     createCallback,
     cancelCallback,
+    collapsed,
+    setCollapsed,
 }) => {
-    const [collapsed, setCollapsed] = useState(!open)
     return (
         <article className={`user-list flex column left ${collapsed ? 'user-list--collapsed' : ''} user-list--add`}>
             <div
                 className={`${collapsed ? 'pointer' : ''} user-list__header user-list__header  w-100`}
                 data-testid={collapsed ? `add-${type}-button` : ''}
-                onClick={!collapsed ? noop : (e) => setCollapsed(not)}
+                onClick={!collapsed ? noop : () => setCollapsed(ADD_USER_EXPANDED_SEARCH_VALUE)}
             >
                 {collapsed && <AddIcon className="add-svg mr-16" />}
                 <span className="user-list__email-name flex left column">

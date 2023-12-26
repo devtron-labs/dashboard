@@ -52,6 +52,8 @@ export interface CollapsedUserOrGroupProps {
     deleteCallback: (index: number) => void
     createCallback: (payload: any) => void
     isAutoAssignFlowEnabled?: boolean
+    collapsed: boolean
+    setCollapsed: (id?: string) => void
 }
 interface RoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB

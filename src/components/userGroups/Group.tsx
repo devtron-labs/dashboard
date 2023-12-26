@@ -203,6 +203,7 @@ export default function GroupForm({
             await deleteGroup(id)
             toast.success('Group deleted')
             deleteCallback(index)
+            setDeleteConfirmationModal(false)
         } catch (err) {
             showError(err)
         } finally {
@@ -240,7 +241,9 @@ export default function GroupForm({
             >
                 {PermissionType.map(({ label, value }) => (
                     <RadioGroupItem
-                        dataTestId={`${value === PermissionTypeEnum.SPECIFIC ? 'specific-user' : 'super-admin'}-permission-radio-button`}
+                        dataTestId={`${
+                            value === PermissionTypeEnum.SPECIFIC ? 'specific-user' : 'super-admin'
+                        }-permission-radio-button`}
                         value={value}
                         key={label}
                     >
@@ -304,6 +307,7 @@ export default function GroupForm({
                     description={'Deleting this group will revoke permissions from users added to this group.'}
                     closeDelete={() => setDeleteConfirmationModal(false)}
                     delete={handleDelete}
+                    apiCallInProgress={submitting}
                 />
             )}
         </div>

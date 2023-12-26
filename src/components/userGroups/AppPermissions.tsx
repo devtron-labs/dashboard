@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
+import { NavLink, Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import {
     APPROVER_ACTION,
     CONFIG_APPROVER_ACTION,
@@ -49,9 +49,10 @@ export default function AppPermissions({
         appsListHelmApps,
         fetchJobsList,
         jobsList,
-        superAdmin
+        superAdmin,
     } = useUserGroupContext()
-    const { url, path } = useRouteMatch()
+    const { url, path, ...rest } = useRouteMatch()
+    const location = useLocation()
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
         entityName: [],
@@ -110,30 +111,30 @@ export default function AppPermissions({
         }
     }
 
-   async function setAllWorkflows(jobOptions) {
-       let jobNames
-       let appIdWorkflowNamesMapping
-       let workflowOptions = []
-       jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
-       const { result } = await getAllWorkflowsForAppNames(jobNames)
-       appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
-       for (const jobName in appIdWorkflowNamesMapping) {
-           workflowOptions.push({
-               label: jobName,
-               options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
-                   label: workflow,
-                   value: workflow,
-               })),
-           })
-       }
+    async function setAllWorkflows(jobOptions) {
+        let jobNames
+        let appIdWorkflowNamesMapping
+        let workflowOptions = []
+        jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
+        const { result } = await getAllWorkflowsForAppNames(jobNames)
+        appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
+        for (const jobName in appIdWorkflowNamesMapping) {
+            workflowOptions.push({
+                label: jobName,
+                options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
+                    label: workflow,
+                    value: workflow,
+                })),
+            })
+        }
 
-       return [
-           { label: 'All Workflows', value: '*' },
-           ...workflowOptions.reduce((acc, option) => {
-               return [...acc, ...option.options]
-           }, []),
-       ]
-   }
+        return [
+            { label: 'All Workflows', value: '*' },
+            ...workflowOptions.reduce((acc, option) => {
+                return [...acc, ...option.options]
+            }, []),
+        ]
+    }
 
     function setAllEnv(directRolefilter: APIRoleFilter) {
         if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
@@ -438,7 +439,7 @@ export default function AppPermissions({
         }
     }
 
-    async function handleDirectPermissionChange(index, selectedValue, actionMeta,workflowList?) {
+    async function handleDirectPermissionChange(index, selectedValue, actionMeta, workflowList?) {
         const { action, option, name } = actionMeta
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {
@@ -681,7 +682,13 @@ export default function AppPermissions({
                             />
                         </Route>
                     )}
-                    <Redirect to={serverMode !== SERVER_MODE.EA_ONLY ? `${path}/devtron-apps` : `${path}/helm-apps`} />
+                    <Redirect
+                        // Preserving the search params
+                        to={{
+                            ...location,
+                            pathname: serverMode !== SERVER_MODE.EA_ONLY ? `${path}/devtron-apps` : `${path}/helm-apps`,
+                        }}
+                    />
                 </Switch>
             </div>
         </>
@@ -755,8 +762,8 @@ function AppPermissionDetail({
                                 key={idx}
                                 permission={permission}
                                 removeRow={removeDirectPermissionRow}
-                                handleDirectPermissionChange={(value, actionMeta,workflowList?) =>
-                                    handleDirectPermissionChange(idx, value, actionMeta,workflowList)
+                                handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
+                                    handleDirectPermissionChange(idx, value, actionMeta, workflowList)
                                 }
                             />
                         </div>

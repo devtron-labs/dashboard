@@ -324,11 +324,11 @@ export default function UserForm({
             await deleteUser(id);
             deleteCallback(email_id);
             toast.success('User deleted');
+            setDeleteConfirmationModal(false)
         } catch (err) {
             showError(err);
         } finally {
             setSubmitting(false);
-            setDeleteConfirmationModal(false)
         }
     }
 
@@ -408,12 +408,10 @@ export default function UserForm({
             )}
             <div className="flex left mb-16">
                 <RadioGroup
-                    
                     className="permission-type__radio-group"
                     value={localSuperAdmin}
                     name={`permission-type_${id}`}
                     onChange={handlePermissionType}
-                    
                 >
                     {PermissionType.map(({ label, value }) => (
                         <RadioGroupItem
@@ -523,6 +521,7 @@ export default function UserForm({
                     description={'Deleting this user will remove the user and revoke all their permissions.'}
                     delete={handleDelete}
                     closeDelete={() => setDeleteConfirmationModal(false)}
+                    apiCallInProgress={submitting}
                 />
             )}
         </div>
