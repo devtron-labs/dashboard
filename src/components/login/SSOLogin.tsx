@@ -17,7 +17,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import { SSOConfigType } from './ssoConfig.types'
-import { ViewType, DOCUMENTATION } from '../../config'
+import { ViewType, DOCUMENTATION, URLS } from '../../config'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
 import sample from './sampleConfig.json'
@@ -30,6 +30,7 @@ import { ReactComponent as LDAP } from '../../assets/icons/ic-ldap.svg'
 import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
+import { ReactComponent as UsersIcon } from '../../assets/icons/ic-users.svg'
 
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import './login.scss'
@@ -43,6 +44,7 @@ import {
     ssoDocumentationMap,
     ssoProviderToDisplayNameMap,
 } from './constants'
+import { withGlobalConfiguration } from '../globalConfigurations/GlobalConfigurationProvider'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
@@ -90,7 +92,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
     )
 }
 
-export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
+class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     /**
      * Ref to store the value from the API, used for showing the modal
      */
@@ -387,11 +389,40 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const payload = this._getSSOCreateOrUpdatePayload(configJSON)
 
-        //Create SSO
+        // Create SSO
         if (!this.state.lastActiveSSO) {
             createSSOList(payload)
                 .then((response) => {
                     this.saveSSO(response)
+                    const { setTippyConfig } = this.props.globalConfiguration
+
+                    const renderTippyButton = () => {
+                        const handleClick = () => {
+                            setTippyConfig({
+                                showTippy: false,
+                            })
+                            this.props.history.push(URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION)
+                        }
+
+                        return (
+                            <div className="pb-20 pr-20 pl-20">
+                                <button onClick={handleClick} className="cta secondary cursor lh-20-imp h-28">
+                                    Take me there
+                                </button>
+                            </div>
+                        )
+                    }
+
+                    setTippyConfig({
+                        infoTextHeading: 'Manage Users and Permissions',
+                        infoText: 'Ensure seamless one-click SSO login by adding users.',
+                        Icon: UsersIcon,
+                        iconClass: 'fcy-5',
+                        showTippy: true,
+                        showOnRoute: URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION,
+                        iconSize: 32,
+                        additionalContent: renderTippyButton(),
+                    })
                 })
                 .catch((error) => {
                     showError(error)
@@ -794,3 +825,5 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         )
     }
 }
+
+export default withGlobalConfiguration(SSOLogin)

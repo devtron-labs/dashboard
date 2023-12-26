@@ -1,5 +1,6 @@
 import { RouteComponentProps } from "react-router-dom";
 import { SSOProvider } from "./constants";
+import { GlobalConfiguration } from "../globalConfigurations/types";
 
 export interface SSOLogin {
     id: number;
@@ -46,7 +47,7 @@ export interface SSOConfigType {
 }
 
 export interface SSOLoginProps extends RouteComponentProps<{}> {
-
+    globalConfiguration: GlobalConfiguration
 }
 
 export interface SSOLoginTabType {
