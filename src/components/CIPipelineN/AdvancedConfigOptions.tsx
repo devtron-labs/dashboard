@@ -1,31 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
+import { CIBuildConfigType, CIBuildType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import CIConfig from '../ciConfig/CIConfig'
+import DockerArgs from './DockerArgs'
+import CustomImageTags from './CustomImageTags'
+import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { CIBuildConfigType, CIBuildType, CustomInput, noop, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
-import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { OptionType } from '../app/types'
-import '../ciConfig/CIConfig.scss'
-import CustomImageTags from './CustomImageTags'
+import { DockerArgsAction, HandleDockerArgsUpdate } from './types'
+import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import '../ciConfig/CIConfig.scss'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
 }: AdvancedConfigOptionsProps) {
-    const {
-        formData,
-        setFormData,
-        loadingState,
-        setLoadingState,
-        formDataErrorObj,
-        setFormDataErrorObj
-    } = useContext(pipelineContext)
+    const { formData, setFormData, loadingState, setLoadingState, formDataErrorObj, setFormDataErrorObj } =
+        useContext(pipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     // TODO: Should be getting that from formData, redundant state
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
@@ -42,7 +34,7 @@ export default function AdvancedConfigOptions({
     const targetPlatformMap = getTargetPlatformMap()
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
-  
+
     useEffect(() => {
         if (parentState.ciConfig) {
             populateCurrentPlatformsData()
@@ -70,31 +62,28 @@ export default function AdvancedConfigOptions({
         setShowCustomPlatformWarning(_customTargetPlatform)
     }
 
-    const addDockerArg = (): void => {
+    // All updates to docker args will be handled here, which will will be further merged into formData on introduction of reducer
+    const handleDockerArgsUpdate = ({ action, argData }: HandleDockerArgsUpdate) => {
         const _form = { ...formData }
 
-        if (_form.args.length > 0) {
-            _form.args.unshift({ key: '', value: '' })
-        } else {
-            _form.args.push({ key: '', value: '' })
+        switch (action) {
+            case DockerArgsAction.ADD:
+                _form.args.unshift({ key: '', value: '' })
+                break
+
+            case DockerArgsAction.UPDATE_KEY:
+                _form.args[argData.index]['key'] = argData.value
+                break
+
+            case DockerArgsAction.UPDATE_VALUE:
+                _form.args[argData.index]['value'] = argData.value
+                break
+
+            case DockerArgsAction.DELETE:
+                _form.args = _form.args.filter((_, index) => index !== argData.index)
+                break
         }
 
-        setFormData(_form)
-    }
-
-    const handleDockerArgChange = (event, index: number, key: 'key' | 'value'): void => {
-        const _form = { ...formData }
-        _form.args[index][key] = event.target.value
-        setFormData(_form)
-    }
-
-    const removeDockerArgs = (index: number): void => {
-        const _form = { ...formData }
-        const newArgs = []
-        for (let i = 0; i < _form.args.length; i++) {
-            if (index != i) newArgs.push(_form.args[i])
-        }
-        _form.args = newArgs
         setFormData(_form)
     }
 
@@ -152,72 +141,6 @@ export default function AdvancedConfigOptions({
         setFormData(_form)
     }
 
-    // TODO: Move into separate component
-    const renderDockerArgs = () => {
-        return (
-            <div>
-                <h3 className="flex left fs-13 fw-6 cn-9 lh-20 m-0">
-                    Docker build arguments
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-300"
-                        placement="top"
-                        Icon={HelpIcon}
-                        iconClass="fcv-5"
-                        heading="Docker Build Arguments"
-                        infoText="Key/value pair will be appended as docker build arguments (--build-args)."
-                        showCloseButton={true}
-                        trigger="click"
-                        interactive={true}
-                    >
-                        <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </TippyCustomized>
-                </h3>
-                <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg} data-testid="create-build-pipeline-docker-args-add-parameter-button">
-                    <Add className="add-icon mt-6" />
-                    Add parameter
-                </div>
-                {formData.args.length > 0 &&
-                    formData.args.map((arg, index) => {
-                        return (
-                            <div className="flexbox justify-space" key={`build-${index}`}>
-                                <div className="mt-8 w-100">
-                                    <CustomInput
-                                        name="arg-key"
-                                        data-testid={`docker-arg-key-${index}`}
-                                        rootClassName="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
-                                        autoComplete="off"
-                                        placeholder="Key"
-                                        type="text"
-                                        value={arg.key}
-                                        onChange={(event) => {
-                                            handleDockerArgChange(event, index, 'key')
-                                        }}
-                                    />
-                                    <textarea
-                                        data-testid={`docker-arg-value-${index}`}
-                                        className="build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
-                                        value={arg.value}
-                                        onChange={(event) => {
-                                            handleDockerArgChange(event, index, 'value')
-                                        }}
-                                        placeholder="Value"
-                                    />
-                                </div>
-                                <Close
-                                    className="icon-dim-24 pointer mt-6 ml-6"
-                                    onClick={() => {
-                                        removeDockerArgs(index)
-                                    }}
-                                />
-                            </div>
-                        )
-                    })}
-            </div>
-        )
-    }
-
     const toggleAdvancedOptions = (): void => {
         setCollapsedSection(!collapsedSection)
     }
@@ -242,6 +165,7 @@ export default function AdvancedConfigOptions({
                     className={`allow-config-override flex h-28 ml-auto cta ${allowOverride ? 'delete' : 'ghosted'}`}
                     data-testid={`create-build-pipeline-${allowOverride ? 'delete' : 'allow'}-override-button`}
                     onClick={toggleAllowOverride}
+                    type="button"
                 >
                     {`${allowOverride ? 'Delete' : 'Allow'} Override`}
                 </button>
@@ -283,7 +207,7 @@ export default function AdvancedConfigOptions({
                                 setFormDataErrorObj={setFormDataErrorObj}
                             />
 
-                            {renderDockerArgs()}
+                            <DockerArgs args={formData.args} handleDockerArgsUpdate={handleDockerArgsUpdate} />
                         </>
                     )}
             </div>
