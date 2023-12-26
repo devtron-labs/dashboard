@@ -388,7 +388,6 @@ export interface BuildType {
     ciPipeline: CIPipelineDataType
     pageState: string
     isSecurityModuleInstalled: boolean
-    setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
     getPluginData: (_formData?: PipelineFormType) => void
 }

@@ -4,7 +4,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import CIConfig from '../ciConfig/CIConfig'
-import { deepEqual } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -18,7 +17,6 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
-    setDockerConfigOverridden,
 }: AdvancedConfigOptionsProps) {
     const {
         formData,
@@ -151,9 +149,6 @@ export default function AdvancedConfigOptions({
 
         // set updated form data
         setFormData(_form)
-
-        // Check for diff in global & current CI config and set isDockerConfigOverridden flag accordingly
-        setDockerConfigOverridden(!deepEqual(_form.dockerConfigOverride, parentState.defaultDockerConfigs))
     }
 
     const renderDockerArgs = () => {
