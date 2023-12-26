@@ -258,7 +258,7 @@ export default function AdvancedConfigOptions({
                     setLoadingStateFromParent={setLoadingState}
                 />
 
-                {/* FIXME: Hidden after build without dockerfile and then delete override */}
+                {/* FIXME: Hidden after build without dockerfile and then delete override and if global is not BUILDPACK */}
                 {parentState?.loadingState === ComponentStates.loaded &&
                     parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE && (
                         <>

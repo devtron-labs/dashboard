@@ -382,6 +382,7 @@ export default function CIPipeline({
         await getMandatoryPluginData(_formData ?? formData, [...presetPlugins, ...sharedPlugins])
     }
 
+    // TODO: Test the API Errors as well
     const handleOnMountAPICalls = async () => {
         try {
             setPageState(ViewType.LOADING)
