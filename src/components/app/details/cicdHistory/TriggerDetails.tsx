@@ -133,7 +133,7 @@ const WorkerStatus = React.memo(
         // check if finishedOn time is timed out or not
         const isTimedOut = moment(finishedOn).isBefore(moment().subtract(TIMEOUT_VALUE, 'hours'))
         // finishedOn is 0001-01-01T00:00:00Z when the worker is still running
-        const showLink = workerPodName.length>0 && (finishedOn === ZERO_TIME_STRING || !isTimedOut)
+        const showLink = workerPodName && (finishedOn === ZERO_TIME_STRING || !isTimedOut)
 
         return (
             <>
@@ -143,7 +143,7 @@ const WorkerStatus = React.memo(
                         {stage === 'DEPLOY' ? (
                             <div className="mr-10">Message</div>
                         ) : showLink ? (
-                            <NavLink to={`${WORKER_POD_BASE_URL}/${workerPodName}/logs`} target='_blank' className="anchor">
+                            <NavLink to={`${WORKER_POD_BASE_URL}/${workerPodName}/logs`} target="_blank" className="anchor">
                                 <div className="mr-10">View worker pod</div>
                             </NavLink>
                         ) : (
