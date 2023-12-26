@@ -125,6 +125,7 @@ export interface DeploymentConfigFormCTAProps {
     setShowLockedDiffForApproval: (show: boolean) => void
     checkForProtectedLockedChanges: () => Promise<ResponseType>
     setLockedOverride: (value: Object) => void
+    setLockedConfigKeysWithLockType: (value: ConfigKeysWithLockType) => void
 }
 
 export interface CompareWithDropdownProps {

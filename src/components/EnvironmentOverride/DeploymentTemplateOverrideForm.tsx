@@ -664,6 +664,7 @@ export default function DeploymentTemplateOverrideForm({
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
                 showLockedDiffForApproval={showLockedDiffForApproval}
                 setLockedOverride={setLockedOverride}
+                setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
             />
         </form>
     )

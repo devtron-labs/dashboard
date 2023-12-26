@@ -918,6 +918,7 @@ export default function DeploymentConfig({
                 showLockedDiffForApproval={showLockedDiffForApproval}
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
                 setLockedOverride={setLockedOverride}
+                setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
             />
         </form>
     )

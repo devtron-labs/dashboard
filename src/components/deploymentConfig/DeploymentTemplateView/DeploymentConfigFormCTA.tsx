@@ -9,6 +9,7 @@ import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlin
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help-outline.svg'
 import { hasApproverAccess, importComponentFromFELibrary } from '../../common'
 import { DeploymentConfigContext } from '../DeploymentConfig'
+import { getLockedJsonPathArray } from '../../EnvironmentOverride/service'
 
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
 
@@ -30,7 +31,8 @@ export default function DeploymentConfigFormCTA({
     setShowLockedDiffForApproval,
     showLockedDiffForApproval,
     checkForProtectedLockedChanges,
-    setLockedOverride
+    setLockedOverride,
+    setLockedConfigKeysWithLockType
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled, dispatch } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -69,10 +71,15 @@ export default function DeploymentConfigFormCTA({
                     type: DeploymentConfigStateActionTypes.lockChangesLoading,
                     payload: true,
                 })
-                const res = await checkForProtectedLockedChanges()
-                if (res.result.isLockConfigError) {
+                const [lockedJSONPathResp, deploymentTemplateResp] = await Promise.all([
+                    getLockedJsonPathArray(),
+                    checkForProtectedLockedChanges()
+                    
+                ])
+                if (deploymentTemplateResp.result.isLockConfigError) {
+                    setLockedConfigKeysWithLockType(lockedJSONPathResp.result)
                     setShowLockedDiffForApproval(true)
-                    setLockedOverride(res.result.lockedOverride)
+                    setLockedOverride(deploymentTemplateResp.result.lockedOverride)
                     handleLockedDiffDrawer(true)
                 }
             } catch (err) {
