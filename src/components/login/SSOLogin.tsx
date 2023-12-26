@@ -394,35 +394,39 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             createSSOList(payload)
                 .then((response) => {
                     this.saveSSO(response)
-                    const { setTippyConfig } = this.props.globalConfiguration
 
-                    const renderTippyButton = () => {
-                        const handleClick = () => {
-                            setTippyConfig({
-                                showTippy: false,
-                            })
-                            this.props.history.push(URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION)
+                    // The tippy for User Permission is displayed only when the SSO config is saved for the first time with AD 'off'.
+                    if (payload.globalAuthConfigType !== AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS) {
+                        const { setTippyConfig } = this.props.globalConfiguration
+
+                        const renderTippyButton = () => {
+                            const handleClick = () => {
+                                setTippyConfig({
+                                    showTippy: false,
+                                })
+                                this.props.history.push(URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION)
+                            }
+
+                            return (
+                                <div className="pb-20 pr-20 pl-20">
+                                    <button onClick={handleClick} className="cta secondary cursor lh-20-imp h-28">
+                                        Take me there
+                                    </button>
+                                </div>
+                            )
                         }
 
-                        return (
-                            <div className="pb-20 pr-20 pl-20">
-                                <button onClick={handleClick} className="cta secondary cursor lh-20-imp h-28">
-                                    Take me there
-                                </button>
-                            </div>
-                        )
+                        setTippyConfig({
+                            infoTextHeading: 'Manage Users and Permissions',
+                            infoText: 'Ensure seamless one-click SSO login by adding users.',
+                            Icon: UsersIcon,
+                            iconClass: 'fcy-5',
+                            showTippy: true,
+                            showOnRoute: URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION,
+                            iconSize: 32,
+                            additionalContent: renderTippyButton(),
+                        })
                     }
-
-                    setTippyConfig({
-                        infoTextHeading: 'Manage Users and Permissions',
-                        infoText: 'Ensure seamless one-click SSO login by adding users.',
-                        Icon: UsersIcon,
-                        iconClass: 'fcy-5',
-                        showTippy: true,
-                        showOnRoute: URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION,
-                        iconSize: 32,
-                        additionalContent: renderTippyButton(),
-                    })
                 })
                 .catch((error) => {
                     showError(error)

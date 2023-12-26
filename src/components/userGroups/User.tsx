@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
-import { mapByKey, validateEmail, deepEqual } from '../common'
+import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../common'
 import {
     showError,
     Progressing,
@@ -34,6 +34,9 @@ import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { PermissionType } from '../apiTokens/authorization.utils';
 import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
 
+const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
+const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
+
 const CreatableChipStyle = {
     multiValue: (base, state) => {
         return {
@@ -66,6 +69,7 @@ export default function UserForm({
     deleteCallback,
     createCallback,
     cancelCallback,
+    isAutoAssignFlowEnabled
 }) {
     // id null is for create
     const { serverMode } = useContext(mainContext);
@@ -375,107 +379,119 @@ export default function UserForm({
     return (
         <div className="user-form">
             {!id && (
-                <div className="mb-16">
-                    <label htmlFor="" className="mb-8">
-                        Email addresses*
-                    </label>
-                    <Creatable
-                        classNamePrefix="email-address-dropdown"
-                        ref={creatableRef}
-                        options={creatableOptions}
-                        components={CreatableComponents}
-                        styles={CreatableChipStyle}
-                        autoFocus
-                        isMulti
-                        isClearable
-                        inputValue={emailState.inputEmailValue}
-                        placeholder="Type email and press enter..."
-                        isValidNewOption={() => false}
-                        backspaceRemovesValue
-                        value={emailState.emails}
-                        onBlur={handleCreatableBlur}
-                        onInputChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                        onChange={handleEmailChange}
-                    />
-                    {emailState.emailError && (
-                        <label className="form__error">
-                            <Error className="form__icon form__icon--error" />
-                            {emailState.emailError}
-                        </label>
-                    )}
-                </div>
-            )}
-            <div className="flex left mb-16">
-                <RadioGroup
-                    className="permission-type__radio-group"
-                    value={localSuperAdmin}
-                    name={`permission-type_${id}`}
-                    onChange={handlePermissionType}
-                >
-                    {PermissionType.map(({ label, value }) => (
-                        <RadioGroupItem
-                            dataTestId={`${
-                                value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
-                            }-permission-radio-button`}
-                            value={value}
-                            key={label}
-                        >
-                            <span className={`dc__no-text-transform ${localSuperAdmin === value ? 'fw-6' : 'fw-4'}`}>
-                                {label}
-                            </span>
-                        </RadioGroupItem>
-                    ))}
-                </RadioGroup>
-            </div>
-            {localSuperAdmin === 'SPECIFIC' && (
                 <>
-                    <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
-                    <Select
-                        value={userGroups}
-                        ref={groupPermissionsRef}
-                        classNamePrefix="group-permission-dropdown"
-                        components={{
-                            MultiValueContainer: ({ ...props }) => (
-                                <MultiValueChipContainer {...props} validator={null} />
-                            ),
-                            DropdownIndicator: null,
-                            ClearIndicator,
-                            MultiValueRemove,
-                            Option,
-                        }}
-                        styles={{
-                            ...multiSelectStyles,
-                            multiValue: (base) => ({
-                                ...base,
-                                border: `1px solid var(--N200)`,
-                                borderRadius: `4px`,
-                                background: 'white',
-                                height: '30px',
-                                margin: '0 8px 0 0',
-                                padding: '1px',
-                            }),
-                        }}
-                        formatOptionLabel={formatChartGroupOptionLabel}
-                        closeMenuOnSelect={false}
-                        isMulti
-                        autoFocus={!id}
-                        name="groups"
-                        options={availableGroups}
-                        hideSelectedOptions={false}
-                        onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
-                        className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
-                    />
-                    <AppPermissions
-                        data={userData}
-                        directPermission={directPermission}
-                        setDirectPermission={setDirectPermission}
-                        chartPermission={chartPermission}
-                        setChartPermission={setChartPermission}
-                        k8sPermission={k8sPermission}
-                        setK8sPermission={setK8sPermission}
-                        currentK8sPermissionRef={currentK8sPermissionRef}
-                    />
+                    <UserPermissionsInfoBar />
+                    <div className="mb-16">
+                        <label htmlFor="" className="mb-8">
+                            Email addresses*
+                        </label>
+                        <Creatable
+                            classNamePrefix="email-address-dropdown"
+                            ref={creatableRef}
+                            options={creatableOptions}
+                            components={CreatableComponents}
+                            styles={CreatableChipStyle}
+                            autoFocus
+                            isMulti
+                            isClearable
+                            inputValue={emailState.inputEmailValue}
+                            placeholder="Type email and press enter..."
+                            isValidNewOption={() => false}
+                            backspaceRemovesValue
+                            value={emailState.emails}
+                            onBlur={handleCreatableBlur}
+                            onInputChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            onChange={handleEmailChange}
+                        />
+                        {emailState.emailError && (
+                            <label className="form__error">
+                                <Error className="form__icon form__icon--error" />
+                                {emailState.emailError}
+                            </label>
+                        )}
+                    </div>
+                </>
+            )}
+            {id && isAutoAssignFlowEnabled && <UserPermissionGroupTable permissionGroups={userData?.roleGroups} />}
+            {!isAutoAssignFlowEnabled && (
+                <>
+                    <div className="flex left mb-16">
+                        <RadioGroup
+                            className="permission-type__radio-group"
+                            value={localSuperAdmin}
+                            name={`permission-type_${id}`}
+                            onChange={handlePermissionType}
+                        >
+                            {PermissionType.map(({ label, value }) => (
+                                <RadioGroupItem
+                                    dataTestId={`${
+                                        value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
+                                    }-permission-radio-button`}
+                                    value={value}
+                                    key={label}
+                                >
+                                    <span
+                                        className={`dc__no-text-transform ${
+                                            localSuperAdmin === value ? 'fw-6' : 'fw-4'
+                                        }`}
+                                    >
+                                        {label}
+                                    </span>
+                                </RadioGroupItem>
+                            ))}
+                        </RadioGroup>
+                    </div>
+                    {localSuperAdmin === 'SPECIFIC' && (
+                        <>
+                            <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
+                            <Select
+                                value={userGroups}
+                                ref={groupPermissionsRef}
+                                classNamePrefix="group-permission-dropdown"
+                                components={{
+                                    MultiValueContainer: ({ ...props }) => (
+                                        <MultiValueChipContainer {...props} validator={null} />
+                                    ),
+                                    DropdownIndicator: null,
+                                    ClearIndicator,
+                                    MultiValueRemove,
+                                    Option,
+                                }}
+                                styles={{
+                                    ...multiSelectStyles,
+                                    multiValue: (base) => ({
+                                        ...base,
+                                        border: `1px solid var(--N200)`,
+                                        borderRadius: `4px`,
+                                        background: 'white',
+                                        height: '30px',
+                                        margin: '0 8px 0 0',
+                                        padding: '1px',
+                                    }),
+                                }}
+                                formatOptionLabel={formatChartGroupOptionLabel}
+                                closeMenuOnSelect={false}
+                                isMulti
+                                autoFocus={!id}
+                                name="groups"
+                                options={availableGroups}
+                                hideSelectedOptions={false}
+                                onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
+                                className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
+                            />
+                            <AppPermissions
+                                data={userData}
+                                directPermission={directPermission}
+                                setDirectPermission={setDirectPermission}
+                                chartPermission={chartPermission}
+                                setChartPermission={setChartPermission}
+                                k8sPermission={k8sPermission}
+                                setK8sPermission={setK8sPermission}
+                                currentK8sPermissionRef={currentK8sPermissionRef}
+                            />
+                        </>
+                    )}
                 </>
             )}
             <div className="flex right mt-32">
@@ -495,24 +511,29 @@ export default function UserForm({
                         Unsaved changes
                     </span>
                 )}
-                <button
-                    data-testid="user-form-cancel-button"
-                    disabled={submitting}
-                    onClick={cancelCallback}
-                    type="button"
-                    className="cta cancel mr-16"
-                >
-                    Cancel
-                </button>
-                <button
-                    disabled={submitting}
-                    data-testid="user-form-save-button"
-                    type="button"
-                    className="cta"
-                    onClick={handleSubmit}
-                >
-                    {submitting ? <Progressing /> : 'Save'}
-                </button>
+                {
+                    !(isAutoAssignFlowEnabled && id) &&
+                        <>
+                            <button
+                                data-testid="user-form-cancel-button"
+                                disabled={submitting}
+                                onClick={cancelCallback}
+                                type="button"
+                                className="cta cancel mr-16"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                disabled={submitting}
+                                data-testid="user-form-save-button"
+                                type="button"
+                                className="cta"
+                                onClick={handleSubmit}
+                            >
+                                {submitting ? <Progressing /> : 'Save'}
+                            </button>
+                        </>
+                }
             </div>
             {deleteConfirmationModal && (
                 <DeleteDialog

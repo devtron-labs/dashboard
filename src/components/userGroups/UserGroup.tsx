@@ -13,7 +13,6 @@ import {
     MultiValueRemove,
     multiSelectStyles,
     getRandomColor,
-    not,
     noop,
     useEffectAfterMount,
     GenericEmptyState,
@@ -90,7 +89,6 @@ import { ADD_USER_EXPANDED_SEARCH_VALUE, EXPANDED_TILE_SEARCH_KEY } from './cons
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 const AuthorizationGlobalConfigWrapper = importComponentFromFELibrary('AuthorizationGlobalConfigWrapper')
 const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
-const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 
 const UserGroupContext = React.createContext<UserGroup>({
@@ -700,6 +698,7 @@ const UserGroupList: React.FC<{
                         collapsed={expandedTile !== ADD_USER_EXPANDED_SEARCH_VALUE && result?.length !== 0}
                         setCollapsed={updateCollapsedTile}
                         {...{ createCallback, updateCallback, deleteCallback }}
+                        isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                     />
                 )}
                 {filteredAndSorted.map((data, index) => (
@@ -820,22 +819,19 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
             {!collapsed && data && !dataLoading && (
                 <div className="user-list__form w-100">
                     {type === 'user' ? (
-                        isAutoAssignFlowEnabled ? (
-                            <UserPermissionGroupTable permissionGroups={data.result?.roleGroups ?? []} />
-                        ) : (
-                            <UserForm
-                                id={id}
-                                userData={data.result}
-                                {...{
-                                    updateCallback: updateCallbackOverride,
-                                    deleteCallback,
-                                    createCallback,
-                                    index,
-                                    email_id,
-                                    cancelCallback,
-                                }}
-                            />
-                        )
+                        <UserForm
+                            id={id}
+                            userData={data.result}
+                            {...{
+                                updateCallback: updateCallbackOverride,
+                                deleteCallback,
+                                createCallback,
+                                index,
+                                email_id,
+                                cancelCallback,
+                            }}
+                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                        />
                     ) : (
                         <GroupForm
                             id={id}
@@ -864,6 +860,7 @@ interface AddUser {
     cancelCallback: (...args) => void
     collapsed: boolean
     setCollapsed: (id?: string) => void
+    isAutoAssignFlowEnabled: boolean
 }
 const AddUser: React.FC<AddUser> = ({
     text = '',
@@ -874,6 +871,7 @@ const AddUser: React.FC<AddUser> = ({
     cancelCallback,
     collapsed,
     setCollapsed,
+    isAutoAssignFlowEnabled,
 }) => {
     return (
         <article className={`user-list flex column left ${collapsed ? 'user-list--collapsed' : ''} user-list--add`}>
@@ -898,6 +896,7 @@ const AddUser: React.FC<AddUser> = ({
                             id={null}
                             index={null}
                             {...{ updateCallback, deleteCallback, createCallback, cancelCallback }}
+                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                         />
                     ) : (
                         <GroupForm
