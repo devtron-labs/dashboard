@@ -250,16 +250,16 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     // The global auth config type needs to be updated irrespective of the SSO name check
     _getGlobalAuthConfigType = () =>
-        !!AutoAssignToggleTile && {
-            globalAuthConfigType:
-                this.isAutoAssignPermissionFlowActive && this.state.shouldAutoAssignPermissions
-                    ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
-                    : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
-        }
+        !!AutoAssignToggleTile
+            ? {
+                  globalAuthConfigType:
+                      this.isAutoAssignPermissionFlowActive && this.state.shouldAutoAssignPermissions
+                          ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
+                          : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
+              }
+            : {}
 
-    _getSSOCreateOrUpdatePayload = (
-        configJSON,
-    ) => ({
+    _getSSOCreateOrUpdatePayload = (configJSON) => ({
         id: this.state.ssoConfig?.id,
         name: this.state.sso,
         url: this.state.ssoConfig.url,
@@ -310,8 +310,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setConfig(response, this.state.sso.toLowerCase())
         const ssoConfig = response.result
         const shouldAutoAssignPermissions =
-            this._getGlobalAuthConfigType()?.globalAuthConfigType ===
-            AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
+            this._getGlobalAuthConfigType()?.globalAuthConfigType === AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
         this.setState({
             view: ViewType.FORM,
             saveLoading: false,

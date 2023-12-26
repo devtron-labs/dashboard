@@ -412,7 +412,7 @@ const UserGroupList: React.FC<{
     type: 'user' | 'group'
     reloadLists: () => void
     renderHeaders: (type: 'user' | 'group') => JSX.Element
-    isAutoAssignFlowEnabled?: boolean
+    isAutoAssignFlowEnabled: boolean
 }> = ({ type, reloadLists, renderHeaders, isAutoAssignFlowEnabled }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')

@@ -51,7 +51,7 @@ export interface CollapsedUserOrGroupProps {
     updateCallback: (index: number, payload: any) => void
     deleteCallback: (index: number) => void
     createCallback: (payload: any) => void
-    isAutoAssignFlowEnabled?: boolean
+    isAutoAssignFlowEnabled: boolean
     collapsed: boolean
     setCollapsed: (id?: string) => void
 }
