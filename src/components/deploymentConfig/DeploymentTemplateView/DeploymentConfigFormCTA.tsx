@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
-import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentConfigContextType, DeploymentConfigFormCTAProps } from '../types'
+import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentConfigContextType, DeploymentConfigFormCTAProps, DeploymentConfigStateActionTypes } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { DOCUMENTATION } from '../../../config'
 import Tippy from '@tippyjs/react'
@@ -25,15 +25,22 @@ export default function DeploymentConfigFormCTA({
     reload,
     isValues,
     convertVariables,
+    handleLockedDiffDrawer,
+    isSuperAdmin,
+    setShowLockedDiffForApproval,
+    showLockedDiffForApproval,
+    checkForProtectedLockedChanges,
+    setLockedOverride
 }: DeploymentConfigFormCTAProps) {
-    const { state, isConfigProtectionEnabled } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const { state, isConfigProtectionEnabled, dispatch } =
+        useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const [approveChangesClicked, setApproveChangesClicked] = React.useState(false)
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
     const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
     const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
-
     const getCTATippyContent = () => {
         if (isApprovalPending) {
             if (!hasAccess) {
@@ -53,6 +60,31 @@ export default function DeploymentConfigFormCTA({
             </Tippy>
         )
     }
+    
+    const checkForLockedChangesForApproval = async () => {
+        setApproveChangesClicked(true)
+        if (isApprovalPending && !approveDisabled && !isSuperAdmin) {
+            try {
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.lockChangesLoading,
+                    payload: true,
+                })
+                const res = await checkForProtectedLockedChanges()
+                if (res.result.isLockConfigError) {
+                    setShowLockedDiffForApproval(true)
+                    setLockedOverride(res.result.lockedOverride)
+                    handleLockedDiffDrawer(true)
+                }
+            } catch (err) {
+                showError(err)
+            } finally {
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.lockChangesLoading,
+                    payload: false,
+                })
+            }
+        }
+    }
 
     const renderButton = () => {
         return (
@@ -65,6 +97,7 @@ export default function DeploymentConfigFormCTA({
                         _disabled || approveDisabled ? 'disabled' : ''
                     }`}
                     type={_disabled || isApprovalPending ? 'button' : 'submit'}
+                    onClick={checkForLockedChangesForApproval}
                     data-testid={`${
                         !isEnvOverride && !isCiPipeline
                             ? 'base-deployment-template-save-and-next-button'
@@ -191,6 +224,19 @@ export default function DeploymentConfigFormCTA({
             return 'h-64'
         }
     }
+    
+    function approveRequestTippy(children) {
+        return (
+            <ApproveRequestTippy
+                draftId={state.latestDraft.draftId}
+                draftVersionId={state.latestDraft.draftVersionId}
+                resourceName="deployment template"
+                reload={reload}
+            >
+                <span>{children}</span>
+            </ApproveRequestTippy>
+        )
+    }
 
     return _selectedChart ? (
         <div
@@ -201,20 +247,20 @@ export default function DeploymentConfigFormCTA({
             {compareTab && !state.showReadme && <div className="w-50" />}
             {renderApplicationMetrics()}
             {!isPublishedMode && (
-                <>
-                    {isApprovalPending && state.latestDraft?.canApprove && !approveDisabled && ApproveRequestTippy ? (
-                        <ApproveRequestTippy
-                            draftId={state.latestDraft.draftId}
-                            draftVersionId={state.latestDraft.draftVersionId}
-                            resourceName="deployment template"
-                            reload={reload}
-                        >
-                            {renderButton()}
-                        </ApproveRequestTippy>
-                    ) : (
-                        renderButton()
-                    )}
-                </>
+                <ConditionalWrap
+                    condition={
+                        !showLockedDiffForApproval &&
+                        !state.lockChangesLoading &&
+                        isApprovalPending &&
+                        state.latestDraft?.canApprove &&
+                        !approveDisabled &&
+                        ApproveRequestTippy &&
+                        approveChangesClicked
+                    }
+                    wrap={approveRequestTippy}
+                >
+                    {renderButton()}
+                </ConditionalWrap>
             )}
         </div>
     ) : null

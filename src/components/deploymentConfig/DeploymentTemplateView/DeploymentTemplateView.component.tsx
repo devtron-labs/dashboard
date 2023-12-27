@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { versionComparator } from '../../common'
-import { ConfirmationDialog, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
-import infoIcon from '../../../assets/icons/ic-info-filled.svg'
+import {ReactComponent as InfoIcon} from '../../../assets/icons/ic-info-filled.svg'
 import warningIcon from '../../../assets/img/warning-medium.svg'
 import {
     ChartTypeVersionOptionsProps,
@@ -16,6 +16,7 @@ import {
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
     DropdownItemProps,
+    SaveConfirmationDialogProps,
 } from '../types'
 import {
     DEPLOYMENT_TEMPLATE_LABELS_KEYS,
@@ -31,6 +32,7 @@ import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 import { getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
+import '../deploymentConfig.scss'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -407,15 +409,44 @@ export const SuccessToastBody = ({ chartConfig }) => (
     </div>
 )
 
-export const SaveConfirmationDialog = ({ save }) => {
+export const SaveConfirmationDialog = ({
+    onSave,
+    showAsModal,
+    closeLockedDiffDrawerWithChildModal,
+}: SaveConfirmationDialogProps) => {
     const { state, dispatch } = useContext(DeploymentConfigContext)
-
-    const closeConfirmationDialog = () => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.showConfirmation,
-            payload: false,
-        })
-    }
+    const saveConfirmationContent = () => (
+        <div
+            className={`modal__body flexbox-col dc__gap-12 bcn-0 w-400 pt-16 pb-16 pl-16 pr-16 dc__border ${
+                !showAsModal && 'position-bottom-right'
+            }`}
+        >
+            <InfoIcon className="icon-dim-48" />
+            <div className="fs-16 fw-6">Retain overrides and update</div>
+            <div>
+                <p>Changes will only be applied to environments using default configuration.</p>
+                <p>Environments using overriden configurations will not be updated.</p>
+            </div>
+            <div className="mt-18 flexbox dc__gap-12 ml-auto">
+                <button
+                    data-testid="base-deployment-template-cancel-button"
+                    type="button"
+                    className="cta cancel"
+                    onClick={closeLockedDiffDrawerWithChildModal}
+                >
+                    Cancel
+                </button>
+                <button
+                    data-testid="base_deployment_template_update_button"
+                    type="button"
+                    className="cta"
+                    onClick={onSave}
+                >
+                    {getButtonState()}
+                </button>
+            </div>
+        </div>
+    )
 
     const getButtonState = () => {
         if (state.loading) {
@@ -428,30 +459,13 @@ export const SaveConfirmationDialog = ({ save }) => {
     }
 
     return (
-        <ConfirmationDialog>
-            <ConfirmationDialog.Icon src={infoIcon} />
-            <ConfirmationDialog.Body title="Retain overrides and update" />
-            <p>Changes will only be applied to environments using default configuration.</p>
-            <p>Environments using overriden configurations will not be updated.</p>
-            <ConfirmationDialog.ButtonGroup>
-                <button
-                    data-testid="base-deployment-template-cancel-button"
-                    type="button"
-                    className="cta cancel"
-                    onClick={closeConfirmationDialog}
-                >
-                    Cancel
-                </button>
-                <button
-                    data-testid="base_deployment_template_update_button"
-                    type="button"
-                    className="cta"
-                    onClick={save}
-                >
-                    {getButtonState()}
-                </button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <>
+            {showAsModal ? (
+                <VisibleModal className="">{saveConfirmationContent()}</VisibleModal>
+            ) : (
+                saveConfirmationContent()
+            )}
+        </>
     )
 }
 

@@ -276,6 +276,7 @@ export interface AppGroupDetailDefaultType {
     description?: string
     getAppListData?: () => Promise<void>
     handleSaveDescription?: (description: string) => Promise<void>
+    isSuperAdmin?: boolean
 }
 
 interface CIPipeline {
