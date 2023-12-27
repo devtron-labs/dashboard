@@ -270,16 +270,41 @@ export default function CIPipeline({
                         isClusterActive: env.isClusterActive,
                         description: env.description,
                     })
-                    const _selectedEnv = list.find((env) => env.id == envId)
-                    setSelectedEnv(_selectedEnv)
                 }
             })
+            const _selectedEnv = list.find((env) => env.id == envId)
+            setSelectedEnv(_selectedEnv)
             sortObjectArrayAlphabetically(list, 'name')
             setEnvironments(list)
         }
         catch (error) {
             showError(error)
         }
+    }
+
+    const getGlobalVariables = async (): Promise<void> => {
+        try {
+            const globalVariablesResponse = await getGlobalVariable(Number(appId))
+            const globalVariablesResult = globalVariablesResponse?.result ?? []
+            const _globalVariableOptions = globalVariablesResult.map((variable) => {
+                variable.label = variable.name
+                variable.value = variable.name
+                variable.description = variable.description || ''
+                variable.variableType = RefVariableType.GLOBAL
+                delete variable.name
+                return variable
+            })
+            setGlobalVariables(_globalVariableOptions || [])
+        }
+        catch (error) {
+            if (error instanceof ServerErrors && error.code !== 403) {
+                showError(error)
+            }
+        }
+    }
+
+    const getPluginData = async (_formData?: PipelineFormType): Promise<void> => {
+        await getMandatoryPluginData(_formData ?? formData, [...presetPlugins, ...sharedPlugins])
     }
 
     const calculateLastStepDetail = (
@@ -354,32 +379,6 @@ export default function CIPipeline({
             _formDataErrorObj[stageName].isValid = isStageValid
         }
         setFormDataErrorObj(_formDataErrorObj)
-    }
-
-    const getGlobalVariables = async (): Promise<void> => {
-        try {
-            const globalVariablesResponse = await getGlobalVariable(Number(appId))
-            const globalVariablesResult = globalVariablesResponse?.result ?? []
-            const _globalVariableOptions = globalVariablesResult.map((variable) => {
-                variable.label = variable.name
-                variable.value = variable.name
-                variable.description = variable.description || ''
-                variable.variableType = RefVariableType.GLOBAL
-                delete variable.name
-                return variable
-            })
-            setGlobalVariables(_globalVariableOptions || [])
-        }
-        catch (error) {
-            if (error instanceof ServerErrors && error.code !== 403) {
-                showError(error)
-            }
-        }
-    }
-
-
-    const getPluginData = async (_formData?: PipelineFormType): Promise<void> => {
-        await getMandatoryPluginData(_formData ?? formData, [...presetPlugins, ...sharedPlugins])
     }
 
     const handleOnMountAPICalls = async () => {
