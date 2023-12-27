@@ -58,7 +58,7 @@ export default function BuildContext({
     handleOnChangeConfig,
     buildContextValue,
     currentCIBuildConfig,
-    // Want to remove this prop but its getting updated
+    // Wanted to remove this prop but its getting updated
     formState,
     setCurrentCIBuildConfig,
     currentBuildContextGitMaterial,
@@ -124,7 +124,7 @@ export default function BuildContext({
         return { label: val, value: val }
     }
 
-    if (window._env_.ENABLE_BUILD_CONTEXT) {
+    if (!window._env_.ENABLE_BUILD_CONTEXT) {
         return null
     }
 
@@ -207,7 +207,7 @@ export default function BuildContext({
 
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label htmlFor="" className="form__label">
-                            Build Context (Relative)
+                            Build Context Path (Relative)
                         </label>
 
                         <div className="docker-file-container">

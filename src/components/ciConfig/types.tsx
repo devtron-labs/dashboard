@@ -281,6 +281,7 @@ export interface CICreateDockerfileOptionProps {
     ) => OptionType
     useRootBuildContextFlag: boolean
     checkoutPathOptions: OptionType[]
+    setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>
 }
 
 export interface CIBuildpackBuildOptionsProps {

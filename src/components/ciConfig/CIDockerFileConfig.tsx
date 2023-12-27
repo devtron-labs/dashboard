@@ -7,6 +7,7 @@ import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
+import BuildContext from './BuildContext'
 import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import CIBuildpackBuildOptions, {
@@ -107,20 +108,25 @@ export default function CIDockerFileConfig({
     ]
     const isDefaultBuildContext = (): boolean => {
         if (window._env_.ENABLE_BUILD_CONTEXT) {
-            let currentOverriddenGitMaterialId = 0,
-                currentOverriddenBuildContextGitMaterialId = 0
-            let currentOverriddenBuildContext =
-                ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
-            currentOverriddenGitMaterialId =
-                ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.gitMaterialId
-            currentOverriddenBuildContextGitMaterialId =
-                ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId
+            const currentCIBuildConfig = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig
+            
+            const currentOverriddenBuildContext = currentCIBuildConfig?.dockerBuildConfig?.buildContext
+            const currentOverriddenGitMaterialId = currentCIBuildConfig?.gitMaterialId
+            const currentOverriddenBuildContextGitMaterialId = currentCIBuildConfig?.buildContextGitMaterialId
+
+            // TODO: Ask whether second check is redundant since string empty comes in ! case
+            const isSameCurrentBuildContext =
+                currentOverriddenGitMaterialId === currentOverriddenBuildContextGitMaterialId &&
+                (!currentOverriddenBuildContext || currentOverriddenBuildContext === '')
+
+            const isSameGlobalBuildContext =
+                currentMaterial.id === currentBuildContextGitMaterial.id &&
+                (!ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext ||
+                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === '')
+
             return configOverrideView && allowOverride
-                ? currentOverriddenGitMaterialId === currentOverriddenBuildContextGitMaterialId &&
-                      (!currentOverriddenBuildContext || currentOverriddenBuildContext === '')
-                : currentMaterial.id === currentBuildContextGitMaterial.id &&
-                      (!ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext ||
-                          ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === '')
+                ? isSameCurrentBuildContext
+                : isSameGlobalBuildContext
         }
         return false
     }
@@ -136,6 +142,7 @@ export default function CIDockerFileConfig({
     const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>(checkoutPathArray)
     const { isAirgapped } = useContext(mainContext)
 
+    //TODO: Remove it
     useEffect(() => {
         let checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
         if (selectedBuildContextGitMaterial?.checkoutPath !== RootBuildContext) {
@@ -241,6 +248,7 @@ export default function CIDockerFileConfig({
         })
     }
 
+    // TODO: Remove it
     const handleBuildContextPathChange = (selectedBuildContextGitMaterial): void => {
         setSelectedBuildContextGitMaterial(selectedBuildContextGitMaterial)
         formState.repository.value = selectedBuildContextGitMaterial.name
@@ -268,6 +276,10 @@ export default function CIDockerFileConfig({
         return ciConfig?.ciBuildConfig?.ciBuildType === id
     }
 
+    /**
+     * 
+     * @deprecated
+     */
     const getBuildContextAdditionalContent = () => {
         return (
             <div className="p-12 fs-13">
@@ -306,6 +318,10 @@ export default function CIDockerFileConfig({
     const getSelectedBuildContextGitMaterial = (): any => {
         return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
     }
+    /**
+     * 
+     * @deprecated
+     */
     const getCheckoutPathValue = (
         selectedMaterial: any,
         currentMaterial: any,
@@ -320,6 +336,10 @@ export default function CIDockerFileConfig({
         return { label: val, value: val }
     }
 
+    /**
+     * 
+     * @deprecated
+     */
     const renderInfoCard = (): JSX.Element => {
         return (
             <TippyCustomized
@@ -505,154 +525,28 @@ export default function CIDockerFileConfig({
                     </div>
                 </div>
 
-                {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride) && (
-                    <div className="flex left row ml-0 build-context-label fs-13 mb-6">
-                        <span className="flex pointer" onClick={toggleCollapse}>
-                            <Dropdown
-                                className="icon-dim-26 rotate "
-                                data-testid="set-build-context-button"
-                                style={{ ['--rotateBy' as any]: isCollapsed ? '360deg' : '270deg' }}
-                            />
-                            Set Build context
-                        </span>
-                        {!configOverrideView || allowOverride ? (
-                            <div className="flex row ml-0">{renderInfoCard()}</div>
-                        ) : null}
-                    </div>
-                )}
-
-                {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride ? isCollapsed : true) && (
-                    <div className={`form-row__docker ${!configOverrideView || allowOverride ? 'ml-24' : ''}`}>
-                        <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                            <label className="form__label">{`${
-                                configOverrideView && !allowOverride ? 'Repository' : 'Select repo'
-                            }  containing build context`}</label>
-                            {configOverrideView && !allowOverride ? (
-                                <div className="flex left">
-                                    {currentBuildContextGitMaterial?.url &&
-                                        renderOptionIcon(currentBuildContextGitMaterial.url)}
-                                    <span className="fs-14 fw-4 lh-20 cn-9">
-                                        {currentBuildContextGitMaterial?.name || 'Not selected'}
-                                    </span>
-                                </div>
-                            ) : (
-                                <ReactSelect
-                                    className="m-0"
-                                    classNamePrefix="build-config__select-repository-containing-build-context"
-                                    tabIndex={3}
-                                    isMulti={false}
-                                    isClearable={false}
-                                    options={sourceConfig.material}
-                                    getOptionLabel={(option) => `${option.name}`}
-                                    getOptionValue={(option) => `${option.checkoutPath}`}
-                                    value={
-                                        configOverrideView && !allowOverride
-                                            ? currentBuildContextGitMaterial
-                                            : getSelectedBuildContextGitMaterial()
-                                    }
-                                    styles={{
-                                        ..._multiSelectStyles,
-                                        menu: (base) => ({
-                                            ...base,
-                                            marginTop: '0',
-                                            paddingBottom: '4px',
-                                        }),
-                                    }}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option: repositoryOption,
-                                        Control: repositoryControls,
-                                    }}
-                                    onChange={handleBuildContextPathChange}
-                                    isDisabled={configOverrideView && !allowOverride}
-                                />
-                            )}
-                            {formState.repository.error && (
-                                <label className="form__error">{formState.repository.error}</label>
-                            )}
-                        </div>
-                        <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                            <label htmlFor="" className="form__label">
-                                Build Context (Relative)
-                            </label>
-                            {configOverrideView && !allowOverride ? (
-                                <span className="fs-14 fw-4 lh-20 cn-9">
-                                    {`${
-                                        ciConfig?.ciBuildConfig?.useRootBuildContext
-                                            ? RootBuildContext
-                                            : selectedBuildContextGitMaterial?.checkoutPath
-                                    }/${ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || ''}`.replace(
-                                        '//',
-                                        '/',
-                                    )}
-                                </span>
-                            ) : (
-                                <div className="docker-file-container">
-                                    <ReactSelect
-                                        className="m-0 br-0"
-                                        classNamePrefix="build-config__select-checkout-path-for-build-context"
-                                        tabIndex={4}
-                                        isMulti={false}
-                                        isClearable={false}
-                                        isSearchable={false}
-                                        options={checkoutPathOptions}
-                                        getOptionLabel={(option) => `${option.label}`}
-                                        getOptionValue={(option) => `${option.value}`}
-                                        value={getCheckoutPathValue(
-                                            selectedMaterial,
-                                            currentMaterial,
-                                            useRootBuildContextFlag,
-                                        )}
-                                        styles={{
-                                            ..._multiSelectStyles,
-                                            menu: (base) => ({
-                                                ...base,
-                                                marginTop: '0',
-                                                paddingBottom: '4px',
-                                                width:
-                                                    checkoutPathOptions?.length === 2 &&
-                                                    checkoutPathOptions[1].value.length > 3
-                                                        ? '120px'
-                                                        : '100%',
-                                            }),
-                                            control: (base) => ({
-                                                ...base,
-                                                borderTopRightRadius: '0px',
-                                                borderBottomRightRadius: '0px',
-                                                borderRight: '0px',
-                                            }),
-                                            dropdownIndicator: (base) => ({
-                                                ...base,
-                                                paddingLeft: '0px',
-                                            }),
-                                        }}
-                                        components={{
-                                            IndicatorSeparator: null,
-                                            Option: checkoutPathOption,
-                                        }}
-                                        onChange={handleBuildContextCheckoutPathChange}
-                                        isDisabled={configOverrideView && !allowOverride}
-                                    />
-                                    <CustomInput
-                                        tabIndex={4}
-                                        type="text"
-                                        rootClassName="file-name"
-                                        data-testid="build-context-path-text-box"
-                                        placeholder="Project Path"
-                                        name="buildContext"
-                                        value={
-                                            configOverrideView && !allowOverride
-                                                ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || ''
-                                                : formState.buildContext.value
-                                        }
-                                        onChange={handleOnChangeConfig}
-                                        autoFocus={!configOverrideView}
-                                        disabled={configOverrideView && !allowOverride}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                {window._env_.ENABLE_BUILD_CONTEXT && (
+                    <BuildContext
+                        readOnly={configOverrideView && !allowOverride}
+                        isDefaultBuildContext={isDefaultBuildContext()}
+                        configOverrideView={configOverrideView}
+                        sourceConfig={sourceConfig}
+                        selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
+                        currentMaterial={currentMaterial}
+                        setSelectedBuildContextGitMaterial={setSelectedBuildContextGitMaterial}
+                        repositoryError={formState.repository.error}
+                        handleOnChangeConfig={handleOnChangeConfig}
+                        buildContextValue={formState.buildContext.value}
+                        currentCIBuildConfig={currentCIBuildConfig}
+                        formState={formState}
+                        setCurrentCIBuildConfig={setCurrentCIBuildConfig}
+                        currentBuildContextGitMaterial={currentBuildContextGitMaterial}
+                        readOnlyBuildContextPath={`${
+                            ciConfig?.ciBuildConfig?.useRootBuildContext
+                                ? RootBuildContext
+                                : selectedBuildContextGitMaterial?.checkoutPath
+                        }/${ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || ''}`.replace('//', '/')}
+                    />
                 )}
             </div>
         )
@@ -684,6 +578,7 @@ export default function CIDockerFileConfig({
                 getCheckoutPathValue={getCheckoutPathValue}
                 useRootBuildContextFlag={useRootBuildContextFlag}
                 checkoutPathOptions={checkoutPathOptions}
+                setSelectedBuildContextGitMaterial={setSelectedBuildContextGitMaterial}
             />
         )
     }
