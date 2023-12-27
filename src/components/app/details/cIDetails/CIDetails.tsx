@@ -385,7 +385,7 @@ export const Details = ({
                             artifact={triggerDetails.artifact}
                             environmentName={triggerDetails.environmentName}
                             isJobView={isJobView}
-                            workerPodName={triggerDetails.name}
+                            workerPodName={triggerDetails.podName}
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
