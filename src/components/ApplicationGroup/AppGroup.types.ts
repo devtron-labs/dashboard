@@ -4,9 +4,10 @@ import {
     FilterConditionsListType,
     ResponseType,
     UserApprovalConfigType,
+    WorkflowNodeType
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { WebhookPayloads, WorkflowNodeType, WorkflowType } from '../app/details/triggerView/types'
+import { WebhookPayloads, WorkflowType } from '../app/details/triggerView/types'
 import { EditDescRequest, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 

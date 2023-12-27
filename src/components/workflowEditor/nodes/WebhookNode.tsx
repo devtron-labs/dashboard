@@ -1,61 +1,76 @@
-import Tippy from '@tippyjs/react'
 import React from 'react'
+import { WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
+import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ConditionalWrap } from '../../common'
 import { WebhookNodeProps } from '../types'
 
-export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu, hideWebhookTippy, addNewPipelineBlocked }: WebhookNodeProps) {
+export function WebhookNode({
+    x,
+    y,
+    width,
+    height,
+    id,
+    to,
+    toggleCDMenu,
+    hideWebhookTippy,
+    addNewPipelineBlocked,
+    handleSelectedNodeChange,
+    selectedNode,
+    isLastNode,
+}: WebhookNodeProps) {
+    const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
+    const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
+
     const addNewCD = (event): void => {
-      if (addNewPipelineBlocked) {
-          return
-      }
-      event.stopPropagation()
-      let { top } = event.target.getBoundingClientRect()
-      top = top + 25
-      toggleCDMenu()
+        event.preventDefault()
+        event.stopPropagation()
+
+        if (addNewPipelineBlocked) {
+            return
+        }
+
+        if (isLastNode) {
+            toggleCDMenu()
+        } else {
+            handleSelectedNodeChange?.({
+                nodeType: WorkflowNodeType.WEBHOOK,
+                id: String(id),
+            })
+        }
     }
+    
 
     const renderWebhookCard = (): JSX.Element => {
         return (
-            <>
-                <ConditionalWrap
-                    condition={!!to}
-                    wrap={(children) => (
-                        <Link to={to} onClick={hideWebhookTippy} className="dc__no-decor">
-                            {children}
-                        </Link>
-                    )}
-                >
-                    <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
-                        <div className="workflow-node__title flex">
-                            <div className="workflow-node__full-width-minus-Icon">
-                                <span className="workflow-node__text-light">Webhook</span>
-                                <div className="dc__ellipsis-left">External source</div>
-                            </div>
-                            <Webhook className="icon-dim-20" />
-                        </div>
-                    </div>
-                </ConditionalWrap>
-
-                {toggleCDMenu && (
-                    <button className="workflow-node__add-cd-btn">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={
-                                <span style={{ display: 'block', width: '145px' }}>
-                                    {addNewPipelineBlocked ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.' : 'Add deployment pipeline'}
-                                </span>
-                            }
-                        >
-                            <Add className={`icon-dim-18 fcb-5 ${addNewPipelineBlocked ? 'dc__disabled' : ''}`} onClick={addNewCD} />
-                        </Tippy>
-                    </button>
+            <ConditionalWrap
+                condition={!!to}
+                wrap={(children) => (
+                    <Link to={to} onClick={hideWebhookTippy} className="dc__no-decor">
+                        {children}
+                    </Link>
                 )}
-            </>
+            >
+                <div className={`workflow-node pl-10 ${to ? 'cursor' : ''}`}>
+                    <div className="workflow-node__title flex workflow-node__title--no-margin h-100">
+                        <div className="workflow-node__full-width-minus-Icon p-12">
+                            <span className="workflow-node__text-light">Webhook</span>
+                            <div className="dc__ellipsis-left">External source</div>
+                        </div>
+
+                        <Webhook className="icon-dim-20 mr-12" />
+
+                        {toggleCDMenu && selectedNodeKey !== currentNodeKey && (
+                            <ToggleCDSelectButton
+                                addNewPipelineBlocked={addNewPipelineBlocked}
+                                onClickAddNode={addNewCD}
+                                testId={`webhook-add-deployment-pipeline-button-${id}`}
+                            />
+                        )}
+                    </div>
+                </div>
+            </ConditionalWrap>
         )
     }
 

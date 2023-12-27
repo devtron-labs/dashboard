@@ -27,5 +27,6 @@
 | CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL     | 7000    |  Interval for checking connection with cluster terminal.     |
 | LOGIN_PAGE_IMAGE                   | ""         | Login page image url                          |
 | LOGIN_PAGE_IMAGE_BG                | ""         | Login page image background color code        |
+| DEFAULT_CI_TRIGGER_TYPE_MANUAL     | "false"    | Change default trigger behaviour of newly created ci-pipeline to manual |
 
 # DASHBOARD CONFIG SECRET

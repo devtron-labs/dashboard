@@ -1,8 +1,9 @@
+import { PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import ci from '../../assets/icons/ic-source-build.svg'
 import linkedPipeline from '../../assets/icons/ic-source-linked-build.svg'
 import webhook from '../../assets/icons/ic-source-webhook.svg'
 import ciJobIcon from '../../assets/icons/ic-source-job.svg'
-import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
+import { CIPipelineNodeType } from '../app/details/triggerView/types'
 
 export const WORKFLOW_EDITOR_HEADER_TIPPY = {
     HEADING: 'Workflow Editor',

@@ -670,7 +670,7 @@ export default function ClusterForm({
                         value={state.url.value}
                         error={state.url.error}
                         onChange={handleOnChange}
-                        label={clusterLabel}
+                        label={clusterLabel()}
                         disabled={isDefaultCluster()}
                         placeholder="Enter server URL"
                         dataTestid="enter_server_url_input"
@@ -687,8 +687,8 @@ export default function ClusterForm({
                                         ? id !== 1
                                             ? DEFAULT_SECRET_PLACEHOLDER
                                             : config?.bearer_token
-                                                ? config.bearer_token
-                                                : ''
+                                            ? config.bearer_token
+                                            : ''
                                         : state.token.value
                                 }
                                 onChange={handleOnChange}
@@ -710,7 +710,9 @@ export default function ClusterForm({
                     <>
                         <hr />
                         <div className="dc__position-rel dc__hover mb-20">
-                            <span className="form__input-header pb-20">How do you want Devtron to connect with this cluster?</span>
+                            <span className="form__input-header pb-20">
+                                How do you want Devtron to connect with this cluster?
+                            </span>
                             <span className="pb-20">
                                 <KubectlConnectionRadio
                                     toConnectViaProxy={isConnectedViaProxyTemp}
@@ -719,8 +721,18 @@ export default function ClusterForm({
                                     changeSSHAuthenticationType={changeSSHAuthenticationType}
                                     proxyUrl={state.proxyUrl}
                                     sshTunnelUser={state.sshTunnelUser}
-                                    sshTunnelPassword={(SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPassword : {value: '', error: ''}}
-                                    sshTunnelPrivateKey={(SSHConnectionType === SSHAuthenticationType.SSH_Private_Key || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPrivateKey : {value: '', error: ''}}
+                                    sshTunnelPassword={
+                                        SSHConnectionType === SSHAuthenticationType.Password ||
+                                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                                            ? state.sshTunnelPassword
+                                            : { value: '', error: '' }
+                                    }
+                                    sshTunnelPrivateKey={
+                                        SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
+                                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                                            ? state.sshTunnelPrivateKey
+                                            : { value: '', error: '' }
+                                    }
                                     sshTunnelUrl={state.sshTunnelUrl}
                                     handleOnChange={handleOnChange}
                                 />

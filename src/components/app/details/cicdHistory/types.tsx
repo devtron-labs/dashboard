@@ -13,6 +13,7 @@ export interface History {
     name: string
     status: string
     podStatus: string
+    podName: string
     message: string
     startedOn: string
     finishedOn: string
