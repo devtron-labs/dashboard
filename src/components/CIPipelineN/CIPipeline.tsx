@@ -381,6 +381,7 @@ export default function CIPipeline({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
+    // TODO: Test the API Errors as well
     const handleOnMountAPICalls = async () => {
         try {
             setPageState(ViewType.LOADING)

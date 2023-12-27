@@ -9,7 +9,6 @@ import {
     CIBuildConfigType,
     CIBuildType,
     showError,
-    Progressing,
     ConfirmationDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { saveCIConfig, updateCIConfig } from './service'
@@ -269,6 +268,7 @@ export default function CIConfigForm({
         )
     }
 
+    // FIXME: Not using anywhere but after opening of modal, so move it to child component
     const processFetchedWorkflows = async () => {
         if (!processedWorkflows.processing) {
             try {
