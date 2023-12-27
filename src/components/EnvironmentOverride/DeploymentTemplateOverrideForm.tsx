@@ -263,8 +263,13 @@ export default function DeploymentTemplateOverrideForm({
                 //closing drawer if selected save eligible changes
                 handleLockedDiffDrawer(false)
             }
-            dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: false })
-            dispatch({ type: DeploymentConfigStateActionTypes.lockChangesLoading, payload: false })
+            dispatch({
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload: {
+                    loading: false,
+                    lockChangesLoading: false,
+                },
+            })
         }
     }
 
