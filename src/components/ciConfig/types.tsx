@@ -336,16 +336,6 @@ export interface TargetPlatformSelectorType {
     updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
 }
 
-export interface BuildContextProps {
-    disable: boolean
-    setDisable: React.Dispatch<React.SetStateAction<boolean>>
-    formState: any
-    configOverrideView: boolean
-    allowOverride: boolean
-    ciConfig: CiPipelineResult
-    handleOnChangeConfig: (e) => void
-}
-
 export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
@@ -373,4 +363,22 @@ export interface TaskListType {
         }>
     >
     isJobView: boolean
+}
+
+export interface BuildContextProps {
+    isDefaultBuildContext: boolean
+    sourceConfig: any
+    selectedBuildContextGitMaterial: any
+    currentMaterial: any
+    setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>
+    handleOnChangeConfig: (e) => void
+    buildContextValue: string
+    currentCIBuildConfig: CIBuildConfigType
+    formState: any
+    setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
+    currentBuildContextGitMaterial: any
+    readOnly?: boolean
+    configOverrideView?: boolean
+    repositoryError?: string
+    readOnlyBuildContextPath?: string
 }
