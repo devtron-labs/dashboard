@@ -167,7 +167,10 @@ export const DeploymentAppSelector = ({
     gitRepoURL,
     envId,
     teamId,
-    dispatch
+    setStaleData,
+    staleData,
+    dispatch,
+    isDrawerOpen
 }: DeploymentAppSelectorType): JSX.Element => {
     const [visibleRepoURL, setVisibleRepoURL] = useState<string>("")
     
@@ -229,6 +232,9 @@ export const DeploymentAppSelector = ({
                         dispatch={dispatch}
                         visibleRepoURL={visibleRepoURL}
                         setVisibleRepoURL={setVisibleRepoURL}
+                        staleData={staleData}
+                        setStaleData={setStaleData}
+                        isDrawerOpen={isDrawerOpen}
                     />
                 )}
             </div>
@@ -314,15 +320,18 @@ export const DeploymentAppRadioGroup = ({
 }
 
 const GitOpsDrawer = ({
-    deploymentAppType, 
-    allowedDeploymentTypes, 
-    gitRepoURL, 
-    envId, 
-    teamId, 
-    commonState, 
-    dispatch, 
-    visibleRepoURL, 
-    setVisibleRepoURL
+    deploymentAppType,
+    allowedDeploymentTypes,
+    gitRepoURL,
+    staleData,
+    envId,
+    teamId,
+    commonState,
+    dispatch,
+    visibleRepoURL,
+    setStaleData,
+    setVisibleRepoURL,
+    isDrawerOpen,
 }: gitOpsDrawerType): JSX.Element => {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
@@ -386,10 +395,11 @@ const GitOpsDrawer = ({
             })
             .catch((err) => {
                 if (err instanceof TypeError && err.message.includes("Cannot convert undefined or null to object")) {
-                    toast.error("Change Configurations")
+                    toast.error("Some global configurations for GitOps has changed")
                     setGitOpsState(false)
+                    setStaleData(true)
                 }
-                else {  
+                else {
                     showError(err)
                 }
             }).finally(() => {
@@ -405,7 +415,7 @@ const GitOpsDrawer = ({
 
     return (
         <>
-            {isDeploymentAllowed && (
+            {(isDeploymentAllowed || isDrawerOpen) && (
                 <div>
                     <Drawer onEscape={handleCloseButton} position="right" width="800px">
                         <div className="cluster-form dc__position-rel h-100 bcn-0">
@@ -431,6 +441,7 @@ const GitOpsDrawer = ({
                                     errorInFetching={errorInFetching}
                                     displayValidation={displayValidation}
                                     setDisplayValidation={setDisplayValidation}
+                                    staleData={staleData}
                                 />
                             </div>
                         </div>

@@ -84,4 +84,5 @@ export interface UserGitRepoProps {
     errorInFetching: Map<string, any>
     displayValidation: boolean
     setDisplayValidation: React.Dispatch<React.SetStateAction<boolean>>
+    staleData?: boolean
 }

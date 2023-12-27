@@ -150,6 +150,8 @@ function ChartValuesView({
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
     const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
     const [allowedCustomBool, setAllowedCustomBool] = useState<boolean>()
+    const [staleData, setStaleData] = useState<boolean>(false)
+    const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -883,7 +885,9 @@ function ChartValuesView({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
                     deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
-                    gitRepoURL: commonState.gitRepoURL.gitRepoURL || 'Default',
+                    gitRepoURL: (staleData || commonState.gitRepoURL?.gitRepoURL === undefined)
+                    ? 'Default'
+                    : commonState.gitRepoURL.gitRepoURL,
                 }             
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -939,6 +943,11 @@ function ChartValuesView({
                 toast.error(SOME_ERROR_MSG)
             }
         } catch (err) {
+            if (err instanceof TypeError && err.message.includes("Cannot convert undefined or null to object")) {
+                toast.error("Some global configurations for GitOps has changed")
+                setStaleData(true)
+                setIsDrawerOpen(true)
+            }
             showError(err)
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,
@@ -1559,7 +1568,10 @@ function ChartValuesView({
                                     envId={commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0}
                                     teamId={1}
                                     gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                                    staleData={staleData}
+                                    setStaleData={setStaleData}
                                     dispatch={dispatch}
+                                    isDrawerOpen={isDrawerOpen}
                                 />
                             )}
                         {/**

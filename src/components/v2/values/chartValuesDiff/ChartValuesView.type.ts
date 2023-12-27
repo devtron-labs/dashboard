@@ -95,6 +95,9 @@ export interface DeploymentAppSelectorType {
     envId: string
     teamId?: number
     dispatch: React.Dispatch<ChartValuesViewAction>
+    staleData?: boolean
+    setStaleData?: (boolean) => void
+    isDrawerOpen?: boolean
 }
 
 export interface DeploymentAppRadioGroupType {
@@ -116,6 +119,9 @@ export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
     dispatch: React.Dispatch<ChartValuesViewAction>
     visibleRepoURL: string
     setVisibleRepoURL: React.Dispatch<React.SetStateAction<string>>
+    staleData?: boolean
+    setStaleData?: (boolean) => void
+    isDrawerOpen?: boolean
 }
 
 export interface ChartProjectSelectorType {
@@ -350,7 +356,7 @@ export enum ChartValuesViewActionTypes {
     multipleOptions = 'multipleOptions',
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
-    setGitRepoURL = 'setGitRepoURL'
+    setGitRepoURL = 'setGitRepoURL',
 }
 
 
