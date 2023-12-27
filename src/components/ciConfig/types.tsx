@@ -267,20 +267,10 @@ export interface CICreateDockerfileOptionProps {
     setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
     currentBuildContextGitMaterial: any
     selectedBuildContextGitMaterial: any
-    handleBuildContextPathChange: (selectedBuildContextGitMaterial) => void
     formState: any
     ciConfig: CiPipelineResult
     handleOnChangeConfig: (e) => void
-    renderInfoCard: () => JSX.Element
     isDefaultBuildContext: () => boolean
-    handleBuildContextCheckoutPathChange: (checkoutPath: any) => void
-    getCheckoutPathValue: (
-        selectedBuildContextGitMaterial: any,
-        currentMaterial: any,
-        useRootBuildContextFlag: boolean,
-    ) => OptionType
-    useRootBuildContextFlag: boolean
-    checkoutPathOptions: OptionType[]
     setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>
 }
 

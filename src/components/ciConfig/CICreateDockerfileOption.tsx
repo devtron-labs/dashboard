@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { showError, Progressing, CIBuildType, copyToClipboard, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, CIBuildType, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     Option,
@@ -11,16 +11,13 @@ import {
     ValueContainerWithIcon,
 } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
 import {
-    checkoutPathOption,
-    renderOptionIcon,
     repositoryControls,
     repositoryOption
 } from './CIBuildpackBuildOptions'
-import { _customStyles, _multiSelectStyles } from './CIConfig.utils'
+import { _customStyles } from './CIConfig.utils'
 import BuildContext from './BuildContext'
 
 export default function CICreateDockerfileOption({
@@ -35,17 +32,11 @@ export default function CICreateDockerfileOption({
     setCurrentCIBuildConfig,
     setLoadingState,
     selectedBuildContextGitMaterial,
-    handleBuildContextPathChange,
     currentBuildContextGitMaterial,
     ciConfig,
     formState,
     handleOnChangeConfig,
-    renderInfoCard,
     isDefaultBuildContext,
-    getCheckoutPathValue,
-    handleBuildContextCheckoutPathChange,
-    useRootBuildContextFlag,
-    checkoutPathOptions,
     setSelectedBuildContextGitMaterial,
 }: CICreateDockerfileOptionProps) {
     const [languages, setLanguages] = useState<LanguageOptionType[]>([])
@@ -367,7 +358,6 @@ export default function CICreateDockerfileOption({
         )
     }
 
-    const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext())
     const handleCopyToClipboard = (e) => {
         e.stopPropagation()
         copyToClipboard(editorValue, () => setCopied(true))
@@ -385,12 +375,6 @@ export default function CICreateDockerfileOption({
                 },
             })
         }
-    }
-    const getSelectedBuildContextGitMaterial = ():any => {
-        return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
-    }
-    const toggleCollapse = (e) => {
-        setIsCollapsed(!isCollapsed)
     }
     const editorData =
         templateData && selectedLanguage ? templateData[getTemplateKey(selectedLanguage, selectedFramework)] : null
