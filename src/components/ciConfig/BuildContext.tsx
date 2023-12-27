@@ -159,14 +159,18 @@ export default function BuildContext({
     return (
         <>
             <div className="flex left row ml-0 build-context-label fs-13 mb-6">
-                <span className="flex pointer" onClick={toggleCollapse}>
+                <button
+                    className="flex p-0 dc__no-background dc__no-border dc__outline-none-imp"
+                    onClick={toggleCollapse}
+                    type="button"
+                >
                     <Dropdown
                         className="icon-dim-26 rotate"
                         data-testid="set-build-context-button"
                         style={{ ['--rotateBy' as any]: isCollapsed ? '360deg' : '270deg' }}
                     />
                     Set Build context
-                </span>
+                </button>
 
                 <InfoCard />
             </div>
