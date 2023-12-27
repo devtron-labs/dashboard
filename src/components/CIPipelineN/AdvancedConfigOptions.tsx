@@ -8,7 +8,7 @@ import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.typ
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { OptionType } from '../app/types'
-import { DockerArgsAction, HandleDockerArgsUpdate } from './types'
+import { DockerArgsAction, HandleDockerArgsUpdateType } from './types'
 import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import '../ciConfig/CIConfig.scss'
@@ -63,7 +63,7 @@ export default function AdvancedConfigOptions({
     }
 
     // All updates to docker args will be handled here, which will will be further merged into formData on introduction of reducer
-    const handleDockerArgsUpdate = ({ action, argData }: HandleDockerArgsUpdate) => {
+    const handleDockerArgsUpdate = ({ action, argData }: HandleDockerArgsUpdateType) => {
         const _form = { ...formData }
 
         switch (action) {
