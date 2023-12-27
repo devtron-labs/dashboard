@@ -34,7 +34,6 @@ const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentCo
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
-console.log('COdeHeader',CodeEditor,CodeEditor.Header)
 export default function DeploymentTemplateOverrideForm({
     state,
     isConfigProtectionEnabled,
@@ -623,9 +622,7 @@ export default function DeploymentTemplateOverrideForm({
             className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
                 state.showReadme ? 'readme-view' : ''
             }`}
-            onSubmit={(e) => {
-                handleSaveChanges(e)
-            }}
+            onSubmit={handleSaveChanges}
         >
             <div className="variables-widget-position">
                 <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
