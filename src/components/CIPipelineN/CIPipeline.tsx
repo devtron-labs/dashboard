@@ -14,7 +14,6 @@ import {
     VisibleModal,
     Drawer,
     DeleteDialog,
-    DockerConfigOverrideType,
     RefVariableType,
     VariableType,
     MandatoryPluginDataType,
@@ -179,7 +178,6 @@ export default function CIPipeline({
         },
     })
     const validationRules = new ValidationRules()
-    const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
     const selectedBranchRef = useRef(null)
 
@@ -285,6 +283,7 @@ export default function CIPipeline({
         setPageState(ViewType.LOADING)
         getSecurityModuleStatus()
         if (ciPipelineId) {
+            // TODO: Would need to add loader for getAvailablePlugins to avoid state toggle
             getInitDataWithCIPipeline(appId, ciPipelineId, true)
                 .then((ciResponse) => {
                     const preBuildVariable = calculateLastStepDetail(
@@ -383,7 +382,10 @@ export default function CIPipeline({
         } catch (error) {}
     }
 
-    const getMandatoryPluginData = (_formData: PipelineFormType, pluginList: PluginDetailType[]): void => {
+    const getMandatoryPluginData = (
+        _formData: PipelineFormType,
+        pluginList: PluginDetailType[],
+    ): void => {
         if (!isJobCard && processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
             if (_formData?.materials?.length) {
@@ -398,9 +400,7 @@ export default function CIPipeline({
                 processPluginData(_formData, pluginList, appId, ciPipelineId, branchName)
                     .then((response: MandatoryPluginDataType) => {
                         setMandatoryPluginData(response)
-                        if (_formData) {
-                            setFormData(prepareFormData(_formData, response?.pluginData ?? []))
-                        }
+                        setFormData((prevForm) => prepareFormData({ ...prevForm }, response?.pluginData ?? []))
                     })
                     .catch((error: ServerErrors) => {
                         showError(error)
@@ -533,11 +533,6 @@ export default function CIPipeline({
 
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
 
-        // Reset allow override flag to false if config matches with global
-        if (!ciPipeline.isDockerConfigOverridden && !isDockerConfigOverridden) {
-            formData.isDockerConfigOverridden = false
-            formData.dockerConfigOverride = {} as DockerConfigOverrideType
-        }
         //here we check for the case where the pipeline is multigit and user selects pullrequest or tag creation(webhook)
         //in that case we only send the webhook data not the other one.
         let _materials = formData.materials
@@ -813,7 +808,6 @@ export default function CIPipeline({
                                     isAdvanced={isAdvanced}
                                     ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
-                                    setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobCard}
                                     getPluginData={getPluginData}
                                 />

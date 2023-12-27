@@ -6,6 +6,7 @@ import { ChartGroup } from '../charts/charts.types'
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
     DIRECT = 'apps',
+    JOB = 'jobs',
     DOCKER = 'docker',
     GIT = 'git',
     CLUSTER = 'cluster',
@@ -52,7 +53,7 @@ export interface CollapsedUserOrGroupProps {
     createCallback: (payload: any) => void
 }
 interface RoleFilter {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
     team?: OptionType
     entityName?: OptionType[]
     environment?: OptionType[]
@@ -65,18 +66,20 @@ interface RoleFilter {
 }
 
 export interface DirectPermissionsRoleFilter extends RoleFilter {
-    entity: EntityTypes.DIRECT
+    entity: EntityTypes.DIRECT | EntityTypes.JOB
     team: OptionType
     entityName: OptionType[]
     entityNameError?: string
     environment: OptionType[]
     environmentError?: string
+    workflowError?: string
     action: {
         label: string
         value: string
         configApprover?: boolean
     }
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS,
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    workflow?: OptionType[]
     approver?: boolean
 }
 
@@ -88,7 +91,7 @@ export interface ChartGroupPermissionsFilter extends RoleFilter {
 }
 
 export interface APIRoleFilter {
-    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
     team?: string
     entityName?: string
     environment?: string
@@ -99,6 +102,7 @@ export interface APIRoleFilter {
     group?: any
     kind?: any
     resource?: any
+    workflow?: string
 }
 
 export interface OptionType {
@@ -181,6 +185,8 @@ export interface UserGroup {
     roles: string[]
     envClustersList: any[]
     fetchAppListHelmApps: (projectId: number[]) => void
+    fetchJobsList: (projectId: number[]) => void
+    jobsList: Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: any }>
     appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
     customRoles: CustomRoleAndMeta
 }
@@ -207,12 +213,15 @@ export interface AppPermissionsType {
     currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
 }
 export interface AppPermissionsDetailType {
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     handleDirectPermissionChange: (...rest) => void
     removeDirectPermissionRow: (index: number) => void
-    AddNewPermissionRow: (accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS) => void
+    AddNewPermissionRow: (
+        accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
+    ) => void
     directPermission: DirectPermissionsRoleFilter[]
     hideInfoLegend?: boolean
+    selectedJobs?: string[]
 }
 
 export const K8S_PERMISSION_INFO_MESSAGE = {
@@ -240,6 +249,7 @@ export interface CustomRoleAndMeta {
     possibleRolesMeta: {}
     possibleRolesMetaForHelm: {}
     possibleRolesMetaForCluster: {}
+    possibleRolesMetaForJob: {}
 }
 
 export const ViewChartGroupPermission:APIRoleFilter = {

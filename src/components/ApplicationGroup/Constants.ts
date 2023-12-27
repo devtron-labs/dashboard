@@ -45,6 +45,7 @@ export enum BulkResponseStatus {
     'PASS' = 'pass',
     'FAIL' = 'fail',
     'UNAUTHORIZE' = 'unauthorized',
+    'SKIP' = 'skip',
 }
 
 export const BULK_VIRTUAL_RESPONSE_STATUS = {
@@ -180,6 +181,8 @@ export const CREATE_GROUP_TABS = {
 
 export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus => {
     switch (statusText) {
+        case BulkResponseStatus.SKIP:
+            return BulkResponseStatus.SKIP
         case BULK_VIRTUAL_RESPONSE_STATUS.pass:
             return BulkResponseStatus.PASS
         case BULK_VIRTUAL_RESPONSE_STATUS.fail:
@@ -192,3 +195,5 @@ export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus =>
 }
 
 export const FILTER_NAME_REGEX = /^[a-z][a-z0-9-]{1,}[a-z0-9]$/
+export const SKIPPED_RESOURCES_MESSAGE = 'Build action is not applicable'
+export const SKIPPED_RESOURCES_STATUS_TEXT = 'Skipped'

@@ -11,11 +11,15 @@ import {
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
+    WorkflowNodeType,
+    PipelineType,
+    AddPipelineType,
+    SelectedNode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
-import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
+import { getAllChildDownstreams, getCreateWorkflows, getMaxYFromFirstLevelDownstream } from '../app/details/triggerView/workflow.service'
 import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
 import CIPipeline from '../CIPipelineN/CIPipeline'
@@ -27,9 +31,10 @@ import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
-import { CIPipelineNodeType, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
+import { CIPipelineNodeType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
@@ -37,8 +42,10 @@ import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
 import Tippy from '@tippyjs/react'
+import EmptyWorkflow from './EmptyWorkflow'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
+import { WorkflowCreate } from '../app/details/triggerView/config'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
@@ -80,6 +87,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             },
             blackListedCI: {},
             changeCIPayload: null,
+            selectedNode: null,
+            workflowPositionState: null,
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -155,6 +164,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         appId: 0,
                     },
                     blackListedCI: result.blackListedCI ?? {},
+                    selectedNode: null,
+                    workflowPositionState: null,
                 })
             })
             .catch((errors) => {
@@ -268,11 +279,24 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         parentPipelineType: string,
         parentPipelineId?: number | string,
         isWebhookCD?: boolean,
+        childPipelineId?: number | string,
+        addType?: AddPipelineType,
     ) => {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+        let LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+            URLS.APP_WORKFLOW_CONFIG
+        }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${
+            addType ?? AddPipelineType.PARALLEL
+        }`
+        if (parentPipelineId) {
+            LINK = `${LINK}&parentPipelineId=${parentPipelineId}`
+        }
+        if (childPipelineId) {
+            LINK = `${LINK}&childPipelineId=${childPipelineId}`
+        }
+
         if (this.state.noGitOpsConfiguration) {
             this.setState({
                 showNoGitOpsWarningPopup: true,
@@ -363,6 +387,92 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         return ciNode?.downstreams?.length || 0
     }
 
+    handleClearSelectedNode = () => {
+        this.handleSelectedNodeChange(null)
+    }
+
+    // TODO: Look into why have to parse id into String in few cases
+    handleSelectedNodeChange = (selectedNode: SelectedNode) => {
+        // If selectedNode is null, then remove bufferNodes
+        // else find the workflow in which the selectedNode is present and add bufferNodes
+        // bufferNodes are nodes which are have y greater than the selectedNode and are not present in downstream of selectedNode and the subsequent downstreams of the downstreams.
+        // So basically they are nodes in which we have to add buffer height
+        // and compute the maximum y of the bufferNodes and if there are downstreams > 1 then also for maxY, we will check maxY using node.y and depth
+        if (selectedNode) {
+            // would check if selectedNode.type and selectedNode.id is same as node.id and node.type
+            let _wf = null
+            let _node = null
+            this.state.workflows.forEach((wf) => {
+                if (!_wf) {
+                    _node = wf.nodes?.find(
+                        (wfNode) =>
+                            String(wfNode.id) === String(selectedNode.id) && wfNode.type === selectedNode.nodeType,
+                    )
+                    if (_node) {
+                        _wf = wf
+                    }
+                }
+            })
+            if (_node) {
+                const { downstreamNodes } = getAllChildDownstreams(_node, _wf)
+                const firstLevelDownstreamMaxY = getMaxYFromFirstLevelDownstream(_node, _wf)
+                const bufferNodes = []
+                if (downstreamNodes.length > 0) {
+                    _wf.nodes.forEach((wfNode) => {
+                        if (
+                            wfNode.y > _node.y &&
+                            wfNode.type !== WorkflowNodeType.GIT &&
+                            !downstreamNodes.find(
+                                (downstreamNode) =>
+                                    String(downstreamNode.id) === String(wfNode.id) &&
+                                    downstreamNode.type === wfNode.type,
+                            )
+                        ) {
+                            bufferNodes.push(wfNode)
+                        }
+                    })
+                }
+
+                // It is the starting point of the invisible node that acts as source for parallel edge
+                const dummyNodeY = WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
+                const parallelEdgeY =
+                    downstreamNodes?.length > 0
+                        ? firstLevelDownstreamMaxY +
+                          dummyNodeY +
+                          WorkflowCreate.cDNodeSizes.nodeHeight +
+                          WorkflowCreate.workflow.offsetY
+                        : 0
+                const bufferNodeMaxY = Math.max(
+                    ...bufferNodes.map(
+                        (node) =>
+                            node.y +
+                            dummyNodeY +
+                            WorkflowCreate.cDNodeSizes.nodeHeight +
+                            WorkflowCreate.workflow.offsetY,
+                    ),
+                    0,
+                )
+                const maxY = Math.max(bufferNodeMaxY, parallelEdgeY)
+
+                this.setState({
+                    selectedNode: {
+                        ...selectedNode,
+                    },
+                    workflowPositionState: {
+                        nodes: bufferNodes,
+                        maxY,
+                        selectedWorkflowId: _wf.id,
+                    },
+                })
+            }
+        } else {
+            this.setState({
+                selectedNode: null,
+                workflowPositionState: null,
+            })
+        }
+    }
+
     //TODO: dynamic routes for ci-pipeline
     renderRouter() {
         return (
@@ -382,6 +492,23 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
+                {this.props.isJobView && (
+                    <Route
+                        path={`${this.props.match.path}/empty-workflow`}
+                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                            return (
+                                <EmptyWorkflow
+                                    match={match}
+                                    history={history}
+                                    location={location}
+                                    name={this.state.appName}
+                                    onClose={this.closeAddWorkflow}
+                                    getWorkflows={this.getWorkflows}
+                                />
+                            )
+                        }}
+                    />
+                )}
                 {!this.props.isJobView && (
                     <Route
                         path={[URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
@@ -398,9 +525,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
-                                    isLastNode={
-                                        this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
-                                    }
                                     changeCIPayload={this.state.changeCIPayload}
                                 />
                             )
@@ -531,7 +655,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     openCreateModal = () => {
-        this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/0/ci-pipeline/0`)
+        this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`)
     }
 
     renderNewJobPipelineButton = () => {
@@ -550,7 +674,34 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
-    // TODO: Enhance this function as well
+    renderWorkflowControlButton = (): JSX.Element => {
+        if (this.props.isJobView) {
+            return this.renderNewJobPipelineButton()
+        }
+
+        if (this.state.selectedNode) {
+            return (
+                <div className="flex dc__border-radius-4-imp bcv-5 ev-5">
+                    <div className="flex pt-6 pb-6 pl-12 pr-12 dc__gap-8 h-100 fcn-0">
+                        <ICHelpOutline className="icon-dim-16" />
+                        <p className="cn-0 m-0 fs-13 fw-4 lh-20">Select a position to add pipeline</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        className="pt-6 pb-6 pl-12 pr-12 flex dc__gap-4 bcn-0 h-100 cn-9 fs-13 fw-4 lh-20 dc__hover-n50 dc__no-border dc__outline-none-imp dc__right-radius-4"
+                        onClick={this.handleClearSelectedNode}
+                    >
+                        <ICClose className="icon-dim-12 fcn-9" />
+                        Cancel
+                    </button>
+                </div>
+            )
+        }
+
+        return this.renderNewBuildPipelineButton()
+    }
+
     renderEmptyState() {
         return (
             <div className="create-here">
@@ -577,7 +728,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         </a>
                     )}
                 </p>
-                {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton()}
+                {this.renderWorkflowControlButton()}
             </div>
         )
     }
@@ -634,6 +785,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     filteredCIPipelines={this.state.filteredCIPipelines}
                     addNewPipelineBlocked={!!this.props.filteredEnvIds}
                     handleChangeCI={this.handleChangeCI}
+                    selectedNode={this.state.selectedNode}
+                    handleSelectedNodeChange={this.handleSelectedNodeChange}
+                    appName={this.state.appName}
+                    getWorkflows={this.getWorkflows}
+                    reloadEnvironments={this.props.reloadEnvironments}
+                    workflowPositionState={this.state.workflowPositionState}
                 />
             )
         })
@@ -713,7 +870,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         </TippyCustomized>
                     </div>
 
-                    {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton()}
+                    {this.renderWorkflowControlButton()}
                 </div>
 
                 {this.renderRouter()}

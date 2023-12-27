@@ -94,17 +94,18 @@ export default function AppComposeRouter({
                                 getWorkflows={getWorkflows}
                                 isJobView={isJobView}
                                 envList={environments}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         )}
                     />,
                     <Route
                         key={`${path}/${URLS.APP_CM_CONFIG}`}
-                        path={`${path}/${URLS.APP_CM_CONFIG}`}
+                        path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}
                         render={(props) => <ConfigMapList isJobView={isJobView} isProtected={false} />}
                     />,
                     <Route
                         key={`${path}/${URLS.APP_CS_CONFIG}`}
-                        path={`${path}/${URLS.APP_CS_CONFIG}`}
+                        path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}
                         render={(props) => <SecretList isJobView={isJobView} isProtected={false} />}
                     />,
                     <Route
@@ -192,18 +193,19 @@ export default function AppComposeRouter({
                                 respondOnSuccess={respondOnSuccess}
                                 getWorkflows={getWorkflows}
                                 filteredEnvIds={filteredEnvIds}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         )}
                     />,
-                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}`}>
+                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
                     </Route>,
-                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}`}>
+                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <SecretList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
                     </Route>,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
-                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?/:name?`}
                         render={(props) => (
                             <EnvironmentOverride environments={environments} reloadEnvironments={reloadEnvironments} />
                         )}

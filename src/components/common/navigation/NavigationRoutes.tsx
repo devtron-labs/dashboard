@@ -39,7 +39,6 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
@@ -410,7 +409,7 @@ export default function NavigationRoutes() {
                                                 />
                                             </Route>,
                                         ]}
-                                        {isSuperAdmin && !window._env_.K8S_CLIENT && (
+                                        {!window._env_.K8S_CLIENT && (
                                             <Route path={URLS.JOB}>
                                                 <AppContext.Provider value={contextValue}>
                                                     <Jobs />
@@ -525,14 +524,14 @@ export function RedirectUserWithSentry({ isFirstLoginUser }) {
 }
 
 export function RedirectToAppList() {
-    const { push } = useHistory()
+    const { replace } = useHistory()
     const { serverMode } = useContext(mainContext)
     useEffect(() => {
         let baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
         if (serverMode == SERVER_MODE.FULL) {
-            push(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
+            replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
         } else {
-            push(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
+            replace(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
         }
     }, [])
     return null

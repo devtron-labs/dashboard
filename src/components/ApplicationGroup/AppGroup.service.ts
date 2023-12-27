@@ -4,15 +4,13 @@ import {
     CiPipelineResult,
     WorkflowResult,
     NodeAttr,
-    PipelineType,
-    WorkflowNodeType,
     CiPipeline,
 } from '../app/details/triggerView/types'
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
-import { get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, ResponseType, trash, WorkflowNodeType, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppGroupList,
     CIConfigListType,
@@ -79,21 +77,23 @@ export const getWorkflows = (envID: string, appIds: string): Promise<WorkflowsRe
         for (const _ciConfig of ciConfig.result) {
             _ciConfigMap.set(_ciConfig.appId, _ciConfig)
         }
-        for (const workflowResult of workflow.result.workflows) {
-            const processWorkflowData = processWorkflow(
-                {
-                    ...workflowResult,
-                    workflows: [workflowResult],
-                } as WorkflowResult,
-                _ciConfigMap.get(workflowResult.appId),
-                cdConfig.result as CdPipelineResult,
-                externalCIConfig.result,
-                WorkflowTrigger,
-                WorkflowTrigger.workflow,
-                filterChildAndSiblingCD(envID),
-            )
-            _workflows.push(...processWorkflowData.workflows)
-            _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
+        if (workflow?.result?.workflows) {
+            for (const workflowResult of workflow.result.workflows) {
+                const processWorkflowData = processWorkflow(
+                    {
+                        ...workflowResult,
+                        workflows: [workflowResult],
+                    } as WorkflowResult,
+                    _ciConfigMap.get(workflowResult.appId),
+                    cdConfig.result as CdPipelineResult,
+                    externalCIConfig.result,
+                    WorkflowTrigger,
+                    WorkflowTrigger.workflow,
+                    filterChildAndSiblingCD(envID),
+                )
+                _workflows.push(...processWorkflowData.workflows)
+                _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
+            }
         }
         return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
     })

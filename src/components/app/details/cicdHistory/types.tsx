@@ -13,6 +13,7 @@ export interface History {
     name: string
     status: string
     podStatus: string
+    podName: string
     message: string
     startedOn: string
     finishedOn: string
@@ -108,7 +109,7 @@ export interface CIListItemType {
     hideImageTaggingHardDelete?: boolean
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
-    isSuperAdmin?:boolean
+    isSuperAdmin?: boolean
 }
 
 export interface ImageComment {
@@ -146,7 +147,7 @@ export interface GitChangesType {
     ciPipelineId?: number
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean,
+    hideImageTaggingHardDelete?: boolean
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
 }
@@ -206,6 +207,7 @@ export interface TriggerDetailsType {
     artifact?: string
     environmentName?: string
     isJobView?: boolean
+    workerPodName?: string
 }
 
 export interface TriggerDetailsStatusIconType {
@@ -222,6 +224,8 @@ export interface WorkerStatusType {
     message: string
     podStatus: string
     stage: DeploymentStageType
+    finishedOn?: string
+    workerPodName?: string
 }
 export interface ProgressingStatusType {
     status: string
@@ -229,6 +233,8 @@ export interface ProgressingStatusType {
     podStatus: string
     stage: DeploymentStageType
     type: HistoryComponentType
+    finishedOn?: string
+    workerPodName?: string
 }
 
 export interface CurrentStatusType {
@@ -240,6 +246,7 @@ export interface CurrentStatusType {
     stage: DeploymentStageType
     type: HistoryComponentType
     isJobView?: boolean
+    workerPodName?: string
 }
 
 export interface StartDetailsType {
