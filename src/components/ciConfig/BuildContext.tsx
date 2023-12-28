@@ -68,7 +68,7 @@ export default function BuildContext({
     const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext)
     const [useRootBuildContextFlag, setUseRootBuildContextFlag] = useState<boolean>(useRootBuildContextFlagFormState)
 
-    const buildContextCheckoutPath = selectedBuildContextGitMaterial?.checkoutPath ?? currentMaterial?.checkoutPath
+    const buildContextCheckoutPath = selectedBuildContextGitMaterial?.checkoutPath || currentMaterial?.checkoutPath
     const checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
     if (buildContextCheckoutPath !== RootBuildContext) {
         checkoutPathArray.push({ label: buildContextCheckoutPath, value: buildContextCheckoutPath })
@@ -138,7 +138,7 @@ export default function BuildContext({
                     <div className="flex left">
                         {currentBuildContextGitMaterial?.url && renderOptionIcon(currentBuildContextGitMaterial.url)}
                         <span className="fs-14 fw-4 lh-20 cn-9">
-                            {currentBuildContextGitMaterial?.name ?? 'Not selected'}
+                            {currentBuildContextGitMaterial?.name || 'Not selected'}
                         </span>
                     </div>
 
