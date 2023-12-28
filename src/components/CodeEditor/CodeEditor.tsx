@@ -1,15 +1,7 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
 import { useJsonYaml, Select, RadioGroup, useWindowSize } from '../common'
-import {
-    CodeEditorComposition,
-    CodeEditorHeaderComposition,
-    CodeEditorHeaderInterface,
-    CodeEditorInterface,
-    InformationBarProps,
-    Progressing,
-    copyToClipboard,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
@@ -44,6 +36,61 @@ window.MonacoEnvironment = {
 // @ts-ignore
 const { yaml } = monaco.languages || {};
 
+
+interface InformationBarProps { text: string; className?: string; children?: React.ReactNode }
+
+interface CodeEditorInterface {
+    value?: string;
+    lineDecorationsWidth?: number;
+    responseType?: string;
+    onChange?: (string) => void;
+    onBlur?: () => void;
+    onFocus?: () => void;
+    children?: any;
+    defaultValue?: string;
+    mode?: 'json' | 'yaml' | 'shell' | 'dockerfile' | 'plaintext';
+    tabSize?: number;
+    readOnly?: boolean;
+    noParsing?: boolean;
+    minHeight?: number;
+    maxHeight?: number;
+    inline?: boolean;
+    height?: number | string;
+    shebang?: string | JSX.Element;
+    diffView?: boolean;
+    loading?: boolean;
+    customLoader?: JSX.Element;
+    theme?: string;
+    original?: string;
+    focus?: boolean;
+    validatorSchema?: any;
+    isKubernetes?: boolean;
+    cleanData?: boolean;
+    chartVersion?: any; 
+}
+
+interface CodeEditorHeaderInterface {
+    children?: any;
+    className?: string
+    hideDefaultSplitHeader?: boolean;
+}
+interface CodeEditorComposition {
+    Header?: React.FC<any>;
+    LanguageChanger?: React.FC<any>;
+    ThemeChanger?: React.FC<any>;
+    ValidationError?: React.FC<any>;
+    Clipboard?: React.FC<any>;
+    Warning?: React.FC<InformationBarProps>;
+    ErrorBar?: React.FC<InformationBarProps>;
+    Information?: React.FC<InformationBarProps>
+}
+interface CodeEditorHeaderComposition {
+    LanguageChanger?: React.FC<any>;
+    ThemeChanger?: React.FC<any>;
+    ValidationError?: React.FC<any>;
+    Clipboard?: React.FC<any>;
+}
+
 const CodeEditorContext = React.createContext(null)
 
 function useCodeEditorContext() {
@@ -63,7 +110,7 @@ interface Action {
 }
 
 interface CodeEditorState {
-    mode: 'json' | 'yaml' | 'shell' | 'dockerfile';
+    mode: 'json' | 'yaml' | 'shell' | 'dockerfile' | 'plaintext';
     diffMode: boolean;
     theme: 'vs' | 'vs-dark';
     code: string;
