@@ -1,24 +1,18 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import {
     CIBuildType,
     ConditionalWrap,
     showError,
     Progressing,
-    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import BuildContext from './BuildContext'
 import CISelfDockerBuildOption from './CISelfDockerBuildOption'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import CIBuildpackBuildOptions, {
-    renderOptionIcon,
-    repositoryControls,
-    repositoryOption,
-} from './CIBuildpackBuildOptions'
-import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
+import CIBuildpackBuildOptions from './CIBuildpackBuildOptions'
+import { CI_BUILDTYPE_ALIAS } from './CIConfig.utils'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
