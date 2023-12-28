@@ -379,7 +379,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div>
                 <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
-                <div className="fs-13 font-roboto flexbox dc__word-break">
+                <div className="fs-13 font-roboto flexbox dc__word-break pl-8-imp">
                     {token}
                     <Tippy
                         className="default-tt"
