@@ -92,6 +92,7 @@ export interface DeploymentStatusDetailsBreakdownDataType {
     deploymentStatusBreakdown: {
         DEPLOYMENT_INITIATED: DeploymentStatusDetailRow
         GIT_COMMIT?: DeploymentStatusDetailRow
+        ARGOCD_SYNC?: DeploymentStatusDetailRow
         KUBECTL_APPLY?: DeploymentStatusDetailRow
         APP_HEALTH?: DeploymentStatusDetailRow
         HELM_PACKAGE_GENERATED?: DeploymentStatusDetailRow
@@ -110,6 +111,10 @@ export interface DeploymentStatusDetailModalType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     streamData: AppStreamData
     isVirtualEnvironment: boolean
+    /**
+     * Loading state for the timeline data
+     */
+    isLoading: boolean
 }
 
 export interface ModuleConfigResponse extends ResponseType {
