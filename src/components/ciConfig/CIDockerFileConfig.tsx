@@ -17,10 +17,8 @@ import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
 import { RootBuildContext } from './ciConfigConstant'
+import { CI_BUILD_TYPE_OPTIONS } from './constants'
 import { FEATURE_DISABLED } from '../../config/constantMessaging'
-import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
-import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 
@@ -68,35 +66,6 @@ export default function CIDockerFileConfig({
     const { isAirgapped } = useContext(mainContext)
 
     const isBuildpackType = ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE
-    const CI_BUILD_TYPE_OPTIONS = [
-        {
-            id: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
-            heading: 'I have a Dockerfile',
-            info: 'Requires a Dockerfile, gives full control of the build process.',
-            icon: FileIcon,
-            noIconFill: false,
-            iconStroke: true,
-            addDivider: true,
-        },
-        {
-            id: CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE,
-            heading: 'Create Dockerfile',
-            info: 'Select from available templates and create a Dockerfile.',
-            icon: AddIcon,
-            noIconFill: false,
-            iconStroke: false,
-            addDivider: true,
-        },
-        {
-            id: CIBuildType.BUILDPACK_BUILD_TYPE,
-            heading: 'Build without Dockerfile',
-            info: 'Uses buildpack to build container image.',
-            icon: BuildpackIcon,
-            noIconFill: true,
-            iconStroke: false,
-            addDivider: false,
-        },
-    ]
     const isDefaultBuildContext = (): boolean => {
         if (window._env_.ENABLE_BUILD_CONTEXT) {
             const currentCIBuildConfig = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig

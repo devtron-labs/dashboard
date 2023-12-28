@@ -387,3 +387,13 @@ export interface CISelfDockerBuildOptionProps {
     repositoryError?: string
     dockerfileError?: string
 }
+
+export interface CIBuildTypeOptionType {
+    id: CIBuildType
+    heading: string
+    info: string
+    icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    noIconFill: boolean
+    iconStroke: boolean
+    addDivider: boolean
+}
