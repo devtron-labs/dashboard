@@ -64,6 +64,9 @@ export default function CIDockerFileConfig({
         loading: false,
         failed: false,
     })
+
+    const { isAirgapped } = useContext(mainContext)
+
     const isBuildpackType = ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE
     const CI_BUILD_TYPE_OPTIONS = [
         {
@@ -118,7 +121,6 @@ export default function CIDockerFileConfig({
         }
         return false
     }
-    const { isAirgapped } = useContext(mainContext)
 
     useEffect(() => {
         if (
