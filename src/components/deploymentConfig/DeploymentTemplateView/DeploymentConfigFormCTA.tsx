@@ -62,19 +62,20 @@ export default function DeploymentConfigFormCTA({
     }
     
     const checkForLockedChangesForApproval = async () => {
-        setApproveChangesClicked(true)
+        //setting approveChangesClicked to true only is approve changes button
         if (isApprovalPending && !approveDisabled && !isSuperAdmin) {
+            setApproveChangesClicked(true)
             try {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.lockChangesLoading,
                     payload: true,
                 })
-                const res = await checkForProtectedLockedChanges()
-                if (res.result.isLockConfigError) {
+                const deploymentTemplateResp = await checkForProtectedLockedChanges()
+                if (deploymentTemplateResp.result.isLockConfigError) {
                     setShowLockedDiffForApproval(true)
-                    setLockedOverride(res.result.lockedOverride)
+                    setLockedOverride(deploymentTemplateResp.result.lockedOverride)
                     handleLockedDiffDrawer(true)
-                }
+                } else setShowLockedDiffForApproval(false)
             } catch (err) {
                 showError(err)
             } finally {
@@ -83,6 +84,8 @@ export default function DeploymentConfigFormCTA({
                     payload: false,
                 })
             }
+        } else if (isApprovalPending) {
+            setApproveChangesClicked(true)
         }
     }
 
@@ -232,6 +235,7 @@ export default function DeploymentConfigFormCTA({
                 draftVersionId={state.latestDraft.draftVersionId}
                 resourceName="deployment template"
                 reload={reload}
+                onClose={() => setApproveChangesClicked(false)}
             >
                 <span>{children}</span>
             </ApproveRequestTippy>

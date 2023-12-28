@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, getLockedJSON, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
 import { ConfigKeysWithLockType, DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { EDITOR_VIEW } from '../deploymentConfig/constants'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../config'
-import { createDeploymentTemplate, getLockedJsonPathArray, updateDeploymentTemplate } from './service'
+import { createDeploymentTemplate, updateDeploymentTemplate } from './service'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import DeploymentTemplateOptionsTab from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateOptionsTab'
@@ -27,8 +27,6 @@ import {
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
-import { getLockedJSON } from '@devtron-labs/devtron-fe-common-lib'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
@@ -218,13 +216,9 @@ export default function DeploymentTemplateOverrideForm({
                 //loading state for checking locked changes
                 dispatch({ type: DeploymentConfigStateActionTypes.lockChangesLoading, payload: true })
             }
-            const [lockedJSONPathResp, deploymentTemplateResp] = await Promise.all([
-                getLockedJsonPathArray(),
-                isConfigProtectionEnabled
-                    ? checkForProtectedLockedChanges()
-                    : api(+appId, +envId, prepareDataToSave(envOverrideValuesWithBasic, false)),
-            ])
-            setLockedConfigKeysWithLockType(lockedJSONPathResp.result)
+            const deploymentTemplateResp = isConfigProtectionEnabled
+                ? await checkForProtectedLockedChanges()
+                : await api(+appId, +envId, prepareDataToSave(envOverrideValuesWithBasic, false))
             if (deploymentTemplateResp.result.isLockConfigError && !saveEligibleChanges) {
                 //checking if any locked changes and opening drawer to show eligible and locked ones
                 setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
@@ -748,6 +742,7 @@ export default function DeploymentTemplateOverrideForm({
                     lockedOverride={lockedOverride}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     disableSaveEligibleChanges={disableSaveEligibleChanges}
+                    setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
                 />
             )}
         </DeploymentConfigContext.Provider>
