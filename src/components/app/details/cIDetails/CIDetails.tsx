@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload, GenericEmptyState, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, GenericEmptyState, useAsync, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
@@ -30,7 +30,6 @@ import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
-import { PipelineType } from '../triggerView/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -386,7 +385,7 @@ export const Details = ({
                             artifact={triggerDetails.artifact}
                             environmentName={triggerDetails.environmentName}
                             isJobView={isJobView}
-                            workerPodName={triggerDetails.name}
+                            workerPodName={triggerDetails.podName}
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">

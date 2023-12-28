@@ -27,7 +27,7 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
 
     return (
         <>
-            <div className="ci-webhook-info bcv-1 bw-1 ev-2 br-4 mt-16">
+            <div className="ci-webhook-info bcv-1 bw-1 ev-2 br-4">
                 <Info className="icon-dim-20" />
                 <p className="fs-13 cn-9 m-0">
                     <span className="fw-6 mr-5">Info:</span>

@@ -94,6 +94,7 @@ export default function AppComposeRouter({
                                 getWorkflows={getWorkflows}
                                 isJobView={isJobView}
                                 envList={environments}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         )}
                     />,
@@ -192,6 +193,7 @@ export default function AppComposeRouter({
                                 respondOnSuccess={respondOnSuccess}
                                 getWorkflows={getWorkflows}
                                 filteredEnvIds={filteredEnvIds}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         )}
                     />,
