@@ -45,9 +45,11 @@ export const Routes = {
 
     DEPLOYMENT_TEMPLATE: 'app/template',
     DEPLOYMENT_TEMPLATE_UPDATE: 'app/template/update',
+    LOCKED_CONFIG_PROTECTED: 'draft/config/lock/validate',
+    LOCKED_CONFIG_NON_PROTECTED: 'app/template/validate',
 
     DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
-    DEPLOYMENT_OPTIONS:'app/template/list',
+    DEPLOYMENT_OPTIONS: 'app/template/list',
 
     DEPLOYMENT_STRATEGY: 'app/cd-pipeline/strategies',
     ENVIRONMENT_CONFIG: 'app/env',
@@ -244,7 +246,7 @@ export const Routes = {
     PERMISSION: 'permission/check',
     SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
-    GVK: 'gvk'
+    GVK: 'gvk',
 }
 
 export const ViewType = {
@@ -711,6 +713,8 @@ export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
     GIT_COMMIT_FAILED = 'GIT_COMMIT_FAILED',
+    ARGOCD_SYNC = 'ARGOCD_SYNC',
+    ARGOCD_SYNC_FAILED = 'ARGOCD_SYNC_FAILED',
     KUBECTL_APPLY = 'KUBECTL_APPLY',
     KUBECTL_APPLY_STARTED = 'KUBECTL_APPLY_STARTED',
     KUBECTL_APPLY_SYNCED = 'KUBECTL_APPLY_SYNCED',

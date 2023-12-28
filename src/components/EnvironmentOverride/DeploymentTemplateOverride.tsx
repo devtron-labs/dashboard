@@ -37,6 +37,7 @@ export default function DeploymentTemplateOverride({
     environmentName,
     isProtected,
     reloadEnvironments,
+    isSuperAdmin
 }: DeploymentTemplateOverrideProps) {
     const { currentServerInfo } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -501,6 +502,7 @@ export default function DeploymentTemplateOverride({
                         setManifestDataRHS={setManifestDataRHSOverride}
                         setManifestDataLHS={setManifestDataLHSOverride}
                         convertVariablesOverride={state.convertVariablesOverride}
+                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>

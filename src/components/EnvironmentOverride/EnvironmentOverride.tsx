@@ -16,6 +16,7 @@ export default function EnvironmentOverride({
     environments,
     reloadEnvironments,
     envName,
+    isSuperAdmin,
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
@@ -110,6 +111,7 @@ export default function EnvironmentOverride({
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
+                            isSuperAdmin={isSuperAdmin}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>

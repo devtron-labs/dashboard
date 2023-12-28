@@ -1101,6 +1101,7 @@ export const ConfigMapSecretForm = React.memo(
                         toggleModal={toggleDraftSaveModal}
                         latestDraft={latestDraftData}
                         reload={reloadData}
+                        showAsModal={true}
                     />
                 )}
             </>
