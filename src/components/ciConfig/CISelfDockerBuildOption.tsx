@@ -8,7 +8,7 @@ import { CISelfDockerBuildOptionProps } from './types'
 
 export default function CISelfDockerBuildOption({
     readOnly,
-    sourceConfig,
+    sourceMaterials,
     readonlyDockerfileRelativePath,
     selectedMaterial,
     dockerFileValue,
@@ -55,7 +55,7 @@ export default function CISelfDockerBuildOption({
                     tabIndex={3}
                     isMulti={false}
                     isClearable={false}
-                    options={sourceConfig.material}
+                    options={sourceMaterials}
                     getOptionLabel={(option) => `${option.name}`}
                     getOptionValue={(option) => `${option.checkoutPath}`}
                     value={selectedMaterial}

@@ -376,7 +376,7 @@ export interface BuildContextProps {
 
 export interface CISelfDockerBuildOptionProps {
     currentMaterial: any
-    sourceConfig: any
+    sourceMaterials: any
     readonlyDockerfileRelativePath: string
     selectedMaterial: any
     dockerFileValue: string
