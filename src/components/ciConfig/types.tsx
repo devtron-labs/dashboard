@@ -373,3 +373,17 @@ export interface BuildContextProps {
     repositoryError?: string
     readOnlyBuildContextPath?: string
 }
+
+export interface CISelfDockerBuildOptionProps {
+    currentMaterial: any
+    sourceConfig: any
+    readonlyDockerfileRelativePath: string
+    selectedMaterial: any
+    dockerFileValue: string
+    handleFileLocationChange: (selectedMaterial) => void
+    handleOnChangeConfig: (e) => void
+    readOnly?: boolean
+    configOverrideView?: boolean
+    repositoryError?: string
+    dockerfileError?: string
+}
