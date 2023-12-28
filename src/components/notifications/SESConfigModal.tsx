@@ -303,7 +303,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             />
                         </label>
                         <div className="form__row">
-                            <label htmlFor="" className="form__label dc__reuired-field">
+                            <label htmlFor="" className="form__label dc__required-field">
                                 AWS Region
                             </label>
                             <ReactSelect

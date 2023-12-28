@@ -413,7 +413,7 @@ function TitledCard({ number, completed = false, title, next, onClick, children 
             <div className={`title-container ${completed ? 'active' : ''}`}>
                 <div className="index flex">{number}</div>
                 <div className="title flex left cn-9">{title}</div>
-                <div className="next flex">{completed && typeof next === 'function' && <button className="cta" onClick={next} type="button">Next</button>}</div>
+                <div className="next flex">{completed && typeof next === 'function' && <button className="cta flex" onClick={next} type="button">Next</button>}</div>
             </div>
             {children}
         </div>
