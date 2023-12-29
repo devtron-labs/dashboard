@@ -87,8 +87,8 @@ function DeploymentStatusCard({
 
     const onClickLastDeploymentStatus = (e) => {
         if (!hideDetails) {
-            refetchDeploymentStatus(true)
             showDeploymentDetailedStatus(e)
+            refetchDeploymentStatus(true)
         }
     }
 
