@@ -30,12 +30,16 @@ function ResetEditorChanges({ resetChanges, editorData, editorValue }: ResetEdit
     return (
         <>
             <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
-            <div className="flex left cursor" onClick={resetChanges}>
+            <button
+                className="flex left p-0 dc__no-background dc__no-border dc__outline-none-imp"
+                onClick={resetChanges}
+                type="button"
+            >
                 <div className="icon-dim-12 flex">
                     <Reset className="icon-dim-12" />
                 </div>
                 <span className="ml-4">Reset changes</span>
-            </div>
+            </button>
         </>
     )
 }
