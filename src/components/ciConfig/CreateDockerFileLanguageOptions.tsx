@@ -1,0 +1,162 @@
+import React from 'react'
+import Tippy from '@tippyjs/react'
+import ReactSelect from 'react-select'
+import { repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
+import { DropdownIndicator, Option, OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
+import { _customStyles } from './CIConfig.utils'
+import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
+import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
+import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
+
+function Title() {
+    return (
+        <Tippy
+            className="default-tt w-200"
+            arrow={false}
+            placement="top"
+            content={CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT.TITLE_INFO}
+        >
+            <span className="fs-13 fw-4 lh-20 cn-7 mr-8">{CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT.TITLE}</span>
+        </Tippy>
+    )
+}
+
+function ResetEditorChanges({ resetChanges, editorData, editorValue }: ResetEditorChangesProps) {
+    const showReset = !editorData?.fetching && editorData?.data !== editorValue
+    if (!showReset) {
+        return null
+    }
+
+    return (
+        <>
+            <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+            <div className="flex left cursor" onClick={resetChanges}>
+                <div className="icon-dim-12 flex">
+                    <Reset className="icon-dim-12" />
+                </div>
+                <span className="ml-4">Reset changes</span>
+            </div>
+        </>
+    )
+}
+
+export default function CreateDockerFileLanguageOptions({
+    editorData,
+    editorValue,
+    handleGitRepoChange,
+    materialOptions,
+    selectedMaterial,
+    languageFrameworks,
+    selectedLanguage,
+    resetChanges,
+    currentMaterial,
+    languages,
+    selectedFramework,
+    handleLanguageSelection,
+    handleFrameworkSelection,
+    readOnly,
+}: CreateDockerFileLanguageOptionsProps) {
+    const selectedLanguageFrameworks = languageFrameworks?.get(selectedLanguage?.value)
+
+    if (readOnly) {
+        return (
+            <div className="flex">
+                <Title />
+
+                {/* TODO: Look into this condition, this won't ever be true since we derive icon from url  */}
+                <div className="flex left">
+                    {selectedMaterial?.icon && (
+                        <img src={currentMaterial.icon} alt={currentMaterial.label} className="icon-dim-20 mr-8" />
+                    )}
+                    <span className="fs-13 fw-6 lh-20 cn-9">{currentMaterial?.name}</span>
+                </div>
+
+                <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+                <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
+
+                <div className="flex left" data-testid="select-create-dockerfile-language-dropdown">
+                    {selectedLanguage?.icon && (
+                        <img src={selectedLanguage.icon} alt={selectedLanguage.label} className="icon-dim-20 mr-8" />
+                    )}
+                    <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
+                </div>
+
+                {selectedLanguageFrameworks?.[0]?.value && (
+                    <>
+                        <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+                        <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
+                        <span className="fs-13 fw-6 lh-20 cn-9">{selectedFramework?.label}</span>
+                    </>
+                )}
+
+                <ResetEditorChanges resetChanges={resetChanges} editorData={editorData} editorValue={editorValue} />
+            </div>
+        )
+    }
+
+    return (
+        <div className="flex">
+            <Title />
+
+            <ReactSelect
+                tabIndex={3}
+                isSearchable={false}
+                options={materialOptions}
+                getOptionLabel={(option) => `${option.name}`}
+                getOptionValue={(option) => `${option.checkoutPath}`}
+                value={selectedMaterial}
+                styles={_customStyles}
+                components={{
+                    IndicatorSeparator: null,
+                    Option: repositoryOption,
+                    Control: repositoryControls,
+                }}
+                onChange={handleGitRepoChange}
+                classNamePrefix="build-config__select-repository-containing-code"
+            />
+
+            <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+            <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
+
+            <ReactSelect
+                classNamePrefix="select-create-dockerfile-language-dropdown"
+                tabIndex={3}
+                options={languages}
+                value={selectedLanguage}
+                isSearchable={false}
+                styles={_customStyles}
+                components={{
+                    IndicatorSeparator: null,
+                    DropdownIndicator,
+                    Option: OptionWithIcon,
+                    ValueContainer: ValueContainerWithIcon,
+                }}
+                onChange={handleLanguageSelection}
+            />
+
+            {selectedLanguageFrameworks?.[0]?.value && (
+                <>
+                    <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
+                    <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
+
+                    <ReactSelect
+                        tabIndex={3}
+                        options={selectedLanguageFrameworks || []}
+                        value={selectedFramework}
+                        classNamePrefix="build-config__select-framework"
+                        isSearchable={false}
+                        styles={_customStyles}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                        }}
+                        onChange={handleFrameworkSelection}
+                    />
+                </>
+            )}
+
+            <ResetEditorChanges resetChanges={resetChanges} editorData={editorData} editorValue={editorValue} />
+        </div>
+    )
+}
