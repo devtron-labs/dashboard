@@ -3,7 +3,6 @@ import {
     showError,
     Progressing,
     ConfirmationDialog,
-    Host,
     noop,
     stopPropagation,
     multiSelectStyles,
@@ -24,7 +23,7 @@ import {
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
-import { NavigationArrow, useAppContext, useEventSource, FragmentHOC, ScanDetailsModal } from '../../../common'
+import { NavigationArrow, useAppContext, FragmentHOC, ScanDetailsModal } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
@@ -139,8 +138,10 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
 
                 // Set the URL and push to navigation stack
                 if (selectedEnvId) {
-                    const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
-                    push(newUrl)
+                    if (String(selectedEnvId) !== String(params.envId)) {
+                        const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
+                        push(newUrl)
+                    }
                 } else {
                     setEnvironmentId(null)
                 }
@@ -224,7 +225,8 @@ export const Details: React.FC<DetailsType> = ({
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
-    const [streamData, setStreamData] = useState<AppStreamData>(null)
+    // fixme: the state is not being set anywhere and just being drilled down
+    const [streamData] = useState<AppStreamData>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
@@ -246,13 +248,15 @@ export const Details: React.FC<DetailsType> = ({
     })
     const [loadingDetails, setLoadingDetails] = useState(true)
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
+    // State to track the loading state for the timeline data when the detailed status modal opens
+    const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
     const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
-    const deploymentModalShownRef = useRef(false)
     const { envId } = useParams<{ appId: string; envId?: string }>()
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef(null)
+    const shouldFetchTimelineRef = useRef(false)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -267,26 +271,18 @@ export const Details: React.FC<DetailsType> = ({
     const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
     appDetailsRequestRef.current = appDetails?.deploymentAppDeleteRequest
 
-    const syncSSE = useEventSource(
-        `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
-        [params.appId, params.envId],
-        appDetails &&
-            !!appDetails.appName &&
-            !!appDetails.environmentName &&
-            appDetails.deploymentAppType !== DeploymentAppTypes.HELM,
-        (event) => setStreamData(JSON.parse(event.data)),
-    )
-
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || [])
     }, [appDetails])
 
     useEffect(() => {
-        if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
-            deploymentModalShownRef.current = true
-        } else {
-            deploymentModalShownRef.current = false
+        const isModalOpen = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
+        // Reset the loading state when the modal is closed
+        if (shouldFetchTimelineRef.current && !isModalOpen) {
+            setIsInitialTimelineDataLoading(true)
         }
+        // The timeline should be fetched by default if the modal is open
+        shouldFetchTimelineRef.current = isModalOpen
     }, [location.search])
 
     const clearDeploymentStatusTimer = useCallback((): void => {
@@ -304,15 +300,6 @@ export const Details: React.FC<DetailsType> = ({
 
             clearDeploymentStatusTimer()
 
-            if (
-                processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
-                processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
-                processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
-                processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
-            ) {
-                deploymentModalShownRef.current = false
-            }
-
             if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
                 deploymentStatusTimer = setTimeout(() => {
                     getDeploymentDetailStepsData()
@@ -327,24 +314,29 @@ export const Details: React.FC<DetailsType> = ({
             processDeploymentStatusDetailsData,
             clearDeploymentStatusTimer,
             DEPLOYMENT_STATUS,
-            deploymentModalShownRef,
             setDeploymentStatusDetailsBreakdownData,
         ],
     )
 
     const getDeploymentDetailStepsData = useCallback(
         (showTimeline?: boolean): void => {
+            const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
+
             // Deployments status details for Devtron apps
-            getDeploymentStatusDetail(params.appId, params.envId, showTimeline ?? deploymentModalShownRef.current).then(
+            getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline).then(
                 (deploymentStatusDetailRes) => {
                     processDeploymentStatusData(deploymentStatusDetailRes.result)
+                    // Update the loading status if the modal is open
+                    if (shouldFetchTimeline) {
+                        setIsInitialTimelineDataLoading(false)
+                    }
                 },
             )
         },
         [
             params.appId,
             params.envId,
-            deploymentModalShownRef.current,
+            shouldFetchTimelineRef.current,
             getDeploymentStatusDetail,
             processDeploymentStatusData,
         ],
@@ -437,7 +429,9 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
-        getDeploymentStatusDetail(params.appId, params.envId, deploymentModalShownRef.current)
+        const shouldFetchTimeline = shouldFetchTimelineRef.current
+
+        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     if (deploymentAppType === DeploymentAppTypes.HELM) {
@@ -455,6 +449,9 @@ export const Details: React.FC<DetailsType> = ({
                         })
                     } else {
                         processDeploymentStatusData(deploymentStatusDetailRes.result)
+                    }
+                    if (shouldFetchTimeline) {
+                        setIsInitialTimelineDataLoading(false)
                     }
                 }
             })
@@ -687,6 +684,7 @@ export const Details: React.FC<DetailsType> = ({
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
+                    isLoading={isInitialTimelineDataLoading}
                 />
             )}
             {showScanDetailsModal && (

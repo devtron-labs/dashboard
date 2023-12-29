@@ -127,7 +127,6 @@ export interface CIConfigFormProps {
 
 export interface AdvancedConfigOptionsProps {
     ciPipeline: CIPipelineDataType
-    setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 interface LanguageBuilderType {
