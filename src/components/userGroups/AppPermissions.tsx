@@ -51,7 +51,7 @@ export default function AppPermissions({
         jobsList,
         superAdmin,
     } = useUserGroupContext()
-    const { url, path, ...rest } = useRouteMatch()
+    const { url, path } = useRouteMatch()
     const location = useLocation()
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
@@ -574,13 +574,19 @@ export default function AppPermissions({
         }
     }
 
+    // To persist the search params
+    const _getNavLinkUrl = (tabName) => (location) => ({
+        ...location,
+        pathname: `${url}/${tabName}`,
+    })
+
     return (
         <>
             <ul role="tablist" className="tab-list mt-12 dc__border-bottom">
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink
-                            to={`${url}/devtron-apps`}
+                            to={_getNavLinkUrl('devtron-apps')}
                             data-testid="devtron-app-permission-tab"
                             className="tab-list__tab-link"
                             activeClassName="active"
@@ -591,7 +597,7 @@ export default function AppPermissions({
                 )}
                 <li className="tab-list__tab">
                     <NavLink
-                        to={`${url}/helm-apps`}
+                        to={_getNavLinkUrl('helm-apps')}
                         data-testid="helm-app-permission-tab"
                         className="tab-list__tab-link"
                         activeClassName="active"
@@ -601,7 +607,7 @@ export default function AppPermissions({
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
-                        to={`${url}/jobs`}
+                        to={_getNavLinkUrl('jobs')}
                         data-testid="jobs-permission-tab"
                         className="tab-list__tab-link"
                         activeClassName="active"
@@ -612,7 +618,7 @@ export default function AppPermissions({
                 {superAdmin && (
                     <li className="tab-list__tab">
                         <NavLink
-                            to={`${url}/kubernetes-objects`}
+                            to={_getNavLinkUrl('kubernetes-objects')}
                             data-testid="kube-resource-permission-tab"
                             className="tab-list__tab-link"
                             activeClassName="active"
@@ -624,7 +630,7 @@ export default function AppPermissions({
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink
-                            to={`${url}/chart-groups`}
+                            to={_getNavLinkUrl('chart-groups')}
                             data-testid="chart-group-permission-tab"
                             className="tab-list__tab-link"
                             activeClassName="active"

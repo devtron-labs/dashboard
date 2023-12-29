@@ -548,26 +548,3 @@ export default function UserForm({
         </div>
     )
 }
-
-const SuperAdmin: React.FC<{
-    superAdmin: boolean;
-    setSuperAdmin: (checked: boolean) => any;
-}> = ({ superAdmin, setSuperAdmin }) => {
-    return (
-        <div className="flex left column top bcn-1 br-4 p-16 mb-24">
-            <div className="flex left">
-                <input
-                    type="checkbox"
-                    checked={!!superAdmin}
-                    onChange={(e) => setSuperAdmin(e.target.checked)}
-                    style={{ height: '13px', width: '13px' }}
-                />
-                <span className="fs-14 fw-6 cn-9 ml-16">Assign superadmin permissions</span>
-            </div>
-            <p className="fs-12 cn-7 mt-4">
-                Superadmins have complete access to all applications across projects. Only superadmins can add more
-                superadmins.
-            </p>
-        </div>
-    );
-};
