@@ -134,7 +134,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             // keeping the existing type intact
             .then(([ssoConfigListRes, authorizationGlobalConfig]: any) => {
                 let ssoConfig = ssoConfigListRes.result?.find((sso) => sso.active)
-                if (ssoConfigListRes.result && ssoConfig) {
+                if (ssoConfig) {
                     this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig })
                 } else {
                     ssoConfig = sample['google']
@@ -262,7 +262,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             : {}
 
     _getSSOCreateOrUpdatePayload = (configJSON) => ({
-        id: this.state.ssoConfig?.id,
+        id: this.state.ssoConfig.id,
         name: this.state.sso,
         url: this.state.ssoConfig.url,
         config: {
@@ -281,8 +281,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     _validateYaml = () => {
         let configJSON: any = {}
         try {
-            configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config)
-            configJSON = this.checkConfigJson(configJSON)
+            configJSON = this.checkConfigJson(yamlJsParser.parse(this.state.ssoConfig.config.config))
 
             if (
                 this.state.sso === SSOProvider.microsoft &&
