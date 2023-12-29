@@ -26,7 +26,6 @@ enum PermissionTypeEnum {
 
 export default function GroupForm({
     id = null,
-    index = null,
     groupData = null,
     updateCallback,
     deleteCallback,
@@ -174,7 +173,7 @@ export default function GroupForm({
             const { result } = await saveGroup(payload)
             if (id) {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                updateCallback(index, result)
+                updateCallback(id, result)
                 toast.success('Group updated')
             } else {
                 createCallback(result)
@@ -201,8 +200,8 @@ export default function GroupForm({
         setSubmitting(true)
         try {
             await deleteGroup(id)
+            deleteCallback(id)
             toast.success('Group deleted')
-            deleteCallback(index)
             setDeleteConfirmationModal(false)
         } catch (err) {
             showError(err)

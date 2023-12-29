@@ -63,8 +63,6 @@ const CreatableChipStyle = {
 export default function UserForm({
     id = null,
     userData = null,
-    index,
-    email_id=null,
     updateCallback,
     deleteCallback,
     createCallback,
@@ -242,7 +240,7 @@ export default function UserForm({
             const { result } = await saveUser(payload);
             if (id) {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                updateCallback(index, result);
+                updateCallback(id, result);
                 toast.success('User updated');
             } else {
                 createCallback(result);
@@ -326,7 +324,7 @@ export default function UserForm({
         setSubmitting(true);
         try {
             await deleteUser(id);
-            deleteCallback(email_id);
+            deleteCallback(id);
             toast.success('User deleted');
             setDeleteConfirmationModal(false)
         } catch (err) {

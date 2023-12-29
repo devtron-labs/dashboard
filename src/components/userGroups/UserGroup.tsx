@@ -23,7 +23,6 @@ import {
 import {
     NavigationArrow,
     useKeyDown,
-    removeItemsFromArray,
     getRandomString,
     sortBySelected,
     mapByKey,
@@ -214,7 +213,7 @@ export default function UserGroupRoute() {
             setJobsList(
                 (jobsList) =>
                     new Map(
-                        missingProjects.reduce((jobsList, projectId, index) => {
+                        missingProjects.reduce((jobsList, projectId) => {
                             jobsList.set(projectId, {
                                 loading: false,
                                 result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
@@ -250,7 +249,7 @@ export default function UserGroupRoute() {
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsList((appList) => {
                 return new Map(
-                    missingProjects.reduce((appList, projectId, index) => {
+                    missingProjects.reduce((appList, projectId) => {
                         appList.set(projectId, {
                             loading: false,
                             result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
@@ -286,7 +285,7 @@ export default function UserGroupRoute() {
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsListHelmApps((appListHelmApps) => {
                 return new Map(
-                    missingProjects.reduce((appListHelmApps, projectId, index) => {
+                    missingProjects.reduce((appListHelmApps, projectId) => {
                         appListHelmApps.set(projectId, {
                             loading: false,
                             result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
@@ -470,8 +469,9 @@ const UserGroupList: React.FC<{
     }, [result.length, loading])
 
     const updateCallback = useCallback(
-        (index: number, payload) => {
+        (id: CreateUser['id'], payload) => {
             const newResult = [...result]
+            const index = result.findIndex((userOrGroup) => userOrGroup.id === id)
             newResult[index] = payload
             setState((state) => ({ ...state, result: newResult }))
         },
@@ -479,15 +479,8 @@ const UserGroupList: React.FC<{
     )
 
     const deleteCallback = useCallback(
-        (email_id: string) => {
-            // find index from the filtered list
-            const index = result.findIndex((userOrGroup) => userOrGroup.email_id === email_id)
-
-            // remove the item from the filtered list
-            const newResult = removeItemsFromArray(result, index, 1)
-
-            // update the state
-            setState((state) => ({ ...state, result: newResult }))
+        (id: CreateUser['id']) => {
+            setState((state) => ({ ...state, result: result.filter((userOrGroup) => userOrGroup.id !== id) }))
         },
         [result.length],
     )
@@ -701,12 +694,12 @@ const UserGroupList: React.FC<{
                         isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                     />
                 )}
-                {filteredAndSorted.map((data, index) => (
+                {filteredAndSorted.map((data) => (
                     <CollapsedUserOrGroup
                         key={data.id}
                         {...data}
                         type={type}
-                        {...{ updateCallback, deleteCallback, createCallback, index }}
+                        {...{ updateCallback, deleteCallback, createCallback }}
                         isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                         collapsed={expandedTile !== String(data.id)}
                         setCollapsed={updateCollapsedTile}
@@ -721,7 +714,6 @@ const UserGroupList: React.FC<{
 }
 
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
-    index,
     email_id = null,
     id = null,
     name = null,
@@ -751,9 +743,9 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         setCollapsed(collapsed ? String(id) : undefined)
     }
 
-    function updateCallbackOverride(index, data) {
+    function updateCallbackOverride(id, data) {
         setData((state) => ({ ...state, result: data }))
-        updateCallback(index, data)
+        updateCallback(id, data)
     }
 
     function getToolTipContent(user: string): string {
@@ -826,8 +818,6 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 updateCallback: updateCallbackOverride,
                                 deleteCallback,
                                 createCallback,
-                                index,
-                                email_id,
                                 cancelCallback,
                             }}
                             isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
@@ -840,7 +830,6 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 updateCallback: updateCallbackOverride,
                                 deleteCallback,
                                 createCallback,
-                                index,
                                 cancelCallback,
                             }}
                         />
@@ -894,14 +883,12 @@ const AddUser: React.FC<AddUser> = ({
                     {type === 'user' ? (
                         <UserForm
                             id={null}
-                            index={null}
                             {...{ updateCallback, deleteCallback, createCallback, cancelCallback }}
                             isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                         />
                     ) : (
                         <GroupForm
                             id={null}
-                            index={null}
                             {...{ updateCallback, deleteCallback, createCallback, cancelCallback }}
                         />
                     )}
