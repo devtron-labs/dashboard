@@ -378,7 +378,7 @@ export default function UserForm({
         <div className="user-form">
             {!id && (
                 <>
-                    <UserPermissionsInfoBar />
+                    {isAutoAssignFlowEnabled && <UserPermissionsInfoBar />}
                     <div className="mb-16">
                         <label htmlFor="" className="mb-8">
                             Email addresses*

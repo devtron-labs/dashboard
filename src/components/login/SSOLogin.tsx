@@ -14,9 +14,8 @@ import {
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
+import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
-import { SSOConfigType } from './ssoConfig.types'
 import { ViewType, DOCUMENTATION, URLS } from '../../config'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
