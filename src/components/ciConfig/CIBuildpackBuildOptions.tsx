@@ -253,7 +253,8 @@ export default function CIBuildpackBuildOptions({
             _builder = buildersAndFrameworks.selectedBuilder
 
         // Update buildersAndFrameworks & buildPackConfig only on the first mount of the component
-        if (!_language || !_version || !_builder) {
+        // for !builderLanguageSupportMap, we will reset the values on init, but not proper solution
+        if (!_language || !_version || !_builder || !builderLanguageSupportMap) {
             if (ciBuildConfig?.buildPackConfig) {
                 _builder = {
                     label: ciBuildConfig.buildPackConfig.builderId,
