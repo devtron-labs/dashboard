@@ -67,11 +67,11 @@ export default function CIDockerFileConfig({
     const isBuildpackType = ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE
     const isDefaultBuildContext = (): boolean => {
         if (window._env_.ENABLE_BUILD_CONTEXT) {
-            const currentCIBuildConfig = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig
-            
-            const currentOverriddenBuildContext = currentCIBuildConfig?.dockerBuildConfig?.buildContext
-            const currentOverriddenGitMaterialId = currentCIBuildConfig?.gitMaterialId
-            const currentOverriddenBuildContextGitMaterialId = currentCIBuildConfig?.buildContextGitMaterialId
+            // TODO: Re-assess with product
+            const selectedCIBuildContext = selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig            
+            const currentOverriddenBuildContext = selectedCIBuildContext?.dockerBuildConfig?.buildContext
+            const currentOverriddenGitMaterialId = selectedCIBuildContext?.gitMaterialId
+            const currentOverriddenBuildContextGitMaterialId = selectedCIBuildContext?.buildContextGitMaterialId
 
             // TODO: Ask whether second check is redundant since string empty comes in ! case
             const isSameCurrentBuildContext =
