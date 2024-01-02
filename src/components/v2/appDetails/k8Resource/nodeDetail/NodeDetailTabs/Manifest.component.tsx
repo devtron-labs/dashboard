@@ -178,6 +178,7 @@ function ManifestComponent({
     const handleApplyChanges = () => {
         setLoading(true)
         setLoadingMsg('Applying changes')
+        setShowDecodedData(false)
 
         let manifestString
         try {
@@ -265,6 +266,7 @@ function ManifestComponent({
         setModifiedManifest(manifest)
         setActiveManifestEditorData('')
         setErrorText('')
+        setShowDecodedData(false)
     }
 
     const markActiveTab = (_tabName: string) => {
