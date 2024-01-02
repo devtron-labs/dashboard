@@ -318,11 +318,9 @@ function ManifestComponent({
                     id="showDecodedValue"
                     isChecked={showDecodedData}
                     onChange={() => onChangeToggleShowDecodedValue(codeEditorData)}
-                    value='CHECKED'
+                    value="CHECKED"
                 />
-                <div className="pl-4">
-                    Show Decoded Value
-                </div>
+                Show decoded Value
             </div>
         )
     }
