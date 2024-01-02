@@ -59,7 +59,7 @@ export default function AppComposeRouter({
     isBaseConfigProtected,
     reloadEnvironments,
     configProtectionData,
-    filteredEnvIds
+    filteredEnvIds,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
     const renderJobViewRoutes = (): JSX.Element => {
