@@ -133,7 +133,7 @@ const Sidebar = React.memo(
                             DropdownIndicator,
                         }}
                         styles={FILTER_STYLE}
-                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
                     />
                 </div>
 
