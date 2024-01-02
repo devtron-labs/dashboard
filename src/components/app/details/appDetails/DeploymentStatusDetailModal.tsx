@@ -4,21 +4,22 @@ import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
 import { useHistory } from 'react-router-dom'
 import './appDetails.scss'
-import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentStatusDetailModal({
     appName,
     environmentName,
     streamData,
     deploymentStatusDetailsBreakdownData,
-    isVirtualEnvironment
+    isVirtualEnvironment,
+    isLoading,
 }: DeploymentStatusDetailModalType) {
     const history = useHistory()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
 
     const closeStatusModal = () => {
         history.replace({
-            search: ''
+            search: '',
         })
     }
 
@@ -29,10 +30,7 @@ export default function DeploymentStatusDetailModal({
         }
     }
     const outsideClickHandler = (evt): void => {
-        if (
-            appStatusDetailRef.current &&
-            !appStatusDetailRef.current.contains(evt.target)
-        ) {
+        if (appStatusDetailRef.current && !appStatusDetailRef.current.contains(evt.target)) {
             closeStatusModal()
         }
     }
@@ -53,19 +51,35 @@ export default function DeploymentStatusDetailModal({
 
     return (
         <Drawer position="right" width="1024px">
-            <div className="deployment-status-breakdown-modal-container bcn-0" data-testid="deployment-status-drawer" ref={appStatusDetailRef}>
+            <div
+                className="deployment-status-breakdown-modal-container bcn-0"
+                data-testid="deployment-status-drawer"
+                ref={appStatusDetailRef}
+            >
                 <div className="dc__box-shadow pb-12 pt-12 bcn-0">
-                    <div className="title flex dc__content-space pl-20 pr-20 " data-testid="app-status-cross">
+                    <div
+                        className="title flex dc__content-space pl-20 pr-20 show-shimmer-loading"
+                        data-testid="app-status-cross"
+                    >
                         <div>
-                            <div className="cn-9 fs-16 fw-6">
-                                Deployment status: {appName} / {environmentName}
+                            <div className="cn-9 fs-16 fw-6 flexbox flex-align-center">
+                                Deployment status:&nbsp;
+                                {appName ?? <span className="child child-shimmer-loading w-120 h-20 mt-0-imp" />}
+                                &nbsp;/&nbsp;
+                                {environmentName ?? (
+                                    <span className="child child-shimmer-loading w-120 h-20 mt-0-imp" />
+                                )}
                             </div>
                             <div className="flexbox">
-                                <span
-                                    className={`app-summary__status-name fs-13 fw-6 f-${deploymentStatusDetailsBreakdownData.deploymentStatus}`}
-                                >
-                                    {deploymentStatusDetailsBreakdownData.deploymentStatusText}
-                                </span>
+                                {isLoading ? (
+                                    <span className="child child-shimmer-loading w-120 h-20" />
+                                ) : (
+                                    <span
+                                        className={`app-summary__status-name fs-13 fw-6 f-${deploymentStatusDetailsBreakdownData.deploymentStatus}`}
+                                    >
+                                        {deploymentStatusDetailsBreakdownData.deploymentStatusText}
+                                    </span>
+                                )}
                             </div>
                         </div>
                         <span className="cursor" onClick={closeStatusModal}>
@@ -74,11 +88,15 @@ export default function DeploymentStatusDetailModal({
                     </div>
                 </div>
                 <div className="bcn-1 dc__overflow-scroll pb-20 deployment-status-breakdown">
-                    <DeploymentStatusDetailBreakdown
-                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                        streamData={streamData}
-                        isVirtualEnvironment={isVirtualEnvironment}
-                    />
+                    {isLoading ? (
+                        <Progressing />
+                    ) : (
+                        <DeploymentStatusDetailBreakdown
+                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                            streamData={streamData}
+                            isVirtualEnvironment={isVirtualEnvironment}
+                        />
+                    )}
                 </div>
             </div>
         </Drawer>
