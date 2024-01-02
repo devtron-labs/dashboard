@@ -9,7 +9,7 @@ export enum DockerArgsAction {
 
 export interface DockerArgsProps {
     args: PipelineFormType['args']
-    handleDockerArgsUpdate: ({ action, argData }: HandleDockerArgsUpdate) => void
+    handleDockerArgsUpdate: ({ action, argData }: HandleDockerArgsUpdateType) => void
     fromBuildPack?: boolean
     disabled?: boolean
 }
@@ -17,7 +17,7 @@ export interface DockerArgsProps {
 export interface DockerArgsItemProps {
     arg: PipelineFormType['args'][number]
     index: number
-    handleDockerArgsUpdate: ({ action, argData }: HandleDockerArgsUpdate) => void
+    handleDockerArgsUpdate: ({ action, argData }: HandleDockerArgsUpdateType) => void
 }
 
 export interface DockerArgsActionData {
@@ -25,7 +25,7 @@ export interface DockerArgsActionData {
     value?: string
 }
 
-export interface HandleDockerArgsUpdate {
+export interface HandleDockerArgsUpdateType {
     action: DockerArgsAction
     argData?: DockerArgsActionData
 }

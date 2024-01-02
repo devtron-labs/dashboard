@@ -361,18 +361,16 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
-            <div className="mb-16">
-                <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
-                    <CustomInput
-                        name="api-token"
-                        label={renderWebhhokTokenLabel()}
-                        placeholder="Enter API token"
-                        rootClassName="bcn-0 dc__no-border"
-                        onChange={handleTokenChange}
-                        value={tryoutAPIToken} 
-                        error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
-                    />
-                </div>
+            <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-16">
+                {renderWebhhokTokenLabel()}
+                <CustomInput
+                    name="api-token"
+                    placeholder="Enter API token"
+                    rootClassName="bcn-0 dc__no-border-imp w-100 h-32 pt-5-imp p-0-8-imp"
+                    onChange={handleTokenChange}
+                    value={tryoutAPIToken}
+                    error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
+                />
             </div>
         )
     }
@@ -381,7 +379,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div>
                 <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
-                <div className="fs-13 font-roboto flexbox dc__word-break">
+                <div className="fs-13 font-roboto flexbox dc__word-break pl-8-imp">
                     {token}
                     <Tippy
                         className="default-tt"

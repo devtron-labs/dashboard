@@ -73,15 +73,13 @@ export default function CIDockerFileConfig({
             const currentOverriddenGitMaterialId = selectedCIBuildContext?.gitMaterialId
             const currentOverriddenBuildContextGitMaterialId = selectedCIBuildContext?.buildContextGitMaterialId
 
-            // TODO: Ask whether second check is redundant since string empty comes in ! case
             const isSameCurrentBuildContext =
                 currentOverriddenGitMaterialId === currentOverriddenBuildContextGitMaterialId &&
-                (!currentOverriddenBuildContext || currentOverriddenBuildContext === '')
+                !currentOverriddenBuildContext
 
             const isSameGlobalBuildContext =
                 currentMaterial.id === currentBuildContextGitMaterial.id &&
-                (!ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext ||
-                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === '')
+                !ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
 
             return configOverrideView && allowOverride
                 ? isSameCurrentBuildContext
