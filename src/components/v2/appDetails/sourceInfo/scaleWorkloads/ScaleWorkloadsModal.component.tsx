@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, DetailsProgressing, Checkbox, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    VisibleModal,
+    DetailsProgressing,
+    Checkbox,
+    DeploymentAppTypes,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg'
@@ -55,7 +62,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
             appDetails.resourceTree.nodes.forEach((node) => {
                 if (node.canBeHibernated && node.health?.status?.toLowerCase() !== 'missing') {
                     const workloadKey = `${node.kind}/${node.name}`
-                    let _workloadTarget: ScaleWorkloadsType = {
+                    const _workloadTarget: ScaleWorkloadsType = {
                         kind: node.kind,
                         name: node.name,
                         group: node.group,
@@ -219,7 +226,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const _setWorkloadsList = isActiveWorkloadsTab ? setWorkloadsToScaleDown : setWorkloadsToRestore
 
-        for (let [key, value] of _workloadsList) {
+        for (const [key, value] of _workloadsList) {
             value.value = !_nameSelection.isChecked ? 'CHECKED' : 'INTERMEDIATE'
             value.isChecked = !_nameSelection.isChecked ? true : false
             _workloadsList.set(key, value)

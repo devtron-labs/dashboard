@@ -77,7 +77,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     useEffect(() => {
         // check for more
-        if (loading || !deploymentHistoryResult) return
+        if (loading || !deploymentHistoryResult) {
+            return
+        }
         if (!deploymentHistoryResult?.result?.cdWorkflows?.length) {
             return
         }
@@ -119,7 +121,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     async function pollHistory() {
         // polling
-        if (!pipelineId || !appId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !appId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) {
+            return
+        }
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )

@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router'
 import { ServerError, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface NotifierProps extends RouteComponentProps<{ id: string }> { }
+export type NotifierProps = RouteComponentProps<{ id: string }>
 
 export interface NotifierState {
     code: number
@@ -85,32 +85,32 @@ export interface ConfigurationTabState {
     slackConfig: any
     webhookConfig: any
     showDeleteConfigModalType: string
-    showWebhookConfigModal: boolean 
+    showWebhookConfigModal: boolean
 }
 
 export interface WebhookConfigModalProps {
-    webhookConfigId: number;
-    onSaveSuccess: () => void;
-    closeWebhookConfigModal: (event) => void;
+    webhookConfigId: number
+    onSaveSuccess: () => void
+    closeWebhookConfigModal: (event) => void
 }
 
 export interface WebhhookConfigModalState {
-    view: string;
+    view: string
     form: {
-        configName: string;
-        webhookUrl: string;
-        isLoading: boolean;
-        isError: boolean;
-        payload: string;
-        header: HeaderType[];
-    };
+        configName: string
+        webhookUrl: string
+        isLoading: boolean
+        isError: boolean
+        payload: string
+        header: HeaderType[]
+    }
     isValid: {
-        configName: boolean;
-        webhookUrl: boolean;
-        payload: boolean;
-    };
-    webhookAttribute: Record<string, string>;
-    copyAttribute: boolean;
+        configName: boolean
+        webhookUrl: boolean
+        payload: boolean
+    }
+    webhookAttribute: Record<string, string>
+    copyAttribute: boolean
 }
 
 export interface HeaderType {
@@ -119,10 +119,10 @@ export interface HeaderType {
 }
 
 export interface CreateHeaderDetailsType {
-    index: number;
-    headerData: HeaderType;
-    setHeaderData: (index: number, headerData: HeaderType) => void;
-    removeHeader?: (index: number) => void;
+    index: number
+    headerData: HeaderType
+    setHeaderData: (index: number, headerData: HeaderType) => void
+    removeHeader?: (index: number) => void
 }
 
 export interface WebhookAttributesResponseType extends ResponseType {

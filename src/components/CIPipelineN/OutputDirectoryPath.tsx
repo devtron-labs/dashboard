@@ -7,12 +7,7 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
 function OutputDirectoryPath() {
-    const {
-        selectedTaskIndex,
-        formData,
-        setFormData,
-        activeStageName,
-    } = useContext(pipelineContext)
+    const { selectedTaskIndex, formData, setFormData, activeStageName } = useContext(pipelineContext)
 
     const addOutputDirectoryPath = (): void => {
         const _formData = { ...formData }

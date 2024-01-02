@@ -7,13 +7,7 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
 function MountFromHost() {
-    const {
-        selectedTaskIndex,
-        formData,
-        setFormData,
-        activeStageName,
-        formDataErrorObj,
-    } = useContext(pipelineContext)
+    const { selectedTaskIndex, formData, setFormData, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const addMountDirectoryfromHost = () => {
         const _formData = { ...formData }
 

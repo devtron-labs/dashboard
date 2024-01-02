@@ -72,7 +72,6 @@ export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Prom
             return sortOptionsByLabel(a, b)
         })
 
-
         return {
             projectsRes: projectsRes,
             environmentsRes: environmentsRes,
@@ -110,7 +109,7 @@ export const getAppListDataToExport = (
             const _jobDataList = []
             for (const _job of result.jobContainers) {
                 if (_job.ciPipelines?.length > 0) {
-                    for (let _pipeline of _job.ciPipelines as JobCIPipeline[]) {
+                    for (const _pipeline of _job.ciPipelines as JobCIPipeline[]) {
                         _jobDataList.push({
                             jobId: _job.jobId,
                             jobName: _job.jobName,

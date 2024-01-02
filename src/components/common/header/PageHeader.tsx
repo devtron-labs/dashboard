@@ -85,30 +85,35 @@ function PageHeader({
     }
 
     const onClickHelp = (e) => {
-      if (!window._env_.K8S_CLIENT && currentServerInfo.serverInfo?.installationType !== InstallationType.ENTERPRISE) {
-          getCurrentServerInfo()
-      }
-      setShowHelpCard(!showHelpCard)
-      if (showLogOutCard) {
-          setShowLogOutCard(false)
-      }
-      setActionWithExpiry('clickedOkay', 1)
-      hideGettingStartedCard()
-      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
-      ReactGA.event({
-          category: 'Main Navigation',
-          action: `Help Clicked`,
-      })
+        if (
+            !window._env_.K8S_CLIENT &&
+            currentServerInfo.serverInfo?.installationType !== InstallationType.ENTERPRISE
+        ) {
+            getCurrentServerInfo()
+        }
+        setShowHelpCard(!showHelpCard)
+        if (showLogOutCard) {
+            setShowLogOutCard(false)
+        }
+        setActionWithExpiry('clickedOkay', 1)
+        hideGettingStartedCard()
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
+        ReactGA.event({
+            category: 'Main Navigation',
+            action: `Help Clicked`,
+        })
     }
 
     const renderLogoutHelpSection = () => {
         return (
             <>
                 <div className="flex left cursor mr-16" onClick={onClickHelp}>
-                    <span className="icon-dim-24 fcn-9 mr-4 ml-16" >
+                    <span className="icon-dim-24 fcn-9 mr-4 ml-16">
                         <Question />
                     </span>
-                    <span className="fs-13 cn-9" data-testid="go-to-get-started">Help</span>
+                    <span className="fs-13 cn-9" data-testid="go-to-get-started">
+                        Help
+                    </span>
                     <DropDownIcon
                         style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
                         className="fcn-9 icon-dim-20 rotate pointer"
@@ -170,6 +175,7 @@ function PageHeader({
                             target="_blank"
                             href={tippyRedirectLink}
                             onClick={onClickTippybutton}
+                            rel="noreferrer"
                         >
                             <Tippy
                                 className="default-tt "
@@ -244,7 +250,7 @@ function PageHeader({
                     {renderLogoutHelpSection()}
                 </div>
             )}
-              {showAnnouncementHeader && <AnnouncementBanner parentClassName="page-header-banner" />}
+            {showAnnouncementHeader && <AnnouncementBanner parentClassName="page-header-banner" />}
         </div>
     )
 }

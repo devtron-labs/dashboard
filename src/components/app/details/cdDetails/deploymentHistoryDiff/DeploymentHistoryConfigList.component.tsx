@@ -10,13 +10,13 @@ import { Progressing, GenericEmptyState } from '@devtron-labs/devtron-fe-common-
 import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 
 interface TemplateConfiguration {
-  setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
+    setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
 }
 
 export default function DeploymentHistoryConfigList({
-  setFullScreenView,
+    setFullScreenView,
     deploymentHistoryList,
     setDeploymentHistoryList: setDeploymentHistoryList,
 }: TemplateConfiguration) {
@@ -32,7 +32,13 @@ export default function DeploymentHistoryConfigList({
         })
     }, [triggerId])
 
-    const getNavLink = (index:number , componentId: number, componentName: string, key: string, childComponentName?: string) => {
+    const getNavLink = (
+        index: number,
+        componentId: number,
+        componentName: string,
+        key: string,
+        childComponentName?: string,
+    ) => {
         const currentComponent = DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[componentName]
         const configURL = `${match.url}/${currentComponent.VALUE}/${componentId}${
             childComponentName ? `/${childComponentName}` : ''

@@ -66,7 +66,8 @@ export const COPIED_MESSAGE = 'Copied!'
 export const PROJECT_EXIST_MSG = 'This Project already exists.'
 
 export const CustomErrorMessage = {
-    CUSTOM_TAG_ERROR_MSG: 'Allowed: Alphanumeric characters, including (_) (.) (-) but cannot begin or end with (.) or (-).',
+    CUSTOM_TAG_ERROR_MSG:
+        'Allowed: Alphanumeric characters, including (_) (.) (-) but cannot begin or end with (.) or (-).',
     CUSTOM_TAG_MANDATORY_X: 'Using variable {x} is mandatory',
     CUSTOM_TAG_LIMIT: 'Max 128 characters.',
     INVALID_IMAGE_PATTERN: 'Invalid image tag pattern',
@@ -257,9 +258,9 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'No deployments',
         SUBTITLE: 'No deployment history available for the',
     },
-    CHART:{
+    CHART: {
         NO_SOURCE_TITLE: 'No chart source configured',
-        NO_CHART_FOUND: 'Could not find any matching chart source'
+        NO_CHART_FOUND: 'Could not find any matching chart source',
     },
     CHART_DEPLOYMENT_HISTORY: {
         SUBTITLE:
@@ -407,11 +408,12 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'The trigger you are looking for does not exist',
     },
     OVERVIEW: {
-        DEPLOYMENT_TITLE: 'Explore your application\'s deployment landscape',
-        DEPLOYMENT_SUB_TITLE: 'Although there are no deployments to display just yet, it\'s the perfect time to start configuring and deploying your app to various environments. Let\'s go!',
+        DEPLOYMENT_TITLE: "Explore your application's deployment landscape",
+        DEPLOYMENT_SUB_TITLE:
+            "Although there are no deployments to display just yet, it's the perfect time to start configuring and deploying your app to various environments. Let's go!",
         APP_DESCRIPTION: 'Write a short description for this application',
-        JOB_DESCRIPTION: 'Write a short description for this job'
-    }
+        JOB_DESCRIPTION: 'Write a short description for this job',
+    },
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'
@@ -429,5 +431,5 @@ export const NO_TASKS_CONFIGURED_ERROR = 'No tasks are configured in this job pi
 
 export const FEATURE_DISABLED = 'This feature is disabled'
 
-export const DUPLICATE_PIPELINE_NAME_VALIDATION = "You cannot use same name for pipeline within an app."
-export const GENERATE_TOKEN_NAME_VALIDATION = "Token name is required to generate token"
+export const DUPLICATE_PIPELINE_NAME_VALIDATION = 'You cannot use same name for pipeline within an app.'
+export const GENERATE_TOKEN_NAME_VALIDATION = 'Token name is required to generate token'

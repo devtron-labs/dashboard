@@ -9,7 +9,9 @@ import { ChartUsedCardType } from '../environment.type'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 
 const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: ChartUsedCardType) => {
-    if (cardLoading) return <LoadingCard />
+    if (cardLoading) {
+        return <LoadingCard />
+    }
 
     return (
         <div

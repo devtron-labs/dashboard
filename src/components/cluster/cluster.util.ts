@@ -33,8 +33,8 @@ export function getEnvName(components: ClusterComponentType[], agentInstallation
         ]
     }
 
-    let str = nonTerminatingStatus.join('')
-    let c = components?.find((c) => str.search(c.status) >= 0)
+    const str = nonTerminatingStatus.join('')
+    const c = components?.find((c) => str.search(c.status) >= 0)
     return c?.envName
 }
 
@@ -46,10 +46,12 @@ export function getClusterTerminalParamsData(
     clusterShellList: OptionType[],
     node: string,
 ): ClusterTerminalParamsType {
-    if (!nodeList || nodeList.length === 0) return emptyClusterTerminalParamsData
+    if (!nodeList || nodeList.length === 0) {
+        return emptyClusterTerminalParamsData
+    }
     const _selectedImage = imageList.find((image) => image.value === params.get('image'))
     const _selectedNamespace = namespaceList.find((namespace) => namespace.value === params.get('namespace'))
-    let nodeOptionList: OptionType[] = []
+    const nodeOptionList: OptionType[] = []
     nodeList?.forEach((item) => nodeOptionList.push(...item.options))
 
     const _selectedNode: OptionType =

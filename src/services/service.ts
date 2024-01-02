@@ -13,7 +13,7 @@ import {
     ClusterListResponse,
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
-    AllWorkflows
+    AllWorkflows,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
@@ -128,7 +128,7 @@ export function getAvailableCharts(
     })
 }
 
-export function getEnvironmentListMin(includeAllowedDeploymentTypes?:boolean): Promise<any> {
+export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): Promise<any> {
     const url = `${Routes.ENVIRONMENT_LIST_MIN}${includeAllowedDeploymentTypes ? '?showDeploymentOptions=true' : ''}`
     return get(url)
 }
@@ -137,9 +137,11 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
-export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?:boolean) {
+export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?: boolean) {
     return get(
-        `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''}`,
+        `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${
+            includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''
+        }`,
     )
 }
 
@@ -149,7 +151,9 @@ export function getClusterListMin() {
 }
 
 export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status${isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''}`
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status${
+        isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''
+    }`
     return get(URL)
 }
 
@@ -171,8 +175,8 @@ export function getJobOtherEnvironmentMin(appId): Promise<AppOtherEnvironment> {
 export function addJobEnvironment(data): Promise<ResponseType> {
     const URL = `${Routes.JOB_CONFIG_ENVIRONMENTS}`
     const payload = {
-        envId: (Number)(data.envId),
-        appId: (Number)(data.appId)
+        envId: Number(data.envId),
+        appId: Number(data.appId),
     }
     return post(URL, payload)
 }
@@ -180,8 +184,8 @@ export function addJobEnvironment(data): Promise<ResponseType> {
 export function deleteJobEnvironment(data): Promise<ResponseType> {
     const URL = `${Routes.JOB_CONFIG_ENVIRONMENTS}`
     const payload = {
-        envId: (Number)(data.envId),
-        appId: (Number)(data.appId)
+        envId: Number(data.envId),
+        appId: Number(data.appId),
     }
     return trash(URL, payload)
 }
@@ -207,20 +211,20 @@ export const getAllWorkflowsForAppNames = (appNames: string[], signal?: AbortSig
 }
 
 export function getWorkflowList(appId, filteredEnvIds?: string) {
-  let filteredEnvParams = ''
-  if (filteredEnvIds) {
-      filteredEnvParams = `?envIds=${filteredEnvIds}`
-  }
-  const URL = `${Routes.WORKFLOW}/${appId}${filteredEnvParams}`
-  return get(URL)
+    let filteredEnvParams = ''
+    if (filteredEnvIds) {
+        filteredEnvParams = `?envIds=${filteredEnvIds}`
+    }
+    const URL = `${Routes.WORKFLOW}/${appId}${filteredEnvParams}`
+    return get(URL)
 }
 
 export function getWorkflowViewList(appId, filteredEnvIds?: string) {
-  let filteredEnvParams = ''
-  if (filteredEnvIds) {
-      filteredEnvParams = `?envIds=${filteredEnvIds}`
-  }
-  return get(`${Routes.WORKFLOW}/view/${appId}${filteredEnvParams}`)
+    let filteredEnvParams = ''
+    if (filteredEnvIds) {
+        filteredEnvParams = `?envIds=${filteredEnvIds}`
+    }
+    return get(`${Routes.WORKFLOW}/view/${appId}${filteredEnvParams}`)
 }
 
 export function stopStartApp(AppId, EnvironmentId, RequestType) {
@@ -237,15 +241,15 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
 }
 
 function parseLastExecutionResponse(response): LastExecutionResponseType {
-    let vulnerabilities = response.result.vulnerabilities || []
-    let critical = vulnerabilities
+    const vulnerabilities = response.result.vulnerabilities || []
+    const critical = vulnerabilities
         .filter((v) => v.severity === 'critical')
         .sort((a, b) => sortCallback('cveName', a, b))
-    let moderate = vulnerabilities
+    const moderate = vulnerabilities
         .filter((v) => v.severity === 'moderate')
         .sort((a, b) => sortCallback('cveName', a, b))
-    let low = vulnerabilities.filter((v) => v.severity === 'low').sort((a, b) => sortCallback('cveName', a, b))
-    let groupedVulnerabilities = critical.concat(moderate, low)
+    const low = vulnerabilities.filter((v) => v.severity === 'low').sort((a, b) => sortCallback('cveName', a, b))
+    const groupedVulnerabilities = critical.concat(moderate, low)
     return {
         ...response,
         result: {
@@ -357,11 +361,11 @@ export function getChartRepoList(): Promise<ResponseType> {
 }
 
 export function getChartRepoListMin(): Promise<ResponseType> {
-    const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH_MIN}`;
-    return get(URL);
+    const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH_MIN}`
+    return get(URL)
 }
 
-export function getHostURLConfiguration(key: string = 'url'): Promise<ResponseType> {
+export function getHostURLConfiguration(key = 'url'): Promise<ResponseType> {
     const URL = `${Routes.HOST_URL}?key=${key}`
     return get(URL)
 }
@@ -408,8 +412,8 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
         const {
             result: { chartRefs, latestAppChartRef },
         } = response
-        let selectedChartId = latestAppChartRef
-        let chart = chartRefs?.find((chart) => selectedChartId === chart.id)
+        const selectedChartId = latestAppChartRef
+        const chart = chartRefs?.find((chart) => selectedChartId === chart.id)
         return {
             code: response.code,
             status: response.status,
@@ -419,11 +423,11 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
 }
 
 export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
-  let envParam = ''
-  if (envId) {
-      envParam = `/${envId}`
-  }
-  return get(`${Routes.CHART_REFERENCES_MIN}/${appId}${envParam}`)
+    let envParam = ''
+    if (envId) {
+        envParam = `/${envId}`
+    }
+    return get(`${Routes.CHART_REFERENCES_MIN}/${appId}${envParam}`)
 }
 
 export function getAppChartRefForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
@@ -431,8 +435,8 @@ export function getAppChartRefForAppAndEnv(appId: number, envId?: number): Promi
         const {
             result: { chartRefs, latestEnvChartRef, latestAppChartRef },
         } = response
-        let selectedChartId = latestEnvChartRef || latestAppChartRef
-        let chart = chartRefs?.find((chart) => selectedChartId === chart.id)
+        const selectedChartId = latestEnvChartRef || latestAppChartRef
+        const chart = chartRefs?.find((chart) => selectedChartId === chart.id)
         return {
             code: response.code,
             status: response.status,
@@ -486,7 +490,7 @@ export function getEnvironmentListHelmApps(): Promise<EnvironmentListHelmRespons
 }
 
 export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailList> {
-    let url = `${Routes.CLUSTER_ENV_MAPPING}`
+    const url = `${Routes.CLUSTER_ENV_MAPPING}`
     return get(url)
 }
 
@@ -520,7 +524,7 @@ export function updatePostHogEvent(payload): Promise<ResponseType> {
     return post(Routes.TELEMETRY_EVENT, payload)
 }
 
-export const validateContainerConfiguration = (request: any):Promise<any> => {
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/validate`;
-    return post(URL, request);
+export const validateContainerConfiguration = (request: any): Promise<any> => {
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/validate`
+    return post(URL, request)
 }

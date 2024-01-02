@@ -1,16 +1,9 @@
 import React, { useState } from 'react'
-import {
-    showError,
-    Progressing,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Success } from '../../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-error-exclamation.svg'
-import {
-    RotatePodsRequest,
-    RotatePodsResponseTargetObject,
-    RotateResponseModalProps,
-} from './rotatePodsModal.type'
+import { RotatePodsRequest, RotatePodsResponseTargetObject, RotateResponseModalProps } from './rotatePodsModal.type'
 import '../scaleWorkloads/scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -19,7 +12,12 @@ import { RotatePods } from './rotatePodsModal.service'
 import { toast } from 'react-toastify'
 import { POD_ROTATION_INITIATED } from '../../../../../config'
 import { ReactComponent as BackIcon } from '../../../../../assets/icons/ic-arrow-backward.svg'
-export default function RotateResponseModal({ onClose, response, setResult, callAppDetailsAPI}: RotateResponseModalProps) {
+export default function RotateResponseModal({
+    onClose,
+    response,
+    setResult,
+    callAppDetailsAPI,
+}: RotateResponseModalProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
 
@@ -130,10 +128,10 @@ export default function RotateResponseModal({ onClose, response, setResult, call
     }
 
     return (
-            <>
-                {renderHeaderSection()}
-                {renderResponseBodySection()}
-                {renderFooterSection()}
-            </>
+        <>
+            {renderHeaderSection()}
+            {renderResponseBodySection()}
+            {renderFooterSection()}
+        </>
     )
 }

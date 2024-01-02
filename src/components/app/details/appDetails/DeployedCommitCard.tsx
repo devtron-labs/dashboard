@@ -39,8 +39,12 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
         }
     }, [envId, ciArtifactId])
 
-    if (noValidCommit) return null
-    if (cardLoading || !commitId) return <LoadingCard />
+    if (noValidCommit) {
+        return null
+    }
+    if (cardLoading || !commitId) {
+        return <LoadingCard />
+    }
 
     return (
         <div

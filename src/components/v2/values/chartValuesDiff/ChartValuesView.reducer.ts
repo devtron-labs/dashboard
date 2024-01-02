@@ -1,11 +1,6 @@
 import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
-import {ChartValuesType, ChartVersionType} from '../../../charts/charts.types'
-import {
-    ChartValuesViewAction,
-    ChartValuesViewActionTypes,
-    ChartValuesViewState,
-} from './ChartValuesView.type'
-
+import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
+import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 
 export const initState = (
     selectedVersionFromParent: number,
@@ -68,7 +63,7 @@ export const initState = (
         invalidProject: false,
         formValidationError: {},
         showNoGitOpsWarning: false,
-        deploymentAppType: DeploymentAppTypes.HELM
+        deploymentAppType: DeploymentAppTypes.HELM,
     }
 }
 
@@ -169,9 +164,9 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
         case ChartValuesViewActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         case ChartValuesViewActionTypes.showNoGitOpsWarning:
-          return { ...state, showNoGitOpsWarning: action.payload }
+            return { ...state, showNoGitOpsWarning: action.payload }
         case ChartValuesViewActionTypes.selectedDeploymentApp:
-            return {...state, deploymentAppType: action.payload}
+            return { ...state, deploymentAppType: action.payload }
         default:
             return state
     }

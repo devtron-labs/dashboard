@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router'
 import { ChartValuesType } from '../charts.types'
 
-export interface DiscoverChartDetailsProps extends RouteComponentProps<{ chartId: string }> {}
+export type DiscoverChartDetailsProps = RouteComponentProps<{ chartId: string }>
 
 export interface DeploymentProps {
     icon?: string

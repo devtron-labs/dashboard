@@ -10,14 +10,13 @@ export default function ClusterNodeEmptyState({
     title?: string
     actionHandler?: () => void
 }) {
-
-  const renderClearSearchButton = () => {
-      return (
-          <button onClick={actionHandler} className="add-link cta flex">
-              Clear search
-          </button>
-      )
-  }
+    const renderClearSearchButton = () => {
+        return (
+            <button onClick={actionHandler} className="add-link cta flex">
+                Clear search
+            </button>
+        )
+    }
     return (
         <GenericEmptyState
             image={emptyCustomChart}
@@ -25,7 +24,7 @@ export default function ClusterNodeEmptyState({
             subTitle={EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.SUBTITLE}
             isButtonAvailable={true}
             renderButton={renderClearSearchButton}
-            classname='dc__position-rel-imp'
+            classname="dc__position-rel-imp"
         />
     )
 }

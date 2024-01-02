@@ -56,7 +56,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     }
 
     componentDidMount() {
-        let params = {
+        const params = {
             envId: this.props.envId,
             ciArtifactId: this.props.ciArtifactId,
         }
@@ -74,17 +74,19 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     }
 
     selectMaterial(materialId: string): void {
-        let materials = this.state.materials.map((material) => {
+        const materials = this.state.materials.map((material) => {
             if (String(material.id) === materialId) {
                 material.isSelected = true
-            } else material.isSelected = false
+            } else {
+                material.isSelected = false
+            }
             return material
         })
         this.setState({ materials: materials })
     }
 
     toggleChanges(materialId: string, commit: string): void {
-        let materials = this.state.materials.map((material) => {
+        const materials = this.state.materials.map((material) => {
             if (String(material.id) === materialId) {
                 material.history = material.history.map((hist) => {
                     if (hist.commit === commit) {

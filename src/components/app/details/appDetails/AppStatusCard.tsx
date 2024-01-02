@@ -37,7 +37,9 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
         )
     }
 
-    if (cardLoading) return <LoadingCard wider={displayMessage} />
+    if (cardLoading) {
+        return <LoadingCard wider={displayMessage} />
+    }
 
     return (
         <div

@@ -159,6 +159,7 @@ export default function DeploymentConfigFormCTA({
                                             href={DOCUMENTATION.APP_METRICS}
                                             target="_blank"
                                             className="fw-4 cb-5 dc__underline-onhover"
+                                            rel="noreferrer"
                                         >
                                             {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
                                         </a>

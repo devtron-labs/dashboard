@@ -150,7 +150,6 @@ export default function ChartValuesEditor({
         selectedManifestVersionForDiff: null,
     })
 
-
     useEffect(() => {
         const ExternalModeCondition = chartValuesList.length > 0 && isExternalApp
         const FullModeCondition =
@@ -213,7 +212,7 @@ export default function ChartValuesEditor({
     }, [chartValuesList, deploymentHistoryList, selectedChartValues])
 
     useEffect(() => {
-        if (comparisonView && valuesForDiffState.selectedVersionForDiff) { 
+        if (comparisonView && valuesForDiffState.selectedVersionForDiff) {
             setValuesForDiffState({
                 ...valuesForDiffState,
                 loadingValuesForDiff: true,
@@ -254,11 +253,11 @@ export default function ChartValuesEditor({
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
                             const _manifestsForDiff = valuesForDiffState.manifestsForDiff
-                            let _selectedValues : string
+                            let _selectedValues: string
                             try {
                                 _selectedValues = YAML.stringify(JSON.parse(res.result.valuesYaml))
                             } catch (error) {
-                                _selectedValues = res.result.valuesYaml 
+                                _selectedValues = res.result.valuesYaml
                             }
                             _valuesForDiff.set(_version, _selectedValues)
                             _manifestsForDiff.set(_version, res.result.manifest)
@@ -339,17 +338,25 @@ export default function ChartValuesEditor({
 
     const getDynamicClassName = (): string => {
         if (isDeployChartView) {
-            if (!showInfoText || showEditorHeader) return 'sub130-vh'
+            if (!showInfoText || showEditorHeader) {
+                return 'sub130-vh'
+            }
             return manifestView ? 'sub193-vh' : 'sub160-vh'
         }
 
         if (comparisonView) {
-            if (manifestView) return 'sub193-vh'
+            if (manifestView) {
+                return 'sub193-vh'
+            }
             return 'sub160-vh'
         }
 
-        if (manifestView) return 'sub222-vh'
-        if (showEditorHeader) return 'sub160-vh'
+        if (manifestView) {
+            return 'sub222-vh'
+        }
+        if (showEditorHeader) {
+            return 'sub160-vh'
+        }
         return 'sub189-vh'
     }
 

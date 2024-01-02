@@ -45,12 +45,7 @@ export default function ChartVersionSelectorModal({
             return (
                 <div className="fw-4 fs-13 cn-7">
                     <span className="cr-5">{cardDetail.noDataSubtitle[0]}</span>&nbsp;
-                    <a
-                        className="dc__link"
-                        href={cardDetail.helpLink}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                    >
+                    <a className="dc__link" href={cardDetail.helpLink} rel="noreferrer noopener" target="_blank">
                         {cardDetail.noDataSubtitle[1]}
                     </a>
                 </div>

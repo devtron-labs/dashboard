@@ -68,11 +68,13 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
         return (
             <>
                 {this.props.material?.history?.map((history, index) => {
-                    let classes = `material-history w-auto mt-12 ${history.isSelected ? 'material-history-selected' : ''}`
+                    let classes = `material-history w-auto mt-12 ${
+                        history.isSelected ? 'material-history-selected' : ''
+                    }`
                     if (this.props.selectCommit) {
                         classes = `${classes}`
                     }
-                    let _commitId =
+                    const _commitId =
                         this.props.material.type == SourceTypeMap.WEBHOOK && history.webhookData
                             ? history.webhookData.id.toString()
                             : history.commit
@@ -86,7 +88,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={this.props.material.gitURL}
-                                showMaterialInfoHeader={this.props.pipelineName===""}
+                                showMaterialInfoHeader={this.props.pipelineName === ''}
                                 commitInfo={history}
                                 materialSourceType={this.props.material.type}
                                 selectedCommitInfo={this.props.selectCommit}

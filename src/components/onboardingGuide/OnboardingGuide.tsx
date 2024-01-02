@@ -124,7 +124,9 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                         >
                             {SKIP_AND_EXPLORE_NOTE}
                         </NavLink>
-                        <div className="cn-7" data-testid="tip-return-from-help-menu">{TIP_RETURN_FROM_HELP_MENU}</div>
+                        <div className="cn-7" data-testid="tip-return-from-help-menu">
+                            {TIP_RETURN_FROM_HELP_MENU}
+                        </div>
                     </div>
                 </div>
             </div>

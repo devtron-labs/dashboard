@@ -47,7 +47,7 @@ const LATEST_TRIGGER_CONFIG_OPTION = {
 }
 
 export const getDeployConfigOptions = (isRollbackTriggerSelected: boolean, isRecentDeployConfigPresent: boolean) => {
-    let configOptionsList = [
+    const configOptionsList = [
         {
             label: 'Select a configuration to deploy',
             options: [LAST_SAVED_CONFIG_OPTION],

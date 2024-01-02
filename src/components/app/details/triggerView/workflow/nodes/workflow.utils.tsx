@@ -1,5 +1,5 @@
 import React from 'react'
-import Tippy from '@tippyjs/react';
+import Tippy from '@tippyjs/react'
 
 export const envDescriptionTippy = (environmentName: string, description: string) => {
     return (

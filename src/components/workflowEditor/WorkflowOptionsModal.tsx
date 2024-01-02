@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { VisibleModal, showError, stopPropagation, WorkflowNodeType, PipelineType, } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    VisibleModal,
+    showError,
+    stopPropagation,
+    WorkflowNodeType,
+    PipelineType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import selectWorkflowSource from '../../assets/img/select-image-source.png'
 import changeCI from '../../assets/img/change-source.png'
 import {

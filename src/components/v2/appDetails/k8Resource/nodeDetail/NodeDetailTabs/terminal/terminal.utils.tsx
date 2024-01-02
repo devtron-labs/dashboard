@@ -31,7 +31,9 @@ import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from '.
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
-    if (selectData.hideTerminalStripComponent) return null
+    if (selectData.hideTerminalStripComponent) {
+        return null
+    }
     return (
         <>
             <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />
@@ -69,7 +71,9 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
 }
 
 const reactSelect = (selectData: ReactSelectType) => {
-    if (selectData.hideTerminalStripComponent) return null
+    if (selectData.hideTerminalStripComponent) {
+        return null
+    }
     return (
         <>
             {selectData.showDivider && <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />}
@@ -91,18 +95,24 @@ const reactSelect = (selectData: ReactSelectType) => {
 }
 
 const titleName = (titleData: WrapperTitleType) => {
-    if (titleData.hideTerminalStripComponent) return null
+    if (titleData.hideTerminalStripComponent) {
+        return null
+    }
     return (
         <>
             <div className="cn-6 mr-16">{titleData.title}</div>
-            <div className="flex fw-6 fs-13 mr-20" data-testid={titleData.dataTestId} >{titleData.value}</div>
+            <div className="flex fw-6 fs-13 mr-20" data-testid={titleData.dataTestId}>
+                {titleData.value}
+            </div>
             <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
         </>
     )
 }
 
 const connectionButton = (connectData: ConnectionButtonType) => {
-    if (connectData.hideTerminalStripComponent) return null
+    if (connectData.hideTerminalStripComponent) {
+        return null
+    }
     return (
         <Tippy
             className="default-tt"
@@ -112,11 +122,19 @@ const connectionButton = (connectData: ConnectionButtonType) => {
         >
             {connectData.connectTerminal ? (
                 <span className="flex mr-8">
-                    <Disconnect className="icon-dim-16 mr-4 cursor" data-testid="node-details-terminal-disconnect" onClick={connectData.closeTerminalModal} />
+                    <Disconnect
+                        className="icon-dim-16 mr-4 cursor"
+                        data-testid="node-details-terminal-disconnect"
+                        onClick={connectData.closeTerminalModal}
+                    />
                 </span>
             ) : (
                 <span className="flex mr-8">
-                    <Connect className="icon-dim-16 mr-4 cursor" data-testid="node-details-terminal-connect" onClick={connectData.reconnectTerminal} />
+                    <Connect
+                        className="icon-dim-16 mr-4 cursor"
+                        data-testid="node-details-terminal-connect"
+                        onClick={connectData.reconnectTerminal}
+                    />
                 </span>
             )}
         </Tippy>
@@ -124,7 +142,9 @@ const connectionButton = (connectData: ConnectionButtonType) => {
 }
 
 const closeExpandView = (viewData: CloseExpandView) => {
-    if (viewData.hideTerminalStripComponent) return null
+    if (viewData.hideTerminalStripComponent) {
+        return null
+    }
     return (
         <span className="flex dc__align-right">
             {viewData.showExpand && (
@@ -161,7 +181,9 @@ const closeExpandView = (viewData: CloseExpandView) => {
 }
 
 const connectionSwitch = (switchProps: ConnectionSwitchType) => {
-    if (switchProps.hideTerminalStripComponent) return null
+    if (switchProps.hideTerminalStripComponent) {
+        return null
+    }
     return (
         <>
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
@@ -186,7 +208,9 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
 }
 
 const clearTerminal = (clearProps: ClearTerminalType) => {
-    if (clearProps.hideTerminalStripComponent) return null
+    if (clearProps.hideTerminalStripComponent) {
+        return null
+    }
     return (
         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
             <div className="flex mr-8" data-testid={clearProps.dataTestId}>
@@ -197,7 +221,9 @@ const clearTerminal = (clearProps: ClearTerminalType) => {
 }
 
 const debugModeToggleButton = (selectData: DebugModeType) => {
-    if (selectData.hideTerminalStripComponent) return null
+    if (selectData.hideTerminalStripComponent) {
+        return null
+    }
     return (
         <>
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
@@ -274,7 +300,11 @@ const manifestEditButtons = ({
         const config = buttonConfig[buttonSelectionState] || buttonConfig.noEdit
 
         return (
-            <span className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left" data-testid={`${buttonSelectionState}-manifest`} onClick={config.onClick}>
+            <span
+                className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left"
+                data-testid={`${buttonSelectionState}-manifest`}
+                onClick={config.onClick}
+            >
                 {config.icon}
                 {config.message}
             </span>
@@ -286,7 +316,11 @@ const manifestEditButtons = ({
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EditModeType.NON_EDIT && (
-                <span className="ml-12 cn-7 fw-6 fs-12 cursor" data-testid="cancel-edit-manifest" onClick={cancelChanges}>
+                <span
+                    className="ml-12 cn-7 fw-6 fs-12 cursor"
+                    data-testid="cancel-edit-manifest"
+                    onClick={cancelChanges}
+                >
                     {MANIFEST_SELECTION_MESSAGE.CANCEL}
                 </span>
             )}

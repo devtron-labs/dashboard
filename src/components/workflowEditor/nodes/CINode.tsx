@@ -131,22 +131,13 @@ export class CINode extends Component<CINodeProps> {
                             <span className="workflow-node__text-light" data-testid="linked-indication-name">
                                 {!this.props.isJobView && pipeline}
                             </span>
-                            <Tippy
-                                className="default-tt"
-                                arrow={true}
-                                placement="bottom"
-                                content={this.props.title}
-                            >
+                            <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                                 <div className="dc__ellipsis-left">{this.props.title}</div>
                             </Tippy>
                             {this.props.isJobView && (
                                 <>
-                                    <span className="fw-4 fs-11">
-                                        Env: {env ? env.environment_name : DEFAULT_ENV}
-                                    </span>
-                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">
-                                        {!env && '(Default)'}
-                                    </span>
+                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : DEFAULT_ENV}</span>
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && '(Default)'}</span>
                                 </>
                             )}
                         </div>

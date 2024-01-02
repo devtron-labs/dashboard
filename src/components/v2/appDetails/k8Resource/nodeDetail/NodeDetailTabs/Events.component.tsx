@@ -15,7 +15,13 @@ function EventsComponent({
     isResourceBrowserView,
     selectedResource,
 }: ResourceInfoActionPropsType) {
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; namespace: string; }>()
+    const params = useParams<{
+        actionName: string
+        podName: string
+        nodeType: string
+        node: string
+        namespace: string
+    }>()
     const { url } = useRouteMatch()
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
@@ -31,14 +37,17 @@ function EventsComponent({
     }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
-        if (isDeleted) return
+        if (isDeleted) {
+            return
+        }
 
         try {
             getEvent(appDetails, params.podName, params.nodeType, isResourceBrowserView, selectedResource)
                 .then((response) => {
                     /* Sorting the EventList object on the basis of Last TimeStamp. */
-                    const eventResult = response.result.items || response.result.events && response.result.events.items || []
-                    eventResult.sort(((a, b) => {
+                    const eventResult =
+                        response.result.items || (response.result.events && response.result.events.items) || []
+                    eventResult.sort((a, b) => {
                         if (a.lastTimestamp > b.lastTimestamp) {
                             return -1
                         }
@@ -46,7 +55,7 @@ function EventsComponent({
                             return 1
                         }
                         return 0
-                    }))
+                    })
                     setEvents(eventResult)
                     setLoading(false)
                 })

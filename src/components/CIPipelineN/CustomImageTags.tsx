@@ -104,7 +104,8 @@ function CustomImageTags({
             <Tippy
                 content={
                     <div className="fs-12">
-                        {`{x}`} is an auto increasing number. It will increase by one on each {isCDBuild ? getCDStageTypeSelectorValue(formData.customTagStage).label : " build "} trigger.
+                        {`{x}`} is an auto increasing number. It will increase by one on each{' '}
+                        {isCDBuild ? getCDStageTypeSelectorValue(formData.customTagStage).label : ' build '} trigger.
                     </div>
                 }
                 placement="top"
@@ -211,7 +212,7 @@ function CustomImageTags({
                     <Edit className="icon-dim-20" onClick={toggleEditToShowCreateImageView} />
                 </div>
                 <div className="dc__italic-font-style cn-7">
-                    {`{X}`} = {formData.customTag.counterX} in the next {!isCDBuild ? " build " : "" }  trigger
+                    {`{X}`} = {formData.customTag.counterX} in the next {!isCDBuild ? ' build ' : ''} trigger
                     {isCDBuild && formData.customTagStage
                         ? ` of ${getCDStageTypeSelectorValue(formData.customTagStage).label}`
                         : ''}

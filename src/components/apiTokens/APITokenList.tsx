@@ -15,7 +15,6 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
-
 function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType) {
     const history = useHistory()
     const [showDeleteConfirmation, setDeleteConfirmation] = useState(false)
@@ -37,18 +36,17 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 className="w-300 h-100 fcv-5"
                 placement="right"
                 Icon={QuestionFilled}
-                heading={"API tokens"}
+                heading={'API tokens'}
                 infoText="Tokens you have generated that can be used to access the Devtron API."
                 showCloseButton={true}
                 trigger="click"
-                interactive = {true}
+                interactive={true}
                 documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
                 documentationLinkText="View Documentation"
             >
                 <div className="icon-dim-16 fcn-9 ml-8 cursor">
                     <Question />
                 </div>
-
             </TippyCustomized>
         )
     }
@@ -59,7 +57,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
 
     const handleEditRowAction = (e) => {
         const id = tokenList[e.currentTarget.dataset.index].id
-        handleGenerateRowActionButton('edit',id)
+        handleGenerateRowActionButton('edit', id)
     }
 
     const handleDelete = (e) => {
@@ -68,14 +66,14 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
     }
 
     const noMatchingResults = () => {
-      return (
-          <GenericEmptyState
-              image={NoResults}
-              title={EMPTY_STATE_STATUS.API_TOKEN.TITLE}
-              subTitle={EMPTY_STATE_STATUS.API_TOKEN.SUBTITLE}
-          />
-      )
-  }
+        return (
+            <GenericEmptyState
+                image={NoResults}
+                title={EMPTY_STATE_STATUS.API_TOKEN.TITLE}
+                subTitle={EMPTY_STATE_STATUS.API_TOKEN.SUBTITLE}
+            />
+        )
+    }
 
     return (
         <div className="bcn-0">
@@ -105,68 +103,72 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div></div>
                 </div>
                 <div className="dc__overflow-scroll api__list__height dc__position-rel">
-                    {!tokenList || tokenList.length === 0 ? (
-                        noMatchingResults()
-                    ) : (
-                        tokenList.map((list, index) => (
-                            <div
-                                key={`api_${index}`}
-                                data-testid="api-list-row"
-                                className="api-list__row api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
-                                style={{ height: '45px' }}
-                            >
-                                <button
-                                    type="button"
-                                    className="dc__transparent cursor flex"
-                                    data-index={index}
-                                    onClick={handleEditRowAction}
-                                >
-                                    <Key
-                                        className={`api-key-icon icon-dim-20 ${
-                                            isTokenExpired(list.expireAtInMs) ? 'api-key-expired-icon' : ''
-                                        }`}
-                                    />
-                                </button>
-                                <div className={`flexbox cb-5 cursor`} data-index={index} onClick={handleEditRowAction}>
-                                    <span className="dc__ellipsis-right">{list.name}</span>
-                                </div>
-                                <div className="dc__ellipsis-right">
-                                    {list.lastUsedAt ? moment(list.lastUsedAt).format(MomentDateFormat) : 'Never used'}
-                                </div>
-                                <div>{list.lastUsedByIp ? list.lastUsedByIp : '-'}</div>
-                                <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
-                                    {list.expireAtInMs === 0 ? (
-                                        'No expiration date'
-                                    ) : (
-                                        <>
-                                            {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
-                                            {moment(list.expireAtInMs).format(MomentDateFormat)}
-                                        </>
-                                    )}
-                                </div>
-                                <div className="api__row-actions flex right">
-                                    <button
-                                        type="button"
-                                        className="dc__transparent mr-12"
-                                        data-index={index}
-                                        data-testid="api-token-edit-button"
-                                        onClick={handleEditRowAction}
-                                    >
-                                        <Edit className="icon-dim-20" />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="dc__transparent"
-                                        data-index={index}
-                                        data-testid="api-token-delete-button"
-                                        onClick={handleDelete}
-                                    >
-                                        <Trash className="scn-6 icon-dim-20" />
-                                    </button>
-                                </div>
-                            </div>
-                        ))
-                    )}
+                    {!tokenList || tokenList.length === 0
+                        ? noMatchingResults()
+                        : tokenList.map((list, index) => (
+                              <div
+                                  key={`api_${index}`}
+                                  data-testid="api-list-row"
+                                  className="api-list__row api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                  style={{ height: '45px' }}
+                              >
+                                  <button
+                                      type="button"
+                                      className="dc__transparent cursor flex"
+                                      data-index={index}
+                                      onClick={handleEditRowAction}
+                                  >
+                                      <Key
+                                          className={`api-key-icon icon-dim-20 ${
+                                              isTokenExpired(list.expireAtInMs) ? 'api-key-expired-icon' : ''
+                                          }`}
+                                      />
+                                  </button>
+                                  <div
+                                      className={`flexbox cb-5 cursor`}
+                                      data-index={index}
+                                      onClick={handleEditRowAction}
+                                  >
+                                      <span className="dc__ellipsis-right">{list.name}</span>
+                                  </div>
+                                  <div className="dc__ellipsis-right">
+                                      {list.lastUsedAt
+                                          ? moment(list.lastUsedAt).format(MomentDateFormat)
+                                          : 'Never used'}
+                                  </div>
+                                  <div>{list.lastUsedByIp ? list.lastUsedByIp : '-'}</div>
+                                  <div className={`${isTokenExpired(list.expireAtInMs) ? 'cr-5' : ''}`}>
+                                      {list.expireAtInMs === 0 ? (
+                                          'No expiration date'
+                                      ) : (
+                                          <>
+                                              {isTokenExpired(list.expireAtInMs) ? 'Expired on ' : ''}
+                                              {moment(list.expireAtInMs).format(MomentDateFormat)}
+                                          </>
+                                      )}
+                                  </div>
+                                  <div className="api__row-actions flex right">
+                                      <button
+                                          type="button"
+                                          className="dc__transparent mr-12"
+                                          data-index={index}
+                                          data-testid="api-token-edit-button"
+                                          onClick={handleEditRowAction}
+                                      >
+                                          <Edit className="icon-dim-20" />
+                                      </button>
+                                      <button
+                                          type="button"
+                                          className="dc__transparent"
+                                          data-index={index}
+                                          data-testid="api-token-delete-button"
+                                          onClick={handleDelete}
+                                      >
+                                          <Trash className="scn-6 icon-dim-20" />
+                                      </button>
+                                  </div>
+                              </div>
+                          ))}
                 </div>
                 {showDeleteConfirmation && selectedToken && (
                     <DeleteAPITokenModal

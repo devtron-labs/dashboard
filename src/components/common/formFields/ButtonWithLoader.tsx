@@ -19,7 +19,9 @@ export class ButtonWithLoader extends Component<ButtonProps> {
     }
 
     clickHandler(event) {
-        if (!this.props.isLoading && this.props.onClick) this.props.onClick(event)
+        if (!this.props.isLoading && this.props.onClick) {
+            this.props.onClick(event)
+        }
     }
 
     render() {

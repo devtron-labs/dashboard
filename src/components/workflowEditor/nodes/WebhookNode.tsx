@@ -40,7 +40,6 @@ export function WebhookNode({
             })
         }
     }
-    
 
     const renderWebhookCard = (): JSX.Element => {
         return (

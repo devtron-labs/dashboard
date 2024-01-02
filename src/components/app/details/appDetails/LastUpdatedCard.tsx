@@ -6,11 +6,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-clock-counterclockwise.svg'
 import LoadingCard from './LoadingCard'
 
-const LastUpdatedCard = ({
-    deploymentTriggerTime,
-    triggeredBy,
-    cardLoading
-}: LastUpdatedCardType) => {
+const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: LastUpdatedCardType) => {
     const history = useHistory()
     const match = useRouteMatch()
 
@@ -18,7 +14,9 @@ const LastUpdatedCard = ({
         history.push(`${match.url.split(URLS.APP_DETAILS)[0]}${URLS.APP_DEPLOYMNENT_HISTORY}`)
     }
 
-    if(cardLoading) return <LoadingCard />
+    if (cardLoading) {
+        return <LoadingCard />
+    }
 
     return (
         <div

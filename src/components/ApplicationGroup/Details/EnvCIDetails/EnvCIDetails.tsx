@@ -58,8 +58,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
                     if (!_filteredPipelines.length && pipelineId) {
                         replace(generatePath(path, { envId }))
-                    }
-                    else if (!selectedPipelineExist && _filteredPipelines.length ) {
+                    } else if (!selectedPipelineExist && _filteredPipelines.length) {
                         replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
                     }
                     setPipelineList(_filteredPipelines)
@@ -161,7 +160,9 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     }
 
     async function pollHistory() {
-        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) {
+            return
+        }
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(pipelineId, { offset: 0, size: pagination.offset + pagination.size }),

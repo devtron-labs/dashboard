@@ -31,5 +31,5 @@ export const MODAL_STATE = {
     /**
      * Value when the modal is open
      */
-    value: 'open'
+    value: 'open',
 } as const

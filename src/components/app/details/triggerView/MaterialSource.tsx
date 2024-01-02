@@ -12,7 +12,7 @@ export default function MaterialSource({
     selectMaterial,
     ciPipelineId,
     fromTriggerInfo,
-    clearSearch
+    clearSearch,
 }: MaterialSourceProps) {
     const renderErrorMessage = (mat: CIMaterialType): string => {
         if (mat.isRepoError) {

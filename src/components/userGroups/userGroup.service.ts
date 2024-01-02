@@ -1,8 +1,7 @@
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { get, post, put, trash, ResponseType, getTeamListMin, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import { CreateGroup, CreateUser, Custom_Roles } from './userGroups.types'
-import { Routes} from '../../config'
-
+import { Routes } from '../../config'
 
 export function getData() {
     return Promise.all([getTeamListMin(), getAppListMin(), getEnvironmentListMin()]).then(
@@ -36,7 +35,7 @@ export function getActionList() {
 }
 
 export function getParsedData(teamList, appList, environmentList) {
-    let lists = {
+    const lists = {
         team: teamList.result
             ? teamList.result.map((team) => {
                   return { value: team.name, name: team.name }
@@ -54,7 +53,7 @@ export function getParsedData(teamList, appList, environmentList) {
             : [],
         action: getActionList().result,
     }
-    let response = {
+    const response = {
         lists: lists,
         code: teamList.code || appList.code || environmentList.code,
     }
@@ -170,9 +169,9 @@ export function getUsersDataToExport(): Promise<UsersDataToExportResponse> {
 export function getGroupsDataToExport(): Promise<GroupsDataToExportResponse> {
     return get(Routes.ALL_GROUPS_LIST)
 }
- export interface customRoles extends ResponseType {
-     result?: Custom_Roles[]
- }
- export function getCustomRoles(): Promise<customRoles> {
-     return get(Routes.CUSTOM_ROLES)
- }
+export interface customRoles extends ResponseType {
+    result?: Custom_Roles[]
+}
+export function getCustomRoles(): Promise<customRoles> {
+    return get(Routes.CUSTOM_ROLES)
+}

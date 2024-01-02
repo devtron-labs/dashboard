@@ -337,7 +337,9 @@ export default function ClusterTerminal({
     }, [socketConnection, terminalAccessIdRef.current])
 
     function getNewSession() {
-        if (!terminalAccessIdRef.current) return
+        if (!terminalAccessIdRef.current) {
+            return
+        }
         setSocketConnection(SocketConnectionType.CONNECTING)
         // It might be that we dont have resourceData.
         getClusterData(
@@ -352,8 +354,9 @@ export default function ClusterTerminal({
     }
 
     const getClusterData = (url: string, terminalId: number, count: number) => {
-        if (terminalId !== terminalAccessIdRef.current) return
-        else if (
+        if (terminalId !== terminalAccessIdRef.current) {
+            return
+        } else if (
             clusterTimeOut &&
             (socketConnection === SocketConnectionType.DISCONNECTED ||
                 socketConnection === SocketConnectionType.DISCONNECTING)
@@ -401,7 +404,9 @@ export default function ClusterTerminal({
     const preFetchData = (podState = '', status = '') => {
         const _terminal = terminalRef.current
         let startingText = TERMINAL_STATUS.CREATE
-        if (!_terminal) return
+        if (!_terminal) {
+            return
+        }
 
         _terminal.reset()
 
@@ -649,11 +654,11 @@ export default function ClusterTerminal({
         return (
             <div className="p-12 fs-13">
                 {CLUSTER_TERMINAL_MESSAGING.SELECT_UTILITY}&nbsp;
-                <a href={NETSHOOT_LINK} target="_blank">
+                <a href={NETSHOOT_LINK} target="_blank" rel="noreferrer">
                     {CLUSTER_TERMINAL_MESSAGING.NETSHOOT}
                 </a>
                 ,&nbsp;
-                <a href={BUSYBOX_LINK} target="_blank">
+                <a href={BUSYBOX_LINK} target="_blank" rel="noreferrer">
                     {CLUSTER_TERMINAL_MESSAGING.BUSYBOX}
                 </a>
                 {CLUSTER_TERMINAL_MESSAGING.DEBUG_CLUSTER}
@@ -844,7 +849,7 @@ export default function ClusterTerminal({
         setShowPodExistPopup(isClose)
     }
 
-    const hideShell: boolean = !(connectTerminal && isPodCreated && !selectedTabIndex)
+    const hideShell = !(connectTerminal && isPodCreated && !selectedTabIndex)
     const showManagedFieldsCheckbox: boolean =
         selectedTabIndex === 2 && isManifestAvailable && manifestButtonState === EditModeType.NON_EDIT
 

@@ -143,7 +143,7 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
         setCollapsedPosition(data)
     }
 
-    if (!isActive)
+    if (!isActive) {
         return (
             <Draggable
                 bounds={bounds}
@@ -175,6 +175,7 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
                 </div>
             </Draggable>
         )
+    }
 
     return (
         <Draggable

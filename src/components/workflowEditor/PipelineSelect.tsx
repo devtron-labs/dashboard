@@ -7,7 +7,7 @@ import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
 import webhook from '../../assets/img/webhook.svg'
 import ciJobIcon from '../../assets/icons/ic-job-node.svg'
 import { CIPipelineNodeType } from '../app/details/triggerView/types'
-import { Modal, PipelineType, } from '@devtron-labs/devtron-fe-common-lib'
+import { Modal, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 
 /**
  * @deprecated
@@ -99,12 +99,14 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
     }
 
     render() {
-        if (!this.props.showMenu) return null
-        else
+        if (!this.props.showMenu) {
+            return null
+        } else {
             return (
                 <Modal onClick={this.props.toggleCIMenu} style={{ ...this.props.styles }}>
                     {this.renderCIMenu()}
                 </Modal>
             )
+        }
     }
 }

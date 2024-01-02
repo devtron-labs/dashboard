@@ -8,7 +8,7 @@ export function ErrorInfoStatusBar({
     type,
     errorMessage,
     hideVerticalConnector,
-    hideErrorIcon
+    hideErrorIcon,
 }: ErrorInfoStatusBarType) {
     return nonDeploymentError === type ? (
         <>

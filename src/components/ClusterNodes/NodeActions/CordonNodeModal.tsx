@@ -30,9 +30,7 @@ export default function CordonNodeModal({ name, version, kind, unschedulable, cl
             }
             await cordonNodeCapacity(payload)
             toast.success(
-                unschedulable
-                    ? CORDON_NODE_MODAL_MESSAGING.uncordoning
-                    : CORDON_NODE_MODAL_MESSAGING.cordoning,
+                unschedulable ? CORDON_NODE_MODAL_MESSAGING.uncordoning : CORDON_NODE_MODAL_MESSAGING.cordoning,
             )
             closePopup(true)
         } catch (err) {
@@ -62,12 +60,7 @@ export default function CordonNodeModal({ name, version, kind, unschedulable, cl
                 </>
             )}
             <ConfirmationDialog.ButtonGroup>
-                <button
-                    type="button"
-                    className="flex cta cancel h-36"
-                    disabled={apiCallInProgress}
-                    onClick={onClose}
-                >
+                <button type="button" className="flex cta cancel h-36" disabled={apiCallInProgress} onClick={onClose}>
                     {CORDON_NODE_MODAL_MESSAGING.cancel}
                 </button>
                 <button

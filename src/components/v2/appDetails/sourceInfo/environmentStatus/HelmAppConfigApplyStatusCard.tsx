@@ -5,7 +5,9 @@ import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 import { HelmAppConfigApplyStatusCardType } from '../environment.type'
 
 function HelmAppConfigApplyStatusCard({ releaseStatus, cardLoading }: HelmAppConfigApplyStatusCardType) {
-    if (cardLoading) return <LoadingCard wider />
+    if (cardLoading) {
+        return <LoadingCard wider />
+    }
 
     return releaseStatus ? (
         <div
@@ -29,9 +31,7 @@ function HelmAppConfigApplyStatusCard({ releaseStatus, cardLoading }: HelmAppCon
                     </div>
                 </div>
                 <div className="flex br-4">
-                    <figure
-                        className={`${releaseStatus['status'].toLowerCase()}  ml-8 icon-dim-24`}
-                    ></figure>
+                    <figure className={`${releaseStatus['status'].toLowerCase()}  ml-8 icon-dim-24`}></figure>
                 </div>
             </div>
             <div className="app-details-info-card__bottom-container">

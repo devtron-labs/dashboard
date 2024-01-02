@@ -11,13 +11,11 @@ export default function ResourceListEmptyState({
     actionHandler,
 }: ResourceListEmptyStateType) {
     const handleButton = () => {
-        return (
-            actionHandler ? (
-                <button onClick={actionHandler} className="add-link cta flex">
-                    {actionButtonText ?? 'Clear filters'}
-                </button>
-            ) : null
-        )
+        return actionHandler ? (
+            <button onClick={actionHandler} className="add-link cta flex">
+                {actionButtonText ?? 'Clear filters'}
+            </button>
+        ) : null
     }
     return (
         <GenericEmptyState

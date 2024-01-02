@@ -10,7 +10,11 @@ export function updateCIConfig(request) {
 }
 
 export function getDockerRegistryMinAuth(appId: string, isStorageActionPush?: boolean) {
-    return get(`${Routes.APP}/${appId}/autocomplete/docker${isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''}`)
+    return get(
+        `${Routes.APP}/${appId}/autocomplete/docker${
+            isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''
+        }`,
+    )
 }
 
 export const getBuildpackMetadata = (): Promise<any> => {

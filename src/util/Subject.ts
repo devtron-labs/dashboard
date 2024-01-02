@@ -4,30 +4,41 @@ export class Subject<T> {
     private name: string
 
     constructor() {
-        this.name = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)
+        this.name = Math.random()
+            .toString(36)
+            .replace(/[^a-z]+/g, '')
+            .substr(0, 5)
     }
 
     public subscribe(observer: (t: T) => void): [boolean, () => boolean] {
-        let hash = murmurhash3_32_gc(observer.toString(), 0)
+        const hash = murmurhash3_32_gc(observer.toString(), 0)
         if (this.observers.has(hash)) {
-            return [false, () => {return false}]
+            return [
+                false,
+                () => {
+                    return false
+                },
+            ]
         } else {
             this.observers.set(hash, observer)
-            return [true, (): boolean => {
-                return this.observers.delete(hash)
-            }]
+            return [
+                true,
+                (): boolean => {
+                    return this.observers.delete(hash)
+                },
+            ]
         }
     }
 
     public publish(topic: T) {
-        let keys = Array.from(this.observers.keys())
+        const keys = Array.from(this.observers.keys())
         keys.forEach((key) => {
             this.observers.get(key)(topic)
         })
     }
 
     public unsubscribeAll() {
-        let keys = Array.from(this.observers.keys())
+        const keys = Array.from(this.observers.keys())
         keys.forEach((key) => {
             this.observers.delete(key)
         })

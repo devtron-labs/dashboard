@@ -7,5 +7,5 @@ export function RotatePods(request: RotatePodsRequest): Promise<RotatePodsRespon
 }
 
 export function GetDeploymentStrategy(appId: number, envId: number): Promise<DeploymentStrategyResponse> {
-    return get(Routes.DEFAULT_STRATEGY+appId+'/'+envId);
+    return get(Routes.DEFAULT_STRATEGY + appId + '/' + envId)
 }

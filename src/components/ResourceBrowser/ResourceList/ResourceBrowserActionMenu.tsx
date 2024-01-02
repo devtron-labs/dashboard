@@ -17,7 +17,7 @@ export default function ResourceBrowserActionMenu({
     selectedResource,
     getResourceListData,
     handleResourceClick,
-    removeTabByIdentifier
+    removeTabByIdentifier,
 }: ResourceBrowserActionMenuType) {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 

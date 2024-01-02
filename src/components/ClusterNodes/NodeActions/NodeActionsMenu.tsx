@@ -22,7 +22,7 @@ export default function NodeActionsMenu({
     openTerminal,
     getNodeListData,
     isSuperAdmin,
-    addTab
+    addTab,
 }: NodeActionsMenuProps) {
     const history = useHistory()
     const { url } = useRouteMatch()

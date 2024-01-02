@@ -27,8 +27,8 @@ export function CiPipelineSourceConfig({
     isRegex,
     primaryBranchAfterRegex,
 }: CIPipelineSourceConfigInterface) {
-    let _isWebhook = sourceType === SourceTypeMap.WEBHOOK
-    let _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex || isRegex
+    const _isWebhook = sourceType === SourceTypeMap.WEBHOOK
+    const _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex || isRegex
 
     const [sourceValueBase, setSourceValueBase] = useState<ReactNode>('')
     const [sourceValueAdv, setSourceValueAdv] = useState<ReactNode>('')
@@ -42,7 +42,7 @@ export function CiPipelineSourceConfig({
         if (_isWebhook) {
             const _sourceValueObj = JSON.parse(sourceValue)
             getWebhookEventsForEventId(_sourceValueObj.eventId).then((_res) => {
-                let _webhookEvent = _res.result
+                const _webhookEvent = _res.result
                 setSourceValueBase(_webhookEvent.name)
                 setSourceValueAdv(
                     _buildHoverHtmlForWebhook(_webhookEvent.name, _sourceValueObj.condition, _webhookEvent.selectors),
@@ -78,12 +78,12 @@ export function CiPipelineSourceConfig({
         if (!_isWebhook) {
             return
         }
-        let _sourceValueObj = JSON.parse(sourceValue)
-        let _eventId = _sourceValueObj.eventId
-        let _condition = _sourceValueObj.condition
+        const _sourceValueObj = JSON.parse(sourceValue)
+        const _eventId = _sourceValueObj.eventId
+        const _condition = _sourceValueObj.condition
 
         getWebhookEventsForEventId(_eventId).then((_res) => {
-            let _webhookEvent = _res.result
+            const _webhookEvent = _res.result
             setSourceValueBase(_webhookEvent.name)
             setSourceValueAdv(_buildHoverHtmlForWebhook(_webhookEvent.name, _condition, _webhookEvent.selectors))
             setLoading(false)
@@ -98,9 +98,9 @@ export function CiPipelineSourceConfig({
     }
 
     function _buildHoverHtmlForWebhook(eventName, condition, selectors) {
-        let _conditions = []
+        const _conditions = []
         Object.keys(condition).forEach((_selectorId) => {
-            let _selector = selectors.find((i) => i.id == _selectorId)
+            const _selector = selectors.find((i) => i.id == _selectorId)
             _conditions.push({ name: _selector ? _selector.name : '', value: condition[_selectorId] })
         })
 
@@ -137,7 +137,12 @@ export function CiPipelineSourceConfig({
                         />
                     )}
                     {showTooltip && (
-                        <Tippy className="default-tt dc__word-break-all" arrow={false} placement="bottom" content={sourceValueAdv}>
+                        <Tippy
+                            className="default-tt dc__word-break-all"
+                            arrow={false}
+                            placement="bottom"
+                            content={sourceValueAdv}
+                        >
                             <div className="flex" style={{ maxWidth: !baseText ? 'calc(100% - 15px)' : 'auto' }}>
                                 {!baseText && (
                                     <>

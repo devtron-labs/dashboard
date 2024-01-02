@@ -49,7 +49,9 @@ export default function BranchRegexModal({
     }
 
     const renderBranchRegexMaterialHeader = () => {
-        if (hideHeaderFooter) return null
+        if (hideHeaderFooter) {
+            return null
+        }
         return (
             <div className="trigger-modal__header">
                 <h1 className="modal__title flex left fs-16">{title}</h1>
@@ -104,7 +106,9 @@ export default function BranchRegexModal({
             return REQUIRED_FIELD_MSG
         } else if (regexValue.isInvalid) {
             return BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
-        } else return ''
+        } else {
+            return ''
+        }
     }
 
     return (

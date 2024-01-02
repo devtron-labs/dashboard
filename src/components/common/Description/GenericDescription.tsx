@@ -68,7 +68,7 @@ export default function GenericDescription({
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>(initialDescriptionUpdatedOn)
     const [modifiedDescriptionText, setModifiedDescriptionText] = useState<string>(initialDescriptionText)
     const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
-    const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
+    const isDescriptionModified = !deepEqual(descriptionText, modifiedDescriptionText)
     const mdeRef = useRef(null)
 
     useEffect(() => {
@@ -94,7 +94,7 @@ export default function GenericDescription({
 
     const toggleDescriptionView = () => {
         if (isAuthorized()) {
-            let isConfirmed: boolean = true
+            let isConfirmed = true
             if (isDescriptionModified) {
                 isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
             }
@@ -137,7 +137,7 @@ export default function GenericDescription({
                 if (response.result) {
                     setDescriptionText(response.result.description)
                     setDescriptionUpdatedBy(response.result.updatedBy)
-                    let _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+                    const _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
                     const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updatedOn
                     setDescriptionUpdatedOn(_date)
                     setModifiedDescriptionText(response.result.description)
@@ -166,7 +166,7 @@ export default function GenericDescription({
                 if (response.result) {
                     setDescriptionText(response.result.description)
                     setDescriptionUpdatedBy(response.result.updatedBy)
-                    let _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+                    const _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
                     const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updatedOn
                     setDescriptionUpdatedOn(_date)
                     setModifiedDescriptionText(response.result.description)

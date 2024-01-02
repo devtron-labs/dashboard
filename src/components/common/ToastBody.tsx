@@ -54,10 +54,7 @@ export class ToastBodyWithButton extends React.Component<{
 
 export const toastAccessDenied = (title?: string, subtitle?: string) => {
     return toast.info(
-        <ToastBody
-            title={title || TOAST_ACCESS_DENIED.TITLE}
-            subtitle={subtitle || TOAST_ACCESS_DENIED.SUBTITLE}
-        />,
+        <ToastBody title={title || TOAST_ACCESS_DENIED.TITLE} subtitle={subtitle || TOAST_ACCESS_DENIED.SUBTITLE} />,
         {
             className: 'devtron-toast unauthorized',
         },

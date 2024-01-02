@@ -86,7 +86,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     useEffect(() => {
-        if (!showDraftData || isValues) return // hit api only when manifest is selected, for values use local states.
+        if (!showDraftData || isValues) {
+            return
+        } // hit api only when manifest is selected, for values use local states.
         setDraftLoading(true)
         getLocalDaftManifest()
             .then((data) => {
@@ -245,7 +247,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
-        if (!isValues) return
+        if (!isValues) {
+            return
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValues,
             payload: fetchedValues,
@@ -253,7 +257,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     const setFetchedValuesManifest = (fetchedValuesManifest: Record<number | string, string>) => {
-        if (isValues) return
+        if (isValues) {
+            return
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
             payload: fetchedValuesManifest,
@@ -272,7 +278,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     useEffect(() => {
-        if (!convertVariables) return
+        if (!convertVariables) {
+            return
+        }
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {

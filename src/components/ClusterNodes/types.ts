@@ -70,8 +70,8 @@ export interface ClusterDetail {
 export interface ClusterDescriptionType {
     clusterId: number
     clusterName: string
-    serverUrl:string,
-    description:string,
+    serverUrl: string
+    description: string
     clusterCreatedBy: string
     clusterCreatedOn: string
     clusterNote?: ClusterNoteType

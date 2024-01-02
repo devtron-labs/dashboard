@@ -11,12 +11,7 @@ interface CustomScriptType {
 }
 
 function CustomScript({ handleScriptChange }: CustomScriptType) {
-    const {
-        selectedTaskIndex,
-        formData,
-        activeStageName,
-        formDataErrorObj,
-    } = useContext(pipelineContext)
+    const { selectedTaskIndex, formData, activeStageName, formDataErrorObj } = useContext(pipelineContext)
 
     const [editorValue, setEditorValue] = useState<string>(
         formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script,

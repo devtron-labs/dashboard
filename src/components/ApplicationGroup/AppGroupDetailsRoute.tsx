@@ -211,7 +211,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 setShowDeleteGroup(true)
             }
         } catch (err) {
-            let _map = new Map<string, boolean>()
+            const _map = new Map<string, boolean>()
             if (err['code'] === 403) {
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
@@ -221,7 +221,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                         if (!_map.get(element)) {
                             _map.set(element, true)
                         }
-                        for (let idx in selectedAppList) {
+                        for (const idx in selectedAppList) {
                             if (element === selectedAppList[idx].label) {
                                 unauthorizedCount++
                             }
@@ -244,7 +244,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             } else {
                 setShowCreateGroup(true)
                 setShowDeleteGroup(false)
-                if (_delete) setIsPopupBox(true)
+                if (_delete) {
+                    setIsPopupBox(true)
+                }
             }
             showError(err)
         }
@@ -274,10 +276,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
         const _allAppLists: number[] = []
-        for (let app of _allAppList) {
+        for (const app of _allAppList) {
             _allAppLists.push(+app.id)
         }
-        let _permissionData = {
+        const _permissionData = {
             id: +envId,
             appIds: _allAppLists,
             envId: +envId,

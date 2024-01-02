@@ -29,7 +29,9 @@ export default function DeploymentTemplateOptionsTab({
     const currentStateValues =
         state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state
 
-    if (state.openComparison || state.showReadme) return null
+    if (state.openComparison || state.showReadme) {
+        return null
+    }
 
     const selectChart = (selectedChart: DeploymentChartVersionType) => {
         dispatch({
@@ -50,7 +52,9 @@ export default function DeploymentTemplateOptionsTab({
     }
 
     const restoreLastSaved = () => {
-        if (!isValues) return
+        if (!isValues) {
+            return
+        }
         if (isEnvOverride) {
             const overriddenValues = state.latestDraft
                 ? state.draftValues
@@ -64,11 +68,12 @@ export default function DeploymentTemplateOptionsTab({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: _envValues,
             })
-        } else
+        } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
             })
+        }
     }
 
     const getRestoreLastSavedCTA = () => (

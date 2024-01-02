@@ -1,11 +1,11 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { URLS, AppListConstants } from '../../config';
-import Deploy from '../../assets/img/ic-checklist-app@2x.png';
+import React from 'react'
+import { NavLink } from 'react-router-dom'
+import { URLS, AppListConstants } from '../../config'
+import Deploy from '../../assets/img/ic-checklist-app@2x.png'
 
 interface CustomAppDeployType {
-    parentClassName?: string;
-    imageClassName?: string;
+    parentClassName?: string
+    imageClassName?: string
 }
 
 export default function CustomAppDeploy({ parentClassName, imageClassName }: CustomAppDeployType) {
@@ -22,5 +22,5 @@ export default function CustomAppDeploy({ parentClassName, imageClassName }: Cus
                 </NavLink>
             </div>
         </div>
-    );
+    )
 }

@@ -69,11 +69,21 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
     const renderModalCTA = () => {
         return (
             <div className="modal__CTA flex right dc__border-top">
-                <button type="button" className="flex cta cancel h-32" onClick={handleCancelAction} data-testid="close-export-csv-button">
+                <button
+                    type="button"
+                    className="flex cta cancel h-32"
+                    onClick={handleCancelAction}
+                    data-testid="close-export-csv-button"
+                >
                     {exportingData ? 'Cancel' : 'Close'}
                 </button>
                 {!exportingData && errorExportingData && (
-                    <button type="button" className="flex cta ml-12 h-32" onClick={generateDataToExport} data-testid="retry-export-csv-button">
+                    <button
+                        type="button"
+                        className="flex cta ml-12 h-32"
+                        onClick={generateDataToExport}
+                        data-testid="retry-export-csv-button"
+                    >
                         Retry
                     </button>
                 )}

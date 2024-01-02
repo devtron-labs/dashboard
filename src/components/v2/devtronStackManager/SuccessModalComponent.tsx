@@ -14,35 +14,39 @@ export function SuccessModalComponent({
     setToggled,
 }: SuccessModalType) {
     const enableModuleState = (moduleName: string) => {
-        let _moduleList = stackDetails.installedModulesList.map((module) => {
+        const _moduleList = stackDetails.installedModulesList.map((module) => {
             if (module.name === moduleName) {
                 return {
                     ...module,
                     enabled: true,
                 }
-            }
-            else if ((moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||(moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)) {
+            } else if (
+                (moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||
+                (moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)
+            ) {
                 return {
                     ...module,
                     enabled: false,
                 }
-            } 
-            
+            }
+
             return module
         })
-        let _discovermoduleList = stackDetails.discoverModulesList.map((module) => {
+        const _discovermoduleList = stackDetails.discoverModulesList.map((module) => {
             if (module.name === moduleName) {
                 return {
                     ...module,
                     enabled: true,
                 }
-            }
-            else if ((moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||(moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)) {
+            } else if (
+                (moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||
+                (moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)
+            ) {
                 return {
                     ...module,
                     enabled: false,
                 }
-            } 
+            }
             return module
         })
         setStackDetails({

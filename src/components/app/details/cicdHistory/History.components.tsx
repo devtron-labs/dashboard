@@ -23,7 +23,9 @@ export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResize
     const keys = useKeyDown()
 
     useEffect(() => {
-        if (!pathname.includes('/logs')) return
+        if (!pathname.includes('/logs')) {
+            return
+        }
         switch (keys.join('')) {
             case 'f':
                 toggleFullScreen()
@@ -91,9 +93,9 @@ export const GitChanges = ({
 }: GitChangesType) => {
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
     useEffect(() => {
-        if(artifactId){
+        if (artifactId) {
             initialise()
-        }    
+        }
     }, [artifactId])
     async function initialise() {
         try {
@@ -115,7 +117,7 @@ export const GitChanges = ({
             />
         )
     }
-    
+
     return (
         <div className="flex column left w-100 ">
             {ciMaterials?.map((ciMaterial, index) => {
@@ -183,14 +185,12 @@ export const GitChanges = ({
 
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
     const EmptyViewButton = () => {
-        return (
-            link ? (
-                <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
-                    <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
-                    {linkText}
-                </NavLink>
-            ) : null
-        )
+        return link ? (
+            <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
+                <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
+                {linkText}
+            </NavLink>
+        ) : null
     }
     return (
         <GenericEmptyState
@@ -205,7 +205,7 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
 }
 
 export const triggerStatus = (triggerDetailStatus: string): string => {
-    let triggerStatus = triggerDetailStatus?.toUpperCase()
+    const triggerStatus = triggerDetailStatus?.toUpperCase()
     if (triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
         return 'Failed'
     } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {

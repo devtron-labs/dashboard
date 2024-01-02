@@ -186,12 +186,7 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                 })}
             </div>
             <ConfirmationDialog.ButtonGroup>
-                <button
-                    type="button"
-                    className="flex cta cancel h-36"
-                    disabled={apiCallInProgress}
-                    onClick={onClose}
-                >
+                <button type="button" className="flex cta cancel h-36" disabled={apiCallInProgress} onClick={onClose}>
                     {DRAIN_NODE_MODAL_MESSAGING.Actions.cancel}
                 </button>
                 <button type="button" className="flex cta delete h-36" disabled={apiCallInProgress} onClick={drainAPI}>

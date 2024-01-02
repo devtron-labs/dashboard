@@ -235,7 +235,7 @@ export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map
 
 const convertItemsToObj = (items) => {
     const itemsObj = {}
-    for (let item of items) {
+    for (const item of items) {
         itemsObj[item.key.value] = item.value.value
     }
     return itemsObj
@@ -244,7 +244,7 @@ const convertItemsToObj = (items) => {
 const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed): string[] => {
     let currentPath: string[] = [],
         noValueInCurrentPath = false
-    for (let _pathKey of parentPathKey) {
+    for (const _pathKey of parentPathKey) {
         if (noValueInCurrentPath) {
             break
         } else {
@@ -308,7 +308,7 @@ export const getAndUpdateSchemaValue = (
     const updatedSchemaJson = schemaJson
 
     if (updatedSchemaJson?.size && parsedValuesYamlDocument?.contents) {
-        for (let [key, value] of updatedSchemaJson) {
+        for (const [key, value] of updatedSchemaJson) {
             const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
             value.value =
                 value['type'] === 'select'

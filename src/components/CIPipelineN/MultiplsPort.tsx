@@ -6,12 +6,7 @@ import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 function MultiplePort() {
-    const {
-        selectedTaskIndex,
-        formData,
-        setFormData,
-        activeStageName,
-    } = useContext(pipelineContext)
+    const { selectedTaskIndex, formData, setFormData, activeStageName } = useContext(pipelineContext)
     const addMultiplePort = (): void => {
         const _formData = { ...formData }
 

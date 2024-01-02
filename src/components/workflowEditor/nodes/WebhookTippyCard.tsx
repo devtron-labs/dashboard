@@ -11,7 +11,7 @@ export default function WebhookTippyCard({ link, hideTippy }: WebhookTippyType) 
             <div className={`webhook-tippy-card cn-0 p-20 br-8 fs-13 `}>
                 <div className="flexbox dc__content-space mb-12">
                     <Webhook className="icon-dim-32 webhook-icon-white" />
-                    <Close className="icon-dim-24 fcn-0 cursor" onClick={hideTippy}/>
+                    <Close className="icon-dim-24 fcn-0 cursor" onClick={hideTippy} />
                 </div>
                 <div className="flex column left fw-6">Click to get webhook details</div>
                 <div>Get webhook url and sample JSON to be used in external CI service.</div>

@@ -45,9 +45,9 @@ export interface CommonEnvironmentOverridesProps {
     isJobView?: boolean
 }
 
-export interface ConfigMapOverridesProps extends CommonEnvironmentOverridesProps {}
+export type ConfigMapOverridesProps = CommonEnvironmentOverridesProps
 
-export interface SecretOverridesProps extends CommonEnvironmentOverridesProps {}
+export type SecretOverridesProps = CommonEnvironmentOverridesProps
 
 export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverridesProps {
     environments: AppEnvironment[]

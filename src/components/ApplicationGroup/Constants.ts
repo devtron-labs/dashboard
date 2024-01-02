@@ -97,7 +97,7 @@ export const BULK_CI_MESSAGING = {
         title: (envName: string) => `Syncs images deployed on ${envName}`,
         subTitle: (envName: string) =>
             `Nothing to build. Images deployed on ${envName} will be available for deployment`,
-    }
+    },
 }
 
 export const BULK_CD_MESSAGING = {

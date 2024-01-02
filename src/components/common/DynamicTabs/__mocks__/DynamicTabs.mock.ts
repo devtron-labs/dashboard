@@ -82,52 +82,50 @@ export const persistedTabsData = {
     },
 }
 
-export const mockedRemoveTabByIdentifier = jest
-    .fn()
-    .mockImplementation((id: string, _tabsData: DynamicTabType[]) => {
-        let pushURL = ''
-        let selectedRemoved = false
-        const _tabs = _tabsData.filter((tab) => {
-            if (tab.id === id) {
-                selectedRemoved = tab.isSelected
-                return false
+export const mockedRemoveTabByIdentifier = jest.fn().mockImplementation((id: string, _tabsData: DynamicTabType[]) => {
+    let pushURL = ''
+    let selectedRemoved = false
+    const _tabs = _tabsData.filter((tab) => {
+        if (tab.id === id) {
+            selectedRemoved = tab.isSelected
+            return false
+        }
+        return true
+    })
+
+    if (selectedRemoved) {
+        _tabs[0].isSelected = true
+        pushURL = _tabs[0].url
+    }
+
+    return {
+        pushURL,
+        updatedTabsData: _tabs,
+    }
+})
+
+export const mockedStopTabByIdentifier = jest.fn().mockImplementation((title: string, _tabsData: DynamicTabType[]) => {
+    let pushURL = ''
+    let selectedRemoved = false
+    const _tabs = _tabsData.map((tab) => {
+        if (tab.title.toLowerCase() === title.toLowerCase()) {
+            selectedRemoved = tab.isSelected
+            return {
+                ...tab,
+                url: tab.url.split('?')[0],
+                isSelected: false,
             }
-            return true
-        })
-
-        if (selectedRemoved) {
-            _tabs[0].isSelected = true
-            pushURL = _tabs[0].url
-        }
-
-        return {
-            pushURL,
-            updatedTabsData: _tabs
+        } else {
+            return tab
         }
     })
 
-    export const mockedStopTabByIdentifier= jest
-    .fn()
-    .mockImplementation((title: string, _tabsData: DynamicTabType[]) => {
-      let pushURL = ''
-      let selectedRemoved = false
-      const _tabs = _tabsData.map((tab) => {
-          if (tab.title.toLowerCase() === title.toLowerCase()) {
-              selectedRemoved = tab.isSelected
-              return {
-                  ...tab,
-                  url: tab.url.split('?')[0],
-                  isSelected: false,
-              }
-          } else return tab
-      })
-
-      if (selectedRemoved) {
-          _tabs[0].isSelected = true
-          pushURL = _tabs[0].url
-      }
-      return {
-          pushURL,
-          updatedTabsData: _tabs,
-      }
-    })
+    if (selectedRemoved) {
+        _tabs[0].isSelected = true
+        pushURL = _tabs[0].url
+    }
+    return {
+        pushURL,
+        updatedTabsData: _tabs,
+    }
+})

@@ -22,15 +22,13 @@ export function CIBuildConfigDiff({
             const _currentPipelineOverride = configOverridenPipelines.find(
                 (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
             )?.dockerConfigOverride
-            setCIConfigDiffValues(getCIConfigDiffValues(globalCIConfig, _currentPipelineOverride, materials, gitMaterials))
+            setCIConfigDiffValues(
+                getCIConfigDiffValues(globalCIConfig, _currentPipelineOverride, materials, gitMaterials),
+            )
         }
     }, [configOverridenWorkflows, configOverridenPipelines, globalCIConfig])
     const renderDetailedValue = (parentClassName: string, value: string): JSX.Element => {
-        return (
-            <td className={`${parentClassName} cn-9 fs-13 fw-4 lh-20 pt-8 pb-8 pl-16 pr-16`}>
-                {value}
-            </td>
-        )
+        return <td className={`${parentClassName} cn-9 fs-13 fw-4 lh-20 pt-8 pb-8 pl-16 pr-16`}>{value}</td>
     }
 
     const renderValueDiff = (value: CIConfigDiffType, isLastItem?: boolean): JSX.Element => {
@@ -39,9 +37,7 @@ export function CIBuildConfigDiff({
         const lastColumnClass = isLastItem ? '' : 'dc__border-bottom-n1'
         return (
             <tr>
-                <td className={`fs-13 fw-4 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 ${borderClass}`}>
-                    {configName}
-                </td>
+                <td className={`fs-13 fw-4 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 ${borderClass}`}>{configName}</td>
                 {showInEditor ? (
                     <td colSpan={2}>
                         <CodeEditor
@@ -62,7 +58,7 @@ export function CIBuildConfigDiff({
                                 baseValue,
                             )
                         ) : (
-                            <td className={borderClass } />
+                            <td className={borderClass} />
                         )}
                         {overridenValue ? (
                             renderDetailedValue(
@@ -84,12 +80,8 @@ export function CIBuildConfigDiff({
                 <th className="fs-12 fw-6 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__border-right dc__border-bottom">
                     BUILD CONFIGS
                 </th>
-                <th className="fs-12 fw-6 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__border-right dc__border-bottom">
-                    BASE
-                </th>
-                <th className="fs-12 fw-6 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__border-bottom">
-                    OVERRIDE
-                </th>
+                <th className="fs-12 fw-6 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__border-right dc__border-bottom">BASE</th>
+                <th className="fs-12 fw-6 lh-20 cn-7 pt-8 pb-8 pl-16 pr-16 dc__border-bottom">OVERRIDE</th>
             </tr>
         )
     }

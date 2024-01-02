@@ -21,7 +21,6 @@ function HelpNav({
     setGettingStartedClicked,
     showHelpCard,
 }: HelpNavType) {
-
     const { currentServerInfo } = useContext(mainContext)
     const isEnterprise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
     const FEEDBACK_FORM_ID = `UheGN3KJ#source=${window.location.hostname}`
@@ -40,7 +39,7 @@ function HelpNav({
             icon: Discord,
             showSeparator: isEnterprise,
         },
-        ...(isEnterprise ? EnterpriseHelpOptions : OSSHelpOptions)
+        ...(isEnterprise ? EnterpriseHelpOptions : OSSHelpOptions),
     ]
 
     const onClickGettingStarted = (): void => {
@@ -80,26 +79,34 @@ function HelpNav({
     }
 
     const renderHelpOptions = (): JSX.Element => {
-        return <> {CommonHelpOptions.map((option,index) => {
-                return (
-                    <Fragment key={option.name}>
-                        <a
-                            key={option.name}
-                            className="dc__no-decor help-card__option help-card__link flex left cn-9"
-                            href={option.link}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            data-index = {index}
-                            onClick={handleHelpOptions}
-                        >
-                            <option.icon />
-                            <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
-                        </a>
-                        {isEnterprise && index===1 && <div className = "help__enterprise pl-8 pb-4-imp pt-4-imp dc__gap-12 flexbox dc__align-items-center h-28">Enterprise Support</div>}
-                    </Fragment>
-                )
-            })}
-        </>
+        return (
+            <>
+                {' '}
+                {CommonHelpOptions.map((option, index) => {
+                    return (
+                        <Fragment key={option.name}>
+                            <a
+                                key={option.name}
+                                className="dc__no-decor help-card__option help-card__link flex left cn-9"
+                                href={option.link}
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                data-index={index}
+                                onClick={handleHelpOptions}
+                            >
+                                <option.icon />
+                                <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
+                            </a>
+                            {isEnterprise && index === 1 && (
+                                <div className="help__enterprise pl-8 pb-4-imp pt-4-imp dc__gap-12 flexbox dc__align-items-center h-28">
+                                    Enterprise Support
+                                </div>
+                            )}
+                        </Fragment>
+                    )
+                })}
+            </>
+        )
     }
 
     return (
@@ -113,7 +120,9 @@ function HelpNav({
                         onClick={onClickGettingStarted}
                     >
                         <GettingStartedIcon />
-                        <div className="help-card__option-name ml-12 cn-9 fs-14" data-testid="getting-started-link">Getting started</div>
+                        <div className="help-card__option-name ml-12 cn-9 fs-14" data-testid="getting-started-link">
+                            Getting started
+                        </div>
                     </NavLink>
                 )}
                 {renderHelpOptions()}

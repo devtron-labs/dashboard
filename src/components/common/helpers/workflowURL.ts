@@ -1,4 +1,4 @@
-import { URLS } from "../../../config"
+import { URLS } from '../../../config'
 
 export function getCDPipelineURL(
     appId: string,

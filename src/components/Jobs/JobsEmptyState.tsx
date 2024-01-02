@@ -28,15 +28,15 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
     }
 
     const renderNoResultsView = () => {
-        const handleButton = () =>{
+        const handleButton = () => {
             return (
                 <button
-                type="button"
-                className="saved-filter__clear-btn dc__saved-filter__clear-btn--dark"
-                onClick={props.clickHandler}
-            >
-                {JOBLIST_EMPTY_STATE_MESSAGING.noJobsButtonLabel}
-            </button>
+                    type="button"
+                    className="saved-filter__clear-btn dc__saved-filter__clear-btn--dark"
+                    onClick={props.clickHandler}
+                >
+                    {JOBLIST_EMPTY_STATE_MESSAGING.noJobsButtonLabel}
+                </button>
             )
         }
         return (

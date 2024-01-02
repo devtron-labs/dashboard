@@ -120,7 +120,9 @@ export default function ClusterSelectionList({
     }
 
     const hideDataOnLoad = (value) => {
-        if (clusterListLoader) return
+        if (clusterListLoader) {
+            return
+        }
         return value
     }
 

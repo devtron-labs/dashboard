@@ -2,11 +2,15 @@ import { PATTERNS } from '../../config'
 
 export class ValidationRules {
     name = (value: string): { isValid: boolean; message: string } => {
-        let re = PATTERNS.API_TOKEN
-        let regExp = new RegExp(re)
-        let test = regExp.test(value)
-        if (value.length === 0) return { isValid: false, message: 'This is a required field' }
-        if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' }
+        const re = PATTERNS.API_TOKEN
+        const regExp = new RegExp(re)
+        const test = regExp.test(value)
+        if (value.length === 0) {
+            return { isValid: false, message: 'This is a required field' }
+        }
+        if (value.length < 3) {
+            return { isValid: false, message: 'Atleast 3 characters required' }
+        }
         if (!test || value.length > 50) {
             return {
                 isValid: false,
@@ -18,8 +22,9 @@ export class ValidationRules {
     }
 
     description = (value: string): { isValid: boolean; message: string } => {
-        if (value.length > 350) return { isValid: false, message: `Max 350 characters allowed` }
-        else {
+        if (value.length > 350) {
+            return { isValid: false, message: `Max 350 characters allowed` }
+        } else {
             return { message: null, isValid: true }
         }
     }

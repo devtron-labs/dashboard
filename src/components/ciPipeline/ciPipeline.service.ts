@@ -33,11 +33,7 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
     return get(URL)
 }
 
-export function getInitData(
-    appId: string | number,
-    includeWebhookData: boolean = false,
-    preFillName: boolean = true,
-): Promise<any> {
+export function getInitData(appId: string | number, includeWebhookData = false, preFillName = true): Promise<any> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
@@ -105,8 +101,8 @@ function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
 
 export function getPipelineMetaConfiguration(
     appId: string,
-    includeWebhookData: boolean = false,
-    isNewPipeline: boolean = true,
+    includeWebhookData = false,
+    isNewPipeline = true,
 ): Promise<any> {
     return getPipelineBaseMetaConfiguration(appId).then((baseResponse) => {
         // if webhook data is not to be included, or materials not found, or multigit new pipeline, then return
@@ -148,7 +144,7 @@ export function getPipelineMetaConfiguration(
 export function getInitDataWithCIPipeline(
     appId: string,
     ciPipelineId: string,
-    includeWebhookData: boolean = false,
+    includeWebhookData = false,
 ): Promise<any> {
     return Promise.all([
         getCIPipeline(appId, ciPipelineId),
@@ -167,7 +163,11 @@ export function getInitDataWithCIPipeline(
     })
 }
 
-export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; appId: number; workflowId: number }, changeCIPayload?: ChangeCIPayloadType) {
+export function saveLinkedCIPipeline(
+    parentCIPipeline,
+    params: { name: string; appId: number; workflowId: number },
+    changeCIPayload?: ChangeCIPayloadType,
+) {
     delete parentCIPipeline['beforeDockerBuildScripts']
     delete parentCIPipeline['afterDockerBuildScripts']
     const request: any = {
@@ -186,8 +186,7 @@ export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; a
 
     if (changeCIPayload?.switchFromCiPipelineId) {
         request.switchFromCiPipelineId = changeCIPayload.switchFromCiPipelineId
-    }
-    else if (changeCIPayload?.switchFromExternalCiPipelineId) {
+    } else if (changeCIPayload?.switchFromExternalCiPipelineId) {
         request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
@@ -226,8 +225,7 @@ export function saveCIPipeline(
 
     if (changeCIPayload?.switchFromCiPipelineId) {
         request.switchFromCiPipelineId = changeCIPayload.switchFromCiPipelineId
-    }
-    else if (changeCIPayload?.switchFromExternalCiPipelineId) {
+    } else if (changeCIPayload?.switchFromExternalCiPipelineId) {
         request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
@@ -514,7 +512,7 @@ function parseCIResponse(
                     tagPattern: ciPipeline.customTag?.tagPattern || '',
                     counterX: +ciPipeline.customTag?.counterX || 0,
                 },
-                enableCustomTag: ciPipeline.enableCustomTag
+                enableCustomTag: ciPipeline.enableCustomTag,
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
@@ -568,8 +566,8 @@ function createCurlRequest(externalCiConfig): string {
     return curl
 }
 
-export function getPluginsData(appId: number,isCD: boolean = false): Promise<any> {
-    return get(`${Routes.PLUGIN_LIST}?appId=${appId}${isCD ? '&stage=cd' : '' }`)
+export function getPluginsData(appId: number, isCD = false): Promise<any> {
+    return get(`${Routes.PLUGIN_LIST}?appId=${appId}${isCD ? '&stage=cd' : ''}`)
 }
 
 export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
@@ -579,7 +577,7 @@ export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
 export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {
     let variableList = []
     await get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`).then((response) => {
-        variableList = response.result?.filter((item) => isCD ? item.stageType !== 'ci' : item.stageType === 'ci')
+        variableList = response.result?.filter((item) => (isCD ? item.stageType !== 'ci' : item.stageType === 'ci'))
     })
 
     return { result: variableList }

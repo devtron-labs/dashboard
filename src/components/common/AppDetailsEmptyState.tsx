@@ -5,10 +5,10 @@ import { ERROR_EMPTY_SCREEN } from '../../config/constantMessaging'
 import { EnvType } from '../v2/appDetails/appDetails.type'
 
 interface AppDetailsEmptyChart {
-  envType?: string
+    envType?: string
 }
 
-export function AppDetailsEmptyState({envType}: AppDetailsEmptyChart) {
+export function AppDetailsEmptyState({ envType }: AppDetailsEmptyChart) {
     return (
         <GenericEmptyState
             image={notFound}

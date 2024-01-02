@@ -146,7 +146,9 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
             )
         }
 
-        if (!enableSearch) return <Reload reload={reloadVariables} className="bcn-0 pb-16" />
+        if (!enableSearch) {
+            return <Reload reload={reloadVariables} className="bcn-0 pb-16" />
+        }
 
         return renderSuggestions()
     }

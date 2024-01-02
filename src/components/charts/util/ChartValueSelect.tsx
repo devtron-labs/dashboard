@@ -44,9 +44,9 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
     }
 
     render() {
-        let chartValuesList = this.props.chartValuesList
-        let chartValues = getChartValuesFiltered(this.props.chartValuesList)
-        let selectedChartValue = chartValuesList.find(
+        const chartValuesList = this.props.chartValuesList
+        const chartValues = getChartValuesFiltered(this.props.chartValuesList)
+        const selectedChartValue = chartValuesList.find(
             (chartValue) =>
                 this.props.chartValues.id === chartValue.id && chartValue.kind === this.props.chartValues.kind,
         )
@@ -63,9 +63,14 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                     <div className="w-90 flexbox">
                         {selectedChartValue ? (
                             <>
-                                <div className="dc__ellipsis-right" data-testid="name-of-preset-chart">{selectedChartValue.name}</div>&nbsp;
+                                <div className="dc__ellipsis-right" data-testid="name-of-preset-chart">
+                                    {selectedChartValue.name}
+                                </div>
+                                &nbsp;
                                 {!this.props.hideVersionFromLabel && selectedChartValue.chartVersion && (
-                                    <span data-testid="version-of-preset-chart">({selectedChartValue.chartVersion})</span>
+                                    <span data-testid="version-of-preset-chart">
+                                        ({selectedChartValue.chartVersion})
+                                    </span>
                                 )}
                             </>
                         ) : (
@@ -76,7 +81,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 <Select.OptGroup label="DEPLOYED" key={'DEPLOYED'}>
                     {chartValues.deployedChartValues.length
                         ? chartValues.deployedChartValues.map((chartValue) => {
-                              let env = chartValue.environmentName || ''
+                              const env = chartValue.environmentName || ''
                               return (
                                   <Select.Option key={chartValue.id} value={chartValue}>
                                       <div>
@@ -131,7 +136,11 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                         : this.renderNoResultsOption()}
                 </Select.OptGroup>
                 {!this.props.hideCreateNewOption && (
-                    <div className="select__sticky-bottom" onClick={this.props.redirectToChartValues} data-testid="add-preset-values-button-dropdown">
+                    <div
+                        className="select__sticky-bottom"
+                        onClick={this.props.redirectToChartValues}
+                        data-testid="add-preset-values-button-dropdown"
+                    >
                         <Add className="icon-dim-20 mr-5" />
                         Create preset value
                     </div>

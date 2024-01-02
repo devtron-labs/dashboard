@@ -9,7 +9,6 @@ export default function CreateHeaderDetails({
     setHeaderData,
     removeHeader,
 }: CreateHeaderDetailsType) {
-
     const deleteHeader = (e): void => {
         e.stopPropagation()
         removeHeader(index)
@@ -23,9 +22,9 @@ export default function CreateHeaderDetails({
 
     return (
         <div className="flexbox mb-8">
-            <CustomInput 
+            <CustomInput
                 rootClassName="tag-input pt-4-imp pb-4-imp fs-13 dc__no-right-radius"
-                value={headerData?.["key"]}
+                value={headerData?.['key']}
                 name="key"
                 onChange={handleInputChange}
                 placeholder="Enter key"
@@ -33,14 +32,18 @@ export default function CreateHeaderDetails({
             />
             <CustomInput
                 rootClassName="tag-input pt-4-imp pb-4-imp fs-13 dc__no-border-radius dc__no-right-border dc__no-left-border"
-                value={headerData?.["value"]}
+                value={headerData?.['value']}
                 name="value"
                 onChange={handleInputChange}
                 placeholder="Enter value"
                 data-testid={`header-value-${index}`}
             />
 
-            <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer flex top" onClick={deleteHeader} data-testid={`delete-header-${index}`}>
+            <div
+                className="dc__border pl-4 pr-4 dc__right-radius-4 pointer flex top"
+                onClick={deleteHeader}
+                data-testid={`delete-header-${index}`}
+            >
                 <DeleteCross className="icon-dim-20 mt-4" />
             </div>
         </div>

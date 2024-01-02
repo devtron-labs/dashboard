@@ -15,9 +15,9 @@ export function cleanKubeManifest(manifestJsonString: string): string {
         delete obj['status']
 
         // 2 - delete all fields from metadata except some predefined
-        let metadata = obj['metadata']
+        const metadata = obj['metadata']
         if (metadata) {
-            for (let key in metadata) {
+            for (const key in metadata) {
                 if (!MANIFEST_METADATA_REQUIRED_FIELDS.includes(key)) {
                     delete metadata[key]
                 }
@@ -39,21 +39,21 @@ export const decode = (data) => {
         }, {})
 }
 
-export const replaceLastOddBackslash = (str: string): string=>{
-  let countBackSlash = 0
-  const strArr = str.split('')
-  for (let index = strArr.length - 1; index >= 0; index--) {
-      const char = strArr[index]
-      if (char === '\\') {
-          countBackSlash++
-      } else {
-          break
-      }
-  }
-  if (countBackSlash % 2 !== 0) {
-      str += '\\'
-  }
-  return str
+export const replaceLastOddBackslash = (str: string): string => {
+    let countBackSlash = 0
+    const strArr = str.split('')
+    for (let index = strArr.length - 1; index >= 0; index--) {
+        const char = strArr[index]
+        if (char === '\\') {
+            countBackSlash++
+        } else {
+            break
+        }
+    }
+    if (countBackSlash % 2 !== 0) {
+        str += '\\'
+    }
+    return str
 }
 
 export const safeTrim = (str: string): string => {

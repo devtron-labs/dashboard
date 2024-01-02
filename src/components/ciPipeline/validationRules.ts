@@ -1,4 +1,4 @@
-import { RefVariableType } from '@devtron-labs/devtron-fe-common-lib';
+import { RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { PATTERNS } from '../../config'
 import {
     CHARACTER_ERROR_MIN,
@@ -13,32 +13,47 @@ import {
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
         const regExp = new RegExp(PATTERNS.APP_NAME)
-        if (!(value?.length)) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        if (value.length < 2) return { isValid: false, message: CHARACTER_ERROR_MIN }
-        if (value.length > 50) return { isValid: false, message: CHARACTER_ERROR_MAX }
-        else if (!regExp.test(value))
+        if (!value?.length) {
+            return { isValid: false, message: REQUIRED_FIELD_MSG }
+        }
+        if (value.length < 2) {
+            return { isValid: false, message: CHARACTER_ERROR_MIN }
+        }
+        if (value.length > 50) {
+            return { isValid: false, message: CHARACTER_ERROR_MAX }
+        } else if (!regExp.test(value)) {
             return {
                 isValid: false,
                 message: ERROR_MESSAGE_FOR_VALIDATION,
             }
-        else return { isValid: true, message: '' }
+        } else {
+            return { isValid: true, message: '' }
+        }
     }
 
     namespace = (name: string): { isValid: boolean; message: string } => {
         const regExp = new RegExp(PATTERNS.NAMESPACE)
-        if (!(name?.length)) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        if (name.length > 50) return { isValid: false, message: CHARACTER_ERROR_MAX }
-        else if (!regExp.test(name))
+        if (!name?.length) {
+            return { isValid: false, message: REQUIRED_FIELD_MSG }
+        }
+        if (name.length > 50) {
+            return { isValid: false, message: CHARACTER_ERROR_MAX }
+        } else if (!regExp.test(name)) {
             return {
                 isValid: false,
                 message: ERROR_MESSAGE_FOR_VALIDATION,
             }
-        else return { isValid: true, message: '' }
+        } else {
+            return { isValid: true, message: '' }
+        }
     }
 
     environment = (id: number): { isValid: boolean; message: string } => {
-        if (!id) return { isValid: false, message:REQUIRED_FIELD_MSG  }
-        else return { isValid: true, message: null }
+        if (!id) {
+            return { isValid: false, message: REQUIRED_FIELD_MSG }
+        } else {
+            return { isValid: true, message: null }
+        }
     }
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
@@ -140,40 +155,59 @@ export class ValidationRules {
     }
 
     containerRegistry = (containerRegistry: string): { isValid: boolean; message: string } => {
-        if (!containerRegistry.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        else return { isValid: true, message: null }
+        if (!containerRegistry.length) {
+            return { isValid: false, message: REQUIRED_FIELD_MSG }
+        } else {
+            return { isValid: true, message: null }
+        }
     }
 
     repository = (repository: string): { isValid: boolean; message: string } => {
-        if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        if (repository.split('/').slice(-1)[0].length > 30) return { isValid: false, message: MAX_LENGTH_30 }
-        if (repository.split('/').slice(-1)[0].includes("_")) return { isValid: false, message: REPO_NAME_VALIDATION }
+        if (!repository.length) {
+            return { isValid: false, message: REQUIRED_FIELD_MSG }
+        }
+        if (repository.split('/').slice(-1)[0].length > 30) {
+            return { isValid: false, message: MAX_LENGTH_30 }
+        }
+        if (repository.split('/').slice(-1)[0].includes('_')) {
+            return { isValid: false, message: REPO_NAME_VALIDATION }
+        }
         return { isValid: true, message: null }
     }
 
     customTag = (value: string): { message: string[] | []; isValid: boolean } => {
-        let _message = []
+        const _message = []
         const regExp = new RegExp(PATTERNS.CUSTOM_TAG)
         function checkIfOne(string) {
             return string.split('{x}').length === 2
         }
 
-        if (!value?.length) return { isValid: false, message: [REQUIRED_FIELD_MSG] }
-        else {
-            if (value.length >= 128) _message.push(CustomErrorMessage.CUSTOM_TAG_LIMIT)
-            if (!(value.includes('{x}') || value.includes('{X}')))
+        if (!value?.length) {
+            return { isValid: false, message: [REQUIRED_FIELD_MSG] }
+        } else {
+            if (value.length >= 128) {
+                _message.push(CustomErrorMessage.CUSTOM_TAG_LIMIT)
+            }
+            if (!(value.includes('{x}') || value.includes('{X}'))) {
                 _message.push(CustomErrorMessage.CUSTOM_TAG_MANDATORY_X)
-            else if (!checkIfOne(value)) _message.push(CustomErrorMessage.VARIABLE_X_ONLY_ONCE)
-            if (!regExp.test(value)) _message.push(CustomErrorMessage.CUSTOM_TAG_ERROR_MSG)
+            } else if (!checkIfOne(value)) {
+                _message.push(CustomErrorMessage.VARIABLE_X_ONLY_ONCE)
+            }
+            if (!regExp.test(value)) {
+                _message.push(CustomErrorMessage.CUSTOM_TAG_ERROR_MSG)
+            }
         }
         if (_message.length) {
             return { isValid: false, message: _message }
-        } else return { isValid: true, message: [] }
+        } else {
+            return { isValid: true, message: [] }
+        }
     }
 
     counterX = (value: string): { message: string; isValid: boolean } => {
-        if (!value.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        else if (value.includes('-') || value.includes('+')) {
+        if (!value.length) {
+            return { isValid: false, message: REQUIRED_FIELD_MSG }
+        } else if (value.includes('-') || value.includes('+')) {
             return { isValid: false, message: CustomErrorMessage.USE_ONLY_NON_NEGATIVE_INTERGER }
         }
         return { isValid: true, message: '' }

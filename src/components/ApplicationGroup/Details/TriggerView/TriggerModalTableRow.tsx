@@ -17,7 +17,7 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
     const params = {
         appId: rowData.appId,
         envId: rowData.envId,
-        appName: `${rowData.appName}-${envName}`
+        appName: `${rowData.appName}-${envName}`,
     }
 
     const renderStatusIcon = (rowData: ResponseRowType): JSX.Element => {
@@ -41,13 +41,16 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
     }
 
     useEffect(() => {
-        if(typeof setDownloadPopupOpen === 'function'){
+        if (typeof setDownloadPopupOpen === 'function') {
             setDownloadPopupOpen(downloader)
         }
     }, [downloader])
 
     return (
-        <div className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual': ''}`} key={`response-${rowData.appId}`}>
+        <div
+            className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual' : ''}`}
+            key={`response-${rowData.appId}`}
+        >
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
             <div className="flex left top fs-13 fw-4 cn-9">
                 {renderStatusIcon(rowData)}
@@ -55,7 +58,11 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
             </div>
             <div className="fs-13 fw-4 cn-9">{rowData.message}</div>
             {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (
-                <div className="flex right cursor" data-testid={`bulk-cd-manifest-download-button-${index}`} onClick={downloadPackage}>
+                <div
+                    className="flex right cursor"
+                    data-testid={`bulk-cd-manifest-download-button-${index}`}
+                    onClick={downloadPackage}
+                >
                     {downloader ? (
                         <span className="flex">
                             <Progressing />
