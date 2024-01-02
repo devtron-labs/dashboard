@@ -280,7 +280,6 @@ export interface CIBuildpackBuildOptionsProps {
     buildersAndFrameworks: BuildersAndFrameworksType
     setBuildersAndFrameworks: React.Dispatch<React.SetStateAction<BuildersAndFrameworksType>>
     configOverrideView: boolean
-    allowOverride: boolean
     currentMaterial: any
     selectedMaterial: any
     handleFileLocationChange: (selectedMaterial) => void
@@ -291,6 +290,7 @@ export interface CIBuildpackBuildOptionsProps {
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     buildEnvArgs: CIBuildArgType[]
     setBuildEnvArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
+    readOnly?: boolean
 }
 
 export interface CIAdvancedConfigProps {

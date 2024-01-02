@@ -354,7 +354,6 @@ export default function CIDockerFileConfig({
                 buildersAndFrameworks={buildersAndFrameworks}
                 setBuildersAndFrameworks={setBuildersAndFrameworks}
                 configOverrideView={configOverrideView}
-                allowOverride={allowOverride}
                 currentMaterial={currentMaterial}
                 selectedMaterial={selectedMaterial}
                 handleFileLocationChange={handleFileLocationChange}
@@ -365,6 +364,7 @@ export default function CIDockerFileConfig({
                 setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                 buildEnvArgs={buildEnvArgs}
                 setBuildEnvArgs={setBuildEnvArgs}
+                readOnly={configOverrideView && !allowOverride}
             />
         )
     }

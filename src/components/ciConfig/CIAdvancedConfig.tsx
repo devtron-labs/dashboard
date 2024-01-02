@@ -62,6 +62,7 @@ export default function CIAdvancedConfig({
         setArgs(argsTemp)
     }
 
+    // FIXME: Another Duplication :/
     const renderBuildArgs = (isDockerArgsSection?: boolean) => {
         return (
             <div>
@@ -114,7 +115,7 @@ export default function CIAdvancedConfig({
                                 <textarea
                                     data-testid={`build-pack-build-env-value${idx}`}
                                     name="arg-value"
-                                    className={`build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
+                                    className={`build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1 form__textarea ${
                                         updateNotAllowed ? 'cursor-not-allowed' : ''
                                     }`}
                                     value={arg.v}
