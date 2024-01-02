@@ -237,7 +237,7 @@ export default function CIConfigDiffView({
                     startX={_wf.startX}
                     startY={_wf.startY}
                     height={getWorkflowHeight(_wf)}
-                    width={'100%'}
+                    width="100%"
                     nodes={_wf.nodes}
                     history={history}
                     location={location}
