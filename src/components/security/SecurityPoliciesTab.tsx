@@ -1,27 +1,28 @@
-import React, { Component } from 'react';
-import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom';
-import { SecurityPolicyGlobal } from './SecurityPolicyGlobal';
-import { SecurityPolicyCluster } from './SecurityPolicyCluster';
-import { SecurityPolicyApp } from './SecurityPolicyApp';
-import { SecurityPolicyEnvironment } from './SecurityPolicyEnvironment';
-import { VulnerabilityExposure } from './VulnerabilityExposure';
+import React, { Component } from 'react'
+import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
+import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
+import { SecurityPolicyCluster } from './SecurityPolicyCluster'
+import { SecurityPolicyApp } from './SecurityPolicyApp'
+import { SecurityPolicyEnvironment } from './SecurityPolicyEnvironment'
+import { VulnerabilityExposure } from './VulnerabilityExposure'
 
 export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
-
     renderRouter() {
-        const path = this.props.match.path;
-        return <Switch>
-            <Route path={`${path}/global`} component={SecurityPolicyGlobal} />
-            <Route path={`${path}/clusters/:clusterId?`} component={SecurityPolicyCluster} />
-            <Route path={`${path}/environments/:envId?`} component={SecurityPolicyEnvironment} />
-            <Route path={`${path}/apps/:appId?`} component={SecurityPolicyApp} />
-            <Route path={`${path}/vulnerability`} component={VulnerabilityExposure} />
-            <Redirect to={`${path}/global`} />
-        </Switch>
+        const path = this.props.match.path
+        return (
+            <Switch>
+                <Route path={`${path}/global`} component={SecurityPolicyGlobal} />
+                <Route path={`${path}/clusters/:clusterId?`} component={SecurityPolicyCluster} />
+                <Route path={`${path}/environments/:envId?`} component={SecurityPolicyEnvironment} />
+                <Route path={`${path}/apps/:appId?`} component={SecurityPolicyApp} />
+                <Route path={`${path}/vulnerability`} component={VulnerabilityExposure} />
+                <Redirect to={`${path}/global`} />
+            </Switch>
+        )
     }
 
     render() {
-        const path = this.props.match.path;
+        const path = this.props.match.path
         return (
             <div className="security-policy">
                 <div className="dc__secondary-nav">

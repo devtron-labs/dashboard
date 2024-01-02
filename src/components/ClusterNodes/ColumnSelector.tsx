@@ -48,8 +48,8 @@ const MenuList = (props: any): JSX.Element => {
             localStorage.appliedColumns = JSON.stringify(_appliedColumns)
         }
         if (props.selectRef.current) {
-            props.selectRef.current.blur();
-          }
+            props.selectRef.current.blur()
+        }
         setAppliedColumns(_appliedColumns)
     }
     return (
@@ -79,7 +79,7 @@ export default function ColumnSelector() {
     } = useColumnFilterContext()
     const [columnOptions, setColumnOptions] = useState<MultiValue<ColumnMetadataType>>([])
     const [columnFilterInput, setColumnFilterInput] = useState('')
-    const selectRef = useRef(null);
+    const selectRef = useRef(null)
 
     useEffect(() => {
         setColumnOptions(COLUMN_METADATA.filter((columnData) => !columnData.isDisabled))
@@ -118,7 +118,9 @@ export default function ColumnSelector() {
                 setColumnFilterInput('')
             }}
             onInputChange={(value, action) => {
-                if (action.action === 'input-change') setColumnFilterInput(value)
+                if (action.action === 'input-change') {
+                    setColumnFilterInput(value)
+                }
             }}
             components={{
                 Option: Option,

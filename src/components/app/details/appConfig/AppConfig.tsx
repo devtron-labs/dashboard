@@ -97,14 +97,14 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
         ])
             .then(([configStatusRes, workflowRes, envResult, configProtectionsResp]) => {
                 const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
-                let { navItems } = getNavItems(configs, appId, isJobView)
+                const { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
                     index = isJobView ? 2 : 4
                 }
-                let redirectUrl = navItems[index - 1].href
-                let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
-                let isCDPipeline = isCDPipelineCreated(configStatusRes.result)
+                const redirectUrl = navItems[index - 1].href
+                const isCiPipeline = isCIPipelineCreated(configStatusRes.result)
+                const isCDPipeline = isCDPipelineCreated(configStatusRes.result)
                 const envProtectMap: Record<number, boolean> = {}
                 if (configProtectionsResp.result) {
                     for (const config of configProtectionsResp.result) {
@@ -116,7 +116,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                     envResult.result
                         ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
                         .map((env) => {
-                            let envData = { ...env, isProtected: false }
+                            const envData = { ...env, isProtected: false }
                             if (envProtectMap[env.environmentId]) {
                                 envData.isProtected = true
                             }
@@ -229,14 +229,14 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
         getAppConfigStatus(+appId, isJobView)
             .then((configStatusRes) => {
                 const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
-                let { navItems } = getNavItems(configs, appId, isJobView)
+                const { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
                     index = isJobView ? 2 : 4
                 }
-                let redirectUrl = navItems[index - 1].href
-                let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
-                let isCDPipeline = isCDPipelineCreated(configStatusRes.result)
+                const redirectUrl = navItems[index - 1].href
+                const isCiPipeline = isCIPipelineCreated(configStatusRes.result)
+                const isCDPipeline = isCDPipelineCreated(configStatusRes.result)
 
                 setState((state) => ({
                     ...state,
@@ -276,7 +276,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                     envResult.result
                         ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
                         .map((env) => {
-                            let envData = { ...env, isProtected: false }
+                            const envData = { ...env, isProtected: false }
                             if (envProtectMap[env.environmentId]) {
                                 envData.isProtected = true
                             }
@@ -301,7 +301,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
 
     function renderDeleteDialog() {
         if (state.showDeleteConfirm) {
-            if (state.canDeleteApp)
+            if (state.canDeleteApp) {
                 return (
                     <DeleteDialog
                         title={`Delete '${state.appName}'?`}
@@ -318,7 +318,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                         </DeleteDialog.Description>
                     </DeleteDialog>
                 )
-            else {
+            } else {
                 return (
                     <ConfirmationDialog>
                         <ConfirmationDialog.Icon src={warn} />
@@ -438,7 +438,9 @@ function renderNavItem(item: CustomNavItemsType, isBaseConfigProtected?: boolean
             data-testid={`${linkDataTestName}-link`}
             key={item.title}
             onClick={(event) => {
-                if (item.isLocked) event.preventDefault()
+                if (item.isLocked) {
+                    event.preventDefault()
+                }
             }}
             className="app-compose__nav-item cursor"
             to={item.href}

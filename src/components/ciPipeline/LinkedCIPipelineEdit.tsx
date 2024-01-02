@@ -72,7 +72,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     selectApp({ value }): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.parentAppId = value
         form.parentCIPipelineId = 0
         isValid.parentAppId = true
@@ -94,16 +94,16 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     handleName(event): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.name = event.target.value
-        let isFound = !!this.state.ciPipelines.find((pipeline) => pipeline.name === form.name)
+        const isFound = !!this.state.ciPipelines.find((pipeline) => pipeline.name === form.name)
         isValid.name = +this.props.match.params.appId === this.state.form.parentAppId ? !isFound : true
         this.setState({ form, isValid })
     }
 
     selectPipeline(pipelines): void {
-        let pipeline = pipelines[0]
-        let { form, isValid } = { ...this.state }
+        const pipeline = pipelines[0]
+        const { form, isValid } = { ...this.state }
         form.parentCIPipelineId = pipeline.id
         form.name = pipelines[0].name
         isValid.parentCIPipelineId = true
@@ -117,9 +117,9 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             return
         }
         this.setState({ loadingData: true })
-        let parentCIPipeline = this.state.ciPipelines.find((ci) => ci.id === this.state.form.parentCIPipelineId)
+        const parentCIPipeline = this.state.ciPipelines.find((ci) => ci.id === this.state.form.parentCIPipelineId)
         parentCIPipeline.pipelineType = CIPipelineBuildType.CI_EXTERNAL
-        let params = {
+        const params = {
             appId: +this.props.match.params.appId,
             workflowId: +this.props.match.params.workflowId,
             name: this.state.form.name,
@@ -205,7 +205,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     renderCIPipelinesDropdown(app) {
-        let pipeline = this.state.ciPipelines.find((pipeline) => pipeline.id === this.state.form.parentCIPipelineId)
+        const pipeline = this.state.ciPipelines.find((pipeline) => pipeline.id === this.state.form.parentCIPipelineId)
         return (
             <div className={`typeahead form__row`}>
                 <Typeahead
@@ -234,24 +234,25 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                         )
                     })}
                     {(() => {
-                        if (this.state.loadingPipelines)
+                        if (this.state.loadingPipelines) {
                             return (
                                 <TypeaheadErrorOption className="typeahead__menu-item--blur">
                                     Loading...
                                 </TypeaheadErrorOption>
                             )
-                        else if (this.state.ciPipelines.length === 0 && !app)
+                        } else if (this.state.ciPipelines.length === 0 && !app) {
                             return (
                                 <TypeaheadErrorOption className="typeahead__menu-item--blur">
                                     Please select an app to view available pipelines
                                 </TypeaheadErrorOption>
                             )
-                        else if (this.state.ciPipelines.length === 0)
+                        } else if (this.state.ciPipelines.length === 0) {
                             return (
                                 <TypeaheadErrorOption className="typeahead__menu-item--blur">
                                     No CI pipelines found
                                 </TypeaheadErrorOption>
                             )
+                        }
                     })()}
                 </Typeahead>
                 {this.state.showError && !this.state.isValid.parentCIPipelineId ? (
@@ -263,7 +264,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 {this.state.showPluginWarning && (
                     <span className="flex left">
                         <Warning className="icon-dim-14 warning-icon-y7 mr-4" />
-                        Some mandatory plugins are not configured for selected CI pipeline. CI trigger might get blocked.
+                        Some mandatory plugins are not configured for selected CI pipeline. CI trigger might get
+                        blocked.
                     </span>
                 )}
             </div>
@@ -277,7 +279,9 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             return REQUIRED_FIELD_MSG
         } else if (!this.state.isValid.name) {
             return DUPLICATE_PIPELINE_NAME_VALIDATION
-        } else return ''
+        } else {
+            return ''
+        }
     }
 
     renderCIPipelineBody() {

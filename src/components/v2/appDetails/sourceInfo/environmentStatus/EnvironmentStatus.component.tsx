@@ -47,7 +47,7 @@ function EnvironmentStatusComponent({
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
 
     const onClickUpgrade = () => {
-        let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
+        const _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
     }
 
@@ -65,7 +65,9 @@ function EnvironmentStatusComponent({
     }
 
     const renderStatusBlock = () => {
-        if (!status) return null
+        if (!status) {
+            return null
+        }
         return (
             <AppStatusCard
                 appDetails={appDetails}
@@ -143,7 +145,9 @@ function EnvironmentStatusComponent({
     }
 
     const renderChartUsedBlock = () => {
-        if (!appDetails.appStoreAppName) return null
+        if (!appDetails.appStoreAppName) {
+            return null
+        }
         return (
             <ChartUsedCard
                 appDetails={appDetails}

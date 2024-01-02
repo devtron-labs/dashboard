@@ -63,7 +63,6 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             })
         }
 
-
         const { yaml: lockedYaml } = useKeyValueYaml(
             state.currentData?.map(({ k, v }) => ({ k, v: Array(8).fill('*').join('') })),
             setKeyValueArray,
@@ -122,7 +121,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                 payload: json,
             })
             json = json.map((j) => {
-                let temp = {}
+                const temp = {}
                 temp['isBinary'] = j.isBinary
                 if (j.fileName) {
                     temp['key'] = j.fileName

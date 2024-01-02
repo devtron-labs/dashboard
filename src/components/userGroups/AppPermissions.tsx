@@ -49,7 +49,7 @@ export default function AppPermissions({
         appsListHelmApps,
         fetchJobsList,
         jobsList,
-        superAdmin
+        superAdmin,
     } = useUserGroupContext()
     const { url, path } = useRouteMatch()
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
@@ -110,30 +110,30 @@ export default function AppPermissions({
         }
     }
 
-   async function setAllWorkflows(jobOptions) {
-       let jobNames
-       let appIdWorkflowNamesMapping
-       let workflowOptions = []
-       jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
-       const { result } = await getAllWorkflowsForAppNames(jobNames)
-       appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
-       for (const jobName in appIdWorkflowNamesMapping) {
-           workflowOptions.push({
-               label: jobName,
-               options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
-                   label: workflow,
-                   value: workflow,
-               })),
-           })
-       }
+    async function setAllWorkflows(jobOptions) {
+        let jobNames
+        let appIdWorkflowNamesMapping
+        const workflowOptions = []
+        jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
+        const { result } = await getAllWorkflowsForAppNames(jobNames)
+        appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
+        for (const jobName in appIdWorkflowNamesMapping) {
+            workflowOptions.push({
+                label: jobName,
+                options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
+                    label: workflow,
+                    value: workflow,
+                })),
+            })
+        }
 
-       return [
-           { label: 'All Workflows', value: '*' },
-           ...workflowOptions.reduce((acc, option) => {
-               return [...acc, ...option.options]
-           }, []),
-       ]
-   }
+        return [
+            { label: 'All Workflows', value: '*' },
+            ...workflowOptions.reduce((acc, option) => {
+                return [...acc, ...option.options]
+            }, []),
+        ]
+    }
 
     function setAllEnv(directRolefilter: APIRoleFilter) {
         if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
@@ -151,9 +151,9 @@ export default function AppPermissions({
                 ]
             }
         } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
-            let returnArr = []
-            let envArr = directRolefilter.environment.split(',')
-            let envMap: Map<string, boolean> = new Map()
+            const returnArr = []
+            const envArr = directRolefilter.environment.split(',')
+            const envMap: Map<string, boolean> = new Map()
             envArr.forEach((element) => {
                 const endsWithStar = element.endsWith('*')
                 if (endsWithStar) {
@@ -349,7 +349,7 @@ export default function AppPermissions({
     }
 
     function setClusterValues(startsWithHash, clusterName) {
-        let defaultValueArr = []
+        const defaultValueArr = []
         if (startsWithHash) {
             defaultValueArr.push({
                 label: 'All existing + future environments in ' + clusterName,
@@ -438,7 +438,7 @@ export default function AppPermissions({
         }
     }
 
-    async function handleDirectPermissionChange(index, selectedValue, actionMeta,workflowList?) {
+    async function handleDirectPermissionChange(index, selectedValue, actionMeta, workflowList?) {
         const { action, option, name } = actionMeta
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {
@@ -507,7 +507,9 @@ export default function AppPermissions({
             tempPermissions[index][name] = selectedValue
             tempPermissions[index]['entityName'] = []
             tempPermissions[index]['environment'] = []
-            if (tempPermissions[index]['workflow']) tempPermissions[index]['workflow'] = []
+            if (tempPermissions[index]['workflow']) {
+                tempPermissions[index]['workflow'] = []
+            }
             if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {
                 const projectId = projectsList.find(
                     (project) => project.name === tempPermissions[index]['team'].value,
@@ -540,7 +542,7 @@ export default function AppPermissions({
                 foundHelmApps = false,
                 foundJobs = false
 
-            let permissionArr = removeItemsFromArray(permission, index, 1)
+            const permissionArr = removeItemsFromArray(permission, index, 1)
             for (let i = 0; i < permissionArr.length; i++) {
                 if (permissionArr[i].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                     foundDevtronApps = true
@@ -755,8 +757,8 @@ function AppPermissionDetail({
                                 key={idx}
                                 permission={permission}
                                 removeRow={removeDirectPermissionRow}
-                                handleDirectPermissionChange={(value, actionMeta,workflowList?) =>
-                                    handleDirectPermissionChange(idx, value, actionMeta,workflowList)
+                                handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
+                                    handleDirectPermissionChange(idx, value, actionMeta, workflowList)
                                 }
                             />
                         </div>

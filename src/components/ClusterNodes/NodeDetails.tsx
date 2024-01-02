@@ -61,12 +61,12 @@ import { GVKType } from '../ResourceBrowser/Types'
 import { Nodes } from '../app/types'
 
 export default function NodeDetails({
-  isSuperAdmin,
-  markTabActiveByIdentifier,
-  addTab,
-  updateNodeSelectionData,
-  k8SObjectMapRaw,
-  lastDataSync
+    isSuperAdmin,
+    markTabActiveByIdentifier,
+    addTab,
+    updateNodeSelectionData,
+    k8SObjectMapRaw,
+    lastDataSync,
 }: ClusterListType) {
     const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
@@ -139,12 +139,7 @@ export default function NodeDetails({
     }
 
     const handleSelectedTab = (_tabName: string) => {
-        const isTabFound = markTabActiveByIdentifier(
-            K8S_EMPTY_GROUP,
-            node,
-            nodeType,
-            url,
-        )
+        const isTabFound = markTabActiveByIdentifier(K8S_EMPTY_GROUP, node, nodeType, url)
 
         if (!isTabFound) {
             let _urlToCreate = url + '?' + _tabName.toLowerCase()
@@ -155,19 +150,14 @@ export default function NodeDetails({
                 _urlToCreate = _urlToCreate + '?container=' + query.get('container')
             }
 
-            addTab(
-                K8S_EMPTY_GROUP,
-                nodeType,
-                node,
-                _urlToCreate,
-            )
+            addTab(K8S_EMPTY_GROUP, nodeType, node, _urlToCreate)
         }
     }
 
     useEffect(() => {
         getData(patchData)
         handleSelectedTab(node)
-    }, [node,lastDataSync])
+    }, [node, lastDataSync])
 
     useEffect(() => {
         if (queryParams.has('tab')) {
@@ -182,12 +172,12 @@ export default function NodeDetails({
         }
     }, [location.search])
 
-    const selectedResource = useMemo(():{gvk: GVKType, namespaced: boolean} => {
-      if (!k8SObjectMapRaw) {
-          return { gvk: { Kind: Nodes.Pod, Group: '', Version: 'v1' }, namespaced: true }
-      }
-      return { gvk: getEventObjectTypeGVK(k8SObjectMapRaw, 'pod'), namespaced: true }
-  }, [k8SObjectMapRaw])
+    const selectedResource = useMemo((): { gvk: GVKType; namespaced: boolean } => {
+        if (!k8SObjectMapRaw) {
+            return { gvk: { Kind: Nodes.Pod, Group: '', Version: 'v1' }, namespaced: true }
+        }
+        return { gvk: getEventObjectTypeGVK(k8SObjectMapRaw, 'pod'), namespaced: true }
+    }, [k8SObjectMapRaw])
 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
@@ -210,8 +200,8 @@ export default function NodeDetails({
     const renderNodeDetailsTabs = (): JSX.Element => {
         const cursorValue = 'cursor'
         return (
-            <div className='pl-20 flex dc__border-bottom'>
-                <div className='flex left w-100'>
+            <div className="pl-20 flex dc__border-bottom">
+                <div className="flex left w-100">
                     <ul role="tablist" className="tab-list pt-6">
                         <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
                             <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 0 ? ' fw-6 active' : ' fw-4'}`}>
@@ -220,7 +210,11 @@ export default function NodeDetails({
                             {selectedTabIndex === 0 && <div className="node-details__active-tab" />}
                         </li>
                         <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
-                            <div className={`mb-6 flexbox fs-12 tab-hover${selectedTabIndex === 1 ? ' fw-6 active' : ' fw-4'}`}>
+                            <div
+                                className={`mb-6 flexbox fs-12 tab-hover${
+                                    selectedTabIndex === 1 ? ' fw-6 active' : ' fw-4'
+                                }`}
+                            >
                                 <Edit className="icon-dim-14 mr-4 mt-2 edit-yaml-icon" />
                                 {NODE_DETAILS_TABS.yaml}
                             </div>
@@ -252,8 +246,9 @@ export default function NodeDetails({
         return (
             <div className="flexbox mb-8 hover-trigger dc__position-rel">
                 <div
-                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${!value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
-                        }`}
+                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                        !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
+                    }`}
                 >
                     {key}
                 </div>
@@ -435,7 +430,9 @@ export default function NodeDetails({
     }
     const renderErrorOverviewCard = (): JSX.Element | null => {
         const nodeErrorKeys = Object.keys(nodeDetail.errors)
-        if (!nodeErrorKeys.length) return null
+        if (!nodeErrorKeys.length) {
+            return null
+        }
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
                 <div className="flexbox bcr-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
@@ -459,7 +456,9 @@ export default function NodeDetails({
         const isCPUOverCommitted = Number(cpuData.usagePercentage?.slice(0, -1)) > 100
         const issueCount =
             (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taints?.length > 0 ? 1 : 0)
-        if (!issueCount) return null
+        if (!issueCount) {
+            return null
+        }
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
                 <div className="flexbox bcy-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
@@ -497,13 +496,18 @@ export default function NodeDetails({
     }
 
     const renderStatus = () => {
-        return <span className="flex left">
-            <span>{nodeDetail.status}</span>
-            {nodeDetail.unschedulable && <><span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
-                <span className="cr-5"> SchedulingDisabled</span></>}
-        </span>
+        return (
+            <span className="flex left">
+                <span>{nodeDetail.status}</span>
+                {nodeDetail.unschedulable && (
+                    <>
+                        <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
+                        <span className="cr-5"> SchedulingDisabled</span>
+                    </>
+                )}
+            </span>
+        )
     }
-
 
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
@@ -518,7 +522,9 @@ export default function NodeDetails({
                     </div>
                     <div>
                         <div className="fw-6 fs-13 cn-7">Status</div>
-                        <p className={`fw-4 fs-13 cn-9 mb-12 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>{renderStatus()}</p>
+                        <p className={`fw-4 fs-13 cn-9 mb-12 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
+                            {renderStatus()}
+                        </p>
                     </div>
                     <div>
                         <div className="fw-6 fs-13 cn-7">Role</div>
@@ -584,7 +590,10 @@ export default function NodeDetails({
                     </div>
                 )}
                 {nodeDetail.resources.map((resource) => (
-                    <div key={resource.name} className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div
+                        key={resource.name}
+                        className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9"
+                    >
                         <Storage className="mt-2 mb-2 icon-dim-18" />
                         <div>{resource.name || '-'}</div>
                         <div>{resource.requestPercentage || '-'}</div>
@@ -602,7 +611,11 @@ export default function NodeDetails({
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeDetail.name)
         const url = location.pathname
-        push(`${url.split('/').slice(0, -3).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`)
+        push(
+            `${url.split('/').slice(0, -3).join('/')}/${
+                AppDetailsTabs.terminal
+            }/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
+        )
     }
 
     const handleSortClick = (columnName: string, sortType: string): void => {
@@ -616,47 +629,47 @@ export default function NodeDetails({
         const comparatorMethod =
             sortType === 'number'
                 ? (a, b) => {
-                    const sortByColumnArr = columnName.split('.')
-                    let firstValue = 0,
-                        secondValue = 0
-                    if (a[sortByColumnArr[0]][sortByColumnArr[1]]) {
-                        firstValue = Number(a[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
-                    }
-                    if (b[sortByColumnArr[0]][sortByColumnArr[1]]) {
-                        secondValue = Number(b[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
-                    }
-                    return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
-                }
+                      const sortByColumnArr = columnName.split('.')
+                      let firstValue = 0,
+                          secondValue = 0
+                      if (a[sortByColumnArr[0]][sortByColumnArr[1]]) {
+                          firstValue = Number(a[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
+                      }
+                      if (b[sortByColumnArr[0]][sortByColumnArr[1]]) {
+                          secondValue = Number(b[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
+                      }
+                      return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
+                  }
                 : (a, b) => {
-                    return (_sortOrder === OrderBy.ASC && columnName !== 'createdAt') ||
-                        (_sortOrder === OrderBy.DESC && columnName === 'createdAt')
-                        ? a[columnName].localeCompare(b[columnName])
-                        : b[columnName].localeCompare(a[columnName])
-                }
+                      return (_sortOrder === OrderBy.ASC && columnName !== 'createdAt') ||
+                          (_sortOrder === OrderBy.DESC && columnName === 'createdAt')
+                          ? a[columnName].localeCompare(b[columnName])
+                          : b[columnName].localeCompare(a[columnName])
+                  }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
 
     const handleResourceClick = (e) => {
-      const { name, tab, namespace } = e.currentTarget.dataset
-      let _nodeSelectionData, _group
-      _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-      _nodeSelectionData = { name: 'pod' + '_' + name, namespace, isFromNodeDetails: true }
-      const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
-          tab ? `/${tab.toLowerCase()}` : ''
-      }`
-      const isAdded = addTab(`${_group}_${namespace}`, 'pod', name, _url)
-      if (isAdded) {
-          updateNodeSelectionData(_nodeSelectionData, _group)
-          push(_url)
-      } else {
-          toast.error(
-              <div>
-                  <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
-                  <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
-              </div>,
-          )
-      }
-  }
+        const { name, tab, namespace } = e.currentTarget.dataset
+        let _nodeSelectionData, _group
+        _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+        _nodeSelectionData = { name: 'pod' + '_' + name, namespace, isFromNodeDetails: true }
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
+        const isAdded = addTab(`${_group}_${namespace}`, 'pod', name, _url)
+        if (isAdded) {
+            updateNodeSelectionData(_nodeSelectionData, _group)
+            push(_url)
+        } else {
+            toast.error(
+                <div>
+                    <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
+                    <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
+                </div>,
+            )
+        }
+    }
 
     const renderPodHeaderCell = (
         columnName: string,
@@ -666,8 +679,9 @@ export default function NodeDetails({
     ): JSX.Element => {
         return (
             <div
-                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${sortByColumnName === sortingFieldName ? 'sort-by' : ''
-                    } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${
+                    sortByColumnName === sortingFieldName ? 'sort-by' : ''
+                } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
                 onClick={() => {
                     handleSortClick(sortingFieldName, columnType)
                 }}
@@ -683,17 +697,20 @@ export default function NodeDetails({
                 {sortByColumnName === sortingFieldName ? (
                     <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`}></span>
                 ) : (
-                    <span className="sort-column dc__opacity-0_5 ml-4"></span>)}
+                    <span className="sort-column dc__opacity-0_5 ml-4"></span>
+                )}
             </div>
         )
     }
 
-    const getPodListData =async (): Promise<void>=>{
-      getData([])
+    const getPodListData = async (): Promise<void> => {
+        getData([])
     }
 
     const renderPodList = (): JSX.Element | null => {
-        if (!sortedPodList) return null
+        if (!sortedPodList) {
+            return null
+        }
         return (
             <div className="pod-container">
                 <div className="dc__position-sticky  pod-container-header">
@@ -796,62 +813,89 @@ export default function NodeDetails({
 
     const renderTabControls = () => {
         if (selectedTabIndex == 0) {
-            return <><span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
-                {nodeDetail.unschedulable ? (
-                    <>
-                        <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
-                        {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
-                    </>
-                ) : (
-                    <>
-                        <CordonIcon className="icon-dim-16 mr-5 scb-5" />
-                        {CLUSTER_NODE_ACTIONS_LABELS.cordon}
-                    </>
-                )}
-            </span>
-                <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showDrainNodeModal}>
-                    <DrainIcon className="icon-dim-16 mr-5 scb-5" />
-                    {CLUSTER_NODE_ACTIONS_LABELS.drain}
-                </span>
-                <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showEditTaintsModal}>
-                    <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
-                    {CLUSTER_NODE_ACTIONS_LABELS.taints}
-                </span></>
+            return (
+                <>
+                    <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
+                        {nodeDetail.unschedulable ? (
+                            <>
+                                <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                                {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
+                            </>
+                        ) : (
+                            <>
+                                <CordonIcon className="icon-dim-16 mr-5 scb-5" />
+                                {CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                            </>
+                        )}
+                    </span>
+                    <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showDrainNodeModal}>
+                        <DrainIcon className="icon-dim-16 mr-5 scb-5" />
+                        {CLUSTER_NODE_ACTIONS_LABELS.drain}
+                    </span>
+                    <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showEditTaintsModal}>
+                        <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
+                        {CLUSTER_NODE_ACTIONS_LABELS.taints}
+                    </span>
+                </>
+            )
         } else if (selectedTabIndex == 1) {
             if (!isEdit) {
-                return <span className='cb-5 fs-12 scb-5 fw-6 cursor flex' onClick={setYAMLEdit}><Edit className="icon-dim-16 mr-6" /> Edit YAML</span>
+                return (
+                    <span className="cb-5 fs-12 scb-5 fw-6 cursor flex" onClick={setYAMLEdit}>
+                        <Edit className="icon-dim-16 mr-6" /> Edit YAML
+                    </span>
+                )
             }
-            return <>
-                {apiInProgress ? <Progressing /> : <span className="flex scb-5 cb-5 left fw-6 fs-12 cursor" onClick={saveYAML}>{isReviewState ?
-                    <><Check className="icon-dim-16 mr-6" /> Apply changes</> :
-                    <><Review className="icon-dim-16 mr-6" /> Review & Save changes</>}</span>}
-                <span className="flex left fw-6 fs-12 cn-6 cursor ml-12" onClick={cancelYAMLEdit}>
-                    Cancel
-                </span>
-            </>
+            return (
+                <>
+                    {apiInProgress ? (
+                        <Progressing />
+                    ) : (
+                        <span className="flex scb-5 cb-5 left fw-6 fs-12 cursor" onClick={saveYAML}>
+                            {isReviewState ? (
+                                <>
+                                    <Check className="icon-dim-16 mr-6" /> Apply changes
+                                </>
+                            ) : (
+                                <>
+                                    <Review className="icon-dim-16 mr-6" /> Review & Save changes
+                                </>
+                            )}
+                        </span>
+                    )}
+                    <span className="flex left fw-6 fs-12 cn-6 cursor ml-12" onClick={cancelYAMLEdit}>
+                        Cancel
+                    </span>
+                </>
+            )
         }
     }
 
     const nodeControls = () => {
-        return <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
-            <div className="flex left">
-                {isSuperAdmin && <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
-                    <TerminalLineIcon className="icon-dim-16 mr-5" />
-                    {NODE_DETAILS_TABS.debug}
-                </span>}
-                <span className="cn-2 mr-16 ml-16">|</span>
-                {renderTabControls()}
+        return (
+            <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
+                <div className="flex left">
+                    {isSuperAdmin && (
+                        <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
+                            <TerminalLineIcon className="icon-dim-16 mr-5" />
+                            {NODE_DETAILS_TABS.debug}
+                        </span>
+                    )}
+                    <span className="cn-2 mr-16 ml-16">|</span>
+                    {renderTabControls()}
+                </div>
+                <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={showDeleteNodeModal}>
+                    <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
+                    {CLUSTER_NODE_ACTIONS_LABELS.delete}
+                </span>
             </div>
-            <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={showDeleteNodeModal}>
-                <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
-                {CLUSTER_NODE_ACTIONS_LABELS.delete}
-            </span>
-        </div>
+        )
     }
 
-
     const renderSummary = (): JSX.Element | null => {
-        if (!nodeDetail) return null
+        if (!nodeDetail) {
+            return null
+        }
         return (
             <div className="node-details-container node-data-wrapper">
                 <div className="ml-20 mr-20 mt-12 node-details-grid">
@@ -939,13 +983,13 @@ export default function NodeDetails({
         }
     }
 
-    const getCodeEditorHeight = (): string=>{
-      if (!isReviewState) {
-          return 'calc(100vh - 115px)'
-      } else if (isShowWarning) {
-          return `calc(100vh - 180px)`
-      }
-      return `calc(100vh - 148px)`
+    const getCodeEditorHeight = (): string => {
+        if (!isReviewState) {
+            return 'calc(100vh - 115px)'
+        } else if (isShowWarning) {
+            return `calc(100vh - 180px)`
+        }
+        return `calc(100vh - 148px)`
     }
 
     const renderYAMLEditor = (): JSX.Element => {
@@ -969,7 +1013,7 @@ export default function NodeDetails({
                         />
                     )}
                     {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader={true} className="node-code-editor-header" >
+                        <CodeEditor.Header hideDefaultSplitHeader={true} className="node-code-editor-header">
                             <div className="h-32 lh-32 fs-12 fw-6 flexbox w-100 cn-0">
                                 <div className=" pl-10 w-49">Current node YAML </div>
                                 <div className="pl-25 w-51 flexbox">
@@ -1011,7 +1055,6 @@ export default function NodeDetails({
             </div>
         )
     }
-
 
     const renderTabs = (): JSX.Element => {
         if (selectedTabIndex === 1) {
@@ -1095,44 +1138,49 @@ export default function NodeDetails({
     }
 
     return (
-        <div className='bcn-0 node-data-container'>
-            {loader ? <Progressing pageLoader /> : <>
-                {renderNodeDetailsTabs()}
-                {renderTabs()}
-                {showCordonNodeDialog && (
-                    <CordonNodeModal
-                        name={node}
-                        version={nodeDetail.version}
-                        kind={nodeDetail.kind}
-                        unschedulable={nodeDetail.unschedulable}
-                        closePopup={hideCordonNodeModal}
-                    />
-                )}
-                {showDrainNodeDialog && (
-                    <DrainNodeModal
-                        name={node}
-                        version={nodeDetail.version}
-                        kind={nodeDetail.kind}
-                        closePopup={hideDrainNodeModal}
-                    />
-                )}
-                {showDeleteNodeDialog && (
-                    <DeleteNodeModal
-                        name={node}
-                        version={nodeDetail.version}
-                        kind={nodeDetail.kind}
-                        closePopup={hideDeleteNodeModal}
-                    />
-                )}
-                {showEditTaints && (
-                    <EditTaintsModal
-                        name={node}
-                        version={nodeDetail.version}
-                        kind={nodeDetail.kind}
-                        taints={nodeDetail.taints}
-                        closePopup={hideEditTaintsModal}
-                    />
-                )}</>}
+        <div className="bcn-0 node-data-container">
+            {loader ? (
+                <Progressing pageLoader />
+            ) : (
+                <>
+                    {renderNodeDetailsTabs()}
+                    {renderTabs()}
+                    {showCordonNodeDialog && (
+                        <CordonNodeModal
+                            name={node}
+                            version={nodeDetail.version}
+                            kind={nodeDetail.kind}
+                            unschedulable={nodeDetail.unschedulable}
+                            closePopup={hideCordonNodeModal}
+                        />
+                    )}
+                    {showDrainNodeDialog && (
+                        <DrainNodeModal
+                            name={node}
+                            version={nodeDetail.version}
+                            kind={nodeDetail.kind}
+                            closePopup={hideDrainNodeModal}
+                        />
+                    )}
+                    {showDeleteNodeDialog && (
+                        <DeleteNodeModal
+                            name={node}
+                            version={nodeDetail.version}
+                            kind={nodeDetail.kind}
+                            closePopup={hideDeleteNodeModal}
+                        />
+                    )}
+                    {showEditTaints && (
+                        <EditTaintsModal
+                            name={node}
+                            version={nodeDetail.version}
+                            kind={nodeDetail.kind}
+                            taints={nodeDetail.taints}
+                            closePopup={hideEditTaintsModal}
+                        />
+                    )}
+                </>
+            )}
         </div>
     )
 }

@@ -594,6 +594,7 @@ export default function BulkCITrigger({
                                     className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
                                     href={DOCUMENTATION.BLOB_STORAGE}
                                     target="_blank"
+                                    rel="noreferrer"
                                 >
                                     {IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
                                 </a>

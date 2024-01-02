@@ -1,19 +1,19 @@
 import { Component } from 'react'
-import { toast } from 'react-toastify';
-export class CommandErrorBoundary extends Component<{ toggleCommandBar; }, any>{
+import { toast } from 'react-toastify'
+export class CommandErrorBoundary extends Component<{ toggleCommandBar }, any> {
     constructor(props) {
-        super(props);
-        this.state = { eventId: null, hasError: false };
+        super(props)
+        this.state = { eventId: null, hasError: false }
     }
 
     static getDerivedStateFromError(error) {
-        return { hasError: true };
+        return { hasError: true }
     }
 
     componentDidCatch(error, errorInfo) {
-        toast.error("Some Error Occurred");
-        console.error("Error")
-        this.props.toggleCommandBar(false);
+        toast.error('Some Error Occurred')
+        console.error('Error')
+        this.props.toggleCommandBar(false)
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -25,7 +25,4 @@ export class CommandErrorBoundary extends Component<{ toggleCommandBar; }, any>{
     render() {
         return this.props.children
     }
-
 }
-
-

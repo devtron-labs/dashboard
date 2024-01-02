@@ -8,9 +8,8 @@ import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 import { ShortcutKeyBadge } from '../common/formFields/Widgets/Widgets'
-import { useLocation, useHistory} from 'react-router-dom'
+import { useLocation, useHistory } from 'react-router-dom'
 import * as queryString from 'query-string'
-
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -55,28 +54,28 @@ export default function NodeListSearchFliter({
     }, [searchText, searchedTextMap])
 
     const handleFocus = () => {
-        document.removeEventListener('keydown', keyPressHandler);
-      };
+        document.removeEventListener('keydown', keyPressHandler)
+    }
 
-      const handleBlur = () => {
-        document.addEventListener('keydown', keyPressHandler);
-      };
+    const handleBlur = () => {
+        document.addEventListener('keydown', keyPressHandler)
+    }
 
     useEffect(() => {
-          handleBlur()
-          document.addEventListener('focusin', handleFocus);
-          document.addEventListener('focusout', handleBlur);
+        handleBlur()
+        document.addEventListener('focusin', handleFocus)
+        document.addEventListener('focusout', handleBlur)
         return () => {
-            document.removeEventListener('keydown', keyPressHandler);
-            document.removeEventListener('focusin', handleFocus);
-            document.removeEventListener('focusout', handleBlur);
-        };
+            document.removeEventListener('keydown', keyPressHandler)
+            document.removeEventListener('focusin', handleFocus)
+            document.removeEventListener('focusout', handleBlur)
+        }
     }, [])
 
     const keyPressHandler = (e) => {
-       if(e.key === "r"){
+        if (e.key === 'r') {
             setOpenFilterPopup(true)
-       }
+        }
     }
 
     const clearTextFilter = (): void => {
@@ -91,22 +90,20 @@ export default function NodeListSearchFliter({
     const handleFilterInput = (event): void => {
         setSearchInputText(event.target.value)
     }
-    const handleQueryParamsSeacrh=(searchString:string)=>{
+    const handleQueryParamsSeacrh = (searchString: string) => {
         const qs = queryString.parse(location.search)
         const keys = Object.keys(qs)
         const query = {}
         keys.forEach((key) => {
             query[key] = qs[key]
         })
-        if(searchString){
+        if (searchString) {
             query[selectedSearchTextType] = searchInputText
-        }
-        else {
+        } else {
             delete query[selectedSearchTextType]
         }
         const queryStr = queryString.stringify(query)
         push(`?${queryStr}`)
-
     }
 
     const handleFilterTag = (event): void => {
@@ -131,7 +128,7 @@ export default function NodeListSearchFliter({
                     _searchedTextMap.set(currentItem, true)
                 }
             }
-            
+
             handleQueryParamsSeacrh(searchInputText)
             setSearchText(searchInputText)
             setSearchedTextMap(_searchedTextMap)
@@ -157,8 +154,8 @@ export default function NodeListSearchFliter({
         setSearchInputText('')
         setOpenFilterPopup(false)
     }
-    
-    const applyFilter=(selected)=>{
+
+    const applyFilter = (selected) => {
         setSelectedVersion(selected)
         const qs = queryString.parse(location.search)
         const keys = Object.keys(qs)
@@ -166,11 +163,13 @@ export default function NodeListSearchFliter({
         keys.forEach((key) => {
             query[key] = qs[key]
         })
-        if(selected.value===defaultVersion.value)delete query['k8sversion']
-        else query['k8sversion']=selected.value
-        let queryStr = queryString.stringify(query)
+        if (selected.value === defaultVersion.value) {
+            delete query['k8sversion']
+        } else {
+            query['k8sversion'] = selected.value
+        }
+        const queryStr = queryString.stringify(query)
         push(`?${queryStr}`)
-
     }
     const renderTextFilter = (): JSX.Element => {
         let placeholderText = ''
@@ -209,9 +208,11 @@ export default function NodeListSearchFliter({
                             />
                         </>
                     ) : (
-                        <span className='cn-5'>Search nodes by name, labels or node group</span>
+                        <span className="cn-5">Search nodes by name, labels or node group</span>
                     )}
-                    {!selectedSearchTextType && <ShortcutKeyBadge shortcutKey="r" rootClassName="node-list-search-key" />}
+                    {!selectedSearchTextType && (
+                        <ShortcutKeyBadge shortcutKey="r" rootClassName="node-list-search-key" />
+                    )}
                 </div>
                 {openFilterPopup && (
                     <>
@@ -274,9 +275,9 @@ export default function NodeListSearchFliter({
                         ...base,
                         zIndex: 6,
                     }),
-                    valueContainer: (base,state) => ({
-                        ...containerImageSelectStyles.valueContainer(base,state),
-                        display:'grid',
+                    valueContainer: (base, state) => ({
+                        ...containerImageSelectStyles.valueContainer(base, state),
+                        display: 'grid',
                     }),
                 }}
             />

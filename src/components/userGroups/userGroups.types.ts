@@ -20,7 +20,7 @@ export enum ActionTypes {
     VIEW = 'view',
     UPDATE = 'update',
     EDIT = 'edit',
-    APPROVER = 'approver'
+    APPROVER = 'approver',
 }
 
 export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN
@@ -172,7 +172,7 @@ export interface K8sListItemCardType {
         action: string
         index: number
     }
-    customRoles:CustomRoleAndMeta
+    customRoles: CustomRoleAndMeta
 }
 export interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -252,7 +252,7 @@ export interface CustomRoleAndMeta {
     possibleRolesMetaForJob: {}
 }
 
-export const ViewChartGroupPermission:APIRoleFilter = {
+export const ViewChartGroupPermission: APIRoleFilter = {
     entity: EntityTypes.CHART_GROUP,
     action: ActionTypes.VIEW,
 }

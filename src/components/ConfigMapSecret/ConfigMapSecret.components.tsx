@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { ConditionalWrap, CustomInput, Progressing, ResizableTextarea, TippyTheme, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionalWrap,
+    CustomInput,
+    Progressing,
+    ResizableTextarea,
+    TippyTheme,
+    ToastBody,
+    noop,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -126,12 +135,12 @@ export function ConfigMapSecretContainer({
             cmSecretStateLabel = !data?.isNew ? CM_SECRET_STATE.ENV : CM_SECRET_STATE.UNPUBLISHED
         }
     }
-    
+
     useEffect(() => {
-         if (title !== '' && title === name) {
+        if (title !== '' && title === name) {
             getData()
         }
-     }, [])
+    }, [])
 
     const getData = async () => {
         try {
@@ -149,9 +158,7 @@ export function ConfigMapSecretContainer({
                           newAbortController.signal,
                       )
                     : null,
-                !data?.isNew
-                    ? getCMSecret(componentType, id, appId, title, envId, newAbortController.signal)
-                    : null,
+                !data?.isNew ? getCMSecret(componentType, id, appId, title, envId, newAbortController.signal) : null,
             ])
             let draftId, draftState
             if (
@@ -229,10 +236,10 @@ export function ConfigMapSecretContainer({
         }
     }
 
-    const redirectURLToInitial = (urlTo: string = '') => {
+    const redirectURLToInitial = (urlTo = '') => {
         const componentTypeName = componentType === 'secret' ? 'secrets' : 'configmap'
         const urlPrefix = match.url.split(componentTypeName)[0]
-          history.push(`${urlPrefix}${componentTypeName}/${urlTo}`)
+        history.push(`${urlPrefix}${componentTypeName}/${urlTo}`)
     }
 
     const updateCollapsed = (_collapsed?: boolean): void => {
@@ -254,7 +261,7 @@ export function ConfigMapSecretContainer({
                 getData()
                 return redirectURLToInitial(title)
             }
-        } 
+        }
     }
 
     const handleTabSelection = (index: number): void => {
@@ -283,7 +290,9 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
-        if ((name && ((!title && name !== 'create') || (title && name !== title))) || !name) return null
+        if ((name && ((!title && name !== 'create') || (title && name !== title))) || !name) {
+            return null
+        }
         if (title && isProtected && draftData?.draftId) {
             return (
                 <>
@@ -352,7 +361,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDraftState = (): JSX.Element => {
-        if (title !== name ) {
+        if (title !== name) {
             if (data.draftState === 1) {
                 return <i className="mr-10 cr-5">In draft</i>
             } else if (data.draftState === 4) {
@@ -367,7 +376,7 @@ export function ConfigMapSecretContainer({
         if (title && isProtected && draftData?.draftId) {
             setSelectedTab(draftData.draftState === 4 ? 2 : 3)
         }
-         updateCollapsed()
+        updateCollapsed()
     }
 
     const showBlurEffect = name && ((!title && name !== 'create') || (title && name !== title))
@@ -380,10 +389,10 @@ export function ConfigMapSecretContainer({
                     <Tippy
                         theme={TippyTheme.black}
                         followCursor={true}
-                        plugins= {[followCursor]}
+                        plugins={[followCursor]}
                         arrow={true}
                         animation="shift-toward-subtle"
-                        placement='top'
+                        placement="top"
                         content={`Collapse opened ${componentType === 'secret' ? ' Secret' : ' ConfigMap'} first`}
                     >
                         <div>{children}</div>
@@ -391,47 +400,47 @@ export function ConfigMapSecretContainer({
                 )}
             >
                 <div className={`${showBlurEffect ? 'cursor-not-allowed' : 'cursor'}`}>
-                <section
-                    className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
-                        reduceOpacity || showBlurEffect ? 'dc__disable-click dc__blur-1_5' : ''
-                    }`}
-                >
-                    <article
-                        className="dc__configuration-list pr-16 pl-16 mb-16"
-                        onClick={handleCMSecretClick}
-                        data-testid="click-to-add-configmaps-secret"
+                    <section
+                        className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
+                            reduceOpacity || showBlurEffect ? 'dc__disable-click dc__blur-1_5' : ''
+                        }`}
                     >
-                        {renderIcon()}
-                        <div
-                            data-testid={`add-${componentType}-button`}
-                            className={`flex left lh-20 ${!title ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}
+                        <article
+                            className="dc__configuration-list pr-16 pl-16 mb-16"
+                            onClick={handleCMSecretClick}
+                            data-testid="click-to-add-configmaps-secret"
                         >
-                            {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
-                            {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
-                        </div>
-                        {title && (
-                            <div className="flex right">
-                                {isProtected && (
-                                    <>
-                                        {renderDraftState()}
-                                        <ProtectedIcon className="icon-dim-20 mr-10 fcv-5" />
-                                    </>
-                                )}
-                                {isLoader ? (
-                                    <span style={{ width: '20px' }}>
-                                        <Progressing />
-                                    </span>
-                                ) : (
-                                    <Dropdown
-                                        className={`icon-dim-20 rotate ${name === title ? 'dc__flip-180' : ''}`}
-                                    />
-                                )}
+                            {renderIcon()}
+                            <div
+                                data-testid={`add-${componentType}-button`}
+                                className={`flex left lh-20 ${!title ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}
+                            >
+                                {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
+                                {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
                             </div>
-                        )}
-                    </article>
+                            {title && (
+                                <div className="flex right">
+                                    {isProtected && (
+                                        <>
+                                            {renderDraftState()}
+                                            <ProtectedIcon className="icon-dim-20 mr-10 fcv-5" />
+                                        </>
+                                    )}
+                                    {isLoader ? (
+                                        <span style={{ width: '20px' }}>
+                                            <Progressing />
+                                        </span>
+                                    ) : (
+                                        <Dropdown
+                                            className={`icon-dim-20 rotate ${name === title ? 'dc__flip-180' : ''}`}
+                                        />
+                                    )}
+                                </div>
+                            )}
+                        </article>
 
-                    {!isLoader ? renderDetails() : null}
-                </section>
+                        {!isLoader ? renderDetails() : null}
+                    </section>
                 </div>
             </ConditionalWrap>
         </>
@@ -461,7 +470,7 @@ export function ProtectedConfigMapSecretDetails({
     const getBaseData = async () => {
         try {
             abortController.abort()
-            let newAbortController = new AbortController()
+            const newAbortController = new AbortController()
             setAbortController(newAbortController)
             setLoader(true)
             const { result } = await (componentType === 'secret'
@@ -790,15 +799,17 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             return
         }
         try {
-            let obj = YAML.parse(yamlConfig)
+            const obj = YAML.parse(yamlConfig)
             if (typeof obj !== 'object') {
                 setError('Could not parse to valid YAML')
                 return null
             }
-            let errorneousKeys = []
-            let tempArray = Object.keys(obj).reduce((agg, k) => {
-                if (!k && !obj[k]) return agg
-                let v =
+            const errorneousKeys = []
+            const tempArray = Object.keys(obj).reduce((agg, k) => {
+                if (!k && !obj[k]) {
+                    return agg
+                }
+                const v =
                     obj[k] && typeof obj[k] === 'object'
                         ? YAML.stringify(obj[k], { indent: 2 })
                         : convertToValidValue(obj[k])

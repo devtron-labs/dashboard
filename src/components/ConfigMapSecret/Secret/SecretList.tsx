@@ -104,7 +104,7 @@ export default function SecretList({
         }
         try {
             setList((list) => {
-                let configData = list.configData
+                const configData = list.configData
                 if (result === null) {
                     //delete
                     configData.splice(index, 1)
@@ -131,8 +131,9 @@ export default function SecretList({
         } catch (err) {}
     }
 
-    if (parentState === ComponentStates.loading || secretLoading)
+    if (parentState === ComponentStates.loading || secretLoading) {
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    }
     return (
         <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>
             <div className="main-content">

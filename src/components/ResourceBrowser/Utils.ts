@@ -142,9 +142,9 @@ export const sortEventListData = (eventList: Record<string, any>[]): Record<stri
 }
 
 export const removeDefaultForStorageClass = (storageList: Record<string, any>[]): Record<string, any>[] => {
-    for (let iterator of storageList) {
-        if (iterator.name.includes("(default)")) {
-            iterator.name = iterator.name.split(" (default)")[0]
+    for (const iterator of storageList) {
+        if (iterator.name.includes('(default)')) {
+            iterator.name = iterator.name.split(' (default)')[0]
         }
     }
     return storageList
@@ -160,7 +160,7 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
         isResourceGroupPresent = SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() !== nodeType
         groupedChild = {
             namespaced: SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() === nodeType,
-            gvk: nodeType === AppDetailsTabs.terminal? SIDEBAR_KEYS.nodeGVK: SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
+            gvk: nodeType === AppDetailsTabs.terminal ? SIDEBAR_KEYS.nodeGVK : SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
             isGrouped: false,
         }
     } else if (nodeType) {
@@ -202,14 +202,18 @@ export const checkIfDataIsStale = (
     }
 }
 
-export const getScrollableResourceClass = (className: string, showPaginatedView: boolean, syncError: boolean):string=>{
-  let _className = className
-  if (showPaginatedView && syncError) {
-      _className += ' paginated-list-view-with-sync-error'
-  } else if (showPaginatedView) {
-      _className += ' paginated-list-view'
-  } else if (syncError) {
-      _className += ' sync-error'
-  }
-  return _className
+export const getScrollableResourceClass = (
+    className: string,
+    showPaginatedView: boolean,
+    syncError: boolean,
+): string => {
+    let _className = className
+    if (showPaginatedView && syncError) {
+        _className += ' paginated-list-view-with-sync-error'
+    } else if (showPaginatedView) {
+        _className += ' paginated-list-view'
+    } else if (syncError) {
+        _className += ' sync-error'
+    }
+    return _className
 }

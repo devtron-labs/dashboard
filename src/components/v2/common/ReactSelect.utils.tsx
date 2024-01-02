@@ -177,7 +177,9 @@ export const CustomValueContainer = (props): JSX.Element => {
         <components.ValueContainer {...props}>
             {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
                 (props.selectProps.value?.label ? (
-                    <span className={`dc__position-abs cn-9 ml-4 ${props.valClassName ?? ''}`}>{props.selectProps.value.label}</span>
+                    <span className={`dc__position-abs cn-9 ml-4 ${props.valClassName ?? ''}`}>
+                        {props.selectProps.value.label}
+                    </span>
                 ) : (
                     <span className="dc__position-abs cn-5 ml-8">{props.selectProps.placeholder}</span>
                 ))}
@@ -213,8 +215,10 @@ export const noMatchingPlatformOptions = (): string => {
 }
 
 export function GroupHeading(props) {
-    const {data, hideClusterName} = props
-    if (!data.label) return null
+    const { data, hideClusterName } = props
+    if (!data.label) {
+        return null
+    }
     return (
         <components.GroupHeading {...props}>
             <div className="flex dc__no-text-transform flex-justify dc__truncate-text h-100">
@@ -248,7 +252,11 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
     )
 }
 
-export function formatHighlightedTextDescription(option: Environment, inputValue: string, environmentfieldName: string) {
+export function formatHighlightedTextDescription(
+    option: Environment,
+    inputValue: string,
+    environmentfieldName: string,
+) {
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
     const regex = new RegExp(inputValue, 'gi')
     return (
@@ -290,27 +298,27 @@ export const groupHeaderStyle = {
 }
 
 export const groupStyle = () => {
-  return {
-      ...multiSelectStyles,
-      menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-      control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
-      group: (base) => ({
-          ...base,
-          paddingTop: 0,
-          paddingBottom: 0,
-      }),
-      groupHeading: (base) => ({
-          ...base,
-          fontWeight: 600,
-          fontSize: '12px',
-          height: '28px',
-          color: 'var(--N900)',
-          backgroundColor: 'var(--N100)',
-          marginBottom: 0,
-      }),
-      indicatorsContainer: (provided, state) => ({
-          ...provided,
-      }),
-      option: getCustomOptionSelectionStyle(),
-  }
+    return {
+        ...multiSelectStyles,
+        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+        control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
+        group: (base) => ({
+            ...base,
+            paddingTop: 0,
+            paddingBottom: 0,
+        }),
+        groupHeading: (base) => ({
+            ...base,
+            fontWeight: 600,
+            fontSize: '12px',
+            height: '28px',
+            color: 'var(--N900)',
+            backgroundColor: 'var(--N100)',
+            marginBottom: 0,
+        }),
+        indicatorsContainer: (provided, state) => ({
+            ...provided,
+        }),
+        option: getCustomOptionSelectionStyle(),
+    }
 }

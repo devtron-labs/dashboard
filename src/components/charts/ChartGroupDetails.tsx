@@ -45,7 +45,7 @@ export default function ChartGroupDetails() {
         handleChartVersionChange,
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
-        setEnvironmentList
+        setEnvironmentList,
     } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -86,7 +86,7 @@ export default function ChartGroupDetails() {
     }
 
     function redirectToConfigure() {
-        let url = `${URLS.CHARTS}/discover/group/${groupId}/edit`
+        const url = `${URLS.CHARTS}/discover/group/${groupId}/edit`
         push(url)
     }
 
@@ -122,7 +122,7 @@ export default function ChartGroupDetails() {
     }
 
     function getDeleteComponent() {
-        let payload = {
+        const payload = {
             name: state.name,
             description: state.description,
             id: parseInt(groupId),

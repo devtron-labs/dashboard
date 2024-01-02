@@ -1,17 +1,17 @@
-import React, {useContext} from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import { useRouteMatch } from 'react-router';
-import DeploymentGroupList from './DeploymentGroupList';
-import BulkActionEdit from './BulkActionEdit';
-import BulkActionDetails from './BulkActionDetails';
-import './BulkActions.scss';
-import { DOCUMENTATION, SERVER_MODE } from '../../config';
-import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState';
-import { mainContext } from '../common/navigation/NavigationRoutes';
+import React, { useContext } from 'react'
+import { Switch, Route, Redirect } from 'react-router-dom'
+import { useRouteMatch } from 'react-router'
+import DeploymentGroupList from './DeploymentGroupList'
+import BulkActionEdit from './BulkActionEdit'
+import BulkActionDetails from './BulkActionDetails'
+import './BulkActions.scss'
+import { DOCUMENTATION, SERVER_MODE } from '../../config'
+import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 export default function BulkActions({ ...props }) {
-    const { path } = useRouteMatch();
-    const {serverMode} = useContext(mainContext);
+    const { path } = useRouteMatch()
+    const { serverMode } = useContext(mainContext)
 
     const renderEmptyStateForEAOnlyMode = () => {
         return (
@@ -26,8 +26,8 @@ export default function BulkActions({ ...props }) {
                     headerText="Deployment Groups"
                 />
             </div>
-        );
-    };
+        )
+    }
     return serverMode === SERVER_MODE.EA_ONLY ? (
         renderEmptyStateForEAOnlyMode()
     ) : (
@@ -37,5 +37,5 @@ export default function BulkActions({ ...props }) {
             <Route exact path={`${path}`} component={DeploymentGroupList} />
             <Redirect to={`${path}`} />
         </Switch>
-    );
+    )
 }

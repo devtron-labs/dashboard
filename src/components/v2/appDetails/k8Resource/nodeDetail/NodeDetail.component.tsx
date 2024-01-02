@@ -254,7 +254,9 @@ function NodeDetailComponent({
     }
 
     const renderPodTerminal = (): JSX.Element => {
-        if (!startTerminal) return null
+        if (!startTerminal) {
+            return null
+        }
         return (
             <TerminalComponent
                 showTerminal={location.pathname.endsWith('/terminal')}

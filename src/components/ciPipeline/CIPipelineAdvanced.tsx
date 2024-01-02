@@ -92,15 +92,18 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             title = 'Post-build Stages'
             description = ' These stages are run in sequence after the container image is built'
         }
-        let showBuild = key === 'beforeDockerBuildScripts' ? this.props.showPreBuild : this.props.showPostBuild
+        const showBuild = key === 'beforeDockerBuildScripts' ? this.props.showPreBuild : this.props.showPostBuild
 
         return (
             <>
                 <div
                     className="flex left cursor"
                     onClick={(event) => {
-                        if (key === 'beforeDockerBuildScripts') this.props.handlePreBuild()
-                        else this.props.handlePostBuild()
+                        if (key === 'beforeDockerBuildScripts') {
+                            this.props.handlePreBuild()
+                        } else {
+                            this.props.handlePostBuild()
+                        }
                     }}
                 >
                     <div className="sqr-44">
@@ -311,7 +314,9 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     renderTriggerType() {
         return (
             <div className="form__row">
-                <label className="form__label form__label--sentence dc__required-field">When do you want the pipeline to execute?</label>
+                <label className="form__label form__label--sentence dc__required-field">
+                    When do you want the pipeline to execute?
+                </label>
                 <RadioGroup
                     value={this.props.form.triggerType}
                     name="trigger-type"
@@ -417,7 +422,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     }
 
     renderMaterials() {
-        let _webhookData: WebhookCIProps = {
+        const _webhookData: WebhookCIProps = {
             webhookConditionList: this.props.form.webhookConditionList,
             gitHost: this.props.form.gitHost,
             getSelectedWebhookEvent: this.props.getSelectedWebhookEvent,
@@ -472,7 +477,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     }
 
     render() {
-        let errorObj = this.props.validationRules.name(this.props.form.name)
+        const errorObj = this.props.validationRules.name(this.props.form.name)
 
         return (
             <>

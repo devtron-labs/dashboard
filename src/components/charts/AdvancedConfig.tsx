@@ -8,24 +8,56 @@ import { MarkDown } from './discoverChartDetail/DiscoverChartDetails'
 import { getReadme, getChartValues } from './charts.service'
 import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg';
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
 import { useHistory } from 'react-router'
 import { getSavedValuesListURL } from './charts.helper'
 
 interface AdvancedConfig extends AdvancedConfigHelpers {
-    chart: ChartGroupEntry;
-    index: number;
+    chart: ChartGroupEntry
+    index: number
 }
 
-const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValues, getChartVersionsAndValues, handleEnvironmentChange, handleChartValueChange, handleChartVersionChange, handleValuesYaml, handleNameChange, discardValuesYamlChanges }) => {
-    const { environment, loading, chartMetaData: { chartName }, valuesYaml, id, appStoreValuesChartVersion, appStoreApplicationVersionId, appStoreValuesVersionId, appStoreValuesVersionName, kind, name: appName, availableChartVersions, availableChartValues, appStoreApplicationVersion } = chart;
-    const [ environments, setEnvironments] = useState(new Map())
+const AdvancedConfig: React.FC<AdvancedConfig> = ({
+    chart,
+    index,
+    fetchChartValues,
+    getChartVersionsAndValues,
+    handleEnvironmentChange,
+    handleChartValueChange,
+    handleChartVersionChange,
+    handleValuesYaml,
+    handleNameChange,
+    discardValuesYamlChanges,
+}) => {
+    const {
+        environment,
+        loading,
+        chartMetaData: { chartName },
+        valuesYaml,
+        id,
+        appStoreValuesChartVersion,
+        appStoreApplicationVersionId,
+        appStoreValuesVersionId,
+        appStoreValuesVersionName,
+        kind,
+        name: appName,
+        availableChartVersions,
+        availableChartValues,
+        appStoreApplicationVersion,
+    } = chart
+    const [environments, setEnvironments] = useState(new Map())
     const [showReadme, setReadme] = useState(false)
-    const [showDiff, setDiff] = useState(false);
+    const [showDiff, setDiff] = useState(false)
     const [chartValuesLoading, setChartValuesLoading] = useState(false)
-    const [showValuesYamlDialog, toggleValuesYamlDialog] = useState(false);
-    const [valuesYamlSelection, setValuesYamlSelection] = useState({ valuesId: appStoreApplicationVersionId, kind: kind });
-    const [readmeLoading, readmeResult, error, reload] = useAsync(() => getReadme(appStoreApplicationVersionId), [appStoreApplicationVersionId])
+    const [showValuesYamlDialog, toggleValuesYamlDialog] = useState(false)
+    const [valuesYamlSelection, setValuesYamlSelection] = useState({
+        valuesId: appStoreApplicationVersionId,
+        kind: kind,
+    })
+    const [readmeLoading, readmeResult, error, reload] = useAsync(
+        () => getReadme(appStoreApplicationVersionId),
+        [appStoreApplicationVersionId],
+    )
     const { push } = useHistory()
 
     useEffect(() => {
@@ -33,8 +65,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
             try {
                 const { result } = await getEnvironmentListMin()
                 setEnvironments(mapByKey(result, 'id'))
-            }
-            catch (err) {
+            } catch (err) {
                 showError(err)
             }
         }
@@ -43,38 +74,38 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
 
     function handleChartVersionChangeAdvancedConfig(index, value) {
         if (chart.originalValuesYaml !== chart.valuesYaml) {
-            toggleValuesYamlDialog(true);
+            toggleValuesYamlDialog(true)
+        } else {
+            handleChartVersionChange(index, value)
         }
-        else handleChartVersionChange(index, value);
     }
 
     function handleChartValueChangeAdvancedConfig(e) {
-        const [kind, valuesId] = e.target.value.split("..");
-        setValuesYamlSelection({ valuesId, kind });
+        const [kind, valuesId] = e.target.value.split('..')
+        setValuesYamlSelection({ valuesId, kind })
         if (chart.originalValuesYaml !== chart.valuesYaml) {
-            toggleValuesYamlDialog(true);
-        }
-        else {
-            setValuesYamlSelection({ valuesId, kind });
-            handleChartValueChange(index, kind, Number(valuesId));
+            toggleValuesYamlDialog(true)
+        } else {
+            setValuesYamlSelection({ valuesId, kind })
+            handleChartValueChange(index, kind, Number(valuesId))
         }
     }
 
     function discardValuesYamlChangesAdvancedConfig(e) {
-        discardValuesYamlChanges(index);
-        toggleValuesYamlDialog(false);
+        discardValuesYamlChanges(index)
+        toggleValuesYamlDialog(false)
     }
 
     function copyValuesYamlToClipBoard(e) {
-        let textarea = document.createElement("textarea");
-        let main = document.getElementsByClassName("main")[0];
+        const textarea = document.createElement('textarea')
+        const main = document.getElementsByClassName('main')[0]
         main.appendChild(textarea)
-        textarea.value = chart.valuesYaml;
-        textarea.select();
-        document.execCommand("copy");
-        main.removeChild(textarea);
-        toggleValuesYamlDialog(false);
-        handleChartValueChange(index, valuesYamlSelection.kind, Number(valuesYamlSelection.valuesId));
+        textarea.value = chart.valuesYaml
+        textarea.select()
+        document.execCommand('copy')
+        main.removeChild(textarea)
+        toggleValuesYamlDialog(false)
+        handleChartValueChange(index, valuesYamlSelection.kind, Number(valuesYamlSelection.valuesId))
     }
 
     async function handleDiff(e) {
@@ -83,15 +114,12 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
             try {
                 await fetchChartValues(chart.id, index)
                 setDiff(true)
-            }
-            catch (err) {
+            } catch (err) {
                 showError(err)
-            }
-            finally {
+            } finally {
                 setChartValuesLoading(false)
             }
-        }
-        else {
+        } else {
             setDiff(true)
         }
     }
@@ -102,172 +130,318 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
 
     let selectedChartValue: ChartValuesNativeType = {
         id: appStoreValuesVersionId || appStoreApplicationVersionId,
-        name: appStoreValuesVersionName || "Default",
+        name: appStoreValuesVersionName || 'Default',
         chartVersion: appStoreValuesChartVersion,
-    };
+    }
 
     let selectedChartVersion: ChartVersionType = {
         id: appStoreApplicationVersionId,
-        version: appStoreApplicationVersion
-    };
+        version: appStoreApplicationVersion,
+    }
 
     // NOTE: appStoreValuesVersionId does not exist in case of default chart value version.
     if (appStoreValuesVersionId && availableChartValues.length) {
-        let values = availableChartValues?.find(({ kind: k }) => (kind === k))
-        selectedChartValue = values.values?.find(({ id }) => (id === appStoreValuesVersionId));
+        const values = availableChartValues?.find(({ kind: k }) => kind === k)
+        selectedChartValue = values.values?.find(({ id }) => id === appStoreValuesVersionId)
     }
 
     if (availableChartVersions.length) {
-        selectedChartVersion = availableChartVersions.find(({ id }) => (id === appStoreApplicationVersionId))
+        selectedChartVersion = availableChartVersions.find(({ id }) => id === appStoreApplicationVersionId)
     }
 
-    let availableChartValuesCopy = JSON.parse(JSON.stringify(availableChartValues || []))
+    const availableChartValuesCopy = JSON.parse(JSON.stringify(availableChartValues || []))
     let chartValuesDropDown = availableChartValuesCopy.map((chartValuesObj) => {
-        if (chartValuesObj.kind === "DEFAULT") {
-            chartValuesObj.values = chartValuesObj.values.filter(e => e.id === chart.appStoreApplicationVersionId)
+        if (chartValuesObj.kind === 'DEFAULT') {
+            chartValuesObj.values = chartValuesObj.values.filter((e) => e.id === chart.appStoreApplicationVersionId)
         }
-        return chartValuesObj;
+        return chartValuesObj
     })
     // chart group create flow, do not show deployed values
     if (!handleEnvironmentChange) {
-        chartValuesDropDown = chartValuesDropDown.filter(arr => arr.kind !== "DEPLOYED");
+        chartValuesDropDown = chartValuesDropDown.filter((arr) => arr.kind !== 'DEPLOYED')
     }
 
     //TODO: use default state for variables, so that you don't have to apply ?. before every object.
-    let warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version;
+    const warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version
 
     return (
         <>
             <div className="advanced-config flex">
                 <form action="" className="advanced-config__form">
-                    <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">{chartName}</h1>
-                    {handleNameChange && <div className="flex column left top mb-16">
-                        <label htmlFor="" className="form__label" data-testid="advanced-option-app-name">App name*</label>
-                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} data-testid="advanced-option-app-name-box"/>
-                        {appName?.error &&
-                            <span className="form__error flex left">
-                                <WarningIcon className="mr-5 icon-dim-16" />{appName?.error || ""}
-                                {appName.suggestedName && <span>. Suggested name: <span className="anchor pointer" onClick={e => handleNameChange(index, appName.suggestedName)}>{appName.suggestedName}</span></span>}
-                            </span>}
-                    </div>}
-                    {handleEnvironmentChange && <div className="flex top mb-16">
-                        <div className="flex column half left top">
-                            <label htmlFor="" className="form__label" data-testid="advanced-option-environment">Deploy to environment*</label>
-                            <Select rootClassName={`${environment?.error ? 'popup-button--error' : ''}`} onChange={e => handleEnvironmentChange(index, e.target.value)} value={environment?.id}>
-                                <Select.Button rootClassName="select-button--default" dataTestIdDropdown="advanced-option-environment-list">{environments.has(environment?.id) ? environments.get(environment.id).environment_name : 'Select Environment'}</Select.Button>
-                                {Array.from(environments.values()).filter((itm) => !itm.isVirtualEnvironment).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
-                            </Select>
-                            {environment?.error && <span className="form__error flex left"><WarningIcon className="mr-5 icon-dim-16" />{environment?.error || ""}</span>}
+                    <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">
+                        {chartName}
+                    </h1>
+                    {handleNameChange && (
+                        <div className="flex column left top mb-16">
+                            <label htmlFor="" className="form__label" data-testid="advanced-option-app-name">
+                                App name*
+                            </label>
+                            <input
+                                type="text"
+                                autoComplete="off"
+                                className={`form__input ${appName?.error ? 'form__input--error' : ''}`}
+                                value={appName.value}
+                                onChange={(e) => handleNameChange(index, e.target.value)}
+                                data-testid="advanced-option-app-name-box"
+                            />
+                            {appName?.error && (
+                                <span className="form__error flex left">
+                                    <WarningIcon className="mr-5 icon-dim-16" />
+                                    {appName?.error || ''}
+                                    {appName.suggestedName && (
+                                        <span>
+                                            . Suggested name:{' '}
+                                            <span
+                                                className="anchor pointer"
+                                                onClick={(e) => handleNameChange(index, appName.suggestedName)}
+                                            >
+                                                {appName.suggestedName}
+                                            </span>
+                                        </span>
+                                    )}
+                                </span>
+                            )}
                         </div>
-                        <div className="flex column half left top">
-                            <label htmlFor="" className="form__label" data-testid="advanced-option-namespace">Namespace*</label>
-                            <input autoComplete="off" disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} data-testid = "advanced-option-namespace-box" />
+                    )}
+                    {handleEnvironmentChange && (
+                        <div className="flex top mb-16">
+                            <div className="flex column half left top">
+                                <label htmlFor="" className="form__label" data-testid="advanced-option-environment">
+                                    Deploy to environment*
+                                </label>
+                                <Select
+                                    rootClassName={`${environment?.error ? 'popup-button--error' : ''}`}
+                                    onChange={(e) => handleEnvironmentChange(index, e.target.value)}
+                                    value={environment?.id}
+                                >
+                                    <Select.Button
+                                        rootClassName="select-button--default"
+                                        dataTestIdDropdown="advanced-option-environment-list"
+                                    >
+                                        {environments.has(environment?.id)
+                                            ? environments.get(environment.id).environment_name
+                                            : 'Select Environment'}
+                                    </Select.Button>
+                                    {Array.from(environments.values())
+                                        .filter((itm) => !itm.isVirtualEnvironment)
+                                        .map((env) => (
+                                            <Select.Option value={env.id} key={env.id}>
+                                                {env.environment_name}
+                                            </Select.Option>
+                                        ))}
+                                </Select>
+                                {environment?.error && (
+                                    <span className="form__error flex left">
+                                        <WarningIcon className="mr-5 icon-dim-16" />
+                                        {environment?.error || ''}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex column half left top">
+                                <label htmlFor="" className="form__label" data-testid="advanced-option-namespace">
+                                    Namespace*
+                                </label>
+                                <input
+                                    autoComplete="off"
+                                    disabled
+                                    className="form__input"
+                                    value={
+                                        environments.has(environment?.id)
+                                            ? environments.get(environment?.id).namespace
+                                            : ''
+                                    }
+                                    data-testid="advanced-option-namespace-box"
+                                />
+                            </div>
                         </div>
-                    </div>}
+                    )}
                     <div className="flex top mb-16">
                         <div className="flex column left top half">
-                            <label htmlFor="" className="form__label" data-testid="advanced-option-chart-version">Chart version</label>
-                            <Select rootClassName="select-button--default" value={appStoreApplicationVersionId} onChange={e => handleChartVersionChangeAdvancedConfig(index, e.target.value)}>
-                                {!availableChartVersions?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
+                            <label htmlFor="" className="form__label" data-testid="advanced-option-chart-version">
+                                Chart version
+                            </label>
+                            <Select
+                                rootClassName="select-button--default"
+                                value={appStoreApplicationVersionId}
+                                onChange={(e) => handleChartVersionChangeAdvancedConfig(index, e.target.value)}
+                            >
+                                {!availableChartVersions?.length && (
+                                    <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />
+                                )}
                                 <Select.Button dataTestIdDropdown="advanced-option-chart-version-list">{`v${selectedChartVersion.version}`}</Select.Button>
-                                {availableChartVersions.map(({ id, version }) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
+                                {availableChartVersions.map(({ id, version }) => (
+                                    <Select.Option key={id} value={id}>
+                                        {version}
+                                    </Select.Option>
+                                ))}
                             </Select>
                         </div>
 
                         <div className="flex column left top half">
                             <label className="form__label form__label--manage-values">
                                 <span data-testid="advanced-option-value">Values</span>
-                                <button type="button" className="text-button p-0" onClick={openSavedValuesList} data-testid="advanced-option-preset-values-button">
-                                  Preset values
+                                <button
+                                    type="button"
+                                    className="text-button p-0"
+                                    onClick={openSavedValuesList}
+                                    data-testid="advanced-option-preset-values-button"
+                                >
+                                    Preset values
                                 </button>
                             </label>
-                            <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>
-                                {!chartValuesDropDown?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
-                                <Select.Button rootClassName="select-button--default" dataTestIdDropdown="advanced-option-values-list">
-                                    <span className="ml-5 select-button__selected-option dc__ellipsis-right" style={{ "width": "100%" }}>
+                            <Select
+                                onChange={handleChartValueChangeAdvancedConfig}
+                                value={`${kind}..${appStoreValuesVersionId}`}
+                            >
+                                {!chartValuesDropDown?.length && (
+                                    <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />
+                                )}
+                                <Select.Button
+                                    rootClassName="select-button--default"
+                                    dataTestIdDropdown="advanced-option-values-list"
+                                >
+                                    <span
+                                        className="ml-5 select-button__selected-option dc__ellipsis-right"
+                                        style={{ width: '100%' }}
+                                    >
                                         {`${selectedChartValue.name} (v${selectedChartValue.chartVersion})`}
                                     </span>
                                 </Select.Button>
-                                {chartValuesDropDown?.map(({ kind, values }) => <Select.OptGroup key={kind} label={kind === 'TEMPLATE' ? 'CUSTOM' : kind}>
-                                    {values?.map(({ chartVersion, id, name, environmentName }) => <Select.Option key={`${kind}..${id}`} value={`${kind}..${id}..${name}`}>
-                                        <div className="flex left column">
-                                            <span style={{ color: 'var(--N900)', fontSize: '14px' }}>{name} ({chartVersion})</span>
-                                            {environmentName && <span style={{ color: '#404040', fontSize: '12px' }}>{environmentName}</span>}
-                                        </div>
-
-                                    </Select.Option>)}
-                                    {(!values || values?.length === 0) && <div onClick={e => e.stopPropagation()} className="select__option-with-subtitle select__option-with-subtitle--empty-state">No Results</div>}
-                                </Select.OptGroup>)}
+                                {chartValuesDropDown?.map(({ kind, values }) => (
+                                    <Select.OptGroup key={kind} label={kind === 'TEMPLATE' ? 'CUSTOM' : kind}>
+                                        {values?.map(({ chartVersion, id, name, environmentName }) => (
+                                            <Select.Option key={`${kind}..${id}`} value={`${kind}..${id}..${name}`}>
+                                                <div className="flex left column">
+                                                    <span style={{ color: 'var(--N900)', fontSize: '14px' }}>
+                                                        {name} ({chartVersion})
+                                                    </span>
+                                                    {environmentName && (
+                                                        <span style={{ color: '#404040', fontSize: '12px' }}>
+                                                            {environmentName}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </Select.Option>
+                                        ))}
+                                        {(!values || values?.length === 0) && (
+                                            <div
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="select__option-with-subtitle select__option-with-subtitle--empty-state"
+                                            >
+                                                No Results
+                                            </div>
+                                        )}
+                                    </Select.OptGroup>
+                                ))}
                             </Select>
                         </div>
                     </div>
-                    {!handleNameChange && <div className="tips">
-                        {/* only chart group create and update flow */}
-                        <Info className="tips__icon" />
-                        <div className="column">
-                            <b className="tips__title">Tips</b>
-                            <ul className="tips__container">
-                                <li className="tips__tip">Only default & custom values can be used in a chart group. Read how to create custom values.</li>
-                                <li className="tips__tip">Selected values can be edited during deployment.</li>
-                                <li className="tips__tip">You can select other deployed values during deployment.</li>
-                            </ul>
+                    {!handleNameChange && (
+                        <div className="tips">
+                            {/* only chart group create and update flow */}
+                            <Info className="tips__icon" />
+                            <div className="column">
+                                <b className="tips__title">Tips</b>
+                                <ul className="tips__container">
+                                    <li className="tips__tip">
+                                        Only default & custom values can be used in a chart group. Read how to create
+                                        custom values.
+                                    </li>
+                                    <li className="tips__tip">Selected values can be edited during deployment.</li>
+                                    <li className="tips__tip">
+                                        You can select other deployed values during deployment.
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>}
+                    )}
                     <div className="code-editor-container" data-testid="code-editor-code-editor-container">
                         <CodeEditor
                             value={valuesYaml}
                             noParsing
                             loading={loading}
                             readOnly={!handleValuesYaml}
-                            onChange={handleValuesYaml ? valuesYaml => { handleValuesYaml(index, valuesYaml) } : () => { }}
+                            onChange={
+                                handleValuesYaml
+                                    ? (valuesYaml) => {
+                                          handleValuesYaml(index, valuesYaml)
+                                      }
+                                    : () => {}
+                            }
                             mode="yaml"
                         >
                             <CodeEditor.Header>
                                 <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
-                                    <span data-testid="code-editor-code-editor-container-heading">{appName.value}.yaml</span>
+                                    <span data-testid="code-editor-code-editor-container-heading">
+                                        {appName.value}.yaml
+                                    </span>
                                     <div className="flex">
                                         {!handleValuesYaml && <LockIcon className="mr-5" />}
-                                        {handleValuesYaml && <button className="cta small  cancel mr-16" type="button" onClick={handleDiff} data-testid="advanced-option-check-diff-button">{chartValuesLoading ? <Progressing /> : 'Check diff'}</button>}
-                                        <button className="cta small  cancel" type="button" onClick={e => setReadme(true)} data-testid="advanced-option-readme-button">Readme</button>
+                                        {handleValuesYaml && (
+                                            <button
+                                                className="cta small  cancel mr-16"
+                                                type="button"
+                                                onClick={handleDiff}
+                                                data-testid="advanced-option-check-diff-button"
+                                            >
+                                                {chartValuesLoading ? <Progressing /> : 'Check diff'}
+                                            </button>
+                                        )}
+                                        <button
+                                            className="cta small  cancel"
+                                            type="button"
+                                            onClick={(e) => setReadme(true)}
+                                            data-testid="advanced-option-readme-button"
+                                        >
+                                            Readme
+                                        </button>
                                     </div>
                                 </div>
                             </CodeEditor.Header>
-                            {warning ? <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
-                                : null}
+                            {warning ? (
+                                <CodeEditor.Warning text="The values configuration was created for a different chart version. Review the diff before continuing." />
+                            ) : null}
                         </CodeEditor>
                     </div>
                 </form>
             </div>
-            {showReadme && <VisibleModal className="">
-                <ReadmeCharts
-                    readme={readmeResult.result.readme}
-                    valuesYaml={valuesYaml}
-                    handleClose={e => setReadme(false)}
-                    chart={chart}
-                    onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
+            {showReadme && (
+                <VisibleModal className="">
+                    <ReadmeCharts
+                        readme={readmeResult.result.readme}
+                        valuesYaml={valuesYaml}
+                        handleClose={(e) => setReadme(false)}
+                        chart={chart}
+                        onChange={handleValuesYaml ? (valuesYaml) => handleValuesYaml(index, valuesYaml) : null}
+                    />
+                </VisibleModal>
+            )}
+            {showDiff && (
+                <VisibleModal className="">
+                    <ValuesDiffViewer
+                        chartName={chart?.chartMetaData?.chartName || ''}
+                        appName={chart?.name?.value || ''}
+                        valuesYaml={valuesYaml}
+                        kind={kind}
+                        selectedChartValue={selectedChartValue}
+                        availableChartValues={chart.availableChartValues || []}
+                        handleClose={(e) => setDiff(false)}
+                        onChange={handleValuesYaml ? (valuesYaml) => handleValuesYaml(index, valuesYaml) : null}
+                        fetchChartValues={() => fetchChartValues(chart.id, index)}
+                    />
+                </VisibleModal>
+            )}
+            {showValuesYamlDialog ? (
+                <ValuesYamlConfirmDialog
+                    className=""
+                    title="Discard values yaml changes?"
+                    description="Selecting a different value will discard changes made to yaml"
+                    closeOnESC={true}
+                    close={() => toggleValuesYamlDialog(false)}
+                    copyYamlToClipboard={copyValuesYamlToClipBoard}
+                    discardYamlChanges={discardValuesYamlChangesAdvancedConfig}
                 />
-            </VisibleModal>}
-            {showDiff && <VisibleModal className="">
-                <ValuesDiffViewer
-                    chartName={chart?.chartMetaData?.chartName || ""}
-                    appName={chart?.name?.value || ""}
-                    valuesYaml={valuesYaml}
-                    kind={kind}
-                    selectedChartValue={selectedChartValue}
-                    availableChartValues={chart.availableChartValues || []}
-                    handleClose={e => setDiff(false)}
-                    onChange={handleValuesYaml ? valuesYaml => handleValuesYaml(index, valuesYaml) : null}
-                    fetchChartValues={() => fetchChartValues(chart.id, index)}
-               />
-            </VisibleModal>}
-            {showValuesYamlDialog ? <ValuesYamlConfirmDialog className=""
-                title="Discard values yaml changes?"
-                description="Selecting a different value will discard changes made to yaml"
-                closeOnESC={true}
-                close={() => toggleValuesYamlDialog(false)}
-                copyYamlToClipboard={copyValuesYamlToClipBoard}
-                discardYamlChanges={discardValuesYamlChangesAdvancedConfig} />
-                : null}
+            ) : null}
         </>
     )
 }
@@ -302,37 +476,60 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
                             mode="yaml"
                             noParsing
                             readOnly={!onChange}
-                            height={"100%"}
-                            onChange={onChange ? valuesYaml => onChange(valuesYaml) : () => { }}
+                            height={'100%'}
+                            onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
                         />
                     </div>
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose} data-testid="readme-done-button">Done</button>
+                <button className="cta secondary" onClick={handleClose} data-testid="readme-done-button">
+                    Done
+                </button>
             </div>
         </div>
     )
 }
 
-function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, kind: originalKind, availableChartValues, fetchChartValues, onChange, handleClose, }) {
-    const [versionId, setVersionId] = useState(selectedChartValue.id);
-    const [kind, setKind] = useState(originalKind);
-    const [originalValuesYaml, setOriginalValuesYaml] = useState("");
+function ValuesDiffViewer({
+    chartName,
+    appName,
+    valuesYaml,
+    selectedChartValue,
+    kind: originalKind,
+    availableChartValues,
+    fetchChartValues,
+    onChange,
+    handleClose,
+}) {
+    const [versionId, setVersionId] = useState(selectedChartValue.id)
+    const [kind, setKind] = useState(originalKind)
+    const [originalValuesYaml, setOriginalValuesYaml] = useState('')
 
-    const { DEFAULT, TEMPLATE, DEPLOYED } = availableChartValues.reduce((agg, { kind, values }) => {
-        agg[kind] = values
-        return agg
-    }, { DEFAULT: [], TEMPLATE: [], DEPLOYED: [] })
+    const { DEFAULT, TEMPLATE, DEPLOYED } = availableChartValues.reduce(
+        (agg, { kind, values }) => {
+            agg[kind] = values
+            return agg
+        },
+        { DEFAULT: [], TEMPLATE: [], DEPLOYED: [] },
+    )
     const valuesMap = useMemo(() => {
-        if (kind === 'DEFAULT') return mapByKey(DEFAULT, 'id')
-        if (kind === 'DEPLOYED') return mapByKey(DEPLOYED, 'id')
-        if (kind === 'TEMPLATE') return mapByKey(TEMPLATE, 'id')
+        if (kind === 'DEFAULT') {
+            return mapByKey(DEFAULT, 'id')
+        }
+        if (kind === 'DEPLOYED') {
+            return mapByKey(DEPLOYED, 'id')
+        }
+        if (kind === 'TEMPLATE') {
+            return mapByKey(TEMPLATE, 'id')
+        }
     }, [DEPLOYED, DEFAULT, TEMPLATE, kind, versionId])
 
     const [loading, result, error, reload] = useAsync(() => getChartValues(versionId, kind), [versionId, kind])
     useEffect(() => {
-        if (!result) return
+        if (!result) {
+            return
+        }
         setOriginalValuesYaml(result?.result?.values)
     }, [result])
 
@@ -344,12 +541,12 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
     }, [key.join()])
 
     function handleValuesChange(e) {
-        const [kind, id] = e.target.value.split("--")
+        const [kind, id] = e.target.value.split('--')
         setVersionId(Number(id))
         setKind(kind)
     }
 
-    let chartVersion = valuesMap?.get(versionId)?.chartVersion || selectedChartValue.chartVersion;
+    const chartVersion = valuesMap?.get(versionId)?.chartVersion || selectedChartValue.chartVersion
 
     return (
         <div className="advanced-config__diff">
@@ -358,27 +555,57 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
                 {/* TODO: use code editor header */}
                 <div className="readme-config--header">
                     <h5 className="flex left">
-                        <Select rootClassName="values-select" onChange={handleValuesChange} value={kind + "--" + versionId} autoWidth={false}>
+                        <Select
+                            rootClassName="values-select"
+                            onChange={handleValuesChange}
+                            value={kind + '--' + versionId}
+                            autoWidth={false}
+                        >
                             {availableChartValues?.length === 0 && <Select.Async api={fetchChartValues} />}
-                            <Select.Button>{kind} {chartVersion}</Select.Button>
+                            <Select.Button>
+                                {kind} {chartVersion}
+                            </Select.Button>
                             <Select.OptGroup className="select__option-group" label="DEPLOYED VALUES">
-                                {DEPLOYED?.map(value =>
-                                    <Select.Option key={value.id} value={"DEPLOYED" + "--" + value.id} id={value.id}>
+                                {DEPLOYED?.map((value) => (
+                                    <Select.Option key={value.id} value={'DEPLOYED' + '--' + value.id} id={value.id}>
                                         <div className="flex column left">
-                                            <div className="dc__ellipsis-right">{value.name}{value.chartVersion}</div>
+                                            <div className="dc__ellipsis-right">
+                                                {value.name}
+                                                {value.chartVersion}
+                                            </div>
                                             <div>ENV: {value.environmentName}</div>
                                         </div>
                                     </Select.Option>
+                                ))}
+                                {DEPLOYED?.length === 0 && (
+                                    <div className="select__option-with-subtitle select__option-with-subtitle--empty-state">
+                                        No Results
+                                    </div>
                                 )}
-                                {DEPLOYED?.length === 0 && <div className="select__option-with-subtitle select__option-with-subtitle--empty-state">No Results</div>}
                             </Select.OptGroup>
                             <Select.OptGroup className="select__option-group" label="CUSTOM VALUES">
-                                {TEMPLATE?.map(value => <Select.Option key={value.id} value={"TEMPLATE" + "--" + value.id} id={value.id}>{value.name} (v{value.chartVersion})</Select.Option>)}
-                                {TEMPLATE?.length === 0 && <div className="select__option-with-subtitle select__option-with-subtitle--empty-state">No Results</div>}
+                                {TEMPLATE?.map((value) => (
+                                    <Select.Option key={value.id} value={'TEMPLATE' + '--' + value.id} id={value.id}>
+                                        {value.name} (v{value.chartVersion})
+                                    </Select.Option>
+                                ))}
+                                {TEMPLATE?.length === 0 && (
+                                    <div className="select__option-with-subtitle select__option-with-subtitle--empty-state">
+                                        No Results
+                                    </div>
+                                )}
                             </Select.OptGroup>
                             <Select.OptGroup className="select__option-group" label="DEFAULT VALUES">
-                                {DEFAULT?.map(value => <Select.Option key={value.id} value={"DEFAULT" + "--" + value.id} id={value.id}>Default (v{value.chartVersion})</Select.Option>)}
-                                {DEFAULT?.length === 0 && <div className="select__option-with-subtitle select__option-with-subtitle--empty-state">No Results</div>}
+                                {DEFAULT?.map((value) => (
+                                    <Select.Option key={value.id} value={'DEFAULT' + '--' + value.id} id={value.id}>
+                                        Default (v{value.chartVersion})
+                                    </Select.Option>
+                                ))}
+                                {DEFAULT?.length === 0 && (
+                                    <div className="select__option-with-subtitle select__option-with-subtitle--empty-state">
+                                        No Results
+                                    </div>
+                                )}
                             </Select.OptGroup>
                         </Select>
                         <LockIcon style={{ marginLeft: 'auto' }} />
@@ -396,15 +623,16 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
                         noParsing
                         loading={loading && !originalValuesYaml}
                         readOnly={!onChange}
-                        height={"100%"}
+                        height={'100%'}
                         diffView
-                        onChange={onChange ? valuesYaml => onChange(valuesYaml) : () => { }}
-                    >
-                    </CodeEditor>
+                        onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
+                    ></CodeEditor>
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose} data-testid="check-diff-done-button">Done</button>
+                <button className="cta secondary" onClick={handleClose} data-testid="check-diff-done-button">
+                    Done
+                </button>
             </div>
         </div>
     )

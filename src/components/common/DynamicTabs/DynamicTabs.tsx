@@ -16,9 +16,8 @@ import Select from 'react-select/dist/declarations/src/Select'
 import { AppDetailsTabs } from '../../../components/v2/appDetails/appDetails.store'
 import './DynamicTabs.scss'
 import moment from 'moment'
-import { handleUTCTime,getTimeElapsed } from '../helpers/time'
-import {checkIfDataIsStale
-} from '../../ResourceBrowser/Utils'
+import { handleUTCTime, getTimeElapsed } from '../helpers/time'
+import { checkIfDataIsStale } from '../../ResourceBrowser/Utils'
 let interval
 
 /**
@@ -41,7 +40,7 @@ function DynamicTabs({
     isOverview,
     lastDataSync,
     setLastDataSyncTimeString,
-    isStaleDataRef
+    isStaleDataRef,
 }: DynamicTabsProps & IWithShortcut) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -56,7 +55,6 @@ function DynamicTabs({
     const tabPopupMenuRef = useRef(null)
     const CLUSTER_TERMINAL_TAB = 'cluster_terminal-Terminal'
     const [timeElapsedLastSync, setTimeElapsedLastSync] = useState('')
-
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -88,7 +86,7 @@ function DynamicTabs({
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
         const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect } = tab
         const _showNameOnSelect = showNameOnSelect ? !!url.split('?')[1] : true
-        let tabName = dynamicTitle || name
+        const tabName = dynamicTitle || name
 
         return (
             <NavLink
@@ -290,7 +288,7 @@ function DynamicTabs({
             closeMenu()
         }
     }
-    
+
     const timerForSync = () => {
         if (loader || !timeElapsedLastSync) {
             return (
@@ -337,63 +335,62 @@ function DynamicTabs({
                     </ul>
                 </div>
             )}
-            {(tabsData.dynamicTabs.length > 0 ||
-                !isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB )&& (
-                    <div className="ml-auto flexbox dc__no-shrink dc__align-self-stretch dc__border-left">
-                        {!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
-                            <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
-                        )}
+            {(tabsData.dynamicTabs.length > 0 || (!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB)) && (
+                <div className="ml-auto flexbox dc__no-shrink dc__align-self-stretch dc__border-left">
+                    {!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
+                        <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
+                    )}
 
-                        {tabsData.dynamicTabs.length > 0 && (
-                            <MoreButtonWrapper
-                                tabPopupMenuRef={tabPopupMenuRef}
-                                isMenuOpen={isMenuOpen}
-                                onClose={closeMenu}
-                                toggleMenu={toggleMenu}
+                    {tabsData.dynamicTabs.length > 0 && (
+                        <MoreButtonWrapper
+                            tabPopupMenuRef={tabPopupMenuRef}
+                            isMenuOpen={isMenuOpen}
+                            onClose={closeMenu}
+                            toggleMenu={toggleMenu}
+                        >
+                            <div
+                                className="more-tabs__search-icon icon-dim-16 cursor-text"
+                                onClick={focusSearchTabInput}
                             >
-                                <div
-                                    className="more-tabs__search-icon icon-dim-16 cursor-text"
-                                    onClick={focusSearchTabInput}
-                                >
-                                    <SearchIcon className="icon-dim-16" />
-                                </div>
-                                <ReactSelect
-                                    ref={moreButtonRef}
-                                    placeholder="Search tabs"
-                                    classNamePrefix="tab-search-select"
-                                    options={tabsData.dynamicTabs}
-                                    value={selectedTab}
-                                    inputValue={tabSearchText}
-                                    onChange={onChangeTab}
-                                    onKeyDown={escHandler}
-                                    onInputChange={handleOnChangeSearchText}
-                                    tabSelectsValue={false}
-                                    backspaceRemovesValue={false}
-                                    controlShouldRenderValue={false}
-                                    hideSelectedOptions={false}
-                                    menuIsOpen
-                                    autoFocus
-                                    noOptionsMessage={noMatchingTabs}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        DropdownIndicator: null,
-                                        Option: tabsOption,
-                                        Menu: TabsMenu,
-                                    }}
-                                    styles={COMMON_TABS_SELECT_STYLES}
-                                />
-                                <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
-                                    {tabSearchText && (
-                                        <ClearIcon
-                                            className="clear-tab-search-icon icon-dim-16"
-                                            onClick={clearSearchInput}
-                                        />
-                                    )}
-                                </div>
-                            </MoreButtonWrapper>
-                        )}
-                    </div>
-                )}
+                                <SearchIcon className="icon-dim-16" />
+                            </div>
+                            <ReactSelect
+                                ref={moreButtonRef}
+                                placeholder="Search tabs"
+                                classNamePrefix="tab-search-select"
+                                options={tabsData.dynamicTabs}
+                                value={selectedTab}
+                                inputValue={tabSearchText}
+                                onChange={onChangeTab}
+                                onKeyDown={escHandler}
+                                onInputChange={handleOnChangeSearchText}
+                                tabSelectsValue={false}
+                                backspaceRemovesValue={false}
+                                controlShouldRenderValue={false}
+                                hideSelectedOptions={false}
+                                menuIsOpen
+                                autoFocus
+                                noOptionsMessage={noMatchingTabs}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    DropdownIndicator: null,
+                                    Option: tabsOption,
+                                    Menu: TabsMenu,
+                                }}
+                                styles={COMMON_TABS_SELECT_STYLES}
+                            />
+                            <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
+                                {tabSearchText && (
+                                    <ClearIcon
+                                        className="clear-tab-search-icon icon-dim-16"
+                                        onClick={clearSearchInput}
+                                    />
+                                )}
+                            </div>
+                        </MoreButtonWrapper>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

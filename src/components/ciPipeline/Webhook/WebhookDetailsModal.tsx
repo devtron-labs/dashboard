@@ -1,7 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ButtonWithLoader } from '../../common'
-import { showError, Progressing, Drawer, InfoColourBar, Reload, copyToClipboard, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    InfoColourBar,
+    Reload,
+    copyToClipboard,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -83,21 +91,25 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     const flattenObject = (ob: Record<string, any>, tableName: string): Record<string, SchemaType> => {
-        let toReturn = {}
+        const toReturn = {}
         toReturn[tableName] = {}
-        for (let key in ob) {
-            if (!ob.hasOwnProperty(key)) continue
+        for (const key in ob) {
+            if (!ob.hasOwnProperty(key)) {
+                continue
+            }
             const currentElement = ob[key]
             if (currentElement.child) {
-                var flatObject = flattenObject(
+                const flatObject = flattenObject(
                     currentElement.dataType === 'Array' ? currentElement.child[0] : currentElement.child,
                     key,
                 )
                 currentElement.createLink = true
                 currentElement.dataType = key
                 delete currentElement.child
-                for (var x in flatObject) {
-                    if (!flatObject.hasOwnProperty(x)) continue
+                for (const x in flatObject) {
+                    if (!flatObject.hasOwnProperty(x)) {
+                        continue
+                    }
                     toReturn[key] = flatObject[x]
                 }
             }
@@ -262,7 +274,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     const ValueContainer = (props) => {
-        let value = props.getValue()[0]?.label
+        const value = props.getValue()[0]?.label
         return (
             <components.ValueContainer {...props}>
                 <>
@@ -575,14 +587,16 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                 {renderSchema(schema['root'], schemaName + '-root')}
                 {Object.keys(schema).map((key) => {
                     const data = schema[key]
-                    if (key === 'root') return null
-                    else
+                    if (key === 'root') {
+                        return null
+                    } else {
                         return (
                             <>
                                 <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
                                 {renderSchema(schema[key], schemaName + '-root' + '-' + key)}
                             </>
                         )
+                    }
                 })}
             </div>
         )

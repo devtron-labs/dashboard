@@ -4,7 +4,7 @@ import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import AddChartSource from '../../charts/list/AddChartSource'
 
-export function Accordian({ header, options, value, onChange, onClickViewChartButton,dataTestId }) {
+export function Accordian({ header, options, value, onChange, onClickViewChartButton, dataTestId }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
     const [showAddSource, toggleAddSource] = useState<boolean>(false)
     const toggleDropdown = (): void => {

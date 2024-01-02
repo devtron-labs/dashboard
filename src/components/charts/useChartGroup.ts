@@ -8,12 +8,9 @@ import {
     getChartGroupDetail,
     createChartValues as createChartValuesService,
 } from './charts.service'
-import {
-    getAvailableCharts,
-    getChartRepoListMin,
-} from '../../services/service'
-import {getTeamListMin, showError } from '@devtron-labs/devtron-fe-common-lib'
-import {mapByKey, sortOptionsByLabel} from '../common'
+import { getAvailableCharts, getChartRepoListMin } from '../../services/service'
+import { getTeamListMin, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { mapByKey, sortOptionsByLabel } from '../common'
 import { toast } from 'react-toastify'
 import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
@@ -61,12 +58,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     serverMode == SERVER_MODE.FULL
                         ? getChartGroups()
                         : { value: { status: 'fulfilled', result: undefined } },
-                    getTeamListMin()
+                    getTeamListMin(),
                 ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
-                    const [chartRepoList, chartGroup, projects] =
-                        responses.map((response) => response?.value?.result || [])
+                    const [chartRepoList, chartGroup, projects] = responses.map(
+                        (response) => response?.value?.result || [],
+                    )
 
-                    let chartRepos = chartRepoList
+                    const chartRepos = chartRepoList
                         .filter((chartRepo) => chartRepo.active)
                         .map((chartRepo) => {
                             return {
@@ -157,7 +155,9 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
 
     useEffect(() => {
-        if (!chartGroupId) return
+        if (!chartGroupId) {
+            return
+        }
         getChartGroupDetails()
     }, [chartGroupId])
 
@@ -379,7 +379,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
 
     function removeChart(index: number, removeAll?: boolean): void {
-        let tempCharts = [...state.charts]
+        const tempCharts = [...state.charts]
         if (removeAll) {
             tempCharts.length = 0
         } else {
@@ -559,8 +559,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, noGitOpsConfigAvailable: isGitOpsConfigAvailable }))
     }
 
-    function setEnvironmentList(envList): void{
-        setState((state) => ({...state, environments: envList}))
+    function setEnvironmentList(envList): void {
+        setState((state) => ({ ...state, environments: envList }))
     }
 
     return {

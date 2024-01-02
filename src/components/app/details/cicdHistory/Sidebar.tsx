@@ -96,8 +96,7 @@ const Sidebar = React.memo(
                         {(type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI) && (
                             <div
                                 className={
-                                    'dc__ci-pipeline-type-icon mr-5 ' +
-                                        props.data.pipelineType?.toLowerCase() || ''
+                                    'dc__ci-pipeline-type-icon mr-5 ' + props.data.pipelineType?.toLowerCase() || ''
                                 }
                             ></div>
                         )}
@@ -335,7 +334,7 @@ const SummaryTooltipCard = React.memo(
                                                 <a
                                                     href={createGitCommitUrl(gitMaterialUrl, gitDetail.Commit)}
                                                     target="_blank"
-                                                    rel="noopener noreferer"
+                                                    rel="noopener noreferer noreferrer"
                                                     className="fs-12 fw-6 cn-9 pointer"
                                                 >
                                                     /{sourceValue}

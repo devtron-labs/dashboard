@@ -87,7 +87,7 @@ const EnvOverrideRoute = ({
     }
 
     const deleteEnvHandler = () => {
-        let requestBody = { envId: envOverride.environmentId, appId: appId }
+        const requestBody = { envId: envOverride.environmentId, appId: appId }
         deleteJobEnvironment(requestBody)
             .then((response) => {
                 toast.success('Deleted Successfully')
@@ -291,7 +291,7 @@ export default function EnvironmentOverrideRouter({
                 getCIConfig(Number(appId)),
                 getJobOtherEnvironmentMin(appId),
             ])
-            let list = []
+            const list = []
             envListMinRes?.forEach((env) => {
                 if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
                     list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
@@ -310,7 +310,7 @@ export default function EnvironmentOverrideRouter({
         try {
             setIsEnvLoading(true)
             setEnvironmentView(!addEnvironment)
-            let requestBody = { envId: selection.id, appId: appId }
+            const requestBody = { envId: selection.id, appId: appId }
             await addJobEnvironment(requestBody)
             toast.success('Saved Successfully')
             getJobOtherEnvironment()

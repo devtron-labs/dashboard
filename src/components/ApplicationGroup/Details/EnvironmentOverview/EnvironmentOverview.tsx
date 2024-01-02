@@ -64,7 +64,9 @@ export default function EnvironmentOverview({
 
     useEffect(() => {
         return () => {
-            if (timerId.current) clearInterval(timerId.current)
+            if (timerId.current) {
+                clearInterval(timerId.current)
+            }
         }
     }, [])
 
@@ -73,7 +75,9 @@ export default function EnvironmentOverview({
         fetchDeployments()
         timerId.current = setInterval(fetchDeployments, 30000)
         return () => {
-            if (timerId.current) clearInterval(timerId.current)
+            if (timerId.current) {
+                clearInterval(timerId.current)
+            }
         }
     }, [appGroupListData])
 

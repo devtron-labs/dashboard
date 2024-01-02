@@ -1,71 +1,71 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
-import { getTreeNodesWithChild } from './useNodeTreeReducer';
-import { useHistory, useLocation, useRouteMatch } from 'react-router';
-import { NavLink } from 'react-router-dom';
-import IndexStore from '../../index.store';
-import { useSharedState } from '../../../utils/useSharedState';
-import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus, NodeType } from '../../appDetails.type';
-import { URLS } from '../../../../../config';
-import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
+import { getTreeNodesWithChild } from './useNodeTreeReducer'
+import { useHistory, useLocation, useRouteMatch } from 'react-router'
+import { NavLink } from 'react-router-dom'
+import IndexStore from '../../index.store'
+import { useSharedState } from '../../../utils/useSharedState'
+import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus, NodeType } from '../../appDetails.type'
+import { URLS } from '../../../../../config'
+import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg'
 function NodeTreeComponent({
     clickedNodes,
     registerNodeClick,
     isDevtronApp,
 }: {
-    clickedNodes: Map<string, string>;
-    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
-    isDevtronApp?:boolean
+    clickedNodes: Map<string, string>
+    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
+    isDevtronApp?: boolean
 }) {
-    const { url } = useRouteMatch();
-    const history = useHistory();
-    const location = useLocation();
+    const { url } = useRouteMatch()
+    const history = useHistory()
+    const location = useLocation()
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
-    );
-    const _arr = url.split(URLS.APP_DETAILS_K8);
-    const k8URL = _arr[0] + URLS.APP_DETAILS_K8;
+    )
+    const _arr = url.split(URLS.APP_DETAILS_K8)
+    const k8URL = _arr[0] + URLS.APP_DETAILS_K8
 
     //This is used to re-render in case of click node update
-    const [reRender, setReRender] = useState(false);
-    const _treeNodes = getTreeNodesWithChild(filteredNodes);
+    const [reRender, setReRender] = useState(false)
+    const _treeNodes = getTreeNodesWithChild(filteredNodes)
     const getPNodeName = (_string: string): AggregationKeys => {
-        return getAggregator((_string.charAt(0).toUpperCase() + _string.slice(1)) as NodeType);
-    };
+        return getAggregator((_string.charAt(0).toUpperCase() + _string.slice(1)) as NodeType)
+    }
     const handleClickOnNodes = (_node: string, parents?: string[], e?: any) => {
         if (e) {
-            e.stopPropagation();
+            e.stopPropagation()
         }
-        let _clickedNodes = generateSelectedNodes(clickedNodes, _treeNodes, _node, parents, isDevtronApp);
-        registerNodeClick(_clickedNodes);
-        setReRender(!reRender);
-    };
+        const _clickedNodes = generateSelectedNodes(clickedNodes, _treeNodes, _node, parents, isDevtronApp)
+        registerNodeClick(_clickedNodes)
+        setReRender(!reRender)
+    }
 
     useEffect(() => {
-        const _urlArray = window.location.href.split(URLS.APP_DETAILS_K8 + '/');
+        const _urlArray = window.location.href.split(URLS.APP_DETAILS_K8 + '/')
         if (_urlArray?.length === 2) {
-            const [_kind, _ignore, _name] = _urlArray[1].split('/');
-            let parent = getPNodeName(_kind);
+            const [_kind, _ignore, _name] = _urlArray[1].split('/')
+            const parent = getPNodeName(_kind)
             if (_name) {
-                handleClickOnNodes(_name, [parent.toLowerCase(), _kind.toLowerCase()]);
+                handleClickOnNodes(_name, [parent.toLowerCase(), _kind.toLowerCase()])
             } else {
-                handleClickOnNodes(_kind, [parent.toLowerCase()]);
+                handleClickOnNodes(_kind, [parent.toLowerCase()])
             }
         } else {
             history.replace({
                 pathname: url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes, isDevtronApp),
-                search: location.search
-            });
+                search: location.search,
+            })
         }
-    }, [url]);
+    }, [url])
 
-    let tempNodes = _treeNodes;
+    let tempNodes = _treeNodes
     while (tempNodes.length > 0) {
         tempNodes = tempNodes.flatMap((_tn) => {
-            _tn.isSelected = clickedNodes.has(_tn.name.toLowerCase());
-            return _tn.childNodes ?? [];
-        });
+            _tn.isSelected = clickedNodes.has(_tn.name.toLowerCase())
+            return _tn.childNodes ?? []
+        })
     }
 
     const makeNodeTree = (treeNodes: iNodes, parents: string[], isDevtronApp) => {
@@ -132,10 +132,10 @@ function NodeTreeComponent({
                         )}
                 </div>
             )
-        });
-    };
+        })
+    }
 
-    return <div>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [], isDevtronApp)}</div>;
+    return <div>{_treeNodes && _treeNodes.length > 0 && makeNodeTree(_treeNodes, [], isDevtronApp)}</div>
 }
 
 export function generateSelectedNodes(
@@ -143,9 +143,9 @@ export function generateSelectedNodes(
     _treeNodes: iNode[],
     _node: string,
     parents?: string[],
-    isDevtronApp?: boolean
+    isDevtronApp?: boolean,
 ): Map<string, string> {
-    let _nodeLowerCase = _node.toLowerCase();
+    const _nodeLowerCase = _node.toLowerCase()
 
     // If parents length is zero then it is the aggregation key which is clicked
     if ((parents ?? []).length === 0) {
@@ -155,34 +155,37 @@ export function generateSelectedNodes(
          * Currently at max only 3 levels are possible.
          */
         if (clickedNodes.size === 0) {
-            let childNodes = _treeNodes.find((_tn) => _tn.name.toLowerCase() === _nodeLowerCase)?.childNodes;
+            const childNodes = _treeNodes.find((_tn) => _tn.name.toLowerCase() === _nodeLowerCase)?.childNodes
             if ((childNodes ?? []).length > 0) {
-                clickedNodes.set(childNodes[0].name.toLowerCase(), '');
+                clickedNodes.set(childNodes[0].name.toLowerCase(), '')
                 if ((childNodes[0].childNodes ?? []).length > 0) {
-                    clickedNodes.set(childNodes[0].childNodes[0].name.toLowerCase(), '');
+                    clickedNodes.set(childNodes[0].childNodes[0].name.toLowerCase(), '')
                 }
             }
         }
         if (clickedNodes.has(_nodeLowerCase)) {
-            clickedNodes.delete(_nodeLowerCase);
+            clickedNodes.delete(_nodeLowerCase)
         } else {
-            clickedNodes.set(_nodeLowerCase, '');
+            clickedNodes.set(_nodeLowerCase, '')
         }
     } else {
         /**
          * 1. Parent's length 2 is possible only if type is Pod that means click happened on child of pod node
          * 2. Parent length 1 but node is not type pod means it is a leaf node
          */
-        if (parents.length === 2 || (parents.length === 1 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase()))) {
+        if (
+            parents.length === 2 ||
+            (parents.length === 1 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase()))
+        ) {
             // remove if leaf node selected previously if any
-            let _childNodes = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []);
+            const _childNodes = _treeNodes.flatMap((_tn) => _tn.childNodes ?? [])
             let leafNode = _childNodes.find(
                 (_cn) =>
                     clickedNodes.has(_cn.name.toLowerCase()) &&
                     (isDevtronApp || _cn.name.toLowerCase() !== NodeType.Pod.toLowerCase()),
             )
             if (leafNode) {
-                clickedNodes.delete(leafNode.name.toLowerCase());
+                clickedNodes.delete(leafNode.name.toLowerCase())
             } else {
                 /**
                  * 1. First find the node of type Pod & it's either already present in clickedNodes map
@@ -196,24 +199,29 @@ export function generateSelectedNodes(
                             _cn.name.toLowerCase() === NodeType.Pod.toLowerCase() &&
                             (clickedNodes.has(_cn.name.toLowerCase()) || _cn.childNodes?.length > 0),
                     )
-                    ?.childNodes?.find((_cn) => clickedNodes.has(_cn.name.toLowerCase()));
+                    ?.childNodes?.find((_cn) => clickedNodes.has(_cn.name.toLowerCase()))
 
                 if (leafNode) {
-                    clickedNodes.delete(leafNode.name.toLowerCase());
+                    clickedNodes.delete(leafNode.name.toLowerCase())
                 }
             }
         }
-        parents.forEach((_p) => clickedNodes.set(_p.toLowerCase(), ''));
-        if (!isDevtronApp && parents.length === 1 && _nodeLowerCase === NodeType.Pod.toLowerCase() && clickedNodes.has(_nodeLowerCase)) {
-            clickedNodes.delete(_nodeLowerCase);
+        parents.forEach((_p) => clickedNodes.set(_p.toLowerCase(), ''))
+        if (
+            !isDevtronApp &&
+            parents.length === 1 &&
+            _nodeLowerCase === NodeType.Pod.toLowerCase() &&
+            clickedNodes.has(_nodeLowerCase)
+        ) {
+            clickedNodes.delete(_nodeLowerCase)
         } else {
             /**
              * Start: TODO: Revisit this
              * Deleting selection of nodes from clickedNodes if other leafNode is selected & currently
              * selected node is not present under selected filter tab (i.e. Healthy, Progressing, etc.).
              */
-            const _parentAggKeys = Object.values(AggregationKeys);
-            const _nodeTypes = Object.values(NodeType);
+            const _parentAggKeys = Object.values(AggregationKeys)
+            const _nodeTypes = Object.values(NodeType)
 
             const _clickedNodes = Array.from(clickedNodes.keys()).filter(
                 (_node) =>
@@ -221,22 +229,25 @@ export function generateSelectedNodes(
                         _parentAggKeys.some((_p) => _p.toLowerCase() === _node.toLowerCase()) ||
                         _node.toLowerCase() === NodeType.Pod.toLowerCase()
                     ),
-            );
+            )
 
-            if ( _clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase())
-            ) {
-                _clickedNodes.forEach((_node) => clickedNodes.delete(_node));
+            if (_clickedNodes.length > 0 && (isDevtronApp || _nodeLowerCase !== NodeType.Pod.toLowerCase())) {
+                _clickedNodes.forEach((_node) => clickedNodes.delete(_node))
             }
             /** End: Revisit this */
 
             // Adding the selected node in clickedNodes
-            clickedNodes.set(_nodeLowerCase, '');
+            clickedNodes.set(_nodeLowerCase, '')
         }
     }
-    return clickedNodes;
+    return clickedNodes
 }
 
-export function getRedirectURLExtension(clickedNodes: Map<string, string>, _treeNodes: iNode[], isDevtronApp: boolean): string {
+export function getRedirectURLExtension(
+    clickedNodes: Map<string, string>,
+    _treeNodes: iNode[],
+    isDevtronApp: boolean,
+): string {
     // User has yet not clicked anything
     if (clickedNodes.size === 0) {
         let leafNode = _treeNodes
@@ -245,50 +256,50 @@ export function getRedirectURLExtension(clickedNodes: Map<string, string>, _tree
                 (_tn) => _tn.childNodes?.filter((_cn) => _cn.name.toLowerCase() === NodeType.Pod.toLowerCase()) ?? [],
             )
             .flatMap((_cn) => _cn.childNodes ?? [])
-            .find((_cn, index) => index === 0);
+            .find((_cn, index) => index === 0)
         if (leafNode) {
-            return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
+            return isDevtronApp ? '/pod' : '/pod/group/' + leafNode.name.toLowerCase()
         }
-        leafNode = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []).find((_cn, index) => index === 0);
+        leafNode = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []).find((_cn, index) => index === 0)
         if (leafNode) {
-            return '/' + leafNode.name.toLowerCase();
+            return '/' + leafNode.name.toLowerCase()
         }
     } else {
-        let leafNodes = _treeNodes.flatMap(
+        const leafNodes = _treeNodes.flatMap(
             (_tn) => _tn.childNodes?.filter((_cn) => clickedNodes.has(_cn.name.toLowerCase())) ?? [],
-        );
+        )
         /**
          * More than one leafNodes click means user has clicked on pods as well as some other leaf node
          * therefore details of non-pod leaf node should be shown
          */
         if (leafNodes.length > 1) {
-            let leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() !== NodeType.Pod.toLowerCase());
+            const leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() !== NodeType.Pod.toLowerCase())
             if (leafNode) {
-                return '/' + leafNode.name.toLowerCase();
+                return '/' + leafNode.name.toLowerCase()
             }
         } else if (leafNodes.length === 1) {
             // case when clicked is a pod group
-            let leafPodNode = leafNodes.filter((_ln) => _ln.name.toLowerCase() === NodeType.Pod.toLowerCase());
+            const leafPodNode = leafNodes.filter((_ln) => _ln.name.toLowerCase() === NodeType.Pod.toLowerCase())
             let leafNode = leafPodNode
                 .flatMap((_ln) => _ln.childNodes ?? [])
-                .find((_ln) => clickedNodes.has(_ln.name.toLowerCase()));
+                .find((_ln) => clickedNodes.has(_ln.name.toLowerCase()))
             if (leafNode) {
-                return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
+                return isDevtronApp ? '/pod' : '/pod/group/' + leafNode.name.toLowerCase()
             } else {
-                leafNode = leafPodNode.flatMap((_ln) => _ln.childNodes ?? []).find((_ln, index) => index === 0);
+                leafNode = leafPodNode.flatMap((_ln) => _ln.childNodes ?? []).find((_ln, index) => index === 0)
                 if (leafNode) {
-                    return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
+                    return isDevtronApp ? '/pod' : '/pod/group/' + leafNode.name.toLowerCase()
                 }
             }
             // case when clicked is not pod group
-            leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() !== NodeType.Pod.toLowerCase());
+            leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() !== NodeType.Pod.toLowerCase())
             if (leafNode) {
-                return '/' + leafNode.name.toLowerCase();
+                return '/' + leafNode.name.toLowerCase()
             }
         }
         // handle the case when none match, its same as clickedNodes size 0
-        return getRedirectURLExtension(new Map<string, string>(), _treeNodes, isDevtronApp);
+        return getRedirectURLExtension(new Map<string, string>(), _treeNodes, isDevtronApp)
     }
 }
 
-export default NodeTreeComponent;
+export default NodeTreeComponent

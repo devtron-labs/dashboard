@@ -61,7 +61,9 @@ export default function Artifacts({
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
-        if (!copied) return
+        if (!copied) {
+            return
+        }
         setTimeout(() => setCopied(false), 2000)
     }, [copied])
 
@@ -93,7 +95,12 @@ export default function Artifacts({
                     <span className="fs-13 fw-4 mr-8 ml-8">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
                     </span>
-                    <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
+                    <a
+                        className="fs-13 fw-6 cb-5 dc__no-decor"
+                        href={DOCUMENTATION.BLOB_STORAGE}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
                     <OpenInNew className="icon-dim-20 ml-8" />
@@ -118,7 +125,7 @@ export default function Artifacts({
                     title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifacts}
                     subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifactsError}
                 />
-            ) 
+            )
         }
 
         return (
@@ -137,7 +144,7 @@ export default function Artifacts({
         )
     } else {
         return (
-            <div className={`flex left column p-16 ${jobCIClass??''}`}>
+            <div className={`flex left column p-16 ${jobCIClass ?? ''}`}>
                 {!isJobView && type !== HistoryComponentType.CD && (
                     <CIListItem
                         type="artifact"
@@ -149,8 +156,6 @@ export default function Artifacts({
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         isSuperAdmin={isSuperAdmin}
-                        
-
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
@@ -167,13 +172,12 @@ export default function Artifacts({
                     </CIListItem>
                 )}
                 {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
-                    <CIListItem 
-                        type="report" 
+                    <CIListItem
+                        type="report"
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         isSuperAdmin={isSuperAdmin}
                     >
                         <div className="flex column left">
-                    
                             <div className="cn-9 fs-14">Reports.zip</div>
                             <button
                                 type="button"
@@ -269,7 +273,7 @@ export const CIListItem = ({
 
             <div
                 className={`dc__h-fit-content ci-artifact ci-artifact--${type} image-tag-parent-card bcn-0 br-4 dc__border p-12 w-100 dc__mxw-800 ${
-                    CIListHeader && headerMetaDataPresent  ? 'dc__no-top-radius dc__no-top-border' : ''
+                    CIListHeader && headerMetaDataPresent ? 'dc__no-top-radius dc__no-top-border' : ''
                 }`}
                 data-testid="hover-on-report-artifact"
             >

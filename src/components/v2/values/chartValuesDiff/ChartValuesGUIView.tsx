@@ -251,6 +251,7 @@ const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
                         className="cb-5 fw-6"
                         href="https://github.com/devtron-labs/devtron/issues/new/choose"
                         target="_blank"
+                        rel="noreferrer"
                     >
                         report it here.
                     </a>
@@ -274,7 +275,6 @@ const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
                 isCreateValueView={props.isCreateValueView}
                 deployOrUpdateApplication={props.deployOrUpdateApplication}
             />
-
         </div>
     )
 }

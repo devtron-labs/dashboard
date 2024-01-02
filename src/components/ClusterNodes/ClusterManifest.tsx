@@ -43,8 +43,7 @@ export default function ClusterManifest({
                     // Ideally should have been setManifest(trimmedManifest).
                     if (hideManagedFields) {
                         setManifest(trimmedManifest)
-                    }
-                    else {
+                    } else {
                         setManifest(_manifest)
                     }
                     setLoading(false)
@@ -96,14 +95,14 @@ export default function ClusterManifest({
                 const parsedManifest = YAML.parse(manifestValue)
                 if (parsedManifest) {
                     const trimmedManifest = YAML.stringify(getTrimmedManifestData(parsedManifest))
-                    const errorDetails = errorMessage?.length ? defaultManifestErrorText + '# ' + errorMessage + '\n#\n' : ''
+                    const errorDetails = errorMessage?.length
+                        ? defaultManifestErrorText + '# ' + errorMessage + '\n#\n'
+                        : ''
                     setManifest(errorDetails + trimmedManifest)
-                }
-                else {
+                } else {
                     setManifest(defaultManifestErrorText)
                 }
-            }
-            catch (error) {
+            } catch (error) {
                 // Should we directly use error object here?
                 setManifest(defaultManifestErrorText + '# ' + error + '\n#\n' + manifestValue)
             }
@@ -128,7 +127,7 @@ export default function ClusterManifest({
                         <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
                             <div className="pl-12 flex dc__content-space">
                                 Pod manifest
-                                <span className='flex' data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
+                                <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
                                     <Close className="icon-dim-16 cursor fcn-0" />
                                 </span>
                             </div>
@@ -194,7 +193,11 @@ export function ManifestPopupMenu({ closePopup, podName, namespace, forceDeleteP
                     >
                         {ManifestMessaging.CANCEL}
                     </button>
-                    <button className="cta sso__warn-button btn-confirm" data-testid="terminate-existing-pod-button" onClick={forceDelete}>
+                    <button
+                        className="cta sso__warn-button btn-confirm"
+                        data-testid="terminate-existing-pod-button"
+                        onClick={forceDelete}
+                    >
                         {ManifestMessaging.TERMINATE_EXISTING_POD}
                     </button>
                 </div>

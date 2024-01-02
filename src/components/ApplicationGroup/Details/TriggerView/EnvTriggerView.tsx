@@ -21,12 +21,7 @@ import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
-import {
-    CIMaterialRouterProps,
-    MATERIAL_TYPE,
-    NodeAttr,
-    WorkflowType,
-} from '../../../app/details/triggerView/types'
+import { CIMaterialRouterProps, MATERIAL_TYPE, NodeAttr, WorkflowType } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
     getCIMaterialList,
@@ -135,7 +130,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
-    
+
     // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
     const handledLocation = useRef(false)
     const abortControllerRef = useRef(new AbortController())
@@ -158,7 +153,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }, [filteredAppIds])
 
-    useEffect(()=>{
+    useEffect(() => {
         if (!handledLocation.current && filteredWorkflows?.length) {
             handledLocation.current = true
             // Would have been better if filteredWorkflows had default value to null since we are using it as a flag
@@ -170,42 +165,40 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const nodeId = Number(searchParams.get('approval-node'))
                 if (!isNaN(nodeId)) {
                     onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-                }
-                else {
+                } else {
                     toast.error('Invalid node id')
                     history.push({
                         search: '',
                     })
                 }
-            }
-            else if (location.search.includes('rollback-node')) {
+            } else if (location.search.includes('rollback-node')) {
                 const searchParams = new URLSearchParams(location.search)
                 const nodeId = Number(searchParams.get('rollback-node'))
                 if (!isNaN(nodeId)) {
                     onClickRollbackMaterial(nodeId)
-                }
-                else {
+                } else {
                     toast.error('Invalid node id')
                     history.push({
                         search: '',
                     })
                 }
-            }
-            else if (location.search.includes('cd-node')) {
+            } else if (location.search.includes('cd-node')) {
                 const searchParams = new URLSearchParams(location.search)
                 const nodeId = Number(searchParams.get('cd-node'))
                 const nodeType = searchParams.get('node-type') ?? DeploymentNodeType.CD
 
-                if (nodeType !== DeploymentNodeType.CD && nodeType !== DeploymentNodeType.PRECD && nodeType !== DeploymentNodeType.POSTCD) {
+                if (
+                    nodeType !== DeploymentNodeType.CD &&
+                    nodeType !== DeploymentNodeType.PRECD &&
+                    nodeType !== DeploymentNodeType.POSTCD
+                ) {
                     toast.error('Invalid node type')
                     history.push({
                         search: '',
                     })
-                }
-                else if (!isNaN(nodeId)) {
+                } else if (!isNaN(nodeId)) {
                     onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
-                }
-                else {
+                } else {
                     toast.error('Invalid node id')
                     history.push({
                         search: '',
@@ -213,12 +206,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             }
         }
-    },[filteredWorkflows])
+    }, [filteredWorkflows])
 
     const getConfigs = () => {
         getDefaultConfig().then((response) => {
-            let isConfigPresent = response.result.isConfigured
-            let _isDefaultConfig = response.result.is_default_configured
+            const isConfigPresent = response.result.isConfigured
+            const _isDefaultConfig = response.result.is_default_configured
             setDefaultConfig(_isDefaultConfig)
             setConfigPresent(isConfigPresent)
         })
@@ -502,7 +495,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         return material
                     })
                     return node
-                } else return node
+                } else {
+                    return node
+                }
             })
             return workflow
         })
@@ -603,7 +598,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                     searchText: mat.searchText,
                                     showAllCommits: showExcluded,
                                 }
-                            } else return mat
+                            } else {
+                                return mat
+                            }
                         })
                     }
                     return node
@@ -701,9 +698,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                     isSelected: selectMaterial.id === material.id,
                                 }
                             })
-                        } else node.inputMaterialList = response.result
+                        } else {
+                            node.inputMaterialList = response.result
+                        }
                         return node
-                    } else return node
+                    } else {
+                        return node
+                    }
                 })
                 return workflow
             })
@@ -797,7 +798,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
     }
 
-    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false): void => {
+    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode = false): void => {
         ReactGA.event(
             isApprovalNode ? ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked,
         )
@@ -909,7 +910,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 _inputMaterial.value,
             ]
             if (_inputMaterial) {
-                if (_inputMaterial.value === DEFAULT_GIT_BRANCH_VALUE) continue
+                if (_inputMaterial.value === DEFAULT_GIT_BRANCH_VALUE) {
+                    continue
+                }
                 const history = _inputMaterial.history.filter((hstry) => hstry.isSelected)
                 if (!history.length) {
                     history.push(_inputMaterial.history[0])
@@ -961,9 +964,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     getWorkflowStatusData(workflows)
                 }
             })
-            .catch((errors: ServerErrors) => { 
+            .catch((errors: ServerErrors) => {
                 showError(errors)
-                
+
                 setCDLoading(false)
 
                 setErrorCode(errors.code)
@@ -1003,9 +1006,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
-    const isBuildAndBranchTriggerAllowed = (node: NodeAttr): boolean => (
+    const isBuildAndBranchTriggerAllowed = (node: NodeAttr): boolean =>
         !node.isLinkedCI && !node.isLinkedCD && node.type !== WorkflowNodeType.WEBHOOK
-    )
 
     const changeBranch = (value): void => {
         const appIds = []
@@ -1021,8 +1023,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     if (isBuildAndBranchTriggerAllowed(_ciNode)) {
                         appIds.push(wf.appId)
                         appNameMap.set(wf.appId, wf.name)
-                    }
-                    else {
+                    } else {
                         skippedResources.push({
                             appId: wf.appId,
                             appName: wf.name,
@@ -1104,7 +1105,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     node.inputMaterialList.map((material) => {
                         if (material.id == materialId) {
                             material.history.map((hist) => {
-                                if (hist.commit == hash) hist.showChanges = !hist.showChanges
+                                if (hist.commit == hash) {
+                                    hist.showChanges = !hist.showChanges
+                                }
                             })
                         }
                     })
@@ -1303,12 +1306,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             }
         }
-        
+
         const _CDTriggerPromiseList = []
         nodeList.forEach((node, index) => {
             let ciArtifact = null
             node[materialType].forEach((artifact) => {
-                if (artifact.isSelected == true) ciArtifact = artifact
+                if (artifact.isSelected == true) {
+                    ciArtifact = artifact
+                }
             })
             if (ciArtifact) {
                 _CDTriggerPromiseList.push(
@@ -1431,8 +1436,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setShowBulkCDModal(false)
                 setShowBulkCIModal(false)
                 setResponseList([])
-            }
-            else {
+            } else {
                 updateResponseListData(_responseList)
             }
         }
@@ -1470,8 +1474,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (node && isBuildAndBranchTriggerAllowed(node)) {
                     triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                     nodeList.push(node)
-                }
-                else if (node && !isBuildAndBranchTriggerAllowed(node)) {
+                } else if (node && !isBuildAndBranchTriggerAllowed(node)) {
                     // skipped can never be in appsToRetry
                     skippedResources.push({
                         appId: _wf.appId,
@@ -1492,7 +1495,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     node.inputMaterialList[i].gitMaterialName.toLowerCase(),
                     node.inputMaterialList[i].value,
                 ]
-                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
+                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) {
+                    continue
+                }
                 const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
                 if (!history.length) {
                     history.push(node.inputMaterialList[i].history[0])
@@ -1535,8 +1540,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     // Would only set data no need to get data related to materials from it, we will get that in bulk trigger
     const createBulkCDTriggerData = (): BulkCDDetailTypeResponse => {
-        let uniqueReleaseTags: string[] = []
-        let uniqueTagsSet = new Set<string>()
+        const uniqueReleaseTags: string[] = []
+        const uniqueTagsSet = new Set<string>()
         const _selectedAppWorkflowList: BulkCDDetailType[] = []
 
         filteredWorkflows.forEach((wf) => {
@@ -1704,7 +1709,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         material: _ciNode.inputMaterialList,
                         warningMessage: getWarningMessage(_ciNode),
                         errorMessage: getErrorMessage(wf.appId, _ciNode),
-                        hideSearchHeader: _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI || _ciNode.isLinkedCD,
+                        hideSearchHeader:
+                            _ciNode.type === WorkflowNodeType.WEBHOOK || _ciNode.isLinkedCI || _ciNode.isLinkedCD,
                         filteredCIPipelines: filteredCIPipelines.get(wf.appId),
                         isJobCI: !!_ciNode.isJobCI,
                     })
@@ -1806,7 +1812,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 appId={_appID?.toString()}
                                 isCITriggerBlocked={nd?.isCITriggerBlocked}
                                 ciBlockState={nd?.ciBlockState}
-                                isJobCI={!!nd?.isJobCI}    
+                                isJobCI={!!nd?.isJobCI}
                             />
                         )}
                     </div>

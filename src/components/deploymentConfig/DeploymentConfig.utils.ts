@@ -170,18 +170,38 @@ export function textDecider(option, charts) {
 
 export const getPosition = (isValues: boolean, isEnv: boolean, type: number) => {
     if (isValues && isEnv) {
-        if (type === 3) return 1
-        if (type === 2) return 2
-        if (type === 1) return 3
+        if (type === 3) {
+            return 1
+        }
+        if (type === 2) {
+            return 2
+        }
+        if (type === 1) {
+            return 3
+        }
     } else if (isValues) {
-        if (type === 2) return 1
-        if (type === 1) return 2
+        if (type === 2) {
+            return 1
+        }
+        if (type === 1) {
+            return 2
+        }
     } else if (isEnv) {
-        if (type === 3) return 1
-        if (type === 4) return 2
-        if (type === 2) return 3
+        if (type === 3) {
+            return 1
+        }
+        if (type === 4) {
+            return 2
+        }
+        if (type === 2) {
+            return 3
+        }
     } else {
-        if (type === 4) return 1
-        if (type === 2) return 2
+        if (type === 4) {
+            return 1
+        }
+        if (type === 2) {
+            return 2
+        }
     }
 }

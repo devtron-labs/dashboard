@@ -11,7 +11,12 @@ import AppPermissions from '../userGroups/AppPermissions'
 import { useUserGroupContext } from '../userGroups/UserGroup'
 import Select from 'react-select'
 import { OptionType } from '../app/types'
-import { ChartGroupPermissionsFilter, CreateUser, DirectPermissionsRoleFilter, K8sPermissionFilter } from '../userGroups/userGroups.types'
+import {
+    ChartGroupPermissionsFilter,
+    CreateUser,
+    DirectPermissionsRoleFilter,
+    K8sPermissionFilter,
+} from '../userGroups/userGroups.types'
 
 function GroupPermission({
     userData,
@@ -22,7 +27,7 @@ function GroupPermission({
     chartPermission,
     setChartPermission,
     k8sPermission,
-    setK8sPermission
+    setK8sPermission,
 }: {
     userData: CreateUser
     userGroups: OptionType[]
@@ -31,7 +36,7 @@ function GroupPermission({
     setDirectPermission: React.Dispatch<React.SetStateAction<DirectPermissionsRoleFilter[]>>
     chartPermission: ChartGroupPermissionsFilter
     setChartPermission: React.Dispatch<React.SetStateAction<ChartGroupPermissionsFilter>>
-    k8sPermission: K8sPermissionFilter[],
+    k8sPermission: K8sPermissionFilter[]
     setK8sPermission: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
 }) {
     const { userGroupsList } = useUserGroupContext()

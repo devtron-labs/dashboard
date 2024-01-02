@@ -17,13 +17,19 @@ import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg'
-import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service'
 import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { components } from 'react-select'
-import { multiSelectStyles, DropdownIndicator, Option, MultiValueContainer, renderPipelineTypeIcon } from './notifications.util'
+import {
+    multiSelectStyles,
+    DropdownIndicator,
+    Option,
+    MultiValueContainer,
+    renderPipelineTypeIcon,
+} from './notifications.util'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
@@ -34,7 +40,7 @@ import { EMAIL_AGENT } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { channel } from 'diagnostics_channel'
 
-interface AddNotificationsProps extends RouteComponentProps<{}> {}
+type AddNotificationsProps = RouteComponentProps<{}>
 
 enum FilterOptions {
     ENVIRONMENT = 'environment',
@@ -87,8 +93,18 @@ interface AddNotificationState {
         value
         data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
     }[]
-    sesConfigOptions: { id: number; configName: string; dest: 'slack' | 'ses' | 'smtp' | 'webhook' |''; recipient: string }[]
-    smtpConfigOptions: { id: number; configName: string; dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; recipient: string }[]
+    sesConfigOptions: {
+        id: number
+        configName: string
+        dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
+        recipient: string
+    }[]
+    smtpConfigOptions: {
+        id: number
+        configName: string
+        dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
+        recipient: string
+    }[]
     isLoading: boolean
     appliedFilters: Array<{ type: string; value: number | string | undefined; label: string | undefined }>
     selectedChannels: {
@@ -104,7 +120,7 @@ interface AddNotificationState {
     options: Options
     isApplistLoading: boolean
     selectedEmailAgent: string
-    showWebhookConfigModal: boolean 
+    showWebhookConfigModal: boolean
 }
 
 export class AddNotification extends Component<AddNotificationsProps, AddNotificationState> {
@@ -160,8 +176,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             this.setState({
                 sesConfigOptions: result.sesConfigOptions,
                 smtpConfigOptions: result.smtpConfigOptions,
-                channelOptions: result.channelOptions?.map(channel=>{
-                    channel.value = channel.value + "-" + channel.data.dest
+                channelOptions: result.channelOptions?.map((channel) => {
+                    channel.value = channel.value + '-' + channel.data.dest
                     return channel
                 }),
                 view: ViewType.FORM,
@@ -174,17 +190,19 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             filterInput: event.target.value,
             openSelectPipeline: true,
         })
-        let unsavedFilter = this.state.appliedFilters.find((e) => e.type && !e.value)
+        const unsavedFilter = this.state.appliedFilters.find((e) => e.type && !e.value)
         if (unsavedFilter.type === FilterOptions.APPLICATION) {
             this.getData(event.target.value)
         }
     }
 
     handleFilterTag(event): void {
-        let theKeyCode = event.key
+        const theKeyCode = event.key
         if (theKeyCode === ' ' || theKeyCode === 'Enter') {
-            let state = { ...this.state }
-            let unsavedFilterIndex = state.appliedFilters.findIndex((e) => e.type && !e.value && e.type === 'pipeline')
+            const state = { ...this.state }
+            const unsavedFilterIndex = state.appliedFilters.findIndex(
+                (e) => e.type && !e.value && e.type === 'pipeline',
+            )
             if (unsavedFilterIndex >= 0) {
                 state.filterInput = ''
                 state.appliedFilters[unsavedFilterIndex] = {
@@ -196,10 +214,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 this.setState(state, () => {
                     getPipelines(state.appliedFilters)
                         .then((response) => {
-                            let selectedPipelines = this.state.pipelineList.filter(
+                            const selectedPipelines = this.state.pipelineList.filter(
                                 (pipeline) => pipeline.checkbox.isChecked,
                             )
-                            let newPipelines = response.result || []
+                            const newPipelines = response.result || []
                             this.setState({
                                 view: ViewType.FORM,
                                 pipelineList: selectedPipelines.concat(newPipelines),
@@ -212,9 +230,9 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 })
             }
         } else if (theKeyCode === 'Backspace') {
-            let unsavedFilterIndex = this.state.appliedFilters.findIndex((e) => e.type && !e.value)
+            const unsavedFilterIndex = this.state.appliedFilters.findIndex((e) => e.type && !e.value)
             if (this.state.filterInput.length === 0 && unsavedFilterIndex >= 0) {
-                let state = { ...this.state }
+                const state = { ...this.state }
                 state.appliedFilters.pop()
                 this.setState(state)
             }
@@ -222,7 +240,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     showEmailAgents(): boolean {
-        let allEmails = this.state.selectedChannels?.filter(
+        const allEmails = this.state.selectedChannels?.filter(
             (p) =>
                 (p.data.dest === '' || p.data.dest === 'ses' || p.data.dest === 'smtp') &&
                 validateEmail(p.data.recipient),
@@ -239,11 +257,13 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     selectFilterType(filter: { label: string; value: string | number; type: string }): void {
-        let state = { ...this.state }
-        let unsavedFilterIndex = state.appliedFilters.findIndex((e) => e.type && !e.value)
+        const state = { ...this.state }
+        const unsavedFilterIndex = state.appliedFilters.findIndex((e) => e.type && !e.value)
         if (unsavedFilterIndex < 0) {
             state.appliedFilters.push({ type: filter.label, value: undefined, label: undefined })
-            if (filter.label === 'pipeline') state.openSelectPipeline = false
+            if (filter.label === 'pipeline') {
+                state.openSelectPipeline = false
+            }
             this.setState(state)
         } else {
             state.view = ViewType.LOADING
@@ -251,10 +271,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             this.setState(state, () => {
                 getPipelines(state.appliedFilters)
                     .then((response) => {
-                        let selectedPipelines = this.state.pipelineList.filter(
+                        const selectedPipelines = this.state.pipelineList.filter(
                             (pipeline) => pipeline.checkbox.isChecked,
                         )
-                        let newPipelines = response.result || []
+                        const newPipelines = response.result || []
                         this.setState({
                             view: ViewType.FORM,
                             pipelineList: selectedPipelines.concat(newPipelines),
@@ -270,13 +290,13 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     clearFilter(filter: { type; label; value }) {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.appliedFilters = state.appliedFilters.filter((f) => !(f.type === filter.type && f.value === filter.value))
         this.setState(state, () => {
             getPipelines(state.appliedFilters)
                 .then((response) => {
-                    let selectedPipelines = this.state.pipelineList.filter((pipeline) => pipeline.checkbox.isChecked)
-                    let newPipelines = response.result || []
+                    const selectedPipelines = this.state.pipelineList.filter((pipeline) => pipeline.checkbox.isChecked)
+                    const newPipelines = response.result || []
                     this.setState({
                         view: ViewType.FORM,
                         pipelineList: selectedPipelines.concat(newPipelines),
@@ -290,31 +310,32 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     handlePipelineEventType(pipelineIndex: number, stage: 'success' | 'trigger' | 'failure'): void {
-        let state = { ...this.state }
-        let pipeline = state.pipelineList[pipelineIndex]
+        const state = { ...this.state }
+        const pipeline = state.pipelineList[pipelineIndex]
         pipeline[stage] = !pipeline[stage]
-        if (pipeline.success && pipeline.trigger && pipeline.failure)
+        if (pipeline.success && pipeline.trigger && pipeline.failure) {
             pipeline.checkbox = {
                 value: 'CHECKED',
                 isChecked: true,
             }
-        else if (pipeline.success || pipeline.trigger || pipeline.failure)
+        } else if (pipeline.success || pipeline.trigger || pipeline.failure) {
             pipeline.checkbox = {
                 value: 'INTERMEDIATE',
                 isChecked: true,
             }
-        else if (!(pipeline.success && pipeline.trigger && pipeline.failure))
+        } else if (!(pipeline.success && pipeline.trigger && pipeline.failure)) {
             pipeline.checkbox = {
                 value: 'CHECKED',
                 isChecked: false,
             }
+        }
         state.pipelineList[pipelineIndex] = pipeline
         this.setState(state)
     }
 
     togglePipelineCheckbox(pipelineIndex: number): void {
-        let state = { ...this.state }
-        let pipeline = state.pipelineList[pipelineIndex]
+        const state = { ...this.state }
+        const pipeline = state.pipelineList[pipelineIndex]
         pipeline.checkbox.isChecked = !pipeline.checkbox.isChecked
         pipeline.checkbox.value = pipeline.checkbox.isChecked ? 'CHECKED' : 'INTERMEDIATE'
         pipeline.trigger = pipeline.checkbox.isChecked
@@ -325,31 +346,33 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     selectChannel(selectedChannels): void {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.selectedChannels = selectedChannels || []
         state.selectedChannels = state.selectedChannels.map((p) => {
-            if (p.__isNew__) return { ...p, data: { dest: '', configId: 0, recipient: p.value } }
+            if (p.__isNew__) {
+                return { ...p, data: { dest: '', configId: 0, recipient: p.value } }
+            }
             return p
         })
         this.setState(state)
     }
 
     selectEmailAgentAccount(event): void {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.emailAgentConfigId = event.target.value
         this.setState(state)
     }
 
     selectEmailAgentConfigIdFromChild(emailAgentConfigId: number): void {
         if (emailAgentConfigId && emailAgentConfigId > 0) {
-            let state = { ...this.state }
+            const state = { ...this.state }
             state.emailAgentConfigId = emailAgentConfigId
             this.setState(state)
         }
     }
 
     saveNotification(): void {
-        let selectedPipelines = this.state.pipelineList.filter((p) => p.checkbox.isChecked)
+        const selectedPipelines = this.state.pipelineList.filter((p) => p.checkbox.isChecked)
         if (!selectedPipelines.length) {
             toast.error('Select atleast one pipeline')
             return
@@ -358,7 +381,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             return
         }
 
-        let selectedChannels = []
+        const selectedChannels = []
         for (let index = 0; index < this.state.selectedChannels.length; index++) {
             const element = this.state.selectedChannels[index]
             if (element.data.dest === 'ses' || element.data.dest === 'smtp' || element.data.dest === '') {
@@ -424,8 +447,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         name="trigger-type"
                         onChange={this.changeEmailAgent}
                     >
-                        <RadioGroupItem dataTestId="add-notification-ses-checkbox" value={EMAIL_AGENT.SES}>{EMAIL_AGENT.SES}</RadioGroupItem>
-                        <RadioGroupItem dataTestId="add-notification-smtp-checkbox" value={EMAIL_AGENT.SMTP}>{EMAIL_AGENT.SMTP}</RadioGroupItem>
+                        <RadioGroupItem dataTestId="add-notification-ses-checkbox" value={EMAIL_AGENT.SES}>
+                            {EMAIL_AGENT.SES}
+                        </RadioGroupItem>
+                        <RadioGroupItem dataTestId="add-notification-smtp-checkbox" value={EMAIL_AGENT.SMTP}>
+                            {EMAIL_AGENT.SMTP}
+                        </RadioGroupItem>
                     </RadioGroup>
                     <div className="w-300">
                         <Select
@@ -433,13 +460,20 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             onChange={this.selectEmailAgentAccount}
                             value={this.state.emailAgentConfigId}
                         >
-                            <Select.Button dataTestIdDropdown="add-notification-select-agent-dropdown" rootClassName="select-button--default h-36">
+                            <Select.Button
+                                dataTestIdDropdown="add-notification-select-agent-dropdown"
+                                rootClassName="select-button--default h-36"
+                            >
                                 {emailAgentConfig
                                     ? emailAgentConfig.configName
                                     : `Select ${EMAIL_AGENT[this.state.selectedEmailAgent]} Account`}
                             </Select.Button>
                             {this.state[emailConfigAgentOptions].map((config) => (
-                                <Select.Option dataTestIdMenuList={`add-notification-select-agent-menu-${config.configName}`} key={`${this.state.selectedEmailAgent}_${config.id}`} value={config.id}>
+                                <Select.Option
+                                    dataTestIdMenuList={`add-notification-select-agent-menu-${config.configName}`}
+                                    key={`${this.state.selectedEmailAgent}_${config.id}`}
+                                    value={config.id}
+                                >
                                     <span className="dc__ellipsis-left">{config.configName}</span>
                                 </Select.Option>
                             ))}
@@ -456,7 +490,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     getEnvTeamData(): void {
         Promise.all([getEnvironmentListMin(), getTeamListMin()]).then(([environments, teams]) => {
-            let state = { ...this.state }
+            const state = { ...this.state }
             state.options.environment = environments.result.map((elem) => {
                 return {
                     label: `${elem.environment_name.toLowerCase()}`,
@@ -479,7 +513,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.setState({ isApplistLoading: true })
         if (text.length > 2) {
             getAppListMin(null, null, text).then((response) => {
-                let state = { ...this.state }
+                const state = { ...this.state }
                 state.options.application = response.result.map((elem) => {
                     return {
                         label: `${elem.name.toLowerCase()}`,
@@ -494,10 +528,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     }
 
     renderSelectPipelines() {
-        let unsavedFilter = this.state.appliedFilters.find((e) => e.type && !e.value)
+        const unsavedFilter = this.state.appliedFilters.find((e) => e.type && !e.value)
         let options = this.filterOptionsMain
         if (unsavedFilter) {
-            let input = this.state.filterInput.toLowerCase()
+            const input = this.state.filterInput.toLowerCase()
             if (unsavedFilter.type === FilterOptions.ENVIRONMENT) {
                 options =
                     input.length === 0
@@ -626,7 +660,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             <th className="pipeline-list__stages dc__block fw-6">Events</th>
                         </tr>
                         {this.state.pipelineList.map((row, rowIndex) => {
-                            let _isCi = row.branch && row.type === 'CI'
+                            const _isCi = row.branch && row.type === 'CI'
                             let _isWebhookCi
                             if (_isCi) {
                                 try {
@@ -670,9 +704,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         )}
                                     </td>
                                     <th className="pipeline-list__pipeline-name fw-6">{row?.appName}</th>
-                                    <td className="pipeline-list__type">
-                                      {renderPipelineTypeIcon(row)}
-                                    </td>
+                                    <td className="pipeline-list__type">{renderPipelineTypeIcon(row)}</td>
                                     <td className="pipeline-list__environment">
                                         {_isCi && (
                                             <span className="flex left">
@@ -860,7 +892,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         this.setState({ showSESConfigModal: false })
                         getChannelConfigs()
                             .then((response: any) => {
-                                let providers = response?.result.sesConfigs || []
+                                const providers = response?.result.sesConfigs || []
                                 this.setState({ sesConfigOptions: providers })
                             })
                             .catch((error) => {
@@ -886,7 +918,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         this.setState({ showSMTPConfigModal: false })
                         getChannelConfigs()
                             .then((response: any) => {
-                                let providers = response?.result.smtpConfig || []
+                                const providers = response?.result.smtpConfig || []
                                 this.setState({ smtpConfigOptions: providers })
                             })
                             .catch((error) => {
@@ -941,7 +973,9 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         return (
             <ErrorBoundary>
                 <div className="add-notification-page">
-                    <div data-testid="add-notifications-heading-title" className="form__title mb-16">Add Notifications</div>
+                    <div data-testid="add-notifications-heading-title" className="form__title mb-16">
+                        Add Notifications
+                    </div>
                     {this.renderAddCard()}
                     {this.renderShowSlackConfigModal()}
                     {this.renderSESConfigModal()}

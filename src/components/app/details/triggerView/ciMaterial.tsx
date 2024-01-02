@@ -39,8 +39,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-        if(this.props.isJobView && this.props.environmentLists?.length > 0) {
-            let envId = this.state.selectedCIPipeline?.environmentId || 0
+        if (this.props.isJobView && this.props.environmentLists?.length > 0) {
+            const envId = this.state.selectedCIPipeline?.environmentId || 0
             const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
             this.props.setSelectedEnv(_selectedEnv)
         }
@@ -82,6 +82,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                 className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
                                 href={DOCUMENTATION.BLOB_STORAGE}
                                 target="_blank"
+                                rel="noreferrer"
                             >
                                 {IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
                             </a>
@@ -120,7 +121,14 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     renderEnvironments = () => {
-        return <EnvironmentList isBuildStage={false} environments={this.props.environmentLists} selectedEnv={this.props.selectedEnv} setSelectedEnv={this.props.setSelectedEnv}/>
+        return (
+            <EnvironmentList
+                isBuildStage={false}
+                environments={this.props.environmentLists}
+                selectedEnv={this.props.selectedEnv}
+                setSelectedEnv={this.props.setSelectedEnv}
+            />
+        )
     }
 
     handleStartBuildAction = (e) => {
@@ -130,7 +138,14 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     redirectToCIPipeline = () => {
         this.props.history.push(
-            getCIPipelineURL(this.props.appId, this.props.workflowId.toString(), true, this.props.pipelineId, false, this.props.isJobCI),
+            getCIPipelineURL(
+                this.props.appId,
+                this.props.workflowId.toString(),
+                true,
+                this.props.pipelineId,
+                false,
+                this.props.isJobCI,
+            ),
         )
     }
 

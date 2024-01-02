@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
-import { ChartCheckListProps } from './checklist.type';
-import { NavLink } from 'react-router-dom';
-import { URLS } from '../../config';
+import React, { Component } from 'react'
+import { ChartCheckListProps } from './checklist.type'
+import { NavLink } from 'react-router-dom'
+import { URLS } from '../../config'
 
 export class ChartCheckList extends Component<ChartCheckListProps, {}> {
-
     render() {
-        let { environment, project } = this.props.chartChecklist;
+        const { environment, project } = this.props.chartChecklist
 
         return (
             <>
@@ -14,10 +13,24 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                     <div className="fs-14">To deploy chart</div>
                 </div>
                 <div className="fs-13">
-                    {!this.props.chartChecklist.project && <NavLink to={`${URLS.GLOBAL_CONFIG_PROJECT}`} className="dc__no-decor  mt-8 flex left" style={{ ['color']: project ? `var(--N500)` : `var(--B500)` }}>
-                    Add project</NavLink>}
-                    {!this.props.chartChecklist.environment && <NavLink to={`${URLS.GLOBAL_CONFIG_CLUSTER}`} className="dc__no-decor mt-8 pb-8 flex left" style={{ ['color']: environment ? `var(--N500)` : `var(--B500)` }}>
-                    Add cluster & environment</NavLink>}
+                    {!this.props.chartChecklist.project && (
+                        <NavLink
+                            to={`${URLS.GLOBAL_CONFIG_PROJECT}`}
+                            className="dc__no-decor  mt-8 flex left"
+                            style={{ ['color']: project ? `var(--N500)` : `var(--B500)` }}
+                        >
+                            Add project
+                        </NavLink>
+                    )}
+                    {!this.props.chartChecklist.environment && (
+                        <NavLink
+                            to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}
+                            className="dc__no-decor mt-8 pb-8 flex left"
+                            style={{ ['color']: environment ? `var(--N500)` : `var(--B500)` }}
+                        >
+                            Add cluster & environment
+                        </NavLink>
+                    )}
                 </div>
             </>
         )

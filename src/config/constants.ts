@@ -47,7 +47,7 @@ export const Routes = {
     DEPLOYMENT_TEMPLATE_UPDATE: 'app/template/update',
 
     DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
-    DEPLOYMENT_OPTIONS:'app/template/list',
+    DEPLOYMENT_OPTIONS: 'app/template/list',
 
     DEPLOYMENT_STRATEGY: 'app/cd-pipeline/strategies',
     ENVIRONMENT_CONFIG: 'app/env',
@@ -244,7 +244,7 @@ export const Routes = {
     PERMISSION: 'permission/check',
     SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
-    GVK: 'gvk'
+    GVK: 'gvk',
 }
 
 export const ViewType = {
@@ -289,7 +289,6 @@ export const PATTERNS = {
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
     CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, //Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
     ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
-
 }
 
 export const TriggerType = {
@@ -360,7 +359,7 @@ export const DOCUMENTATION = {
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
     JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
-    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`
+    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -437,7 +436,7 @@ export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageAction
 
 export const RegistryStorageType = {
     OCI_PRIVATE: 'OCI_PRIVATE',
-    OCI_PUBLIC: 'OCI_PUBLIC'
+    OCI_PUBLIC: 'OCI_PUBLIC',
 }
 
 export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
@@ -490,18 +489,18 @@ export interface RegistryPayloadType {
 }
 
 export const RegistryType = {
-   DOCKER_HUB: 'docker-hub',
-   ACR: 'acr',
-   QUAY: 'quay',
-   OTHER: 'other',
-   ECR: 'ecr',
-   ARTIFACT_REGISTRY: 'artifact-registry',
-   GCR: 'gcr'
+    DOCKER_HUB: 'docker-hub',
+    ACR: 'acr',
+    QUAY: 'quay',
+    OTHER: 'other',
+    ECR: 'ecr',
+    ARTIFACT_REGISTRY: 'artifact-registry',
+    GCR: 'gcr',
 }
 
 export const RegistryTypeName = {
-    'OCI_PRIVATE': 'Private Registry',
-    'OCI_PUBLIC': 'Public Registry'
+    OCI_PRIVATE: 'Private Registry',
+    OCI_PUBLIC: 'Public Registry',
 }
 
 export const AppCreationType = {
@@ -572,7 +571,7 @@ export const EXTERNAL_TYPES = {
         ESO_HashiCorpVault: 'Hashi Corp Vault',
         ESO_AWSSecretsManager: 'AWS Secrets Manager',
         ESO_GoogleSecretsManager: 'Google Secrets Manager',
-        ESO_AzureSecretsManager: 'Azure Secrets Manager'
+        ESO_AzureSecretsManager: 'Azure Secrets Manager',
     },
     [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
         '': 'Kubernetes ConfigMap',
@@ -799,13 +798,13 @@ export const ManifestMessaging = {
 }
 
 export const SERVER_ERROR_CODES = {
-    RELEASE_NOT_FOUND: "7001",
+    RELEASE_NOT_FOUND: '7001',
     CHART_ALREADY_EXISTS: '5001',
     CHART_NAME_RESERVED: '5002',
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
-export const CVE_ID_NOT_FOUND = "CVE ID not found"
-export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"
-export const NO_HOST_URL = "Please enter host url"
-export const WEBHOOK_NO_API_TOKEN_ERROR = "API Token is required to execute webhook"
+export const CVE_ID_NOT_FOUND = 'CVE ID not found'
+export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
+export const NO_HOST_URL = 'Please enter host url'
+export const WEBHOOK_NO_API_TOKEN_ERROR = 'API Token is required to execute webhook'

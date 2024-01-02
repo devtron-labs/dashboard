@@ -31,7 +31,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         this.isFormNotValid = this.isFormNotValid.bind(this)
     }
     componentDidMount() {
-        let queryString = new URLSearchParams(this.props.location.search)
+        const queryString = new URLSearchParams(this.props.location.search)
         let queryParam = queryString.get('continue')
 
         //1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
@@ -47,21 +47,25 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
-            let url = `${this.props.location.pathname}?continue=${queryParam}`
+            const url = `${this.props.location.pathname}?continue=${queryParam}`
             this.props.history.push(url)
         }
-        if (!queryParam) queryParam = ''
+        if (!queryParam) {
+            queryParam = ''
+        }
         this.setState({
             continueUrl: encodeURI(`${window.location.origin}/orchestrator${process.env.PUBLIC_URL}${queryParam}`),
         })
         getSSOConfigList().then((response) => {
-            let list = response.result || []
+            const list = response.result || []
             this.setState({
                 loginList: list,
             })
         })
         if (typeof Storage !== 'undefined') {
-            if (localStorage.isDashboardAccessed) return
+            if (localStorage.isDashboardAccessed) {
+                return
+            }
             dashboardAccessed()
                 .then((response) => {
                     if (response.result) {
@@ -88,7 +92,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     isFormNotValid(): boolean {
         let isValid = true
-        let keys = ['username', 'password']
+        const keys = ['username', 'password']
         keys.map((key) => {
             if (key === 'password') {
                 isValid = isValid && this.state.form[key]?.length >= 6
@@ -107,14 +111,14 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     login(e): void {
         e.preventDefault()
-        let data = this.state.form
+        const data = this.state.form
         this.setState({ loading: true })
         loginAsAdmin(data)
             .then((response) => {
                 if (response.result.token) {
                     this.setState({ loading: false })
-                    let queryString = this.props.location.search.split('continue=')[1]
-                    let url = queryString ? `${queryString}` : URLS.APP
+                    const queryString = this.props.location.search.split('continue=')[1]
+                    const url = queryString ? `${queryString}` : URLS.APP
                     this.props.history.push(url)
                     localStorage.setItem('isAdminLogin', 'true')
                 }
@@ -127,12 +131,14 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     renderLoginPrivacyText = () => {
         if (window.location.origin === PREVIEW_DEVTRON) {
-            return <div className="flex mt-12">
-                By logging in, you agree to our
-                <a href={PRIVACY_POLICY} target="blank" className="ml-4 bc-5">
-                    Privacy Policy
-                </a>
-            </div>
+            return (
+                <div className="flex mt-12">
+                    By logging in, you agree to our
+                    <a href={PRIVACY_POLICY} target="blank" className="ml-4 bc-5">
+                        Privacy Policy
+                    </a>
+                </div>
+            )
         }
     }
 
@@ -143,7 +149,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             <div className="login__control">
                 {/* <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" /> */}
                 <div className="flex">
-                    <ChristmasLogo width={170} height={120} className="login__dt-logo"/>
+                    <ChristmasLogo width={170} height={120} className="login__dt-logo" />
                 </div>
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {this.state.loginList
@@ -174,14 +180,14 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     }
 
     renderAdminLoginPage() {
-        let search = this.props.location.search
+        const search = this.props.location.search
 
         return (
             <div className="login__control">
                 {/* TODO: Uncomment after New year */}
                 {/* <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" /> */}
                 <div className="flex">
-                    <ChristmasLogo width={170} height={120} className="login__dt-logo"/>
+                    <ChristmasLogo width={170} height={120} className="login__dt-logo" />
                 </div>
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {/* @ts-ignore */}
@@ -236,8 +242,20 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     render() {
         return (
             <div className="login">
-                <div className="login__bg" style={window?._env_?.LOGIN_PAGE_IMAGE_BG?{backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG}:{}}>
-                    <div className="login__image" style={window?._env_?.LOGIN_PAGE_IMAGE?{backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})`}:{}} />
+                <div
+                    className="login__bg"
+                    style={
+                        window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}
+                    }
+                >
+                    <div
+                        className="login__image"
+                        style={
+                            window?._env_?.LOGIN_PAGE_IMAGE
+                                ? { backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})` }
+                                : {}
+                        }
+                    />
                 </div>
                 <div className="login__section">
                     <Switch>

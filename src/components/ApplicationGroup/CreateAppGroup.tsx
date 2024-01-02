@@ -130,7 +130,7 @@ export default function CreateAppGroup({
     }
 
     const appFilterAuthorizedList = () => {
-        let _authorizedApp = []
+        const _authorizedApp = []
         appList.forEach((app) => {
             if (!unAuthorizedApps.get(app.appName)) {
                 _authorizedApp.push({ id: app.id, appName: app.appName })
@@ -155,8 +155,8 @@ export default function CreateAppGroup({
     }
 
     const appFilterList = () => {
-        let _authorizedAppList = []
-        let _unauthorizedAppList = []
+        const _authorizedAppList = []
+        const _unauthorizedAppList = []
         appList.forEach((app) => {
             unAuthorizedApps.get(app.appName)
                 ? _unauthorizedAppList.push({ id: app.id, appName: app.appName })
@@ -408,7 +408,7 @@ export default function CreateAppGroup({
             _selectedAppIds.push(+_appId)
         }
 
-        let appListIds = []
+        const appListIds = []
         appList.forEach((element) => {
             if (!unAuthorizedApps.get(element.appName)) {
                 appListIds.push(+element.id)

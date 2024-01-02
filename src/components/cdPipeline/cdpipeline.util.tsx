@@ -210,7 +210,7 @@ const checkStepsUniqueness = (list): boolean => {
                     taskData.inlineStepDetail['mountPathMap'] = null
                 }
                 taskData.inlineStepDetail.outputVariables = null
-                let conditionDetails = taskData.inlineStepDetail.conditionDetails
+                const conditionDetails = taskData.inlineStepDetail.conditionDetails
                 for (let i = 0; i < conditionDetails?.length; i++) {
                     if (
                         conditionDetails[i].conditionType === ConditionType.PASS ||
@@ -231,16 +231,14 @@ const checkStepsUniqueness = (list): boolean => {
 }
 
 export const checkUniqueness = (formData, isCDPipeline?: boolean): boolean => {
-    if(isCDPipeline){
+    if (isCDPipeline) {
         const preStageValidation: boolean = checkStepsUniqueness(formData.preBuildStage.steps)
         const postStageValidation: boolean = checkStepsUniqueness(formData.postBuildStage.steps)
         return preStageValidation && postStageValidation
-
     } else {
         const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
         return checkStepsUniqueness(list)
     }
-
 }
 
 export const calculateLastStepDetailsLogic = (
@@ -251,17 +249,18 @@ export const calculateLastStepDetailsLogic = (
     startIndex: number,
     isFromMoveTask: boolean,
     isCDPipeline?: boolean,
-    globalVariables?: { label: string; value: string; format: string ; stageType: string}[]
+    globalVariables?: { label: string; value: string; format: string; stageType: string }[],
 ) => {
     if (!_formData[activeStageName].steps) {
         _formData[activeStageName].steps = []
     }
     const stepsLength = _formData[activeStageName].steps?.length
-    let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
+    const _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
         _inputVariablesListPerTask: Map<string, VariableType>[] = []
     for (let i = 0; i < stepsLength; i++) {
-        if (!_formDataErrorObj[activeStageName].steps[i])
+        if (!_formDataErrorObj[activeStageName].steps[i]) {
             _formDataErrorObj[activeStageName].steps.push({ isValid: true })
+        }
         _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
         _formData[activeStageName].steps[i].index = i + 1
         if (!_formData[activeStageName].steps[i].stepType) {
@@ -316,9 +315,13 @@ export const calculateLastStepDetailsLogic = (
         ) {
             for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
                 const variableDetail = _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
-                if(isCDPipeline){
-                    if(!globalVariables.filter((variable) => variable.stageType !== 'post-cd').find((variables) => variables.value === variableDetail.refVariableName)){
-                        variableDetail.refVariableName = ''; 
+                if (isCDPipeline) {
+                    if (
+                        !globalVariables
+                            .filter((variable) => variable.stageType !== 'post-cd')
+                            .find((variables) => variables.value === variableDetail.refVariableName)
+                    ) {
+                        variableDetail.refVariableName = ''
                     }
                 }
                 if (

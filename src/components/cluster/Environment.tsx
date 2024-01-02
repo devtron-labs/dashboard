@@ -166,30 +166,32 @@ export default function Environment({
                             label="Namespace"
                         />
                     </div>
-                    {!isVirtual && <div className="mb-16 flex left">
-                        <label className="pr-16 flex cursor">
-                            <input
-                                data-testid="production"
-                                type="radio"
-                                name="isProduction"
-                                checked={state.isProduction.value === 'true'}
-                                value="true"
-                                onChange={handleOnChange}
-                            />
-                            <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
-                        </label>
-                        <label className="flex cursor">
-                            <input
-                                data-testid="nonProduction"
-                                type="radio"
-                                name="isProduction"
-                                checked={state.isProduction.value === 'false'}
-                                value="false"
-                                onChange={handleOnChange}
-                            />
-                            <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
-                        </label>
-                    </div>}
+                    {!isVirtual && (
+                        <div className="mb-16 flex left">
+                            <label className="pr-16 flex cursor">
+                                <input
+                                    data-testid="production"
+                                    type="radio"
+                                    name="isProduction"
+                                    checked={state.isProduction.value === 'true'}
+                                    value="true"
+                                    onChange={handleOnChange}
+                                />
+                                <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
+                            </label>
+                            <label className="flex cursor">
+                                <input
+                                    data-testid="nonProduction"
+                                    type="radio"
+                                    name="isProduction"
+                                    checked={state.isProduction.value === 'false'}
+                                    value="false"
+                                    onChange={handleOnChange}
+                                />
+                                <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
+                            </label>
+                        </div>
+                    )}
                     <div className="mb-16">
                         <CustomInput
                             name="description"

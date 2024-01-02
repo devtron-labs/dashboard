@@ -24,7 +24,7 @@ export function getWebhookAPITokenList(
 }
 
 export async function executeWebhookAPI(webhookUrl: string, token: string, data?: object): Promise<any> {
-    let options = {
+    const options = {
         method: 'POST',
         headers: {
             Accept: 'application/json',

@@ -27,7 +27,7 @@ const handleQuestion = () => {
 
 export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {}> {
     render() {
-        let classes = "cluster-create-status"
+        const classes = 'cluster-create-status'
         if (this.props.agentInstallationStage === 0) {
             return (
                 <div className={`${classes} cluster-create-status--not-triggered`}>

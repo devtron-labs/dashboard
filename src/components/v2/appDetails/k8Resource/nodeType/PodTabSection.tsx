@@ -23,7 +23,7 @@ function PodTabSection({
     isNew: boolean
 }) {
     const dataTestId = isNew ? 'all-pods-new' : 'all-pods-old'
-    
+
     return (
         <div
             className={

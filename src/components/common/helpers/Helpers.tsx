@@ -30,7 +30,7 @@ export type IntersectionOptions = {
 }
 
 export function validateEmail(email) {
-    var re =
+    const re =
         /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     const result = re.test(String(email).toLowerCase())
     return result
@@ -93,7 +93,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // single validator
-        let _validator = validationSchema[name]?.validator
+        const _validator = validationSchema[name]?.validator
         if (_validator && typeof _validator === 'object') {
             if (!_validateSingleValidator(_validator, value)) {
                 return _validator.error
@@ -101,9 +101,9 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // multiple validators
-        let _validators = validationSchema[name]?.validators
+        const _validators = validationSchema[name]?.validators
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
-            let errors = []
+            const errors = []
             _validators.forEach((_validator) => {
                 if (!_validateSingleValidator(_validator, value)) {
                     errors.push(_validator.error)
@@ -122,7 +122,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
             setIsDirty(true)
 
             const { name, value } = event.target
-            let error = validateField(name, value)
+            const error = validateField(name, value)
             setState((prevState) => ({
                 ...prevState,
                 [name]: { value, error },
@@ -273,7 +273,7 @@ export function useInterval(callback, delay) {
             savedCallback.current()
         }
         if (delay !== null) {
-            let id = setInterval(tick, delay)
+            const id = setInterval(tick, delay)
             return () => clearInterval(id)
         }
     }, [delay])
@@ -288,16 +288,16 @@ export function shallowEqual(objA, objB) {
         return false
     }
 
-    var keysA = Object.keys(objA)
-    var keysB = Object.keys(objB)
+    const keysA = Object.keys(objA)
+    const keysB = Object.keys(objB)
 
     if (keysA.length !== keysB.length) {
         return false
     }
 
     // Test for A's keys different from B.
-    var bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB)
-    for (var i = 0; i < keysA.length; i++) {
+    const bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB)
+    for (let i = 0; i < keysA.length; i++) {
         if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
             return false
         }
@@ -382,7 +382,9 @@ export function useScrollable(options: scrollableInterface) {
     const [autoBottom, toggleAutoBottom] = useState(false)
 
     const target = useCallback((node) => {
-        if (node === null) return
+        if (node === null) {
+            return
+        }
         targetRef.current = node
         wheelListener.current = node.addEventListener('wheel', handleWheel)
         raf_id.current = requestAnimationFrame(rAFCallback)
@@ -404,7 +406,7 @@ export function useScrollable(options: scrollableInterface) {
         }
 
         let topScrollable = true
-        let bottomScrollable = !(
+        const bottomScrollable = !(
             targetRef.current.scrollHeight - targetRef.current.scrollTop ===
             targetRef.current.clientHeight
         )
@@ -428,7 +430,9 @@ export function useScrollable(options: scrollableInterface) {
 
     useThrottledEffect(
         () => {
-            if (!autoBottom || !targetRef.current) return
+            if (!autoBottom || !targetRef.current) {
+                return
+            }
             targetRef.current.scrollBy({
                 top: scrollHeight,
                 left: 0,
@@ -486,7 +490,9 @@ export function useKeyDown() {
     useDelayedEffect(clearKeys, 500, [keys.join('+')])
 
     function clearKeys() {
-        if (keys.length) setKeys([])
+        if (keys.length) {
+            setKeys([])
+        }
     }
 
     const onKeyDown = ({ key }) => {
@@ -525,7 +531,9 @@ export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = f
     }
 
     useEffect(() => {
-        if (!shouldRun) return
+        if (!shouldRun) {
+            return
+        }
         let obj
         let jsonError = null
         let yamlError = null
@@ -592,7 +600,9 @@ export function useEventSource(
     const eventSourceRef = useRef(null)
 
     function closeEventSource() {
-        if (eventSourceRef.current?.close) eventSourceRef.current.close()
+        if (eventSourceRef.current?.close) {
+            eventSourceRef.current.close()
+        }
     }
 
     function handleMessage(event) {
@@ -600,7 +610,9 @@ export function useEventSource(
     }
 
     useEffect(() => {
-        if (!shouldRun) return
+        if (!shouldRun) {
+            return
+        }
         eventSourceRef.current = new EventSource(url, { withCredentials: true })
         eventSourceRef.current.onmessage = handleMessage
         return closeEventSource
@@ -654,13 +666,17 @@ export function useSize(): UseSize {
     })
 
     const target = useCallback((node) => {
-        if (node === null) return
+        if (node === null) {
+            return
+        }
         targetRef.current = node
         return () => (targetRef.current = null)
     }, [])
 
     useEffect(() => {
-        if (!windowWidth || !windowHeight || !targetRef.current) return
+        if (!windowWidth || !windowHeight || !targetRef.current) {
+            return
+        }
         const { x, y, height, width, left, right, top, bottom } = targetRef.current.getBoundingClientRect()
         setDimension({ x, y, height, width, left, right, top, bottom })
     }, [windowHeight, windowWidth])
@@ -823,7 +839,9 @@ export const convertToOptionsList = (
     customValue?: string,
     customFieldKey?: string,
 ): OptionType[] => {
-    if (!Array.isArray(arr) || !arr) return []
+    if (!Array.isArray(arr) || !arr) {
+        return []
+    }
     return arr.map((ele) => {
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
@@ -970,7 +988,7 @@ export function createClusterEnvGroup<T>(
 }
 
 export const k8sStyledAgeToSeconds = (duration: string): number => {
-    let totalTimeInSec: number = 0
+    let totalTimeInSec = 0
     if (!duration) {
         return totalTimeInSec
     }
@@ -978,8 +996,8 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
     const matchesNumber = duration.match(/\d+/g)
     const matchesChar = duration.match(/[dhms]/g)
     for (let i = 0; i < matchesNumber.length; i++) {
-        let _unit = matchesChar[i]
-        let _unitVal = +matchesNumber[i]
+        const _unit = matchesChar[i]
+        const _unitVal = +matchesNumber[i]
         switch (_unit) {
             case 'd':
                 totalTimeInSec += _unitVal * 24 * 60 * 60
@@ -1026,7 +1044,9 @@ export const trackByGAEvent = (category: string, action: string): void => {
 }
 
 export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
-    if (!list) return []
+    if (!list) {
+        return []
+    }
     let emptyHeadingCount = 0
     const objList: Record<string, OptionType[]> = list?.reduce((acc, obj) => {
         if (obj.nodeGroup) {
@@ -1119,14 +1139,14 @@ export const getDeploymentAppType = (
 export const hasApproverAccess = (approverList: string[]): boolean => {
     const loginInfo = getLoginInfo()
     let hasAccess = false
-    if(approverList?.length > 0) {
-    for (const approver of approverList) {
-        if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
-            hasAccess = true
-            break
+    if (approverList?.length > 0) {
+        for (const approver of approverList) {
+            if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
+                hasAccess = true
+                break
+            }
         }
     }
-}
     return hasAccess
 }
 

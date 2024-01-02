@@ -64,7 +64,9 @@ export default function ChartGroupAdvanceDeploy() {
     const [deployed, setDeployed] = useState(false)
 
     useEffectAfterMount(() => {
-        if (state.loading) return
+        if (state.loading) {
+            return
+        }
         if (state.charts.length === 0) {
             push(url.replace('/deploy', ''))
         }
@@ -72,7 +74,9 @@ export default function ChartGroupAdvanceDeploy() {
     }, [state.loading])
 
     useEffectAfterMount(() => {
-        if (state.chartGroupDetailsLoading) return
+        if (state.chartGroupDetailsLoading) {
+            return
+        }
         setCharts((location?.state as any)?.charts || [])
         if ((location?.state as any)?.projectId) {
             setProject({ id: (location?.state as any).projectId, error: '' })
@@ -98,7 +102,9 @@ export default function ChartGroupAdvanceDeploy() {
 
     useEffectAfterMount(() => {
         // whenver deployment succeeds, go to deployments list
-        if (!deployed) return
+        if (!deployed) {
+            return
+        }
         push(url.replace('/deploy', ''))
     }, [deployed])
 

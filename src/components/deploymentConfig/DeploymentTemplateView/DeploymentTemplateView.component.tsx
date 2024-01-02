@@ -155,7 +155,9 @@ export const CompareWithDropdown = ({
     }
 
     useEffect(() => {
-        if (isEnvOverride && groupedData.length === 0) return
+        if (isEnvOverride && groupedData.length === 0) {
+            return
+        }
         _initOptions()
     }, [environments, charts, isValues, groupedData])
 
@@ -172,9 +174,15 @@ export const CompareWithDropdown = ({
 
         // place all options under corresponding groups
         groupedData.forEach((group) => {
-            if (!isValues && group[0].type === 1) return
-            if (isValues && group[0].type === 4) return
-            if (!envId && group[0].type === 3) return
+            if (!isValues && group[0].type === 1) {
+                return
+            }
+            if (isValues && group[0].type === 4) {
+                return
+            }
+            if (!envId && group[0].type === 3) {
+                return
+            }
             _groupOptions[getPosition(isValues, isEnvOverride, group[0].type)] = {
                 label: labelName[group[0].type],
                 //filter out item where item.chartType !== 'deployment

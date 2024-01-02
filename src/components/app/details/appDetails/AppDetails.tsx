@@ -155,7 +155,9 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     }, [filteredEnvIds, otherEnvsResult])
 
     useEffect(() => {
-        if (!params.envId) return
+        if (!params.envId) {
+            return
+        }
         setEnvironmentId(Number(params.envId))
         setIsAppDeleted(false)
     }, [params.envId])
@@ -477,7 +479,9 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     async function callLastExecutionMinAPI(appId, envId) {
-        if (!appId || !envId) return
+        if (!appId || !envId) {
+            return
+        }
 
         try {
             const { result } = await getLastExecutionMinByAppAndEnv(appId, envId)
@@ -938,7 +942,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                       }
             }
         >
-            <div className={`pl-20 flex left tab-container ${!!params.tab ? 'dc__cursor--ns-resize ' : 'pointer'}`}>
+            <div className={`pl-20 flex left tab-container ${params.tab ? 'dc__cursor--ns-resize ' : 'pointer'}`}>
                 {[
                     NodeDetailTabs.MANIFEST,
                     NodeDetailTabs.EVENTS,
@@ -959,7 +963,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                     </div>
                 ))}
             </div>
-            <div className={`flex right pr-20 ${!!params.tab ? 'dc__cursor--ns-resize ' : 'pointer'}`}>
+            <div className={`flex right pr-20 ${params.tab ? 'dc__cursor--ns-resize ' : 'pointer'}`}>
                 <div
                     className="flex pointer"
                     style={{ height: '36px', width: '36px' }}
@@ -974,7 +978,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                     }}
                 >
                     <NavigationArrow
-                        style={{ ['--rotateBy' as any]: !!params?.tab ? '0deg' : '180deg' }}
+                        style={{ ['--rotateBy' as any]: params?.tab ? '0deg' : '180deg' }}
                         color="#fff"
                         className="icon-dim-20 rotate"
                     />
@@ -1060,14 +1064,16 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
         initContainers = []
     }
 
-    if (params.tab === NodeDetailTabs.TERMINAL) initContainers = []
+    if (params.tab === NodeDetailTabs.TERMINAL) {
+        initContainers = []
+    }
 
-    let total = containers.concat(initContainers)
-    let allContainers = total.filter((item) => !!item)
+    const total = containers.concat(initContainers)
+    const allContainers = total.filter((item) => !!item)
 
     allContainers.forEach((item) => {
         if (item?.length < 2) {
-            let contAvailable = allContainers[0]
+            const contAvailable = allContainers[0]
             if (contAvailable && !selectedContainer) {
                 selectContainer(contAvailable[0])
             }
@@ -1105,8 +1111,8 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
         handleLogsPause(!logsPaused)
     }
 
-    let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED'
-    let podItems = params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName
+    const isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED'
+    const podItems = params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName
     return (
         <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
             {params.tab === NodeDetailTabs.TERMINAL && (
@@ -1360,7 +1366,7 @@ export function AppNotConfigured({
                 ) : (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
-                        <a href={DOCUMENTATION.APP_CREATE} target="_blank">
+                        <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noreferrer">
                             {APP_DETAILS.NEED_HELP}
                         </a>
                     </>

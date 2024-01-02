@@ -27,7 +27,7 @@ function AppStatusDetailModal({
         return aggregateNodes(_appDetails.resourceTree?.nodes || [], _appDetails.resourceTree?.podMetadata || [])
     }, [_appDetails])
     const nodesKeyArray = Object.keys(nodes?.nodes || {})
-    let flattenedNodes = []
+    const flattenedNodes = []
     if (nodesKeyArray.length > 0) {
         for (let index = 0; index < nodesKeyArray.length; index++) {
             const element = nodes.nodes[nodesKeyArray[index]]

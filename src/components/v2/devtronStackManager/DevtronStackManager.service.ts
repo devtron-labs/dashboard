@@ -43,8 +43,6 @@ export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> =
     return Promise.resolve(moduleStatusMap)
 }
 
-
-
 export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInfoResponse> => {
     // getting Security Module Installation status
     const res: ModuleInfo = {
@@ -52,7 +50,7 @@ export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInf
         name: null,
         status: null,
     }
-    let installedResponseFlag=false
+    let installedResponseFlag = false
     try {
         const { result: trivyResponse } = await get(`${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_TRIVY}`)
         const isTrivyInstalled = trivyResponse && trivyResponse.status === ModuleStatus.INSTALLED
@@ -66,7 +64,6 @@ export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInf
         } else {
             installedResponseFlag = true
         }
-
     } catch {
         installedResponseFlag = false
     } finally {
@@ -112,11 +109,7 @@ export const executeModuleAction = (
 }
 
 const isValidServerInfo = (_serverInfo: ServerInfoResponse): boolean => {
-    return !!(
-        _serverInfo?.result &&
-        _serverInfo.result.releaseName &&
-        _serverInfo.result.installationType
-    )
+    return !!(_serverInfo?.result && _serverInfo.result.releaseName && _serverInfo.result.installationType)
 }
 
 const getSavedServerInfo = (): ServerInfoResponse => {

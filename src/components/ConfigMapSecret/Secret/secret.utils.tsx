@@ -229,10 +229,14 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
     const groupList = isJobView ? noGroups : [...noGroups, ...esoGroups, ...ksoGroups]
     const externalType = groupList.find((x) => x.value === typeValue)
 
-    if (typeValue) return externalType
+    if (typeValue) {
+        return externalType
+    }
     if (isJobView) {
         const externalType = [...noGroups].find((x) => x.value === typeValue)
-        if (typeValue) return externalType
+        if (typeValue) {
+            return externalType
+        }
         return [
             {
                 label: '',
@@ -269,12 +273,19 @@ export function SecretOptions(props) {
 }
 
 export function GroupHeading(props) {
-    if (!props.data.label) return null
+    if (!props.data.label) {
+        return null
+    }
     return (
         <components.GroupHeading {...props}>
             <div className="flex flex-justify h-100">
                 {props.data.label}
-                <a className="flex" href="https://github.com/external-secrets/external-secrets" target="_blank">
+                <a
+                    className="flex"
+                    href="https://github.com/external-secrets/external-secrets"
+                    target="_blank"
+                    rel="noreferrer"
+                >
                     <InfoIcon className="icon-dim-20 fcn-6" />
                 </a>
             </div>
@@ -328,7 +339,7 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
             },
         })
         if (configMapSecretData.secretData) {
-            let json = configMapSecretData.secretData.map((s) => {
+            const json = configMapSecretData.secretData.map((s) => {
                 return {
                     fileName: s.key,
                     name: s.name,
@@ -374,7 +385,7 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
         })
     } else if (Array.isArray(json)) {
         json = json.map((j) => {
-            let temp = {}
+            const temp = {}
             temp['isBinary'] = j.isBinary
             if (j.key) {
                 temp['fileName'] = j.key
@@ -400,13 +411,15 @@ export function handleSecretDataYamlChange(
     isESO: boolean,
     dispatch: (action: ConfigMapAction) => void,
 ): void {
-    if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
+    if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) {
+        return
+    }
     dispatch({
         type: isESO ? ConfigMapActionTypes.setEsoYaml : ConfigMapActionTypes.setSecretDataYaml,
         payload: yaml,
     })
     try {
-        let json = YAML.parse(yaml)
+        const json = YAML.parse(yaml)
         if (!json || !Object.keys(json).length) {
             dispatch({
                 type: ConfigMapActionTypes.multipleOptions,
@@ -437,7 +450,7 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
     })
     jsonForSecretDataYaml = jsonForSecretDataYaml.map((j) => {
-        let temp = {}
+        const temp = {}
         temp['isBinary'] = j.isBinary
         if (j.key) {
             temp['key'] = j.key
@@ -450,7 +463,7 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         }
         return temp
     })
-    let tempEsoSecretData =
+    const tempEsoSecretData =
         (configMapSecretData?.esoSecretData?.esoData || []).length === 0 && configMapSecretData?.defaultESOSecretData
             ? configMapSecretData?.defaultESOSecretData
             : configMapSecretData?.esoSecretData
@@ -472,7 +485,7 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
         secretMode: false,
-        unAuthorized: configMapSecretData?.unAuthorized ?? (!!configMapSecretData?.name),
+        unAuthorized: configMapSecretData?.unAuthorized ?? !!configMapSecretData?.name,
     }
 }
 

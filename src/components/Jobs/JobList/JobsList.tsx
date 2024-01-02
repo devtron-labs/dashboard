@@ -332,7 +332,7 @@ export default function JobsList() {
         <div className="jobs-view-container">
             {dataStateType === JobListViewType.LOADING && (
                 <div className="w-100 h-100vh">
-                    <DevtronProgressing parentClasses="h-100 w-100 flex bcn-0" classes="icon-dim-80"/>
+                    <DevtronProgressing parentClasses="h-100 w-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
             )}
             {dataStateType === JobListViewType.ERROR && (

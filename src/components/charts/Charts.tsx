@@ -7,12 +7,12 @@ import '../app/details/appDetails/appDetails.scss'
 import './charts.scss'
 import { useRouteMatch } from 'react-router'
 
-export default function Charts({isSuperAdmin}: {isSuperAdmin: boolean}) {
+export default function Charts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     const { path } = useRouteMatch()
 
     return (
         <Switch>
-            <Route path={`${path}/discover`} render={() => <DiscoverCharts isSuperAdmin={isSuperAdmin}/>} />
+            <Route path={`${path}/discover`} render={() => <DiscoverCharts isSuperAdmin={isSuperAdmin} />} />
             <Redirect to={`${path}/discover`} />
         </Switch>
     )

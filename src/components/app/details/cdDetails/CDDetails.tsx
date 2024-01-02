@@ -39,7 +39,7 @@ import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { STAGE_TYPE } from '../triggerView/types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
-let statusSet = new Set(['starting', 'running', 'pending'])
+const statusSet = new Set(['starting', 'running', 'pending'])
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }) {
@@ -83,7 +83,9 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
 
     useEffect(() => {
         // check for more
-        if (loading || !deploymentHistoryResult) return
+        if (loading || !deploymentHistoryResult) {
+            return
+        }
         if (!deploymentHistoryResult?.result?.cdWorkflows?.length) {
             return
         }
@@ -97,10 +99,10 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             setHasMoreLoading(true)
         }
         let _triggerId = deploymentHistoryResult.result?.cdWorkflows?.[0]?.id
-        let queryString = new URLSearchParams(location.search)
-        let queryParam = queryString.get('type')
+        const queryString = new URLSearchParams(location.search)
+        const queryParam = queryString.get('type')
         if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
-            let deploymentStageType =
+            const deploymentStageType =
                 queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
             const requiredResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
                 return obj.stage === deploymentStageType
@@ -148,7 +150,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             }
             if (result[0]) {
                 const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
-                let _selectedEnvironment = (result[0]['value']?.result || [])
+                const _selectedEnvironment = (result[0]['value']?.result || [])
                     .filter((env) => {
                         return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
                     })
@@ -218,7 +220,9 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
     }, [result])
 
     async function pollHistory() {
-        if (!pipelineId || !envId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !envId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) {
+            return
+        }
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -252,8 +256,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                     triggerHistory.set(triggerId, { ...triggerDetail, appliedFilters, appliedFiltersTimestamp })
                     return new Map(triggerHistory)
                 })
-            }
-            else {
+            } else {
                 setTriggerHistory((triggerHistory) => {
                     triggerHistory.set(triggerId, triggerDetail)
                     return new Map(triggerHistory)
@@ -409,7 +412,9 @@ export const TriggerOutput: React.FC<{
     )
 
     useEffect(() => {
-        if (triggerDetailsLoading) return
+        if (triggerDetailsLoading) {
+            return
+        }
         let triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageComment: triggerDetails?.imageComment,
@@ -423,7 +428,9 @@ export const TriggerOutput: React.FC<{
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     useEffect(() => {
-        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) return
+        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) {
+            return
+        }
         const triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageReleaseTags: tagDetailsResult?.result?.imageReleaseTags,
@@ -436,8 +443,9 @@ export const TriggerOutput: React.FC<{
         if (
             !triggerDetails ||
             terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
-        )
-            return null // no interval
+        ) {
+            return null
+        } // no interval
         if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
             // 10s because progressing
             return 10000
@@ -451,8 +459,9 @@ export const TriggerOutput: React.FC<{
         (!areTagDetailsRequired && triggerDetailsLoading && !triggerDetails) ||
         !triggerId ||
         (areTagDetailsRequired && (tagDetailsLoading || triggerDetailsLoading) && !triggerDetails)
-    )
+    ) {
         return <Progressing pageLoader />
+    }
     if (triggerDetailsError?.code === 404) {
         return (
             <GenericEmptyState
@@ -461,9 +470,15 @@ export const TriggerOutput: React.FC<{
             />
         )
     }
-    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
-    if (triggerDetails?.id !== +triggerId) return null
+    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) {
+        return <Reload />
+    }
+    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) {
+        return <Reload />
+    }
+    if (triggerDetails?.id !== +triggerId) {
+        return null
+    }
 
     return (
         <>
@@ -607,7 +622,7 @@ const HistoryLogs: React.FC<{
     tagsEditable,
     hideImageTaggingHardDelete,
 }) => {
-    let { path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
         appId: string
         pipelineId: string

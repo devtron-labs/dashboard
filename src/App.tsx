@@ -12,12 +12,7 @@ import './css/base.scss'
 import './css/formulae.scss'
 import './css/forms.scss'
 import 'tippy.js/dist/tippy.css'
-import {
-    useOnline,
-    ToastBody,
-    ToastBody3 as UpdateToast,
-    ErrorBoundary,
-} from './components/common'
+import { useOnline, ToastBody, ToastBody3 as UpdateToast, ErrorBoundary } from './components/common'
 import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import * as serviceWorker from './serviceWorker'
 import Hotjar from './components/Hotjar/Hotjar'
@@ -40,7 +35,7 @@ toast.configure({
 export default function App() {
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
-    const [errorPage, setErrorPage] = useState<Boolean>(false)
+    const [errorPage, setErrorPage] = useState<boolean>(false)
     const isOnline = useOnline()
     const refreshing = useRef(false)
     const [bgUpdated, setBGUpdated] = useState(false)
@@ -115,7 +110,9 @@ export default function App() {
     }, [])
 
     async function update() {
-        if (!navigator.serviceWorker) return
+        if (!navigator.serviceWorker) {
+            return
+        }
         try {
             const reg = await navigator.serviceWorker.getRegistration()
             if (reg.waiting) {
@@ -137,12 +134,16 @@ export default function App() {
     }
 
     useEffect(() => {
-        if (!forceUpdateOnLocationChange) return
+        if (!forceUpdateOnLocationChange) {
+            return
+        }
         update()
     }, [location])
 
     useEffect(() => {
-        if (!navigator.serviceWorker) return
+        if (!navigator.serviceWorker) {
+            return
+        }
         function onUpdate(reg) {
             const updateToastBody = (
                 <UpdateToast
@@ -167,7 +168,9 @@ export default function App() {
         navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         serviceWorker.register({ onUpdate, onSuccess })
         navigator.serviceWorker.getRegistration().then((reg) => {
-            if (!reg) return
+            if (!reg) {
+                return
+            }
             setInterval(
                 (reg) => {
                     try {
@@ -188,7 +191,9 @@ export default function App() {
     }, [])
 
     useEffect(() => {
-        if (!bgUpdated) return
+        if (!bgUpdated) {
+            return
+        }
         const bgUpdatedToastBody = (
             <UpdateToast
                 onClick={(e) => window.location.reload()}
@@ -207,7 +212,7 @@ export default function App() {
         <Suspense fallback={null}>
             {validating ? (
                 <div className="full-height-width">
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
+                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
             ) : (
                 <>

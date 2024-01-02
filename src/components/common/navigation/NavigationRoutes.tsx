@@ -1,6 +1,13 @@
 import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { getLoginInfo, showError, Host, Reload, useAsync, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getLoginInfo,
+    showError,
+    Host,
+    Reload,
+    useAsync,
+    DevtronProgressing,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { ErrorBoundary, AppContext } from '../../common'
 import Navigation from './Navigation'
@@ -143,7 +150,9 @@ export default function NavigationRoutes() {
     useEffect(() => {
         const loginInfo = getLoginInfo()
 
-        if (!loginInfo) return
+        if (!loginInfo) {
+            return
+        }
 
         if (process.env.NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
@@ -152,8 +161,8 @@ export default function NavigationRoutes() {
                 })
             }
             if (window._env_.GA_ENABLED) {
-                let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
-                let path = location.pathname
+                const email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
+                const path = location.pathname
                 ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                     gaOptions: {
                         userId: `${email}`,
@@ -186,7 +195,9 @@ export default function NavigationRoutes() {
 
         if (typeof Storage !== 'undefined') {
             setActionWithExpiry('dashboardLoginTime', 0)
-            if (localStorage.isDashboardLoggedIn) return
+            if (localStorage.isDashboardLoggedIn) {
+                return
+            }
             dashboardLoggedIn()
                 .then((response) => {
                     if (response.result) {
@@ -296,7 +307,7 @@ export default function NavigationRoutes() {
     if (pageState === ViewType.LOADING || loginLoader) {
         return (
             <div className="full-height-width">
-                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
+                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
             </div>
         )
     } else if (pageState === ViewType.ERROR) {
@@ -511,7 +522,9 @@ export function RedirectUserWithSentry({ isFirstLoginUser }) {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
-        if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+        if (pathname && pathname !== '/') {
+            Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+        }
         if (window._env_.K8S_CLIENT) {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
@@ -527,7 +540,7 @@ export function RedirectToAppList() {
     const { replace } = useHistory()
     const { serverMode } = useContext(mainContext)
     useEffect(() => {
-        let baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
+        const baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
         if (serverMode == SERVER_MODE.FULL) {
             replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
         } else {

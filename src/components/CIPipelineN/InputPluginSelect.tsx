@@ -92,7 +92,7 @@ export const InputPluginSelection = ({
     }
 
     const onSelectValue = (e, tag): void => {
-        let _tagData = variableData
+        const _tagData = variableData
         const updatedTagData = {
             ...tag,
             label: e.currentTarget.dataset.key,
@@ -104,8 +104,8 @@ export const InputPluginSelection = ({
     }
 
     const trimLines = (value: string) => {
-        let trimmedLines = value.split('\n')
-        let nonEmptyLines = trimmedLines.filter((line) => {
+        const trimmedLines = value.split('\n')
+        const nonEmptyLines = trimmedLines.filter((line) => {
             return line.trim() !== ''
         })
         return nonEmptyLines.join('\n')
@@ -119,8 +119,8 @@ export const InputPluginSelection = ({
         ) {
             setHighlightedIndex(-1)
             setActiveElement('')
-            let _tagData = { ...variableData }
-            let trimmedValue = trimLines(selectedValue)
+            const _tagData = { ...variableData }
+            const trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
 
             setVariableData(_tagData)

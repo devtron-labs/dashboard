@@ -119,7 +119,7 @@ export default function ConfigMapList({
         }
         try {
             setConfigMap((cmList) => {
-                let configData = cmList.configData
+                const configData = cmList.configData
                 if (result === null) {
                     //delete
                     configData.splice(index, 1)
@@ -145,8 +145,9 @@ export default function ConfigMapList({
         } catch (err) {}
     }
 
-    if (parentState === ComponentStates.loading || !configMap || configMapLoading)
+    if (parentState === ComponentStates.loading || !configMap || configMapLoading) {
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    }
 
     return (
         <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>

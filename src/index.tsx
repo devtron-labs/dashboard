@@ -165,5 +165,6 @@ ReactDOM.render(
 )
 
 if (process.env.NODE_ENV === 'development') {
+    // prettier-ignore
     (module as any).hot.accept()
 }

@@ -293,7 +293,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                         className="flexbox dc__gap-8"
                                         href={codeSource.redirectionUrl}
                                         target="_blank"
-                                        rel="external no-referrer"
+                                        rel="external no-referrer noreferrer"
                                         key={`${codeSource.displayName}-${index}`}
                                     >
                                         {getGitProviderIcon(codeSource.redirectionUrl)}
@@ -517,7 +517,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         {activeTab === OVERVIEW_TABS.DEPENDENCIES && (
                             <button
                                 type="button"
-                                className={`cta flex h-28 dc__gap-4 ${isEditDependencyButtonDisabled ? 'disabled-opacity' : ''}`}
+                                className={`cta flex h-28 dc__gap-4 ${
+                                    isEditDependencyButtonDisabled ? 'disabled-opacity' : ''
+                                }`}
                                 onClick={isEditDependencyButtonDisabled ? noop : handleEditDependencyClick}
                             >
                                 <EditIcon className="mw-14 icon-dim-14 scn-0 dc__no-svg-fill" />

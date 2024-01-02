@@ -220,23 +220,30 @@ export function LatencySelect(props) {
 }
 
 export function getCalendarValue(startDateStr: string, endDateStr: string): string {
-    let str: string = `${startDateStr} - ${endDateStr}`
+    let str = `${startDateStr} - ${endDateStr}`
     if (endDateStr === 'now' && startDateStr.includes('now')) {
-        let range = DayPickerRangeControllerPresets.find((d) => d.endStr === startDateStr)
-        if (range) str = range.text
-        else str = `${startDateStr} - ${endDateStr}`
+        const range = DayPickerRangeControllerPresets.find((d) => d.endStr === startDateStr)
+        if (range) {
+            str = range.text
+        } else {
+            str = `${startDateStr} - ${endDateStr}`
+        }
     }
     return str
 }
 
 export function isK8sVersionValid(k8sVersion: string): boolean {
-    if (!k8sVersion) return false
+    if (!k8sVersion) {
+        return false
+    }
     try {
-        let versionNum = getVersionArr(k8sVersion)
-        let sum = versionNum.reduce((sum, item) => {
+        const versionNum = getVersionArr(k8sVersion)
+        const sum = versionNum.reduce((sum, item) => {
             return (sum += item)
         }, 0)
-        if (isNaN(sum)) return false
+        if (isNaN(sum)) {
+            return false
+        }
     } catch (error) {
         return false
     }
@@ -245,7 +252,7 @@ export function isK8sVersionValid(k8sVersion: string): boolean {
 
 export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
     //Comparing with v1.15.xxx
-    let target = [1, 15]
+    const target = [1, 15]
     return isVersionLessThanOrEqualToTarget(k8sVersion, target)
 }
 
@@ -266,7 +273,7 @@ export function getIframeSrc(
     statusCode?: StatusTypes,
     latency?: number,
 ): string {
-    let baseURL = getGrafanaBaseURL(chartName)
+    const baseURL = getGrafanaBaseURL(chartName)
     let grafanaURL = addChartNameExtensionToBaseURL(baseURL, appInfo.k8sVersion, chartName, statusCode)
     grafanaURL = addQueryParamToGrafanaURL(
         grafanaURL,
@@ -295,8 +302,12 @@ export function getGrafanaBaseURL(chartName: ChartTypes): string {
 }
 
 export function getPodNameSuffix(nodeName: string, isAppDeployment: boolean, nodesMap: any, kind: string): string {
-    if (Nodes.Pod !== kind || !isAppDeployment) return ''
-    if (!nodesMap.has(nodeName)) return ''
+    if (Nodes.Pod !== kind || !isAppDeployment) {
+        return ''
+    }
+    if (!nodesMap.has(nodeName)) {
+        return ''
+    }
     const pod = nodesMap.get(nodeName)
     return pod.isNew ? '(new)' : '(old)'
 }
@@ -328,7 +339,7 @@ export function getSelectedNodeItems(
         const result = nodeItems.filter((item) => item.label.includes('(old)'))
         selectedNodeItems = result
     } else {
-        let initialNode = {
+        const initialNode = {
             label: selectedNodes + getPodNameSuffix(selectedNodes, isAppDeployment, nodesMap, kind),
             value: selectedNodes,
         }
@@ -351,12 +362,16 @@ export function addChartNameExtensionToBaseURL(
         case 'ram':
             if (isK8sVersion115OrBelow(k8sVersion)) {
                 url += `memory-k8s15/memory-usage-k8s15`
-            } else url += `memory/memory-usage`
+            } else {
+                url += `memory/memory-usage`
+            }
             break
         case 'cpu':
             if (isK8sVersion115OrBelow(k8sVersion)) {
                 url += `cpu-k8s15/cpu-usage-k8s15`
-            } else url += `cpu/cpu-usage`
+            } else {
+                url += `cpu/cpu-usage`
+            }
             break
         case 'status':
             url += ``
@@ -380,8 +395,8 @@ export function addQueryParamToGrafanaURL(
     statusCode?: StatusTypes,
     latency?: number,
 ): string {
-    let startTime: string = calendarInputs.startDate
-    let endTime: string = calendarInputs.endDate
+    const startTime: string = calendarInputs.startDate
+    const endTime: string = calendarInputs.endDate
     url += `?orgId=${process.env.REACT_APP_GRAFANA_ORG_ID}`
     url += `&refresh=10s`
     url += `&var-app=${appId}`
@@ -472,7 +487,7 @@ export const processDeploymentStatusDetailsData = (
 
     const lastFetchedTime = handleUTCTime(data?.statusLastFetchedAt, true)
     const deploymentPhases = ['PreSync', 'Sync', 'PostSync', 'Skip', 'SyncFail']
-    let tableData: { currentPhase: string; currentTableData: { icon: string; phase?: string; message: string }[] } = {
+    const tableData: { currentPhase: string; currentTableData: { icon: string; phase?: string; message: string }[] } = {
         currentPhase: '',
         currentTableData: [{ icon: 'success', message: 'Started by Argo CD' }],
     }
@@ -527,7 +542,7 @@ export const processDeploymentStatusDetailsData = (
 
                 if (element?.resourceDetails) {
                     deploymentPhases.forEach((phase) => {
-                        for (let item of element.resourceDetails) {
+                        for (const item of element.resourceDetails) {
                             if (phase === item.resourcePhase) {
                                 tableData.currentPhase = phase
                                 // Seems else block was forgotten to add here, TODO: Sync for this later
@@ -638,8 +653,7 @@ export const processDeploymentStatusDetailsData = (
                     deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
                     deploymentData.deploymentStatusText = 'Failed'
                     deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.timelineStatus = element['statusDetail']
-                }
-                else {
+                } else {
                     deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
                     if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.FAILED) {
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
@@ -738,10 +752,10 @@ export const processDeploymentStatusDetailsData = (
                     if (deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time === '') {
                         deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'unreachable'
-    
+
                         deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'unreachable'
-    
+
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
 
@@ -759,22 +773,20 @@ export const processDeploymentStatusDetailsData = (
 
                             deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
                             deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
-                        }
-                        else if (deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon !== 'failed') {
+                        } else if (deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon !== 'failed') {
                             deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'Unknown'
                             deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
 
                             deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
                             deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
                         }
-                    }
-                    else {
+                    } else {
                         deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'unreachable'
-    
+
                         deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'unreachable'
-    
+
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
 
@@ -840,7 +852,9 @@ export const ValueContainerImage = (props) => {
 }
 
 export const validateMomentDate = (date: string, format: string): string => {
-    if (!date || date === ZERO_TIME_STRING) return '--'
+    if (!date || date === ZERO_TIME_STRING) {
+        return '--'
+    }
     return moment(date, format).fromNow()
 }
 

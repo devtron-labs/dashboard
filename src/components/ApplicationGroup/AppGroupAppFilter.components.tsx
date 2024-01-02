@@ -82,7 +82,6 @@ export const Option = (props): JSX.Element => {
     }
 
     const renderOptionIcon = (): JSX.Element => {
-        
         if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
             if (props.isSelected || props.isFocused) {
                 return (

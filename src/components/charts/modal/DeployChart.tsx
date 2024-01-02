@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
+import { Select, Page, DropdownIcon, useJsonYaml } from '../../common'
 import {
-    Select,
-    Page,
-    DropdownIcon,
-    useJsonYaml,
-} from '../../common'
-import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin, ResponseType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+    ServerErrors,
+    showError,
+    Progressing,
+    DeleteDialog,
+    ForceDeleteDialog,
+    sortCallback,
+    getTeamListMin,
+    ResponseType,
+    DeploymentAppTypes,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
@@ -123,13 +128,13 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const { push } = useHistory()
     const { chartId, envId } = useParams<{ chartId; envId }>()
     const [showCodeEditorError, setCodeEditorError] = useState(false)
-    const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false);
-    const [clusterName, setClusterName] = useState<string>('');
+    const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
+    const [clusterName, setClusterName] = useState<string>('')
     const deployChartForm = useRef(null)
     const deployChartEditor = useRef(null)
 
     const fetchProjects = async () => {
-        let { result } = await getTeamListMin()
+        const { result } = await getTeamListMin()
         let projectList = result.map((p) => {
             return { value: p.id, label: p.name }
         })
@@ -139,7 +144,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
     const fetchEnvironments = async () => {
         if (serverMode == SERVER_MODE.FULL) {
-            let response = await getEnvironmentListMin()
+            const response = await getEnvironmentListMin()
             let envList = response.result ? response.result : []
             envList = envList.map((env) => {
                 return { value: env.id, label: env.environment_name, active: env.active }
@@ -148,7 +153,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             setEnvironments(envList)
         } else {
             // for hyperion
-            let response = await getEnvironmentListHelmApps()
+            const response = await getEnvironmentListHelmApps()
             const envList = (response.result ? response.result : [])?.map((cluster) => ({
                 label: cluster.clusterName,
                 options: [
@@ -207,7 +212,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         try {
             setLoading(true)
             if (installedAppVersion) {
-                let payload = {
+                const payload = {
                     // if chart has changed send 0
                     id: hasChartChanged() ? 0 : installedAppVersion,
                     referenceValueId: chartValues.id,
@@ -222,8 +227,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 setLoading(false)
                 onHide(true)
             } else {
-                let payload = {
-                    teamId: selectedProject.value ,
+                const payload = {
+                    teamId: selectedProject.value,
                     referenceValueId: chartValues.id,
                     referenceValueKind: chartValues.kind,
                     environmentId: serverMode == SERVER_MODE.FULL ? selectedEnvironment.value : 0,
@@ -275,15 +280,17 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }, [])
 
     useEffect(() => {
-        let cv = versions.get(selectedVersion)
+        const cv = versions.get(selectedVersion)
         if (chartValues && cv && cv.version !== chartValues.chartVersion) {
             setCodeEditorError(true)
-        } else setCodeEditorError(false)
+        } else {
+            setCodeEditorError(false)
+        }
     }, [selectedVersion])
 
     useEffect(() => {
         if (chartIdFromDeploymentDetail) {
-            if (chartIdFromDeploymentDetail)
+            if (chartIdFromDeploymentDetail) {
                 getChartValuesCategorizedListParsed(chartIdFromDeploymentDetail)
                     .then((response) => {
                         setChartValuesList(response.result)
@@ -291,19 +298,20 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     .catch((error) => {
                         showError(error)
                     })
+            }
         }
     }, [chartIdFromDeploymentDetail])
 
     useEffect(() => {
         if (environmentId && environments.length) {
-            let environment = environments.find((e) => e.value.toString() === environmentId.toString())
+            const environment = environments.find((e) => e.value.toString() === environmentId.toString())
             selectEnvironment(environment)
         }
     }, [environmentId, environments])
 
     useEffect(() => {
         if (teamId && projects.length) {
-            let project = projects.find((e) => e.value.toString() === teamId.toString())
+            const project = projects.find((e) => e.value.toString() === teamId.toString())
             selectProject(project)
         }
     }, [teamId, projects])
@@ -312,12 +320,14 @@ const DeployChart: React.FC<DeployChartProps> = ({
         if (chartValues.id && chartValues.chartVersion) {
             getChartValues(chartValues.id, chartValues.kind)
                 .then((response) => {
-                    let values = response.result.values || ''
+                    const values = response.result.values || ''
                     setTextRef(values)
-                    let cv = versions.get(selectedVersion)
+                    const cv = versions.get(selectedVersion)
                     if (chartValues && cv && cv.version !== chartValues.chartVersion) {
                         setCodeEditorError(true)
-                    } else setCodeEditorError(false)
+                    } else {
+                        setCodeEditorError(false)
+                    }
                 })
                 .catch((error) => {
                     showError(error)
@@ -355,14 +365,17 @@ const DeployChart: React.FC<DeployChartProps> = ({
     async function handleDelete(deleteAction: DELETE_ACTION) {
         setDeleting(true)
         try {
-            let response: ResponseType = await deleteInstalledChart(Number(installedAppId), false, deleteAction)
+            const response: ResponseType = await deleteInstalledChart(Number(installedAppId), false, deleteAction)
             if (response.result.deleteResponse?.deleteInitiated) {
                 toast.success('Successfully deleted.')
                 toggleConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 setForceDeleteDialog(false)
                 push(URLS.CHARTS)
-            } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+            } else if (
+                deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
+                !response.result.deleteResponse?.clusterReachable
+            ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
                 toggleConfirmation(false)
                 showNonCascadeDeleteDialog(true)
@@ -382,8 +395,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
     }
 
     async function redirectToChartValues() {
-        let id = chartId || chartIdFromDeploymentDetail
-        let url = getChartValuesURL(id)
+        const id = chartId || chartIdFromDeploymentDetail
+        const url = getChartValuesURL(id)
         push(url)
     }
 
@@ -471,8 +484,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
         getChartValuesList(event.chartId, installedAppVersionId)
     }
 
-    let isUpdate = environmentId && teamId
-    let isDisabled = isUpdate
+    const isUpdate = environmentId && teamId
+    const isDisabled = isUpdate
         ? false
         : !(
               selectedEnvironment &&
@@ -480,7 +493,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
               selectedVersion &&
               appName?.length
           )
-    let chartVersionObj = versions.get(selectedVersion)
+    const chartVersionObj = versions.get(selectedVersion)
     // fetch chart versions for update route
     useEffect(() => {
         if (isUpdate !== null) {
@@ -491,14 +504,18 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const onClickHideNonCascadeDeletePopup = () => {
         showNonCascadeDeleteDialog(false)
     }
-    
+
     const onClickNonCascadeDelete = async () => {
         showNonCascadeDeleteDialog(false)
         await handleDelete(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
-    const handleForceDelete = () => {handleDelete(DELETE_ACTION.FORCE_DELETE)}
-    const handleCascadeDelete = () => {handleDelete(DELETE_ACTION.DELETE)}
+    const handleForceDelete = () => {
+        handleDelete(DELETE_ACTION.FORCE_DELETE)
+    }
+    const handleCascadeDelete = () => {
+        handleDelete(DELETE_ACTION.DELETE)
+    }
 
     return (
         <>

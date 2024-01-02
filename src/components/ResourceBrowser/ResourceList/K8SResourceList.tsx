@@ -1,11 +1,11 @@
-import React, {  useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { highlightSearchedText } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
-  ALL_NAMESPACE_OPTION,
+    ALL_NAMESPACE_OPTION,
     K8S_EMPTY_GROUP,
     K8S_RESOURCE_LIST,
     RESOURCE_EMPTY_PAGE_STATE,
@@ -70,7 +70,7 @@ export function K8SResourceList({
              */
             const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 200
             const windowWidth = window.innerWidth
-            let clientWidth = 0
+            const clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [resourceList?.headers])
@@ -209,7 +209,9 @@ export function K8SResourceList({
                                         className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                         data-name={resourceData[columnName]}
                                         onClick={handleNodeClick}
-                                    >{children}</a>
+                                    >
+                                        {children}
+                                    </a>
                                 )}
                             >
                                 <span

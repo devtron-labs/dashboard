@@ -61,13 +61,13 @@ export const handleAction = async (
     updateActionTrigger: (isActionTriggered: boolean) => void,
     history: RouteComponentProps['history'],
     location: RouteComponentProps['location'],
-    moduleType?:string
+    moduleType?: string,
 ) => {
     try {
         const actionRequest: ModuleActionRequest = {
             action: isUpgradeView ? ModuleActions.UPGRADE : ModuleActions.INSTALL,
             version: upgradeVersion,
-            moduleType: moduleType
+            moduleType: moduleType,
         }
 
         const { result } = isUpgradeView
@@ -93,7 +93,9 @@ export const handleEnableAction = async (
 ) => {
     try {
         const toolVersion =
-            moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : (window._env_.CLAIR_TOOL_VERSION|| CLAIR_TOOL_VERSION_V4)
+            moduleName === ModuleNameMap.SECURITY_TRIVY
+                ? TRIVY_TOOL_VERSION
+                : window._env_.CLAIR_TOOL_VERSION || CLAIR_TOOL_VERSION_V4
         const { result } = await executeModuleEnableAction(moduleName, toolVersion)
         if (result?.success) {
             setSuccessState(true)
@@ -114,13 +116,15 @@ const getVersionLevels = (version: string): number[] => {
 }
 
 export const isLatestVersionAvailable = (currentVersion: string, newVersion: string): boolean => {
-    if (!currentVersion || !newVersion) return false
+    if (!currentVersion || !newVersion) {
+        return false
+    }
 
     const currentVersionLevels = getVersionLevels(currentVersion)
     const newVersionLevels = getVersionLevels(newVersion)
     const minLevels = currentVersionLevels.length > newVersionLevels.length ? newVersionLevels : currentVersionLevels
 
-    for (let [idx, level] of minLevels.entries()) {
+    for (const [idx, level] of minLevels.entries()) {
         if (level === newVersionLevels[idx]) {
             continue
         } else if (level > newVersionLevels[idx]) {
@@ -193,8 +197,8 @@ export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResour
 }
 
 export const AppStatusClass = {
-  [ModuleStatus.INSTALLING]: 'progressing',
-  [ModuleStatus.TIMEOUT]: 'degraded',
-  [ModuleStatus.INSTALL_FAILED]: 'degraded',
-  [ModuleStatus.INSTALLED]: 'healthy'
+    [ModuleStatus.INSTALLING]: 'progressing',
+    [ModuleStatus.TIMEOUT]: 'degraded',
+    [ModuleStatus.INSTALL_FAILED]: 'degraded',
+    [ModuleStatus.INSTALLED]: 'healthy',
 }

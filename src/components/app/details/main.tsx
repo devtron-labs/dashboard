@@ -141,8 +141,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         } catch (err) {
             if (err['code'] === 403) {
                 setErrorStatusCode(403)
-            }
-            else {
+            } else {
                 showError(err)
             }
         }
@@ -170,7 +169,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 setShowDeleteGroup(true)
             }
         } catch (err) {
-            let _map = new Map<string, boolean>()
+            const _map = new Map<string, boolean>()
             if (err['code'] === 403) {
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
@@ -180,7 +179,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         if (!_map.get(element)) {
                             _map.set(element, true)
                         }
-                        for (let idx in selectedAppList) {
+                        for (const idx in selectedAppList) {
                             if (element === selectedAppList[idx].label) {
                                 unauthorizedCount++
                             }
@@ -204,7 +203,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             } else {
                 setShowCreateGroup(true)
                 setShowDeleteGroup(false)
-                if (_delete) setIsPopupBox(true)
+                if (_delete) {
+                    setIsPopupBox(true)
+                }
             }
             showError(err)
         }
@@ -234,10 +235,10 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
         const _allAppLists: number[] = []
-        for (let app of _allAppList) {
+        for (const app of _allAppList) {
             _allAppLists.push(+app.id)
         }
-        let _permissionData = {
+        const _permissionData = {
             id: +appId,
             resourceIds: _allAppLists,
             parentResourceId: +appId,

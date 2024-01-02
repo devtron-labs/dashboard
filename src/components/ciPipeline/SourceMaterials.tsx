@@ -21,7 +21,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
     const location = useLocation()
     const islinkedCI = location.pathname.includes('linked-ci')
     let _materials = props.materials
-    let _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
+    const _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
 
     if (isMultiGit && _webhookTypeMaterial) {
         _materials = []
@@ -128,7 +128,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 : i.value === mat.type,
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
-                let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
+                const errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
                 const isMultiGitAndWebhook = isMultiGit && _selectedWebhookEvent
                 return (
                     <div key={`source-material-${index}`}>
@@ -226,7 +226,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }
                                         />
                                         {/* Note: In case Error is not shown added height*/}
-                                         {errorObj?.isValid && <div className="h-24"></div>} 
+                                        {errorObj?.isValid && <div className="h-24"></div>}
                                     </div>
                                 )}
 
@@ -248,11 +248,12 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 )
                                             }}
                                             error={
-                                                errorObj && !errorObj.isValid
-                                                    && props.validationRules?.sourceValue(_materials[index].regex).message
+                                                errorObj &&
+                                                !errorObj.isValid &&
+                                                props.validationRules?.sourceValue(_materials[index].regex).message
                                             }
                                         />
-                                          {/* Note: In case Error is not shown */}
+                                        {/* Note: In case Error is not shown */}
                                         {errorObj?.isValid && <div className="h-24"></div>}
                                     </div>
                                 )}

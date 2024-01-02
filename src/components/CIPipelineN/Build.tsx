@@ -19,12 +19,7 @@ export function Build({
     isJobView,
     getPluginData,
 }: BuildType) {
-    const {
-        formData,
-        setFormData,
-        formDataErrorObj,
-        setFormDataErrorObj,
-    } = useContext(pipelineContext)
+    const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
         const _formData = { ...formData }
@@ -51,14 +46,13 @@ export function Build({
     }
 
     const handleOnBlur = (event): void => {
-      getPluginData()
+        getPluginData()
     }
-
 
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
         const _formData = { ...formData }
-        let isPrevWebhook =
+        const isPrevWebhook =
             _formData.ciPipelineSourceTypeOptions.find((sto) => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
 
         const allMaterials = _formData.materials.map((mat) => {
@@ -258,9 +252,7 @@ export function Build({
             {!isJobView && isAdvanced && (
                 <>
                     {isSecurityModuleInstalled && renderScanner()}
-                    <AdvancedConfigOptions
-                        ciPipeline={ciPipeline}
-                    />
+                    <AdvancedConfigOptions ciPipeline={ciPipeline} />
                 </>
             )}
         </div>

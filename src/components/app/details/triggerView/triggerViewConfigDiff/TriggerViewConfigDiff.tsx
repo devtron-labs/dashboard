@@ -55,7 +55,9 @@ export default function TriggerViewConfigDiff({
     }, [selectedConfigToDeploy])
 
     useEffect(() => {
-        if (Object.keys(currentData).length === 0) return
+        if (Object.keys(currentData).length === 0) {
+            return
+        }
         const { rhsData, lhsData } = currentData
         const editorValuesRHS = convertVariables ? rhsData?.resolvedValue : rhsData?.value
         const editorValuesLHS = convertVariables ? lhsData?.resolvedValue : lhsData?.value

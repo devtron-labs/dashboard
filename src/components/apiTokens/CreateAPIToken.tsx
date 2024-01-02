@@ -27,7 +27,15 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import { ServerErrors, showError, RadioGroup, RadioGroupItem, TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerErrors,
+    showError,
+    RadioGroup,
+    RadioGroupItem,
+    TippyCustomized,
+    TippyTheme,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { API_COMPONENTS } from '../../config/constantMessaging'
 
@@ -42,14 +50,13 @@ export const renderQuestionwithTippy = () => {
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
             showCloseButton={true}
             trigger="click"
-            interactive = {true}
+            interactive={true}
             documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
             documentationLinkText="View Documentation"
         >
             <div className="icon-dim-20 fcn-9 ml-8 cursor">
                 <Question />
             </div>
-
         </TippyCustomized>
     )
 }

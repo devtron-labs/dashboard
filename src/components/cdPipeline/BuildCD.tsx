@@ -50,7 +50,7 @@ export default function BuildCD({
     parentPipelineId,
     isWebhookCD,
     dockerRegistries,
-    envIds
+    envIds,
 }) {
     const {
         formData,
@@ -66,7 +66,7 @@ export default function BuildCD({
         setIsEnvUsedState,
         savedCustomTagPattern,
         selectedCDStageTypeValue,
-        setSelectedCDStageTypeValue
+        setSelectedCDStageTypeValue,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     let { cdPipelineId } = useParams<{
@@ -152,7 +152,7 @@ export default function BuildCD({
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
         } else {
-            let list = _form.environments.map((item) => {
+            const list = _form.environments.map((item) => {
                 return {
                     ...item,
                     active: false,
@@ -216,7 +216,9 @@ export default function BuildCD({
                     </div>
                 </div>
             )
-        } else return null
+        } else {
+            return null
+        }
     }
 
     const renderTriggerType = () => {
@@ -243,8 +245,8 @@ export default function BuildCD({
     }
 
     const setRepositoryName = (event): void => {
-        const form = {...formData}
-        const formDataError = {...formDataErrorObj}
+        const form = { ...formData }
+        const formDataError = { ...formDataErrorObj }
         formDataError.repositoryError = validationRules.repository(event.target.value)
         form.repoName = event.target.value
         setFormData(form)
@@ -252,18 +254,19 @@ export default function BuildCD({
     }
 
     const handleRegistryChange = (selectedRegistry): void => {
-        const form = {...formData}
-        const formDataError = {...formDataErrorObj}
-        formDataError.containerRegistryError = validationRules.containerRegistry(selectedRegistry.id || formData.containerRegistryName)
+        const form = { ...formData }
+        const formDataError = { ...formDataErrorObj }
+        formDataError.containerRegistryError = validationRules.containerRegistry(
+            selectedRegistry.id || formData.containerRegistryName,
+        )
         form.selectedRegistry = selectedRegistry
         form.containerRegistryName = selectedRegistry.id
         setFormData(form)
         setFormDataErrorObj(formDataError)
-
     }
 
-    const  onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
-        const form = {...formData}
+    const onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
+        const form = { ...formData }
         form.generatedHelmPushAction = selectedGeneratedHelmValue
         setFormData(form)
     }
@@ -271,11 +274,14 @@ export default function BuildCD({
     const selectStrategy = (e): void => {
         const value = e.target.value
         const _form = { ...formData }
-        let selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
-        let strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
+        const selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
+        const strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
 
-        if (_form.savedStrategies.length == 0) selection.default = true
-        else selection.default = false
+        if (_form.savedStrategies.length == 0) {
+            selection.default = true
+        } else {
+            selection.default = false
+        }
 
         selection['defaultConfig'] = allStrategies.current[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(allStrategies.current[selection.deploymentTemplate], null, 4)
@@ -290,9 +296,9 @@ export default function BuildCD({
     }
 
     const renderEnvNamespaceAndTriggerType = () => {
-        let envId = formData.environmentId
-        let selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
-        let namespaceEditable = false
+        const envId = formData.environmentId
+        const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
+        const namespaceEditable = false
         const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
         const groupHeading = (props) => {
@@ -412,13 +418,13 @@ export default function BuildCD({
     const setDefaultStrategy = (selection: string): void => {
         const _form = { ...formData }
 
-        let strategies = _form.strategies.map((strategy) => {
+        const strategies = _form.strategies.map((strategy) => {
             return {
                 ...strategy,
                 default: strategy.deploymentTemplate == selection,
             }
         })
-        let savedStrategies = _form.savedStrategies.map((strategy) => {
+        const savedStrategies = _form.savedStrategies.map((strategy) => {
             return {
                 ...strategy,
                 default: strategy.deploymentTemplate == selection,
@@ -431,14 +437,14 @@ export default function BuildCD({
 
     const deleteStrategy = (selection: string): void => {
         const _form = { ...formData }
-        let removedStrategy = _form.savedStrategies.find(
+        const removedStrategy = _form.savedStrategies.find(
             (savedStrategy) => selection === savedStrategy.deploymentTemplate,
         )
         if (removedStrategy.default) {
             toast.error('Cannot remove default strategy')
             return
         }
-        let savedStrategies = _form.savedStrategies.filter(
+        const savedStrategies = _form.savedStrategies.filter(
             (savedStrategy) => selection !== savedStrategy.deploymentTemplate,
         )
         _form.strategies.push(removedStrategy)
@@ -448,7 +454,7 @@ export default function BuildCD({
 
     const toggleStrategy = (selection: string): void => {
         const _form = { ...formData }
-        let savedStrategies = _form.savedStrategies.map((strategy) => {
+        const savedStrategies = _form.savedStrategies.map((strategy) => {
             return {
                 ...strategy,
                 isCollapsed: strategy.deploymentTemplate === selection ? !strategy.isCollapsed : strategy.isCollapsed,
@@ -475,11 +481,17 @@ export default function BuildCD({
             } catch (error) {}
         }
         const _form = { ...formData }
-        let strategies = _form.savedStrategies.map((strategy) => {
+        const strategies = _form.savedStrategies.map((strategy) => {
             if (strategy.deploymentTemplate === selection) {
-                if (json) strategy['config'] = json
-                if (jsonStr) strategy['jsonStr'] = jsonStr
-                if (yamlStr) strategy['yamlStr'] = yamlStr
+                if (json) {
+                    strategy['config'] = json
+                }
+                if (jsonStr) {
+                    strategy['jsonStr'] = jsonStr
+                }
+                if (yamlStr) {
+                    strategy['yamlStr'] = yamlStr
+                }
             }
             return strategy
         })
@@ -534,10 +546,10 @@ export default function BuildCD({
     }
 
     const renderBasicDeploymentStartegy = () => {
-        let strategyMenu = Object.keys(allStrategies.current).map((option) => {
+        const strategyMenu = Object.keys(allStrategies.current).map((option) => {
             return { label: option, value: option }
         })
-        let strategy = formData.savedStrategies[0]
+        const strategy = formData.savedStrategies[0]
             ? {
                   label: formData.savedStrategies[0]?.deploymentTemplate,
                   value: formData.savedStrategies[0]?.deploymentTemplate,

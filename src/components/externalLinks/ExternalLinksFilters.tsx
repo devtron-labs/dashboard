@@ -322,7 +322,7 @@ export const AppliedFilterChips = ({
     url,
 }: AppliedFilterChipsType): JSX.Element => {
     const removeFilter = (type: string, filter: IdentifierOptionType): void => {
-        let ids = []
+        const ids = []
         if (type === 'App') {
             const filteredApps = []
             for (const _app of appliedApps) {

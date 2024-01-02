@@ -163,7 +163,9 @@ function LogsComponent({
                         setNoPrevContainer(log.toString())
                     }
                 }
-            } else setNoPrevContainer('')
+            } else {
+                setNoPrevContainer('')
+            }
         })
         if (event.data.readyState) {
             setReadyState(event.data.readyState)

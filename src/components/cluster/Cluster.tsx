@@ -78,7 +78,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     initialise() {
-        if (this.timerRef) clearInterval(this.timerRef)
+        if (this.timerRef) {
+            clearInterval(this.timerRef)
+        }
         Promise.all([
             getClusterList(),
             this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
@@ -86,7 +88,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 : getEnvironmentList(),
         ])
             .then(([clusterRes, envResponse]) => {
-                let environments = envResponse.result || []
+                const environments = envResponse.result || []
                 const clusterEnvMap = environments.reduce((agg, curr, idx) => {
                     agg[curr.cluster_id] = agg[curr.cluster_id] || []
                     agg[curr.cluster_id].push(curr)
@@ -107,7 +109,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         view: ViewType.FORM,
                     },
                     () => {
-                        let cluster = this.state.clusters.find(
+                        const cluster = this.state.clusters.find(
                             (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
                         )
                         if (cluster) {
@@ -129,11 +131,11 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             const { result } = await getClusterList()
             let clusters = result
                 ? result.map((c) => {
-                    return {
-                        ...c,
-                        environments: this.state.clusterEnvMap[c.id],
-                    }
-                })
+                      return {
+                          ...c,
+                          environments: this.state.clusterEnvMap[c.id],
+                      }
+                  })
                 : []
             clusters = clusters.concat({
                 id: null,
@@ -144,7 +146,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     user: '',
                     password: '',
                     authKey: '',
-                    sshServerAddress: ''
+                    sshServerAddress: '',
                 },
                 active: true,
                 config: {},
@@ -154,11 +156,13 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
             this.setState({ clusters: clusters })
-            let cluster = this.state.clusters.find(
+            const cluster = this.state.clusters.find(
                 (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
             )
-            if (!cluster) clearInterval(this.timerRef)
-        } catch (error) { }
+            if (!cluster) {
+                clearInterval(this.timerRef)
+            }
+        } catch (error) {}
     }
 
     componentWillUnmount() {
@@ -193,7 +197,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ browseFile: !this.state.browseFile })
     }
 
-
     render() {
         if (!this.props.isSuperAdmin) {
             return (
@@ -201,11 +204,16 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     <ErrorScreenNotAuthorized />
                 </div>
             )
-        } else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
-        else {
+        } else if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        } else if (this.state.view === ViewType.ERROR) {
+            return <Reload className="dc__align-reload-center" />
+        }
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        } else if (this.state.view === ViewType.ERROR) {
+            return <Reload className="dc__align-reload-center" />
+        } else {
             const moduleBasedTitle =
                 'Clusters' +
                 (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments')
@@ -234,7 +242,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         <a
                             className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
-                            rel="noopener noreferer"
+                            rel="noopener noreferer noreferrer"
                             target="_blank"
                         >
                             Learn more
@@ -254,7 +262,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                     setTlsConnectionFalse={this.setTlsConnectionFalse}
                                     isTlsConnection={this.state.isTlsConnection}
                                     prometheus_url={cluster.prometheus_url}
-
                                 />
                             ),
                     )}
@@ -266,7 +273,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 server_url={this.state.server_url}
                                 active={true}
                                 config={{}}
-                                toggleEditMode={() => { }}
+                                toggleEditMode={() => {}}
                                 reload={this.initialise}
                                 prometheus_url=""
                                 prometheusAuth={this.state.prometheus}
@@ -317,7 +324,7 @@ function Cluster({
     toggleShowAddCluster,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
-    isVirtualCluster
+    isVirtualCluster,
 }) {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
@@ -332,7 +339,7 @@ function Cluster({
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
-    let authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+    const authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const editLabelRef = useRef(null)
     const drawerRef = useRef(null)
@@ -386,7 +393,10 @@ function Cluster({
             },
             sshTunnelUser: {
                 required: false,
-                validator: { error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -', regex: /^[A-Za-z0-9_-]+$/ },
+                validator: {
+                    error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -',
+                    regex: /^[A-Za-z0-9_-]+$/,
+                },
             },
             sshTunnelPassword: {
                 required: false,
@@ -443,9 +453,9 @@ function Cluster({
                 isDefaultCluster() || id
                     ? {}
                     : {
-                        required: true,
-                        validator: { error: 'token is required', regex: /[^]+/ },
-                    },
+                          required: true,
+                          validator: { error: 'token is required', regex: /[^]+/ },
+                      },
             endpoint: {
                 required: prometheusToggleEnabled ? true : false,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
@@ -476,9 +486,11 @@ function Cluster({
 
     async function callRetryClusterInstall() {
         try {
-            let payload = {}
+            const payload = {}
             const { result } = await retryClusterInstall(clusterId, payload)
-            if (result) toast.success('Successfully triggered')
+            if (result) {
+                toast.success('Successfully triggered')
+            }
             reload()
         } catch (error) {
             showError(error)
@@ -488,7 +500,9 @@ function Cluster({
     async function clusterInstallStatusOnclick(e) {
         if (agentInstallationStage === 3) {
             callRetryClusterInstall()
-        } else toggleClusterComponentModal(!showClusterComponentModal)
+        } else {
+            toggleClusterComponentModal(!showClusterComponentModal)
+        }
     }
 
     const hideClusterDrawer = (e) => {
@@ -509,7 +523,7 @@ function Cluster({
     }
 
     async function onValidation() {
-        let payload = getClusterPayload()
+        const payload = getClusterPayload()
         const urlValue = state.url.value?.trim() ?? ''
         if (urlValue.endsWith('/')) {
             payload['server_url'] = urlValue.slice(0, -1)
@@ -527,7 +541,7 @@ function Cluster({
         payload.sshTunnelConfig['authKey'] = state.sshTunnelPrivateKey?.value
         payload.sshTunnelConfig['sshServerAddress'] = state.sshTunnelUrl?.value
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
-            let isValid = state.userName?.value && state.password?.value
+            const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
                 toast.error('Please add both username and password')
                 return
@@ -578,7 +592,7 @@ function Cluster({
         }
     }, [outsideClickHandler])
 
-    let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
+    const envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
     const renderNoEnvironmentTab = () => {
         return (
@@ -650,8 +664,9 @@ function Cluster({
     return (
         <>
             <article
-                className={`cluster-list ${clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
-                    }`}
+                className={`cluster-list ${
+                    clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
+                }`}
             >
                 <>
                     <List className="dc__border" key={clusterId} onClick={editModeToggle}>
@@ -662,7 +677,11 @@ function Cluster({
                         )}
                         <div className="flex left">
                             {clusterId ? clusterIcon() : null}
-                            <List.Title title={cluster_name || 'Add cluster'} subtitle={subTitle} className="fw-6 dc__mxw-400 dc__truncate-text" />
+                            <List.Title
+                                title={cluster_name || 'Add cluster'}
+                                subtitle={subTitle}
+                                className="fw-6 dc__mxw-400 dc__truncate-text"
+                            />
                             {clusterId && (
                                 <div className="flex dc__align-right">
                                     <div
@@ -687,13 +706,16 @@ function Cluster({
                             </Tippy>
                         )}
                     </List>
-                    {!isVirtualCluster && serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId && (
-                        <ClusterInstallStatus
-                            agentInstallationStage={agentInstallationStage}
-                            envName={envName}
-                            onClick={clusterInstallStatusOnclick}
-                        />
-                    )}
+                    {!isVirtualCluster &&
+                        serverMode !== SERVER_MODE.EA_ONLY &&
+                        !window._env_.K8S_CLIENT &&
+                        clusterId && (
+                            <ClusterInstallStatus
+                                agentInstallationStage={agentInstallationStage}
+                                envName={envName}
+                                onClick={clusterInstallStatusOnclick}
+                            />
+                        )}
                     {showClusterComponentModal && (
                         <ClusterComponentModal
                             agentInstallationStage={agentInstallationStage}
@@ -707,9 +729,9 @@ function Cluster({
                         />
                     )}
                     {serverMode !== SERVER_MODE.EA_ONLY &&
-                        !window._env_.K8S_CLIENT &&
-                        Array.isArray(newEnvs) &&
-                        newEnvs.length > 1 ? (
+                    !window._env_.K8S_CLIENT &&
+                    Array.isArray(newEnvs) &&
+                    newEnvs.length > 1 ? (
                         <div className="pb-8">
                             <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                                 <div></div>
@@ -827,12 +849,12 @@ function Cluster({
                                 config={{}}
                                 reload={reload}
                                 prometheus_url={prometheus_url}
-                                prometheusAuth={prometheusAuth} 
+                                prometheusAuth={prometheusAuth}
                                 defaultClusterComponent={state.defaultClusterComponent}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={proxyUrl}
-                                sshTunnelUser={sshTunnelConfig?.user} 
+                                sshTunnelUser={sshTunnelConfig?.user}
                                 sshTunnelPassword={sshTunnelConfig?.password}
                                 sshTunnelPrivateKey={sshTunnelConfig?.authKey}
                                 sshTunnelUrl={sshTunnelConfig?.sshServerAddress}

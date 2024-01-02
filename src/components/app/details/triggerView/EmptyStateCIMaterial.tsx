@@ -93,7 +93,15 @@ export default function EmptyStateCIMaterial({
                 img: NoEligibleCommit,
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitSubtitle,
-                link: <span data-testid="show-excluded-commits-button" className="dc__link dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
+                link: (
+                    <span
+                        data-testid="show-excluded-commits-button"
+                        className="dc__link dc__underline dc__block cursor"
+                        onClick={toggleExclude}
+                    >
+                        {CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}
+                    </span>
+                ),
                 cta: null,
             }
         } else if (!anyCommit) {
@@ -128,20 +136,20 @@ export default function EmptyStateCIMaterial({
     }
 
     const { title, subtitle, img, cta, link } = getData()
-    return isMaterialLoading ? ( 
-            <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
+    return isMaterialLoading ? (
+        <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
     ) : (
-            <GenericEmptyState
-                image={img}
-                title={title}
-                subTitle={
-                    <>
-                        {subtitle}
-                        {link}
-                    </>
-                }
-                isButtonAvailable={isWebHook}
-                renderButton={handleMaterialLoadingButton}
-            />
+        <GenericEmptyState
+            image={img}
+            title={title}
+            subTitle={
+                <>
+                    {subtitle}
+                    {link}
+                </>
+            }
+            isButtonAvailable={isWebHook}
+            renderButton={handleMaterialLoadingButton}
+        />
     )
 }

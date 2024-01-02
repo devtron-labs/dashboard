@@ -23,9 +23,8 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
     name,
     setChartDetailsUpdate,
 }) => {
-
     const removeAllCharts = (): void => {
-        removeChart(0,true)
+        removeChart(0, true)
     }
 
     const updateChartDetails = (): void => {
@@ -129,7 +128,7 @@ interface SelectedChartWidget {
     getChartVersionsAndValues?: (...args) => Promise<void>
     selected: boolean
     hideDeployedValues?: boolean
-    index?:number
+    index?: number
 }
 
 const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
@@ -191,7 +190,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
         }
     }
 
-    let availableChartValuesCopy = JSON.parse(JSON.stringify(chart.availableChartValues || []))
+    const availableChartValuesCopy = JSON.parse(JSON.stringify(chart.availableChartValues || []))
     let chartValuesDropDown = availableChartValuesCopy.map((chartValuesObj) => {
         if (chartValuesObj.kind === 'DEFAULT') {
             chartValuesObj.values = chartValuesObj.values.filter((e) => e.id === chart.appStoreApplicationVersionId)
@@ -217,7 +216,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
     //appStoreValuesVersionId does not exist in case of default chart Value
     //availableChartValues Async Call
     if (appStoreValuesVersionId && availableChartValues.length) {
-        let chartValuesArr = availableChartValues.find(({ kind: k }) => kind === k)
+        const chartValuesArr = availableChartValues.find(({ kind: k }) => kind === k)
         selectedChartValue = chartValuesArr?.values.find(({ id }) => id === appStoreValuesVersionId)
     }
 

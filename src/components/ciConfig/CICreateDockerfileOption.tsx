@@ -4,22 +4,12 @@ import ReactSelect from 'react-select'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { showError, Progressing, CIBuildType, copyToClipboard, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    DropdownIndicator,
-    Option,
-    OptionWithIcon,
-    ValueContainerWithIcon,
-} from '../v2/common/ReactSelect.utils'
+import { DropdownIndicator, Option, OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
-import {
-    checkoutPathOption,
-    renderOptionIcon,
-    repositoryControls,
-    repositoryOption
-} from './CIBuildpackBuildOptions'
+import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
 import { _customStyles, _multiSelectStyles } from './CIConfig.utils'
 
 export default function CICreateDockerfileOption({
@@ -152,7 +142,7 @@ export default function CICreateDockerfileOption({
         } else if (_selectedFramework?.templateUrl) {
             setLoadingState((prevState) => ({
                 ...prevState,
-                loading: true
+                loading: true,
             }))
             setTemplateData({
                 ...templateData,
@@ -190,7 +180,7 @@ export default function CICreateDockerfileOption({
                 })
                 setLoadingState((prevState) => ({
                     ...prevState,
-                    loading: false
+                    loading: false,
                 }))
             } catch (err) {
                 // Don't show error toast or log the error as user aborted the request
@@ -207,7 +197,7 @@ export default function CICreateDockerfileOption({
                 setEditorValue('')
                 setLoadingState((prevState) => ({
                     ...prevState,
-                    loading: false
+                    loading: false,
                 }))
             }
         } else {
@@ -252,25 +242,21 @@ export default function CICreateDockerfileOption({
     const renderLanguageOptions = (editorData: TemplateDataType) => {
         return (
             <div className="flex">
-                 <Tippy
-                     className="default-tt w-200"
-                     arrow={false}
-                     placement="top"
-                     content="Dockerfile will be placed at the root of the selected repo path"
-                 >
+                <Tippy
+                    className="default-tt w-200"
+                    arrow={false}
+                    placement="top"
+                    content="Dockerfile will be placed at the root of the selected repo path"
+                >
                     <span className={`fs-13 fw-4 lh-20 cn-7 ${configOverrideView && !allowOverride ? 'mr-8' : ''}`}>
                         Repo to place Dockerfile
                     </span>
-                 </Tippy>
+                </Tippy>
 
                 {configOverrideView && !allowOverride ? (
                     <div className="flex left">
                         {selectedMaterial?.icon && (
-                            <img
-                                src={currentMaterial.icon}
-                                alt={currentMaterial.label}
-                                className="icon-dim-20 mr-8"
-                            />
+                            <img src={currentMaterial.icon} alt={currentMaterial.label} className="icon-dim-20 mr-8" />
                         )}
                         <span className="fs-13 fw-6 lh-20 cn-9">{currentMaterial?.name}</span>
                     </div>
@@ -307,22 +293,22 @@ export default function CICreateDockerfileOption({
                         <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
                     </div>
                 ) : (
-                        <ReactSelect
-                            classNamePrefix="select-create-dockerfile-language-dropdown"
-                            tabIndex={3}
-                            options={languages}
-                            value={selectedLanguage}
-                            isSearchable={false}
-                            styles={_customStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                Option: OptionWithIcon,
-                                ValueContainer: ValueContainerWithIcon,
-                            }}
-                            onChange={handleLanguageSelection}
-                            isDisabled={configOverrideView && !allowOverride}
-                        />
+                    <ReactSelect
+                        classNamePrefix="select-create-dockerfile-language-dropdown"
+                        tabIndex={3}
+                        options={languages}
+                        value={selectedLanguage}
+                        isSearchable={false}
+                        styles={_customStyles}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option: OptionWithIcon,
+                            ValueContainer: ValueContainerWithIcon,
+                        }}
+                        onChange={handleLanguageSelection}
+                        isDisabled={configOverrideView && !allowOverride}
+                    />
                 )}
                 {languageFrameworks?.get(selectedLanguage?.value)?.[0]?.value && (
                     <>
@@ -331,21 +317,21 @@ export default function CICreateDockerfileOption({
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-13 fw-6 lh-20 cn-9">{selectedFramework?.label}</span>
                         ) : (
-                                <ReactSelect
-                                    tabIndex={3}
-                                    options={languageFrameworks?.get(selectedLanguage?.value) || []}
-                                    value={selectedFramework}
-                                    classNamePrefix="build-config__select-framework"
-                                    isSearchable={false}
-                                    styles={_customStyles}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        DropdownIndicator,
-                                        Option,
-                                    }}
-                                    onChange={handleFrameworkSelection}
-                                    isDisabled={configOverrideView && !allowOverride}
-                                />
+                            <ReactSelect
+                                tabIndex={3}
+                                options={languageFrameworks?.get(selectedLanguage?.value) || []}
+                                value={selectedFramework}
+                                classNamePrefix="build-config__select-framework"
+                                isSearchable={false}
+                                styles={_customStyles}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    DropdownIndicator,
+                                    Option,
+                                }}
+                                onChange={handleFrameworkSelection}
+                                isDisabled={configOverrideView && !allowOverride}
+                            />
                         )}
                     </>
                 )}
@@ -383,7 +369,7 @@ export default function CICreateDockerfileOption({
             })
         }
     }
-    const getSelectedBuildContextGitMaterial = ():any => {
+    const getSelectedBuildContextGitMaterial = (): any => {
         return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
     }
     const toggleCollapse = (e) => {

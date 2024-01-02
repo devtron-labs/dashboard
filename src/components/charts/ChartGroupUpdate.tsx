@@ -118,12 +118,12 @@ export default function ChartGroupUpdate({}) {
                     }
                 })
                 .sort(sortOptionsByLabel),
-        [chartLists]
+        [chartLists],
     )
 
     const getChartFilter = async () => {
         try {
-            let chartRepos = (await getChartProviderList()).result || []
+            const chartRepos = (await getChartProviderList()).result || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
         } catch (err) {
@@ -155,7 +155,7 @@ export default function ChartGroupUpdate({}) {
     }
 
     function redirectToGroupDetail(): void {
-        let url = `${URLS.CHARTS}/discover/group/${groupId}`
+        const url = `${URLS.CHARTS}/discover/group/${groupId}`
         history.push(url)
     }
 
@@ -167,29 +167,41 @@ export default function ChartGroupUpdate({}) {
     }
 
     function initialiseFromQueryParams(chartRepoList): void {
-        let searchParams = new URLSearchParams(location.search)
-        let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
-        let allRegistryIds: string = searchParams.get(QueryParams.RegistryId)
-        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
-        let appStoreName: string = searchParams.get(QueryParams.AppStoreName)
+        const searchParams = new URLSearchParams(location.search)
+        const allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
+        const allRegistryIds: string = searchParams.get(QueryParams.RegistryId)
+        const deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
+        const appStoreName: string = searchParams.get(QueryParams.AppStoreName)
         let chartRepoIdArray = []
         let ociRegistryArray = []
-        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(',')
-        if (allRegistryIds) ociRegistryArray = allRegistryIds.split(',')
+        if (allChartRepoIds) {
+            chartRepoIdArray = allChartRepoIds.split(',')
+        }
+        if (allRegistryIds) {
+            ociRegistryArray = allRegistryIds.split(',')
+        }
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId) => parseInt(chartRepoId))
         ociRegistryArray = ociRegistryArray.map((ociRegistryId) => ociRegistryId)
 
-        let selectedRepos = []
+        const selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
-            let chartRepo = chartRepoList?.find((item) => +item.value === chartRepoIdArray[i])
-            if (chartRepo) selectedRepos.push(chartRepo)
+            const chartRepo = chartRepoList?.find((item) => +item.value === chartRepoIdArray[i])
+            if (chartRepo) {
+                selectedRepos.push(chartRepo)
+            }
         }
         for (let i = 0; i < ociRegistryArray.length; i++) {
-            let registry = chartRepoList?.find((item) => item.value === ociRegistryArray[i])
-            if (registry) selectedRepos.push(registry)
+            const registry = chartRepoList?.find((item) => item.value === ociRegistryArray[i])
+            if (registry) {
+                selectedRepos.push(registry)
+            }
         }
-        if (selectedRepos) setSelectedChartRepo(selectedRepos)
-        if (deprecated) setIncludeDeprecated(parseInt(deprecated))
+        if (selectedRepos) {
+            setSelectedChartRepo(selectedRepos)
+        }
+        if (deprecated) {
+            setIncludeDeprecated(parseInt(deprecated))
+        }
         if (appStoreName) {
             setSearchApplied(true)
             setAppStoreName(appStoreName)
@@ -204,7 +216,6 @@ export default function ChartGroupUpdate({}) {
         await applyFilterOnCharts(location.search, resetPage)
         setChartListLoading(false)
     }
-
 
     async function reloadNextAfterBottom() {
         await applyFilterOnCharts(location.search, false)
@@ -301,8 +312,8 @@ export default function ChartGroupUpdate({}) {
                                             selectedInstances={state.selectedInstances}
                                             isGrid={isGrid}
                                         />
-                                        {state.hasMoreCharts && <Progressing/>}
-                                        {state.hasMoreCharts &&  <DetectBottom callback={reloadNextAfterBottom} />}
+                                        {state.hasMoreCharts && <Progressing />}
+                                        {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
                                 )}
                             </div>

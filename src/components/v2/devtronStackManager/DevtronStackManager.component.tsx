@@ -12,7 +12,7 @@ import {
     StackManagerNavItemType,
     StackManagerNavLinkType,
     StackManagerPageHeaderType,
-    ModuleEnableType
+    ModuleEnableType,
 } from './DevtronStackManager.type'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
@@ -54,15 +54,15 @@ import {
     MORE_MODULE_DETAILS,
     OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
-    handleEnableAction
+    handleEnableAction,
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
 import Tippy from '@tippyjs/react'
-import trivy from "../../../assets/icons/ic-clair-to-trivy.svg"
-import clair from "../../../assets/icons/ic-trivy-to-clair.svg"
-import warn  from '../../../assets/icons/ic-error-medium.svg';
+import trivy from '../../../assets/icons/ic-clair-to-trivy.svg'
+import clair from '../../../assets/icons/ic-trivy-to-clair.svg'
+import warn from '../../../assets/icons/ic-error-medium.svg'
 import { SuccessModalComponent } from './SuccessModalComponent'
 import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
@@ -73,7 +73,10 @@ const getInstallationStatusLabel = (
 ): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
         return (
-            <div data-testid={`module-details-card-status-${installationStatus}`} className={`module-details__installation-status flex ${installationStatus}`}>
+            <div
+                data-testid={`module-details-card-status-${installationStatus}`}
+                className={`module-details__installation-status flex ${installationStatus}`}
+            >
                 <Progressing size={20} />
                 <span className="fs-13 fw-6 ml-8" data-testid={`status-${dataTestId}`}>
                     Installing
@@ -86,12 +89,12 @@ const getInstallationStatusLabel = (
                 <div className="flex">
                     <InstalledIcon className="icon-dim-20" />
                     <span className="fs-13 fw-6 ml-8 " data-testid={`status-${dataTestId}`}>
-                    {MODULE_STATUS.Installed}
+                        {MODULE_STATUS.Installed}
                     </span>
                 </div>
                 {!enableStatus && (
                     <span className="fs-12 ml-8 mb-20 fw-400 cn-7 ml-13" data-testid={`enable-status-${dataTestId}`}>
-                       {MODULE_STATUS.NotEnabled}
+                        {MODULE_STATUS.NotEnabled}
                     </span>
                 )}
             </div>
@@ -101,7 +104,7 @@ const getInstallationStatusLabel = (
             <div className={`module-details__installation-status flex installFailed`}>
                 <ErrorIcon className="icon-dim-20" />
                 <span className="fs-13 fw-6 ml-8" data-testid={`status-${dataTestId}`}>
-                   { MODULE_STATUS.Failed}
+                    {MODULE_STATUS.Failed}
                 </span>
             </div>
         )
@@ -185,7 +188,7 @@ export const ModulesListingView = ({
                         className="cursor"
                         handleModuleCardClick={handleModuleCardClick}
                         fromDiscoverModules={isDiscoverModulesView}
-                        dataTestId = {`module-card-${idx}`}
+                        dataTestId={`module-card-${idx}`}
                     />
                 )
             })}
@@ -299,7 +302,7 @@ export const StackPageHeader = ({
     const history = useHistory()
 
     const handleRedirectToModule = (detailsMode) => {
-        let url =
+        const url =
             detailsMode === 'discover' ? URLS.STACK_MANAGER_DISCOVER_MODULES : URLS.STACK_MANAGER_INSTALLED_MODULES
         history.push(url)
     }
@@ -369,7 +372,7 @@ export function EnableModuleConfirmation({
             setProgressing,
         )
     }
-    const isModuleTrivy=(moduleDetails.name === ModuleNameMap.SECURITY_TRIVY)
+    const isModuleTrivy = moduleDetails.name === ModuleNameMap.SECURITY_TRIVY
     return (
         <ConfirmationDialog>
             <ConfirmationDialog.Icon
@@ -440,7 +443,7 @@ const InstallationStatus = ({
     retryState,
     setRetryState,
     successState,
-    setSuccessState
+    setSuccessState,
 }: ModuleInstallationStatusType): JSX.Element => {
     const openCheckResourceStatusModal = (e) => {
         e.stopPropagation()
@@ -449,10 +452,12 @@ const InstallationStatus = ({
             setShowResourceStatusModal(true)
         }
     }
-    const [moduleNotEnabled,moduleNotEnabledState] =useState<boolean>(moduleDetails &&
-        moduleDetails.enabled === false &&
-        moduleDetails.installationStatus === ModuleStatus.INSTALLED &&
-        moduleDetails.moduleType === MODULE_TYPE_SECURITY)
+    const [moduleNotEnabled, moduleNotEnabledState] = useState<boolean>(
+        moduleDetails &&
+            moduleDetails.enabled === false &&
+            moduleDetails.installationStatus === ModuleStatus.INSTALLED &&
+            moduleDetails.moduleType === MODULE_TYPE_SECURITY,
+    )
     const renderTransitonToggle = () => {
         toastAccessDenied()
         setToggled(true)
@@ -460,7 +465,7 @@ const InstallationStatus = ({
             setToggled(false)
         }, 1000)
     }
-    const handleToggleButton=()=>{
+    const handleToggleButton = () => {
         if (isSuperAdmin) {
             setToggled(true)
             setDialog(true)
@@ -759,7 +764,7 @@ export const InstallationWrapper = ({
                     updateActionTrigger,
                     history,
                     location,
-                    moduleDetails && (moduleDetails.moduleType?moduleDetails.moduleType:undefined),
+                    moduleDetails && (moduleDetails.moduleType ? moduleDetails.moduleType : undefined),
                 )
             } else {
                 setShowPreRequisiteConfirmationModal(true)
@@ -777,7 +782,9 @@ export const InstallationWrapper = ({
     }
 
     const renderPrerequisiteConfirmationModal = (): JSX.Element | null => {
-        if (!showPreRequisiteConfirmationModal) return null
+        if (!showPreRequisiteConfirmationModal) {
+            return null
+        }
         return (
             <VisibleModal className="transition-effect">
                 <div className="modal__body upload-modal dc__no-top-radius mt-0 p-0 w-600">
@@ -799,7 +806,7 @@ export const InstallationWrapper = ({
                                     breaks={true}
                                     markdown={preRequisite.prerequisiteMessage}
                                 />
-                                <a className="cb-5" href={preRequisite.tagLink} target="_blank">
+                                <a className="cb-5" href={preRequisite.tagLink} target="_blank" rel="noreferrer">
                                     View full release note
                                 </a>
                             </div>
@@ -1016,7 +1023,7 @@ export const ModuleDetailsView = ({
     successState,
     setSuccessState,
     toggled,
-    setToggled
+    setToggled,
 }: ModuleDetailsViewType): JSX.Element | null => {
     const queryParams = new URLSearchParams(location.search)
     useEffect(() => {
@@ -1038,10 +1045,7 @@ export const ModuleDetailsView = ({
                         src={moduleDetails.icon}
                         alt={moduleDetails.title}
                     />
-                    <h2
-                        data-testid="module-details-title"
-                        className="module-details__feature-heading cn-9 fs-20 fw-6"
-                    >
+                    <h2 data-testid="module-details-title" className="module-details__feature-heading cn-9 fs-20 fw-6">
                         {moduleDetails.title}
                     </h2>
                     <div className="module-details__divider mt-24 mb-24" />
@@ -1087,7 +1091,6 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
     const redirectToDiscoverModules = () => {
         history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)
-        
     }
 
     const renderDiscoverIntegrationsButton = () => {
@@ -1096,7 +1099,7 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
                 type="button"
                 className="empty-state__discover-btn flex fs-13 fw-6 br-4"
                 onClick={redirectToDiscoverModules}
-                >
+            >
                 <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
             </button>
         )
@@ -1200,7 +1203,12 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                         {isUpgradeView ? (
                             <>
                                 Please refer&nbsp;
-                                <a className="cb-5 fw-6" href={DOCUMENTATION.DEVTRON_UPGRADE} target="_blank">
+                                <a
+                                    className="cb-5 fw-6"
+                                    href={DOCUMENTATION.DEVTRON_UPGRADE}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
                                     steps to upgrade using CLI
                                 </a>
                             </>

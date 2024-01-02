@@ -31,11 +31,11 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
 
     renderStatus(title?: string) {
         const url = this.getCDNodeDetailsURL()
-        let statusText = this.props.status ? triggerStatus(this.props.status) : ''
-        let status = statusText ? statusText.toLowerCase() : ''
-        let hideDetails =
+        const statusText = this.props.status ? triggerStatus(this.props.status) : ''
+        const status = statusText ? statusText.toLowerCase() : ''
+        const hideDetails =
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
-        if (hideDetails)
+        if (hideDetails) {
             return (
                 <div
                     data-testid={`cd-trigger-status-${this.props.index}`}
@@ -45,7 +45,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     <span>{statusText}</span>
                 </div>
             )
-        else
+        } else {
             return (
                 <div
                     data-testid={`cd-trigger-status-${this.props.index}`}
@@ -68,6 +68,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     )}
                 </div>
             )
+        }
     }
 
     renderCardContent() {

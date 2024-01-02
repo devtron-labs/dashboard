@@ -10,7 +10,14 @@ import { WorkflowProps, NodeAttr, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
-import { Checkbox, CHECKBOX_VALUE, DeploymentNodeType, noop, WorkflowNodeType, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    DeploymentNodeType,
+    noop,
+    WorkflowNodeType,
+    PipelineType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerViewContext } from '../config'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
@@ -265,11 +272,11 @@ export class Workflow extends Component<WorkflowProps> {
     getEdges() {
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                let endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
-                    edgeList.push({
-                        startNode: node,
-                        endNode: endNode,
-                    })
+                const endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                edgeList.push({
+                    startNode: node,
+                    endNode: endNode,
+                })
             })
             return edgeList
         }, [])
@@ -278,7 +285,7 @@ export class Workflow extends Component<WorkflowProps> {
     onClickNodeEdge = (nodeId: number) => {
         this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
         this.props.history.push({
-            search: `approval-node=${nodeId}`
+            search: `approval-node=${nodeId}`,
         })
     }
 
@@ -320,10 +327,7 @@ export class Workflow extends Component<WorkflowProps> {
         )
 
         return (
-            <div
-                className="workflow--trigger flexbox-col mb-16 dc__gap-6"
-                style={{ minWidth: 'auto' }}
-            >
+            <div className="workflow--trigger flexbox-col mb-16 dc__gap-6" style={{ minWidth: 'auto' }}>
                 <div className="bcn-0 cn-9 fs-13 fw-6 lh-20">
                     {this.props.fromAppGrouping ? (
                         <Checkbox
@@ -342,7 +346,11 @@ export class Workflow extends Component<WorkflowProps> {
                     )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
-                <div className={`workflow__body bc-n50 dc__overflow-scroll dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2': ''}`}>
+                <div
+                    className={`workflow__body bc-n50 dc__overflow-scroll dc__border-n1 br-4 ${
+                        this.props.isSelected ? 'eb-2' : ''
+                    }`}
+                >
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}
                         {this.renderNodes()}

@@ -41,7 +41,9 @@ export default function EnvironmentOverride({
     }, [location.pathname])
 
     useEffect(() => {
-        if (params.envId) return
+        if (params.envId) {
+            return
+        }
         if (environmentsMap.has(environmentId)) {
             const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
             push(newUrl)

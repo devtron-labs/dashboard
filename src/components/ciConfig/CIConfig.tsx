@@ -35,7 +35,6 @@ export default function CIConfig({
     const { appId } = useParams<{ appId: string }>()
 
     useEffect(() => {
-        
         if (!configOverrideView || parentState?.loadingState !== ComponentStates.loaded) {
             initialise()
         }
@@ -118,7 +117,7 @@ export default function CIConfig({
         }
     }
 
-    if (loading)
+    if (loading) {
         return (
             <Progressing
                 size={configOverrideView ? 24 : 48}
@@ -127,7 +126,10 @@ export default function CIConfig({
                 }}
             />
         )
-    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
+    }
+    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) {
+        return null
+    }
     return (
         <CIConfigForm
             parentReloading={parentReloading}

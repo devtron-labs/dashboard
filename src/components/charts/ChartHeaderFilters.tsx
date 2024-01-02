@@ -24,7 +24,7 @@ function ChartHeaderFilter({
     const history = useHistory()
     const location = useLocation()
     const { url } = match
-  
+
     const handleSelection = (event): void => {
         const chartRepoList = selectedChartRepo.filter((e) => e.value != event.value)
         setSelectedChartRepo(chartRepoList)
@@ -32,7 +32,7 @@ function ChartHeaderFilter({
             handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
         } else {
             handleFilterChanges(chartRepoList, 'chart-repo')
-        } 
+        }
     }
 
     const handleViewAllCharts = (): void => {
@@ -47,14 +47,14 @@ function ChartHeaderFilter({
         const registryId = searchParams.get(QueryParams.RegistryId)
         let isOCIRegistry
         if (key == 'chart-repo') {
-            let paramsChartRepoIds = selected
+            const paramsChartRepoIds = selected
                 .filter((selectedRepo) => !selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     return selectedRepo.value
                 })
                 .join(',')
 
-            let paramsRegistryIds = selected
+            const paramsRegistryIds = selected
                 .filter((selectedRepo) => selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     isOCIRegistry = true
@@ -63,42 +63,71 @@ function ChartHeaderFilter({
                 .join(',')
             if (isOCIRegistry) {
                 let qsr = `${QueryParams.RegistryId}=${paramsRegistryIds}`
-                if (paramsChartRepoIds) qsr = `${qsr}&${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
-                if (app) qsr = `${qsr}&${QueryParams.AppStoreName}=${app}`
-                if (deprecate) qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                if (paramsChartRepoIds) {
+                    qsr = `${qsr}&${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
+                }
+                if (app) {
+                    qsr = `${qsr}&${QueryParams.AppStoreName}=${app}`
+                }
+                if (deprecate) {
+                    qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                }
                 history.push(`${url}?${qsr}`)
             } else {
                 let qs = `${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
-                if (paramsRegistryIds) qs = `${qs}&${QueryParams.RegistryId}=${paramsRegistryIds}`
-                if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
-                if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                if (paramsRegistryIds) {
+                    qs = `${qs}&${QueryParams.RegistryId}=${paramsRegistryIds}`
+                }
+                if (app) {
+                    qs = `${qs}&${QueryParams.AppStoreName}=${app}`
+                }
+                if (deprecate) {
+                    qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                }
                 history.push(`${url}?${qs}`)
             }
         }
 
-
         if (key == 'deprecated') {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
-            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
-            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            if (app) {
+                qs = `${qs}&${QueryParams.AppStoreName}=${app}`
+            }
+            if (chartRepoId) {
+                qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            }
+            if (registryId) {
+                qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            }
             history.push(`${url}?${qs}`)
         }
 
         if (key == 'search') {
             selected.preventDefault()
             let qs = `${QueryParams.AppStoreName}=${appStoreName}`
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
-            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            if (deprecate) {
+                qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+            }
+            if (chartRepoId) {
+                qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            }
+            if (registryId) {
+                qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            }
             history.push(`${url}?${qs}`)
         }
 
         if (key == 'clear') {
-            let qs: string = ''
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
-            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            let qs = ''
+            if (deprecate) {
+                qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+            }
+            if (chartRepoId) {
+                qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            }
+            if (registryId) {
+                qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            }
             history.push(`${url}?${qs}`)
         }
     }
@@ -120,7 +149,7 @@ function ChartHeaderFilter({
     }
 
     const toggleDeprecated = (): void => {
-        let value = (includeDeprecated + 1) % 2
+        const value = (includeDeprecated + 1) % 2
         handleFilterChanges(value, 'deprecated')
     }
 

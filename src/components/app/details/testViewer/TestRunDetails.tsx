@@ -1,48 +1,48 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react'
 import { Progressing, Drawer, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { useDebouncedEffect } from '../../../common/';
-import { useParams } from 'react-router';
-import './TestRunDetails.scss';
-import List from './List';
-import { ReactComponent as Folder } from '../../../../assets/icons/ic-folder.svg';
-import { ReactComponent as SuccessIcon } from '../../../../assets/icons/ic-success.svg';
-import { ReactComponent as SkipIcon } from '../../../../assets/icons/ic-skip.svg';
-import { ReactComponent as WarnIcon } from '../../../../assets/icons/ic-warning.svg';
-import { ReactComponent as ErrorIcon } from '../../../../assets/icons/misc/errorInfo.svg';
-import { ReactComponent as Briefcase } from '../../../../assets/icons/ic-briefcase.svg';
-import { ReactComponent as FileIcon } from '../../../../assets/icons/ic-file.svg';
-import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg';
-import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg';
-import { getTestSuites, getTestCase, getSuiteDetail } from './service';
+import { useDebouncedEffect } from '../../../common/'
+import { useParams } from 'react-router'
+import './TestRunDetails.scss'
+import List from './List'
+import { ReactComponent as Folder } from '../../../../assets/icons/ic-folder.svg'
+import { ReactComponent as SuccessIcon } from '../../../../assets/icons/ic-success.svg'
+import { ReactComponent as SkipIcon } from '../../../../assets/icons/ic-skip.svg'
+import { ReactComponent as WarnIcon } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as ErrorIcon } from '../../../../assets/icons/misc/errorInfo.svg'
+import { ReactComponent as Briefcase } from '../../../../assets/icons/ic-briefcase.svg'
+import { ReactComponent as FileIcon } from '../../../../assets/icons/ic-file.svg'
+import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
+import { getTestSuites, getTestCase, getSuiteDetail } from './service'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import {SelectedNames} from './Test.types'
+import { SelectedNames } from './Test.types'
 
-const computeHistogram = require('compute-histogram');
+const computeHistogram = require('compute-histogram')
 
-export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedNames})=>{
-    const params = useParams<{ appId: string; pipelineId: string; triggerId: string }>();
+export const TestRunDetails: React.FC<{ selectedNames: SelectedNames }> = ({ selectedNames }) => {
+    const params = useParams<{ appId: string; pipelineId: string; triggerId: string }>()
     const [testSuiteIds, setTestSuiteIds] = useState<{
-        testSuitesId: number;
-        testSuiteId: number;
-        testcaseId?: number;
-        tab: 'properties' | 'system-output' | 'system-error' | 'testcase' | '';
-    }>({ testSuitesId: 0, testSuiteId: 0, tab: '' });
-    const [loading, result, error, reload] = useAsync(() => getTestSuites(params.pipelineId, params.triggerId, selectedNames), [
-        params,
-    ]);
+        testSuitesId: number
+        testSuiteId: number
+        testcaseId?: number
+        tab: 'properties' | 'system-output' | 'system-error' | 'testcase' | ''
+    }>({ testSuitesId: 0, testSuiteId: 0, tab: '' })
+    const [loading, result, error, reload] = useAsync(
+        () => getTestSuites(params.pipelineId, params.triggerId, selectedNames),
+        [params],
+    )
 
     useDebouncedEffect(reload, 2000, [selectedNames])
-
 
     const { statusAggregation, timeAggregation } = useMemo(() => {
         const testcases = result?.result?.result?.testsuites?.reduce((agg, curr) => {
             return [
                 ...agg,
                 ...curr?.testsuite.reduce((agg2, curr2) => {
-                    return [...agg2, ...curr2.testcases];
+                    return [...agg2, ...curr2.testcases]
                 }, []),
-            ];
-        }, []);
+            ]
+        }, [])
 
         const initStatusAggregation = {
             testCount: 0,
@@ -51,45 +51,56 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
             failureCount: 0,
             skippedCount: 0,
             unknownCount: 0,
-        };
+        }
 
         const timeAggregation = testcases?.reduce((agg, testcase) => {
-            const { time } = testcase;
+            const { time } = testcase
             if (time) {
                 if (agg[time]) {
-                    agg[time] += 1;
+                    agg[time] += 1
                 } else {
-                    agg[time] = 1;
+                    agg[time] = 1
                 }
             }
-            return agg;
-        }, {});
+            return agg
+        }, {})
 
         const statusAggregation = result?.result?.result?.testsuites?.reduce((agg, curr) => {
-            const { testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount } = curr;
-            agg['testCount'] += testCount || 0;
-            agg['disabledCount'] += disabledCount || 0;
-            agg['errorCount'] += errorCount || 0;
-            agg['failureCount'] += failureCount || 0;
-            agg['skippedCount'] += skippedCount || 0;
-            agg['unknownCount'] += unknownCount || 0;
-            return agg;
-        }, initStatusAggregation);
-        return { timeAggregation, statusAggregation };
-    }, [result]);
+            const { testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount } = curr
+            agg['testCount'] += testCount || 0
+            agg['disabledCount'] += disabledCount || 0
+            agg['errorCount'] += errorCount || 0
+            agg['failureCount'] += failureCount || 0
+            agg['skippedCount'] += skippedCount || 0
+            agg['unknownCount'] += unknownCount || 0
+            return agg
+        }, initStatusAggregation)
+        return { timeAggregation, statusAggregation }
+    }, [result])
 
-    function showDrawer(testSuitesId:number, testSuiteId:number, tab: 'properties' | 'system-output' | 'system-error' | 'testcase', testcaseId?: number){
-        setTestSuiteIds({testSuitesId, testSuiteId, testcaseId, tab})
+    function showDrawer(
+        testSuitesId: number,
+        testSuiteId: number,
+        tab: 'properties' | 'system-output' | 'system-error' | 'testcase',
+        testcaseId?: number,
+    ) {
+        setTestSuiteIds({ testSuitesId, testSuiteId, testcaseId, tab })
     }
 
-    function hideDrawer(){
-        setTestSuiteIds({testSuitesId: 0, testcaseId: 0, testSuiteId: 0, tab: ''})
+    function hideDrawer() {
+        setTestSuiteIds({ testSuitesId: 0, testcaseId: 0, testSuiteId: 0, tab: '' })
     }
-    if(loading) return <div className="w-100" style={{height:'100%'}}><Progressing pageLoader/></div>
+    if (loading) {
+        return (
+            <div className="w-100" style={{ height: '100%' }}>
+                <Progressing pageLoader />
+            </div>
+        )
+    }
     return (
         <>
             <div className="app-details test-details mt-16">
-                <div style={{display:'grid', gridTemplateColumns:'502px 1fr', gridColumnGap:'16px'}}>
+                <div style={{ display: 'grid', gridTemplateColumns: '502px 1fr', gridColumnGap: '16px' }}>
                     <TestsChart {...statusAggregation} />
                     {timeAggregation && <TestsDuration timeAggregation={timeAggregation} />}
                 </div>
@@ -99,32 +110,32 @@ export const TestRunDetails:React.FC<{selectedNames: SelectedNames}>=({selectedN
             </div>
             {!!testSuiteIds.testSuitesId && !!testSuiteIds.testSuiteId && (
                 <Drawer position="right" width="800px">
-                    {testSuiteIds.tab === 'properties' &&  <Properties {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'system-output' &&  <SystemOutput {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'system-error' &&  <SystemError {...testSuiteIds} hideDrawer={hideDrawer} />}
-                    {testSuiteIds.tab === 'testcase' &&  <TestCaseStatus {...testSuiteIds} hideDrawer={hideDrawer} />}
+                    {testSuiteIds.tab === 'properties' && <Properties {...testSuiteIds} hideDrawer={hideDrawer} />}
+                    {testSuiteIds.tab === 'system-output' && <SystemOutput {...testSuiteIds} hideDrawer={hideDrawer} />}
+                    {testSuiteIds.tab === 'system-error' && <SystemError {...testSuiteIds} hideDrawer={hideDrawer} />}
+                    {testSuiteIds.tab === 'testcase' && <TestCaseStatus {...testSuiteIds} hideDrawer={hideDrawer} />}
                 </Drawer>
             )}
         </>
-    );
+    )
 }
 const TestSuites: React.FC<{
-    name: string;
-    testsuite: any;
-    time: number;
-    id: number;
-    testCount: number;
-    disabledCount: number;
-    errorCount: number;
-    failureCount: number;
-    skippedCount: number;
-    unknownCount: number;
+    name: string
+    testsuite: any
+    time: number
+    id: number
+    testCount: number
+    disabledCount: number
+    errorCount: number
+    failureCount: number
+    skippedCount: number
+    unknownCount: number
     showDrawer(
         testSuitesId: number,
         testSuiteId: number,
         tab: 'properties' | 'system-output' | 'system-error' | 'testcase',
         testcaseId?: number,
-    ):any;
+    ): any
 }> = ({
     name,
     testsuite,
@@ -136,7 +147,7 @@ const TestSuites: React.FC<{
     failureCount,
     skippedCount,
     unknownCount,
-    showDrawer
+    showDrawer,
 }) => {
     return (
         <List key={testsuitesId} collapsible={testsuite?.length > 0} className="test--list testsuites">
@@ -162,23 +173,28 @@ const TestSuites: React.FC<{
             <List.Detail>
                 <div className="test--detail">
                     {testsuite?.map((testsuiteData) => (
-                        <TestSuite showDrawer={showDrawer} testsuitesId={testsuitesId} key={testsuiteData.id} data={testsuiteData} />
+                        <TestSuite
+                            showDrawer={showDrawer}
+                            testsuitesId={testsuitesId}
+                            key={testsuiteData.id}
+                            data={testsuiteData}
+                        />
                     ))}
                 </div>
             </List.Detail>
         </List>
-    );
-};
+    )
+}
 
 const TestSuite: React.FC<{
-    data: any;
-    testsuitesId: number;
+    data: any
+    testsuitesId: number
     showDrawer(
         testSuitesId: number,
         testSuiteId: number,
         tab: 'properties' | 'system-output' | 'system-error' | 'testcase',
         testcaseId?: number,
-    ): any;
+    ): any
 }> = ({ data, testsuitesId, showDrawer }) => {
     const {
         id: testsuiteId,
@@ -194,7 +210,7 @@ const TestSuite: React.FC<{
         unknownCount,
         systemOut,
         systemError,
-    } = data;
+    } = data
     return (
         <List key={testsuiteId} collapsible={testcases?.length > 0} className="test--list testsuite">
             <List.Icon>
@@ -225,7 +241,7 @@ const TestSuite: React.FC<{
                                     <div
                                         className="flex left testsuite-meta testsuite--property"
                                         onClick={(e) => {
-                                            e.stopPropagation();
+                                            e.stopPropagation()
                                             showDrawer(testsuitesId, testsuiteId, 'properties')
                                         }}
                                     >
@@ -237,8 +253,8 @@ const TestSuite: React.FC<{
                                     <div
                                         className="flex left testsuite-meta testsuite--system-out"
                                         onClick={(e) => {
-                                            e.stopPropagation();
-                                            showDrawer(testsuitesId, testsuiteId, 'system-output');
+                                            e.stopPropagation()
+                                            showDrawer(testsuitesId, testsuiteId, 'system-output')
                                         }}
                                     >
                                         <FileIcon />
@@ -249,8 +265,8 @@ const TestSuite: React.FC<{
                                     <div
                                         className="flex left testsuite-meta testsuite--system-error"
                                         onClick={(e) => {
-                                            e.stopPropagation();
-                                            showDrawer(testsuitesId, testsuiteId, 'system-error');
+                                            e.stopPropagation()
+                                            showDrawer(testsuitesId, testsuiteId, 'system-error')
                                         }}
                                     >
                                         <FileIcon />
@@ -265,8 +281,8 @@ const TestSuite: React.FC<{
                             key={testcase.id}
                             className={`testcase testcase-status ${testcase?.status || ''}`}
                             onClick={(e) => {
-                                e.stopPropagation();
-                                showDrawer(testsuitesId, testsuiteId, 'testcase', testcase.id);
+                                e.stopPropagation()
+                                showDrawer(testsuitesId, testsuiteId, 'testcase', testcase.id)
                             }}
                         >
                             <StatusIcon status={testcase?.status} />
@@ -277,116 +293,127 @@ const TestSuite: React.FC<{
                 </ul>
             </List.Detail>
         </List>
-    );
-};
-function Properties({testSuiteId, testSuitesId, hideDrawer}) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
-        testSuiteId,
-    ]);
+    )
+}
+function Properties({ testSuiteId, testSuitesId, hideDrawer }) {
+    const [loading, result, error, reload] = useAsync(
+        () => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)),
+        [testSuiteId],
+    )
 
     function handleClose(e) {
-       hideDrawer()
+        hideDrawer()
     }
     if (loading) {
-        return <Progressing pageLoader />;
+        return <Progressing pageLoader />
     }
     return (
         <div className="testcase--detail" style={{ width: '800px', background: 'white', height: '100%' }}>
-            {loading ? <Progressing pageLoader />
-            :
-            <>
-            <div className="testcase--title">
-                <h1>Properties</h1>
-                <Cross className="pointer" onClick={handleClose} style={{ marginLeft: 'auto' }} />
-            </div>
-            <div style={{ height: 'calc( 100% - 68px )', overflow: 'auto' }}>
-                <table className="properties-table">
-                    <thead>
-                        <tr>
-                            <th>NAME</th>
-                            <th>VALUE</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {result?.result?.result?.properties
-                            ?.filter(({ name, value }) => name || value)
-                            ?.map(({ id, name, value }) => (
-                                <tr key={id}>
-                                    <td>{name}</td>
-                                    <td>{value}</td>
+            {loading ? (
+                <Progressing pageLoader />
+            ) : (
+                <>
+                    <div className="testcase--title">
+                        <h1>Properties</h1>
+                        <Cross className="pointer" onClick={handleClose} style={{ marginLeft: 'auto' }} />
+                    </div>
+                    <div style={{ height: 'calc( 100% - 68px )', overflow: 'auto' }}>
+                        <table className="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>NAME</th>
+                                    <th>VALUE</th>
                                 </tr>
-                            ))}
-                    </tbody>
-                </table>
-            </div>
-            </>}
+                            </thead>
+                            <tbody>
+                                {result?.result?.result?.properties
+                                    ?.filter(({ name, value }) => name || value)
+                                    ?.map(({ id, name, value }) => (
+                                        <tr key={id}>
+                                            <td>{name}</td>
+                                            <td>{value}</td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
         </div>
-    );
+    )
 }
 
 function SystemOutput({ testSuiteId, testSuitesId, hideDrawer }) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
-        testSuiteId,
-    ]);
+    const [loading, result, error, reload] = useAsync(
+        () => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)),
+        [testSuiteId],
+    )
     function handleClose(e) {
         hideDrawer()
     }
     return (
         <div className="testcase--detail testsuite" style={{ width: '800px', background: 'white', height: '100%' }}>
-            {loading ? <Progressing pageLoader />
-            :
-            <>
-            <div className="testcase--title">
-                <h1>System Output</h1>
-                <Cross className="pointer" onClick={handleClose} style={{ marginLeft: 'auto' }} />
-            </div>
-            <div className="testsuite-detail--body">
-                {result?.result?.systemOut && <samp className="console">{result.result.systemOut}</samp>}
-            </div>
-            </>}
+            {loading ? (
+                <Progressing pageLoader />
+            ) : (
+                <>
+                    <div className="testcase--title">
+                        <h1>System Output</h1>
+                        <Cross className="pointer" onClick={handleClose} style={{ marginLeft: 'auto' }} />
+                    </div>
+                    <div className="testsuite-detail--body">
+                        {result?.result?.systemOut && <samp className="console">{result.result.systemOut}</samp>}
+                    </div>
+                </>
+            )}
         </div>
-    );
+    )
 }
 
 function SystemError({ testSuiteId, testSuitesId, hideDrawer }) {
-    const [loading, result, error, reload] = useAsync(() => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)), [
-        testSuiteId,
-    ]);
+    const [loading, result, error, reload] = useAsync(
+        () => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)),
+        [testSuiteId],
+    )
     function handleClose(e) {
         hideDrawer()
     }
     return (
         <div className="testcase--detail testsuite" style={{ width: '800px', background: 'white', height: '100%' }}>
-            {loading ? <Progressing pageLoader />
-            :
-            <>
-                <div className="testcase--title">
-                    <h1>System Error</h1>
-                    <Cross className="pointer" onClick={handleClose} style={{ marginLeft: 'auto' }} />
-                </div>
-                <div className="testsuite-detail--body">
-                    {result?.result?.result?.systemError && <samp className="error">{result?.result.result.systemError}</samp>}
-                </div>
-            </>}
+            {loading ? (
+                <Progressing pageLoader />
+            ) : (
+                <>
+                    <div className="testcase--title">
+                        <h1>System Error</h1>
+                        <Cross className="pointer" onClick={handleClose} style={{ marginLeft: 'auto' }} />
+                    </div>
+                    <div className="testsuite-detail--body">
+                        {result?.result?.result?.systemError && (
+                            <samp className="error">{result?.result.result.systemError}</samp>
+                        )}
+                    </div>
+                </>
+            )}
         </div>
-    );
+    )
 }
 
 function StatusIcon({ status, width = '24', height = '24' }) {
     switch (status?.toLowerCase()) {
         case 'success':
         case 'passed':
-            return <SuccessIcon width={width} height={height} />;
+            return <SuccessIcon width={width} height={height} />
         case 'failure':
         case 'failed':
-            return <ErrorIcon width={width} height={height} />;
+            return <ErrorIcon width={width} height={height} />
         case 'error':
         case 'errors':
-            return <WarnIcon width={width} height={height} />;
+            return <WarnIcon width={width} height={height} />
         case 'unknown':
-            return <Question width={width} height={height} />;
+            return <Question width={width} height={height} />
         default:
-            return <SkipIcon width={width} height={height} />;
+            return <SkipIcon width={width} height={height} />
     }
 }
 
@@ -398,7 +425,7 @@ function TestStats({ testCount, disabledCount, errorCount, failureCount, skipped
         failureCount: 'failed',
         skippedCount: 'skipped',
         unknownCount: 'unknown',
-    };
+    }
     return (
         <ul className="test-stats flex left">
             {Object.entries({ errorCount, failureCount }).map(([status, count], idx) =>
@@ -413,71 +440,77 @@ function TestStats({ testCount, disabledCount, errorCount, failureCount, skipped
                 ) : null,
             )}
         </ul>
-    );
+    )
 }
 
-function TestCaseStatus({ testcaseId=0, testSuitesId, testSuiteId, hideDrawer }) {
-    const [testCaseDetail, setTestCaseDetail] = useState(null);
-    const [loading, result, error, reload] = useAsync(() => getTestCase(Number(testcaseId)), [testcaseId]);
+function TestCaseStatus({ testcaseId = 0, testSuitesId, testSuiteId, hideDrawer }) {
+    const [testCaseDetail, setTestCaseDetail] = useState(null)
+    const [loading, result, error, reload] = useAsync(() => getTestCase(Number(testcaseId)), [testcaseId])
     function handleClose(e) {
         hideDrawer()
     }
     useEffect(() => {
-        if (loading) return;
-        if (result?.result?.result) setTestCaseDetail(result.result?.result);
-    }, [loading]);
+        if (loading) {
+            return
+        }
+        if (result?.result?.result) {
+            setTestCaseDetail(result.result?.result)
+        }
+    }, [loading])
 
     return (
         <div className="testcase--detail" style={{ width: '800px', background: 'white', height: '100%' }}>
-            {loading ? <Progressing pageLoader />
-            :
-            <>
-            <div className="testcase--title">
-                <span className={`status testcase-status ${testCaseDetail?.status || ''}`}>
-                    {testCaseDetail?.status}
-                </span>
-                <h1 className="dc__ellipsis-right">{testCaseDetail?.name || 'unnamed'}</h1>
-                <Cross className="pointer" onClick={handleClose} />
-            </div>
-            <div className="testcase--body">
-                <section>
-                    <label className="light">Duration</label>
-                    <p>{testCaseDetail?.time || 'unavailable'}</p>
-                </section>
-                <section>
-                    <label className="light">Classname</label>
-                    <p>{testCaseDetail?.classname || 'unavailable'}</p>
-                </section>
-                {typeof testCaseDetail?.assertionCount === 'number' && (
-                    <section>
-                        <label className="light">assertions</label>
-                        <p>{testCaseDetail?.assertionCount}</p>
-                    </section>
-                )}
-                {testCaseDetail?.errors?.map((error) => (
-                    <MessageTypeViewer {...error} nodeType="Error" />
-                ))}
-                {testCaseDetail?.failures?.map((failure) => (
-                    <MessageTypeViewer {...failure} nodeType="Failure" />
-                ))}
-                {testCaseDetail?.skippedMessage && testCaseDetail?.skippedType && (
-                    <MessageTypeViewer
-                        nodeType="Skip"
-                        message={testCaseDetail.skippedMessage}
-                        type={testCaseDetail.skippedType}
-                        text={testCaseDetail.text}
-                    />
-                )}
-                {testCaseDetail?.systemOuts?.map(({ text, id }) => (
-                    <MessageTypeViewer key={id} text={text} nodeType="System Output" />
-                ))}
-                {testCaseDetail?.systemErrors?.map(({ text, id }) => (
-                    <MessageTypeViewer key={id} text={text} nodeType="System Error" />
-                ))}
-            </div>
-            </>}
+            {loading ? (
+                <Progressing pageLoader />
+            ) : (
+                <>
+                    <div className="testcase--title">
+                        <span className={`status testcase-status ${testCaseDetail?.status || ''}`}>
+                            {testCaseDetail?.status}
+                        </span>
+                        <h1 className="dc__ellipsis-right">{testCaseDetail?.name || 'unnamed'}</h1>
+                        <Cross className="pointer" onClick={handleClose} />
+                    </div>
+                    <div className="testcase--body">
+                        <section>
+                            <label className="light">Duration</label>
+                            <p>{testCaseDetail?.time || 'unavailable'}</p>
+                        </section>
+                        <section>
+                            <label className="light">Classname</label>
+                            <p>{testCaseDetail?.classname || 'unavailable'}</p>
+                        </section>
+                        {typeof testCaseDetail?.assertionCount === 'number' && (
+                            <section>
+                                <label className="light">assertions</label>
+                                <p>{testCaseDetail?.assertionCount}</p>
+                            </section>
+                        )}
+                        {testCaseDetail?.errors?.map((error) => (
+                            <MessageTypeViewer {...error} nodeType="Error" />
+                        ))}
+                        {testCaseDetail?.failures?.map((failure) => (
+                            <MessageTypeViewer {...failure} nodeType="Failure" />
+                        ))}
+                        {testCaseDetail?.skippedMessage && testCaseDetail?.skippedType && (
+                            <MessageTypeViewer
+                                nodeType="Skip"
+                                message={testCaseDetail.skippedMessage}
+                                type={testCaseDetail.skippedType}
+                                text={testCaseDetail.text}
+                            />
+                        )}
+                        {testCaseDetail?.systemOuts?.map(({ text, id }) => (
+                            <MessageTypeViewer key={id} text={text} nodeType="System Output" />
+                        ))}
+                        {testCaseDetail?.systemErrors?.map(({ text, id }) => (
+                            <MessageTypeViewer key={id} text={text} nodeType="System Error" />
+                        ))}
+                    </div>
+                </>
+            )}
         </div>
-    );
+    )
 }
 
 function MessageTypeViewer({ nodeType, message = null, type = null, text }) {
@@ -502,11 +535,11 @@ function MessageTypeViewer({ nodeType, message = null, type = null, text }) {
             )}
             {text && <samp>{text}</samp>}
         </section>
-    );
+    )
 }
 
 function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount }) {
-    const passedCount = testCount - disabledCount - errorCount - failureCount - skippedCount - unknownCount;
+    const passedCount = testCount - disabledCount - errorCount - failureCount - skippedCount - unknownCount
     const data = [
         { label: 'disabled', value: disabledCount },
         { label: 'error', value: errorCount },
@@ -514,7 +547,7 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
         { label: 'skipped', value: skippedCount },
         { label: 'unknown', value: unknownCount },
         { label: 'passed', value: passedCount },
-    ];
+    ]
 
     const colorMap = {
         skipped: '#d0d4d9',
@@ -523,9 +556,9 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
         disabled: '#58508d',
         unknown: '#ff9800',
         passed: '#00be61',
-    };
+    }
 
-    const passPercentage = passedCount * 100 / testCount
+    const passPercentage = (passedCount * 100) / testCount
     return (
         <div className="bcn-0 br-8 en-2 bw-1 p-20 flex left top">
             <div className="flex left column top" style={{ width: '200px', height: '250px' }}>
@@ -536,7 +569,7 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
                         display: 'grid',
                         gridTemplateColumns: '1fr 1fr',
                         gridColumnGap: '30px',
-                        gridRowGap:'12px',
+                        gridRowGap: '12px',
                         marginTop: 'auto',
                     }}
                 >
@@ -558,38 +591,30 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
             </div>
 
             <PieChart width={260} height={260}>
-                <Pie
-                    data={data}
-                    cx={130}
-                    cy={130}
-                    innerRadius={80}
-                    outerRadius={120}
-                    fill="#8884d8"
-                    dataKey="value"
-                >
+                <Pie data={data} cx={130} cy={130} innerRadius={80} outerRadius={120} fill="#8884d8" dataKey="value">
                     {data.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={colorMap[entry.label]} />
                     ))}
                 </Pie>
-                <Tooltip/>
+                <Tooltip />
             </PieChart>
         </div>
-    );
+    )
 }
 
 const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) => {
-
-    function calculateHistogram(dist, numOfBins=10){
-        const arr = Object.keys(dist).map(Number).sort((a,b)=>a-b)
-        const histogram = computeHistogram(arr, numOfBins).map(arr=>arr.reduce((a,b)=>a+b, 0))
+    function calculateHistogram(dist, numOfBins = 10) {
+        const arr = Object.keys(dist)
+            .map(Number)
+            .sort((a, b) => a - b)
+        const histogram = computeHistogram(arr, numOfBins).map((arr) => arr.reduce((a, b) => a + b, 0))
         return histogram
-
     }
-    const hist = useMemo(()=>calculateHistogram(timeAggregation), [timeAggregation]);
+    const hist = useMemo(() => calculateHistogram(timeAggregation), [timeAggregation])
     const data = Object.entries(hist).map(([timeSpent, freq]) => ({
         'time spent': timeSpent,
         'number of tests': freq,
-    }));
+    }))
     return (
         <div className="w-100 bcn-0 br-8 en-2 bw-1 p-20" style={{ height: '300px' }}>
             <ResponsiveContainer>
@@ -602,6 +627,5 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
                 </BarChart>
             </ResponsiveContainer>
         </div>
-    );
-};
-
+    )
+}

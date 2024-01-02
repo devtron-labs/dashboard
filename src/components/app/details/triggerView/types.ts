@@ -47,7 +47,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
-        appId?:number,
+        appId?: number,
     ) => void
     toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
     closeCDModal: (e: React.MouseEvent) => void
@@ -76,14 +76,20 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
-    updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
-    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, fromRollback?: boolean) => void
+    updateCurrentAppMaterial?: (matId: number, releaseTags?: ReleaseTag[], imageComment?: ImageComment) => void
+    handleMaterialFilters?: (
+        text: string,
+        cdNodeId,
+        nodeType: DeploymentNodeType,
+        isApprovalNode?: boolean,
+        fromRollback?: boolean,
+    ) => void
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
     updateBulkCDMaterialsItem?: (singleCDMaterialResponse: CDMaterialResponseType) => void
     deploymentAppType?: DeploymentAppTypes
     selectedImageFromBulk?: string
-    isSuperAdmin?:boolean
+    isSuperAdmin?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -106,7 +112,7 @@ export enum FilterConditionViews {
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
-    showSearch:boolean
+    showSearch: boolean
     diffFound: boolean
     diffOptions: Record<string, boolean>
     showConfigDiffView: boolean
@@ -119,13 +125,13 @@ export interface CDMaterialState {
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
-    materialInEditModeMap: Map<number,boolean>
+    materialInEditModeMap: Map<number, boolean>
     areMaterialsPassingFilters: boolean
     searchApplied: boolean
     searchText: string
     showConfiguredFilters: boolean
     filterView: FilterConditionViews
-    isSuperAdmin?:boolean
+    isSuperAdmin?: boolean
 }
 
 export interface MaterialInfo {
@@ -177,11 +183,11 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     isJobView?: boolean
     isCITriggerBlocked?: boolean
     ciBlockState?: {
-        action: any,
+        action: any
         metadataField: string
     }
     selectedEnv?: Environment
-    setSelectedEnv?: (selectedEnv: Environment) => void;
+    setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
 }
@@ -310,10 +316,11 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<{
-    appId: string
-    envId: string
-}> {
+export interface TriggerViewProps
+    extends RouteComponentProps<{
+        appId: string
+        envId: string
+    }> {
     isJobView?: boolean
     filteredEnvIds?: string
 }
@@ -515,7 +522,7 @@ export interface CiPipeline {
     componentId?: number
     isCITriggerBlocked?: boolean
     ciBlockState?: {
-        action: any,
+        action: any
         metadataField: string
     }
     isOffendingMandatoryPlugin?: boolean
@@ -565,8 +572,8 @@ export interface CDStageConfigMapSecretNames {
 }
 
 export interface PrePostDeployStageType {
-    isValid: boolean;
-    steps: TaskErrorObj[];
+    isValid: boolean
+    steps: TaskErrorObj[]
     triggerType: string
     name: string
     status: string
@@ -713,8 +720,8 @@ export interface MaterialSourceProps {
 }
 
 export interface AddDimensionsToDownstreamDeploymentsParams {
-    downstreams: NodeAttr[],
-    dimensions: WorkflowDimensions,
-    startX: number,
-    startY: number,
+    downstreams: NodeAttr[]
+    dimensions: WorkflowDimensions
+    startX: number
+    startY: number
 }

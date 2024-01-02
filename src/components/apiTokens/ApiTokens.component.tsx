@@ -46,7 +46,7 @@ function ApiTokens() {
                 setLoader(false)
             })
             .catch((error) => {
-                showError(error,true,true)
+                showError(error, true, true)
                 setErrorStatusCode(error.code)
                 setLoader(false)
             })

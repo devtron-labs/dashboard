@@ -223,7 +223,9 @@ export default function DeploymentTemplateOverrideForm({
         state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
-        if (isCompareAndApprovalState) return
+        if (isCompareAndApprovalState) {
+            return
+        }
 
         if (isValuesOverride && !convertVariablesOverride) {
             dispatch({
@@ -247,7 +249,9 @@ export default function DeploymentTemplateOverrideForm({
             }
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
-            if (!isValuesOverride) return // Don't set unableToParseYaml flag when in manifest view
+            if (!isValuesOverride) {
+                return
+            } // Don't set unableToParseYaml flag when in manifest view
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: true,
@@ -256,7 +260,9 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const handleReadMeClick = () => {
-        if (!state.showReadme && state.unableToParseYaml) return
+        if (!state.showReadme && state.unableToParseYaml) {
+            return
+        }
 
         dispatch({
             type: DeploymentConfigStateActionTypes.multipleOptions,
@@ -275,7 +281,9 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const handleTabSelection = (index: number) => {
-        if (state.unableToParseYaml) return
+        if (state.unableToParseYaml) {
+            return
+        }
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
@@ -389,7 +397,9 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     useEffect(() => {
-        if (isValuesOverride) return
+        if (isValuesOverride) {
+            return
+        }
         const values = Promise.all([getCodeEditorManifestValue(false), getCodeEditorManifestValue(true)])
         setLoadingManifestOverride(true)
         values

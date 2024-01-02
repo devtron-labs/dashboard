@@ -21,7 +21,7 @@ export function TaskDetailComponent() {
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
-        isCdPipeline
+        isCdPipeline,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
@@ -108,15 +108,15 @@ export function TaskDetailComponent() {
             <div>
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
-                        <CustomInput
-                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                            data-testid="preBuild-task-name-textbox"
-                            type="text"
-                            onChange={(e) => handleNameChange(e)}
-                            value={formData[activeStageName].steps[selectedTaskIndex].name}
-                            name="task-name"
-                            error={renderTaskNameError()}
-                        />
+                    <CustomInput
+                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                        data-testid="preBuild-task-name-textbox"
+                        type="text"
+                        onChange={(e) => handleNameChange(e)}
+                        value={formData[activeStageName].steps[selectedTaskIndex].name}
+                        name="task-name"
+                        error={renderTaskNameError()}
+                    />
                 </div>
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>

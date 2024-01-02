@@ -85,7 +85,7 @@ export default function K8sPermissionModal({
     }
 
     const savePermission = () => {
-        let isPermissionValid = k8PermissionList.reduce((valid, permission) => {
+        const isPermissionValid = k8PermissionList.reduce((valid, permission) => {
             valid = valid && !!permission.resource?.length
             return valid
         }, true)
@@ -145,7 +145,7 @@ export default function K8sPermissionModal({
                                 objectMapping={objectMapping}
                                 setObjectMapping={setObjectMapping}
                                 selectedPermissionAction={selectedPermissionAction}
-                                customRoles={customRoles}                              
+                                customRoles={customRoles}
                             />
                         )
                     })}

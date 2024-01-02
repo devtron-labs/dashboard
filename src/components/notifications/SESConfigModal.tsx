@@ -85,9 +85,9 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
         if (this.props.sesConfigId) {
             getSESConfiguration(this.props.sesConfigId)
                 .then((response) => {
-                    let state = { ...this.state }
-                    let region = response.result.region
-                    let awsRegion = this.awsRegionListParsed.find((r) => r.value === region)
+                    const state = { ...this.state }
+                    const region = response.result.region
+                    const awsRegion = this.awsRegionListParsed.find((r) => r.value === region)
                     state.form = {
                         ...response.result,
                         isLoading: false,
@@ -113,37 +113,42 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                     showError(error)
                 })
         } else {
-            let state = { ...this.state }
+            const state = { ...this.state }
             state.form.default = this.props.shouldBeDefault
             state.view = ViewType.FORM
             this.setState(state)
             setTimeout(() => {
-                if (this._configName) this._configName.focus()
+                if (this._configName) {
+                    this._configName.focus()
+                }
             }, 100)
         }
     }
 
     handleBlur(event, key: string): void {
-        let { isValid } = { ...this.state }
-        if (key !== 'region') isValid[key] = !!event.target.value.length
-        else isValid[key] = !!this.state.form.region.value
+        const { isValid } = { ...this.state }
+        if (key !== 'region') {
+            isValid[key] = !!event.target.value.length
+        } else {
+            isValid[key] = !!this.state.form.region.value
+        }
         this.setState({ isValid })
     }
 
     handleConfigNameChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        let { form } = { ...this.state }
+        const { form } = { ...this.state }
         form.configName = event.target.value
         this.setState({ form })
     }
 
     handleAccessKeyIDChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.accessKey = event.target.value
         this.setState({ form, isValid })
     }
 
     handleSecretAccessKeyChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         let secretKey = this.state.secretKey
         form.secretKey = event.target.value
         if (event.target.value.indexOf('*') < 0 && event.target.value.length > 0) {
@@ -153,20 +158,20 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
     }
 
     handleAWSRegionChange(event): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.region = event
         isValid.region = !!event
         this.setState({ form, isValid })
     }
 
     handleEmailChange(event: React.ChangeEvent<HTMLInputElement>): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.fromEmail = event.target.value
         this.setState({ form, isValid })
     }
 
     handleCheckbox(event): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.default = !form.default
         this.setState({ form, isValid })
     }
@@ -180,21 +185,21 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
     }
 
     saveSESConfig(): void {
-        let keys = Object.keys(this.state.isValid)
+        const keys = Object.keys(this.state.isValid)
         let isFormValid = keys.reduce((isFormValid, key) => {
             isFormValid = isFormValid && this.state.isValid[key]
             return isFormValid
         }, true)
         isFormValid = isFormValid && validateEmail(this.state.form.fromEmail)
         if (!isFormValid) {
-            let state = { ...this.state }
+            const state = { ...this.state }
             state.form.isLoading = false
             state.form.isError = true
             this.setState(state)
             toast.error('Some required fields are missing or Invalid')
             return
         } else {
-            let state = { ...this.state }
+            const state = { ...this.state }
             state.form.isLoading = true
             state.form.isError = false
             this.setState(state)
@@ -202,7 +207,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
 
         saveEmailConfiguration(this.getPayload(), 'ses')
             .then((response) => {
-                let state = { ...this.state }
+                const state = { ...this.state }
                 state.form.isLoading = false
                 this.setState(state)
                 toast.success('Saved Successfully')
@@ -213,7 +218,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
             })
             .catch((error) => {
                 showError(error)
-                let state = { ...this.state }
+                const state = { ...this.state }
                 state.form.isLoading = false
                 this.setState(state)
             })
@@ -229,11 +234,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
-                    <form
-                        
-                    >
-                        {body}
-                    </form>
+                    <form>{body}</form>
                 </div>
             </Drawer>
         )
@@ -252,10 +253,10 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                     <Progressing pageLoader />
                 </div>
             )
-        } else
+        } else {
             body = (
                 <>
-                    <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
+                    <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
                         <label className="form__row">
                             <CustomInput
                                 label="Configuration Name"
@@ -379,14 +380,21 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             >
                                 Cancel
                             </button>
-                            <button onClick={this.onSaveClickHandler}
-                                data-testid="add-ses-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button
+                                onClick={this.onSaveClickHandler}
+                                data-testid="add-ses-save-button"
+                                type="submit"
+                                className="cta"
+                                tabIndex={7}
+                                disabled={this.state.form.isLoading}
+                            >
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>
                     </div>
                 </>
             )
+        }
         return this.renderWithBackdrop(body)
     }
 }

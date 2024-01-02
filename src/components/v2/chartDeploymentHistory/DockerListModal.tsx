@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { ReactComponent as Close } from '../assets/icons/ic-close.svg'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { useKeyDown } from '../../common'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib';
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DockerListModal({ closeTab, dockerList }: { closeTab: () => void; dockerList: string[] }) {
     const key = useKeyDown()

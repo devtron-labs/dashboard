@@ -61,9 +61,9 @@ function ExternalAppDetail({ appId, appName, isExternalApp }) {
     const _convertToGenericAppDetailModel = (
         helmAppDetailAndInstalledAppInfo: HelmAppDetailAndInstalledAppInfo,
     ): AppDetails => {
-        let helmAppDetail = helmAppDetailAndInstalledAppInfo.appDetail
-        let installedAppInfo = helmAppDetailAndInstalledAppInfo.installedAppInfo
-        let genericAppDetail: AppDetails = {
+        const helmAppDetail = helmAppDetailAndInstalledAppInfo.appDetail
+        const installedAppInfo = helmAppDetailAndInstalledAppInfo.installedAppInfo
+        const genericAppDetail: AppDetails = {
             appType: AppType.EXTERNAL_HELM_CHART,
             appId: appId,
             appName: appName,

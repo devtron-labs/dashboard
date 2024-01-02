@@ -4,7 +4,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     Option,
-    multiSelectStyles, 
+    multiSelectStyles,
     CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
@@ -34,7 +34,7 @@ export function Sidebar({
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,
-    setSelectedEnv
+    setSelectedEnv,
 }: CIPipelineSidebarType) {
     const {
         formData,
@@ -105,7 +105,7 @@ export function Sidebar({
     }
 
     const addConfigSecrets = (selected) => {
-        const _form = { ...formData}
+        const _form = { ...formData }
         const preConfigMaps = []
         const preSecrets = []
         const postConfigsMaps = []
@@ -161,7 +161,6 @@ export function Sidebar({
                 ...base,
                 top: 'auto',
                 marginTop: '4px',
-
             }),
             dropdownIndicator: (base, state) => ({
                 ...base,
@@ -224,7 +223,10 @@ export function Sidebar({
                         <div className="">
                             {valueList.map((item) => {
                                 return (
-                                    <div key={item.value} className="dc__hover-n50 pt-6 pb-6 flex left dc__visible-hover dc__visible-hover--parent">
+                                    <div
+                                        key={item.value}
+                                        className="dc__hover-n50 pt-6 pb-6 flex left dc__visible-hover dc__visible-hover--parent"
+                                    >
                                         {listIcon(item.type)}
                                         {item.label}
                                         <Remove
@@ -254,8 +256,11 @@ export function Sidebar({
 
     const handleRunInEnvCheckbox = () => {
         const form = { ...formData }
-        if (isPreBuildTab) form.runPreStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, !form.runPreStageInEnv)
-        else form.runPostStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, !form.runPostStageInEnv)
+        if (isPreBuildTab) {
+            form.runPreStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, !form.runPreStageInEnv)
+        } else {
+            form.runPostStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, !form.runPostStageInEnv)
+        }
         setFormData(form)
     }
 
@@ -264,25 +269,23 @@ export function Sidebar({
 
         return (
             <Tippy
-            className="default-tt"
-            arrow={false}
-            placement="bottom"
-            disabled={formData.isClusterCdActive}
-            content="This Environment is not configured to run on devtron worker."
-        >
-            <div
-                className="flexbox flex-justify fs-13 fw-4 mt-12 mb-12 dc__position-rel"
+                className="default-tt"
+                arrow={false}
+                placement="bottom"
+                disabled={formData.isClusterCdActive}
+                content="This Environment is not configured to run on devtron worker."
             >
-                Execute tasks in application environment
-                <input
-                    type="checkbox"
-                    className="icon-dim-20"
-                    checked={runInEnv}
-                    value={CHECKBOX_VALUE.CHECKED}
-                    onChange={handleRunInEnvCheckbox}
-                    disabled={!formData.isClusterCdActive}
-                />
-            </div>
+                <div className="flexbox flex-justify fs-13 fw-4 mt-12 mb-12 dc__position-rel">
+                    Execute tasks in application environment
+                    <input
+                        type="checkbox"
+                        className="icon-dim-20"
+                        checked={runInEnv}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={handleRunInEnvCheckbox}
+                        disabled={!formData.isClusterCdActive}
+                    />
+                </div>
             </Tippy>
         )
     }
@@ -349,10 +352,20 @@ export function Sidebar({
                                     isJobView={isJobCard}
                                 />
                             </div>
-                            {isCdPipeline && (!isVirtualEnvironment || formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) && triggerPipelineMode()}
+                            {isCdPipeline &&
+                                (!isVirtualEnvironment ||
+                                    formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) &&
+                                triggerPipelineMode()}
                         </>
                     )}
-                    {isJobView && <EnvironmentList isBuildStage={true} environments={environments} selectedEnv={selectedEnv} setSelectedEnv={setSelectedEnv} />}
+                    {isJobView && (
+                        <EnvironmentList
+                            isBuildStage={true}
+                            environments={environments}
+                            selectedEnv={selectedEnv}
+                            setSelectedEnv={setSelectedEnv}
+                        />
+                    )}
                 </div>
             ) : (
                 <div className="sidebar-action-container pr-20">

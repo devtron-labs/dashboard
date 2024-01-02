@@ -42,7 +42,10 @@ const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, val
     return (
         <label className="dc__tertiary-tab__radio flex fs-13">
             <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
-            <div className="tertiary-output-tab cursor mr-12 pb-6" data-testid={name+"-link"}> {name} </div>
+            <div className="tertiary-output-tab cursor mr-12 pb-6" data-testid={name + '-link'}>
+                {' '}
+                {name}{' '}
+            </div>
         </label>
     )
 }
@@ -81,13 +84,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         getSeeExample()
             .then((res) => {
                 this.setState({ view: ViewType.LOADING })
-                let bulkConfig = res.result
+                const bulkConfig = res.result
                 let kind = bulkConfig.map((elm) => elm.script.kind)
                 kind = kind.toString().toLocaleLowerCase()
                 let apiVersion = bulkConfig.map((elm) => elm.script.apiVersion)
                 apiVersion = apiVersion.toString()
-                let readmeResult = bulkConfig.map((elm) => elm.readme)
-                let updatedTemplate = bulkConfig.map((elm) => {
+                const readmeResult = bulkConfig.map((elm) => elm.readme)
+                const updatedTemplate = bulkConfig.map((elm) => {
                     return {
                         value: elm.operation,
                         label: elm.operation,
@@ -109,7 +112,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleRunButton = (e) => {
-        var outputDiv = document.querySelector('.code-editor-body')
+        const outputDiv = document.querySelector('.code-editor-body')
         outputDiv.scrollTop = outputDiv.scrollHeight
 
         this.setState({
@@ -126,14 +129,14 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             this.setState({ view: ViewType.FORM })
             return
         }
-        let errorMessage = []
+        const errorMessage = []
         errorMessage.push(STATUS.ERROR)
 
-        let payload = configJson
+        const payload = configJson
 
         updateBulkList(payload)
             .then((response) => {
-                let outputResult = response.result
+                const outputResult = response.result
                 this.setState({
                     statusCode: 0,
                     view: ViewType.FORM,
@@ -151,7 +154,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     handleShowImpactedObjectButton = () => {
-        var outputDiv = document.querySelector('.code-editor-body')
+        const outputDiv = document.querySelector('.code-editor-body')
         outputDiv.scrollTop = outputDiv.scrollHeight
 
         this.setState({
@@ -169,11 +172,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             return
         }
 
-        let payload = configJson
+        const payload = configJson
 
         updateImpactedObjectsList(payload)
             .then((response) => {
-                let impactedObjects = response.result
+                const impactedObjects = response.result
                 this.setState({
                     statusCode: 0,
                     view: ViewType.FORM,
@@ -198,7 +201,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     onClick={(e) => this.handleRunButton(e)}
                     data-testid="run-button"
                 >
-                    <span >
+                    <span>
                         <PlayButton className="flex icon-dim-16 mr-8 " />
                     </span>
                     <div>Run</div>
@@ -501,10 +504,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderOutputs = () => {
-        let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('')
-        let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:')
-        let configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:')
-        let secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:')
+        const payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('')
+        const deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:')
+        const configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:')
+        const secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:')
         return this.state.view === ViewType.LOADING ? (
             <div style={{ height: 'calc(100vh - 600px)' }}>
                 <Progressing pageLoader />
@@ -587,10 +590,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
     renderImpactedObjects = () => {
-        let payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('')
-        let deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:')
-        let configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:')
-        let secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:')
+        const payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('')
+        const deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:')
+        const configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:')
+        const secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:')
         return this.state.view === ViewType.LOADING ? (
             <div style={{ height: 'calc(100vh - 600px)' }}>
                 <Progressing pageLoader />
@@ -610,7 +613,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         this.setState({ isReadmeLoading: true })
         getSeeExample()
             .then((res) => {
-                let readmeResult = res.result.map((elm) => elm.readme)
+                const readmeResult = res.result.map((elm) => elm.readme)
                 this.setState({
                     isReadmeLoading: false,
                     readmeResult: readmeResult,
@@ -625,9 +628,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSampleTemplateHeader = () => {
         return (
             <div className="border-btm bcn-0 pt-5 pb-5 flex pr-20">
-                <div className="fw-6 cn-9 pl-20" data-testid="sample-application">Sample:</div>
+                <div className="fw-6 cn-9 pl-20" data-testid="sample-application">
+                    Sample:
+                </div>
                 <ReactSelect
-                  classNamePrefix='sample-application-select'
+                    classNamePrefix="sample-application-select"
                     value={this.state.updatedTemplate[0]}
                     defaultValue={this.state.updatedTemplate[0]}
                     className="select-width"
@@ -653,7 +658,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderSampleTemplateBody = () => {
-        let readmeJson = this.state.readmeResult.toString()
+        const readmeJson = this.state.readmeResult.toString()
         return this.state.isReadmeLoading ? (
             <div className="bcn-0" style={{ height: 'calc(100vh - 150px)' }}>
                 <Progressing pageLoader />
@@ -744,7 +749,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         }
 
         return (
-            <div className="fs-13" >
+            <div className="fs-13">
                 <PageHeader
                     headerName="Bulk Edit"
                     isTippyShown={true}

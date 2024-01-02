@@ -114,12 +114,13 @@ export class DatePicker extends Component<DatePickerProps> {
                     let buttonStyles = {
                         ...styless.PresetDateRangePicker_button,
                     }
-                    if (isSelected)
+                    if (isSelected) {
                         buttonStyles = {
                             ...buttonStyles,
                             ...styless.PresetDateRangePicker_button__selected,
                             ...styless.DayPicker_portal__horizontal,
                         }
+                    }
                     return (
                         <button
                             type="button"

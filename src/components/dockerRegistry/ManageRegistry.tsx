@@ -312,6 +312,7 @@ function ManageRegistry({
                     className="dc__link"
                     href="https://docs.devtron.ai/v/v0.6/getting-started/global-configurations/docker-registries#specify-image-pull-secret"
                     target="_blank"
+                    rel="noreferrer"
                 >
                     image pull secret name created via CLI
                 </a>

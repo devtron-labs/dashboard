@@ -24,7 +24,10 @@ import {
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
 import { MODES } from '../../../../../../config'
-import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
+import {
+    EMPTY_YAML_ERROR,
+    SAVE_DATA_VALIDATION_ERROR_MSG,
+} from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getTrimmedManifestData } from '../nodeDetail.util'
 
 function ManifestComponent({
@@ -39,7 +42,14 @@ function ManifestComponent({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string, namespace: string }>()
+    const params = useParams<{
+        actionName: string
+        podName: string
+        nodeType: string
+        node: string
+        group: string
+        namespace: string
+    }>()
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
@@ -57,7 +67,9 @@ function ManifestComponent({
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
-        if (isDeleted) return
+        if (isDeleted) {
+            return
+        }
         toggleManagedFields(false)
         const _selectedResource = isResourceBrowserView
             ? selectedResource
@@ -84,8 +96,7 @@ function ManifestComponent({
         if (
             isResourceBrowserView ||
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-            appDetails.deploymentAppDeleteRequest)
+            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
         ) {
             markActiveTab('Live manifest')
         }
@@ -183,7 +194,7 @@ function ManifestComponent({
             if (!modifiedManifest) {
                 setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
                 // Handled for blocking API call
-                manifestString = ""
+                manifestString = ''
             } else {
                 manifestString = JSON.stringify(YAML.parse(modifiedManifest))
             }

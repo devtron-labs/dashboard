@@ -282,7 +282,7 @@ export default function DeploymentConfig({
         templateData,
         updatePublishedState: boolean,
     ): Promise<void> => {
-        let abortController = new AbortController()
+        const abortController = new AbortController()
         if (_currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             const {
                 result: { defaultAppOverride },
@@ -497,7 +497,9 @@ export default function DeploymentConfig({
         state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
-        if (isCompareAndApprovalState) return
+        if (isCompareAndApprovalState) {
+            return
+        }
 
         if (state.isValues && !state.convertVariables) {
             dispatch({
@@ -528,7 +530,9 @@ export default function DeploymentConfig({
             }
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
-            if (!state.isValues) return // don't set flag when in manifest view
+            if (!state.isValues) {
+                return
+            } // don't set flag when in manifest view
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: true,
@@ -537,7 +541,9 @@ export default function DeploymentConfig({
     }
 
     const handleReadMeClick = () => {
-        if (!state.showReadme && state.unableToParseYaml) return
+        if (!state.showReadme && state.unableToParseYaml) {
+            return
+        }
 
         dispatch({
             type: DeploymentConfigStateActionTypes.multipleOptions,
@@ -591,7 +597,9 @@ export default function DeploymentConfig({
     }
 
     const handleTabSelection = (index: number) => {
-        if (state.unableToParseYaml) return
+        if (state.unableToParseYaml) {
+            return
+        }
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
@@ -674,7 +682,9 @@ export default function DeploymentConfig({
     }
 
     useEffect(() => {
-        if (state.isValues) return
+        if (state.isValues) {
+            return
+        }
         setLoadingManifest(true)
         const values = Promise.all([getValueRHS(), getValuesLHS()])
         values

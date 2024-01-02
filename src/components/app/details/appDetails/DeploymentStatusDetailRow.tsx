@@ -226,14 +226,15 @@ export function DeploymentStatusDetailRow({
                     {((type === TIMELINE_STATUS.KUBECTL_APPLY && statusBreakDownType.kubeList?.length) ||
                         (type === TIMELINE_STATUS.APP_HEALTH &&
                             appHealthDropDownlist.includes(statusBreakDownType.icon)) ||
-                        ((type === TIMELINE_STATUS.GIT_COMMIT || type === TIMELINE_STATUS.ARGOCD_SYNC) && statusBreakDownType.icon === 'failed')) && (
-                            <DropDownIcon
-                                style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
-                                className="icon-dim-24 rotate pointer"
-                                onClick={toggleDropdown}
-                                data-testid="steps-deployment-history-dropdown"
-                            />
-                        )}
+                        ((type === TIMELINE_STATUS.GIT_COMMIT || type === TIMELINE_STATUS.ARGOCD_SYNC) &&
+                            statusBreakDownType.icon === 'failed')) && (
+                        <DropDownIcon
+                            style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
+                            className="icon-dim-24 rotate pointer"
+                            onClick={toggleDropdown}
+                            data-testid="steps-deployment-history-dropdown"
+                        />
+                    )}
                 </div>
                 {isHelmManifestPushFailed && renderErrorInfoBar()}
             </div>

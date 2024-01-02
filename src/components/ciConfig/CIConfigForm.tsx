@@ -111,7 +111,9 @@ export default function CIConfigForm({
         processing: false,
         workflows: [],
     })
-    const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden && _ci?.pipelineType !== CIPipelineBuildType.CI_JOB)
+    const configOverridenPipelines = ciConfig?.ciPipelines?.filter(
+        (_ci) => _ci.isDockerConfigOverridden && _ci?.pipelineType !== CIPipelineBuildType.CI_JOB,
+    )
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
         initCurrentCIBuildConfig(
             allowOverride,
@@ -151,13 +153,13 @@ export default function CIConfigForm({
     }
 
     async function onValidation(state) {
-        let args2 = args.map(({ k, v, keyError, valueError }, idx) => {
+        const args2 = args.map(({ k, v, keyError, valueError }, idx) => {
             if (v && !k) {
                 keyError = 'This field is required'
             } else if (k && !v) {
                 valueError = 'This field is required'
             }
-            let arg = { k, v, keyError, valueError }
+            const arg = { k, v, keyError, valueError }
             return arg
         })
         const areArgsWrong = args2.some((arg) => arg.keyError || arg.valueError)
@@ -189,7 +191,9 @@ export default function CIConfigForm({
                 languageVersion: _ciBuildConfig.buildPackConfig.languageVersion,
                 projectPath: projectPath.value || './',
                 args: buildEnvArgs.reduce((agg, { k, v }) => {
-                    if (k && v) agg[k] = v
+                    if (k && v) {
+                        agg[k] = v
+                    }
                     return agg
                 }, {}),
             }
@@ -199,7 +203,9 @@ export default function CIConfigForm({
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
                 dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                 args: args.reduce((agg, { k, v }) => {
-                    if (k && v) agg[k] = v
+                    if (k && v) {
+                        agg[k] = v
+                    }
                     return agg
                 }, {}),
                 dockerfileRepository: repository.value,

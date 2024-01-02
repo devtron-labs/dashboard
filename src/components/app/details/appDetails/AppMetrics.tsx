@@ -1,107 +1,131 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
+import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router'
 import { not, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect } from './utils';
-import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType, StatusTypes, StatusType, CalendarFocusInput, CalendarFocusInputType, AppDetailsPathParams } from './appDetails.type';
-import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker } from '../../../common';
-import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
-import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
+import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect } from './utils'
+import {
+    ChartTypes,
+    AppMetricsTab,
+    AppMetricsTabType,
+    ChartType,
+    StatusTypes,
+    StatusType,
+    CalendarFocusInput,
+    CalendarFocusInputType,
+    AppDetailsPathParams,
+} from './appDetails.type'
+import { GraphModal } from './GraphsModal'
+import { DatePickerType2 as DateRangePicker } from '../../../common'
+import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
+import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION, ModuleNameMap, URLS } from '../../../../config';
-import { Link, NavLink } from 'react-router-dom';
-import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
-import { getHostURLConfiguration } from '../../../../services/service';
+import {
+    getAppComposeURL,
+    APP_COMPOSE_STAGE,
+    DOCUMENTATION,
+    DEFAULTK8SVERSION,
+    ModuleNameMap,
+    URLS,
+} from '../../../../config'
+import { Link, NavLink } from 'react-router-dom'
+import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service'
+import { getHostURLConfiguration } from '../../../../services/service'
 import { toast } from 'react-toastify'
-import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
-import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png';
-import moment, { Moment } from 'moment';
-import Tippy from '@tippyjs/react';
-import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg';
-import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service';
-import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type';
+import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
+import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
+import moment, { Moment } from 'moment'
+import Tippy from '@tippyjs/react'
+import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 
-export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<string, any>, k8sVersion, addExtraSpace: boolean}> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
-    const { appMetrics, environmentName, infraMetrics } = environment;
-    const [calendar, setDateRange] = useState<{ startDate: Moment, endDate: Moment }>({
+export const AppMetrics: React.FC<{
+    appName: string
+    environment
+    podMap: Map<string, any>
+    k8sVersion
+    addExtraSpace: boolean
+}> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
+    const { appMetrics, environmentName, infraMetrics } = environment
+    const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
         endDate: moment(),
-    });
-    const [calendarInputs, setCalendarInput] = useState<{ startDate: string, endDate: string }>({
+    })
+    const [calendarInputs, setCalendarInput] = useState<{ startDate: string; endDate: string }>({
         startDate: 'now-5m',
         endDate: 'now',
-    });
+    })
     const [datasource, setDatasource] = useState({
         isLoading: true,
         isConfigured: false,
         isHealthy: false,
-    });
-    const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
-    const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate);
-    const [chartName, setChartName] = useState<ChartTypes>(null);
-    const { appId, envId } = useParams<AppDetailsPathParams>();
-    const [calendarValue, setCalendarValue] = useState('');
-    const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput);
-    const [selectedLatency, setLatency] = useState<number>(99.9);
-    const [hostURLConfig, setHostURLConfig] = useState(undefined);
-    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
-    const [graphs, setGraphs] = useState({
-        cpu: "",
-        ram: "",
-        throughput: "",
-        latency: "",
     })
-    const addSpace: string = addExtraSpace ? 'mb-16':'';
-    let pod = podMap?.values().next().value;
-    let newPodHash = pod?.networkingInfo?.labels['rollouts-pod-template-hash'];
+    const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
+    const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate)
+    const [chartName, setChartName] = useState<ChartTypes>(null)
+    const { appId, envId } = useParams<AppDetailsPathParams>()
+    const [calendarValue, setCalendarValue] = useState('')
+    const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput)
+    const [selectedLatency, setLatency] = useState<number>(99.9)
+    const [hostURLConfig, setHostURLConfig] = useState(undefined)
+    const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+    const [graphs, setGraphs] = useState({
+        cpu: '',
+        ram: '',
+        throughput: '',
+        latency: '',
+    })
+    const addSpace: string = addExtraSpace ? 'mb-16' : ''
+    const pod = podMap?.values().next().value
+    const newPodHash = pod?.networkingInfo?.labels['rollouts-pod-template-hash']
 
     function handleTabChange(event): void {
-        let tab = event.target.value;
-        setTab(tab);
-        getNewGraphs(tab);
+        const tab = event.target.value
+        setTab(tab)
+        getNewGraphs(tab)
     }
 
     function handleDatesChange({ startDate, endDate }): void {
         setDateRange({
             startDate: startDate,
             endDate: endDate,
-        });
+        })
         setCalendarInput({
             startDate: startDate?.format('DD-MM-YYYY hh:mm:ss'),
-            endDate: endDate?.format('DD-MM-YYYY hh:mm:ss') || ''
-        });
+            endDate: endDate?.format('DD-MM-YYYY hh:mm:ss') || '',
+        })
     }
 
     function handleDateInput(key: CalendarFocusInputType, value: string): void {
         setCalendarInput({
             ...calendarInputs,
-            [key]: value
-        });
+            [key]: value,
+        })
     }
 
     function handleFocusChange(focusedInput): void {
-        setFocusedInput(focusedInput || CalendarFocusInput.StartDate);
+        setFocusedInput(focusedInput || CalendarFocusInput.StartDate)
     }
 
     function handleApply(): void {
-        let str = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate);
-        setCalendarValue(str);
+        const str = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
+        setCalendarValue(str)
     }
 
     async function checkDatasource() {
         try {
-            let datasourceConfiguredRes, datasourceHealthyRes, hostUrlRes;
-            hostUrlRes = await getHostURLConfiguration();
-            setHostURLConfig(hostUrlRes.result);
-            datasourceConfiguredRes = await isDatasourceConfigured(environmentName);
-            if (datasourceConfiguredRes.id) datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id);
+            let datasourceConfiguredRes, datasourceHealthyRes, hostUrlRes
+            hostUrlRes = await getHostURLConfiguration()
+            setHostURLConfig(hostUrlRes.result)
+            datasourceConfiguredRes = await isDatasourceConfigured(environmentName)
+            if (datasourceConfiguredRes.id) {
+                datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id)
+            }
             setDatasource({
                 isLoading: false,
                 isConfigured: !!datasourceConfiguredRes.id,
-                isHealthy: datasourceHealthyRes.status.toLowerCase() === "success",
+                isHealthy: datasourceHealthyRes.status.toLowerCase() === 'success',
             })
-        }
-        catch (error) {
+        } catch (error) {
             setDatasource({
                 ...datasource,
                 isLoading: false,
@@ -113,102 +137,119 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         setDateRange({
             startDate: start,
             endDate: end,
-        });
+        })
         setCalendarInput({
             startDate: startStr,
             endDate: 'now',
-        });
-        let str = getCalendarValue(startStr, 'now');
-        setCalendarValue(str);
+        })
+        const str = getCalendarValue(startStr, 'now')
+        setCalendarValue(str)
     }
 
     function handleStatusChange(selected): void {
         if (!isK8sVersionValid(k8sVersion)) {
-            k8sVersion = DEFAULTK8SVERSION;
+            k8sVersion = DEFAULTK8SVERSION
         }
-        let appInfo = {
+        const appInfo = {
             appId: appId,
             envId: envId,
             environmentName: environmentName,
             newPodHash: newPodHash,
             k8sVersion: k8sVersion,
         }
-        let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, tab, true, selected.value);
-        setStatusCode(selected.value);
+        const throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, tab, true, selected.value)
+        setStatusCode(selected.value)
         setGraphs({
             ...graphs,
             throughput: throughput,
-        });
+        })
     }
 
     function handleLatencyChange(selected): void {
         if (!isK8sVersionValid(k8sVersion)) {
-            k8sVersion = DEFAULTK8SVERSION;
+            k8sVersion = DEFAULTK8SVERSION
         }
-        let appInfo = {
+        const appInfo = {
             appId: appId,
             envId: envId,
             environmentName: environmentName,
             newPodHash: newPodHash,
             k8sVersion: k8sVersion,
         }
-        let latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, tab, true, undefined, selected.value);
-        setLatency(selected.value);
+        const latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, tab, true, undefined, selected.value)
+        setLatency(selected.value)
         setGraphs({
             ...graphs,
             latency: latency,
-        });
+        })
     }
 
     function getNewGraphs(newTab): void {
-        if (!datasource.isHealthy) return;
-
-        if (!isK8sVersionValid(k8sVersion)) {
-            k8sVersion = DEFAULTK8SVERSION;
-
-            toast.warn(<div className="toast">
-                <div className="toast__title">Error Parsing K8sVersion</div>
-                <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
-            </div>)
+        if (!datasource.isHealthy) {
+            return
         }
 
-        let appInfo = {
+        if (!isK8sVersionValid(k8sVersion)) {
+            k8sVersion = DEFAULTK8SVERSION
+
+            toast.warn(
+                <div className="toast">
+                    <div className="toast__title">Error Parsing K8sVersion</div>
+                    <div className="toast__subtitle">Showing Graphs for {DEFAULTK8SVERSION} and above</div>
+                </div>,
+            )
+        }
+
+        const appInfo = {
             appId: appId,
             envId: envId,
             environmentName: environmentName,
             newPodHash: newPodHash,
             k8sVersion: k8sVersion,
         }
-        let cpu = getIframeSrc(appInfo, ChartType.Cpu, calendarInputs, newTab, true);
-        let ram = getIframeSrc(appInfo, ChartType.Ram, calendarInputs, newTab, true);
-        let latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, newTab, true, undefined, selectedLatency);
-        let throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, newTab, true, StatusType.Throughput);
+        const cpu = getIframeSrc(appInfo, ChartType.Cpu, calendarInputs, newTab, true)
+        const ram = getIframeSrc(appInfo, ChartType.Ram, calendarInputs, newTab, true)
+        const latency = getIframeSrc(
+            appInfo,
+            ChartType.Latency,
+            calendarInputs,
+            newTab,
+            true,
+            undefined,
+            selectedLatency,
+        )
+        const throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, newTab, true, StatusType.Throughput)
         setGraphs({
             cpu,
             ram,
             throughput,
             latency,
-        });
+        })
     }
 
     useEffect(() => {
         const inputCalendarValue: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
-        if(inputCalendarValue !== calendarValue){
-          setCalendarValue(inputCalendarValue);
+        if (inputCalendarValue !== calendarValue) {
+            setCalendarValue(inputCalendarValue)
         }
-        if(grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED){
-          checkDatasource();
+        if (grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED) {
+            checkDatasource()
         }
     }, [appName, grafanaModuleStatus])
 
     useEffect(() => {
-        getNewGraphs(tab);
+        getNewGraphs(tab)
     }, [datasource, calendarValue])
 
     //@ts-ignore
-    if(grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED){
+    if (grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED) {
         return <MonitoringModuleNotInstalled addSpace={addSpace} />
-    } else if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
+    } else if (
+        !datasource.isConfigured ||
+        !datasource.isHealthy ||
+        !hostURLConfig ||
+        hostURLConfig.value !== window.location.origin
+    ) {
         return (
             <AppMetricsEmptyState
                 isLoading={datasource.isLoading}
@@ -217,8 +258,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 hostURLConfig={hostURLConfig}
             />
         )
-    }
-    else {
+    } else {
         return (
             <section
                 data-testid="app-metrices-wrapper"
@@ -393,12 +433,12 @@ function PrometheusError() {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
 function EnableAppMetrics() {
-    const { appId } = useParams<AppDetailsPathParams>();
-    const LINK = getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE);
+    const { appId } = useParams<AppDetailsPathParams>()
+    const LINK = getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE)
     return (
         <div
             data-testid="app-metrices-not-enabled"
@@ -445,22 +485,23 @@ function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
 }
 
 function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig }) {
-    const [collapsed, toggleCollapsed] = useState<boolean>(true);
+    const [collapsed, toggleCollapsed] = useState<boolean>(true)
 
     const toggleHeader = () => {
-      toggleCollapsed(not)
+        toggleCollapsed(not)
     }
 
-    let subtitle = '';
+    let subtitle = ''
     if (!isConfigured) {
-        subtitle = 'We could not connect to prometheus endpoint. Please configure data source and try reloading this page.';
-    }
-    else if (!isHealthy) {
-        subtitle = 'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.';
+        subtitle =
+            'We could not connect to prometheus endpoint. Please configure data source and try reloading this page.'
+    } else if (!isHealthy) {
+        subtitle =
+            'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.'
     }
     return (
-        <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor" >
-            <div  onClick={toggleHeader} className="flex left w-100 lh-20">
+        <div className="app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor">
+            <div onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
                     APPLICATION METRICS
@@ -510,6 +551,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
                                         href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
                                         target="_blank"
                                         style={{ paddingLeft: '0' }}
+                                        rel="noreferrer"
                                     >
                                         See how to fix
                                     </a>

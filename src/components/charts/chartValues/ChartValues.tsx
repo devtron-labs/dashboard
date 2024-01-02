@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router'
-import { showError, Progressing, ErrorScreenManager, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    BreadCrumb,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
@@ -62,15 +68,19 @@ export default function ChartValues() {
         }
         if (id) {
             const chartValues = chartValuesList.find((chrtValue) => {
-                if (chrtValue.kind === kind && chrtValue.id === id) return chrtValue
+                if (chrtValue.kind === kind && chrtValue.id === id) {
+                    return chrtValue
+                }
             })
             if (chartValues) {
                 setChartValues(chartValues)
                 if (chartValueId !== '0') {
                     setValueName(chartValues.name)
                 }
-                if(availableVersions?.length){
-                    const selectedChartVersionObj = availableVersions.find(availableVersion=> availableVersion.version === chartValues.chartVersion)
+                if (availableVersions?.length) {
+                    const selectedChartVersionObj = availableVersions.find(
+                        (availableVersion) => availableVersion.version === chartValues.chartVersion,
+                    )
                     setChartVersionId(+selectedChartVersionObj.id)
                 }
             }

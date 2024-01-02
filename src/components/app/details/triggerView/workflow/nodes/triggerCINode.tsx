@@ -58,7 +58,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         this.props.history.push(this.getCIDetailsURL())
     }
 
-    hideDetails(status: string = '') {
+    hideDetails(status = '') {
         return (
             status === DEFAULT_STATUS.toLowerCase() ||
             status === BUILD_STATUS.NOT_TRIGGERED ||
@@ -70,7 +70,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     renderStatus() {
         const url = this.getCIDetailsURL()
         const status = this.props.status ? this.props.status.toLowerCase() : ''
-        if (this.hideDetails(status))
+        if (this.hideDetails(status)) {
             return (
                 <div
                     data-testid={`ci-trigger-status-${this.props.index}`}
@@ -80,7 +80,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     {this.props.status ? this.props.status : BUILD_STATUS.NOT_TRIGGERED}
                 </div>
             )
-        else
+        } else {
             return (
                 <div
                     data-testid={`ci-trigger-status-${this.props.index}`}
@@ -100,13 +100,16 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     </Link>
                 </div>
             )
+        }
     }
 
     renderCardContent(context) {
         const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
         let _selectedEnv
         if (this.props.isJobView) {
-            let _selectedPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.id)
+            const _selectedPipeline = this.props.filteredCIPipelines?.find(
+                (_ciPipeline) => _ciPipeline?.id == this.props.id,
+            )
             let envId = _selectedPipeline?.environmentId
             if (!_selectedPipeline?.environmentId && _selectedPipeline?.lastTriggeredEnvId === -1) {
                 envId = 0
@@ -119,7 +122,9 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             <div
                 className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
                 onClick={(e) => {
-                    if (!hideDetails) this.redirectToCIDetails()
+                    if (!hideDetails) {
+                        this.redirectToCIDetails()
+                    }
                 }}
             >
                 {this.props.linkedCount ? (
@@ -143,7 +148,9 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 <div className="workflow-node__title flex">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
-                        {!this.props.isJobView && <span className="workflow-node__text-light"> {this.props.isJobCI ? "Job" : "Build" } </span>}
+                        {!this.props.isJobView && (
+                            <span className="workflow-node__text-light"> {this.props.isJobCI ? 'Job' : 'Build'} </span>
+                        )}
                         <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>

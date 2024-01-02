@@ -19,7 +19,11 @@ import {
 import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
-import { getAllChildDownstreams, getCreateWorkflows, getMaxYFromFirstLevelDownstream } from '../app/details/triggerView/workflow.service'
+import {
+    getAllChildDownstreams,
+    getCreateWorkflows,
+    getMaxYFromFirstLevelDownstream,
+} from '../app/details/triggerView/workflow.service'
 import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
 import CIPipeline from '../CIPipelineN/CIPipeline'

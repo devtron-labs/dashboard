@@ -75,7 +75,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     }, [externalLinks])
 
     useEffect(() => {
-        if (!copiedNodeName) return
+        if (!copiedNodeName) {
+            return
+        }
         setTimeout(() => setCopiedNodeName(''), 2000)
     }, [copiedNodeName])
 
@@ -205,7 +207,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
-            const portList = [...new Set(node?.port)];
+            const portList = [...new Set(node?.port)]
             return (
                 <>
                     {portList.map((val, idx) => {
@@ -292,7 +294,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     <Clipboard
                         className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                         onClick={(event) => {
-                            toggleClipBoard(event, nodeName.split(" ").join(""))
+                            toggleClipBoard(event, nodeName.split(' ').join(''))
                         }}
                     />
                 </span>
@@ -441,7 +443,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </div>
                             </div>
                         </div>
-                        {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
+                        {params.nodeType === NodeType.Service.toLowerCase() &&
+                            node.kind !== 'Endpoints' &&
+                            node.kind !== 'EndpointSlice' && (
                                 <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
                                     {portNumberPlaceHolder(node)}
                                     {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
@@ -487,7 +491,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 )}
                             </div>
                         )}
-                        {node?.kind !== NodeType.Containers && node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && (
+                        {node?.kind !== NodeType.Containers &&
+                            node?.kind !== 'Endpoints' &&
+                            node?.kind !== 'EndpointSlice' && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                                 </div>

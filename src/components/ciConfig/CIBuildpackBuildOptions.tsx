@@ -26,7 +26,13 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { stopPropagation, CIBuildType, TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    stopPropagation,
+    CIBuildType,
+    TippyCustomized,
+    TippyTheme,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
@@ -39,7 +45,9 @@ import {
 } from './ciConfigConstant'
 
 export const renderOptionIcon = (option: string) => {
-    if (!option) return null
+    if (!option) {
+        return null
+    }
 
     const isGitLab = option.includes('gitlab')
     const isGitHub = option.includes('github')
@@ -65,7 +73,7 @@ export const repositoryOption = (props): JSX.Element => {
     )
 }
 
-export const releaseTagOption = (props) : JSX.Element => {
+export const releaseTagOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (
         <components.Option {...props} onClick={stopPropagation}>
@@ -74,20 +82,16 @@ export const releaseTagOption = (props) : JSX.Element => {
     )
 }
 
-export const checkoutPathOption = (props) : JSX.Element => {
+export const checkoutPathOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
-    return (
-        <components.Option {...props}>
-            {props.value}
-        </components.Option>
-    )
+    return <components.Option {...props}>{props.value}</components.Option>
 }
 export const repositoryControls = (props): JSX.Element => {
     let value = ''
     if (props.hasValue) {
         value = props.getValue()[0].url
     }
-    let showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
+    const showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
     return (
         <components.Control {...props}>
             {value.includes('github') && <GitHub className="icon-dim-20 ml-10" />}
@@ -362,7 +366,7 @@ export default function CIBuildpackBuildOptions({
     }
 
     const updateBuildEnvArgs = (version: string, builder: BuilderIdOptionType, isInitCall?: boolean) => {
-        let _buildEnvArgs = [...buildEnvArgs]
+        const _buildEnvArgs = [...buildEnvArgs]
 
         /**
          * If _buildEnvArgs contains only one empty arg

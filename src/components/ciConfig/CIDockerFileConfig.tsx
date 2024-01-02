@@ -109,7 +109,7 @@ export default function CIDockerFileConfig({
         if (window._env_.ENABLE_BUILD_CONTEXT) {
             let currentOverriddenGitMaterialId = 0,
                 currentOverriddenBuildContextGitMaterialId = 0
-            let currentOverriddenBuildContext =
+            const currentOverriddenBuildContext =
                 ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
             currentOverriddenGitMaterialId =
                 ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.gitMaterialId
@@ -129,7 +129,7 @@ export default function CIDockerFileConfig({
     const buildContextCheckoutPath = selectedBuildContextGitMaterial
         ? selectedBuildContextGitMaterial.checkoutPath
         : currentMaterial?.checkoutPath
-    let checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
+    const checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
     if (buildContextCheckoutPath !== RootBuildContext) {
         checkoutPathArray.push({ label: buildContextCheckoutPath, value: buildContextCheckoutPath })
     }
@@ -137,7 +137,7 @@ export default function CIDockerFileConfig({
     const { isAirgapped } = useContext(mainContext)
 
     useEffect(() => {
-        let checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
+        const checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
         if (selectedBuildContextGitMaterial?.checkoutPath !== RootBuildContext) {
             checkoutPathArray.push({
                 label: selectedBuildContextGitMaterial?.checkoutPath,
@@ -170,7 +170,9 @@ export default function CIDockerFileConfig({
                 buildPackConfig: {
                     ...currentCIBuildConfig.buildPackConfig,
                     args: buildEnvArgs.reduce((agg, { k, v }) => {
-                        if (k && v) agg[k] = v
+                        if (k && v) {
+                            agg[k] = v
+                        }
                         return agg
                     }, {}),
                 },
@@ -250,14 +252,14 @@ export default function CIDockerFileConfig({
         })
     }
 
-    const handleCIBuildTypeOptionSelection = (id: CIBuildType, isDisabled:boolean) => {
+    const handleCIBuildTypeOptionSelection = (id: CIBuildType, isDisabled: boolean) => {
         if (!isDisabled) {
             setCIBuildTypeOption(id)
             setCurrentCIBuildConfig({
                 ...currentCIBuildConfig,
                 ciBuildType: id,
             })
-        }  
+        }
     }
 
     const canShowTick = (id: CIBuildType) => {

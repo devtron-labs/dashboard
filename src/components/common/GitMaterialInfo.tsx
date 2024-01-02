@@ -1,19 +1,18 @@
-
 import React, { useState } from 'react'
 import { createGitCommitUrl } from './index'
-import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg';
-import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg';
-import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
-import { ReactComponent as CommitIcon } from '../../assets/icons/ic-commit.svg';
-import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg';
+import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg'
+import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg'
+import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg'
+import { ReactComponent as CommitIcon } from '../../assets/icons/ic-commit.svg'
+import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { GitTriggers, CiMaterial } from '../app/details/cicdHistory/types'
-import { Moment12HourFormat } from '../../config';
+import { Moment12HourFormat } from '../../config'
 import moment from 'moment'
-import {CiPipelineSourceConfig} from '../ciPipeline/CiPipelineSourceConfig';
+import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import { not } from '@devtron-labs/devtron-fe-common-lib'
 
 function getGitIcon(repoUrl) {
-    for (let gitProvider of ['github', 'gitlab', 'bitbucket']) {
+    for (const gitProvider of ['github', 'gitlab', 'bitbucket']) {
         if (repoUrl.includes(gitProvider)) {
             return `${gitProvider}`
         }
@@ -55,7 +54,7 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
     gitTrigger,
     ciMaterial,
 }) => {
-    const [changes, showChanges] = useState(false);
+    const [changes, showChanges] = useState(false)
     return (
         <div className="flex column left">
             <div className="material-history__header">
@@ -85,7 +84,11 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
             {changes && (
                 <div className="material-history__all-changes w-100 mono fs-14">
                     {gitTrigger?.Changes.map((change, index) => {
-                        return <div className="pl-16 " key={index}>{change}</div>;
+                        return (
+                            <div className="pl-16 " key={index}>
+                                {change}
+                            </div>
+                        )
                     })}
                 </div>
             )}
@@ -100,5 +103,5 @@ export const GitCommitDetailCard: React.FC<{ gitTrigger: GitTriggers; ciMaterial
                 </div>
             )}
         </div>
-    );
-};
+    )
+}

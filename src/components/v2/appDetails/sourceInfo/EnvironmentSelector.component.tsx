@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
-import { showError, PopupMenu, multiSelectStyles, ForceDeleteDialog, ServerErrors, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    PopupMenu,
+    multiSelectStyles,
+    ForceDeleteDialog,
+    ServerErrors,
+    DeploymentAppTypes,
+} from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import IndexStore from '../index.store'
 import { AppEnvironment } from './environment.type'
@@ -103,7 +110,7 @@ function EnvironmentSelectorComponent({
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteDialogTitle(userMessage)
-                setForceDeleteDialogMessage( internalMessage)
+                setForceDeleteDialogMessage(internalMessage)
             })
         }
     }
@@ -119,8 +126,8 @@ function EnvironmentSelectorComponent({
     const onClickHideNonCascadeDeletePopup = () => {
         showNonCascadeDeleteDialog(false)
     }
-    
-    const onClickNonCascadeDelete = async() => {
+
+    const onClickNonCascadeDelete = async () => {
         await deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
@@ -144,7 +151,7 @@ function EnvironmentSelectorComponent({
                 showNonCascadeDeleteDialog(true)
             }
         } catch (error: any) {
-            if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && error.code !== 403) { 
+            if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && error.code !== 403) {
                 setShowDeleteConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 setForceDeleteDialogData(error)
@@ -261,7 +268,9 @@ function EnvironmentSelectorComponent({
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
                             <BinWithDots className="icon-dim-16 mr-8 ml-12" />
-                            <span className="cr-5 fw-6" data-testid = "delete-progress">{DELETE_DEPLOYMENT_PIPELINE}</span>
+                            <span className="cr-5 fw-6" data-testid="delete-progress">
+                                {DELETE_DEPLOYMENT_PIPELINE}
+                            </span>
                             <span className="dc__loading-dots cr-5" />
                         </>
                     )}
@@ -298,13 +307,19 @@ function EnvironmentSelectorComponent({
                             deployedAppDetail[0],
                         )
                     ) && (
-                        <div data-testid="dot-button-app-details" className="helm-delete-wrapper flex ml-8 mw-none cta cancel small">
+                        <div
+                            data-testid="dot-button-app-details"
+                            className="helm-delete-wrapper flex ml-8 mw-none cta cancel small"
+                        >
                             <PopupMenu autoClose>
                                 <PopupMenu.Button rootClassName="flex" isKebab={true}>
                                     <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                   <div className="helm-delete-pop-up bcn-0 br-4"> <Popup /></div>
+                                    <div className="helm-delete-pop-up bcn-0 br-4">
+                                        {' '}
+                                        <Popup />
+                                    </div>
                                 </PopupMenu.Body>
                             </PopupMenu>
                             {showDeleteConfirmation && (

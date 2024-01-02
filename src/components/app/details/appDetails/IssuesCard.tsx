@@ -52,15 +52,16 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP && appDetails.resourceTree?.nodes?.length) {
             const hasImagePullBackOff = appDetails.resourceTree.nodes.some((node) => {
-                return node.info?.some((info) =>
-                    info.value &&
-                    (info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
-                        info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF)
-                );
-            });
-    
+                return node.info?.some(
+                    (info) =>
+                        info.value &&
+                        (info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
+                            info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF),
+                )
+            })
+
             if (hasImagePullBackOff) {
-                setIsImagePullBackOff(true);
+                setIsImagePullBackOff(true)
             }
         }
     }, [appDetails])
@@ -177,7 +178,9 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         return null
     }
 
-    if (cardLoading) return <LoadingCard />
+    if (cardLoading) {
+        return <LoadingCard />
+    }
 
     return (
         <div

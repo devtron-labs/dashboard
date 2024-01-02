@@ -39,9 +39,9 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     renderEnvironmentList(app) {
-        let len = app.environments.length
+        const len = app.environments.length
         if (len) {
-            let isEnvConfigured = app.defaultEnv && app.defaultEnv.name
+            const isEnvConfigured = app.defaultEnv && app.defaultEnv.name
             return (
                 <div className="app-list__cell app-list__cell--env">
                     <p
@@ -51,13 +51,20 @@ export class AppListView extends Component<AppListViewProps> {
                         {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
                     </p>
                     {len > 1 ? (
-                        <button type="button" className="cell__link fs-13 dc__truncate-text mw-18" data-key={app.id} onClick={this.expandEnv}>
+                        <button
+                            type="button"
+                            className="cell__link fs-13 dc__truncate-text mw-18"
+                            data-key={app.id}
+                            onClick={this.expandEnv}
+                        >
                             +{len - 1} more
                         </button>
                     ) : null}
                 </div>
             )
-        } else return <div className="app-list__cell app-list__cell--env"></div>
+        } else {
+            return <div className="app-list__cell app-list__cell--env"></div>
+        }
     }
 
     sortByAppName = (e) => {
@@ -85,7 +92,7 @@ export class AppListView extends Component<AppListViewProps> {
 
     renderAppList() {
         if (this.props.apps.length) {
-            let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
+            const icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
                 <div className="app-list" data-testid="app-list-container">
                     <div className="app-list__header dc__position-sticky dc__top-47">
@@ -189,7 +196,10 @@ export class AppListView extends Component<AppListViewProps> {
                                                 className="app-list__cell app-list__cell--app_status"
                                                 data-testid="devtron-app-status"
                                             >
-                                                <AppStatus appStatus={app.defaultEnv.appStatus} isVirtualEnv={app.defaultEnv.isVirtualEnvironment} />
+                                                <AppStatus
+                                                    appStatus={app.defaultEnv.appStatus}
+                                                    isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
+                                                />
                                             </div>
                                         )}
                                         {this.renderEnvironmentList(app)}

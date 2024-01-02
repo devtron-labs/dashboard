@@ -17,7 +17,7 @@ import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import * as queryString from 'query-string'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { SIDEBAR_KEYS ,NODE_DETAILS_PAGE_SIZE_OPTIONS} from '../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
 
 export default function NodeDetailsList({
@@ -28,16 +28,16 @@ export default function NodeDetailsList({
     addTab,
     syncError,
     lastDataSync,
-    setLastDataSync
+    setLastDataSync,
 }) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
     const urlParams = new URLSearchParams(location.search)
-    const k8sVersion = urlParams.get('k8sversion')?decodeURIComponent(urlParams.get('k8sversion')):''
-    const name = decodeURIComponent(urlParams.get('name') || '');
-    const label = decodeURIComponent(urlParams.get('label') || '');
-    const group = decodeURIComponent(urlParams.get('group') || '');
+    const k8sVersion = urlParams.get('k8sversion') ? decodeURIComponent(urlParams.get('k8sversion')) : ''
+    const name = decodeURIComponent(urlParams.get('name') || '')
+    const label = decodeURIComponent(urlParams.get('label') || '')
+    const group = decodeURIComponent(urlParams.get('group') || '')
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [searchText, setSearchText] = useState(name || label || group || '')
@@ -48,10 +48,8 @@ export default function NodeDetailsList({
         k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion,
     )
 
-    const initialSeachType = getInitialSearchType(name, label, group);
+    const initialSeachType = getInitialSearchType(name, label, group)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>(initialSeachType)
-    
-
 
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
@@ -61,23 +59,24 @@ export default function NodeDetailsList({
 
     function getInitialSearchType(name: string, label: string, group: string): string {
         if (name) {
-            return NODE_SEARCH_TEXT.NAME;
+            return NODE_SEARCH_TEXT.NAME
         } else if (label) {
-            return NODE_SEARCH_TEXT.LABEL;
+            return NODE_SEARCH_TEXT.LABEL
         } else if (group) {
-            return NODE_SEARCH_TEXT.NODE_GROUP;
+            return NODE_SEARCH_TEXT.NODE_GROUP
         } else {
-            return '';
+            return ''
         }
     }
 
-
     const getSearchTextMap = (searchText: string): Map<string, string> => {
         const _searchedTextMap = new Map()
-        if (!searchText) return _searchedTextMap
+        if (!searchText) {
+            return _searchedTextMap
+        }
         const searchedLabelArr = searchText.split(',').map((item) => item.trim())
 
-        for (let currentItem of searchedLabelArr) {
+        for (const currentItem of searchedLabelArr) {
             if (!currentItem) {
                 continue
             }
@@ -112,7 +111,7 @@ export default function NodeDetailsList({
 
             const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60 + 220
             const windowWidth = window.innerWidth
-            let clientWidth = 0
+            const clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [appliedColumns])
@@ -173,14 +172,18 @@ export default function NodeDetailsList({
     }, [])
 
     const flattenObject = (ob: Object): Object => {
-        let toReturn = {}
-        for (let i in ob) {
-            if (!ob.hasOwnProperty(i)) continue
+        const toReturn = {}
+        for (const i in ob) {
+            if (!ob.hasOwnProperty(i)) {
+                continue
+            }
             const currentElement = ob[i]
             if (typeof currentElement == 'object' && currentElement !== null && !Array.isArray(currentElement)) {
-                let flatObject = flattenObject(currentElement)
-                for (let x in flatObject) {
-                    if (!flatObject.hasOwnProperty(x)) continue
+                const flatObject = flattenObject(currentElement)
+                for (const x in flatObject) {
+                    if (!flatObject.hasOwnProperty(x)) {
+                        continue
+                    }
 
                     toReturn[i + '.' + x] = flatObject[x]
                 }
@@ -234,7 +237,7 @@ export default function NodeDetailsList({
     }
 
     const handleFilterChanges = (): void => {
-        let _flattenNodeList = []
+        const _flattenNodeList = []
         for (const element of flattenNodeList) {
             if (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) {
                 continue
@@ -587,10 +590,13 @@ export default function NodeDetailsList({
                         <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
                     ) : (
                         <>
-                            <div className="mt-16" style={{ width: '100%', overflow: 'auto', height:'calc(100vh - 204px)'}}>
+                            <div
+                                className="mt-16"
+                                style={{ width: '100%', overflow: 'auto', height: 'calc(100vh - 204px)' }}
+                            >
                                 <div
                                     className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0"
-                                    style={{ width: 'max-content', minWidth: '100%' ,zIndex:5}}
+                                    style={{ width: 'max-content', minWidth: '100%', zIndex: 5 }}
                                 >
                                     {appliedColumns.map((column) => renderNodeListHeader(column))}
                                 </div>

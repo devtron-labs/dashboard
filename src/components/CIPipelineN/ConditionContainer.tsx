@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
-import {
-    RadioGroup,
-    RadioGroupItem,
-    ConditionType,
-    PluginType,
-    CustomInput,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { RadioGroup, RadioGroupItem, ConditionType, PluginType, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'
@@ -58,7 +52,9 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         if (conditionDetails?.length) {
             const errorConditionIndexArr = []
             for (let i = 0; i < conditionDetails.length; i++) {
-                if (!conditionDetails[i].isValid) errorConditionIndexArr.push(i)
+                if (!conditionDetails[i].isValid) {
+                    errorConditionIndexArr.push(i)
+                }
             }
             if (errorConditionIndexArr?.length) {
                 let derivedConditionType

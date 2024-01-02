@@ -135,7 +135,9 @@ function ClusterOverview({
         } else {
             if (clusterNoteResponse.reason['code'] === 403) {
                 setErrorCode(clusterNoteResponse.reason['code'])
-            } else showError(clusterNoteResponse.reason)
+            } else {
+                showError(clusterNoteResponse.reason)
+            }
         }
     }
 
@@ -227,7 +229,9 @@ function ClusterOverview({
     }
 
     useEffect(() => {
-        if (errorStatusCode > 0) return
+        if (errorStatusCode > 0) {
+            return
+        }
         setErrorStatusCode(0)
         getClusterNoteAndCapacity(clusterId)
     }, [selectedCluster])
@@ -252,7 +256,9 @@ function ClusterOverview({
     }
 
     const renderClusterError = (): JSX.Element => {
-        if (clusterErrorList.length === 0) return
+        if (clusterErrorList.length === 0) {
+            return
+        }
         return (
             <div className="mb-16 dc__border br-4 pt-12">
                 <div className="flexbox pointer mb-12 pl-16 pr-16">

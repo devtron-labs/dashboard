@@ -10,7 +10,15 @@ import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
-import { get, post, put, ResponseType, trash, WorkflowNodeType, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    put,
+    ResponseType,
+    trash,
+    WorkflowNodeType,
+    PipelineType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppGroupList,
     CIConfigListType,
@@ -125,7 +133,7 @@ const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowTy
             }
             node.downstreamNodes = []
             node.downstreams = []
-            if (!!node.postNode) {
+            if (node.postNode) {
                 node.downstreams = [`${WorkflowNodeType.POST_CD}-${node.id}`]
                 node.postNode.downstreams = []
             }
@@ -151,11 +159,11 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
         parentType = WorkflowNodeType.WEBHOOK
     }
 
-    let parentNode = nodes.get(parentType + '-' + node.parentPipelineId)
+    const parentNode = nodes.get(parentType + '-' + node.parentPipelineId)
 
     const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
 
-    if (!!parentNode) {
+    if (parentNode) {
         if (parentNode.postNode) {
             parentNode.postNode.downstreams = [type + '-' + node.id]
         } else {
@@ -178,7 +186,9 @@ export const getEnvAppList = (params?: {
 }): Promise<EnvAppType> => {
     if (params) {
         const urlParams = Object.entries(params).map(([key, value]) => {
-            if (!value) return
+            if (!value) {
+                return
+            }
             return `${key}=${value}`
         })
         return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`)
@@ -194,7 +204,7 @@ export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
     return get(`${Routes.APP_LIST_GROUP}/${envId}`)
 }
 
-export const  getEnvGroupList = (envId: number, filterParentType?:string): Promise<EnvGroupListResponse> => {
+export const getEnvGroupList = (envId: number, filterParentType?: string): Promise<EnvGroupListResponse> => {
     let filterParentTypeQuery = ''
     if (filterParentType) {
         filterParentTypeQuery = `?groupType=${filterParentType}`
@@ -217,7 +227,11 @@ export const appGroupPermission = (envId: string, data: CheckPermissionType): Pr
     return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${Routes.PERMISSION}`, data)
 }
 
-export const deleteEnvGroup = (envId: string, groupId: string, filterParentType?:string): Promise<EnvGroupResponse> => {
+export const deleteEnvGroup = (
+    envId: string,
+    groupId: string,
+    filterParentType?: string,
+): Promise<EnvGroupResponse> => {
     let filterParentTypeQuery = ''
     if (filterParentType) {
         filterParentTypeQuery = `?groupType=${filterParentType}`

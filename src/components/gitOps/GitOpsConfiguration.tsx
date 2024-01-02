@@ -104,6 +104,7 @@ const GitInfoTab: React.FC<{ tab: string; gitLink: string; gitProvider: string; 
                 href={gitLink}
                 className="ml-28 cursor fs-13 onlink"
                 data-testid="gitops-create-organization-link"
+                rel="noreferrer"
             >
                 How to create {gitProviderGroupAlias} in {gitProvider} ?
             </a>
@@ -152,7 +153,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     fetchGitOpsConfigurationList() {
         getGitOpsConfigurationList()
             .then((response) => {
-                let form = response.result?.find((item) => item.active) ?? {
+                const form = response.result?.find((item) => item.active) ?? {
                     ...DefaultGitOpsConfig,
                     ...DefaultShortGitOps,
                     host: GitHost[this.state.providerTab],
@@ -183,8 +184,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return
         }
 
-        let newGitOps = event.target.value
-        let form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
+        const newGitOps = event.target.value
+        const form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
             ...DefaultGitOpsConfig,
             ...DefaultShortGitOps,
             host: GitHost[newGitOps],
@@ -401,8 +402,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             const payload = this.getPayload()
             validateGitOpsConfiguration(payload)
                 .then((response) => {
-                    let resp = response.result
-                    let errorMap = resp.stageErrorMap
+                    const resp = response.result
+                    const errorMap = resp.stageErrorMap
                     if (errorMap != null && Object.keys(errorMap).length > 0) {
                         this.setState({
                             validationStatus: VALIDATION_STATUS.FAILURE,
@@ -457,8 +458,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     render() {
         const suggestedURL = this.suggestedValidGitOpsUrl()
-        let key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
-        let warning =
+        const key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
+        const warning =
             'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -491,7 +492,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return (
                 <div className="flex">
                     <span className="dc__required-field">{label}</span>&nbsp;
-                    <a target="_blank" href={link} className="cursor fs-13 onlink ml-4">
+                    <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
                         {linkText}
                     </a>
                 </div>

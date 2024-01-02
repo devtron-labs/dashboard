@@ -7,7 +7,8 @@ import ChartValuesView from './chartValuesDiff/ChartValuesView'
 // TODO: appDetails from useSharedState
 
 export interface ValueComponentTypes {
-   appId: string, init: () => void
+    appId: string
+    init: () => void
 }
 
 function ValuesComponent({ appId, init }: ValueComponentTypes) {
@@ -15,17 +16,17 @@ function ValuesComponent({ appId, init }: ValueComponentTypes) {
     const appDetails = IndexStore.getAppDetails()
 
     useEffect(() => {
-      if (appDetails.appStoreInstalledAppVersionId) {
-        getChartVersionDetailsV2(appDetails.appStoreInstalledAppVersionId)
-            .then((res) => {
-                setInstalledConfig(res.result)
-            })
-            .catch((err) => {
-                if (Array.isArray(err.errors)) {
-                    err.errors.map(({ userMessage }, idx) => toast.error(userMessage))
-                }
-            })
-      }
+        if (appDetails.appStoreInstalledAppVersionId) {
+            getChartVersionDetailsV2(appDetails.appStoreInstalledAppVersionId)
+                .then((res) => {
+                    setInstalledConfig(res.result)
+                })
+                .catch((err) => {
+                    if (Array.isArray(err.errors)) {
+                        err.errors.map(({ userMessage }, idx) => toast.error(userMessage))
+                    }
+                })
+        }
     }, [appDetails.appStoreInstalledAppVersionId])
 
     return (
@@ -33,7 +34,12 @@ function ValuesComponent({ appId, init }: ValueComponentTypes) {
             {!installedConfig ? (
                 <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
-                <ChartValuesView appId={appId} installedConfigFromParent={installedConfig} appDetails={appDetails} init={init} />
+                <ChartValuesView
+                    appId={appId}
+                    installedConfigFromParent={installedConfig}
+                    appDetails={appDetails}
+                    init={init}
+                />
             )}
         </div>
     )

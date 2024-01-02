@@ -191,7 +191,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     }
 
     if (loading) {
-        return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
+        return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
     }
 
     return (

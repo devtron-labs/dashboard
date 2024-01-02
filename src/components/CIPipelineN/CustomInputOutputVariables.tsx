@@ -102,7 +102,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         if (
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].length === 0
         ) {
-            let conditionDetails = _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails
+            const conditionDetails =
+                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails
             for (let i = 0; i < conditionDetails?.length; i++) {
                 if (
                     (type === PluginVariableType.OUTPUT &&
@@ -170,6 +171,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         className="dc__no-decor"
                                         href="https://github.com/Knetic/govaluate/blob/0580e9b47a69125afa0e4ebd1cf93c49eb5a43ec/parsing.go#L258"
                                         target="_blank"
+                                        rel="noreferrer"
                                     >
                                         Standardized date formats
                                     </a>{' '}

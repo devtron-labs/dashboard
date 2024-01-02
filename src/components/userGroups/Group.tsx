@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { deepEqual } from '../common'
-import { showError, Progressing, DeleteDialog, ResizableTextarea, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    DeleteDialog,
+    ResizableTextarea,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { saveGroup, deleteGroup } from './userGroup.service'
 
 import {
@@ -43,7 +49,7 @@ export default function GroupForm({
     const currentK8sPermissionRef = useRef<any[]>([])
 
     function isFormComplete(): boolean {
-        let isComplete: boolean = true
+        let isComplete = true
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
                 isComplete = false
@@ -70,7 +76,7 @@ export default function GroupForm({
                 ? ''
                 : permission.environment.map((env) => env.value).join(',')
         } else {
-            let allFutureCluster = {}
+            const allFutureCluster = {}
             let envList = ''
             permission.environment.forEach((element) => {
                 if (element.clusterName === '' && element.value.startsWith('#')) {

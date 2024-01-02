@@ -1,19 +1,19 @@
-import React from 'react';
-import Select, { components } from 'react-select';
+import React from 'react'
+import Select, { components } from 'react-select'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-import { Option } from '../v2/common/ReactSelect.utils';
+import { Option } from '../v2/common/ReactSelect.utils'
 import './EnvironmentSelect.scss'
 
 export default function HyperionEnvironmentSelect({ selectEnvironment, environments, selectedEnvironment }) {
     const clusterValueContainer = (props) => {
-        let length = props
+        const length = props
             .getValue()
-            .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length;
-        const value = props.getValue()[0]?.clusterName + "/" + props.getValue()[0]?.namespace;
+            .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length
+        const value = props.getValue()[0]?.clusterName + '/' + props.getValue()[0]?.namespace
         return (
             <components.ValueContainer {...props}>
                 {length > 0 ? (
-                    <div className='flex'>
+                    <div className="flex">
                         {!props.selectProps.menuIsOpen && value}
                         {React.cloneElement(props.children[1])}
                     </div>
@@ -21,15 +21,15 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
                     <>{props.children}</>
                 )}
             </components.ValueContainer>
-        );
-    };
+        )
+    }
 
     function formatGroupLabel(option) {
         return (
             <div>
                 <span>{'Cluster : ' + option.label}</span>
             </div>
-        );
+        )
     }
 
     function formatOptionLabelClusterEnv(option, { inputValue }) {
@@ -73,7 +73,7 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
                     </>
                 )}
             </div>
-        );
+        )
     }
 
     function customFilter(option, searchText) {
@@ -82,9 +82,9 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
             option.data.clusterName.toLowerCase().includes(searchText.toLowerCase()) ||
             option.data.namespace.toLowerCase().includes(searchText.toLowerCase())
         ) {
-            return true;
+            return true
         } else {
-            return false;
+            return false
         }
     }
     return (
@@ -115,5 +115,5 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
             }}
             onChange={selectEnvironment}
         />
-    );
+    )
 }

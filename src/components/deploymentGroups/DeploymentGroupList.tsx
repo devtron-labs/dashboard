@@ -23,7 +23,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import PageHeader from '../common/header/PageHeader'
 
-export interface BulkActionListProps extends RouteComponentProps<{}> {}
+export type BulkActionListProps = RouteComponentProps<{}>
 
 export interface BulkActionListState {
     code: number
@@ -65,7 +65,9 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
         deploymentGroupList()
             .then((response) => {
                 let view = ViewType.FORM
-                if (response.result.length === 0) view = ViewType.EMPTY
+                if (response.result.length === 0) {
+                    view = ViewType.EMPTY
+                }
                 this.setState({
                     view: view,
                     list: response.result,
@@ -99,8 +101,8 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
     triggerDeploy() {
         this.setState({ isLoading: true })
-        let material = this.state.materials.find((mat) => mat.isSelected)
-        let request = {
+        const material = this.state.materials.find((mat) => mat.isSelected)
+        const request = {
             DeploymentGroupId: this.state.deploymentGroupId,
             CiArtifactId: material.id,
         }
@@ -131,7 +133,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     }
 
     toggleSourceInfo(index: number) {
-        let { materials } = { ...this.state }
+        const { materials } = { ...this.state }
         materials[index].showSourceInfo = !materials[index].showSourceInfo
         this.setState({ materials })
     }
@@ -296,8 +298,8 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     }
 
     renderDeleteDialog() {
-        let group = this.state.list.find((grp) => grp.id === this.state.deploymentGroupId)
-        if (this.state.showGroupDeleteModal)
+        const group = this.state.list.find((grp) => grp.id === this.state.deploymentGroupId)
+        if (this.state.showGroupDeleteModal) {
             return (
                 <DeleteDialog
                     title={group.name}
@@ -310,6 +312,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     }}
                 />
             )
+        }
     }
 
     redirectToCreateGroup = () => {

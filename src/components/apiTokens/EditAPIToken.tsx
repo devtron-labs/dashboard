@@ -1,5 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { showError, Progressing, InfoColourBar, RadioGroup, RadioGroupItem, copyToClipboard, CustomInput, noop } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    InfoColourBar,
+    RadioGroup,
+    RadioGroupItem,
+    copyToClipboard,
+    CustomInput,
+    noop,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
@@ -10,7 +19,7 @@ import GenerateActionButton from './GenerateActionButton'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { useParams } from 'react-router'
 import moment from 'moment'
-import {  MomentDateFormat } from '../../config'
+import { MomentDateFormat } from '../../config'
 import { ButtonWithLoader } from '../common'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
@@ -56,7 +65,7 @@ function EditAPIToken({
         action: ActionTypes.VIEW,
         entityName: [],
     })
-    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
+    const [k8sPermission, setK8sPermission] = useState<any[]>([])
     const [customDate, setCustomDate] = useState<number>(undefined)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
@@ -84,10 +93,7 @@ function EditAPIToken({
 
     const renderActionButton = () => {
         return (
-            <span
-                className="cr-5 cursor flexbox top fw-6"
-                onClick={() => setShowRegeneratedModal(true)}
-            >
+            <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
                 Regenerate token
             </span>
         )

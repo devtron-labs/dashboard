@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload, GenericEmptyState, useAsync, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Reload,
+    GenericEmptyState,
+    useAsync,
+    PipelineType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
@@ -32,7 +39,7 @@ import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
-let statusSet = new Set(['starting', 'running', 'pending'])
+const statusSet = new Set(['starting', 'running', 'pending'])
 
 export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: boolean; filteredEnvIds?: string }) {
     const { appId, pipelineId, buildId } = useParams<{
@@ -132,7 +139,9 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     }
 
     async function pollHistory() {
-        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) {
+            return
+        }
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
@@ -165,8 +174,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     if (!pipelines.length && pipelineId) {
         // reason is un-required params like logs were leaking
         replace(generatePath(path, { appId }))
-    }
-    else if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist && pipelines.length)) {
+    } else if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist && pipelines.length)) {
         replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
@@ -308,7 +316,9 @@ export const Details = ({
     )
 
     useEffect(() => {
-        if (triggerDetailsLoading) return
+        if (triggerDetailsLoading) {
+            return
+        }
         let triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageReleaseTags: triggerDetails?.imageReleaseTags,
@@ -321,7 +331,9 @@ export const Details = ({
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     useEffect(() => {
-        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) return
+        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) {
+            return
+        }
         const triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageReleaseTags: tagDetailsResult?.result?.imageReleaseTags,
@@ -334,8 +346,9 @@ export const Details = ({
         if (
             !triggerDetails ||
             terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
-        )
-            return null // no interval
+        ) {
+            return null
+        } // no interval
         if (
             statusSet.has(triggerDetails.status?.toLowerCase()) ||
             (triggerDetails.podStatus && statusSet.has(triggerDetails.podStatus.toLowerCase()))
@@ -351,8 +364,9 @@ export const Details = ({
         (!areTagDetailsRequired && triggerDetailsLoading && !triggerDetails) ||
         !buildId ||
         (areTagDetailsRequired && (tagDetailsLoading || triggerDetailsLoading) && !triggerDetails)
-    )
+    ) {
         return <Progressing pageLoader />
+    }
     if (triggerDetailsError?.code === 404) {
         return (
             <GenericEmptyState
@@ -362,9 +376,15 @@ export const Details = ({
         )
     }
 
-    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
-    if (triggerDetails.id !== +buildId) return null
+    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) {
+        return <Reload />
+    }
+    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) {
+        return <Reload />
+    }
+    if (triggerDetails.id !== +buildId) {
+        return null
+    }
     return (
         <>
             <div className="trigger-details-container">
@@ -463,7 +483,7 @@ const HistoryLogs = ({
     tagsEditable,
     hideImageTaggingHardDelete,
 }: HistoryLogsType) => {
-    let { path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const isJobCard: boolean = isJobCI || isJobView
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -647,7 +667,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     }, [artifactId])
 
     const redirectToCreate = () => {
-        if (!ciPipelineId) return
+        if (!ciPipelineId) {
+            return
+        }
         push(
             `${URLS.APP}/${appId ?? appIdFromParent}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
                 URLS.APP_CI_CONFIG
@@ -731,6 +753,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                                             <a
                                                 href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
                                                 target="_blank"
+                                                rel="noreferrer"
                                             >
                                                 {item.name}
                                             </a>

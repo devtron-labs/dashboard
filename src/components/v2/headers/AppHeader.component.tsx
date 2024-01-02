@@ -98,7 +98,7 @@ function AppHeaderComponent() {
                             })
                         }}
                     >
-                       <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
+                        <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
                         Configure
                     </NavLink>
                 </li>
@@ -107,14 +107,14 @@ function AppHeaderComponent() {
     }
 
     return (
-      <div className="app-header-wrapper">
-        <PageHeader
-            isBreadcrumbs={true}
-            breadCrumbs={renderBreadcrumbs}
-            showTabs={true}
-            renderHeaderTabs={renderHelmDetailsTabs}
-            showAnnouncementHeader={true}
-        />
+        <div className="app-header-wrapper">
+            <PageHeader
+                isBreadcrumbs={true}
+                breadCrumbs={renderBreadcrumbs}
+                showTabs={true}
+                renderHeaderTabs={renderHelmDetailsTabs}
+                showAnnouncementHeader={true}
+            />
         </div>
     )
 }

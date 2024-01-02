@@ -159,12 +159,12 @@ export default function HelmAppList({
     function _getExternalHelmApps() {
         if (clusterIdsCsv) {
             setFetchingExternalAppsState(true)
-            let _sseConnection = new EventSource(`${Host}/application?clusterIds=${clusterIdsCsv}`, {
+            const _sseConnection = new EventSource(`${Host}/application?clusterIds=${clusterIdsCsv}`, {
                 withCredentials: true,
             })
-            let _externalAppRecievedClusterIds = []
-            let _externalAppRecievedHelmApps = []
-            let _externalAppFetchErrors: string[] = []
+            const _externalAppRecievedClusterIds = []
+            const _externalAppRecievedHelmApps = []
+            const _externalAppFetchErrors: string[] = []
             _sseConnection.onmessage = function (message) {
                 _onExternalAppDataFromSse(
                     message,
@@ -261,12 +261,12 @@ export default function HelmAppList({
     }
 
     function handleFilteration() {
-        let _projects = payloadParsedFromUrl.teams || []
-        let _clusterVsNamespaces = payloadParsedFromUrl.namespaces || []
-        let _environments = payloadParsedFromUrl.environments || []
-        let _search = payloadParsedFromUrl.appNameSearch
-        let _sortBy = payloadParsedFromUrl.sortBy
-        let _sortOrder = payloadParsedFromUrl.sortOrder
+        const _projects = payloadParsedFromUrl.teams || []
+        const _clusterVsNamespaces = payloadParsedFromUrl.namespaces || []
+        const _environments = payloadParsedFromUrl.environments || []
+        const _search = payloadParsedFromUrl.appNameSearch
+        const _sortBy = payloadParsedFromUrl.sortBy
+        const _sortOrder = payloadParsedFromUrl.sortOrder
         let _filteredHelmAppsList = [...(devtronInstalledHelmAppsList || []), ...(externalHelmAppsList || [])]
 
         // apply project filter
@@ -279,8 +279,8 @@ export default function HelmAppList({
             _filteredHelmAppsList = _filteredHelmAppsList.filter((app) => {
                 let _includes = _environments.includes(app.environmentDetail.environmentId)
                 _clusterVsNamespaces.map((_clusterVsNamespace) => {
-                    let _clusterId = _clusterVsNamespace.split('_')[0]
-                    let _namespace = _clusterVsNamespace.split('_')[1]
+                    const _clusterId = _clusterVsNamespace.split('_')[0]
+                    const _namespace = _clusterVsNamespace.split('_')[1]
                     _includes =
                         _includes ||
                         (app.environmentDetail.clusterId == _clusterId &&
@@ -298,14 +298,18 @@ export default function HelmAppList({
                     app.chartName.toLowerCase().includes(_search.toLowerCase()),
             )
         }
-        
-        const dynamicSortBy = AppListColumnSort[_sortBy];
-        
+
+        const dynamicSortBy = AppListColumnSort[_sortBy]
+
         // handle sort
         if (_sortOrder == OrderBy.ASC) {
-            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>  a[dynamicSortBy].localeCompare(b[dynamicSortBy]))
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>
+                a[dynamicSortBy].localeCompare(b[dynamicSortBy]),
+            )
         } else {
-            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => b[dynamicSortBy].localeCompare(a[dynamicSortBy]))
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>
+                b[dynamicSortBy].localeCompare(a[dynamicSortBy]),
+            )
         }
         setSortBy(_sortBy)
         setSortOrder(_sortOrder)
@@ -326,8 +330,8 @@ export default function HelmAppList({
     }
 
     function _isOnlyAllClusterFilterationApplied() {
-        let _isAllClusterSelected = !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
-        let _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked)
+        const _isAllClusterSelected = !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
+        const _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked)
         return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected
     }
 
@@ -450,7 +454,10 @@ export default function HelmAppList({
                 </div>
                 {isArgoInstalled && (
                     <div className="app-list__cell app-list__cell--namespace">
-                        <AppStatus appStatus={app.appStatus} isVirtualEnv={app.environmentDetail.isVirtualEnvironment} />
+                        <AppStatus
+                            appStatus={app.appStatus}
+                            isVirtualEnv={app.environmentDetail.isVirtualEnvironment}
+                        />
                     </div>
                 )}
                 <div className="app-list__cell app-list__cell--env">
@@ -501,7 +508,12 @@ export default function HelmAppList({
                             </span>
                             <span>
                                 {SELECT_CLUSTER_FROM_FILTER_NOTE}&nbsp;
-                                <a className="dc__link cursor" target="_blank" href={DOCUMENTATION.HYPERION}>
+                                <a
+                                    className="dc__link cursor"
+                                    target="_blank"
+                                    href={DOCUMENTATION.HYPERION}
+                                    rel="noreferrer"
+                                >
                                     {LEARN_MORE}
                                 </a>
                             </span>

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import {
     ServerErrors,
@@ -19,10 +19,10 @@ export const processWorkflowStatuses = (
     allCDs: CDWorkflowStatusType[],
     workflowsList: WorkflowType[],
 ): ProcessWorkFlowStatusType => {
-    let ciMap = {}
-    let cdMap = {}
-    let preCDMap = {}
-    let postCDMap = {}
+    const ciMap = {}
+    const cdMap = {}
+    const preCDMap = {}
+    const postCDMap = {}
     let cicdInProgress = false
     //Create maps from Array
     if (allCIs.length) {
@@ -38,9 +38,15 @@ export const processWorkflowStatuses = (
     }
     if (allCDs.length) {
         allCDs.forEach((pipeline) => {
-            if (pipeline.pre_status) preCDMap[pipeline.pipeline_id] = pipeline.pre_status
-            if (pipeline.post_status) postCDMap[pipeline.pipeline_id] = pipeline.post_status
-            if (pipeline.deploy_status) cdMap[pipeline.pipeline_id] = pipeline.deploy_status
+            if (pipeline.pre_status) {
+                preCDMap[pipeline.pipeline_id] = pipeline.pre_status
+            }
+            if (pipeline.post_status) {
+                postCDMap[pipeline.pipeline_id] = pipeline.post_status
+            }
+            if (pipeline.deploy_status) {
+                cdMap[pipeline.pipeline_id] = pipeline.deploy_status
+            }
             if (
                 !cicdInProgress &&
                 (pipeline.pre_status === 'Starting' ||
@@ -255,5 +261,3 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
         return data.ciBlockState
     }
 }
-
-

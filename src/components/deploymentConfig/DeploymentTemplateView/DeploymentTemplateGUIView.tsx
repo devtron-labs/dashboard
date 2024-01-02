@@ -92,7 +92,9 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
     }
 
     const addRow = (e): void => {
-        if (readOnly) return
+        if (readOnly) {
+            return
+        }
         const _basicFieldValues = { ...currentBasicFieldValues }
         if (e.currentTarget.dataset.name === BASIC_FIELDS.PATH) {
             _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS].unshift('')
@@ -113,7 +115,9 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
     }
 
     const removeRow = (name: string, index: number): void => {
-        if (readOnly) return
+        if (readOnly) {
+            return
+        }
         const _basicFieldValues = { ...currentBasicFieldValues }
         const _currentValue =
             name === BASIC_FIELDS.ENV_VARIABLES

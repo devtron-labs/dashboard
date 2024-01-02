@@ -73,7 +73,9 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 view: ViewType.FORM,
             }))
             setTimeout(() => {
-                if (this._configName) this._configName.focus()
+                if (this._configName) {
+                    this._configName.focus()
+                }
             }, 100)
         }
     }
@@ -102,7 +104,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
     }
 
     saveSMTPConfig(): void {
-        let keys = Object.keys(this.state.isValid)
+        const keys = Object.keys(this.state.isValid)
         let isFormValid = keys.reduce((isFormValid, key) => {
             isFormValid = isFormValid && this.state.isValid[key]
             return isFormValid
@@ -171,10 +173,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     <Progressing pageLoader />
                 </div>
             )
-        } else
+        } else {
             body = (
                 <>
-                    <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
+                    <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
                         <label className="form__row">
                             <CustomInput
                                 name="configName"
@@ -280,14 +282,21 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             >
                                 Cancel
                             </button>
-                            <button onClick={this.onSaveClickHandler}
-                            data-testid="add-smtp-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button
+                                onClick={this.onSaveClickHandler}
+                                data-testid="add-smtp-save-button"
+                                type="submit"
+                                className="cta"
+                                tabIndex={7}
+                                disabled={this.state.form.isLoading}
+                            >
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>
                     </div>
                 </>
             )
+        }
         return this.renderWithBackdrop(body)
     }
 }

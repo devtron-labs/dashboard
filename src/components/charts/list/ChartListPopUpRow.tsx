@@ -10,13 +10,13 @@ import { toast } from 'react-toastify'
 import { getNonEditableChartRepoText } from '../../common'
 import { TOAST_INFO } from '../../../config/constantMessaging'
 
-function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType; }) {
+function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType }) {
     const [isSpecificChartRefetchLoading, setSpecificChartRefetchLoading] = useState(false)
     const [isToggleLoading, setToggleLoading] = useState(false)
     const [enabled, toggleEnabled] = useState<boolean>(list.active)
-    
+
     function refetchSpecificChart(id: number, isOCIRegistry: boolean) {
-        let payload = {
+        const payload = {
             id: id,
             isOCIRegistry: isOCIRegistry,
         }
@@ -36,7 +36,7 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
     const onSelectToggle = async () => {
         if (list.isEditable) {
             const _toggleEnabled = !enabled
-            let payload = {
+            const payload = {
                 id: list.id, //eg: OCI registry: “test-registry” ; for chart repo: “1”
                 isOCIRegistry: list.isOCIRegistry, // for chart-repo: false
                 active: _toggleEnabled,
@@ -52,10 +52,8 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                     setToggleLoading(false)
                     showError(error)
                 })
-        }else{
-            toast.info(
-                getNonEditableChartRepoText(list.name),
-            )
+        } else {
+            toast.info(getNonEditableChartRepoText(list.name))
         }
     }
 
@@ -95,7 +93,7 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                     placement="bottom"
                     content={
                         enabled
-                            ? `${list.isEditable ? "Disable" : "Can't disable"} chart repository`
+                            ? `${list.isEditable ? 'Disable' : "Can't disable"} chart repository`
                             : 'Enable chart repository'
                     }
                 >
@@ -107,7 +105,11 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                         {isToggleLoading ? (
                             <Progressing size={16} />
                         ) : (
-                            <List.Toggle isButtonDisabled={!list.isEditable} onSelect={onSelectToggle} enabled={enabled} />
+                            <List.Toggle
+                                isButtonDisabled={!list.isEditable}
+                                onSelect={onSelectToggle}
+                                enabled={enabled}
+                            />
                         )}
                     </span>
                 </Tippy>

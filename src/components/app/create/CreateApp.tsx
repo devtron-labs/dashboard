@@ -80,7 +80,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.setState({ view: ViewType.ERROR })
             showError(err)
         } finally {
-            if (this._inputAppName) this._inputAppName.focus()
+            if (this._inputAppName) {
+                this._inputAppName.focus()
+            }
         }
         document.addEventListener('keydown', this.escKeyPressHandler)
         document.addEventListener('click', this.outsideClickHandler)
@@ -109,14 +111,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     handleAppname(event: React.ChangeEvent<HTMLInputElement>): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.appName = event.target.value
         isValid.appName = this.rules.appName(event.target.value).isValid
         this.setState({ form, isValid, appNameErrors: true })
     }
 
     handleProject(item: number): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.projectId = item
         isValid.projectId = !!item
         this.setState({ form, isValid })
@@ -153,8 +155,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             }
         }
         this.setState({ showErrors: true, appNameErrors: true })
-        let allKeys = Object.keys(this.state.isValid)
-        let isFormValid = allKeys.reduce((valid, key) => {
+        const allKeys = Object.keys(this.state.isValid)
+        const isFormValid = allKeys.reduce((valid, key) => {
             valid = valid && this.state.isValid[key]
             return valid
         }, true)
@@ -183,7 +185,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             .then((response) => {
                 if (response.result) {
                     this.getHostURLConfig()
-                    let { form, isValid } = { ...this.state }
+                    const { form, isValid } = { ...this.state }
                     form.appId = response.result.id
                     form.appName = response.result.appName
                     isValid.appName = true
@@ -229,7 +231,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     changeTemplate = (appCreationType: string): void => {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.appCreationType = appCreationType
         form.cloneId = appCreationType === AppCreationType.Blank ? 0 : form.cloneId
         isValid.cloneAppId = appCreationType === AppCreationType.Blank
@@ -245,7 +247,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     handleCloneAppChange = ({ value }): void => {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.cloneId = value
         isValid.cloneAppId = !!value
         this.setState({ form, isValid })
@@ -294,7 +296,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     loadAppListOptions = (inputValue: string) => appListOptions(inputValue, this.props.isJobView)
 
     renderBodySection = (): JSX.Element => {
-        let errorObject = [
+        const errorObject = [
             this.rules.appName(this.state.form.appName),
             this.rules.team(this.state.form.projectId),
             this.rules.cloneApp(this.state.form.cloneId),

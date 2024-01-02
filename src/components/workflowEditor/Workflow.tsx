@@ -13,10 +13,7 @@ import {
     importComponentFromFELibrary,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
-import {
-    CIPipelineNodeType,
-    NodeAttr,
-} from '../../components/app/details/triggerView/types'
+import { CIPipelineNodeType, NodeAttr } from '../../components/app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { Link } from 'react-router-dom'
@@ -245,7 +242,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     type="button"
                     className="pipeline-select__button"
                     onClick={(event: any) => {
-                        let { bottom, left } = event.target.getBoundingClientRect()
+                        const { bottom, left } = event.target.getBoundingClientRect()
                         this.setState({
                             showCIMenu: !this.state.showCIMenu,
                             left: left,
@@ -307,7 +304,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     openCDPipeline(node: NodeAttr, isWebhookCD: boolean) {
-        let { appId } = this.props.match.params
+        const { appId } = this.props.match.params
         return (
             this.props.match.url +
             '/' +
@@ -325,7 +322,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         if (node.isExternalCI && !node.isLinkedCI) {
             return `${this.props.match.url}/deprecated-warning`
         }
-        let { appId } = this.props.match.params
+        const { appId } = this.props.match.params
         let url = ''
         if (node.isLinkedCI) {
             url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)

@@ -364,20 +364,21 @@ function ChartValuesView({
                                 commonState.installedConfig) ||
                             (isDeployChartView && commonState.selectedEnvironment)
                         ) {
-                            commonState.chartValues.appStoreVersionId && updateGeneratedManifest(
-                                isCreateValueView,
-                                isUnlinkedCLIApp,
-                                isExternalApp,
-                                isDeployChartView,
-                                appName,
-                                _valueName,
-                                commonState,
-                                commonState.chartValues.appStoreVersionId,
-                                appId,
-                                deploymentVersion,
-                                response.result.values,
-                                dispatch,
-                            )
+                            commonState.chartValues.appStoreVersionId &&
+                                updateGeneratedManifest(
+                                    isCreateValueView,
+                                    isUnlinkedCLIApp,
+                                    isExternalApp,
+                                    isDeployChartView,
+                                    appName,
+                                    _valueName,
+                                    commonState,
+                                    commonState.chartValues.appStoreVersionId,
+                                    appId,
+                                    deploymentVersion,
+                                    response.result.values,
+                                    dispatch,
+                                )
                         }
                     })
                     .catch((error) => {
@@ -597,23 +598,27 @@ function ChartValuesView({
                     if (typeof init === 'function') {
                         init()
                     }
-                    history.push(
-                        getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                    )
+                    history.push(getSavedValuesListURL(installedConfigFromParent.appStoreId))
                     return
                 }
                 // ends
 
                 // helm app OR external helm app delete initiated
-                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedAppInfo)) {
+                if (
+                    response.result.deleteResponse?.deleteInitiated ||
+                    (isExternalApp && !commonState.installedAppInfo)
+                ) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                     init && init()
-                    history.push( `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
+                    history.push(`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
                     return
-                } 
+                }
 
                 // helm app delete failed due to cluster not reachable (ArgoCD installed)
-                if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                if (
+                    deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
+                    !response.result.deleteResponse?.clusterReachable
+                ) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
                         payload: {
@@ -625,7 +630,7 @@ function ChartValuesView({
                         type: ChartValuesViewActionTypes.nonCascadeDeleteData,
                         payload: {
                             nonCascade: true,
-                            clusterName: response.result.deleteResponse?.clusterName
+                            clusterName: response.result.deleteResponse?.clusterName,
                         },
                     })
                     dispatch({
@@ -662,7 +667,7 @@ function ChartValuesView({
                         type: ChartValuesViewActionTypes.nonCascadeDeleteData,
                         payload: {
                             nonCascade: false,
-                            clusterName: ''
+                            clusterName: '',
                         },
                     })
                     dispatch({
@@ -692,7 +697,7 @@ function ChartValuesView({
         // Delete: helm chart preset values
         else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
-        } 
+        }
         // Delete: helm app
         else {
             return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, deleteAction)
@@ -837,17 +842,17 @@ function ChartValuesView({
             })
         }
 
-       const onClickManifestDownload = (appId: number, envId: number, appName: string, helmPackageName: string) => {
-          const downloadManifetsDownload = {
-              appId: appId,
-              envId: envId,
-              appName: helmPackageName ?? appName,
-              isHelmApp: true
-          }
-          if (getDeployManifestDownload) {
-              getDeployManifestDownload(downloadManifetsDownload)
-          }
-      }
+        const onClickManifestDownload = (appId: number, envId: number, appName: string, helmPackageName: string) => {
+            const downloadManifetsDownload = {
+                appId: appId,
+                envId: envId,
+                appName: helmPackageName ?? appName,
+                isHelmApp: true,
+            }
+            if (getDeployManifestDownload) {
+                getDeployManifestDownload(downloadManifetsDownload)
+            }
+        }
 
         try {
             let res, toastMessage
@@ -881,7 +886,9 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
-                    deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
+                    deploymentAppType: isVirtualEnvironmentOnSelector
+                        ? DeploymentAppTypes.MANIFEST_DOWNLOAD
+                        : commonState.deploymentAppType,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -891,7 +898,7 @@ function ChartValuesView({
                     values: commonState.modifiedValuesYaml,
                 }
                 if (chartValueId !== '0') {
-                    const chartVersionObj=commonState.chartVersionsData.find(
+                    const chartVersionObj = commonState.chartVersionsData.find(
                         (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
                     )
                     payload['id'] = parseInt(chartValueId)
@@ -929,7 +936,13 @@ function ChartValuesView({
                 toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
-              appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName, res.result?.helmPackageName)
+                appDetails?.isVirtualEnvironment &&
+                    onClickManifestDownload(
+                        res.result.installedAppId,
+                        +envId,
+                        res.result.appName,
+                        res.result?.helmPackageName,
+                    )
                 toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
                 IndexStore.publishAppDetails({} as AppDetails, null)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
@@ -1137,8 +1150,10 @@ function ChartValuesView({
 
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
-            if (commonState.activeTab === 'manifest'){
-                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.length ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
+            if (commonState.activeTab === 'manifest') {
+                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.length
+                    ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest
+                    : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
             }
             return isCreateValueView
                 ? COMPARISON_OPTION_TIPPY_CONTENT.OtherValues
@@ -1208,29 +1223,29 @@ function ChartValuesView({
     }
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
-      if (selected.allowedDeploymentTypes.indexOf(commonState.deploymentAppType) >= 0) {
-          dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
-      } else {
-          dispatch({
-              type: ChartValuesViewActionTypes.multipleOptions,
-              payload: {
-                  selectedEnvironment: selected,
-                  deploymentAppType: getDeploymentAppType(
-                      selected.allowedDeploymentTypes,
-                      commonState.deploymentAppType,
-                      selected.isVirtualEnvironment
-                  ),
-              },
-          })
-      }
-      setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
-      setAllowedDeploymentTypes(selected.allowedDeploymentTypes ?? [])
-      if (commonState.invalidaEnvironment) {
-          dispatch({
-              type: ChartValuesViewActionTypes.invalidaEnvironment,
-              payload: false,
-          })
-      }
+        if (selected.allowedDeploymentTypes.indexOf(commonState.deploymentAppType) >= 0) {
+            dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
+        } else {
+            dispatch({
+                type: ChartValuesViewActionTypes.multipleOptions,
+                payload: {
+                    selectedEnvironment: selected,
+                    deploymentAppType: getDeploymentAppType(
+                        selected.allowedDeploymentTypes,
+                        commonState.deploymentAppType,
+                        selected.isVirtualEnvironment,
+                    ),
+                },
+            })
+        }
+        setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
+        setAllowedDeploymentTypes(selected.allowedDeploymentTypes ?? [])
+        if (commonState.invalidaEnvironment) {
+            dispatch({
+                type: ChartValuesViewActionTypes.invalidaEnvironment,
+                payload: false,
+            })
+        }
     }
 
     const handleDeploymentAppTypeSelection = (event) => {
@@ -1300,7 +1315,7 @@ function ChartValuesView({
             type: ChartValuesViewActionTypes.nonCascadeDeleteData,
             payload: {
                 nonCascade: false,
-                clusterName: ''
+                clusterName: '',
             },
         })
     }
@@ -1310,7 +1325,7 @@ function ChartValuesView({
             type: ChartValuesViewActionTypes.nonCascadeDeleteData,
             payload: {
                 nonCascade: false,
-                clusterName: ''
+                clusterName: '',
             },
         })
         deleteApplication(DELETE_ACTION.NONCASCADE_DELETE)
@@ -1320,8 +1335,12 @@ function ChartValuesView({
         return (
             <div className="chart-values-view__editor">
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
-                    <GenericEmptyState SvgImage={ErrorExclamation} classname="dc__align-reload-center" title="" subTitle={commonState.valuesEditorError} />
-
+                    <GenericEmptyState
+                        SvgImage={ErrorExclamation}
+                        classname="dc__align-reload-center"
+                        title=""
+                        subTitle={commonState.valuesEditorError}
+                    />
                 ) : (
                     <ChartValuesEditor
                         loading={
@@ -1450,7 +1469,7 @@ function ChartValuesView({
 
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
-        const wrapperClassName = getDynamicWrapperClassName();
+        const wrapperClassName = getDynamicWrapperClassName()
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
@@ -1545,7 +1564,8 @@ function ChartValuesView({
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
                             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig?.isOCICompliantChart &&(
+                            !appDetails?.isVirtualEnvironment &&
+                            !commonState.installedConfig?.isOCICompliantChart && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}

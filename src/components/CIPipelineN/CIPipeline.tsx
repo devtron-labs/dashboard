@@ -134,7 +134,7 @@ export default function CIPipeline({
             counterX: '0',
         },
         defaultTag: [],
-        enableCustomTag: false
+        enableCustomTag: false,
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
@@ -149,14 +149,14 @@ export default function CIPipeline({
             steps: [],
             isValid: true,
         },
-        customTag:{
-            message: [], 
-            isValid: true
+        customTag: {
+            message: [],
+            isValid: true,
         },
-        counterX:{
-            message: '', 
-            isValid: true
-        }
+        counterX: {
+            message: '',
+            isValid: true,
+        },
     })
 
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
@@ -171,7 +171,7 @@ export default function CIPipeline({
         linkedCount: 0,
         scanEnabled: false,
         environmentId: 0,
-        pipelineType: "",
+        pipelineType: '',
         customTag: {
             tagPattern: '',
             counterX: '',
@@ -209,9 +209,12 @@ export default function CIPipeline({
         if (
             location.pathname.includes(`/${URLS.APP_CI_CONFIG}/`) &&
             ciPipelineId &&
-            ciPipeline.pipelineType === CIPipelineBuildType.CI_JOB 
+            ciPipeline.pipelineType === CIPipelineBuildType.CI_JOB
         ) {
-            const editCIPipelineURL: string = location.pathname.replace(`/${URLS.APP_CI_CONFIG}/`, `/${URLS.APP_JOB_CI_CONFIG}/`)
+            const editCIPipelineURL: string = location.pathname.replace(
+                `/${URLS.APP_CI_CONFIG}/`,
+                `/${URLS.APP_JOB_CI_CONFIG}/`,
+            )
             history.push(editCIPipelineURL)
         }
     }, [location.pathname, ciPipeline.pipelineType])
@@ -220,7 +223,7 @@ export default function CIPipeline({
         envId = envId || 0
         getEnvironmentListMinPublic()
             .then((response) => {
-                let list = []
+                const list = []
                 list.push({
                     id: 0,
                     clusterName: '',
@@ -264,7 +267,7 @@ export default function CIPipeline({
         calculatedStageVariables: Map<string, VariableType>[]
     } => {
         const _formDataErrorObj = { ...formDataErrorObj }
-        let { stepsLength, _inputVariablesListPerTask } = calculateLastStepDetailsLogic(
+        const { stepsLength, _inputVariablesListPerTask } = calculateLastStepDetailsLogic(
             _formData,
             activeStageName,
             _formDataErrorObj,
@@ -382,10 +385,7 @@ export default function CIPipeline({
         } catch (error) {}
     }
 
-    const getMandatoryPluginData = (
-        _formData: PipelineFormType,
-        pluginList: PluginDetailType[],
-    ): void => {
+    const getMandatoryPluginData = (_formData: PipelineFormType, pluginList: PluginDetailType[]): void => {
         if (!isJobCard && processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
             if (_formData?.materials?.length) {
@@ -537,7 +537,7 @@ export default function CIPipeline({
         //in that case we only send the webhook data not the other one.
         let _materials = formData.materials
         if (formData.materials.length > 1) {
-            for (let material of formData.materials) {
+            for (const material of formData.materials) {
                 if (material.type === SourceTypeMap.WEBHOOK) {
                     _materials = [material]
                     break
@@ -545,7 +545,7 @@ export default function CIPipeline({
             }
         }
 
-        let _ciPipeline = ciPipeline
+        const _ciPipeline = ciPipeline
         if (selectedEnv && selectedEnv.id !== 0) {
             _ciPipeline.environmentId = selectedEnv.id
         } else {
@@ -619,7 +619,9 @@ export default function CIPipeline({
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
             for (let i = 0; i < stepsLength; i++) {
-                if (!_formDataErrorObj[stageName].steps[i]) _formDataErrorObj[stageName].steps.push({ isValid: true })
+                if (!_formDataErrorObj[stageName].steps[i]) {
+                    _formDataErrorObj[stageName].steps.push({ isValid: true })
+                }
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
@@ -854,7 +856,9 @@ export default function CIPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+            return <></>
+        }
 
         return (
             <div className="flexbox">

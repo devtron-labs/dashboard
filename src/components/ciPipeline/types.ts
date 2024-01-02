@@ -393,10 +393,10 @@ export interface BuildType {
 }
 
 export interface PreBuildType {
-  presetPlugins: PluginDetailType[]
-  sharedPlugins: PluginDetailType[]
-  mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
-  isJobView?: boolean
+    presetPlugins: PluginDetailType[]
+    sharedPlugins: PluginDetailType[]
+    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
+    isJobView?: boolean
 }
 
 export enum CIPipelineBuildType {

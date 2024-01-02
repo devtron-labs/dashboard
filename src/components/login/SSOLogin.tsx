@@ -1,6 +1,12 @@
 import React, { Component } from 'react'
 import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
-import { showError, Progressing, ErrorScreenManager, ConfirmationDialog, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ConfirmationDialog,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
@@ -148,7 +154,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleSSOClick(event): void {
-        let newsso = event.target.value
+        const newsso = event.target.value
         getSSOConfig(newsso)
             .then((response) => {
                 this.setConfig(response, newsso)
@@ -160,10 +166,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     setConfig(response: any, newsso: any): void {
         const config = response.result?.config?.config
-        if ( config?.hasOwnProperty('clientID') && config?.clientID === '') {
+        if (config?.hasOwnProperty('clientID') && config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if ( config?.hasOwnProperty('clientSecret') && config?.clientSecret === '') {
+        if (config?.hasOwnProperty('clientSecret') && config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
         let newConfig: SSOConfigType
@@ -211,10 +217,16 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     checkConfigJson(ssoConfig) {
-        if (ssoConfig?.hasOwnProperty('clientID') && (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)) {
+        if (
+            ssoConfig?.hasOwnProperty('clientID') &&
+            (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)
+        ) {
             ssoConfig.clientID = ''
         }
-        if (ssoConfig?.hasOwnProperty('clientID') && (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)) {
+        if (
+            ssoConfig?.hasOwnProperty('clientID') &&
+            (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)
+        ) {
             ssoConfig.clientSecret = ''
         }
         return ssoConfig
@@ -228,7 +240,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             response.result.config.config.clientSecret = ''
         }
         this.setConfig(response, this.state.sso.toLowerCase())
-        let ssoConfig = response.result
+        const ssoConfig = response.result
         this.setState({
             view: ViewType.FORM,
             saveLoading: false,
@@ -253,7 +265,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             toast.error('Invalid Yaml')
             this.setState({ saveLoading: false })
         }
-        let payload = {
+        const payload = {
             id: this.state.ssoConfig?.id,
             name: this.state.sso,
             url: this.state.ssoConfig.url,
@@ -265,7 +277,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             },
             active: true,
         }
-        let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
+        const promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
         promise
             .then((response) => {
                 this.saveSSO(response)
@@ -287,11 +299,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.sso === OIDCType) {
             if (this.state.invalidYaml) {
-                toast.error("Invalid YAML")
+                toast.error('Invalid YAML')
                 return
             }
-            if (!this.state.ssoConfig.config.id || !this.state.ssoConfig.config.name || !this.state.ssoConfig.config.config) {
-                toast.error("Configuration must have id, name and config value")
+            if (
+                !this.state.ssoConfig.config.id ||
+                !this.state.ssoConfig.config.name ||
+                !this.state.ssoConfig.config.config
+            ) {
+                toast.error('Configuration must have id, name and config value')
                 return
             }
         }
@@ -307,7 +323,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.setState({ saveLoading: false })
             return
         }
-        let payload = {
+        const payload = {
             id: this.state.ssoConfig.id,
             name: this.state.sso,
             url: this.state.ssoConfig.url,
@@ -349,35 +365,37 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleConfigChange(value: string): void {
-        if (this.state.configMap !== SwitchItemValues.Configuration) return
+        if (this.state.configMap !== SwitchItemValues.Configuration) {
+            return
+        }
         if (this.state.sso === OIDCType) {
-            let config:any
+            let config: any
             try {
                 config = yamlJsParser.parse(value)
             } catch (error) {
                 //Invalid YAML, couldn't be parsed to JSON. Show error toast
                 this.setState({
-                    invalidYaml: true
+                    invalidYaml: true,
                 })
                 return
             }
             this.setState({
-                invalidYaml: false
+                invalidYaml: false,
             })
-            let configValue:string = ""
+            let configValue = ''
             if (config?.config) {
                 configValue = yamlJsParser.stringify(config.config)
             }
             this.setState({
-                ssoConfig:{
+                ssoConfig: {
                     ...this.state.ssoConfig,
                     config: {
                         name: config?.name,
                         id: config?.id,
                         type: this.state.ssoConfig.config.type,
-                        config: configValue
-                    }
-                }
+                        config: configValue,
+                    },
+                },
             })
             return
         }
@@ -400,8 +418,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleOnBlur(): void {
-        if (this.state.configMap !== SwitchItemValues.Configuration) return
-        let newConfig:any
+        if (this.state.configMap !== SwitchItemValues.Configuration) {
+            return
+        }
+        let newConfig: any
         try {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
         } catch (error) {
@@ -417,7 +437,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
             }
         }
-        let value = yamlJsParser.stringify(newConfig)
+        const value = yamlJsParser.stringify(newConfig)
 
         this.setState({
             ssoConfig: {
@@ -443,7 +463,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             ssoConfig = stringifyConfig.replaceAll('null', '')
         }
 
-        let codeEditorBody =
+        const codeEditorBody =
             this.state.configMap === SwitchItemValues.Configuration
                 ? ssoConfig
                 : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 })
@@ -491,7 +511,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             )
         }
 
-        let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
+        const shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
 
         const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
@@ -501,8 +521,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         value={codeEditorBody}
                         height={300}
                         mode="yaml"
-                        noParsing={this.state.sso==OIDCType}
-                        lineDecorationsWidth={(this.state.configMap === SwitchItemValues.Configuration) ? decorationWidth : 0}
+                        noParsing={this.state.sso == OIDCType}
+                        lineDecorationsWidth={
+                            this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0
+                        }
                         shebang={shebangHtml}
                         readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                         onChange={this.handleConfigChange}
@@ -541,7 +563,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     getSSOLoginTabsArr() {
-        let SSOLoginTabsArr = [
+        const SSOLoginTabsArr = [
             { provider: SSOProvider.google, SSOName: 'Google' },
             { provider: SSOProvider.github, SSOName: 'GitHub' },
             { provider: SSOProvider.gitlab, SSOName: 'GitLab' },

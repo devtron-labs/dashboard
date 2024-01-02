@@ -27,7 +27,13 @@ import {
     menuComponent,
     Option as SingleSelectOption,
 } from '../../v2/common/ReactSelect.utils'
-import { ALL_NAMESPACE, K8sListItemCardType, K8S_PERMISSION_INFO_MESSAGE, OptionType, EntityTypes } from '../userGroups.types'
+import {
+    ALL_NAMESPACE,
+    K8sListItemCardType,
+    K8S_PERMISSION_INFO_MESSAGE,
+    OptionType,
+    EntityTypes,
+} from '../userGroups.types'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -75,7 +81,7 @@ export default function K8sListItemCard({
         try {
             const { result } = await getClusterList()
             if (result) {
-              const filteredClusterList = result.filter((item) => !item?.isVirtualCluster)
+                const filteredClusterList = result.filter((item) => !item?.isVirtualCluster)
                 const _clusterOptions = convertToOptionsList(
                     sortObjectArrayAlphabetically(filteredClusterList, 'cluster_name'),
                     'cluster_name',

@@ -1,30 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
 export function useWindowSize() {
     function getSize() {
         return {
             width: window.innerWidth,
-            height: window.innerHeight
-        };
+            height: window.innerHeight,
+        }
     }
 
-    let timeout;
+    let timeout
 
-    const [windowSize, setWindowSize] = useState(getSize);
+    const [windowSize, setWindowSize] = useState(getSize)
     function handleResize(e) {
         if (timeout) {
-            window.cancelAnimationFrame(timeout);
+            window.cancelAnimationFrame(timeout)
         }
 
         timeout = window.requestAnimationFrame(function () {
-            setWindowSize(getSize());
-        });
+            setWindowSize(getSize())
+        })
     }
 
     useEffect(() => {
-        window.addEventListener('resize', handleResize, false);
-        return () => window.removeEventListener('resize', handleResize, false);
-    }, []);
+        window.addEventListener('resize', handleResize, false)
+        return () => window.removeEventListener('resize', handleResize, false)
+    }, [])
 
-    return windowSize;
+    return windowSize
 }

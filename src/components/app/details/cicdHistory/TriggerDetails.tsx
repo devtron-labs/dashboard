@@ -129,7 +129,9 @@ const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedTyp
 
 const WorkerStatus = React.memo(
     ({ message, podStatus, stage, workerPodName, finishedOn }: WorkerStatusType): JSX.Element | null => {
-        if (!message && !podStatus) return null
+        if (!message && !podStatus) {
+            return null
+        }
         // check if finishedOn time is timed out or not
         const isTimedOut = moment(finishedOn).isBefore(moment().subtract(TIMEOUT_VALUE, 'hours'))
         // finishedOn is 0001-01-01T00:00:00Z when the worker is still running
@@ -143,7 +145,11 @@ const WorkerStatus = React.memo(
                         {stage === 'DEPLOY' ? (
                             <div className="mr-10">Message</div>
                         ) : showLink ? (
-                            <NavLink to={`${WORKER_POD_BASE_URL}/${workerPodName}/logs`} target="_blank" className="anchor">
+                            <NavLink
+                                to={`${WORKER_POD_BASE_URL}/${workerPodName}/logs`}
+                                target="_blank"
+                                className="anchor"
+                            >
                                 <div className="mr-10">View worker pod</div>
                             </NavLink>
                         ) : (
@@ -342,7 +348,7 @@ const StartDetails = ({
                                 {ciMaterial.type != 'WEBHOOK' && (
                                     <a
                                         target="_blank"
-                                        rel="noopener noreferer"
+                                        rel="noopener noreferer noreferrer"
                                         href={createGitCommitUrl(ciMaterial.url, gitDetail.Commit)}
                                         className="dc__app-commit__hash mr-12 bcn-1 cn-7"
                                     >

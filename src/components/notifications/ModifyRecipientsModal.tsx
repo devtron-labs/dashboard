@@ -71,11 +71,13 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
             }
             oldRecipientList = oldRecipientList.concat(this.props.notificationListFromParent[i].providers)
         }
-        let set = new Set()
-        let arrayWithouDuplicates = []
+        const set = new Set()
+        const arrayWithouDuplicates = []
         for (let i = 0; i < oldRecipientList.length; i++) {
-            let uniqueValue = `${oldRecipientList[i].configId}_${oldRecipientList[i].name}_${oldRecipientList[i].recipient}`
-            if (set.has(uniqueValue)) continue
+            const uniqueValue = `${oldRecipientList[i].configId}_${oldRecipientList[i].name}_${oldRecipientList[i].recipient}`
+            if (set.has(uniqueValue)) {
+                continue
+            }
             set.add(uniqueValue)
             arrayWithouDuplicates.push(oldRecipientList[i])
         }
@@ -86,22 +88,27 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     }
 
     addRecipient = (selectedProviders): void => {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.selectedRecipient = selectedProviders || []
         state.recipientWithoutEmailAgent = selectedProviders.some(
             (item) => item.data.dest === 'ses' || item.data.dest === 'smtp',
         )
         state.selectedRecipient = state.selectedRecipient.map((p) => {
-            if (p.__isNew__) return { ...p, data: { dest: '', configId: 0, recipient: p.value } }
+            if (p.__isNew__) {
+                return { ...p, data: { dest: '', configId: 0, recipient: p.value } }
+            }
             return p
         })
         this.setState(state)
     }
 
     removeRecipient(provider): void {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.savedRecipients = state.savedRecipients.filter((p) => {
-            if ((provider.configId && (p.configId !== provider.configId || ( p.dest!==provider.dest))) || !(provider.recipient === p.recipient)) {
+            if (
+                (provider.configId && (p.configId !== provider.configId || p.dest !== provider.dest)) ||
+                !(provider.recipient === p.recipient)
+            ) {
                 return p
             }
         })
@@ -136,7 +143,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     }
 
     changeEmailAgent(event: any): void {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.selectedEmailAgent = event.target.value
         this.setState(state)
     }
@@ -197,7 +204,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     }
 
     render() {
-        let body = (
+        const body = (
             <>
                 <div className="m-24">
                     <div className="form__row">
@@ -213,7 +220,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                                             <Email className="icon-dim-20 mr-5" />
                                         ) : null}
                                         {p.dest === 'slack' ? <Slack className="icon-dim-20 mr-5" /> : null}
-                                        {p.dest === 'webhook' ? <Webhook className="icon-dim-20 mr-5" /> : null }
+                                        {p.dest === 'webhook' ? <Webhook className="icon-dim-20 mr-5" /> : null}
                                         {p.recipient ? p.recipient : p.name}
                                         <button
                                             type="button"

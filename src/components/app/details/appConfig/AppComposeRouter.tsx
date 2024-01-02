@@ -20,8 +20,8 @@ const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView'
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
-    let index = navItems.findIndex((item) => item.stage === currentStageName)
-    let nextUrl = navItems[index + 1].href
+    const index = navItems.findIndex((item) => item.stage === currentStageName)
+    const nextUrl = navItems[index + 1].href
     if (!isCiPipeline) {
         return (
             <div className="app-compose__next-section">
@@ -59,7 +59,7 @@ export default function AppComposeRouter({
     isBaseConfigProtected,
     reloadEnvironments,
     configProtectionData,
-    filteredEnvIds
+    filteredEnvIds,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
     const renderJobViewRoutes = (): JSX.Element => {

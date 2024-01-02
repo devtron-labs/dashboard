@@ -73,7 +73,7 @@ export default function NewCDPipeline({
     const parentPipelineId = urlParams.get('parentPipelineId')
     const addType = urlParams.get('addType')
     const childPipelineId = urlParams.get('childPipelineId')
-    
+
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string
         workflowId: string
@@ -133,11 +133,16 @@ export default function NewCDPipeline({
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
-    const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string; stageType: string }[]>([])
+    const [globalVariables, setGlobalVariables] = useState<
+        { label: string; value: string; format: string; stageType: string }[]
+    >([])
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [deleteDialog, setDeleteDialog] = useState<DeleteDialogType>(DeleteDialogType.showNormalDeleteDialog)
-    const [forceDeleteData, setForceDeleteData] = useState<ForceDeleteMessageType>({ forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' })
+    const [forceDeleteData, setForceDeleteData] = useState<ForceDeleteMessageType>({
+        forceDeleteDialogMessage: '',
+        forceDeleteDialogTitle: '',
+    })
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [isEnvUsedState, setIsEnvUsedState] = useState<boolean>(false)
@@ -199,8 +204,8 @@ export default function NewCDPipeline({
             getDockerRegistryMinAuth(appId, true),
         ])
             .then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
-                let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
-                let dockerRegistries = dockerResponse.result || []
+                const strategies = pipelineStrategyResponse.result.pipelineStrategy || []
+                const dockerRegistries = dockerResponse.result || []
                 const _allStrategies = {}
 
                 strategies.forEach((strategy) => {
@@ -220,7 +225,7 @@ export default function NewCDPipeline({
                 } else {
                     getEnvCDPipelineName(_form)
                     if (strategies.length > 0) {
-                        let defaultStrategy = strategies.find((strategy) => strategy.default)
+                        const defaultStrategy = strategies.find((strategy) => strategy.default)
                         handleStrategy(defaultStrategy.deploymentTemplate)
                     }
                 }
@@ -285,7 +290,7 @@ export default function NewCDPipeline({
         calculatedStageVariables: Map<string, VariableType>[]
     } => {
         const _formDataErrorObj = { ...formDataErrorObj }
-        let { stepsLength, _inputVariablesListPerTask } = calculateLastStepDetailsLogic(
+        const { stepsLength, _inputVariablesListPerTask } = calculateLastStepDetailsLogic(
             _formData,
             activeStageName,
             _formDataErrorObj,
@@ -305,7 +310,7 @@ export default function NewCDPipeline({
     const getCDPipeline = (form, dockerRegistries): void => {
         getCDPipelineConfig(appId, cdPipelineId)
             .then((result) => {
-                let pipelineConfigFromRes = result.pipelineConfig
+                const pipelineConfigFromRes = result.pipelineConfig
                 updateStateFromResponse(pipelineConfigFromRes, result.environments, form, dockerRegistries)
                 const preBuildVariable = calculateLastStepDetail(
                     false,
@@ -401,7 +406,7 @@ export default function NewCDPipeline({
                 active: env.id === pipelineConfigFromRes.environmentId,
             }
         })
-        let savedStrategies = []
+        const savedStrategies = []
         if (pipelineConfigFromRes.strategies) {
             for (let i = 0; i < pipelineConfigFromRes.strategies.length; i++) {
                 savedStrategies.push({
@@ -422,7 +427,7 @@ export default function NewCDPipeline({
                 )
             }
         }
-        let env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
+        const env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
         form.name = pipelineConfigFromRes.name
         form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
@@ -446,17 +451,25 @@ export default function NewCDPipeline({
         form.customTagStage = pipelineConfigFromRes.customTagStage
 
         if (pipelineConfigFromRes?.preDeployStage) {
-            if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
+            if (pipelineConfigFromRes.preDeployStage.steps?.length > 0) {
                 form.preBuildStage = pipelineConfigFromRes.preDeployStage
-            }else {
-                form.preBuildStage = {...pipelineConfigFromRes.preDeployStage, steps: [], triggerType: TriggerType.Auto}
+            } else {
+                form.preBuildStage = {
+                    ...pipelineConfigFromRes.preDeployStage,
+                    steps: [],
+                    triggerType: TriggerType.Auto,
+                }
             }
         }
         if (pipelineConfigFromRes?.postDeployStage) {
-            if(pipelineConfigFromRes.postDeployStage.steps?.length > 0){
+            if (pipelineConfigFromRes.postDeployStage.steps?.length > 0) {
                 form.postBuildStage = pipelineConfigFromRes?.postDeployStage
-            }else {
-                form.postDeployStage = {...pipelineConfigFromRes.postDeployStage, steps: [], triggerType: TriggerType.Auto}
+            } else {
+                form.postDeployStage = {
+                    ...pipelineConfigFromRes.postDeployStage,
+                    steps: [],
+                    triggerType: TriggerType.Auto,
+                }
             }
         }
         form.requiredApprovals = `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`
@@ -585,9 +598,8 @@ export default function NewCDPipeline({
         if (childPipelineId) {
             pipeline['childPipelineId'] = +childPipelineId
         }
-        
-        pipeline['addType'] = addType
 
+        pipeline['addType'] = addType
 
         const request = {
             appId: +appId,
@@ -697,7 +709,9 @@ export default function NewCDPipeline({
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
             for (let i = 0; i < stepsLength; i++) {
-                if (!_formDataErrorObj[stageName].steps[i]) _formDataErrorObj[stageName].steps.push({ isValid: true })
+                if (!_formDataErrorObj[stageName].steps[i]) {
+                    _formDataErrorObj[stageName].steps.push({ isValid: true })
+                }
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
@@ -733,15 +747,15 @@ export default function NewCDPipeline({
 
         const _form = { ...formData }
 
-        let promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
+        const promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
         promise
             .then((response) => {
                 if (response.result) {
-                    let pipelineConfigFromRes = response.result.pipelines[0]
+                    const pipelineConfigFromRes = response.result.pipelines[0]
                     updateStateFromResponse(pipelineConfigFromRes, _form.environments, _form, dockerRegistries)
                     let envName = pipelineConfigFromRes.environmentName
                     if (!envName) {
-                        let selectedEnv: Environment = _form.environments.find((env) => env.id == _form.environmentId)
+                        const selectedEnv: Environment = _form.environments.find((env) => env.id == _form.environmentId)
                         envName = selectedEnv.name
                     }
                     setFormData(_form)
@@ -831,7 +845,7 @@ export default function NewCDPipeline({
 
     const handleAdvanceClick = () => {
         const form = { ...formData }
-        let strategies = form.strategies.filter(
+        const strategies = form.strategies.filter(
             (strategy) => strategy.deploymentTemplate != form.savedStrategies[0].deploymentTemplate,
         )
         form.strategies = strategies
@@ -932,7 +946,7 @@ export default function NewCDPipeline({
             setIsEnvUsedState,
             savedCustomTagPattern,
             selectedCDStageTypeValue,
-            setSelectedCDStageTypeValue
+            setSelectedCDStageTypeValue,
         }
     }, [
         formData,
@@ -1017,15 +1031,15 @@ export default function NewCDPipeline({
     }
 
     const renderCDPipelineModal = () => {
-        let title;
+        let title
         if (isWebhookCD && workflowId === '0') {
-            title = DEPLOY_IMAGE_EXTERNALSOURCE;
+            title = DEPLOY_IMAGE_EXTERNALSOURCE
         } else if (isWebhookCD && changeCIPayload) {
             title = CHANGE_TO_EXTERNAL_SOURCE
         } else if (cdPipelineId) {
-            title = EDIT_DEPLOYMENT_PIPELINE;
+            title = EDIT_DEPLOYMENT_PIPELINE
         } else {
-            title = CREATE_DEPLOYMENT_PIPELINE;
+            title = CREATE_DEPLOYMENT_PIPELINE
         }
 
         return (
@@ -1085,7 +1099,9 @@ export default function NewCDPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+            return <></>
+        }
 
         return (
             <div className="flexbox">

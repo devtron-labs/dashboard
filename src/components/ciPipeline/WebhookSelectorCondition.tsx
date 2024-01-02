@@ -1,10 +1,18 @@
-import React from 'react';
-import ReactSelect from 'react-select';
-import { Option } from '../v2/common/ReactSelect.utils';
-import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
+import React from 'react'
+import ReactSelect from 'react-select'
+import { Option } from '../v2/common/ReactSelect.utils'
+import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import { CustomInput, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
-export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, selectorCondition, onSelectorChange, onSelectorValueChange, deleteWebhookCondition, canEditSelectorCondition}) {
+export function WebhookSelectorCondition({
+    conditionIndex,
+    masterSelectorList,
+    selectorCondition,
+    onSelectorChange,
+    onSelectorValueChange,
+    deleteWebhookCondition,
+    canEditSelectorCondition,
+}) {
     return (
         <div className="ci-webhook-condition mb-16 flex left">
             <ReactSelect

@@ -36,7 +36,7 @@ export const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
         return getSelectedPermissionValues(permission.environment)
     } else {
-        let allFutureCluster = {}
+        const allFutureCluster = {}
         let envList = ''
         permission.environment.forEach((element) => {
             if (element.clusterName === '' && element.value.startsWith('#')) {
@@ -53,7 +53,7 @@ export const getSelectedEnvironments = (permission) => {
 
 const getSelectedPermissionValues = (permissionLabel: OptionType[]) => {
     let entityName = ''
-    for (let _entityName of permissionLabel) {
+    for (const _entityName of permissionLabel) {
         if (_entityName.value === '*') {
             break
         } else {
@@ -144,7 +144,7 @@ export const isTokenExpired = (expiredDate: number): boolean => {
 }
 
 export const isFormComplete = (directPermission, setDirectPermission): boolean => {
-    let isComplete: boolean = true
+    let isComplete = true
     const tempPermissions = directPermission.reduce((agg, curr) => {
         if (curr.team && curr.entityName.length === 0) {
             isComplete = false

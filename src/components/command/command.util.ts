@@ -61,9 +61,9 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
         })
     }
 
-    let arg = args[0]
+    const arg = args[0]
 
-    let obj = {
+    const obj = {
         app: getAppArguments,
         chart: getChartArguments,
         security: getSecurityArguments,
@@ -73,20 +73,21 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
 
     if (obj[arg.value]) {
         return obj[arg.value](args, options)
-    } else
+    } else {
         return new Promise((resolve, reject) => {
             resolve({
                 allSuggestionArguments: [],
                 groups: [],
             })
         })
+    }
 }
 
 function getAppArguments(args, options): Promise<CommandSuggestionType> {
     //["app", "appName", "envName", "pod", "podname"]
     if (args.length === 1) {
         return getAppListMin(null, options).then((response) => {
-            let list = response.result.map((a) => {
+            const list = response.result.map((a) => {
                 return {
                     value: a.name,
                     ref: undefined,
@@ -121,8 +122,10 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                     },
                 }
             })
-            if (!list) list = []
-            let l = [
+            if (!list) {
+                list = []
+            }
+            const l = [
                 {
                     value: 'configure',
                     ref: undefined,
@@ -252,7 +255,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
         })
     } else if (args[3] && args.length === 4) {
         // args[3] --> pod
-        if (args[3].value === 'env-override')
+        if (args[3].value === 'env-override') {
             return getAppOtherEnvironmentMin(args[1].data.value).then((response) => {
                 let list = response?.result?.map((a) => {
                     return {
@@ -267,12 +270,15 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                         },
                     }
                 })
-                if (!list) list = []
+                if (!list) {
+                    list = []
+                }
                 return {
                     allSuggestionArguments: list,
                     groups: [COMMAND_REV.env],
                 }
             })
+        }
     }
     return new Promise((resolve, reject) => {
         resolve({
@@ -316,7 +322,9 @@ function getChartArguments(args, options): Promise<CommandSuggestionType> {
                         },
                     }
                 })
-                if (!list) list = []
+                if (!list) {
+                    list = []
+                }
                 return {
                     allSuggestionArguments: list,
                     groups: [],

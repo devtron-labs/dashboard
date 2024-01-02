@@ -1,10 +1,4 @@
-import {
-    Drawer,
-    OptionType,
-    showError,
-    TippyCustomized,
-    TippyTheme,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, OptionType, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import {
@@ -82,7 +76,7 @@ function EphemeralContainerDrawer({
 
     const handleEphemeralContainerTypeClick = (containerType) => {
         try {
-            let jsonManifest = JSON.parse(
+            const jsonManifest = JSON.parse(
                 JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)),
             )
             if (jsonManifest) {
@@ -190,7 +184,7 @@ function EphemeralContainerDrawer({
     }
 
     const handleEphemeralChange = (selected, key, defaultOptions) => {
-        let defaultVal = defaultOptions.length && defaultOptions[0]
+        const defaultVal = defaultOptions.length && defaultOptions[0]
         if (key === 'image') {
             const newImageOption = {
                 value: selected.value,
@@ -358,7 +352,9 @@ function EphemeralContainerDrawer({
     }
 
     const handleManifestAdvanceConfiguration = (e) => {
-        if (switchManifest !== SwitchItemValues.Configuration) return
+        if (switchManifest !== SwitchItemValues.Configuration) {
+            return
+        }
         setEphemeralFormAdvanced({
             ...ephemeralFormAdvanced,
             advancedData: {
@@ -376,7 +372,7 @@ function EphemeralContainerDrawer({
     }
 
     const renderAdvancedEphemeral = () => {
-        let codeEditorBody =
+        const codeEditorBody =
             switchManifest === SwitchItemValues.Configuration
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
@@ -460,7 +456,7 @@ function EphemeralContainerDrawer({
                 })
 
                 const _containers = containers
-                let containerName = response.result
+                const containerName = response.result
                 _containers.push({
                     name: containerName,
                     isInitContainer: false,

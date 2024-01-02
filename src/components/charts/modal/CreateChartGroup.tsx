@@ -74,7 +74,9 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             return false
         }
 
-        const isNameUsed = this.state.charts.some((chart) => chart.name === this.state.name.value && chart.id !== this.props.chartGroupId)
+        const isNameUsed = this.state.charts.some(
+            (chart) => chart.name === this.state.name.value && chart.id !== this.props.chartGroupId,
+        )
         if (isNameUsed) {
             toast.error(`A chart group with name ${this.state.name.value} already exists!`)
             return false
@@ -96,7 +98,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             return
         }
 
-        let requestBody = {
+        const requestBody = {
             name: this.state.name.value.trim(),
             description: this.state.description,
         }
@@ -116,7 +118,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                     })
                 } else {
                     toast.success('Successfully created.')
-                    let url = getChartGroupEditURL(response.result.id)
+                    const url = getChartGroupEditURL(response.result.id)
                     this.props.history.push(url)
                 }
             })
@@ -163,7 +165,9 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 onSave={this.saveChartGroup}
             >
                 <label className="form__row">
-                    <span className="form__label dc__required-field" data-testid="create-group-name-heading">Name</span>
+                    <span className="form__label dc__required-field" data-testid="create-group-name-heading">
+                        Name
+                    </span>
                     <input
                         className="form__input"
                         autoComplete="off"
@@ -189,7 +193,9 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 </label>
 
                 <label className="form__row">
-                    <span className="form__label" data-testid="create-group-desc-heading">Description</span>
+                    <span className="form__label" data-testid="create-group-desc-heading">
+                        Description
+                    </span>
                     <textarea
                         className="form__input form__input--textarea"
                         name="description"
@@ -203,7 +209,12 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                     />
                     <span className="form__error"></span>
                 </label>
-                <button type="button" className="cta dc__align-right" onClick={this.saveChartGroup} data-testid="save-group-button">
+                <button
+                    type="button"
+                    className="cta dc__align-right"
+                    onClick={this.saveChartGroup}
+                    data-testid="save-group-button"
+                >
                     {this.state.loading ? <Progressing /> : this.props.chartGroupId ? 'Update Group' : 'Create Group'}
                 </button>
             </DialogForm>

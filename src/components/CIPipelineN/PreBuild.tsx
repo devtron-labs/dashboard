@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import {
-    PluginType,
-    ScriptType,
-    VariableType,
-    RefVariableType,
-    Progressing,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { PluginType, ScriptType, VariableType, RefVariableType, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
@@ -40,7 +34,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setFormDataErrorObj,
         calculateLastStepDetail,
         validateStage,
-        pageState
+        pageState,
     } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
     useEffect(() => {
@@ -99,7 +93,10 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
             }
         } else {
             isPluginRequired =
-                !isJobView && isRequired && !isCdPipeline && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+                !isJobView &&
+                isRequired &&
+                !isCdPipeline &&
+                isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
@@ -175,7 +172,8 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         if (formData[activeStageName].steps.length === 0) {
             const _postText = isCdPipeline ? 'deployment' : 'build'
             const _postSubtitleText = isCdPipeline ? 'deployment' : 'the container image is built'
-            const _preBuildText = activeStageName === BuildStageVariable.PreBuild ? `pre-${_postText}` : `post-${_postText}`
+            const _preBuildText =
+                activeStageName === BuildStageVariable.PreBuild ? `pre-${_postText}` : `post-${_postText}`
             const _execOrderText = activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
             const _title = isJobView ? 'No tasks configured' : `No ${_preBuildText} tasks configured`
             const _subtitle = isJobView

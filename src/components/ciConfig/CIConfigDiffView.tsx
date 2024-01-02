@@ -1,5 +1,12 @@
 import React, { useState } from 'react'
-import { showError, Progressing, Drawer, DeleteDialog, noop, DockerConfigOverrideType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    DeleteDialog,
+    noop,
+    DockerConfigOverrideType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
@@ -37,7 +44,7 @@ export default function CIConfigDiffView({
     const wfCIMap = new Map<number, number>()
     const _configOverridenWorkflows = configOverrideWorkflows.filter((_cwf) => {
         const _ciPipeline = configOverridenPipelines?.find((_ci) => _ci.id === _cwf.ciPipelineId)
-        if (!!_ciPipeline) {
+        if (_ciPipeline) {
             wfCIMap.set(_cwf.id, _ciPipeline.id)
             return _ciPipeline
         }
@@ -210,7 +217,7 @@ export default function CIConfigDiffView({
                                     configOverridenPipelines={configOverridenPipelines}
                                     materials={ciConfig?.materials}
                                     globalCIConfig={globalCIConfig}
-                                    gitMaterials = {gitMaterials}
+                                    gitMaterials={gitMaterials}
                                 />
                             </div>
                         ))

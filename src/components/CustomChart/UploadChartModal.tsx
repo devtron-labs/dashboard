@@ -21,7 +21,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
 
     const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
-        let formData = new FormData()
+        const formData = new FormData()
         formData.append('BinaryFile', e.target.files[0])
         validateChart(formData)
             .then((response: ChartUploadResponse) => {
@@ -33,9 +33,15 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 setUploadState(UPLOAD_STATE.ERROR)
                 if (Array.isArray(error.errors)) {
                     if (error.errors[0].code === SERVER_ERROR_CODES.CHART_ALREADY_EXISTS) {
-                        setErrorData({ title: error.errors[0]?.userMessage || "", message: ['Try uploading another chart'] })
+                        setErrorData({
+                            title: error.errors[0]?.userMessage || '',
+                            message: ['Try uploading another chart'],
+                        })
                     } else if (error.errors[0].code === SERVER_ERROR_CODES.CHART_NAME_RESERVED) {
-                        setErrorData({ title: error.errors[0]?.userMessage || "", message: [error.errors[0]?.internalMessage || ""] })
+                        setErrorData({
+                            title: error.errors[0]?.userMessage || '',
+                            message: [error.errors[0]?.internalMessage || ''],
+                        })
                     } else {
                         setErrorData({
                             title: 'Unsupported chart template',
@@ -121,9 +127,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
                 <div>
                     <div>
-                        <span className="fs-13 fw-4 cn-7 dc__required-field">
-                            Chart Name
-                        </span>
+                        <span className="fs-13 fw-4 cn-7 dc__required-field">Chart Name</span>
                         <input
                             type="text"
                             className="w-100 br-4 en-2 bw-1 mt-6 form__input"
@@ -228,9 +232,15 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
                 {uploadState !== UPLOAD_STATE.UPLOADING && (
                     <ButtonWithLoader
-                        dataTestId={`${uploadState === UPLOAD_STATE.UPLOAD ? "select-tgz-file-button" : 
-                        uploadState === UPLOAD_STATE.ERROR ? "upload-another-chart" : 
-                        uploadState === UPLOAD_STATE.SUCCESS ? "save-chart" : ""}`}
+                        dataTestId={`${
+                            uploadState === UPLOAD_STATE.UPLOAD
+                                ? 'select-tgz-file-button'
+                                : uploadState === UPLOAD_STATE.ERROR
+                                ? 'upload-another-chart'
+                                : uploadState === UPLOAD_STATE.SUCCESS
+                                ? 'save-chart'
+                                : ''
+                        }`}
                         rootClassName="cta mr-20 dc__no-text-transform"
                         loaderColor="white"
                         onClick={handleSuccessButton}
@@ -245,7 +255,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
             </div>
         )
-}
+    }
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body upload-modal dc__no-top-radius mt-0">

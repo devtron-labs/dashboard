@@ -1338,9 +1338,9 @@ export default function CDMaterial({
 
     const renderMaterialCTA = (
         mat: CDMaterialType,
-        isApprovalRequester: boolean = false,
-        isImageApprover: boolean = false,
-        disableSelection: boolean = false,
+        isApprovalRequester = false,
+        isImageApprover = false,
+        disableSelection = false,
     ) => {
         if (mat.filterState !== FilterStates.ALLOWED) {
             return (
@@ -1442,7 +1442,7 @@ export default function CDMaterial({
                             )}
                         >
                             <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                            <div className={`dc__registry-icon ${mat.registryType} mr-8`}></div>
+                                <div className={`dc__registry-icon ${mat.registryType} mr-8`}></div>
                                 {mat.image}
                             </div>
                         </ConditionalWrap>

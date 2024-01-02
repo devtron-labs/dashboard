@@ -1,6 +1,7 @@
+/* eslint-disable no-restricted-globals */
 export default () => {
     // let filteredArray = []
-    var bp = {
+    const bp = {
         // let eventSrc= undefined
         // let filteredArray = []
         // let grepTokens = undefined
@@ -14,22 +15,24 @@ export default () => {
         indexFromLastMatch: -1000000,
         buffer: [],
         trailingLines: [],
-        prefix: "",
+        prefix: '',
         eventListener: function (ev) {
-            let log;
+            let log
             try {
-                log = JSON.parse(ev.data).result.content;
+                log = JSON.parse(ev.data).result.content
             } catch (e) {
-                log = ev.data;
+                log = ev.data
             }
             let bufferedLogs: Array<string> = []
 
             // Regex to match ANSI color code/escape sequence
             const ANSI_COLOR_ESCAPE_SEQUENCE_REGEX = /\u001b\[.*?m/g
             if (!log || log.length == 0) {
-                console.log("no log lines")
+                console.log('no log lines')
             } else {
-                const logTimestamp = ev.lastEventId ? `[${new Date(ev.lastEventId / 1000000).toString().split(' ').splice(1, 5).join(' ')}] ` : ''
+                const logTimestamp = ev.lastEventId
+                    ? `[${new Date(ev.lastEventId / 1000000).toString().split(' ').splice(1, 5).join(' ')}] `
+                    : ''
                 log = `${logTimestamp}${this.prefix}${log}`
 
                 if (!this.grepTokens) {
@@ -38,8 +41,8 @@ export default () => {
                     const { _args, a = 0, b = 0 } = this.grepTokens[0]
 
                     if (new RegExp(_args, 'gi').test(log.replace(ANSI_COLOR_ESCAPE_SEQUENCE_REGEX, ''))) {
-                        if (this.indexFromLastMatch <= 1 * (a+b)) {
-                            let size = Math.min(1*(this.indexFromLastMatch - b), this.trailingLines.length)
+                        if (this.indexFromLastMatch <= 1 * (a + b)) {
+                            const size = Math.min(1 * (this.indexFromLastMatch - b), this.trailingLines.length)
                             bufferedLogs = bufferedLogs.concat(this.trailingLines.slice(0, size))
                             this.trailingLines = new Array<string>()
                         }
@@ -51,12 +54,12 @@ export default () => {
                         if (b > 0) {
                             this.buffer = this.buffer.concat(log).slice(-1 * b)
                         }
-                        if (this.indexFromLastMatch <= 1 * (a)) {
+                        if (this.indexFromLastMatch <= 1 * a) {
                             this.trailingLines.push(log)
                         }
-                        if (this.indexFromLastMatch == 1 * (a+b)) {
+                        if (this.indexFromLastMatch == 1 * (a + b)) {
                             bufferedLogs = bufferedLogs.concat(this.trailingLines)
-                            this.trailingLines = new Array()
+                            this.trailingLines = []
                         }
                     }
                     for (let i = 1; i < this.grepTokens.length; i++) {
@@ -67,7 +70,7 @@ export default () => {
                     }
                 }
             }
-            let matches = bufferedLogs
+            const matches = bufferedLogs
             this.filteredArray = this.filteredArray.concat(matches)
             if (this.grepTokens && this.grepTokens.length > 0) {
                 this.filteredArray = this.filteredArray.map((log) =>
@@ -79,40 +82,55 @@ export default () => {
                         ),
                 )
             }
-        }
+        },
     }
-    var wrappers = []
-    self.onmessage = e => { // eslint-disable-line no-restricted-globals
+    const wrappers = []
+    self.onmessage = (e) => {
+        // eslint-disable-line no-restricted-globals
         if (!e) {
-            console.log('no event found');
+            console.log('no event found')
             return
         }
-        if (!e.data.type && !e.data.paylod) return
+        if (!e.data.type && !e.data.paylod) {
+            return
+        }
         switch (e.data.type) {
             case 'start':
                 const { urls, grepTokens, pods } = e.data.payload
-                wrappers.forEach(wrapper => {
+                wrappers.forEach((wrapper) => {
                     try {
                         wrapper.eventSrc.close()
-                    }
-                    catch (err) { }
+                    } catch (err) {}
                 })
                 for (let index = 0; index < urls.length; index++) {
-                    const element = urls[index];
+                    const element = urls[index]
                     wrappers[index] = Object.assign({}, bp)
-                    wrappers[index].prefix = `${typeof pods[index] === 'object' ? pods[index].name : pods[index]}: `;
+                    wrappers[index].prefix = `${typeof pods[index] === 'object' ? pods[index].name : pods[index]}: `
                     wrappers[index].eventSrc = new EventSource(element, { withCredentials: true })
                     wrappers[index].grepTokens = grepTokens
                     const eventListener = wrappers[index].eventListener.bind(wrappers[index])
                     wrappers[index].eventSrc.addEventListener('message', eventListener)
                     wrappers[index].eventSrc.addEventListener('open', function (ev) {
-                        self.postMessage({ result: [], signal: 'open', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
+                        self.postMessage(
+                            { result: [], signal: 'open', readyState: wrappers[index].eventSrc.readyState },
+                            null,
+                        ) // eslint-disable-line no-restricted-globals
                     })
                     wrappers[index].eventSrc.addEventListener('error', function (ev) {
-                        self.postMessage({ result: [], signal: 'close', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
+                        self.postMessage(
+                            { result: [], signal: 'close', readyState: wrappers[index].eventSrc.readyState },
+                            null,
+                        ) // eslint-disable-line no-restricted-globals
                     })
                     wrappers[index].eventSrc.addEventListener('CUSTOM_ERR_STREAM', function (ev) {
-                        self.postMessage({ result: [ev.data], signal: 'CUSTOM_ERR_STREAM', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
+                        self.postMessage(
+                            {
+                                result: [ev.data],
+                                signal: 'CUSTOM_ERR_STREAM',
+                                readyState: wrappers[index].eventSrc.readyState,
+                            },
+                            null,
+                        ) // eslint-disable-line no-restricted-globals
                     })
                 }
                 break
@@ -120,22 +138,22 @@ export default () => {
                 // wrapper.filteredArray = logFilter.stop()
                 respond()
                 try {
-                    wrappers.forEach(val => val.eventSrc.close())
-                }
-                catch (err) { }
-                finally {
-                    wrappers.forEach( val => val.filteredArray = [])
+                    wrappers.forEach((val) => val.eventSrc.close())
+                } catch (err) {
+                } finally {
+                    wrappers.forEach((val) => (val.filteredArray = []))
                 }
         }
-
     }
 
     function respond() {
-        wrappers.forEach( wrapper => {
-            if (wrapper.filteredArray.length === 0) return
-            self.postMessage({ result: wrapper.filteredArray, readyState: wrapper.eventSrc.readyState }, null);// eslint-disable-line no-restricted-globals
+        wrappers.forEach((wrapper) => {
+            if (wrapper.filteredArray.length === 0) {
+                return
+            }
+            self.postMessage({ result: wrapper.filteredArray, readyState: wrapper.eventSrc.readyState }, null) // eslint-disable-line no-restricted-globals
             wrapper.filteredArray.length = 0
         })
     }
-    self.setInterval(respond, 500); // eslint-disable-line no-restricted-globals
+    self.setInterval(respond, 500) // eslint-disable-line no-restricted-globals
 }

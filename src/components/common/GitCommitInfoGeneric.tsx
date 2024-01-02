@@ -25,28 +25,28 @@ export default function GitCommitInfoGeneric({
     showMaterialInfoHeader,
     canTriggerBuild = false,
     index,
-    isExcluded = false
+    isExcluded = false,
 }) {
     const [showSeeMore, setShowSeeMore] = useState(true)
-    let _lowerCaseCommitInfo = _lowerCaseObject(commitInfo)
-    let _isWebhook =
+    const _lowerCaseCommitInfo = _lowerCaseObject(commitInfo)
+    const _isWebhook =
         materialSourceType === SourceTypeMap.WEBHOOK ||
         (_lowerCaseCommitInfo && _lowerCaseCommitInfo.webhookdata && _lowerCaseCommitInfo.webhookdata.id !== 0)
-    let _webhookData = _isWebhook ? _lowerCaseCommitInfo.webhookdata : {}
-    let _commitUrl = _isWebhook
+    const _webhookData = _isWebhook ? _lowerCaseCommitInfo.webhookdata : {}
+    const _commitUrl = _isWebhook
         ? null
         : _lowerCaseCommitInfo.commiturl
         ? _lowerCaseCommitInfo.commiturl
         : createGitCommitUrl(materialUrl, _lowerCaseCommitInfo.commit)
 
     function _lowerCaseObject(input): any {
-        let _output = {}
+        const _output = {}
         if (!input) {
             return _output
         }
         Object.keys(input).forEach((_key) => {
-            let _modifiedKey = _key.toLowerCase()
-            let _value = input[_key]
+            const _modifiedKey = _key.toLowerCase()
+            const _value = input[_key]
             if (_value && typeof _value === 'object') {
                 _output[_modifiedKey] = _lowerCaseObject(_value)
             } else {
@@ -59,7 +59,7 @@ export default function GitCommitInfoGeneric({
     function renderBasicGitCommitInfoForWebhook() {
         let _date
         if (_webhookData.data.date) {
-            let _moment = moment(_webhookData.data.date, 'YYYY-MM-DDTHH:mm:ssZ')
+            const _moment = moment(_webhookData.data.date, 'YYYY-MM-DDTHH:mm:ssZ')
             _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : _webhookData.data.date
         }
         return (
@@ -86,29 +86,27 @@ export default function GitCommitInfoGeneric({
     }
 
     function renderMoreDataForWebhook(_moreData) {
-        return (
-                !showSeeMore ? (
-                    <div className="material-history__all-changes">
-                        <div className="material-history__body mt-4">
-                            {Object.keys(_moreData).map((_key, index) => {
-                                let classes
-                                if (index % 2 == 0) {
-                                    classes = 'bcn-1'
-                                }
-                                return (
-                                    <div
-                                        key={_key}
-                                        className={`material-history__text material-history__grid left pt-4 pb-4 ${classes}`}
-                                    >
-                                        <div>{_key}</div>
-                                        <div>{_moreData[_key]}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                ) : null
-        )
+        return !showSeeMore ? (
+            <div className="material-history__all-changes">
+                <div className="material-history__body mt-4">
+                    {Object.keys(_moreData).map((_key, index) => {
+                        let classes
+                        if (index % 2 == 0) {
+                            classes = 'bcn-1'
+                        }
+                        return (
+                            <div
+                                key={_key}
+                                className={`material-history__text material-history__grid left pt-4 pb-4 ${classes}`}
+                            >
+                                <div>{_key}</div>
+                                <div>{_moreData[_key]}</div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+        ) : null
     }
 
     function renderSeeMoreButtonForWebhook() {
@@ -128,7 +126,7 @@ export default function GitCommitInfoGeneric({
     }
 
     function handleMoreDataForWebhook() {
-        let _moreData = {}
+        const _moreData = {}
         if (_webhookData.eventactiontype == 'merged') {
             Object.keys(_webhookData.data).forEach((_key) => {
                 if (
@@ -152,7 +150,7 @@ export default function GitCommitInfoGeneric({
             })
         }
 
-        let _hasMoreData = Object.keys(_moreData).length > 0
+        const _hasMoreData = Object.keys(_moreData).length > 0
 
         return (
             <>
@@ -180,7 +178,7 @@ export default function GitCommitInfoGeneric({
             )
         }
 
-        return <span data-testid="valid-git-commit" >Select</span>
+        return <span data-testid="valid-git-commit">Select</span>
     }
 
     return (
@@ -202,7 +200,7 @@ export default function GitCommitInfoGeneric({
                                 <a
                                     href={_commitUrl}
                                     target="_blank"
-                                    rel="noopener"
+                                    rel="noopener noreferrer"
                                     className="commit-hash"
                                     onClick={stopPropagation}
                                     data-testid={`deployment-history-source-code-material-history${index}`}
@@ -238,7 +236,12 @@ export default function GitCommitInfoGeneric({
                         </div>
                     ) : null}
                     {_lowerCaseCommitInfo.message ? (
-                        <div data-testid={`${_lowerCaseCommitInfo.message.trim()}-${isExcluded ? "excluded": "included"}`} className="material-history__text flex left top material-history-text--padded dc__word-break-all">
+                        <div
+                            data-testid={`${_lowerCaseCommitInfo.message.trim()}-${
+                                isExcluded ? 'excluded' : 'included'
+                            }`}
+                            className="material-history__text flex left top material-history-text--padded dc__word-break-all"
+                        >
                             <MessageIcon className="icon-dim-16 mw-16 mr-8 mt-2" />
                             {_lowerCaseCommitInfo.message}
                         </div>
@@ -257,7 +260,7 @@ export default function GitCommitInfoGeneric({
                                 <a
                                     href={`${_webhookData.data['git url']}`}
                                     target="_blank"
-                                    rel="noopener noreferer"
+                                    rel="noopener noreferer noreferrer"
                                     className="dc__no-decor cb-5"
                                 >
                                     View git url
@@ -290,7 +293,7 @@ export default function GitCommitInfoGeneric({
                                                     _webhookData.data['source checkout'],
                                                 )}
                                                 target="_blank"
-                                                rel="noopener"
+                                                rel="noopener noreferrer"
                                                 className="commit-hash"
                                                 onClick={stopPropagation}
                                             >
@@ -323,7 +326,7 @@ export default function GitCommitInfoGeneric({
                                                     _webhookData.data['target checkout'],
                                                 )}
                                                 target="_blank"
-                                                rel="noopener"
+                                                rel="noopener noreferrer"
                                                 className="commit-hash"
                                                 onClick={stopPropagation}
                                             >

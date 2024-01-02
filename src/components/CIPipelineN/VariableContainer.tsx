@@ -8,12 +8,7 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export function VariableContainer({ type }: { type: PluginVariableType }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
-    const {
-        formData,
-        selectedTaskIndex,
-        activeStageName,
-        formDataErrorObj,
-    } = useContext(pipelineContext)
+    const { formData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const variableLength =
         formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
             type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
@@ -82,7 +77,10 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                             </span>
                                         }
                                     >
-                                        <div data-testid={`${variable.name}-dropdown`} className="fs-13 fw-4 lh-28 dc__ellipsis-right">
+                                        <div
+                                            data-testid={`${variable.name}-dropdown`}
+                                            className="fs-13 fw-4 lh-28 dc__ellipsis-right"
+                                        >
                                             <span className="text-underline-dashed">{variable.name}</span>
                                         </div>
                                     </Tippy>

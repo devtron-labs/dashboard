@@ -199,7 +199,9 @@ export default function ResourceList() {
         } else if (nodeType == AppDetailsTabs.cluster_overview.toLocaleLowerCase()) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.cluster_overview, AppDetailsTabs.cluster_overview)
         } else if (selectedResource && !node) {
-            if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) getSidebarData(clusterId)
+            if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
+                getSidebarData(clusterId)
+            }
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.k8s_Resources, AppDetailsTabs.k8s_Resources)
         }
 
@@ -224,7 +226,9 @@ export default function ResourceList() {
     }, [location.pathname])
 
     const getGVKData = async (_clusterId): Promise<void> => {
-        if (!_clusterId) return
+        if (!_clusterId) {
+            return
+        }
         try {
             setRawGVKLoader(true)
             setK8SObjectMapRaw(null)
@@ -479,7 +483,9 @@ export default function ResourceList() {
     }
 
     const getSidebarData = async (_clusterId): Promise<void> => {
-        if (!_clusterId) return
+        if (!_clusterId) {
+            return
+        }
         try {
             setK8SObjectMap(null)
             setLoader(true)
@@ -895,7 +901,9 @@ export default function ResourceList() {
     }
 
     const renderClusterTerminal = (): JSX.Element => {
-        if (!startTerminal && nodeType !== AppDetailsTabs.terminal) return null
+        if (!startTerminal && nodeType !== AppDetailsTabs.terminal) {
+            return null
+        }
         const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
         const _showTerminal =
             nodeType === AppDetailsTabs.terminal && selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
@@ -943,7 +951,7 @@ export default function ResourceList() {
                     />
                 </div>
             )
-        } else if (nodeType === AppDetailsTabs.cluster_overview.toLocaleLowerCase())
+        } else if (nodeType === AppDetailsTabs.cluster_overview.toLocaleLowerCase()) {
             return (
                 <ClusterOverview
                     isSuperAdmin={superAdminRef.current}
@@ -956,6 +964,7 @@ export default function ResourceList() {
                     sideDataAbortController={sideDataAbortController.current}
                 />
             )
+        }
         return loader || rawGVKLoader || errorMsg ? (
             <ConnectingToClusterState
                 loader={loader}
@@ -983,7 +992,7 @@ export default function ResourceList() {
     }
 
     const addClusterButton = () => {
-        if (clusterId)
+        if (clusterId) {
             return (
                 !loader &&
                 !showErrorState &&
@@ -1000,6 +1009,7 @@ export default function ResourceList() {
                     </>
                 )
             )
+        }
 
         return (
             <>

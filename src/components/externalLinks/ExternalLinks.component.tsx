@@ -56,9 +56,7 @@ export const NoExternalLinksView = ({
     history: any
 }): JSX.Element => {
     const handleButton = () => {
-        return (
-            <AddLinkButton handleOnClick={handleAddLinkClick} />
-        )
+        return <AddLinkButton handleOnClick={handleAddLinkClick} />
     }
     return (
         <GenericEmptyState
@@ -172,6 +170,7 @@ export const AppLevelExternalLinks = ({
                     href={getParsedURL(true, linkOption.value, details)}
                     target="_blank"
                     className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
+                    rel="noreferrer"
                 >
                     <img
                         className="icon-dim-16 mr-4"
@@ -250,6 +249,7 @@ export const NodeLevelExternalLinks = ({
                     href={getParsedURL(false, data.value, details, podName, containerName)}
                     target="_blank"
                     className="external-link-option h-32 flex left br-4 dc__no-decor cn-9"
+                    rel="noreferrer"
                 >
                     <img className="icon-dim-20 mr-12" src={data.icon} alt={data.label} onError={onImageLoadError} />
                     <span className="dc__ellipsis-right">{data.label}</span>

@@ -14,14 +14,14 @@ interface TabState {
 export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: StatusFilterButtonType) => {
     const [selectedTab, setSelectedTab] = useState('all')
 
-    let allNodeCount: number = 0,
-        healthyNodeCount: number = 0,
-        progressingNodeCount: number = 0,
-        failedNodeCount: number = 0,
-        missingNodeCount: number = 0
+    let allNodeCount = 0,
+        healthyNodeCount = 0,
+        progressingNodeCount = 0,
+        failedNodeCount = 0,
+        missingNodeCount = 0
 
     nodes?.forEach((_node) => {
-        let _nodeHealth = _node.health?.status
+        const _nodeHealth = _node.health?.status
 
         if (_nodeHealth?.toLowerCase() === NodeStatus.Healthy) {
             healthyNodeCount++

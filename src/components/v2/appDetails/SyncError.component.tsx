@@ -5,8 +5,18 @@ import IndexStore from './index.store'
 import { renderErrorHeaderMessage } from '../../common/error/error.utils'
 import { AppType, SyncErrorType } from './appDetails.type'
 import { AppDetailsErrorType } from '../../../config'
-import { DeploymentAppTypes, ForceDeleteDialog, ResponseType, ServerErrors, not, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from '../../app/details/appDetails/appDetails.service'
+import {
+    DeploymentAppTypes,
+    ForceDeleteDialog,
+    ResponseType,
+    ServerErrors,
+    not,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
+    deleteArgoCDAppWithNonCascade,
+    getClusterConnectionStatus,
+} from '../../app/details/appDetails/appDetails.service'
 import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetails.type'
 import { toast } from 'react-toastify'
 import { TOAST_INFO } from '../../../config/constantMessaging'
@@ -32,7 +42,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
             }
         })
     }
-    
+
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP && appDetails.resourceTree?.nodes?.length) {
             for (let index = 0; index < appDetails.resourceTree.nodes.length; index++) {
@@ -65,7 +75,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
             verifyDeployedClusterConnectionStatus()
         }
     }, [appDetails.appId, appDetails.environmentId])
-    
+
     if (!appDetails || (conditions.length === 0 && !isImagePullBackOff && !clusterConnectionError)) {
         return null
     }
@@ -81,20 +91,20 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
 
     const nonCascadeDeleteArgoCDApp = async (force: boolean): Promise<void> => {
         showForceDeleteDialog(false)
-        deleteArgoCDAppWithNonCascade(appDetails.appType, appDetails.appId, appDetails.environmentId, force).then(
-            (response: ResponseType) => {
+        deleteArgoCDAppWithNonCascade(appDetails.appType, appDetails.appId, appDetails.environmentId, force)
+            .then((response: ResponseType) => {
                 if (response.code === 200) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                 }
-            },
-        ).catch((error: ServerErrors) => {
-            if (!forceDeleteDialog && error.code != 403) {
-                showForceDeleteDialog(true)
-                setForceDeleteDialogData(error)
-            } else {
-                showError(error)
-            }
-        })
+            })
+            .catch((error: ServerErrors) => {
+                if (!forceDeleteDialog && error.code != 403) {
+                    showForceDeleteDialog(true)
+                    setForceDeleteDialogData(error)
+                } else {
+                    showError(error)
+                }
+            })
     }
 
     const onClickHideNonCascadeDeletePopup = () => {
@@ -110,10 +120,9 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
         toggleCollapsed(not)
     }
 
-    const errorCounter = conditions.length +
-        (isImagePullBackOff && !appDetails.externalCi ? 1 : 0) +
-        (clusterConnectionError && 1)
-    
+    const errorCounter =
+        conditions.length + (isImagePullBackOff && !appDetails.externalCi ? 1 : 0) + (clusterConnectionError && 1)
+
     const handleForceDelete = () => {
         nonCascadeDeleteArgoCDApp(true)
     }
@@ -126,9 +135,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
         <div className="top flex left column w-100 bcr-1 pl-20 pr-20 fs-13">
             <div className="flex left w-100 cursor h-56" onClick={toggleErrorHeader}>
                 <AlertTriangle className="icon-dim-20 mr-8" />
-                <span className="cr-5 fs-14 fw-6">
-                    {errorCounter === 1 ? '1 Error' : `${errorCounter} Errors`}
-                </span>
+                <span className="cr-5 fs-14 fw-6">{errorCounter === 1 ? '1 Error' : `${errorCounter} Errors`}</span>
                 {collapsed && (
                     <span className="cn-9 ml-24 w-80 dc__ellipsis-right">
                         {clusterConnectionError &&
@@ -157,10 +164,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
                                         clusterName ? ` '${clusterName}'` : ''
                                     } is not
                                     reachable at the moment.`}
-                                    <span
-                                        className="pointer ml-8 cb-5"
-                                        onClick={setNonCascadeDelete}
-                                    >
+                                    <span className="pointer ml-8 cb-5" onClick={setNonCascadeDelete}>
                                         Force Delete
                                     </span>
                                 </td>

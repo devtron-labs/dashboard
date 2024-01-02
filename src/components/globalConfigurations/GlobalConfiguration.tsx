@@ -93,15 +93,15 @@ export default function GlobalConfiguration(props) {
     function fetchCheckList(): void {
         getAppCheckList()
             .then((response) => {
-                let appChecklist = response.result.appChecklist || {}
-                let chartChecklist = response.result.chartChecklist || {}
-                let appStageArray: number[] = Object.values(appChecklist)
-                let chartStageArray: number[] = Object.values(chartChecklist)
-                let appStageCompleted: number = appStageArray.reduce((item, sum) => {
+                const appChecklist = response.result.appChecklist || {}
+                const chartChecklist = response.result.chartChecklist || {}
+                const appStageArray: number[] = Object.values(appChecklist)
+                const chartStageArray: number[] = Object.values(chartChecklist)
+                const appStageCompleted: number = appStageArray.reduce((item, sum) => {
                     sum = sum + item
                     return sum
                 }, 0)
-                let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+                const chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
                     sum = sum + item
                     return sum
                 }, 0)
@@ -391,15 +391,17 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {CatalogFramework && <NavLink
-                        to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                        key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                        activeClassName="active-route"
-                    >
-                        <div className="flexbox flex-justify">Catalog Framework</div>
-                    </NavLink>}
+                    {CatalogFramework && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Catalog Framework</div>
+                        </NavLink>
+                    )}
 
-                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES &&  (
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -614,14 +616,24 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
 function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...props }) {
     const handleToggle = () => {
         if (!isButtonDisabled) {
-            onSelect(!enabled);
+            onSelect(!enabled)
         }
-    };
-    return <Toggle dataTestId="toggle-button" {...props} onSelect={handleToggle} selected={enabled} disabled={isButtonDisabled} />
+    }
+    return (
+        <Toggle
+            dataTestId="toggle-button"
+            {...props}
+            onSelect={handleToggle}
+            selected={enabled}
+            disabled={isButtonDisabled}
+        />
+    )
 }
 
 function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
-    if (React.isValidElement(src)) return src
+    if (React.isValidElement(src)) {
+        return src
+    }
     return (
         <img
             {...props}
@@ -659,14 +671,14 @@ export function ProtectedInput({
     value,
     error,
     onChange,
-    label= '',
+    label = '',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-    onBlur= (e) => {},
+    onBlur = (e) => {},
     isRequiredField = false,
 }: ProtectedInputType) {
     const [shown, toggleShown] = useState(false)
@@ -676,7 +688,10 @@ export function ProtectedInput({
 
     return (
         <div className="flex column left top ">
-            <label htmlFor="" className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}>
+            <label
+                htmlFor=""
+                className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}
+            >
                 {label}
             </label>
             <div className="dc__position-rel w-100">

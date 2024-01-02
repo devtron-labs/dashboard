@@ -16,7 +16,7 @@ import { AppDetails, ArtifactsCiJob, EditAppRequest } from './types'
 import { DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
-let stageMap = {
+const stageMap = {
     PRECD: 'PRE',
     CD: 'DEPLOY',
     POSTCD: 'POST',
@@ -97,7 +97,9 @@ export function getCITriggerInfoModal(
 }
 
 export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
-    if (!group) group = ''
+    if (!group) {
+        group = ''
+    }
     const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=${version}&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`
     return trash(URL)
 }
@@ -122,7 +124,7 @@ export function fetchAppDetailsInTime(
     appId: number | string,
     envId: number | string,
     reloadTimeOut: number,
-    signal?: AbortSignal
+    signal?: AbortSignal,
 ): Promise<AppDetailsResponse> {
     return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
 }
@@ -133,7 +135,10 @@ export function fetchResourceTreeInTime(
     reloadTimeOut: number,
     signal?: AbortSignal,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
+    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, {
+        timeout: reloadTimeOut,
+        signal: signal,
+    })
 }
 
 export function getEvents(pathParams) {
@@ -176,7 +181,7 @@ interface CIHistoricalStatus extends ResponseType {
 }
 
 export const getCIHistoricalStatus = (params): Promise<CIHistoricalStatus> => {
-    let URL = `${Routes.APP}/${params.appId}/ci-pipeline/${params.pipelineId}/workflow/${params.buildId}`
+    const URL = `${Routes.APP}/${params.appId}/ci-pipeline/${params.pipelineId}/workflow/${params.buildId}`
     return get(URL)
 }
 
@@ -186,7 +191,7 @@ export const getTagDetails = (params) => {
 }
 
 const gitTriggersModal = (triggers, materials) => {
-    let ids = Object.keys(triggers)
+    const ids = Object.keys(triggers)
     return ids.map((key) => {
         const material = materials.find((mat) => mat.id === Number(key))
         return {
@@ -283,7 +288,7 @@ export function extractImage(image: string): string {
 }
 
 export const cancelCiTrigger = (params) => {
-    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}`
+    const URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}`
     return trash(URL)
 }
 
@@ -305,7 +310,7 @@ export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, w
 }
 
 export const triggerCINode = (request) => {
-    let URL = `${Routes.CI_PIPELINE_TRIGGER}`
+    const URL = `${Routes.CI_PIPELINE_TRIGGER}`
     return post(URL, request)
 }
 
@@ -396,7 +401,7 @@ export function getGitMaterialByCommitHash(gitMaterialId: string, commitHash: st
 }
 
 export const getCDTriggerStatus = (appId) => {
-    let URL = `${Routes.CD_TRIGGER_STATUS}?app-id=${appId}`
+    const URL = `${Routes.CD_TRIGGER_STATUS}?app-id=${appId}`
     return get(URL, { timeout: 3 * 60000 }).then((response) => {
         return response.result
             ? response?.result?.map((status) => {
@@ -417,7 +422,7 @@ export const getCDTriggerStatus = (appId) => {
 }
 
 export function getTriggerHistory(pipelineId, params) {
-    let URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
+    const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
 }
 export function setImageTags(request, pipelineId: number, artifactId: number) {
@@ -432,7 +437,7 @@ function handleTime(ts: string) {
     let timestamp = ''
     try {
         if (ts && ts.length) {
-            let date = moment(ts).utc(true).subtract(5, 'hours').subtract(30, 'minutes')
+            const date = moment(ts).utc(true).subtract(5, 'hours').subtract(30, 'minutes')
             timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
         }
     } catch (error) {
@@ -445,7 +450,7 @@ export function handleTimeWithOffset(ts: string) {
     let timestamp = ''
     try {
         if (ts && ts.length) {
-            let date = moment(ts).add(5, 'hours').add(30, 'minutes')
+            const date = moment(ts).add(5, 'hours').add(30, 'minutes')
             timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
         }
     } catch (error) {
@@ -467,7 +472,9 @@ export function getArtifactForJobCi(pipelineId, workflowId): Promise<ArtifactCiJ
 }
 
 export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
-    if (!group) group = ''
+    if (!group) {
+        group = ''
+    }
     return get(
         `api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`,
     )
@@ -495,7 +502,9 @@ export const getIngressServiceUrls = (params: {
     installedAppId?: string
 }): Promise<ResponseType> => {
     const urlParams = Object.entries(params).map(([key, value]) => {
-        if (!value) return
+        if (!value) {
+            return
+        }
         return `${key}=${value}`
     })
     return get(`${Routes.INGRESS_SERVICE_MANIFEST}?${urlParams.filter((s) => s).join('&')}`)

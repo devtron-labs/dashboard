@@ -10,11 +10,7 @@ import {
     deleteConfig,
 } from './service'
 import { useParams } from 'react-router'
-import {
-    isVersionLessThanOrEqualToTarget,
-    isChartRef3090OrBelow,
-    importComponentFromFELibrary,
-} from '../common'
+import { isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow, importComponentFromFELibrary } from '../common'
 import {
     showError,
     Progressing,
@@ -78,7 +74,7 @@ export const ConfigMapSecretForm = React.memo(
         draftMode,
         latestDraftData,
         reloadEnvironments,
-        isAppAdmin
+        isAppAdmin,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
@@ -252,7 +248,6 @@ export const ConfigMapSecretForm = React.memo(
                     })
                     isFormValid = false
                 }
-            
 
                 if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
                     const isFilePermissionValid = validateFilePermission()
@@ -286,7 +281,7 @@ export const ConfigMapSecretForm = React.memo(
                 }
             }
             const hasSecretCode = componentType === 'secret' && tempArr.current.some((data) => data['v'] === '********')
-            let dataArray = state.yamlMode && !hasSecretCode ? tempArr.current : state.currentData
+            const dataArray = state.yamlMode && !hasSecretCode ? tempArr.current : state.currentData
             const { isValid, arr } = validateKeyValuePair(dataArray)
             if (!isValid) {
                 toast.error(INVALID_YAML_MSG)
@@ -324,12 +319,14 @@ export const ConfigMapSecretForm = React.memo(
 
         const createPayload = (arr) => {
             const data = arr.reduce((agg, curr) => {
-                if (!curr.k) return agg
-                let value = curr.v ?? ''
+                if (!curr.k) {
+                    return agg
+                }
+                const value = curr.v ?? ''
                 agg[curr.k] = componentType === 'secret' && state.externalType === '' ? btoa(value) : value
                 return agg
             }, {})
-            let payload = {
+            const payload = {
                 name: state.configName.value,
                 type: state.selectedType,
                 external: state.external,
@@ -457,8 +454,20 @@ export const ConfigMapSecretForm = React.memo(
                         toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
                     } else {
                         componentType === 'secret'
-                            ? await overRideSecret(id, +appId, +envId, [payloadData], configMapSecretAbortRef.current.signal)
-                            : await overRideConfigMap(id, +appId, +envId, [payloadData], configMapSecretAbortRef.current.signal)
+                            ? await overRideSecret(
+                                  id,
+                                  +appId,
+                                  +envId,
+                                  [payloadData],
+                                  configMapSecretAbortRef.current.signal,
+                              )
+                            : await overRideConfigMap(
+                                  id,
+                                  +appId,
+                                  +envId,
+                                  [payloadData],
+                                  configMapSecretAbortRef.current.signal,
+                              )
                         toastTitle = 'Overridden'
                     }
                     toast.success(
@@ -467,14 +476,14 @@ export const ConfigMapSecretForm = React.memo(
                             <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                         </div>,
                     )
-                    if(!configMapSecretAbortRef.current.signal.aborted) {
+                    if (!configMapSecretAbortRef.current.signal.aborted) {
                         update()
                     }
                     updateCollapsed()
                     dispatch({ type: ConfigMapActionTypes.success })
                 }
             } catch (err) {
-                if(!configMapSecretAbortRef.current.signal.aborted) {
+                if (!configMapSecretAbortRef.current.signal.aborted) {
                     handleError(2, err, payloadData)
                 }
             }
@@ -728,7 +737,7 @@ export const ConfigMapSecretForm = React.memo(
                                     href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions"
                                     className="ml-5 mr-5 anchor"
                                     target="_blank"
-                                    rel="noopener noreferer"
+                                    rel="noopener noreferer noreferrer"
                                 >
                                     defaultMode
                                 </a>
@@ -781,7 +790,7 @@ export const ConfigMapSecretForm = React.memo(
                         href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
                         className="ml-5 mr-5 anchor"
                         target="_blank"
-                        rel="noopener noreferer"
+                        rel="noopener noreferer noreferrer"
                     >
                         subPath
                     </a>
@@ -1073,7 +1082,7 @@ export const ConfigMapSecretForm = React.memo(
                             <button
                                 disabled={
                                     (!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED) ||
-                                    (draftMode && !isAppAdmin) || 
+                                    (draftMode && !isAppAdmin) ||
                                     state.isValidateFormError
                                 }
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}

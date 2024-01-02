@@ -44,7 +44,10 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
             setErrorMessage({ title: '', subtitle: '' })
         } catch (error) {
             setLoading(false)
-            setErrorMessage({title: 'Failed to fetch URLs', subtitle: 'Could not fetch service and ingress URLs. Please try again after some time.' })
+            setErrorMessage({
+                title: 'Failed to fetch URLs',
+                subtitle: 'Could not fetch service and ingress URLs. Please try again after some time.',
+            })
         }
     }
 

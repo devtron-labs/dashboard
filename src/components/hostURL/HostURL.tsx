@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
-import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
+import React, { Component } from 'react'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { HostURLConfigState, HostURLConfigProps } from './hosturl.type'
 import {
     showError,
     Progressing,
@@ -11,70 +11,69 @@ import {
     InfoColourBar,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NO_HOST_URL, ViewType } from '../../config';
-import { toast } from 'react-toastify';
-import { getHostURLConfiguration } from '../../services/service';
-import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
-import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
-import './hosturl.scss';
+import { NO_HOST_URL, ViewType } from '../../config'
+import { toast } from 'react-toastify'
+import { getHostURLConfiguration } from '../../services/service'
+import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg'
+import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service'
+import './hosturl.scss'
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
-
     constructor(props) {
         super(props)
-        this.state = ({
+        this.state = {
             view: ViewType.LOADING,
             statusCode: 0,
             form: {
                 id: undefined,
-                key: "url",
-                value: "",
+                key: 'url',
+                value: '',
                 active: true,
             },
             isHostUrlValid: true,
             saveLoading: false,
-        })
+        }
     }
 
     componentDidMount() {
-        if(this.props.isSuperAdmin){
-        getHostURLConfiguration()
-            .then((response) => {
-                let form = response.result || {
-                    id: undefined,
-                    key: 'url',
-                    value: '',
-                    active: true,
-                }
-
-                if (!form.value) {
-                    const payload = {
-                        id: form.id,
-                        key: form.key,
-                        value: window.location.origin,
-                        active: form.active,
+        if (this.props.isSuperAdmin) {
+            getHostURLConfiguration()
+                .then((response) => {
+                    const form = response.result || {
+                        id: undefined,
+                        key: 'url',
+                        value: '',
+                        active: true,
                     }
-                    saveHostURLConfiguration(payload)
-                        .then((response) => {
-                            this.setState({
-                                view: ViewType.FORM,
-                                form: response.result,
+
+                    if (!form.value) {
+                        const payload = {
+                            id: form.id,
+                            key: form.key,
+                            value: window.location.origin,
+                            active: form.active,
+                        }
+                        saveHostURLConfiguration(payload)
+                            .then((response) => {
+                                this.setState({
+                                    view: ViewType.FORM,
+                                    form: response.result,
+                                })
                             })
+                            .catch((err) => {
+                                showError(err)
+                                this.setState({ view: ViewType.ERROR, statusCode: err.code })
+                            })
+                    } else {
+                        this.setState({
+                            view: ViewType.FORM,
+                            form: form,
                         })
-                        .catch((err) => {
-                            showError(err)
-                            this.setState({ view: ViewType.ERROR, statusCode: err.code })
-                        })
-                } else {
-                    this.setState({
-                        view: ViewType.FORM,
-                        form: form,
-                    })
-                }
-            })
-            .catch((error) => {
-                showError(error)
-                this.setState({ view: ViewType.ERROR, statusCode: error.code })
-            })
+                    }
+                })
+                .catch((error) => {
+                    showError(error)
+                    this.setState({ view: ViewType.ERROR, statusCode: error.code })
+                })
         }
     }
 
@@ -82,21 +81,21 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         this.setState({
             form: {
                 ...this.state.form,
-                value: event.target.value
+                value: event.target.value,
             },
-            isHostUrlValid: event.target.value?.length > 0
+            isHostUrlValid: event.target.value?.length > 0,
         })
     }
 
     onSave = (e: React.SyntheticEvent): void => {
-        e.preventDefault();
+        e.preventDefault()
         if (!this.state.form.value.length) {
-            toast.error("Some required fields are missing");
-            return;
-        }else if(!this.state.form.id){
-          return
+            toast.error('Some required fields are missing')
+            return
+        } else if (!this.state.form.id) {
+            return
         }
-        this.setState({ saveLoading: true, })
+        this.setState({ saveLoading: true })
         const payload = {
             id: this.state.form.id,
             key: this.state.form.key,
@@ -104,35 +103,43 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             active: this.state.form.active,
         }
 
-        updateHostURLConfiguration(payload).then((response) => {
-            toast.success("Saved Successful")
-            this.setState({
-                saveLoading: false,
-                form: response.result,
+        updateHostURLConfiguration(payload)
+            .then((response) => {
+                toast.success('Saved Successful')
+                this.setState({
+                    saveLoading: false,
+                    form: response.result,
+                })
+                this.props.refreshGlobalConfig()
+                this.props.handleChecklistUpdate('hostUrl')
             })
-            this.props.refreshGlobalConfig();
-            this.props.handleChecklistUpdate('hostUrl')
-        }).catch((error) => {
-            showError(error);
-            this.setState({
-                statusCode: error.code,
-                saveLoading: false
-            });
-        })
+            .catch((error) => {
+                showError(error)
+                this.setState({
+                    statusCode: error.code,
+                    saveLoading: false,
+                })
+            })
     }
 
     handleHostURLLocation(value: string): void {
         this.setState({
             form: {
                 ...this.state.form,
-                value: value
+                value: value,
             },
-            isHostUrlValid: value?.length > 0
+            isHostUrlValid: value?.length > 0,
         })
     }
 
     renderHostErrorMessage() {
-        return <InfoColourBar classname='dc__hosturl-error m-20' message="Saved host URL doesn’t match the domain address in your browser." Icon={Error} />
+        return (
+            <InfoColourBar
+                classname="dc__hosturl-error m-20"
+                message="Saved host URL doesn’t match the domain address in your browser."
+                Icon={Error}
+            />
+        )
     }
 
     renderBlankHostField() {

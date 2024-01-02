@@ -1,17 +1,17 @@
 export class LogFilter {
-    private indexFromLastMatch: number = -1000000
-    private buffer: Array<string> = new Array()
-    private trailingLines: Array<string> = new Array()
+    private indexFromLastMatch = -1000000
+    private buffer: Array<string> = []
+    private trailingLines: Array<string> = []
     private grepTokens: any
     private prefix: string
 
-    constructor(grepTokens: any, prefix: string = "") {
+    constructor(grepTokens: any, prefix = '') {
         this.grepTokens = grepTokens
         prefix = prefix.trimEnd()
         if (prefix.length > 0) {
-            this.prefix = prefix.trimEnd() + ": "
+            this.prefix = prefix.trimEnd() + ': '
         } else {
-            this.prefix = ""
+            this.prefix = ''
         }
     }
 
@@ -30,7 +30,7 @@ export class LogFilter {
         }
         const { _args, a = 0, b = 0 } = this.grepTokens[0]
         if (new RegExp(_args, 'gi').test(log)) {
-            if (this.distanceFromPreviousLessThanEqualTo(a+b)) {
+            if (this.distanceFromPreviousLessThanEqualTo(a + b)) {
                 bufferedLogs = bufferedLogs.concat(this.fetchNonOverlappingTrailingLines(b))
                 this.trailingLines = new Array<string>()
             }
@@ -45,19 +45,17 @@ export class LogFilter {
             if (this.distanceFromPreviousLessThanEqualTo(a)) {
                 this.trailingLines.push(log)
             }
-            if (this.distanceFromPreviousEqualTo(a+b)) {
+            if (this.distanceFromPreviousEqualTo(a + b)) {
                 bufferedLogs = bufferedLogs.concat(this.trailingLines)
-                this.trailingLines = new Array()
+                this.trailingLines = []
             }
         }
         for (let i = 1; i < this.grepTokens.length; i++) {
             const { v, _args } = this.grepTokens[i]
-            bufferedLogs = bufferedLogs.filter(l => (new RegExp(_args, 'gi').test(l)))
+            bufferedLogs = bufferedLogs.filter((l) => new RegExp(_args, 'gi').test(l))
         }
         return bufferedLogs
     }
-
-
 
     private distanceFromPreviousLessThanEqualTo(dist: number): boolean {
         return this.indexFromLastMatch <= 1 * dist
@@ -68,7 +66,7 @@ export class LogFilter {
     }
 
     private fetchNonOverlappingTrailingLines(previousLinesCount: number): Array<string> {
-        let size = Math.min(1*(this.indexFromLastMatch - previousLinesCount), this.trailingLines.length)
+        const size = Math.min(1 * (this.indexFromLastMatch - previousLinesCount), this.trailingLines.length)
         return this.trailingLines.slice(0, size)
     }
 
@@ -76,7 +74,7 @@ export class LogFilter {
         let bufferedLogs = this.trailingLines
         for (let i = 1; i < this.grepTokens.length; i++) {
             const { v, _args } = this.grepTokens[i]
-            bufferedLogs = bufferedLogs.filter(l => (new RegExp(_args, 'gi').test(l)))
+            bufferedLogs = bufferedLogs.filter((l) => new RegExp(_args, 'gi').test(l))
         }
         this.trailingLines = new Array<string>()
         return bufferedLogs
