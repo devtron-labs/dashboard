@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { CustomInput, OptionType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { _multiSelectStyles } from './CIConfig.utils'
+import { _multiSelectStyles, getBuildContextCheckoutSelectStyles } from './CIConfig.utils'
 import { BuildContextProps } from './types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
@@ -222,28 +222,7 @@ export default function BuildContext({
                                 getOptionLabel={(option) => `${option.label}`}
                                 getOptionValue={(option) => `${option.value}`}
                                 value={getCheckoutPathValue(useRootBuildContextFlag)}
-                                styles={{
-                                    ..._multiSelectStyles,
-                                    menu: (base) => ({
-                                        ...base,
-                                        marginTop: '0',
-                                        paddingBottom: '4px',
-                                        width:
-                                            checkoutPathOptions?.length === 2 && checkoutPathOptions[1].value.length > 3
-                                                ? '120px'
-                                                : '100%',
-                                    }),
-                                    control: (base) => ({
-                                        ...base,
-                                        borderTopRightRadius: '0px',
-                                        borderBottomRightRadius: '0px',
-                                        borderRight: '0px',
-                                    }),
-                                    dropdownIndicator: (base) => ({
-                                        ...base,
-                                        paddingLeft: '0px',
-                                    }),
-                                }}
+                                styles={getBuildContextCheckoutSelectStyles(checkoutPathOptions)}
                                 components={{
                                     IndicatorSeparator: null,
                                     Option: checkoutPathOption,
