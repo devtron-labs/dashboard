@@ -77,8 +77,8 @@ export function DeploymentStatusDetailRow({
                         <div className="">
                             {deploymentDetailedData.deploymentStatusBreakdown[
                                 TIMELINE_STATUS.KUBECTL_APPLY
-                            ].kubeList?.map((items) => (
-                                <div className="flex left lh-20 mb-8">
+                            ].kubeList?.map((items, index) => (
+                                <div className="flex left lh-20 mb-8" key={`item-${index}`}>
                                     {renderIcon(items.icon)}
                                     <span className="ml-12">{items.message}</span>
                                 </div>
@@ -226,19 +226,20 @@ export function DeploymentStatusDetailRow({
                     {((type === TIMELINE_STATUS.KUBECTL_APPLY && statusBreakDownType.kubeList?.length) ||
                         (type === TIMELINE_STATUS.APP_HEALTH &&
                             appHealthDropDownlist.includes(statusBreakDownType.icon)) ||
-                        (type === TIMELINE_STATUS.GIT_COMMIT && statusBreakDownType.icon === 'failed')) && (
-                        <DropDownIcon
-                            style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
-                            className="icon-dim-24 rotate pointer"
-                            onClick={toggleDropdown}
-                            data-testid="steps-deployment-history-dropdown"
-                        />
-                    )}
+                        ((type === TIMELINE_STATUS.GIT_COMMIT || type === TIMELINE_STATUS.ARGOCD_SYNC) && statusBreakDownType.icon === 'failed')) && (
+                            <DropDownIcon
+                                style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
+                                className="icon-dim-24 rotate pointer"
+                                onClick={toggleDropdown}
+                                data-testid="steps-deployment-history-dropdown"
+                            />
+                        )}
                 </div>
                 {isHelmManifestPushFailed && renderErrorInfoBar()}
             </div>
 
             {type === TIMELINE_STATUS.GIT_COMMIT && renderDetailedData()}
+            {type === TIMELINE_STATUS.ARGOCD_SYNC && renderDetailedData()}
             {type === TIMELINE_STATUS.KUBECTL_APPLY && renderDetailedData()}
             {type === TIMELINE_STATUS.APP_HEALTH && renderDetailChart()}
             {!hideVerticalConnector && <div className="vertical-connector"></div>}
