@@ -103,11 +103,7 @@ export default function BuildContext({
     }
 
     const handleBuildContextCheckoutPathChange = (checkoutPath) => {
-        const val = checkoutPath.value
-        let flag = false
-        if (val === RootBuildContext) {
-            flag = true
-        }
+        const flag = checkoutPath.value === RootBuildContext
         setUseRootBuildContextFlag(flag)
         // Don't know how and why we are directly setting state.
         formState.useRootBuildContext.value = flag
