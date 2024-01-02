@@ -38,11 +38,15 @@ export default function CIAdvancedConfig({
                 break
 
             case DockerArgsAction.UPDATE_KEY:
-                _args[argData.index]['k'] = argData.value
+                _args[argData.index].k = argData.value
+                _args[argData.index].keyError = ''
+                _args[argData.index].valueError = ''
                 break
 
             case DockerArgsAction.UPDATE_VALUE:
-                _args[argData.index]['v'] = argData.value
+                _args[argData.index].v = argData.value
+                _args[argData.index].keyError = ''
+                _args[argData.index].valueError = ''
                 break
 
             case DockerArgsAction.DELETE:
