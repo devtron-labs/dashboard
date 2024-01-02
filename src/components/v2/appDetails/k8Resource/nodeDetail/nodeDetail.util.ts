@@ -13,6 +13,7 @@ import { ManifestData, NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 import { MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { decode } from '../../../../../util/Util'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -396,7 +397,7 @@ export const getTrimmedManifestData = (
     manifestData: ManifestData,
     returnAsString: boolean = false,
 ): ManifestData | string => {
-    if (manifestData[MANIFEST_KEY_FIELDS.METADATA]) {
+    if (manifestData[MANIFEST_KEY_FIELDS?.METADATA]) {
         const { [MANIFEST_KEY_FIELDS.MANAGED_FIELDS]: _, ...metadata } = manifestData[MANIFEST_KEY_FIELDS.METADATA]
         const trimmedManifestData = {...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata}
 
@@ -404,4 +405,19 @@ export const getTrimmedManifestData = (
     }
 
     return returnAsString ? JSON.stringify(manifestData) : manifestData
+}
+
+export const getDecodedEncodedSecretManifestData = (
+    manifestData: ManifestData,
+    returnAsString: boolean = false,
+    showDecodedData?: boolean,
+    isEncoded?: boolean,
+): ManifestData | string => {
+    if (manifestData && manifestData[MANIFEST_KEY_FIELDS.DATA]) {
+        const encodedData = {
+            ...manifestData,
+            [MANIFEST_KEY_FIELDS.DATA]: decode(manifestData[MANIFEST_KEY_FIELDS.DATA], isEncoded),
+        }
+        return returnAsString ? JSON.stringify(encodedData) : manifestData
+    }
 }

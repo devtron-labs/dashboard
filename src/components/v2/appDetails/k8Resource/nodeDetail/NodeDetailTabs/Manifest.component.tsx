@@ -17,7 +17,7 @@ import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -25,7 +25,7 @@ import {
 } from '../../../../../../config/constantMessaging'
 import { MODES } from '../../../../../../config'
 import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
-import { getTrimmedManifestData } from '../nodeDetail.util'
+import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 
 function ManifestComponent({
     selectedTab,
@@ -54,6 +54,7 @@ function ManifestComponent({
     const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false)
     const [isResourceMissing, setIsResourceMissing] = useState(false)
     const [showInfoText, setShowInfoText] = useState(false)
+    const [showDecodedData, setShowDecodedData] = useState(false)
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -164,7 +165,7 @@ function ManifestComponent({
 
     const handleEditorValueChange = (codeEditorData: string) => {
         if (activeTab === 'Live manifest' && isEditmode) {
-            setModifiedManifest(codeEditorData)
+        setModifiedManifest(codeEditorData)
         }
     }
 
@@ -299,6 +300,33 @@ function ManifestComponent({
         updateEditor(_tab.name)
     }
 
+    const onChangeToggleShowDecodedValue = (codeEditorData) => {
+        setShowDecodedData(!showDecodedData)
+        const jsonManifestData = YAML.parse(codeEditorData) 
+        if(!showDecodedData){
+            setTrimedManifestEditorData(getDecodedEncodedSecretManifestData(jsonManifestData, true , showDecodedData) as string)
+        } else {
+            setTrimedManifestEditorData(getDecodedEncodedSecretManifestData(jsonManifestData, true, showDecodedData, true) as string)
+        }
+    }
+
+    const renderShowDecodedValueCheckbox = (codeEditorData) => {
+        return (
+            <div className="flex left ml-8">
+                <Checkbox
+                    rootClassName="mb-0-imp h-18"
+                    id="showDecodedValue"
+                    isChecked={showDecodedData}
+                    onChange={() => onChangeToggleShowDecodedValue(codeEditorData)}
+                    value='CHECKED'
+                />
+                <div className="pl-4">
+                    Show Decoded Value
+                </div>
+            </div>
+        )
+    }
+
     return isDeleted ? (
         <div>
             <MessageUI
@@ -415,7 +443,10 @@ function ManifestComponent({
                                                 ? EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT
                                                 : EA_MANIFEST_SECRET_INFO_TEXT
                                         }
-                                    />
+                                        className="flex left"
+                                    >
+                                        {!isEditmode && renderShowDecodedValueCheckbox(trimedManifestEditorData)}
+                                    </CodeEditor.Information>
                                 )}
                                 {activeTab === 'Compare' && (
                                     <CodeEditor.Header hideDefaultSplitHeader={true}>
