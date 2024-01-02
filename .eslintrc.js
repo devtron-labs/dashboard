@@ -1,18 +1,27 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const prettierConfig = require('./.prettierrc')
+
 module.exports = {
     parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
+    plugins: ['@typescript-eslint', 'prettier'],
     env: {
         commonjs: true,
         browser: true,
         es6: true,
     },
+    extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'prettier',
+        'plugin:react/recommended',
+    ],
     parserOptions: {
         ecmaVersion: 2018,
         sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
-        project: ['./tsconfig.json'],
     },
     rules: {
         'no-var': 'error',
@@ -23,16 +32,8 @@ module.exports = {
         '@typescript-eslint/explicit-member-accessibility': 'off',
         curly: [2, 'all'],
         'keyword-spacing': 'error',
-        'prettier/prettier': ['error', { semi: false }],
+        'prettier/prettier': ['error', prettierConfig],
     },
-    extends: [
-        'eslint:recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'plugin:@typescript-eslint/recommended',
-        'prettier/@typescript-eslint',
-        'plugin:prettier/recommended',
-        'plugin:react/recommended',
-    ],
     settings: {
         react: {
             version: 'detect',

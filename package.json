@@ -55,8 +55,9 @@
         "yamljs": "^0.3.0"
     },
     "scripts": {
-        "lint": "eslint src/**/*.tsx",
-        "lint-fix": "eslint --fix src/**/*.tsx",
+        "prepare": "husky install",
+        "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+        "lint-fix": "yarn lint --fix",
         "start": "react-app-rewired start",
         "build": "react-app-rewired build",
         "build-light": "GENERATE_SOURCEMAP=false react-app-rewired build",
@@ -67,9 +68,6 @@
         "test:ci": "./node_modules/.bin/react-app-rewired test --watchAll=false --ci --json --coverage --testLocationInResults --outputFile=report.json",
         "eject": "react-app-rewired eject",
         "jest": "jest"
-    },
-    "eslintConfig": {
-        "extends": "react-app"
     },
     "browserslist": [
         ">0.2%",
@@ -94,6 +92,13 @@
         "@typescript-eslint/eslint-plugin": "^5.15.0",
         "@typescript-eslint/parser": "^5.15.0",
         "env-cmd": "10.1.0",
+        "eslint": "^7.20.0",
+        "eslint-config-airbnb": "^18.2.1",
+        "eslint-import-resolver-typescript": "^2.4.0",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-jsx-a11y": "^6.4.1",
+        "eslint-plugin-react": "^7.22.0",
+        "eslint-plugin-react-hooks": "^4.2.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.0.0",
         "husky": "^7.0.4",
@@ -126,11 +131,6 @@
         "moduleNameMapper": {
             "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
             "monaco-yaml": "<rootDir>/node_modules/react-monaco-editor"
-        }
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "yarn eslint"
         }
     },
     "resolutions": {
