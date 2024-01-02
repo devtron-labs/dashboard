@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
+import { showError, Progressing, CIBuildType, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { showError, Progressing, CIBuildType, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import BuildContext from './BuildContext'
+import {
+    repositoryControls,
+    repositoryOption
+} from './CIBuildpackBuildOptions'
 import {
     DropdownIndicator,
     Option,
     OptionWithIcon,
     ValueContainerWithIcon,
 } from '../v2/common/ReactSelect.utils'
+import { _customStyles } from './CIConfig.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
-import {
-    repositoryControls,
-    repositoryOption
-} from './CIBuildpackBuildOptions'
-import { _customStyles } from './CIConfig.utils'
-import BuildContext from './BuildContext'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
