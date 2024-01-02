@@ -1,0 +1,28 @@
+name: Dashboard CI
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - edited
+      - reopened
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Check linting issues
+      run: yarn lint

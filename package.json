@@ -56,8 +56,8 @@
     },
     "scripts": {
         "prepare": "husky install",
-        "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
-        "lint-fix": "yarn lint --fix",
+        "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+        "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "react-app-rewired start",
         "build": "react-app-rewired build",
         "build-light": "GENERATE_SOURCEMAP=false react-app-rewired build",
@@ -67,7 +67,8 @@
         "test-coverage": "npm run test -- --coverage --watchAll=false",
         "test:ci": "./node_modules/.bin/react-app-rewired test --watchAll=false --ci --json --coverage --testLocationInResults --outputFile=report.json",
         "eject": "react-app-rewired eject",
-        "jest": "jest"
+        "jest": "jest",
+        "lint-staged": "lint-staged"
     },
     "browserslist": [
         ">0.2%",
@@ -103,6 +104,7 @@
         "jest-extended": "^2.0.0",
         "jest-junit": "^13.0.0",
         "jsdom-worker": "^0.2.1",
+        "lint-staged": "12.5.0",
         "mock-socket": "^9.2.1",
         "prettier": "^2.6.0",
         "react-scripts": "3.2.0",
