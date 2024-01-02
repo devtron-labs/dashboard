@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { sortObjectArrayAlphabetically } from '../common'
-import { showError, Progressing, REGISTRY_TYPE_MAP, CIBuildType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing} from '@devtron-labs/devtron-fe-common-lib'
 import { getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails } from '../../services/service'
 import { useParams } from 'react-router-dom'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CIConfigProps } from './types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
-import { CI_BUILDTYPE_ALIAS } from './CIConfig.utils'
 import './CIConfig.scss'
 import CIConfigForm from './CIConfigForm'
 
@@ -128,69 +127,6 @@ export default function CIConfig({
             />
         )
     if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
-
-    // TODO: Would re-visit again after refactoring child render components
-    const renderReadOnlyDockerDetails = (currentCIBuildType: CIBuildType) => {
-        switch (currentCIBuildType) {
-            case CIBuildType.SELF_DOCKERFILE_BUILD_TYPE:
-                break
-
-            case CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE:
-                break
-
-            case CIBuildType.BUILDPACK_BUILD_TYPE:
-                break
-
-            default:
-                return null
-        }
-    }
-
-    // TODO: Would re-visit again after refactoring child render components and separate out the readonly view
-    if (configOverrideView && !allowOverride) {
-        const globalRegistry = ciConfig?.dockerRegistry
-            ? dockerRegistries?.find((reg) => reg.id === ciConfig.dockerRegistry)
-            : dockerRegistries?.find((reg) => reg.isDefault)
-        const globalCIBuildType = ciConfig?.ciBuildConfig?.ciBuildType ?? CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
-
-        return (
-            <div className="form__app-compose config-override-view">
-                <div className="white-card white-card__docker-config dc__position-rel mb-12">
-                    <h3 className="fs-14 fw-6 lh-20 m-0 pb-16" data-testid="store-container-image-heading">
-                        Store container image at
-                    </h3>
-
-                    <div className="mb-4 form-row__docker">
-                        <div className="form__field mb-0-imp">
-                            <label className="form__label">Container Registry</label>
-
-                            <div className="flex left">
-                                <span className={`dc__registry-icon mr-8 ${globalRegistry?.registryType}`} />
-                                <span className="fs-14 fw-4 lh-20 cn-9">{globalRegistry?.id}</span>
-                            </div>
-                        </div>
-
-                        <div className="form__field mb-0-imp">
-                            <label htmlFor="" className="form__label">
-                                Container Repository&nbsp;
-                                {globalRegistry && REGISTRY_TYPE_MAP[globalRegistry.registryType]?.desiredFormat}
-                            </label>
-
-                            <span className="fs-14 fw-4 lh-20 cn-9">{ciConfig?.dockerRepository}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="white-card white-card__docker-config dc__position-rel">
-                    <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">
-                        {`Build the container image ${CI_BUILDTYPE_ALIAS[globalCIBuildType]}`}
-                    </h3>
-
-                    {renderReadOnlyDockerDetails(globalCIBuildType)}
-                </div>
-            </div>
-        )
-    }
 
     return (
         <CIConfigForm
