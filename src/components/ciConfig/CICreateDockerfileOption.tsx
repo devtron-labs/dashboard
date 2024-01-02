@@ -1,24 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import ReactSelect from 'react-select'
 import { showError, Progressing, CIBuildType, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
+import CreateDockerFileLanguageOptions from './CreateDockerFileLanguageOptions'
 import BuildContext from './BuildContext'
-import {
-    repositoryControls,
-    repositoryOption
-} from './CIBuildpackBuildOptions'
-import {
-    DropdownIndicator,
-    Option,
-    OptionWithIcon,
-    ValueContainerWithIcon,
-} from '../v2/common/ReactSelect.utils'
-import { _customStyles } from './CIConfig.utils'
-import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
-import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
+import { RootBuildContext } from './ciConfigConstant'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
+import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -145,7 +134,7 @@ export default function CICreateDockerfileOption({
         } else if (_selectedFramework?.templateUrl) {
             setLoadingState((prevState) => ({
                 ...prevState,
-                loading: true
+                loading: true,
             }))
             setTemplateData({
                 ...templateData,
@@ -183,7 +172,7 @@ export default function CICreateDockerfileOption({
                 })
                 setLoadingState((prevState) => ({
                     ...prevState,
-                    loading: false
+                    loading: false,
                 }))
             } catch (err) {
                 // Don't show error toast or log the error as user aborted the request
@@ -200,7 +189,7 @@ export default function CICreateDockerfileOption({
                 setEditorValue('')
                 setLoadingState((prevState) => ({
                     ...prevState,
-                    loading: false
+                    loading: false,
                 }))
             }
         } else {
@@ -240,122 +229,6 @@ export default function CICreateDockerfileOption({
                 languageFramework: selectedFramework?.value,
             },
         })
-    }
-
-    // TODO: Move this to a component
-    const renderLanguageOptions = (editorData: TemplateDataType) => {
-        return (
-            <div className="flex">
-                 <Tippy
-                     className="default-tt w-200"
-                     arrow={false}
-                     placement="top"
-                     content="Dockerfile will be placed at the root of the selected repo path"
-                 >
-                    <span className={`fs-13 fw-4 lh-20 cn-7 ${configOverrideView && !allowOverride ? 'mr-8' : ''}`}>
-                        Repo to place Dockerfile
-                    </span>
-                 </Tippy>
-
-                {configOverrideView && !allowOverride ? (
-                    <div className="flex left">
-                        {selectedMaterial?.icon && (
-                            <img
-                                src={currentMaterial.icon}
-                                alt={currentMaterial.label}
-                                className="icon-dim-20 mr-8"
-                            />
-                        )}
-                        <span className="fs-13 fw-6 lh-20 cn-9">{currentMaterial?.name}</span>
-                    </div>
-                ) : (
-                    <ReactSelect
-                        tabIndex={3}
-                        isSearchable={false}
-                        options={sourceConfig.material}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.checkoutPath}`}
-                        value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
-                        styles={_customStyles}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option: repositoryOption,
-                            Control: repositoryControls,
-                        }}
-                        onChange={handleGitRepoChange}
-                        isDisabled={configOverrideView && !allowOverride}
-                        classNamePrefix="build-config__select-repository-containing-code"
-                    />
-                )}
-                <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
-                <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
-                {configOverrideView && !allowOverride ? (
-                    <div className="flex left" data-testid="select-create-dockerfile-language-dropdown">
-                        {selectedLanguage?.icon && (
-                            <img
-                                src={selectedLanguage.icon}
-                                alt={selectedLanguage.label}
-                                className="icon-dim-20 mr-8"
-                            />
-                        )}
-                        <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
-                    </div>
-                ) : (
-                        <ReactSelect
-                            classNamePrefix="select-create-dockerfile-language-dropdown"
-                            tabIndex={3}
-                            options={languages}
-                            value={selectedLanguage}
-                            isSearchable={false}
-                            styles={_customStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator,
-                                Option: OptionWithIcon,
-                                ValueContainer: ValueContainerWithIcon,
-                            }}
-                            onChange={handleLanguageSelection}
-                            isDisabled={configOverrideView && !allowOverride}
-                        />
-                )}
-                {languageFrameworks?.get(selectedLanguage?.value)?.[0]?.value && (
-                    <>
-                        <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
-                        <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
-                        {configOverrideView && !allowOverride ? (
-                            <span className="fs-13 fw-6 lh-20 cn-9">{selectedFramework?.label}</span>
-                        ) : (
-                                <ReactSelect
-                                    tabIndex={3}
-                                    options={languageFrameworks?.get(selectedLanguage?.value) || []}
-                                    value={selectedFramework}
-                                    classNamePrefix="build-config__select-framework"
-                                    isSearchable={false}
-                                    styles={_customStyles}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        DropdownIndicator,
-                                        Option,
-                                    }}
-                                    onChange={handleFrameworkSelection}
-                                    isDisabled={configOverrideView && !allowOverride}
-                                />
-                        )}
-                    </>
-                )}
-                {!editorData?.fetching && editorData?.data !== editorValue && (
-                    <>
-                        <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
-                        <div className="flex left cursor" onClick={resetChanges}>
-                            <div className="icon-dim-12 flex">
-                                <Reset className="icon-dim-12" />
-                            </div>
-                            <span className="ml-4">Reset changes</span>
-                        </div>
-                    </>
-                )}
-            </div>
-        )
     }
 
     const handleCopyToClipboard = (e) => {
@@ -401,7 +274,23 @@ export default function CICreateDockerfileOption({
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space w-100 fs-12 fw-6 cn-7">
-                            {renderLanguageOptions(editorData)}
+                            <CreateDockerFileLanguageOptions
+                                editorData={editorData}
+                                editorValue={editorValue}
+                                handleGitRepoChange={handleGitRepoChange}
+                                materialOptions={sourceConfig.material}
+                                selectedMaterial={selectedMaterial}
+                                languageFrameworks={languageFrameworks}
+                                selectedLanguage={selectedLanguage}
+                                resetChanges={resetChanges}
+                                currentMaterial={currentMaterial}
+                                languages={languages}
+                                selectedFramework={selectedFramework}
+                                handleLanguageSelection={handleLanguageSelection}
+                                handleFrameworkSelection={handleFrameworkSelection}
+                                readOnly={configOverrideView && !allowOverride}
+                            />
+
                             {(!configOverrideView || allowOverride) && (
                                 <Tippy
                                     className="default-tt"
@@ -441,11 +330,11 @@ export default function CICreateDockerfileOption({
                     formState={formState}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                     currentBuildContextGitMaterial={currentBuildContextGitMaterial}
-                    // This value is different in other BuildContext ask Why?
-                    readOnlyBuildContextPath={`${selectedBuildContextGitMaterial?.checkoutPath}/${ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext}`.replace(
-                        '//',
-                        '/',
-                    )}
+                    readOnlyBuildContextPath={`${
+                        ciConfig?.ciBuildConfig?.useRootBuildContext
+                            ? RootBuildContext
+                            : selectedBuildContextGitMaterial?.checkoutPath
+                    }/${ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || ''}`.replace('//', '/')}
                 />
             )}
         </>

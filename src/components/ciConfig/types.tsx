@@ -387,3 +387,36 @@ export interface CISelfDockerBuildOptionProps {
     repositoryError?: string
     dockerfileError?: string
 }
+
+export interface CIBuildTypeOptionType {
+    id: CIBuildType
+    heading: string
+    info: string
+    icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    noIconFill: boolean
+    iconStroke: boolean
+    addDivider: boolean
+}
+
+export interface CreateDockerFileLanguageOptionsProps {
+    editorData: TemplateDataType
+    editorValue: string
+    handleGitRepoChange: (selectedMaterial) => void
+    materialOptions: any[]
+    selectedMaterial: any
+    languageFrameworks: Map<string, FrameworkOptionType[]>
+    selectedLanguage: LanguageOptionType
+    resetChanges: () => void
+    currentMaterial: any
+    languages: LanguageOptionType[]
+    selectedFramework: FrameworkOptionType
+    handleLanguageSelection: (selected: LanguageOptionType) => void
+    handleFrameworkSelection: (selected: FrameworkOptionType) => void
+    readOnly?: boolean
+}
+
+export interface ResetEditorChangesProps {
+    resetChanges: () => void
+    editorData: TemplateDataType
+    editorValue: string
+}
