@@ -10,6 +10,8 @@ export enum DockerArgsAction {
 export interface DockerArgsProps {
     args: PipelineFormType['args']
     handleDockerArgsUpdate: ({ action, argData }: HandleDockerArgsUpdate) => void
+    fromBuildPack?: boolean
+    disabled?: boolean
 }
 
 export interface DockerArgsItemProps {
