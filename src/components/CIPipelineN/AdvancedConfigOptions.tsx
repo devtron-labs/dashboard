@@ -35,6 +35,8 @@ export default function AdvancedConfigOptions({
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
 
+    const isGlobalAndNotBuildpack = !allowOverride && parentState.ciConfig?.ciBuildConfig.ciBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE
+
     useEffect(() => {
         if (parentState.ciConfig) {
             populateCurrentPlatformsData()
@@ -182,9 +184,8 @@ export default function AdvancedConfigOptions({
                     setLoadingStateFromParent={setLoadingState}
                 />
 
-                {/* FIXME: Hidden after build without dockerfile and then delete override and if global is not BUILDPACK */}
                 {parentState?.loadingState === ComponentStates.loaded &&
-                    parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE && (
+                    (isGlobalAndNotBuildpack || parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE) && (
                         <>
                             <div className="white-card white-card__docker-config dc__position-rel mb-15">
                                 <TargetPlatformSelector
