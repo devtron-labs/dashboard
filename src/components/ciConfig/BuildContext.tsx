@@ -64,10 +64,9 @@ export default function BuildContext({
     currentBuildContextGitMaterial,
     readOnlyBuildContextPath,
 }: BuildContextProps) {
-    const useRootBuildContextFlagFormState = currentCIBuildConfig?.useRootBuildContext
     const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext)
-    const [useRootBuildContextFlag, setUseRootBuildContextFlag] = useState<boolean>(useRootBuildContextFlagFormState)
 
+    const useRootBuildContextFlag = currentCIBuildConfig?.useRootBuildContext
     const buildContextCheckoutPath = selectedBuildContextGitMaterial?.checkoutPath ?? currentMaterial?.checkoutPath
     const checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
     if (buildContextCheckoutPath !== RootBuildContext) {
@@ -104,9 +103,6 @@ export default function BuildContext({
 
     const handleBuildContextCheckoutPathChange = (checkoutPath) => {
         const flag = checkoutPath.value === RootBuildContext
-        setUseRootBuildContextFlag(flag)
-        // Don't know how and why we are directly setting state.
-        formState.useRootBuildContext.value = flag
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             useRootBuildContext: flag,
