@@ -75,7 +75,6 @@ export default function CIConfigDiffView({
     }
 
     useEffect(() => {
-        setLoading(true)
         handleOnMountAPICalls()
     }, [])
 
