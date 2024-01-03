@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from 'react'
+import { useState, memo, useEffect } from 'react'
 import { GenericEmptyState, Progressing, Reload, DebouncedSearch } from '@devtron-labs/devtron-fe-common-lib'
 import SuggestionItem from './SuggestionItem'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-cross.svg'

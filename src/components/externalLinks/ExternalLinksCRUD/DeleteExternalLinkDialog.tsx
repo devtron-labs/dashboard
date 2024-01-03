@@ -1,4 +1,3 @@
-import React from 'react'
 import { toast } from 'react-toastify'
 import { showError, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteExternalLink, getExternalLinks } from '../ExternalLinks.service'
