@@ -428,7 +428,7 @@ export default function CIBuildpackBuildOptions({
          * - Else remove empty arg from buildEnvArgs array & proceed
          */
         if (_buildEnvArgs.length === 1 && !_buildEnvArgs[0].k && version !== AUTO_DETECT) {
-            if (isInitCall) {
+            if (isInitCall && builder.BuilderLangEnvParam) {
                 _buildEnvArgs[0].k = builder.BuilderLangEnvParam
                 _buildEnvArgs[0].v = version
                 setBuildEnvArgs(_buildEnvArgs)
