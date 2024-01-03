@@ -35,7 +35,11 @@ export default function AdvancedConfigOptions({
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
 
-    const isGlobalAndNotBuildpack = !allowOverride && parentState.ciConfig?.ciBuildConfig.ciBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE
+    const isGlobalAndNotBuildpack =
+        !allowOverride && parentState.ciConfig?.ciBuildConfig.ciBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE
+    const isCurrentCITypeBuildpack = parentState.currentCIBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
+    const hasParentLoaded = parentState?.loadingState === ComponentStates.loaded
+    const showNonBuildpackOptions = hasParentLoaded && (isGlobalAndNotBuildpack || !isCurrentCITypeBuildpack)
 
     useEffect(() => {
         if (parentState.ciConfig) {
@@ -184,33 +188,35 @@ export default function AdvancedConfigOptions({
                     setLoadingStateFromParent={setLoadingState}
                 />
 
-                {parentState?.loadingState === ComponentStates.loaded &&
-                    (isGlobalAndNotBuildpack || parentState.currentCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE) && (
-                        <>
-                            <div className="white-card white-card__docker-config dc__position-rel mb-15">
-                                <TargetPlatformSelector
-                                    allowOverride={allowOverride}
-                                    selectedTargetPlatforms={selectedTargetPlatforms}
-                                    setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                                    showCustomPlatformWarning={showCustomPlatformWarning}
-                                    setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-                                    targetPlatformMap={targetPlatformMap}
-                                    targetPlatform={targetPlatforms}
-                                    configOverrideView={true}
-                                    updateDockerConfigOverride={updateDockerConfigOverride}
-                                />
-                            </div>
-                            <CustomImageTags
-                                savedTagPattern={parentState.selectedCIPipeline.customTag?.tagPattern}
-                                formData={formData}
-                                setFormData={setFormData}
-                                formDataErrorObj={formDataErrorObj}
-                                setFormDataErrorObj={setFormDataErrorObj}
-                            />
+                {showNonBuildpackOptions && (
+                    <div className="white-card white-card__docker-config dc__position-rel mb-15">
+                        <TargetPlatformSelector
+                            allowOverride={allowOverride}
+                            selectedTargetPlatforms={selectedTargetPlatforms}
+                            setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                            showCustomPlatformWarning={showCustomPlatformWarning}
+                            setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                            targetPlatformMap={targetPlatformMap}
+                            targetPlatform={targetPlatforms}
+                            configOverrideView={true}
+                            updateDockerConfigOverride={updateDockerConfigOverride}
+                        />
+                    </div>
+                )}
 
-                            <DockerArgs args={formData.args} handleDockerArgsUpdate={handleDockerArgsUpdate} />
-                        </>
-                    )}
+                {hasParentLoaded && (
+                    <CustomImageTags
+                        savedTagPattern={parentState.selectedCIPipeline.customTag?.tagPattern}
+                        formData={formData}
+                        setFormData={setFormData}
+                        formDataErrorObj={formDataErrorObj}
+                        setFormDataErrorObj={setFormDataErrorObj}
+                    />
+                )}
+
+                {showNonBuildpackOptions && (
+                    <DockerArgs args={formData.args} handleDockerArgsUpdate={handleDockerArgsUpdate} />
+                )}
             </div>
         </div>
     )
