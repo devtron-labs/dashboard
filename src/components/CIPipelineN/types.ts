@@ -7,15 +7,19 @@ export enum DockerArgsAction {
     UPDATE_VALUE = 'update_docker_arg_value',
 }
 
-export interface DockerArgsProps {
-    args: PipelineFormType['args']
+interface DockerArgsCommonType {
     handleDockerArgsUpdate: ({ action, argData }: HandleDockerArgsUpdateType) => void
+    fromBuildPack?: boolean
+    readOnly?: boolean
 }
 
-export interface DockerArgsItemProps {
+export interface DockerArgsProps extends DockerArgsCommonType {
+    args: PipelineFormType['args']
+}
+
+export interface DockerArgsItemProps extends DockerArgsCommonType {
     arg: PipelineFormType['args'][number]
     index: number
-    handleDockerArgsUpdate: ({ action, argData }: HandleDockerArgsUpdateType) => void
 }
 
 export interface DockerArgsActionData {
