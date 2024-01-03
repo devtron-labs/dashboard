@@ -34,13 +34,13 @@ export const WorkflowCreate = {
     cINodeSizes: {
         nodeHeight: 64,
         nodeWidth: 240,
-        distanceX: 60,
+        distanceX: 100,
         distanceY: 25,
     } as NodeDimension,
     cDNodeSizes: {
         nodeHeight: 64,
         nodeWidth: 240,
-        distanceX: 60,
+        distanceX: 100,
         distanceY: 25,
     } as NodeDimension,
     workflow: {

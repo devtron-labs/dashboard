@@ -25,7 +25,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                 options={userNameOptions}
                 value={selectedUserNameOptions[clusterDetail.cluster_name]}
                 isSearchable={false}
-                menuPortalTarget={document.getElementById('visible-modal')}
+                menuPosition="fixed"
                 onChange={handleUserChange}
                 menuPlacement="auto"
                 components={{

@@ -245,10 +245,13 @@ table.pod__table td:last-child {
     padding-right: 20px;
 }
 
-.no-pod {
+.no-pod-list{
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.no-pod {
     width: 100%;
     height: 100%;
     flex-direction: column;

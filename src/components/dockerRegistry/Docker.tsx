@@ -19,10 +19,10 @@ import {
     RepositoryAction,
     ServerErrors,
     useAsync,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     useForm,
-    CustomInput,
     handleOnBlur,
     handleOnFocus,
     parsePassword,
@@ -42,6 +42,10 @@ import {
     RegistryPayloadType,
     REGISTRY_TITLE_DESCRIPTION_CONTENT,
     RegistryType,
+    EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT,
+    URLS,
+    PATTERNS,
+    OCIRegistryStorageActionType,
 } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -77,18 +81,23 @@ export default function Docker({ ...props }) {
     const [clusterLoader, setClusterLoader] = useState(false)
 
     const _getInit = async () => {
+        if (props.isHyperionMode) {
+            return
+        }
         setClusterLoader(true)
         await getClusterListMinWithoutAuth()
             .then((clusterListRes) => {
                 if (Array.isArray(clusterListRes.result)) {
                     setClusterOptions([
                         { label: 'All clusters', value: '-1' },
-                        ...clusterListRes.result.filter((cluster) => !cluster.isVirtualCluster).map((cluster) => {
-                            return {
-                                label: cluster.cluster_name,
-                                value: cluster.id,
-                            }
-                        }),
+                        ...clusterListRes.result
+                            .filter((cluster) => !cluster.isVirtualCluster)
+                            .map((cluster) => {
+                                return {
+                                    label: cluster.cluster_name,
+                                    value: cluster.id,
+                                }
+                            }),
                     ])
                 }
                 setClusterLoader(false)
@@ -113,7 +122,7 @@ export default function Docker({ ...props }) {
         showError(error)
         if (!result) return <Reload />
     }
-    if (clusterOption.length === 0) {
+    if (clusterOption.length === 0 && !props.isHyperionMode) {
         return <Reload />
     }
 
@@ -121,6 +130,9 @@ export default function Docker({ ...props }) {
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
     const additionalRegistryTitleTippyContent = () => {
+        if (props.isHyperionMode) {
+            return null
+        }
         return <p className="p-12 fs-13 fw-4 lh-20">{REGISTRY_TITLE_DESCRIPTION_CONTENT.additionalParagraphText}</p>
     }
 
@@ -130,17 +142,20 @@ export default function Docker({ ...props }) {
             data-testid="select-existing-container-registry-list"
         >
             <div className="flex left fs-16 cn-9 fw-6 mb-20" data-testid="container-oci-registry-heading">
-                Container / OCI Registry
+                {props.isHyperionMode
+                    ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.heading
+                    : REGISTRY_TITLE_DESCRIPTION_CONTENT.heading}
+                
                 <TippyCustomized
                     theme={TippyTheme.white}
                     className="w-300"
                     placement="top"
                     Icon={HelpIcon}
                     iconClass="fcv-5"
-                    heading={REGISTRY_TITLE_DESCRIPTION_CONTENT.heading}
-                    infoText={REGISTRY_TITLE_DESCRIPTION_CONTENT.infoText}
+                    heading={props.isHyperionMode ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.heading : REGISTRY_TITLE_DESCRIPTION_CONTENT.heading}
+                    infoText={props.isHyperionMode ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.infoText :REGISTRY_TITLE_DESCRIPTION_CONTENT.infoText}
                     additionalContent={additionalRegistryTitleTippyContent()}
-                    documentationLinkText={REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
+                    documentationLinkText={props.isHyperionMode ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
                     documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
                     showCloseButton={true}
                     trigger="click"
@@ -151,7 +166,8 @@ export default function Docker({ ...props }) {
             </div>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
-                    reload={reload}
+                isHyperionMode={props.isHyperionMode}
+                reload={reload}
                     {...docker}
                     clusterOption={clusterOption}
                     key={docker.id || Math.random().toString(36).substr(2, 5)}
@@ -162,6 +178,7 @@ export default function Docker({ ...props }) {
 }
 
 function CollapsedList({
+    isHyperionMode,
     id = '',
     pluginId = null,
     registryUrl = '',
@@ -176,15 +193,15 @@ function CollapsedList({
     reload,
     connection = '',
     cert = '',
-    isOCICompliantRegistry = false,
-    isPublic= false,
-    ipsConfig = {
+    isOCICompliantRegistry = isHyperionMode,
+    isPublic = false,
+    ipsConfig = !isHyperionMode ? {
         id: 0,
         credentialType: '',
         credentialValue: '',
         appliedClusterIdsCsv: '',
         ignoredClusterIdsCsv: '',
-    },
+    } : null,
     clusterOption,
     repositoryList = [],
     disabledFields = [],
@@ -243,6 +260,7 @@ function CollapsedList({
             {(params.id === id || (!id && params.id === '0')) && (
                 <DockerForm
                     {...{
+                        isHyperionMode,
                         id,
                         pluginId,
                         registryUrl,
@@ -265,7 +283,7 @@ function CollapsedList({
                         repositoryList,
                         isPublic,
                         disabledFields,
-                        ociRegistryConfig
+                        ociRegistryConfig,
                     }}
                 />
             )}
@@ -274,6 +292,7 @@ function CollapsedList({
 }
 
 function DockerForm({
+    isHyperionMode,
     id,
     pluginId,
     registryUrl,
@@ -296,7 +315,7 @@ function DockerForm({
     repositoryList,
     isPublic,
     disabledFields,
-    ociRegistryConfig = isPublic
+    ociRegistryConfig = isPublic || isHyperionMode
     ? {
           CHART: OCIRegistryConfigConstants.PULL,
       }
@@ -305,18 +324,15 @@ function DockerForm({
       },
     ...rest
 }) {
+    const re = PATTERNS.APP_NAME
+    const regExp = new RegExp(re)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
-            id: { value: id, error: '' },
             registryType: { value: registryType || 'ecr', error: '' },
             advanceSelect: { value: connection || CERTTYPE.SECURE, error: '' },
             certInput: { value: cert || '', error: '' },
         },
         {
-            id: {
-                required: true,
-                validator: { error: 'Do not use "/" ', regex: /^[^/]+$/ },
-            },
             registryType: {
                 required: true,
                 validator: { error: 'Type is required', regex: /^.*$/ },
@@ -331,6 +347,7 @@ function DockerForm({
         },
         onValidation,
     )
+    const history = useHistory()
     const [loading, toggleLoading] = useState(false)
     const [Isdefault, toggleDefault] = useState(isDefault)
     const [toggleCollapsedAdvancedRegistry, setToggleCollapsedAdvancedRegistry] = useState(false)
@@ -343,6 +360,7 @@ function DockerForm({
             : password
 
     const [customState, setCustomState] = useState({
+        id: { value: id, error: '' },
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: {
             value: id && !awsSecretAccessKey ? DEFAULT_SECRET_PLACEHOLDER : awsSecretAccessKey,
@@ -354,8 +372,29 @@ function DockerForm({
             value: id && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
             error: '',
         },
-        repositoryList: { value: repositoryList.join(',') || '', error: '' },
+        repositoryList: {
+            value: repositoryList.join(', ') || '',
+            error: '',
+        },
     })
+    const customStateValidator = {
+        id: [
+            { error: 'Name is required', regex: /^(?=.*).+$/ },
+            {
+                error: "Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use 'spaces'",
+                regex: regExp,
+            },
+            { error: 'Minimum 3 and Maximum 30 characters required', regex: /^.{3,30}$/ }
+        ],
+        registryUrl: [{ error: "Registry URL is required; Do not use 'spaces'", regex: /^(?=.*).+$/ }],
+        repositoryList: [
+            { error: "Registry List is required", regex: /^(?=.*).+$/ },
+            { error: "Do not use 'spaces' or ',' at the start or at the end; new lines are not allowed", regex: /^(?!.*[\s,]$)(?!^[\s,]).*?(?<!\s)$/ },
+            { error: "Use only one 'space' after ','", regex: /^(?!.*,\s{2,}).*/ },
+            { error: "Consecutive ',' are not allowed", regex: /^(?!.*,{2,}).*/ },
+            { error: "Repository name cannot be empty and must be separated by ','", regex: /^(?!.*,\s+,).*/ }
+        ],
+    }
 
     const clusterlistMap = new Map()
 
@@ -421,25 +460,39 @@ function DockerForm({
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
     )
     const [repositoryError, setRepositoryError] = useState<string>('')
-         
-    function customHandleChange(e) {
-        setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
+    const ChartStoreRedirectionUrl: string = id
+                ? `${URLS.CHARTS_DISCOVER}?registryId=${id}`
+                : URLS.CHARTS_DISCOVER
+      
+    const customHandleChange = (e): void => {
+        updateWithCustomStateValidation(e.target.name, e.target.value)
+    }
+
+    const updateWithCustomStateValidation = (name: string, value: any): boolean => { 
+        let errorMessage: string = ''
+        customStateValidator[name]?.forEach((validator) => {
+            if (!validator.regex.test(value)) {
+                errorMessage = validator.error
+            }
+        })
+        setCustomState((st) => ({ ...st, [name]: { value, error: errorMessage } }))
+        return !!errorMessage
     }
 
     const handleRegistryTypeChange = (selectedRegistry) => {
         setSelectedDockerRegistryType(selectedRegistry)
         setCustomState((st) => ({
             ...st,
-            username: { value: selectedRegistry.id.defaultValue, error: '' },
             registryUrl: { value: selectedRegistry.defaultRegistryURL, error: '' },
+            username: { value: selectedRegistry.id.defaultValue, error: '' },
+            password: { value: selectedRegistry.password.defaultValue, error: '' },
+            awsAccessKeyId: { value: "", error: '' },
+            awsSecretAccessKey: { value: "", error: '' },
         }))
     }
 
     const handleRepositoryListChange = (e) => {
-        setCustomState((st) => ({
-            ...st,
-            repositoryList: { value: e.target?.value || '', error: '' },
-        }))
+        updateWithCustomStateValidation("repositoryList", e.target.value)
     }
 
     const onECRAuthTypeChange = (e) => {
@@ -488,7 +541,7 @@ function DockerForm({
         return result[0].split('ecr.')[1]
     }
 
-    function isValidJson(inputString: string) {
+    function isValidJson(inputString: string): boolean {
         try {
             JSON.parse(inputString)
         } catch (e) {
@@ -502,16 +555,17 @@ function DockerForm({
         let ignoredClusterIdsCsv = blackList?.map((cluster) => cluster?.value)?.join(',')
         const trimmedUsername = customState.username.value.replace(/\s/g, '')
         const _ociRegistryConfig =
-            registryStorageType === RegistryStorageType.OCI_PUBLIC
+            registryStorageType === RegistryStorageType.OCI_PUBLIC || isHyperionMode
                 ? { CHART: OCIRegistryConfigConstants.PULL }
                 : OCIRegistryStorageConfig
         return {
-            id: state.id.value,
+            id: customState.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
             isDefault:
-                registryStorageType === RegistryStorageType.OCI_PRIVATE ||
-                selectedDockerRegistryType.value === RegistryType.GCR
+                !isHyperionMode &&
+                (registryStorageType === RegistryStorageType.OCI_PRIVATE ||
+                    selectedDockerRegistryType.value === RegistryType.GCR)
                     ? Isdefault
                     : false,
             isOCICompliantRegistry: selectedDockerRegistryType.value !== RegistryType.GCR,
@@ -525,20 +579,27 @@ function DockerForm({
                 (registryStorageType === RegistryStorageType.OCI_PUBLIC ||
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL)
-                    ? customState.repositoryList?.value.split(',') || []
+                    ? customState.repositoryList?.value
+                        .trim()
+                        .replace(', ', ',')
+                        .split(',') || []
                     : null,
-            registryUrl: customState.registryUrl.value?.trim().replace(/^https?:\/\//, '')
+            registryUrl: customState.registryUrl.value
+                ?.trim()
+                .replace(/^https?:\/\//, '')
                 .replace(/^oci?:\/\//, '')
                 .replace(/^docker?:\/\//, '')
                 .replace(/^http?:\/\//, ''),
-            ...(selectedDockerRegistryType.value === RegistryType.ECR
+            ...(selectedDockerRegistryType.value === RegistryType.ECR &&
+            registryStorageType !== RegistryStorageType.OCI_PUBLIC
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value?.trim(),
                       awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value),
                       awsRegion: awsRegion,
                   }
                 : {}),
-            ...(selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY ||
+            ...((selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY &&
+                registryStorageType !== RegistryStorageType.OCI_PUBLIC) ||
             selectedDockerRegistryType.value === RegistryType.GCR
                 ? {
                       username: trimmedUsername,
@@ -548,15 +609,17 @@ function DockerForm({
                               : `'${parsePassword(customState.password.value)}'`,
                   }
                 : {}),
-            ...(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
-            selectedDockerRegistryType.value === RegistryType.ACR ||
-            selectedDockerRegistryType.value === RegistryType.QUAY
+            ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
+            (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
+                selectedDockerRegistryType.value === RegistryType.ACR ||
+                selectedDockerRegistryType.value === RegistryType.QUAY)
                 ? {
                       username: trimmedUsername,
                       password: parsePassword(customState.password.value),
                   }
                 : {}),
-            ...(selectedDockerRegistryType.value === RegistryType.OTHER
+            ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
+            selectedDockerRegistryType.value === RegistryType.OTHER
                 ? {
                       username: trimmedUsername,
                       password: parsePassword(customState.password.value),
@@ -567,7 +630,8 @@ function DockerForm({
 
             ipsConfig:
                 selectedDockerRegistryType.value === RegistryType.GCR ||
-                (registryStorageType === RegistryStorageType.OCI_PRIVATE && OCIRegistryStorageConfig?.CONTAINER)
+                (registryStorageType === RegistryStorageType.OCI_PRIVATE && OCIRegistryStorageConfig?.CONTAINER) ||
+                !isHyperionMode
                     ? {
                           id: ipsConfig.id,
                           credentialType: credentialsType,
@@ -595,8 +659,11 @@ function DockerForm({
     }
 
     async function onClickValidate() {
+        const isValidated = performCustomValidation()
+        if(!isValidated) {
+            return
+        }
         setValidationStatus(VALIDATION_STATUS.LOADER)
-       
         let payload = getRegistryPayload(awsRegion)
 
         let promise = validateContainerConfiguration(payload)
@@ -633,11 +700,6 @@ function DockerForm({
             if (!awsRegion) return
         }
 
-        if (registryStorageType === RegistryStorageType.OCI_PUBLIC) {
-            setOCIRegistryStorageConfig({
-                CHART: OCIRegistryConfigConstants.PULL,
-            })
-        }
         let payload = getRegistryPayload(awsRegion)
 
         const api = id ? updateRegistryConfig : saveRegistryConfig
@@ -665,13 +727,33 @@ function DockerForm({
         }
     }
 
-     function onValidation() {
-        if (selectedDockerRegistryType.value === RegistryType.ECR) {
-            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
-                if (
+    const performCustomValidation = (): boolean => { 
+        // Custom state validation for Registry Id
+        if (!id && updateWithCustomStateValidation("id", customState.id.value)) {
+            return false
+        } else if (!customState.id.value ) {
+            setCustomState((st) => ({
+                ...st,
+                id: { ...st.id, error: 'Name is required' },
+            }))
+            return false
+        } else if (customState.id.value.includes("/")) {
+            setCustomState((st) => ({
+                ...st,
+                id: { ...st.id, error: 'Do not use "/"' },
+            }))
+            return false
+        }
+
+        // Custom state validation for Registry URL
+        if (updateWithCustomStateValidation("registryUrl",customState.registryUrl.value)) {
+            return false
+        }
+        switch (selectedDockerRegistryType.value) {
+            case RegistryType.ECR:
+                if (registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                     (!isIAMAuthType &&
-                        (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
-                    !customState.registryUrl.value
+                        (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id)))
                 ) {
                     setCustomState((st) => ({
                         ...st,
@@ -680,39 +762,31 @@ function DockerForm({
                             ...st.awsSecretAccessKey,
                             error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
                         },
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                     }))
-                    return
+                    return false
                 }
-            } else {
-                if (!customState.registryUrl.value) {
+                break;
+            case RegistryType.DOCKER_HUB:
+                if (
+                    registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    (!customState.username.value || !(customState.password.value || id))
+                ) {
                     setCustomState((st) => ({
                         ...st,
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                        username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                        password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
                     }))
-                    return
-                }
-            }
-        } else if (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB) {
-            if (
-                registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                (!customState.username.value || !(customState.password.value || id))
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
-                }))
-                return
-            }
-        } else if (
-            selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY ||
-            selectedDockerRegistryType.value === RegistryType.GCR
-        ) {
-            const isValidJsonFile = isValidJson(customState.password.value) || id
-            const isValidJsonStr = isValidJsonFile ? '' : 'Invalid JSON'
-            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
-                if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
+                    return false
+                } 
+                break
+            case RegistryType.ARTIFACT_REGISTRY:
+            case RegistryType.GCR:
+                const isValidJsonFile: boolean = isValidJson(customState.password.value) || !!id
+                const isValidJsonStr: string = isValidJsonFile ? '' : 'Invalid JSON'
+                if (
+                    registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile)
+                ) {
                     setCustomState((st) => ({
                         ...st,
                         username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
@@ -720,85 +794,69 @@ function DockerForm({
                             ...st.password,
                             error: id || st.password.value ? isValidJsonStr : 'Mandatory',
                         },
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                     }))
-                    return
+                    return false
                 }
-            } else {
-                if (!customState.registryUrl.value) {
-                    setCustomState((st) => ({
-                        ...st,
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                    }))
-                    return
-                }
-            }
-        } else if (
-            selectedDockerRegistryType.value === RegistryType.ACR ||
-            selectedDockerRegistryType.value === RegistryType.QUAY ||
-            selectedDockerRegistryType.value === RegistryType.OTHER
-        ) {
-            let error = false
-            if (registryStorageType !== RegistryStorageType.OCI_PUBLIC) {
+                break
+            case RegistryType.ACR:
+            case RegistryType.QUAY:
+            case RegistryType.OTHER:
+                let error = false
                 if (
-                    !customState.username.value ||
-                    !(customState.password.value || id) ||
-                    !customState.registryUrl.value
+                    registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    (!customState.username.value || !(customState.password.value || id))
                 ) {
                     setCustomState((st) => ({
                         ...st,
                         username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                         password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                     }))
                     error = true
                 }
-            } else {
-                if (!customState.registryUrl.value) {
-                    setCustomState((st) => ({
-                        ...st,
-                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                    }))
-                    error = true
-                }
-            }
 
-            if (
-                selectedDockerRegistryType.value === RegistryType.OTHER &&
-                state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT
-            ) {
-                if (state.certInput.value === '') {
-                    if (!toggleCollapsedAdvancedRegistry) {
-                        setToggleCollapsedAdvancedRegistry(not)
+                if (
+                    selectedDockerRegistryType.value === RegistryType.OTHER &&
+                    state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT
+                ) {
+                    if (state.certInput.value === '') {
+                        if (!toggleCollapsedAdvancedRegistry) {
+                            setToggleCollapsedAdvancedRegistry(not)
+                        }
+                        setCertInputError('Mandatory')
+                        error = true
+                    } else {
+                        setCertInputError('')
                     }
-                    setCertInputError('Mandatory')
-                    error = true
-                } else {
-                    setCertInputError('')
                 }
-            }
-            if (error) {
-                return
-            }
+                if (error) {
+                    return false
+                }
+                break
         }
+        
+        // Default validation for OCI registries
         if (selectedDockerRegistryType.value !== RegistryType.GCR) {
             if (showHelmPull || registryStorageType === RegistryStorageType.OCI_PUBLIC) {
-                setCustomState((st) => ({
-                    ...st,
-                    repositoryList: { ...st.repositoryList, error: st.repositoryList?.value ? '' : 'Mandatory' },
-                }))
-                if (customState.repositoryList?.value === '') {
-                    return
+                if (updateWithCustomStateValidation("repositoryList", customState.repositoryList.value)) {
+                    return false
                 }
             }
             if (
                 registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                 !(isContainerStore || isOCIRegistryHelmPush || showHelmPull)
             ) {
-                return
+                return false
             }
         }
-        onSave()
+        return true
+    }
+
+    function onValidation() {
+        const isValidated = performCustomValidation()
+        // save on successfully validated
+        if (isValidated) {
+            onSave()
+        }
     }
 
     let advanceRegistryOptions = [
@@ -821,115 +879,76 @@ function DockerForm({
     const onClickHideManageModal = (): void => {
         setManageModal(false)
     }
+    const handleChartStoreRedirection = (): void => { 
+        history.push(ChartStoreRedirectionUrl)
+    }
 
-    const handleOCIRegistryStorageAction = (e, key ) => {
+    const handleContainerStoreUpdateAction = (isContainerStore: boolean): void => {
+        if (!isContainerStore) {
+            delete OCIRegistryStorageConfig['CONTAINER']
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+            })
+        } else {
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+                CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+            })
+        }
+        setContainerStore(isContainerStore)
+    }
+
+    const handleOCIRegistryHelmPushAction = (isOCIRegistryHelmPush: boolean): void => {
+        if (!isOCIRegistryHelmPush && !showHelmPull) {
+            delete OCIRegistryStorageConfig['CHART']
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+            })
+        } else {
+            let _currentChartConfig: OCIRegistryStorageActionType = isOCIRegistryHelmPush ? OCIRegistryConfigConstants.PUSH : OCIRegistryConfigConstants.PULL
+            if (isOCIRegistryHelmPush && showHelmPull) {
+                _currentChartConfig = OCIRegistryConfigConstants.PULL_PUSH
+            }
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+                CHART: _currentChartConfig,
+            })
+        }
+        setOCIRegistryHelmPush(isOCIRegistryHelmPush)
+    }
+    
+    const handleOCIRegistryHelmPullAction = (showHelmPull: boolean): void => {
+        if (!isOCIRegistryHelmPush && !showHelmPull) {
+            delete OCIRegistryStorageConfig['CHART']
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+            })
+        } else {
+            let _currentChartConfig: OCIRegistryStorageActionType = showHelmPull ? OCIRegistryConfigConstants.PULL : OCIRegistryConfigConstants.PUSH
+            if (isOCIRegistryHelmPush && showHelmPull) {
+                _currentChartConfig = OCIRegistryConfigConstants.PULL_PUSH
+            }
+            setOCIRegistryStorageConfig({
+                ...OCIRegistryStorageConfig,
+                CHART: _currentChartConfig,
+            })
+        }
+        setListRepositories(showHelmPull)
+    }
+
+    const handleOCIRegistryStorageAction = (e, key) => {
         e.stopPropagation()
-        if (key === RepositoryAction.CONTAINER) {
-            setContainerStore(!isContainerStore)
-            if (isContainerStore) {
-                delete OCIRegistryStorageConfig['CONTAINER']
-            } else {
-                if (isOCIRegistryHelmPush && showHelmPull) {
-                    setOCIRegistryStorageConfig({
-                        CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    })
-                } else if (isOCIRegistryHelmPush && !showHelmPull) {
-                    setOCIRegistryStorageConfig({
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                        CHART: OCIRegistryConfigConstants.PUSH,
-                    })
-                } else if (showHelmPull && !isOCIRegistryHelmPush) {
-                    setOCIRegistryStorageConfig({
-                        CHART: OCIRegistryConfigConstants.PULL,
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    })
-                } else {
-                    setOCIRegistryStorageConfig({
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    })
-                }
-            }
+        switch (key) { 
+            case RepositoryAction.CONTAINER:
+                handleContainerStoreUpdateAction(!isContainerStore)
+                break
+            case RepositoryAction.CHART_PUSH:
+                handleOCIRegistryHelmPushAction(!isOCIRegistryHelmPush)
+                break
+            case RepositoryAction.CHART_PULL:
+                handleOCIRegistryHelmPullAction(!showHelmPull)
+                break
         }
-
-        if (key === RepositoryAction.CHART_PUSH) {
-            setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
-            if (isOCIRegistryHelmPush && showHelmPull && isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL,
-                })
-            } else if (isOCIRegistryHelmPush && !showHelmPull && isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else if (isOCIRegistryHelmPush && showHelmPull && !isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL,
-                })
-            } else if (isContainerStore && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL,
-                })
-            } else if (isContainerStore && !showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            } else if (showHelmPull && !isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            }
-            
-        }
-
-        if (key === RepositoryAction.CHART_PULL) {
-            setListRepositories(!showHelmPull)
-            if (isContainerStore && isOCIRegistryHelmPush && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            }
-
-            else if (isContainerStore && !isOCIRegistryHelmPush && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            }
-
-            else if (!isContainerStore && isOCIRegistryHelmPush && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            }
-       
-            else if (isContainerStore && isOCIRegistryHelmPush) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else if (isContainerStore && !isOCIRegistryHelmPush) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL,
-                })
-            } else if (isOCIRegistryHelmPush && !isContainerStore) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            }
-        }  
     }
 
     const registryOptions = (props) => {
@@ -1062,174 +1081,188 @@ function DockerForm({
         ) {
             return
         }
-        return registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-            selectedDockerRegistryType.value !== RegistryType.GCR ? (
-            <>
-                <div className="mb-12">
-                    <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
-                        <span className="flex left w-150">
-                            <span className="dc__required-field">Use repository to</span>
-                        </span>
-                        {!(isContainerStore || isOCIRegistryHelmPush || showHelmPull) && (
-                            <span className="form__error">
-                                <Error className="form__icon form__icon--error" />
-                                This field is mandatory
+        if (registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+            selectedDockerRegistryType.value !== RegistryType.GCR) {
+            return (
+                <>
+                    <div className="mb-12">
+                        <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
+                            <span className="flex left w-150">
+                                <span className="dc__required-field">Use repository to</span>
                             </span>
-                        )}
-                    </span>
-                </div>
-                <ConditionalWrap
-                    condition={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
-                    wrap={(children) => (
-                        <TippyCustomized
-                            theme={TippyTheme.black}
-                            className="w-200 dc__zi-4 mt-0-imp"
-                            placement="left"
-                            infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
+                            {!(isContainerStore || isOCIRegistryHelmPush || showHelmPull) && (
+                                <span className="form__error">
+                                    <Error className="form__icon form__icon--error" />
+                                    This field is mandatory
+                                </span>
+                            )}
+                        </span>
+                    </div>
+                    {!isHyperionMode && (
+                        <ConditionalWrap
+                            condition={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
+                            wrap={(children) => (
+                                <TippyCustomized
+                                    theme={TippyTheme.black}
+                                    className="w-200 dc__zi-4 mt-0-imp"
+                                    placement="left"
+                                    infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
+                                >
+                                    <div>{children}</div>
+                                </TippyCustomized>
+                            )}
                         >
-                            <div>{children}</div>
-                        </TippyCustomized>
+                            <div
+                                className={`flex left ${isContainerStore ? 'mb-12' : ''} ${
+                                    !RegistryHelmPushCheckbox ? 'mb-12' : ''
+                                }`}
+                            >
+                                <Checkbox
+                                    rootClassName={`${
+                                        disabledFields.some((test) => test === 'CONTAINER')
+                                            ? 'registry-disabled-checkbox'
+                                            : ''
+                                    } docker-default mb-0`}
+                                    isChecked={isContainerStore}
+                                    value={CHECKBOX_VALUE.CHECKED}
+                                    onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CONTAINER)}
+                                    dataTestId="store-checkbox"
+                                    disabled={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
+                                >
+                                    Push container images
+                                </Checkbox>
+                            </div>
+                        </ConditionalWrap>
                     )}
-                >
-                    <div
-                        className={`flex left ${isContainerStore ? 'mb-12' : ''} ${
-                            !RegistryHelmPushCheckbox ? 'mb-12' : ''
-                        }`}
+                    {!isHyperionMode && isContainerStore && (
+                        <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                    )}
+                    {!isHyperionMode && (
+                        <ConditionalWrap
+                            condition={disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)}
+                            wrap={(children) => (
+                                <TippyCustomized
+                                    theme={TippyTheme.black}
+                                    className="w-200 dc__zi-4 pt-0-imp"
+                                    placement="left"
+                                    infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
+                                >
+                                    <div>{children}</div>
+                                </TippyCustomized>
+                            )}
+                        >
+                            <div>
+                                {RegistryHelmPushCheckbox && (
+                                    <RegistryHelmPushCheckbox
+                                        handleOCIRegistryStorageAction={handleOCIRegistryStorageAction}
+                                        disabledFields={disabledFields}
+                                        isOCIRegistryHelmPush={isOCIRegistryHelmPush}
+                                    />
+                                )}
+                            </div>
+                        </ConditionalWrap>
+                    )}
+                    <ConditionalWrap
+                        condition={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
+                        wrap={(children) => (
+                            <TippyCustomized
+                                theme={TippyTheme.black}
+                                className="w-200 dc__zi-4 pt-0 mt-0"
+                                placement="left"
+                                infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
+                            >
+                                <div>{children}</div>
+                            </TippyCustomized>
+                        )}
                     >
-                        <Checkbox
-                            rootClassName={`${
-                                disabledFields.some((test) => test === 'CONTAINER') ? 'dc__opacity-0_5' : ''
-                            } docker-default mb-0`}
-                            isChecked={isContainerStore}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CONTAINER)}
-                            dataTestId="store-checkbox"
-                            disabled={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
-                        >
-                            Push container images
-                        </Checkbox>
-                    </div>
-                </ConditionalWrap>
-                {isContainerStore && (
-                    <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
-                )}
-                <ConditionalWrap
-                    condition={disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)}
-                    wrap={(children) => (
-                        <TippyCustomized
-                            theme={TippyTheme.black}
-                            className="w-200 dc__zi-4 pt-0-imp"
-                            placement="left"
-                            infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
-                        >
-                            <div>{children}</div>
-                        </TippyCustomized>
-                    )}
-                >
-                    <div>
-                        {RegistryHelmPushCheckbox && (
-                            <RegistryHelmPushCheckbox
-                                handleOCIRegistryStorageAction={handleOCIRegistryStorageAction}
-                                disabledFields={disabledFields}
-                                isOCIRegistryHelmPush={isOCIRegistryHelmPush}
-                            />
-                        )}
-                    </div>
-                </ConditionalWrap>
-                <ConditionalWrap
-                    condition={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
-                    wrap={(children) => (
-                        <TippyCustomized
-                            theme={TippyTheme.black}
-                            className="w-200 dc__zi-4 pt-0 mt-0"
-                            placement="left"
-                            infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
-                        >
-                            <div>{children}</div>
-                        </TippyCustomized>
-                    )}
-                >
-                    <div>
-                        <Checkbox
-                            rootClassName={`${
-                                disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
-                                    ? 'dc__opacity-0_5'
-                                    : ''
-                            } docker-default mb-12`}
-                            id={RepositoryAction.CHART_PULL}
-                            isChecked={showHelmPull}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CHART_PULL)}
-                            dataTestId="store-checkbox"
-                            disabled={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
-                        >
-                            Use as chart repository (Pull helm charts and show in chart store)
-                        </Checkbox>
-                    </div>
-                </ConditionalWrap>
-                {showHelmPull && <div className="pl-28">{renderOCIPublic()}</div>}
+                        <div>
+                            <Checkbox
+                                rootClassName={`${
+                                    isHyperionMode ||
+                                    disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
+                                        ? 'registry-disabled-checkbox'
+                                        : ''
+                                } docker-default mb-12`}
+                                id={RepositoryAction.CHART_PULL}
+                                isChecked={showHelmPull}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CHART_PULL)}
+                                dataTestId="store-checkbox"
+                                disabled={
+                                    isHyperionMode ||
+                                    disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
+                                }
+                            >
+                                Use as chart repository (Pull helm charts and show in
+                                <span className="ml-4 dc__link cursor" onClick={handleChartStoreRedirection}>chart store</span>.)
+                            </Checkbox>
+                        </div>
+                    </ConditionalWrap>
+                    {showHelmPull && <div className="pl-28">{renderRepositoryList()}</div>}
 
-                <hr className="mt-16 mb-16" />
-            </>
-        ) : (
-            renderRegistryCredentialsAutoInjectToClustersComponent()
-        )
+                    {!isHyperionMode && <hr className="mt-16 mb-16" />}
+                </>
+            )
+        } 
+        return renderRegistryCredentialsAutoInjectToClustersComponent()
     }
 
     const renderRepositoryList = () => {
+        if (selectedDockerRegistryType.value === RegistryType.GCR) { 
+            return
+        }
         return (
-            <div className="mb-12">
-                <div className="dc__required-field fs-13 cn-9 mb-6">List of repositories</div>
-                <textarea
-                    className="form__textarea"
-                    name="repositoryList"
-                    autoFocus={true}
-                    value={customState.repositoryList?.value.trim()}
-                    autoComplete="off"
-                    tabIndex={3}
-                    onChange={handleRepositoryListChange}
-                    placeholder="Enter repository names separated by comma (eg. prometheus, nginx)"
-                />
-                {repositoryError.length > 0 && (
-                    <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-                        <div className="error-label-icon">
-                            <ErrorInfo className="icon-dim-16" />
+            <>
+                <div className="mb-12">
+                    <div className="dc__required-field fs-13 cn-9 mb-6">List of repositories</div>
+                    <textarea
+                        className="form__textarea"
+                        name="repositoryList"
+                        autoFocus={true}
+                        value={customState.repositoryList?.value}
+                        autoComplete="off"
+                        tabIndex={3}
+                        onChange={handleRepositoryListChange}
+                        placeholder="Enter repository names separated by comma (eg. prometheus, nginx)"
+                    />
+                    {repositoryError.length > 0 && (
+                        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
+                            <div className="error-label-icon">
+                                <ErrorInfo className="icon-dim-16" />
+                            </div>
+                            <div className="ml-4 cr-5">{repositoryError}</div>
                         </div>
-                        <div className="ml-4 cr-5">{repositoryError}</div>
-                    </div>
-                )}
-                {customState.repositoryList?.error && (
-                <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
-                        <div className="error-label-icon">
-                        <AlertTriangle className="icon-dim-16" />
+                    )}
+                    {customState.repositoryList?.error && (
+                        <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
+                            <div className="error-label-icon">
+                                <AlertTriangle className="icon-dim-16" />
+                            </div>
+                            <div className="ml-4 cr-5">{customState.repositoryList?.error}</div>
                         </div>
-                        <div className="ml-4 cr-5">{customState.repositoryList?.error}</div>
-                    </div>
-            )}
-            </div>
-        )
-    }
-
-    const renderOCIPublic = () => {
-        if (selectedDockerRegistryType.value !== RegistryType.GCR) {
-            return (
-                <>
-                    {renderRepositoryList()}
+                    )}
+                </div>
+                {registryStorageType === RegistryStorageType.OCI_PUBLIC && (
                     <InfoColourBar
-                        message="Helm charts from provided repositories will be shown in the Chart store."
+                        message="Helm charts from provided repositories will be shown in the"
                         classname="info_bar mb-16"
                         Icon={InfoIcon}
                         iconClass="icon-dim-20"
+                        linkText="Chart store"
+                        redirectLink={ChartStoreRedirectionUrl}
+                        internalLink
                     />
-                </>
-            )
-        }
+                )}
+            </>
+        )
     }
 
     const renderDefaultRegistry = () => {
         if (
-            selectedDockerRegistryType.value === RegistryType.GCR ||
-            (registryStorageType === RegistryStorageType.OCI_PRIVATE && (isContainerStore || isOCIRegistryHelmPush))
+            !isHyperionMode &&
+            (selectedDockerRegistryType.value === RegistryType.GCR ||
+                (registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                    (isContainerStore || isOCIRegistryHelmPush)))
         ) {
             return (
                 <>
@@ -1300,7 +1333,6 @@ function DockerForm({
                                         error={customState.awsAccessKeyId.error}
                                         onChange={customHandleChange}
                                         label={selectedDockerRegistryType.id.label}
-                                        autoComplete="off"
                                         placeholder={selectedDockerRegistryType.id.placeholder}
                                     />
                                 </div>
@@ -1312,12 +1344,11 @@ function DockerForm({
                                         tabIndex={6}
                                         value={customState.awsSecretAccessKey.value}
                                         error={customState.awsSecretAccessKey.error}
-                                        onBlur={id && handleOnBlur}
+                                        handleOnBlur={id && handleOnBlur}
                                         onFocus={handleOnFocus}
                                         onChange={customHandleChange}
                                         label={selectedDockerRegistryType.password.label}
                                         placeholder={selectedDockerRegistryType.password.placeholder}
-                                        autoComplete="off"
                                     />
                                 </div>
                             </>
@@ -1360,7 +1391,7 @@ function DockerForm({
                                         value={customState.password.value}
                                         error={customState.password.error}
                                         onChange={customHandleChange}
-                                        onBlur={id && handleOnBlur}
+                                        handleOnBlur={id && handleOnBlur}
                                         onFocus={handleOnFocus}
                                         label={selectedDockerRegistryType.password.label}
                                         placeholder={
@@ -1368,7 +1399,6 @@ function DockerForm({
                                                 ? selectedDockerRegistryType.password.placeholder
                                                 : 'Enter password/token'
                                         }
-                                        autoComplete="off"
                                     />
                                 )}
                             </div>
@@ -1442,7 +1472,7 @@ function DockerForm({
                                 value={customState.password.value}
                                 error={customState.password.error}
                                 onChange={customHandleChange}
-                                onBlur={id && handleOnBlur}
+                                handleOnBlur={id && handleOnBlur}
                                 onFocus={handleOnFocus}
                                 label={selectedDockerRegistryType.password.label}
                                 placeholder={
@@ -1450,7 +1480,6 @@ function DockerForm({
                                         ? selectedDockerRegistryType.password.placeholder
                                         : 'Enter password/token'
                                 }
-                                autoComplete="off"
                             />
                         )}
                     </div>
@@ -1482,8 +1511,11 @@ function DockerForm({
                 )}
             </>
             )
-    }}
-
+        }
+    }
+    // For EA Mode GCR is not available as it is not OCI compliant
+    const EA_MODE_REGISTRY_TYPE_MAP = JSON.parse(JSON.stringify(REGISTRY_TYPE_MAP))
+    delete EA_MODE_REGISTRY_TYPE_MAP['gcr']
     return (
         <form onSubmit={handleOnSubmit} className="docker-form divider" autoComplete="off">
             <div className="pl-20 pr-20 pt-20 pb-20">
@@ -1502,7 +1534,7 @@ function DockerForm({
                             tabIndex={1}
                             isMulti={false}
                             isClearable={false}
-                            options={Object.values(REGISTRY_TYPE_MAP)}
+                            options={isHyperionMode ? Object.values(EA_MODE_REGISTRY_TYPE_MAP) : Object.values(REGISTRY_TYPE_MAP)}
                             getOptionLabel={(option) => `${option.label}`}
                             getOptionValue={(option) => `${option.value}`}
                             value={selectedDockerRegistryType}
@@ -1578,15 +1610,14 @@ function DockerForm({
                             dataTestid="container-registry-name"
                             labelClassName="dc__required-field"
                             name="id"
-                            autoFocus={true}
-                            value={state.id.value}
-                            autoComplete="off"
-                            error={state.id.error}
+                            value={customState.id.value}
+                            error={customState.id.error}
                             tabIndex={1}
-                            onChange={handleOnChange}
+                            onChange={customHandleChange}
                             label="Name"
                             disabled={!!id}
                             placeholder="e.g. Registry name"
+                            autoFocus={true}
                         />
                     </div>
                     <div className="form__row">
@@ -1597,7 +1628,6 @@ function DockerForm({
                             labelClassName="dc__required-field"
                             label={selectedDockerRegistryType.registryURL.label}
                             value={customState.registryUrl.value || selectedDockerRegistryType.registryURL.defaultValue}
-                            autoComplete="off"
                             error={customState.registryUrl.error}
                             onChange={customHandleChange}
                             disabled={
@@ -1687,7 +1717,7 @@ function DockerForm({
                 )}
                 {registryStorageType !== RegistryStorageType.OCI_PUBLIC && <hr className="mt-0 mb-16" />}
                 {renderStoredContainerImage()}
-                {registryStorageType === RegistryStorageType.OCI_PUBLIC && renderOCIPublic()}
+                {registryStorageType === RegistryStorageType.OCI_PUBLIC && renderRepositoryList()}
                 {renderDefaultRegistry()}
             </div>
             <div className="p-20 divider">
@@ -1697,18 +1727,19 @@ function DockerForm({
                             className="cta flex h-36 delete dc__m-auto ml-0"
                             data-testid="delete-container-registry"
                             type="button"
+                            disabled={loading}
                             onClick={() => toggleConfirmation(true)}
                         >
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
-                    <button className="cta flex h-36 mr-16 cancel" type="button" onClick={setToggleCollapse}>
+                    <button className="cta flex h-36 mr-16 cancel" type="button" onClick={setToggleCollapse} disabled={loading || deleting}>
                         Cancel
                     </button>
                     <button
                         className="cta flex h-36"
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || deleting}
                         data-testid="container-registry-save-button"
                     >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
