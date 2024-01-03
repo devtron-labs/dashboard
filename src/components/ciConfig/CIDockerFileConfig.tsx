@@ -78,7 +78,7 @@ export default function CIDockerFileConfig({
                 !currentOverriddenBuildContext
 
             const isSameGlobalBuildContext =
-                currentMaterial.id === currentBuildContextGitMaterial.id &&
+                currentMaterial?.id === currentBuildContextGitMaterial?.id &&
                 !ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
 
             return configOverrideView && allowOverride

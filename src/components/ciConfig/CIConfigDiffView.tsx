@@ -7,6 +7,7 @@ import {
     noop,
     DockerConfigOverrideType,
     Reload,
+    WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
@@ -14,8 +15,8 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { Workflow } from '../workflowEditor/Workflow'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
-import { CIConfigDiffViewProps, ProcessedWorkflowsType } from './types'
-import { WorkflowType } from '../app/details/triggerView/types'
+import { CIConfigDiffViewProps, GetCIPipelineModalURLType, ProcessedWorkflowsType } from './types'
+import { NodeAttr, WorkflowType } from '../app/details/triggerView/types'
 import { CIBuildConfigDiff } from './CIBuildConfigDiff'
 import Tippy from '@tippyjs/react'
 import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
@@ -24,6 +25,7 @@ import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
+import { getLinkedCIPipelineURL } from '../common'
 
 export default function CIConfigDiffView({
     parentReloading,
@@ -115,7 +117,28 @@ export default function CIConfigDiffView({
         )
     }
 
-    const renderViewBuildPipelineRow = (_wfId: number): JSX.Element => {
+    const getCIPipelineModalURL = ({ ciNode, workflowId }: GetCIPipelineModalURLType): string => {
+        if (!ciNode) {
+            toast.error('Invalid Pipeline')
+            return
+        }
+
+        if (ciNode.isLinkedCI) {
+            return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${getLinkedCIPipelineURL(
+                appId,
+                workflowId,
+                ciNode.id,
+            )}`
+        }
+
+        return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
+            URLS.APP_CI_CONFIG
+        }/${wfCIMap.get(workflowId)}/build`
+    }
+
+    const renderViewBuildPipelineRow = (_wfId: number, nodes: NodeAttr[]): JSX.Element => {
+        const ciNode = nodes?.find((node) => node.type == WorkflowNodeType.CI)
+
         return (
             <div
                 className="flex dc__position-abs dc__content-space"
@@ -125,12 +148,7 @@ export default function CIConfigDiffView({
                 }}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content="Edit override">
-                    <Link
-                        to={`${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${_wfId}/${
-                            URLS.APP_CI_CONFIG
-                        }/${wfCIMap.get(_wfId)}/build`}
-                        className="flex mr-16"
-                    >
+                    <Link to={getCIPipelineModalURL({ ciNode, workflowId: _wfId })} className="flex mr-16">
                         <EditIcon className="icon-dim-24" />
                     </Link>
                 </Tippy>
@@ -250,7 +268,7 @@ export default function CIConfigDiffView({
                     addWebhookCD={noop}
                     cdWorkflowList={_configOverridenWorkflows}
                 />
-                {renderViewBuildPipelineRow(+_wf.id)}
+                {renderViewBuildPipelineRow(+_wf.id, _wf.nodes)}
                 <CIBuildConfigDiff
                     configOverridenWorkflows={_configOverridenWorkflows}
                     wfId={_wf.id}

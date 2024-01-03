@@ -11,7 +11,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
-import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
+import { CiPipeline, CiPipelineResult, Material, NodeAttr, WorkflowType } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
@@ -415,4 +415,9 @@ export interface ResetEditorChangesProps {
     resetChanges: () => void
     editorData: TemplateDataType
     editorValue: string
+}
+
+export interface GetCIPipelineModalURLType {
+    ciNode: NodeAttr
+    workflowId: number
 }
