@@ -10,6 +10,10 @@ on:
 
 jobs:
   ci:
+    permissions:
+      contents: read
+      packages: read
+
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -23,6 +27,8 @@ jobs:
 
     - name: Install dependencies
       run: yarn install
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check linting issues
       run: yarn lint
