@@ -327,7 +327,6 @@ function ManifestComponent({
                 ?.some((m) => {m.value === IS_NON_ADMIN_USER_DATA ? isDecodedRequired = false : isDecodedRequired = true})
                 return isDecodedRequired
     }
-    console.log(isDecodeRequired)
 
     const renderShowDecodedValueCheckbox = (codeEditorData) => {
         return (
