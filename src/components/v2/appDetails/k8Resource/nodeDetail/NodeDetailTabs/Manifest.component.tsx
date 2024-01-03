@@ -23,7 +23,7 @@ import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
-import { MANIFEST_KEY_FIELDS, MODES } from '../../../../../../config'
+import { IS_NON_ADMIN_USER_DATA, MANIFEST_KEY_FIELDS, MODES } from '../../../../../../config'
 import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 
@@ -312,7 +312,8 @@ function ManifestComponent({
         }
     }
 
-    const decodeNotRequired = () => {
+    const isDecodeRequired = (): boolean => {
+        let isDecodedRequired = true
         // Don't decode in case of non admin user
         const jsonManifestData = YAML.parse(trimedManifestEditorData)
             jsonManifestData &&
@@ -323,8 +324,10 @@ function ManifestComponent({
                         value: jsonManifestData[MANIFEST_KEY_FIELDS.DATA][m],
                     }
                 })
-                ?.some((m) => m.value === '++++++++')
+                ?.some((m) => {m.value === IS_NON_ADMIN_USER_DATA ? isDecodedRequired = false : isDecodedRequired = true})
+                return isDecodedRequired
     }
+    console.log(isDecodeRequired)
 
     const renderShowDecodedValueCheckbox = (codeEditorData) => {
         return (
@@ -459,7 +462,7 @@ function ManifestComponent({
                                         }
                                         className="flex left"
                                     >
-                                        {!isEditmode && decodeNotRequired && renderShowDecodedValueCheckbox(trimedManifestEditorData)}
+                                        {!isEditmode && isDecodeRequired() && renderShowDecodedValueCheckbox(trimedManifestEditorData)}
                                     </CodeEditor.Information>
                                 )}
                                 {activeTab === 'Compare' && (
