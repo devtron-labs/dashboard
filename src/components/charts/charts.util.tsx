@@ -74,7 +74,7 @@ export const ValueContainer = (props) => {
                 <>
                     {!props.selectProps.menuIsOpen && (
                         <>
-                            {' '}
+                            &nbsp;
                             {filterName()}: <span className="badge">{count}</span>
                         </>
                     )}

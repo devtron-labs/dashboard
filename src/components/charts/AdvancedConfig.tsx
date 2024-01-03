@@ -190,7 +190,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                                     {appName?.error || ''}
                                     {appName.suggestedName && (
                                         <span>
-                                            . Suggested name:{' '}
+                                            . Suggested name:&nbsp;
                                             <span
                                                 className="anchor pointer"
                                                 onClick={(e) => handleNameChange(index, appName.suggestedName)}

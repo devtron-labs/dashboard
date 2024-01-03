@@ -559,7 +559,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         .map((p) => {
                             return (
                                 <span key={p.label} className="dc__devtron-tag m-2">
-                                    {`${p.type}:${' '}${p.label}`}
+                                    {`${p.type}: ${p.label}`}
                                     <button
                                         type="button"
                                         className="dc__transparent ml-5"
@@ -697,7 +697,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                             </span>
                                                         )
                                                     })}
-                                                </div>{' '}
+                                                </div>&nbsp;
                                             </>
                                         ) : (
                                             row.pipelineName

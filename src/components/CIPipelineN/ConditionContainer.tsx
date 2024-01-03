@@ -393,7 +393,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                 <div className="flexbox cr-5 mb-8 fw-5 fs-11 flexbox">
                                     {errorObj && !errorObj.isValid && (
                                         <>
-                                            {' '}
+                                            &nbsp;
                                             <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                             <span>{errorObj.message}</span>
                                         </>

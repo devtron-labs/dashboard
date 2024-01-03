@@ -544,7 +544,7 @@ function PipelineSelect({ id, name, connections, isActive, select, repositories 
 function Repo({ gitMaterialName, source }) {
     return (
         <div className="flex left repo w-100">
-            <div className="repo-name">{gitMaterialName}</div> /{' '}
+            <div className="repo-name">{gitMaterialName}</div> /&nbsp;
             <div className="branch-name">
                 <BranchIcon />
                 {source.value}

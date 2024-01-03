@@ -93,7 +93,7 @@ export default function CiWebhookModal({
                         onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}
                     >
                         <Edit className=" icon-dim-24" />
-                    </button>{' '}
+                    </button>&nbsp;
                 </div>
                 <div
                     className="cn-5 fs-12 fw-6 pt-8 pb-8 "
@@ -137,7 +137,7 @@ export default function CiWebhookModal({
                         target="_blank"
                         className="dc__link"
                     >
-                        {' '}
+                        &nbsp;
                         /{repo}
                     </a>
                 </div>
@@ -154,7 +154,7 @@ export default function CiWebhookModal({
                                 style={{ display: 'grid', gridTemplateColumns: '40% 20% 20% 20%', height: '100' }}
                             >
                                 <div>
-                                    Received at{' '}
+                                    Received at&nbsp;
                                     <button className="dc__transparent filter-icon">
                                         <i className="fa fa-caret-down"></i>
                                     </button>
@@ -228,7 +228,7 @@ export default function CiWebhookModal({
                         {webhookPayloads.payloads
                             .filter((payload, index, array) => payload.parsedDataId == parsedDataId)
                             .map((payload) => moment(payload.eventTime).format(Moment12HourFormat))
-                            .toString()}{' '}
+                            .toString()}&nbsp;
                     </h1>
                 </div>
                 <button

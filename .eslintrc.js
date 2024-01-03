@@ -29,6 +29,9 @@ module.exports = {
         curly: ['error', 'all'],
         'keyword-spacing': 'error',
         'prettier/prettier': ['error', prettierConfig],
+        // FIXME: Turn this OFF once react-scripts is upgraded or removed
+        'react/jsx-uses-react': 'warn',
+        'react/react-in-jsx-scope': 'warn',
     },
     settings: {
         react: {

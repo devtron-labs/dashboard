@@ -43,8 +43,7 @@ const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, val
         <label className="dc__tertiary-tab__radio flex fs-13">
             <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
             <div className="tertiary-output-tab cursor mr-12 pb-6" data-testid={name + '-link'}>
-                {' '}
-                {name}{' '}
+                &nbsp;{name}&nbsp;
             </div>
         </label>
     )

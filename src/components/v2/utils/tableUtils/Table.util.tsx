@@ -20,8 +20,8 @@ function TableUtil({ table, bodyFont = '' }) {
                             {tRow.map((cell, index) => {
                                 return (
                                     <div key={'tr_cell_' + index} className={`${cell.className} col pt-8 pb-8`}>
-                                        {' '}
-                                        {cell.value}{' '}
+                                        &nbsp;
+                                        {cell.value}&nbsp;
                                     </div>
                                 )
                             })}

@@ -174,8 +174,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         rel="noreferrer"
                                     >
                                         Standardized date formats
-                                    </a>{' '}
-                                    <span className="cn-9">identified by Devtron</span>{' '}
+                                    </a>&nbsp;
+                                    <span className="cn-9">identified by Devtron</span>&nbsp;
                                 </span>
                             </div>
                         </div>
@@ -256,7 +256,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     />
                                                 </div>
                                             )}
-                                        </div>{' '}
+                                        </div>&nbsp;
                                     </div>
                                     {type === PluginVariableType.INPUT && (
                                         <div className="flexbox">

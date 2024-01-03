@@ -113,7 +113,7 @@ function ChartListPopUp({
                     <>Add a {renderNavigationeToOCIRepository()} to view and deploy helm charts.</>
                 ) : (
                     <>
-                        Showing Chart repositories and OCI Registries (used as chart repositories). You can add other{' '}
+                        Showing Chart repositories and OCI Registries (used as chart repositories). You can add other&nbsp;
                         {renderNavigationeToOCIRepository()} as chart sources.
                     </>
                 )}

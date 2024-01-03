@@ -727,7 +727,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                             <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                         </Tippy>
                         <span className="cursor" onClick={this.props.setFrequencyMetric}>
-                            {renderCategoryTag(this.props.frequencyBenchmark.name)}{' '}
+                            {renderCategoryTag(this.props.frequencyBenchmark.name)}&nbsp;
                         </span>
                     </p>
                     <p className="graph-legend__primary-value">
@@ -758,7 +758,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                                     <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                                 </Tippy>
                                 <span className="cursor" onClick={this.props.setFailureMetric}>
-                                    {renderCategoryTag(this.props.failureRateBenchmark?.name)}{' '}
+                                    {renderCategoryTag(this.props.failureRateBenchmark?.name)}&nbsp;
                                 </span>
                             </p>
                             <p className="graph-legend__primary-value">{this.props.failureRate}</p>
@@ -818,7 +818,7 @@ export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndL
                             <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                         </Tippy>
                         <span className="cursor" onClick={this.props.setMetric}>
-                            {renderCategoryTag(this.props.benchmark?.name)}{' '}
+                            {renderCategoryTag(this.props.benchmark?.name)}&nbsp;
                         </span>
                     </p>
                     <p className="graph-legend__primary-value">

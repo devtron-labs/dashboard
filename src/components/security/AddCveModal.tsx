@@ -203,7 +203,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     tabIndex={1}
                                     onClick={this.handlePolicyChange}
                                     checked={this.state.policy === VulnerabilityAction.allow}
-                                />{' '}
+                                />&nbsp;
                                 <span className="ml-10 mr-5">Allow</span>
                             </label>
                             <label className="form__label form__label--flex cursor ml-10">

@@ -94,7 +94,7 @@ const GitInfoTab: React.FC<{ tab: string; gitLink: string; gitProvider: string; 
             <div className="flex left ">
                 <Info className="icon-dim-20" style={{ marginTop: 1 }} />
                 <div className="ml-8 fs-13" data-testid="gitops-create-organisation-text">
-                    <span className="fw-6 dc__capitalize">Recommended: </span>Create a new {gitProvider}{' '}
+                    <span className="fw-6 dc__capitalize">Recommended: </span>Create a new {gitProvider}&nbsp;
                     {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing
                     your source code.
                 </div>

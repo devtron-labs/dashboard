@@ -649,7 +649,7 @@ function LogsComponent({
                         >
                             {logsPaused && (
                                 <div className="w-100 cn-0">
-                                    Stopped printing logs.{' '}
+                                    Stopped printing logs.&nbsp;
                                     <span onClick={(e) => handleLogsPause()} className="pointer dc__underline">
                                         Resume ( Ctrl+c )
                                     </span>
@@ -657,7 +657,7 @@ function LogsComponent({
                             )}
                             {readyState === 2 && (
                                 <div className="w-100 cn-0">
-                                    Disconnected.{' '}
+                                    Disconnected.&nbsp;
                                     <span onClick={(e) => fetchLogs()} className="pointer dc__underline">
                                         Reconnect
                                     </span>

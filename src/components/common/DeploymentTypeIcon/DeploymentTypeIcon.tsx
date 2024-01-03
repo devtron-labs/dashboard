@@ -1,3 +1,4 @@
+import React from 'react'
 import { ReactComponent as Helm } from '../../../assets/icons/helm-app.svg'
 import { ReactComponent as ArgoCD } from '../../../assets/icons/argo-cd-app.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'

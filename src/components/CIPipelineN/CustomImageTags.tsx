@@ -104,7 +104,7 @@ function CustomImageTags({
             <Tippy
                 content={
                     <div className="fs-12">
-                        {`{x}`} is an auto increasing number. It will increase by one on each{' '}
+                        {`{x}`} is an auto increasing number. It will increase by one on each&nbsp;
                         {isCDBuild ? getCDStageTypeSelectorValue(formData.customTagStage).label : ' build '} trigger.
                     </div>
                 }

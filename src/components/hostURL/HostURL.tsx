@@ -177,7 +177,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                         Host URL
                     </h2>
                     <p className="form__subtitle">
-                        Host URL is the domain address at which your devtron dashboard can be reached. &nbsp;{' '}
+                        Host URL is the domain address at which your devtron dashboard can be reached. &nbsp;&nbsp;
                     </p>
                     <form className="bcn-0 br-8 bw-1 en-2 pb-22 " data-testid="form-host-url" onSubmit={this.onSave}>
                         <InfoColourBar

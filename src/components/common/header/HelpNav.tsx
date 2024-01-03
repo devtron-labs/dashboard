@@ -81,7 +81,6 @@ function HelpNav({
     const renderHelpOptions = (): JSX.Element => {
         return (
             <>
-                {' '}
                 {CommonHelpOptions.map((option, index) => {
                     return (
                         <Fragment key={option.name}>

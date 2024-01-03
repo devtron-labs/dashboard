@@ -180,7 +180,7 @@ export function TaskDetailComponent() {
                         <CustomInputOutputVariables type={PluginVariableType.INPUT} />
                     ) : (
                         <VariableContainer type={PluginVariableType.INPUT} />
-                    )}{' '}
+                    )}&nbsp;
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables
                         ?.length > 0 && (

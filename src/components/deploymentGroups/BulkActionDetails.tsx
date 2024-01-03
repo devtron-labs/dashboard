@@ -172,7 +172,7 @@ export default function BulkActionDetails() {
                     title: `Restore all stopped applications`,
                     subtitle: (
                         <p>
-                            All stopped applications in this group will be{' '}
+                            All stopped applications in this group will be&nbsp;
                             <b>scaled up to their original count on this</b> environment
                         </p>
                     ),

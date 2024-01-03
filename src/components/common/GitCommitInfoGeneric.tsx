@@ -281,7 +281,7 @@ export default function GitCommitInfoGeneric({
                                 <div className="flex left mb-8">
                                     {_webhookData.data['source branch name'] ? (
                                         <div className=" mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
-                                            <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />{' '}
+                                            <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />&nbsp;
                                             {_webhookData.data['source branch name']}
                                         </div>
                                     ) : null}
@@ -307,8 +307,8 @@ export default function GitCommitInfoGeneric({
                                     <div className="mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
                                         {_webhookData.data['target branch name'] ? (
                                             <>
-                                                <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />{' '}
-                                                {_webhookData.data['target branch name']}{' '}
+                                                <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />&nbsp;
+                                                {_webhookData.data['target branch name']}&nbsp;
                                             </>
                                         ) : null}
                                     </div>

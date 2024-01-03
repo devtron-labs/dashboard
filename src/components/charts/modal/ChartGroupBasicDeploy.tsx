@@ -275,7 +275,7 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
                                                 {chart.name.error}.
                                                 {chart.name.suggestedName && (
                                                     <>
-                                                        {' '}
+                                                        &nbsp;
                                                         Suggested Name:
                                                         <span
                                                             className="anchor pointer"

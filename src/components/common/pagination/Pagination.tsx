@@ -167,7 +167,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
                 <div ref={(node) => (this.node = node)}>
                     {this.state.show ? (
                         <div className="pagination__select-menu">
-                            {' '}
+                            &nbsp;
                             {this.state.options.map((option, index) => {
                                 return (
                                     <div

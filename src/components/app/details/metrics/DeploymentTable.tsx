@@ -232,7 +232,6 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                         this.sort('deploymentSize')
                     }}
                 >
-                    {' '}
                     Size {this.renderSortIcon('deploymentSize')}
                 </th>
                 <th
@@ -241,7 +240,6 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                         this.sort('recoveryTime')
                     }}
                 >
-                    {' '}
                     Recovery Time {this.renderSortIcon('recoveryTime')}
                 </th>
                 <th className="deployment-table__header-cell deployment-table__cell-image"></th>
@@ -299,7 +297,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                                         <td className="deployment-table__cell-cycle">{row.cycleTime.label}</td>
                                         <td className="deployment-table__cell-lead">{row.leadTime.label}</td>
                                         <td className="deployment-table__cell-size">
-                                            {`${row.deploymentSize} lines`}{' '}
+                                            {`${row.deploymentSize} lines`}&nbsp;
                                         </td>
                                         <td className="deployment-table__cell-recovery">{row.recoveryTime.label}</td>
                                         <td className="deployment-table__cell-image"></td>

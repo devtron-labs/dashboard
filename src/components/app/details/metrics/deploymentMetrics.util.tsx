@@ -199,7 +199,7 @@ export function FrequencyTooltip(props) {
             </p>
             <p className="m-0 flexbox flex-justify">
                 <span>
-                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--R300)' }}></span>Failed{' '}
+                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--R300)' }}></span>Failed&nbsp;
                 </span>
                 <span>{failures}</span>
             </p>

@@ -638,7 +638,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                                         </span>
                                                     )
                                                 })}
-                                            </div>{' '}
+                                            </div>
                                         </>
                                     ) : null}
                                 </td>

@@ -39,7 +39,7 @@ function PodTabSection({
             data-testid={dataTestId}
         >
             <div className="fs-14 fw-6 pt-12 ">
-                {isNew ? 'New Pods' : 'Old Pods'} ({podStatus.all}){' '}
+                {isNew ? 'New Pods' : 'Old Pods'} ({podStatus.all})&nbsp;
             </div>
             <div className="flex left fs-12 cn-9 pb-12">
                 {getFilteredPodStatus(podStatus).map((status, idx) => (

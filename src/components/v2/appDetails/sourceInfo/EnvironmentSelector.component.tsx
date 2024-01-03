@@ -317,7 +317,7 @@ function EnvironmentSelectorComponent({
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
                                     <div className="helm-delete-pop-up bcn-0 br-4">
-                                        {' '}
+                                        &nbsp;
                                         <Popup />
                                     </div>
                                 </PopupMenu.Body>

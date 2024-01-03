@@ -514,7 +514,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>
-                                            </Tippy>{' '}
+                                            </Tippy>&nbsp;
                                         </div>
                                     </td>
                                 )

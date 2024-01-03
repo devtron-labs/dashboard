@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
 import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { buildInitState, appListModal, createAppListPayload } from './appList.modal'
 import { AppListProps, AppListState, OrderBy, SortBy } from './types'
