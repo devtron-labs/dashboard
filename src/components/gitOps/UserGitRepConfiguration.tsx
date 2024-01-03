@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
-import { InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, Progressing, Reload, VisibleModal, VisibleModal2, showError } from '@devtron-labs/devtron-fe-common-lib'
 import UserGitRepo from './UserGitRepo'
 import { UserGitRepoConfigurationProps } from './gitops.type'
 import { repoType } from '../../config'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
-import { useHistory } from 'react-router-dom'
+import { NavLink, useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { URLS } from '../../config'
 
 export default function UserGitRepConfiguration(props: UserGitRepoConfigurationProps) {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
@@ -77,6 +78,30 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
         )
     }
 
+    function reloadModal() {
+        return (
+            <VisibleModal2 className="confirmation-dialog">
+            <div className="confirmation-dialog__body ">
+                <div className="flexbox dc__content-space mb-20">
+                    {/* <WarningIcon className="h-48 mw-48" /> */}
+                    {/* <Close className="icon-dim-24 cursor" onClick={closePopup} /> */}
+                </div>
+                <div className="flex left column ">
+                    <h3 className="confirmation-dialog__title lh-1-25 dc__break-word w-100">
+                        GitOps repository is not configured
+                    </h3>
+                    {/* <p className="fs-14 fw-4 cn-9">{text}</p> */}
+                </div>
+                <div className="flex right confirmation-dialog__button-group">
+                    <button type="button" className="cta cancel sso__warn-button" onClick={()=>{}}>
+                        Reload
+                    </button>
+                </div>
+            </div>
+        </VisibleModal2>
+        )
+    }
+
     function handleSaveButton() {
         const payload = {
             appId: props.appId,
@@ -93,6 +118,9 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
                     toast.success('Successfully saved.')
                     const stageIndex = props.navItems.findIndex((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)
                     history.push(props.navItems[stageIndex + 1].href)
+                }
+                if (response.code === 500 || response.code === 200) {
+                    reloadModal()
                 }
             })
             .catch((err) => {

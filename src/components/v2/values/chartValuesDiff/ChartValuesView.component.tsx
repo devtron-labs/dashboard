@@ -371,7 +371,7 @@ const GitOpsDrawer = ({
 
     const getPayload = () => {
         const payload = {
-            gitRepoURL: selectedRepoType === repoType.DEFAULT ? 'Default' : repoURL.trim(),
+            gitRepoURL: staleData ? 'Default' : selectedRepoType === repoType.DEFAULT ? 'Default' : repoURL.trim(),
             environmentId: +envId,
             teamId: +teamId,
         }
@@ -475,7 +475,7 @@ const GitOpsDrawer = ({
                             <EditIcon className="icon-dim-16 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
                         <a className="dc__ellipsis-right flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${
-                            visibleRepoURL.length > 0 ? (visibleRepoURL === repoType.DEFAULT ? 'Auto-create repository' : visibleRepoURL) : 'Set GitOps repository'
+                            visibleRepoURL.length > 0 ? ((visibleRepoURL === repoType.DEFAULT || staleData) ? 'Auto-create repository' : visibleRepoURL) : 'Set GitOps repository'
                         }`}</a>
                     </div>
                 </div>

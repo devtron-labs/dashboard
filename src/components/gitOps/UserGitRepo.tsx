@@ -2,6 +2,7 @@ import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ValidateForm } from '../common/ValidateForm/ValidateForm';
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 import { UserGitRepoProps } from './gitops.type';
@@ -48,13 +49,24 @@ function UserGitRepo(props: UserGitRepoProps) {
         )
     }
 
-    const renderInfoColorBar = () => {
+    const renderInfoColorBarWarning = () => {
         return (
             <div className="br-4 bw-1 er-2 pt-8 pb-8 pl-12 pr-12 bcr-1 mb-16 flex left">
                 <Error className="icon-dim-20 mr-8" />
                 <div className="cn-9 fs-13">
                     Ability to commit manifest to a desired repository has been disabled. Please continue with
                     Auto-create repository.
+                </div>
+            </div>
+        )
+    }
+
+    const renderInfoColorBar = () => {
+        return (
+            <div className="br-4 bw-1 er-2 pt-8 pb-8 pl-12 pr-12 bcr-1 mb-16 flex left">
+                <Warn className="icon-dim-20 mr-8" />
+                <div className="cn-9 fs-13">
+                    GitOps repository cannot be changed for this application once deployed.
                 </div>
             </div>
         )
@@ -70,7 +82,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                 <RadioGroup
                     className="radio-group-no-border mt-16"
                     name="trigger-type"
-                    value={props.selectedRepoType}
+                    value={props.staleData ? repoType.DEFAULT : props.selectedRepoType}
                     onChange={repoTypeChange}
                 >
                     <div>
@@ -110,7 +122,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                     </div>
                 )}
             </div>
-            {!props.staleData && renderInfoColorBar()}
+            {props.staleData ? renderInfoColorBarWarning() : renderInfoColorBar()}
         </div>
     )
 }
