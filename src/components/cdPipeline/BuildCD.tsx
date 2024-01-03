@@ -329,9 +329,9 @@ export default function BuildCD({
             <>
                 <div className="form__row form__row--flex mt-12">
                     <div className="w-50 mr-8">
-                        <div className="form__label">Environment*</div>
+                        <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
-                            menuPortalTarget={isAdvanced ? null : document.getElementById('visible-modal')}
+                            menuPosition={isAdvanced ? null : "fixed"}
                             closeMenuOnScroll={true}
                             isDisabled={!!cdPipelineId}
                             classNamePrefix="cd-pipeline-environment-dropdown"
@@ -549,7 +549,7 @@ export default function BuildCD({
                 <p className="fs-14 fw-6 cn-9 mb-8 mt-16">Deployment Strategy</p>
                 <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                 <ReactSelect
-                    menuPortalTarget={document.getElementById('visible-modal')}
+                    menuPosition="fixed"
                     closeMenuOnScroll={true}
                     classNamePrefix="deployment-strategy-dropdown"
                     isSearchable={false}
