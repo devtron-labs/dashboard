@@ -57,7 +57,7 @@ import {
     gitOpsRepoNotConfiguredWithEnforcedEnv,
     gitOpsRepoNotConfiguredWithOptionsHidden,
 } from '../gitOps/constants'
-import { NewCDPipelineProps } from './types'
+import { NewCDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -84,6 +84,7 @@ export default function NewCDPipeline({
     const isWebhookCD = window.location.href.includes('webhook')
     const allStrategies = useRef<{ [key: string]: any }>({})
     const noStrategyAvailable = useRef(false)
+    const addType = urlParams.get('addType')
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
     const [gitOpsRepoConfiguredWarning, setGitOpsRepoConfiguredWarning] = useState<{ show: boolean; text: string }>({
@@ -603,8 +604,8 @@ export default function NewCDPipeline({
         if (changeCIPayload?.switchFromCiPipelineId) {
             pipeline['switchFromCiPipelineId'] = changeCIPayload.switchFromCiPipelineId
         }
-        if (childPipelineId) {
-            pipeline['childPipelineId'] = +childPipelineId
+        if (ciPipelineId) {
+            pipeline['childPipelineId'] = +ciPipelineId
         }
         
         pipeline['addType'] = addType
@@ -1136,7 +1137,19 @@ export default function NewCDPipeline({
                         text={gitOpsRepoConfiguredWarning.text}
                     />
                 )}
-                {cdPipelineId && showDeleteModal && renderDeleteCDModal()}
+                {cdPipelineId && showDeleteModal && (
+                    <DeleteCDNode
+                        deleteDialog={deleteDialog}
+                        setDeleteDialog={setDeleteDialog}
+                        clusterName={formData.clusterName}
+                        appName={appName}
+                        hideDeleteModal={hideDeleteModal}
+                        deleteCD={deleteCD}
+                        deploymentAppType={formData.deploymentAppType}
+                        forceDeleteData={forceDeleteData}
+                        deleteTitleName={formData.name}
+                    />
+                )}
             </div>
         )
     }
