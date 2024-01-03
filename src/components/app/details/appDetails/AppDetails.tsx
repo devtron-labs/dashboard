@@ -1448,7 +1448,7 @@ export function TimeRangeSelector({
                 options={options.map((time) => ({ label: time, value: time }))}
                 value={{ label: selectedRange, value: selectedRange }}
                 onChange={(selected) => selectRange(selected.value)}
-                menuPortalTarget={document.body}
+                menuPosition="fixed"
                 components={{ IndicatorSeparator: null, ValueContainer, Option }}
                 styles={{
                     ...multiSelectStyles,
