@@ -60,7 +60,6 @@ export interface CIConfigState {
 }
 
 export interface ProcessedWorkflowsType {
-    processing: boolean
     workflows: WorkflowType[]
 }
 
@@ -97,8 +96,6 @@ export interface CIConfigDiffViewProps {
     parentReloading: boolean
     ciConfig: CiPipelineResult
     configOverridenPipelines: CiPipeline[]
-    configOverrideWorkflows: ConfigOverrideWorkflowDetails[]
-    processedWorkflows: ProcessedWorkflowsType
     toggleConfigOverrideDiffModal: () => void
     reload: (skipPageReload?: boolean) => Promise<void>
     gitMaterials: any
@@ -112,7 +109,6 @@ export interface CIConfigFormProps {
     reload: (skipPageReload?: boolean) => Promise<void>
     appId: string
     selectedCIPipeline: CIPipelineDataType
-    configOverrideWorkflows: ConfigOverrideWorkflowDetails[]
     configOverrideView: boolean
     allowOverride: boolean
     updateDockerConfigOverride: (key: string, value: CIBuildConfigType | boolean | string) => void

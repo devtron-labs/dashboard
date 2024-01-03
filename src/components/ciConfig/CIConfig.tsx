@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { sortObjectArrayAlphabetically } from '../common'
 import { showError, Progressing} from '@devtron-labs/devtron-fe-common-lib'
 import { getDockerRegistryMinAuth } from './service'
-import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails } from '../../services/service'
+import { getSourceConfig, getCIConfig } from '../../services/service'
 import { useParams } from 'react-router-dom'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CIConfigProps } from './types'
-import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import './CIConfig.scss'
 import CIConfigForm from './CIConfigForm'
 
@@ -27,7 +26,6 @@ export default function CIConfig({
     const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
     const [ciConfig, setCIConfig] = useState(parentState?.ciConfig)
-    const [configOverrideWorkflows, setConfigOverrideWorkflows] = useState<ConfigOverrideWorkflowDetails[]>([])
     const [parentReloading, setParentReloading] = useState(false)
     const [loading, setLoading] = useState(
         configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
@@ -47,12 +45,10 @@ export default function CIConfig({
                 { result: dockerRegistries },
                 { result: sourceConfig },
                 { result: ciConfig },
-                { result: configOverrideWorkflows },
             ] = await Promise.all([
                 getDockerRegistryMinAuth(appId),
                 getSourceConfig(appId),
                 getCIConfig(+appId),
-                getConfigOverrideWorkflowDetails(appId),
             ])
             Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id')
             setDockerRegistries(dockerRegistries || [])
@@ -61,7 +57,6 @@ export default function CIConfig({
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
             setSourceConfig(sourceConfig)
             setCIConfig(ciConfig)
-            setConfigOverrideWorkflows(configOverrideWorkflows?.workflows || [])
 
             if (setParentState) {
                 setParentState({
@@ -137,7 +132,6 @@ export default function CIConfig({
             reload={reload}
             appId={appId}
             selectedCIPipeline={parentState?.selectedCIPipeline}
-            configOverrideWorkflows={configOverrideWorkflows}
             configOverrideView={configOverrideView}
             allowOverride={allowOverride}
             updateDockerConfigOverride={updateDockerConfigOverride}

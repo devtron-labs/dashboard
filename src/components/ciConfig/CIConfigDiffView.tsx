@@ -1,24 +1,34 @@
-import React, { useState } from 'react'
-import { showError, Progressing, Drawer, DeleteDialog, noop, DockerConfigOverrideType } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useEffect, useState } from 'react'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    DeleteDialog,
+    noop,
+    DockerConfigOverrideType,
+    Reload,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { Workflow } from '../workflowEditor/Workflow'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
-import { CIConfigDiffViewProps } from './types'
+import { CIConfigDiffViewProps, ProcessedWorkflowsType } from './types'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { CIBuildConfigDiff } from './CIBuildConfigDiff'
 import Tippy from '@tippyjs/react'
 import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
+import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
+import { getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
+import { WorkflowCreate } from '../app/details/triggerView/config'
+import { processWorkflow } from '../app/details/triggerView/workflow.service'
 
 export default function CIConfigDiffView({
     parentReloading,
     ciConfig,
     configOverridenPipelines,
-    configOverrideWorkflows,
-    processedWorkflows,
     toggleConfigOverrideDiffModal,
     reload,
     gitMaterials,
@@ -34,7 +44,42 @@ export default function CIConfigDiffView({
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [deleteInProgress, setDeleteInProgress] = useState(false)
     const [selectedWFId, setSelectedWFId] = useState(0)
+    const [configOverrideWorkflows, setConfigOverrideWorkflows] = useState<ConfigOverrideWorkflowDetails[]>([])
+    const [processedWorkflows, setProcessedWorkflows] = useState<ProcessedWorkflowsType>({
+        workflows: [],
+    })
+    const [loading, setLoading] = useState<boolean>(true)
+    const [error, setError] = useState<boolean>(false)
+
+    const handleOnMountAPICalls = async () => {
+        setLoading(true)
+        setError(false)
+        try {
+            const [{ result: _configOverridenWorkflows }, { result: _processedWorkflows }] = await Promise.all([
+                getConfigOverrideWorkflowDetails(appId),
+                getWorkflowList(appId),
+            ])
+
+            const { workflows = [] } =
+                processWorkflow(_processedWorkflows, ciConfig, null, null, WorkflowCreate, WorkflowCreate.workflow) ||
+                {}
+
+            setProcessedWorkflows({ workflows })
+            setConfigOverrideWorkflows(_configOverridenWorkflows?.workflows ?? [])
+        } catch (e) {
+            showError(e)
+            setError(true)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        handleOnMountAPICalls()
+    }, [])
+
     const wfCIMap = new Map<number, number>()
+    // NOTE: Even on reload after delete the data is going to be stale since we are not updating configOverrideWorkflows
     const _configOverridenWorkflows = configOverrideWorkflows.filter((_cwf) => {
         const _ciPipeline = configOverridenPipelines?.find((_ci) => _ci.id === _cwf.ciPipelineId)
         if (!!_ciPipeline) {
@@ -173,48 +218,56 @@ export default function CIConfigDiffView({
         }
     }
 
+    const renderBodyContent = () => {
+        if (parentReloading || loading) {
+            return <Progressing pageLoader />
+        }
+
+        if (error) {
+            return <Reload reload={handleOnMountAPICalls} />
+        }
+
+        return _overridenWorkflows.map((_wf) => (
+            <div className="mb-20 dc__position-rel" key={_wf.id}>
+                <Workflow
+                    key={_wf.id}
+                    id={+_wf.id}
+                    name={_wf.name}
+                    startX={_wf.startX}
+                    startY={_wf.startY}
+                    height={getWorkflowHeight(_wf)}
+                    width="100%"
+                    nodes={_wf.nodes}
+                    history={history}
+                    location={location}
+                    match={match}
+                    handleCDSelect={noop}
+                    handleCISelect={noop}
+                    openEditWorkflow={noop}
+                    showDeleteDialog={noop}
+                    addCIPipeline={noop}
+                    addWebhookCD={noop}
+                    cdWorkflowList={_configOverridenWorkflows}
+                />
+                {renderViewBuildPipelineRow(+_wf.id)}
+                <CIBuildConfigDiff
+                    configOverridenWorkflows={_configOverridenWorkflows}
+                    wfId={_wf.id}
+                    configOverridenPipelines={configOverridenPipelines}
+                    materials={ciConfig?.materials}
+                    globalCIConfig={globalCIConfig}
+                    gitMaterials={gitMaterials}
+                />
+            </div>
+        ))
+    }
+
     return (
         <Drawer parentClassName="dc__overflow-hidden" position="right" width="87%" minWidth="1024px" maxWidth="1246px">
             <div className="modal__body modal__config-override-diff br-0 modal__body--p-0 dc__overflow-hidden">
                 {renderConfigDiffModalTitle()}
                 <div className="config-override-diff__view h-100 p-20 dc__window-bg dc__overflow-scroll">
-                    {parentReloading || processedWorkflows.processing ? (
-                        <Progressing pageLoader />
-                    ) : (
-                        _overridenWorkflows.map((_wf) => (
-                            <div className="mb-20 dc__position-rel">
-                                <Workflow
-                                    key={_wf.id}
-                                    id={+_wf.id}
-                                    name={_wf.name}
-                                    startX={_wf.startX}
-                                    startY={_wf.startY}
-                                    height={getWorkflowHeight(_wf)}
-                                    width={'100%'}
-                                    nodes={_wf.nodes}
-                                    history={history}
-                                    location={location}
-                                    match={match}
-                                    handleCDSelect={noop}
-                                    handleCISelect={noop}
-                                    openEditWorkflow={noop}
-                                    showDeleteDialog={noop}
-                                    addCIPipeline={noop}
-                                    addWebhookCD={noop}
-                                    cdWorkflowList={_configOverridenWorkflows}
-                                />
-                                {renderViewBuildPipelineRow(+_wf.id)}
-                                <CIBuildConfigDiff
-                                    configOverridenWorkflows={_configOverridenWorkflows}
-                                    wfId={_wf.id}
-                                    configOverridenPipelines={configOverridenPipelines}
-                                    materials={ciConfig?.materials}
-                                    globalCIConfig={globalCIConfig}
-                                    gitMaterials = {gitMaterials}
-                                />
-                            </div>
-                        ))
-                    )}
+                    {renderBodyContent()}
                 </div>
                 {showDeleteDialog && (
                     <DeleteDialog
