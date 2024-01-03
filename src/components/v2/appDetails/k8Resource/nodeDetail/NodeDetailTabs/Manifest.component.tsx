@@ -23,7 +23,7 @@ import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
-import { MODES } from '../../../../../../config'
+import { MANIFEST_KEY_FIELDS, MODES } from '../../../../../../config'
 import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 
@@ -312,6 +312,20 @@ function ManifestComponent({
         }
     }
 
+    const decodeNotRequired = () => {
+        // Don't decode in case of non admin user
+        const jsonManifestData = YAML.parse(trimedManifestEditorData)
+            jsonManifestData &&
+            Object.keys(jsonManifestData[MANIFEST_KEY_FIELDS.DATA])
+                .map((m) => {
+                    return {
+                        key: m,
+                        value: jsonManifestData[MANIFEST_KEY_FIELDS.DATA][m],
+                    }
+                })
+                ?.some((m) => m.value === '++++++++')
+    }
+
     const renderShowDecodedValueCheckbox = (codeEditorData) => {
         return (
             <div className="flex left ml-8">
@@ -445,7 +459,7 @@ function ManifestComponent({
                                         }
                                         className="flex left"
                                     >
-                                        {!isEditmode && renderShowDecodedValueCheckbox(trimedManifestEditorData)}
+                                        {!isEditmode && decodeNotRequired && renderShowDecodedValueCheckbox(trimedManifestEditorData)}
                                     </CodeEditor.Information>
                                 )}
                                 {activeTab === 'Compare' && (
