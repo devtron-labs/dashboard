@@ -9,10 +9,11 @@ module.exports = {
     },
     extends: [
         'eslint:recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:prettier/recommended',
         'plugin:react/recommended',
+        'plugin:react/jsx-runtime',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:prettier/recommended',
     ],
     parserOptions: {
         ecmaVersion: 2018,
