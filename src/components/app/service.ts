@@ -282,8 +282,8 @@ export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
 }
 
-export const cancelCiTrigger = (params) => {
-    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}`
+export const cancelCiTrigger = (params, isForceAbort) => {
+    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}?forceAbort=${isForceAbort}`
     return trash(URL)
 }
 
