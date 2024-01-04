@@ -1,11 +1,8 @@
 import {
     BuildStageVariable,
-    ConditionalWrap,
-    DeleteDialog,
     DeploymentAppTypes,
     Drawer,
     ErrorScreenManager,
-    ForceDeleteDialog,
     OptionType,
     PluginDetailType,
     RefVariableType,
@@ -13,11 +10,12 @@ import {
     showError,
     VariableType,
     VisibleModal,
+    PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, FloatingVariablesSuggestions, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
@@ -33,6 +31,7 @@ import {
 import { getEnvironmentListMinPublic } from '../../services/service'
 import yamlJsParser from 'yaml'
 import { Sidebar } from '../CIPipelineN/Sidebar'
+import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
 import { getGlobalVariable, getPluginsData } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
@@ -47,9 +46,6 @@ import {
     MULTI_REQUIRED_FIELDS_MSG,
     TOAST_INFO,
 } from '../../config/constantMessaging'
-import { PipelineType } from '../app/details/triggerView/types'
-import Tippy from '@tippyjs/react'
-import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
@@ -68,6 +64,7 @@ export enum deleteDialogType {
     showNonCascadeDeleteDialog = 'showNonCascadeDeleteDialog',
     showNormalDeleteDialog = 'showNormalDeleteDialog',
 }
+import { DeleteDialogType, ForceDeleteMessageType, NewCDPipelineProps } from './types'
 
 export default function NewCDPipeline({
     match,
@@ -90,6 +87,8 @@ export default function NewCDPipeline({
     const noStrategyAvailable = useRef(false)
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
+    const addType = urlParams.get('addType')
+    const childPipelineId = urlParams.get('childPipelineId')
     const [gitOpsRepoConfiguredWarning, setGitOpsRepoConfiguredWarning] = useState<{ show: boolean; text: string }>({
         show: false,
         text: '',
@@ -157,8 +156,8 @@ export default function NewCDPipeline({
     const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string; stageType: string }[]>([])
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
-    const [deleteDialog, setDeleteDialog] = useState<deleteDialogType>(deleteDialogType.showNormalDeleteDialog)
-    const [forceDeleteData, setForceDeleteData] = useState({ forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' })
+    const [deleteDialog, setDeleteDialog] = useState<DeleteDialogType>(DeleteDialogType.showNormalDeleteDialog)
+    const [forceDeleteData, setForceDeleteData] = useState<ForceDeleteMessageType>({ forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' })
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [isEnvUsedState, setIsEnvUsedState] = useState<boolean>(false)
@@ -607,6 +606,12 @@ export default function NewCDPipeline({
         if (changeCIPayload?.switchFromCiPipelineId) {
             pipeline['switchFromCiPipelineId'] = changeCIPayload.switchFromCiPipelineId
         }
+        if (childPipelineId) {
+            pipeline['childPipelineId'] = +childPipelineId
+        }
+        
+        pipeline['addType'] = addType
+
 
         const request = {
             appId: +appId,
@@ -827,7 +832,7 @@ export default function NewCDPipeline({
 
     const setForceDeleteDialogData = (serverError) => {
         const _forceDeleteData = { ...forceDeleteData }
-        setDeleteDialog(deleteDialogType.showForceDeleteDialog)
+        setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 _forceDeleteData.forceDeleteDialogMessage = internalMessage
@@ -859,14 +864,14 @@ export default function NewCDPipeline({
                         const form = { ...formData }
                         form.clusterName = response.result.deleteResponse?.clusterName
                         setFormData(form)
-                        setDeleteDialog(deleteDialogType.showNonCascadeDeleteDialog)
+                        setDeleteDialog(DeleteDialogType.showNonCascadeDeleteDialog)
                     } else {
                         toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
                         hideDeleteModal()
                         const form = { ...formData }
                         form.clusterName = response.result.deleteResponse?.clusterName
                         setFormData(form)
-                        setDeleteDialog(deleteDialogType.showNormalDeleteDialog)
+                        setDeleteDialog(DeleteDialogType.showNormalDeleteDialog)
                         close()
                         if (isWebhookCD) {
                             refreshParentWorkflows()
@@ -880,33 +885,11 @@ export default function NewCDPipeline({
                 if (!force && error.code != 403 && error.code != 412) {
                     setForceDeleteDialogData(error)
                     hideDeleteModal()
-                    setDeleteDialog(deleteDialogType.showForceDeleteDialog)
+                    setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                 } else {
                     showError(error)
                 }
             })
-    }
-
-    const handleDeletePipeline = (deleteAction: DELETE_ACTION) => {
-        switch (deleteAction) {
-            case DELETE_ACTION.DELETE:
-                return deleteCD(false, true)
-            case DELETE_ACTION.NONCASCADE_DELETE:
-                return formData.deploymentAppType === DeploymentAppTypes.GITOPS
-                    ? deleteCD(false, false)
-                    : deleteCD(false, true)
-            case DELETE_ACTION.FORCE_DELETE:
-                return deleteCD(true, false)
-        }
-    }
-
-    const onClickHideNonCascadeDeletePopup = () => {
-        setDeleteDialog(deleteDialogType.showNormalDeleteDialog)
-    }
-
-    const onClickNonCascadeDelete = () => {
-        onClickHideNonCascadeDeletePopup()
-        handleDeletePipeline(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
     const handleAdvanceClick = () => {
@@ -921,36 +904,6 @@ export default function NewCDPipeline({
 
     const openDeleteModal = () => {
         setShowDeleteModal(true)
-    }
-
-    const renderDeleteCDModal = () => {
-        if (deleteDialog === deleteDialogType.showForceDeleteDialog) {
-            return (
-                <ForceDeleteDialog
-                    forceDeleteDialogTitle={forceDeleteData.forceDeleteDialogTitle}
-                    onClickDelete={() => handleDeletePipeline(DELETE_ACTION.FORCE_DELETE)}
-                    closeDeleteModal={hideDeleteModal}
-                    forceDeleteDialogMessage={forceDeleteData.forceDeleteDialogMessage}
-                />
-            )
-        } else if (deleteDialog === deleteDialogType.showNonCascadeDeleteDialog) {
-            return (
-                <ClusterNotReachableDailog
-                    clusterName={formData.clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
-            )
-        } else {
-            return (
-                <DeleteDialog
-                    title={`Delete '${formData.name}' ?`}
-                    description={`Are you sure you want to delete this CD Pipeline from '${appName}' ?`}
-                    delete={() => handleDeletePipeline(DELETE_ACTION.DELETE)}
-                    closeDelete={hideDeleteModal}
-                />
-            )
-        }
     }
 
     const getNavLink = (toLink: string, stageName: string) => {
@@ -982,28 +935,15 @@ export default function NewCDPipeline({
 
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
-            const canDeletePipeline = isLastNode
-            const message =
-                !canDeletePipeline ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
             return (
-                <ConditionalWrap
-                    condition={!canDeletePipeline}
-                    wrap={(children) => (
-                        <Tippy className="default-tt" content={message}>
-                            <div>{children}</div>
-                        </Tippy>
-                    )}
+                <button
+                    data-testid="ci-delete-pipeline-button"
+                    type="button"
+                    className={`cta cta--workflow delete mr-16`}
+                    onClick={openDeleteModal}
                 >
-                    <button
-                        data-testid="ci-delete-pipeline-button"
-                        type="button"
-                        className={`cta cta--workflow delete mr-16`}
-                        disabled={!canDeletePipeline}
-                        onClick={openDeleteModal}
-                    >
-                        Delete Pipeline
-                    </button>
-                </ConditionalWrap>
+                    Delete Pipeline
+                </button>
             )
         } else if (!isAdvanced) {
             return (

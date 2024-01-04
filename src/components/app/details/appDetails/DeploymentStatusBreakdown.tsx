@@ -46,6 +46,17 @@ export default function DeploymentStatusDetailBreakdown({
                             type={TIMELINE_STATUS.GIT_COMMIT}
                             deploymentDetailedData={deploymentStatusDetailsBreakdownData}
                         />
+
+                        <ErrorInfoStatusBar
+                            type={TIMELINE_STATUS.ARGOCD_SYNC}
+                            nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
+                            errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
+                        />
+                        <DeploymentStatusDetailRow
+                            type={TIMELINE_STATUS.ARGOCD_SYNC}
+                            deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                        />
+
                         <ErrorInfoStatusBar
                             type={TIMELINE_STATUS.KUBECTL_APPLY}
                             nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
@@ -55,6 +66,7 @@ export default function DeploymentStatusDetailBreakdown({
                             type={TIMELINE_STATUS.KUBECTL_APPLY}
                             deploymentDetailedData={deploymentStatusDetailsBreakdownData}
                         />
+
                         <DeploymentStatusDetailRow
                             type={TIMELINE_STATUS.APP_HEALTH}
                             hideVerticalConnector={true}

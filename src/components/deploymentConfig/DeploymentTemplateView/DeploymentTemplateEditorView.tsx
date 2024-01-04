@@ -422,6 +422,7 @@ export default function DeploymentTemplateEditorView({
             <CodeEditor
                 defaultValue={lhs}
                 value={rhs}
+                chartVersion={state.selectedChart?.version.replace(/\./g, '-')}
                 onChange={editorOnChange}
                 mode={MODES.YAML}
                 validatorSchema={state.schema}

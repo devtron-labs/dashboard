@@ -718,6 +718,8 @@ export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
     GIT_COMMIT_FAILED = 'GIT_COMMIT_FAILED',
+    ARGOCD_SYNC = 'ARGOCD_SYNC',
+    ARGOCD_SYNC_FAILED = 'ARGOCD_SYNC_FAILED',
     KUBECTL_APPLY = 'KUBECTL_APPLY',
     KUBECTL_APPLY_STARTED = 'KUBECTL_APPLY_STARTED',
     KUBECTL_APPLY_SYNCED = 'KUBECTL_APPLY_SYNCED',
@@ -810,3 +812,7 @@ export const SERVER_ERROR_CODES = {
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+export const CVE_ID_NOT_FOUND = "CVE ID not found"
+export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"
+export const NO_HOST_URL = "Please enter host url"
+export const WEBHOOK_NO_API_TOKEN_ERROR = "API Token is required to execute webhook"

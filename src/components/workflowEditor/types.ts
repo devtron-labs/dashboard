@@ -1,4 +1,13 @@
-import { FormType, OptionType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CommonNodeAttr,
+    DeploymentAppTypes,
+    FormType,
+    OptionType,
+    StepType,
+    TaskErrorObj,
+    VariableType,
+    SelectedNode,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import {
@@ -10,6 +19,7 @@ import {
 } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
+import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
 
 export enum DisableType {
     COMING_SOON = 'COMING SOON',
@@ -24,6 +34,12 @@ export interface ChangeCIPayloadType {
     switchFromCiPipelineId?: number
     appId: number
     switchFromExternalCiPipelineId?: number
+}
+
+export interface WorkflowPositionState {
+    nodes: CommonNodeAttr[]
+    maxY: number
+    selectedWorkflowId: number
 }
 
 export interface WorkflowEditState {
@@ -59,6 +75,8 @@ export interface WorkflowEditState {
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
     changeCIPayload: ChangeCIPayloadType
+    selectedNode: SelectedNode
+    workflowPositionState: WorkflowPositionState
 }
 
 export interface WorkflowEditProps
@@ -71,6 +89,7 @@ export interface WorkflowEditProps
     envList?: any[]
     ciPipelines?: any[]
     filteredEnvIds?: string
+    reloadEnvironments?: () => void
 }
 
 export interface AddWorkflowState {
@@ -136,6 +155,14 @@ export interface CDNodeProps{
     description: string
     isVirtualEnvironment?: boolean
     addNewPipelineBlocked?: boolean
+    handleSelectedNodeChange: (selectedNode: SelectedNode) => void
+    isLastNode?: boolean
+    appName?: string
+    deploymentAppType?: DeploymentAppTypes
+    appId?: string
+    getWorkflows?: () => void
+    reloadEnvironments?: () => void
+    selectedNode?: SelectedNode
 }
 
 export interface WebhookNodeProps {
@@ -149,6 +176,9 @@ export interface WebhookNodeProps {
     toggleCDMenu?: () => void
     hideWebhookTippy?: () => void
     addNewPipelineBlocked?: boolean
+    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
+    selectedNode?: SelectedNode
+    isLastNode?: boolean
 }
 
 export interface WebhookTippyType {
@@ -162,6 +192,11 @@ export interface DeprecatedWarningModalType {
 
 export interface CDNodeState {
     showDeletePipelinePopup: boolean
+    showDeleteDialog: boolean
+    deleteDialog: DeleteDialogType
+    forceDeleteData: ForceDeleteMessageType
+    clusterName: string
+    deleteInProgress: boolean
 }
 
 export interface PipelineBuildStageType {
@@ -181,7 +216,7 @@ export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType>
     postBuildStage?: PipelineBuildStageType
     defaultTag?: string[]
     customTag?: CustomTagType
-    enableCustomTag?: boolean;
+    enableCustomTag?: boolean
     customTagStage?: string
 }
 
@@ -287,4 +322,9 @@ export interface WorkflowOptionsModalProps {
     workflows?: WorkflowType[]
     getWorkflows?: () => void
 }
-    
+
+export interface ToggleCDSelectButtonProps {
+    addNewPipelineBlocked: boolean
+    onClickAddNode: (event: any) => void
+    testId: string
+}

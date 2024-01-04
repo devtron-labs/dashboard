@@ -35,6 +35,7 @@ import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
+import ReactGA from 'react-ga4'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog')
 const DependencyList = importComponentFromFELibrary('DependencyList')
@@ -85,6 +86,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             searchParams.set(MODAL_STATE.key, MODAL_STATE.value)
         }
         history.replace({ search: searchParams.toString() })
+    }
+
+    const handleEditDependencyClick = () => {
+        ReactGA.event({
+            category: 'Application Dependency',
+            action: 'Edit Dependency click',
+            label: 'Edit Dependency click',
+        })
+        toggleUpdateDependencyModal()
     }
 
     useEffect(() => {
@@ -481,6 +491,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             isUpdateModalOpen={isUpdateDependencyModalOpen}
                             toggleUpdateModalOpen={toggleUpdateDependencyModal}
                             toggleButtonDisabledState={setIsEditDependencyButtonDisabled}
+                            filteredEnvIds={filteredEnvIds}
                         />
                     ) : null,
             }
@@ -507,7 +518,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             <button
                                 type="button"
                                 className={`cta flex h-28 dc__gap-4 ${isEditDependencyButtonDisabled ? 'disabled-opacity' : ''}`}
-                                onClick={isEditDependencyButtonDisabled ? noop : toggleUpdateDependencyModal}
+                                onClick={isEditDependencyButtonDisabled ? noop : handleEditDependencyClick}
                             >
                                 <EditIcon className="mw-14 icon-dim-14 scn-0 dc__no-svg-fill" />
                                 Edit Dependency
