@@ -133,6 +133,11 @@ export interface NoGitOpsRepoConfiguredWarningType {
     appId: number
     text:string
 }
+
+export interface ReloadNoGitOpsRepoConfiguredModalType {
+    closePopup: () => void
+    reload: () => void
+}
 export interface CDNodeProps{
     id: string
     deploymentStrategy: string

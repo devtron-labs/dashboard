@@ -1,10 +1,9 @@
-import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ValidateForm } from '../common/ValidateForm/ValidateForm';
-import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 import { UserGitRepoProps } from './gitops.type';
 
 function UserGitRepo(props: UserGitRepoProps) {
@@ -21,15 +20,6 @@ function UserGitRepo(props: UserGitRepoProps) {
         props.setRepoURL(event.target.value)
     }
 
-    const renderValidationErrorLabel = (message?: string): JSX.Element => {
-        return (
-            <div className="error-label flex left fs-11 fw-4 mt-6">
-                <Error className="form__icon form__icon--error" />
-                <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
-            </div>
-        )
-    }
-
     const InputUrlBox = () => {
         return (
                 <div className="ml-26 mt-8">
@@ -38,37 +28,24 @@ function UserGitRepo(props: UserGitRepoProps) {
                         type="text"
                         autoComplete="off"
                         name="name"
-                        value={props.repoURL.trimEnd()}
+                        value={props.repoURL.trim()}
                         placeholder="Enter repository URL"
                         className="form__input"
                         onChange={(event) => onChange(event)}
                         disabled={props.staleData}
                     />
-                    {!props.repoURL && renderValidationErrorLabel()}
                 </div>
-        )
-    }
-
-    const renderInfoColorBarWarning = () => {
-        return (
-            <div className="br-4 bw-1 er-2 pt-8 pb-8 pl-12 pr-12 bcr-1 mb-16 flex left">
-                <Error className="icon-dim-20 mr-8" />
-                <div className="cn-9 fs-13">
-                    Ability to commit manifest to a desired repository has been disabled. Please continue with
-                    Auto-create repository.
-                </div>
-            </div>
         )
     }
 
     const renderInfoColorBar = () => {
         return (
-            <div className="br-4 bw-1 er-2 pt-8 pb-8 pl-12 pr-12 bcr-1 mb-16 flex left">
-                <Warn className="icon-dim-20 mr-8" />
-                <div className="cn-9 fs-13">
-                    GitOps repository cannot be changed for this application once deployed.
-                </div>
-            </div>
+            <InfoColourBar
+                message="GitOps repository cannot be changed for this application once deployed."
+                classname="warn mb-16"
+                Icon={Warn}
+                iconClass="icon-dim-20"
+            />
         )
     }
 
@@ -97,7 +74,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                         </RadioGroupItem>
                     </div>
                     <div className="ml-26">
-                        {props.displayValidation && (
+                        {props.displayValidation && !props.staleData && (
                             <ValidateForm
                                 id={1}
                                 validationError={props.errorInFetching}
@@ -122,7 +99,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                     </div>
                 )}
             </div>
-            {props.staleData ? renderInfoColorBarWarning() : renderInfoColorBar()}
+            {!props.staleData && renderInfoColorBar()}
         </div>
     )
 }

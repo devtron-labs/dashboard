@@ -890,8 +890,11 @@ function ChartValuesView({
                     gitRepoURL: (staleData || commonState.gitRepoURL?.gitRepoURL === undefined)
                     ? 'Default'
                     : commonState.gitRepoURL.gitRepoURL,
-                }             
+                }            
                 res = await installChart(payload)
+                if (res.status === 205) {
+                    setIsDrawerOpen(true)
+                }
             } else if (isCreateValueView) {
                 const payload = {
                     name: valueName,
@@ -934,6 +937,7 @@ function ChartValuesView({
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
                 } = res
+                console.log(isDeployChartView)
                 toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
@@ -944,13 +948,15 @@ function ChartValuesView({
             } else {
                 toast.error(SOME_ERROR_MSG)
             }
+
         } catch (err) {
-            if (err instanceof TypeError && err.message.includes("Cannot convert undefined or null to object")) {
+            if (err['code'] === 408) {
                 toast.error("Some global configurations for GitOps has changed")
                 setStaleData(true)
                 setIsDrawerOpen(true)
+            } else {
+                showError(err)
             }
-            showError(err)
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,
                 payload: false,
@@ -1574,6 +1580,7 @@ function ChartValuesView({
                                     setStaleData={setStaleData}
                                     dispatch={dispatch}
                                     isDrawerOpen={isDrawerOpen}
+                                    setIsDrawerOpen={setIsDrawerOpen}
                                 />
                             )}
                         {/**

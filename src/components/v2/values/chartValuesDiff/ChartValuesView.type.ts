@@ -98,6 +98,7 @@ export interface DeploymentAppSelectorType {
     staleData?: boolean
     setStaleData?: (boolean) => void
     isDrawerOpen?: boolean
+    setIsDrawerOpen?: (boolean) => void
 }
 
 export interface DeploymentAppRadioGroupType {
@@ -122,6 +123,7 @@ export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
     staleData?: boolean
     setStaleData?: (boolean) => void
     isDrawerOpen?: boolean
+    setIsDrawerOpen?: (boolean) => void
 }
 
 export interface ChartProjectSelectorType {

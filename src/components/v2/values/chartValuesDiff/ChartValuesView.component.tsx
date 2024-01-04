@@ -170,7 +170,8 @@ export const DeploymentAppSelector = ({
     setStaleData,
     staleData,
     dispatch,
-    isDrawerOpen
+    isDrawerOpen,
+    setIsDrawerOpen
 }: DeploymentAppSelectorType): JSX.Element => {
     const [visibleRepoURL, setVisibleRepoURL] = useState<string>("")
     
@@ -235,6 +236,7 @@ export const DeploymentAppSelector = ({
                         staleData={staleData}
                         setStaleData={setStaleData}
                         isDrawerOpen={isDrawerOpen}
+                        setIsDrawerOpen={setIsDrawerOpen}
                     />
                 )}
             </div>
@@ -332,6 +334,7 @@ const GitOpsDrawer = ({
     setStaleData,
     setVisibleRepoURL,
     isDrawerOpen,
+    setIsDrawerOpen
 }: gitOpsDrawerType): JSX.Element => {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
@@ -356,6 +359,7 @@ const GitOpsDrawer = ({
     const handleCloseButton = () => {
         setIsDeploymentAllowed(false)
         setGitOpsState(true)
+        setIsDrawerOpen(false)
         if (selectedRepoType !== repoType.CONFIGURE) {
             setSelectedRepoType(repoType.DEFAULT)
         }
@@ -391,6 +395,7 @@ const GitOpsDrawer = ({
                 setErrorInFetching(new Map())
                 setDisplayValidation(false)
                 setIsDeploymentAllowed(false)
+                setIsDrawerOpen(false)
                 setVisibleRepoURL(selectedRepoType === repoType.DEFAULT ? repoType.DEFAULT : repoURL)
             })
             .catch((err) => {
@@ -466,7 +471,6 @@ const GitOpsDrawer = ({
                     </Drawer>
                 </div>
             )}
-            
             {gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1 ? (
                 <div className="form__input dashed mt-10 flex" style={{ height: '54px' }}>
                     <div className="mb-10">

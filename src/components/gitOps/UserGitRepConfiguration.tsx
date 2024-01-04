@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
-import { InfoColourBar, Progressing, Reload, VisibleModal, VisibleModal2, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import UserGitRepo from './UserGitRepo'
 import { UserGitRepoConfigurationProps } from './gitops.type'
 import { repoType } from '../../config'
@@ -9,6 +9,7 @@ import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import { NavLink, useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { URLS } from '../../config'
+import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
 
 export default function UserGitRepConfiguration(props: UserGitRepoConfigurationProps) {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
@@ -16,6 +17,7 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
     const [isEditable, setIsEditable] = useState(false)
     const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map())
     const [displayValidation, setDisplayValidation] = useState(false)
+    const [showReloadModal, setShowReloadModal] = useState(false)
     const [loading, setLoading] = useState(false)
     const history = useHistory()
 
@@ -78,28 +80,12 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
         )
     }
 
-    function reloadModal() {
-        return (
-            <VisibleModal2 className="confirmation-dialog">
-            <div className="confirmation-dialog__body ">
-                <div className="flexbox dc__content-space mb-20">
-                    {/* <WarningIcon className="h-48 mw-48" /> */}
-                    {/* <Close className="icon-dim-24 cursor" onClick={closePopup} /> */}
-                </div>
-                <div className="flex left column ">
-                    <h3 className="confirmation-dialog__title lh-1-25 dc__break-word w-100">
-                        GitOps repository is not configured
-                    </h3>
-                    {/* <p className="fs-14 fw-4 cn-9">{text}</p> */}
-                </div>
-                <div className="flex right confirmation-dialog__button-group">
-                    <button type="button" className="cta cancel sso__warn-button" onClick={()=>{}}>
-                        Reload
-                    </button>
-                </div>
-            </div>
-        </VisibleModal2>
-        )
+    const closePopup = () => {
+        setShowReloadModal(false)
+    }
+
+    const reload = () => {
+        window.location.reload()
     }
 
     function handleSaveButton() {
@@ -119,12 +105,13 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
                     const stageIndex = props.navItems.findIndex((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)
                     history.push(props.navItems[stageIndex + 1].href)
                 }
-                if (response.code === 500 || response.code === 200) {
-                    reloadModal()
-                }
             })
             .catch((err) => {
-                showError(err)
+                if (err['code'] === 408) {
+                    setShowReloadModal(true)
+                } else {
+                    showError(err)
+                }
             })
             .finally(() => {
                 setLoading(false)
@@ -162,6 +149,7 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
                         </button>
                     </div>
                 )}
+                {showReloadModal && <ReloadNoGitOpsRepoConfiguredModal closePopup={closePopup} reload={reload} />}
             </div>
     )
 }
