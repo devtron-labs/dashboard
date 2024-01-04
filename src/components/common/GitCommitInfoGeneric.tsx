@@ -257,7 +257,7 @@ export default function GitCommitInfoGeneric({
                                 <a
                                     href={`${_webhookData.data['git url']}`}
                                     target="_blank"
-                                    rel="noopener noreferer"
+                                    rel="noopener noreferrer"
                                     className="dc__no-decor cb-5"
                                 >
                                     View git url
