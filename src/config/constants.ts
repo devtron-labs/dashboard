@@ -804,6 +804,11 @@ export const SERVER_ERROR_CODES = {
     CHART_NAME_RESERVED: '5002',
 }
 
+export enum APPROVAL_MODAL_TYPE {
+    CONFIG = 'CONFIG',
+    IMAGE = 'IMAGE',
+}
+
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
 export const CVE_ID_NOT_FOUND = "CVE ID not found"
 export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"

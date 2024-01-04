@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
-import { URLS } from './config'
+import { APPROVAL_MODAL_TYPE, URLS } from './config'
 import { toast } from 'react-toastify'
 import 'patternfly/dist/css/patternfly.css'
 import 'patternfly/dist/css/patternfly-additions.css'
@@ -17,6 +17,7 @@ import {
     ToastBody,
     ToastBody3 as UpdateToast,
     ErrorBoundary,
+    importComponentFromFELibrary,
 } from './components/common'
 import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import * as serviceWorker from './serviceWorker'
@@ -25,6 +26,7 @@ import { validateToken } from './services/service'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
+const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
 toast.configure({
     autoClose: 3000,
@@ -46,6 +48,9 @@ export default function App() {
     const [bgUpdated, setBGUpdated] = useState(false)
     const [validating, setValidating] = useState(true)
     const [forceUpdateOnLocationChange, setForceUpdateOnLocationChange] = useState(false)
+    const [approvalToken, setApprovalToken] = useState<string>('')
+    const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
+
     const location = useLocation()
     const { push } = useHistory()
     const didMountRef = useRef(false)
@@ -85,8 +90,21 @@ export default function App() {
     }
 
     useEffect(() => {
+        let queryString = new URLSearchParams(location.search)
+        let token = queryString.get('token')
+        if (token) {
+            setApprovalToken(token)
+        }
+        if (location.pathname && location.pathname.includes('deployment')) {
+            setApprovalType(APPROVAL_MODAL_TYPE.IMAGE)
+        } else {
+            setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
+        }
         async function validation() {
             try {
+                if (location.pathname && location.pathname.includes('approve?token')) {
+                    return
+                }
                 await validateToken()
                 defaultRedirection()
             } catch (err: any) {
@@ -106,7 +124,7 @@ export default function App() {
             }
         }
         // If not K8S_CLIENT then validateToken otherwise directly redirect
-        if (!window._env_.K8S_CLIENT) {
+        if (!window._env_.K8S_CLIENT) {     
             validation()
         } else {
             setValidating(false)
@@ -207,7 +225,7 @@ export default function App() {
         <Suspense fallback={null}>
             {validating ? (
                 <div className="full-height-width">
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
+                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
             ) : (
                 <>
@@ -220,6 +238,14 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
+                                    <Route
+                                        path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
+                                        render={() =>
+                                            GenericDirectApprovalModal && (
+                                                <GenericDirectApprovalModal approvalType={approvalType} />
+                                            )
+                                        }
+                                    />
                                     <Route path="/" render={() => <NavigationRoutes />} />
                                     <Redirect
                                         to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
