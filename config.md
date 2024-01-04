@@ -28,5 +28,7 @@
 | LOGIN_PAGE_IMAGE                   | ""         | Login page image url                          |
 | LOGIN_PAGE_IMAGE_BG                | ""         | Login page image background color code        |
 | DEFAULT_CI_TRIGGER_TYPE_MANUAL     | "false"    | Change default trigger behaviour of newly created ci-pipeline to manual |
+| GLOBAL_API_TIMEOUT    |  60000  | Default timeout for all API requests in DASHBOARD  |
+| TRIGGER_API_TIMEOUT   |  60000  | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD  |
 
 # DASHBOARD CONFIG SECRET
