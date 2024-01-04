@@ -5,6 +5,7 @@ import {
     OptionType,
     DeploymentAppTypes,
     getLoginInfo,
+    APIOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
@@ -1132,4 +1133,13 @@ export const hasApproverAccess = (approverList: string[]): boolean => {
 
 export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
+}
+
+export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOptions => {
+    const _options: APIOptions = options ? JSON.parse(JSON.stringify(options)) : {}
+    if (Number.isInteger(window._env_.TRIGGER_API_TIMEOUT)) {
+        _options.timeout = window._env_.TRIGGER_API_TIMEOUT
+    }
+
+    return _options
 }
