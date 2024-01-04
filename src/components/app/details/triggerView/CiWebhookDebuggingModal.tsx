@@ -94,7 +94,6 @@ export default function CiWebhookModal({
                     >
                         <Edit className=" icon-dim-24" />
                     </button>
-                    &nbsp;
                 </div>
                 <div
                     className="cn-5 fs-12 fw-6 pt-8 pb-8 "

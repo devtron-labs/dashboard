@@ -55,7 +55,7 @@ export const Option = (props) => {
                 <div>
                     <div className="cn-9 fs-13"> {props.label}</div>
                     <div className="cn-7 flex left">
-                        <span className="dc__capitalize">Deploy</span>&nbsp;
+                        <span className="dc__capitalize">Deploy</span>
                         <div className="dc__bullet ml-4 dc__bullet--d2 mr-4" />
                         &nbsp;
                         {props.data.author === 'system' ? 'auto-triggered' : props.data.author}
