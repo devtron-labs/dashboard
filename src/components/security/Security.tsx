@@ -14,7 +14,7 @@ interface SecurityProps extends RouteComponentProps<{}> {
 
 export class Security extends Component<SecurityProps> {
     renderRouter() {
-        const path = this.props.match.path
+        const { path } = this.props.match
         return (
             <Switch>
                 <Route path={`${path}/scans`} component={SecurityScansTab} />
@@ -25,7 +25,7 @@ export class Security extends Component<SecurityProps> {
     }
 
     renderSecurityTabs = () => {
-        const path = this.props.match.path
+        const { path } = this.props.match
         return (
             <>
                 <ul role="tablist" className="tab-list">
@@ -53,11 +53,11 @@ export class Security extends Component<SecurityProps> {
         return (
             <PageHeader
                 headerName="Security"
-                isTippyShown={true}
+                isTippyShown
                 tippyRedirectLink={DOCUMENTATION.SECURITY}
-                tippyMessage={'Learn more'}
+                tippyMessage="Learn more"
                 TippyIcon={Question}
-                showTabs={true}
+                showTabs
                 renderHeaderTabs={this.renderSecurityTabs}
             />
         )
@@ -67,10 +67,8 @@ export class Security extends Component<SecurityProps> {
         return (
             <div style={{ height: 'calc(100vh - 250px)' }}>
                 <EAEmptyState
-                    title={'Integrated DevSecOps'}
-                    msg={
-                        'Enable security scanning to identify vulnerabilities in your container and protect from external attacks. Manage security policies to allow or block specific vulnerabilities.'
-                    }
+                    title="Integrated DevSecOps"
+                    msg="Enable security scanning to identify vulnerabilities in your container and protect from external attacks. Manage security policies to allow or block specific vulnerabilities."
                     stateType={EAEmptyStateType.SECURITY}
                     knowMoreLink={DOCUMENTATION.SECURITY}
                 />

@@ -7,6 +7,8 @@ import {
     useAsync,
     PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
+import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
@@ -17,8 +19,6 @@ import {
 } from '../../service'
 import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
@@ -163,7 +163,8 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
 
     if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
-    } else if (pipelineId && !buildId && triggerHistory.size > 0) {
+    }
+    if (pipelineId && !buildId && triggerHistory.size > 0) {
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], appId, pipelineId }))
     }
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
@@ -251,7 +252,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                                     <GenericEmptyState
                                         title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
                                         subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
-                                        isButtonAvailable={true}
+                                        isButtonAvailable
                                         renderButton={renderSourcePipelineButton}
                                     />
                                 ) : (
@@ -413,7 +414,7 @@ export const Details = ({
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`logs`}
+                                    to="logs"
                                     data-testid="logs-link"
                                 >
                                     Logs
@@ -424,7 +425,7 @@ export const Details = ({
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`source-code`}
+                                    to="source-code"
                                     data-testid="source-code-link"
                                 >
                                     Source
@@ -435,7 +436,7 @@ export const Details = ({
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`artifacts`}
+                                    to="artifacts"
                                     data-testid="artifacts-link"
                                 >
                                     Artifacts
@@ -447,7 +448,7 @@ export const Details = ({
                                         replace
                                         className="tab-list__tab-link"
                                         activeClassName="active"
-                                        to={`security`}
+                                        to="security"
                                         data-testid="security_link"
                                     >
                                         Security
@@ -598,7 +599,7 @@ const HistoryLogs = ({
         </div>
     )
 }
-export function NoVulnerabilityViewWithTool({ scanToolId }: { scanToolId: number }) {
+export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number }) => {
     return (
         <div className="flex h-100 dc__position-rel">
             <GenericEmptyState
@@ -677,7 +678,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    const severityCount = securityData.severityCount
+    const { severityCount } = securityData
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
@@ -687,19 +688,23 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
-    } else if (['starting', 'running'].includes(status.toLowerCase())) {
-        return <CIRunningView isSecurityTab={true} />
-    } else if (securityData.isLoading) {
+    }
+    if (['starting', 'running'].includes(status.toLowerCase())) {
+        return <CIRunningView isSecurityTab />
+    }
+    if (securityData.isLoading) {
         return <Progressing pageLoader />
-    } else if (securityData.isError) {
+    }
+    if (securityData.isError) {
         return <Reload />
-    } else if (artifactId && !securityData.scanned) {
+    }
+    if (artifactId && !securityData.scanned) {
         if (!securityData.scanEnabled) {
             return <ScanDisabledView redirectToCreate={redirectToCreate} />
-        } else {
-            return <ImageNotScannedView />
         }
-    } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
+        return <ImageNotScannedView />
+    }
+    if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
         return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId} />
     }
     const scanToolId = securityData.ScanToolId

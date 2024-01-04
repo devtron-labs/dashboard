@@ -3,7 +3,7 @@ import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
 import { LogSearchTermType } from '../appDetails.type'
 import LogsComponent from '../k8Resource/nodeDetail/NodeDetailTabs/Logs.component'
 
-function LogAnalyzerComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTermType) {
+const LogAnalyzerComponent = ({ logSearchTerms, setLogSearchTerms }: LogSearchTermType) => {
     useEffect(() => {
         AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.log_analyzer)
     }, [])

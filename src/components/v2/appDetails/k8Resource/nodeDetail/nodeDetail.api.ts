@@ -1,5 +1,5 @@
-import { Routes } from '../../../../../config'
 import { DeploymentAppTypes, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../../../../config'
 import {
     AppDetails,
     AppType,
@@ -91,7 +91,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
             : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
 
     const requestBody = {
-        appId: appId,
+        appId,
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {

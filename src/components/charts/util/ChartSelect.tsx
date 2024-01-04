@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import Tippy from '@tippyjs/react'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { Chart } from '../charts.types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { LazyImage, ConditionalWrap } from '../../common'
@@ -8,7 +9,6 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { SERVER_MODE } from '../../../config'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
 interface AllChartSelectProps {
     chart: Chart
@@ -109,14 +109,14 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                                 className="default-tt"
                                 arrow={false}
                                 placement="top"
-                                content={'Remove charts from selection'}
+                                content="Remove charts from selection"
                             >
                                 {children}
                             </Tippy>
                         )}
                     >
                         <button
-                            className={'devtron-stepper__item dc__transparent p-0 cursor'}
+                            className="devtron-stepper__item dc__transparent p-0 cursor"
                             disabled={selectedCount <= 0}
                             onClick={removeChartTab}
                             data-testid={`chart-remove-${datatestid}`}
@@ -128,20 +128,15 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                         <span>{selectedCount}</span>
                     </div>
                     <ConditionalWrap
-                        condition={true}
+                        condition
                         wrap={(children) => (
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={'Add charts to deploy'}
-                            >
+                            <Tippy className="default-tt" arrow={false} placement="top" content="Add charts to deploy">
                                 {children}
                             </Tippy>
                         )}
                     >
                         <button
-                            className={'devtron-stepper__item dc__transparent p-0 cursor'}
+                            className="devtron-stepper__item dc__transparent p-0 cursor"
                             onClick={addchartTab}
                             data-testid={`chart-add-${datatestid}`}
                         >

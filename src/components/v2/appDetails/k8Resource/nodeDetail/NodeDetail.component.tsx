@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react'
+import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
+import { useParams, useRouteMatch, useLocation } from 'react-router'
+import { showError, Checkbox, CHECKBOX_VALUE, OptionType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
-import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
-import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import { showError, Checkbox, CHECKBOX_VALUE, OptionType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
@@ -25,7 +25,7 @@ import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
 
-function NodeDetailComponent({
+const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
     markTabActiveByIdentifier,
@@ -34,7 +34,7 @@ function NodeDetailComponent({
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
-}: NodeDetailPropsType) {
+}: NodeDetailPropsType) => {
     const location = useLocation()
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
@@ -192,12 +192,12 @@ function NodeDetailComponent({
 
         if (!isTabFound) {
             setTimeout(() => {
-                let _urlToCreate = url + '/' + _tabName.toLowerCase()
+                let _urlToCreate = `${url}/${_tabName.toLowerCase()}`
 
                 const query = new URLSearchParams(window.location.search)
 
                 if (query.get('container')) {
-                    _urlToCreate = _urlToCreate + '?container=' + query.get('container')
+                    _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
                 }
 
                 if (isResourceBrowserView) {
@@ -215,18 +215,18 @@ function NodeDetailComponent({
     const currentTab = applicationObjectTabs.filter((tab) => {
         return (
             tab.name.toLowerCase() ===
-            params.nodeType + '/...' + (isResourceBrowserView ? params.node : params.podName)?.slice(-6)
+            `${params.nodeType}/...${(isResourceBrowserView ? params.node : params.podName)?.slice(-6)}`
         )
     })
     const isDeleted =
         (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
-            (appDetails.resourceTree.nodes?.findIndex(
-                (node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType,
-            ) >= 0
-                ? false
-                : true))
+            !(
+                appDetails.resourceTree.nodes?.findIndex(
+                    (node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType,
+                ) >= 0
+            ))
 
     // Assign extracted containers to selected resource before passing further
     if (selectedResource) {
@@ -285,7 +285,7 @@ function NodeDetailComponent({
                             tabs.map((tab: string, index: number) => {
                                 return (
                                     <div
-                                        key={index + 'resourceTreeTab'}
+                                        key={`${index}resourceTreeTab`}
                                         className={`${
                                             tab.toLowerCase() === selectedTabName.toLowerCase()
                                                 ? 'default-tab-row cb-5'
@@ -310,7 +310,7 @@ function NodeDetailComponent({
                     </div>
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
-                            <div className="ml-12 mr-5 tab-cell-border"></div>
+                            <div className="ml-12 mr-5 tab-cell-border" />
                             <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
                                 <EphemeralIcon className="mr-4 icon-dim-16 scb-5" />
                                 Launch Ephemeral Container
@@ -319,7 +319,7 @@ function NodeDetailComponent({
                     )}
                     {isManagedFields && (
                         <>
-                            <div className="ml-12 mr-5 tab-cell-border"></div>
+                            <div className="ml-12 mr-5 tab-cell-border" />
                             <div className="pt-6 pb-6 pl-8 pr-8 top">
                                 <Checkbox
                                     rootClassName="mb-0-imp h-20"

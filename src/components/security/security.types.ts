@@ -148,7 +148,7 @@ export interface VulnerabilityUIMetaData {
     title: string
     subTitle: string
 }
-//Generated for security policy
+// Generated for security policy
 
 /**
  * Error object

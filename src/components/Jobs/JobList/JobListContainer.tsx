@@ -72,7 +72,7 @@ export default function JobListContainer({
                         code: response.code,
                         jobs: _jobs,
                         isAllExpandable: _jobs.filter((job) => job.ciPipelines.length > 1).length > 0,
-                        view: view,
+                        view,
                         offset: request.offset,
                         size: response.result.jobCount,
                         pageSize: request.size,

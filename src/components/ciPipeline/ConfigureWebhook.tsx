@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { WebhookSelectorCondition } from './WebhookSelectorCondition'
-import Tippy from '@tippyjs/react'
 
-export function ConfigureWebhook({
+export const ConfigureWebhook = ({
     webhookConditionList,
     copyToClipboard,
     gitHost,
@@ -16,7 +16,7 @@ export function ConfigureWebhook({
     onWebhookConditionSelectorChange,
     onWebhookConditionSelectorValueChange,
     canEditPipeline,
-}) {
+}) => {
     const [copiedUrl, setCopiedUrl] = useState(false)
     const [copiedKey, setCopiedKey] = useState(false)
 

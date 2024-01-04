@@ -113,7 +113,7 @@ export default function WorkflowOptionsModal({
         }
 
         e.stopPropagation()
-        const pipelineType = e.currentTarget.dataset.pipelineType
+        const { pipelineType } = e.currentTarget.dataset
 
         if (pipelineType === PipelineType.WEBHOOK) {
             handleChangeToWebhook()

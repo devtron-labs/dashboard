@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import * as queryString from 'query-string'
+import { withRouter } from 'react-router-dom'
 import { buildInitState, appListModal, createAppListPayload } from './appList.modal'
 import { AppListProps, AppListState, OrderBy, SortBy } from './types'
 import { URLS, ViewType } from '../../../config'
 import { AppListView } from './AppListView'
 import { getAppList } from '../service'
 import { AppListViewType } from '../config'
-import * as queryString from 'query-string'
-import { withRouter } from 'react-router-dom'
 import './list.scss'
 
 class DevtronAppListContainer extends Component<AppListProps, AppListState> {

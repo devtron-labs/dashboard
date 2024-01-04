@@ -1,16 +1,16 @@
 import React, { useState, useMemo } from 'react'
 import { useParams, useRouteMatch, generatePath, useHistory, Route, Switch } from 'react-router'
 import { Progressing, multiSelectStyles, Option, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import Select, { components } from 'react-select'
+import { BarChart, Bar, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import moment from 'moment'
 import { mapByKey, Td, DropdownIcon, DatePicker } from '../../../common'
 import { getCIPipelines } from '../../service'
-import Select, { components } from 'react-select'
 import { getTriggerList, getFilters } from './service'
-import { BarChart, Bar, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { ReactComponent as EmptyTests } from '../../../../assets/img/ic-empty-tests.svg'
 import { SelectedNames } from './Test.types'
 import './TestRunDetails.scss'
 import { TestRunDetails } from './TestRunDetails'
-import moment from 'moment'
 
 export default function TestRunList() {
     const params = useParams<{ appId: string; pipelineId?: string }>()
@@ -106,7 +106,7 @@ const CISelector: React.FC<{ pipelines: any[] }> = ({ pipelines }) => {
     )
 }
 
-function TestsPlaceholder({ title = 'Test Reports', subtitle = '' }) {
+const TestsPlaceholder = ({ title = 'Test Reports', subtitle = '' }) => {
     return (
         <div className="w-100 flex column" style={{ height: '100%' }}>
             <EmptyTests />

@@ -4,7 +4,7 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-question.sv
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 import { HelmAppConfigApplyStatusCardType } from '../environment.type'
 
-function HelmAppConfigApplyStatusCard({ releaseStatus, cardLoading }: HelmAppConfigApplyStatusCardType) {
+const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppConfigApplyStatusCardType) => {
     if (cardLoading) {
         return <LoadingCard wider />
     }
@@ -21,7 +21,7 @@ function HelmAppConfigApplyStatusCard({ releaseStatus, cardLoading }: HelmAppCon
                         <Tippy
                             className="default-tt cursor"
                             arrow={false}
-                            content={'Whether or not your last helm install was successful'}
+                            content="Whether or not your last helm install was successful"
                         >
                             <Question className="cursor icon-dim-16 ml-4" />
                         </Tippy>
@@ -31,7 +31,7 @@ function HelmAppConfigApplyStatusCard({ releaseStatus, cardLoading }: HelmAppCon
                     </div>
                 </div>
                 <div className="flex br-4">
-                    <figure className={`${releaseStatus['status'].toLowerCase()}  ml-8 icon-dim-24`}></figure>
+                    <figure className={`${releaseStatus['status'].toLowerCase()}  ml-8 icon-dim-24`} />
                 </div>
             </div>
             <div className="app-details-info-card__bottom-container">

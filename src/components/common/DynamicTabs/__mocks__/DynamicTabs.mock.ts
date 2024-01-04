@@ -115,9 +115,8 @@ export const mockedStopTabByIdentifier = jest.fn().mockImplementation((title: st
                 url: tab.url.split('?')[0],
                 isSelected: false,
             }
-        } else {
-            return tab
         }
+        return tab
     })
 
     if (selectedRemoved) {

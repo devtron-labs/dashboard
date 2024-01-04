@@ -1,8 +1,11 @@
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
+import { showError, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
+import ReactSelect, { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
 import { getChartValues } from '../../../charts/charts.service'
-import { showError, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../../common/ReactSelect.utils'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
@@ -14,10 +17,7 @@ import {
     CompareWithDropdownProps,
     ValuesForDiffStateType,
 } from './ChartValuesView.type'
-import YAML from 'yaml'
-import ReactSelect, { components } from 'react-select'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import {
     GROUPED_OPTION_LABELS,
@@ -157,9 +157,9 @@ export default function ChartValuesEditor({
             chartValuesList.length > 0 &&
             (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
         if (ExternalModeCondition || FullModeCondition) {
-            const deployedChartValues = [],
-                defaultChartValues = [],
-                presetChartValues = []
+            const deployedChartValues = []
+            const defaultChartValues = []
+            const presetChartValues = []
             let _selectedVersionForDiff
 
             for (let index = 0; index < chartValuesList.length; index++) {
@@ -217,7 +217,7 @@ export default function ChartValuesEditor({
                 ...valuesForDiffState,
                 loadingValuesForDiff: true,
             })
-            const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
+            const { selectedVersionForDiff } = valuesForDiffState
             const _version = selectedVersionForDiff.value
             const _currentValues = manifestView
                 ? valuesForDiffState.manifestsForDiff.get(_version)

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
-import { List } from '../../common'
 import {
     showError,
     Progressing,
@@ -9,14 +8,16 @@ import {
     useBreadcrumb,
     useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { marked } from 'marked'
+import * as DOMPurify from 'dompurify'
+import { toast } from 'react-toastify'
+import { List } from '../../common'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
 import { getAvailableCharts } from '../../../services/service'
 import { DiscoverChartDetailsProps, DeploymentProps } from './types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
-import { marked } from 'marked'
-import * as DOMPurify from 'dompurify'
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
@@ -28,7 +29,6 @@ import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import { ChartValuesType } from '../charts.types'
-import { toast } from 'react-toastify'
 
 const DiscoverDetailsContext = React.createContext(null)
 const uncheckedCheckboxInputElement = `<input checked="" disabled="" type="checkbox">`
@@ -207,7 +207,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
             }}
         >
             <div className="chart-detail-container">
-                <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
+                <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                 {loading ? (
                     <Progressing pageLoader />
                 ) : (
@@ -249,11 +249,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                                     <span style={{ color: 'var(--R500)' }}>&nbsp;(Deprecated)</span>
                                                 )
                                             }
-                                            showCloseButton={true}
+                                            showCloseButton
                                             onClose={goBackToDiscoverChart}
                                         />
                                         <ChartValuesView
-                                            isDeployChartView={true}
+                                            isDeployChartView
                                             installedConfigFromParent={chartInformation as ChartInstalledConfig}
                                             chartValuesListFromParent={chartValuesList}
                                             chartVersionsDataFromParent={availableVersions}
@@ -298,8 +298,8 @@ const Deployment: React.FC<DeploymentProps> = ({
     const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])
 
     useEffect(() => {
-        const _deployedChartValues = [],
-            _presetChartValues = []
+        const _deployedChartValues = []
+        const _presetChartValues = []
         for (let index = 0; index < chartValuesList.length; index++) {
             const _chartValue = chartValuesList[index]
             const chartValueObj: ChartValuesType = {
@@ -383,7 +383,7 @@ const Deployment: React.FC<DeploymentProps> = ({
     )
 }
 
-function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
+const ReadmeRowHorizontal = ({ readme = null, version = '', ...props }) => {
     const [collapsed, toggleCollapse] = useState(true)
     return (
         <div className="discover__readme discover__readme--horizontal" data-testid="readme-file-button">
@@ -412,7 +412,7 @@ function isReadmeInputCheckbox(text: string) {
     }
     return false
 }
-export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) {
+export const MarkDown = ({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) => {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
     const mdeRef = useRef(null)

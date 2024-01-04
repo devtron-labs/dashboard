@@ -3,7 +3,7 @@ import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../../assets/icons/appstatus/ic-chevron-down.svg'
 import './list.scss'
 
-function Logo({ src = '', style = {}, className = '', children = null }) {
+const Logo = ({ src = '', style = {}, className = '', children = null }) => {
     return (
         <>
             {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
@@ -12,7 +12,7 @@ function Logo({ src = '', style = {}, className = '', children = null }) {
     )
 }
 
-function Title({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) {
+const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) => {
     return (
         <div className="flex column left">
             <div className={`list__title ${className}`}>
@@ -23,11 +23,11 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-function ListToggle({ onSelect, enabled = false }) {
+const ListToggle = ({ onSelect, enabled = false }) => {
     return <Toggle onSelect={onSelect} selected={enabled} />
 }
 
-function DropDown({ className = '', style = {}, src = null, ...props }) {
+const DropDown = ({ className = '', style = {}, src = null, ...props }) => {
     if (React.isValidElement(src)) {
         return src
     }

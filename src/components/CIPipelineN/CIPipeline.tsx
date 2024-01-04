@@ -2,12 +2,6 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
 import {
-    ButtonWithLoader,
-    FloatingVariablesSuggestions,
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-} from '../common'
-import {
     ServerErrors,
     showError,
     ConditionalWrap,
@@ -20,6 +14,14 @@ import {
     MandatoryPluginDetailType,
     PluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import {
+    ButtonWithLoader,
+    FloatingVariablesSuggestions,
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import {
     BuildStageVariable,
     BuildTabText,
@@ -38,11 +40,9 @@ import {
     getPluginsData,
     saveCIPipeline,
 } from '../ciPipeline/ciPipeline.service'
-import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
@@ -471,7 +471,7 @@ export default function CIPipeline({
                     <button
                         data-testid="ci-delete-pipeline-button"
                         type="button"
-                        className={`cta cta--workflow delete mr-16`}
+                        className="cta cta--workflow delete mr-16"
                         disabled={!canDeletePipeline}
                         onClick={() => {
                             setShowDeleteModal(true)
@@ -481,7 +481,8 @@ export default function CIPipeline({
                     </button>
                 </ConditionalWrap>
             )
-        } else if (!isAdvanced) {
+        }
+        if (!isAdvanced) {
             return (
                 <button
                     type="button"
@@ -533,8 +534,8 @@ export default function CIPipeline({
 
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
 
-        //here we check for the case where the pipeline is multigit and user selects pullrequest or tag creation(webhook)
-        //in that case we only send the webhook data not the other one.
+        // here we check for the case where the pipeline is multigit and user selects pullrequest or tag creation(webhook)
+        // in that case we only send the webhook data not the other one.
         let _materials = formData.materials
         if (formData.materials.length > 1) {
             for (const material of formData.materials) {

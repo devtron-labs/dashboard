@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
-import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import Tippy from '@tippyjs/react'
-import { Pagination } from '../common'
 import {
     showError,
     Progressing,
@@ -12,6 +10,10 @@ import {
     Reload,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { NavLink } from 'react-router-dom'
+import EmptyImage from '../../assets/img/ic-empty-notifications.png'
+import { Pagination } from '../common'
 import {
     getNotificationConfigurations,
     deleteNotifications,
@@ -19,7 +21,7 @@ import {
     getChannelsAndEmailsFilteredByEmail,
 } from './notifications.service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
+import { ReactComponent as Delete, ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as Bell } from '../../assets/icons/ic-bell.svg'
 import { ReactComponent as User } from '../../assets/icons/ic-users.svg'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
@@ -31,14 +33,12 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
-import { toast } from 'react-toastify'
-import { NavLink } from 'react-router-dom'
 import { getHostURLConfiguration } from '../../services/service'
 import { HostURLConfig } from '../../services/service.types'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { renderPipelineTypeIcon } from './notifications.util'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+
 export interface NotificationConfiguration {
     id: number
     pipelineId?: number
@@ -123,7 +123,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 isChecked: false,
                 value: 'INTERMEDIATE',
             },
-            //TODO: create new component for modify events menu
+            // TODO: create new component for modify events menu
             payloadUpdateEvents: [],
             pagination: {
                 size: 20,
@@ -386,7 +386,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return (
                 <DeleteDialog
                     title={`Delete ${n.length} notification configuration(s)`}
-                    description={`Recipients will stop recieving notifications for selected pipilines.`}
+                    description="Recipients will stop recieving notifications for selected pipilines."
                     closeDelete={() => {
                         this.setState({ showDeleteDialog: false })
                     }}
@@ -424,7 +424,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 image={EmptyImage}
                 title={EMPTY_STATE_STATUS.NOTIFICATION_TAB.TITLE}
                 subTitle={EMPTY_STATE_STATUS.NOTIFICATION_TAB.SUBTITL}
-                isButtonAvailable={true}
+                isButtonAvailable
                 renderButton={renderGenericStateButton}
             />
         )
@@ -489,7 +489,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                             this.triggerCheckboxHandler()
                                         }}
                                     >
-                                        <span></span>
+                                        <span />
                                     </Checkbox>
                                 </li>
                                 <li key="success" className="dc__kebab-menu__list-item flex-justify">
@@ -503,7 +503,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                             this.successCheckboxHandler()
                                         }}
                                     >
-                                        <span></span>
+                                        <span />
                                     </Checkbox>
                                 </li>
                                 <li key="failure" className="dc__kebab-menu__list-item flex-justify">
@@ -516,7 +516,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                             this.failureCheckboxHandler()
                                         }}
                                     >
-                                        <span></span>
+                                        <span />
                                     </Checkbox>
                                 </li>
                             </ul>
@@ -553,7 +553,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 onChange={this.onChangePipelineCheckbox}
                                 dataTestId="notification-list"
                             >
-                                <span></span>
+                                <span />
                             </Checkbox>
                         </th>
                         <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
@@ -562,7 +562,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         <th className="pipeline-list__environment fw-6">Env/Branch</th>
                         <th className="pipeline-list__stages fw-6">Events</th>
                         <th className="pipeline-list__recipients fw-6">Recipients</th>
-                        <th className="pipeline-list__hover "></th>
+                        <th className="pipeline-list__hover " />
                     </tr>
                     {this.state.notificationList.map((row) => {
                         const _isCi = row.branch && row.pipelineType === 'CI'
@@ -588,13 +588,13 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     <Checkbox
                                         rootClassName=""
                                         isChecked={row.isSelected}
-                                        value={'CHECKED'}
+                                        value="CHECKED"
                                         onChange={(e) => {
                                             e.stopPropagation()
                                             this.toggleNotification(row.id)
                                         }}
                                     >
-                                        <span></span>
+                                        <span />
                                     </Checkbox>
                                 </td>
                                 <td className="pipeline-list__pipeline-name">
@@ -652,7 +652,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                                     _isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed
                                                 }
                                                 sourceValue={row.branch}
-                                                showTooltip={true}
+                                                showTooltip
                                             />
                                         </span>
                                     )}
@@ -664,21 +664,21 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                             <Play className="icon-dim-20 icon-n5" />
                                         </Tippy>
                                     ) : (
-                                        <span className="icon-dim-20"></span>
+                                        <span className="icon-dim-20" />
                                     )}
                                     {row.success ? (
                                         <Tippy placement="top" content="on success">
                                             <Check className="icon-dim-20 icon-n5" />
                                         </Tippy>
                                     ) : (
-                                        <span className="icon-dim-20"></span>
+                                        <span className="icon-dim-20" />
                                     )}
                                     {row.failure ? (
                                         <Tippy placement="top" content="on failure">
                                             <Info className="icon-dim-20 icon-n5" />
                                         </Tippy>
                                     ) : (
-                                        <span className="icon-dim-20"></span>
+                                        <span className="icon-dim-20" />
                                     )}
                                 </td>
                                 <td className="pipeline-list__recipients">
@@ -734,9 +734,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                     changePageSize={this.changePageSize}
                 />
             )
-        } else {
-            return null
         }
+        return null
     }
 
     renderBody() {
@@ -812,23 +811,23 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                     <Reload />
                 </div>
             )
-        } else if (!this.state.notificationList.length) {
+        }
+        if (!this.state.notificationList.length) {
             return (
                 <div className="pt-16" style={{ height: 'calc(100vh - 215px)' }}>
                     {this.renderHostErrorMessage()}
                     {this.renderGenericState()}
                 </div>
             )
-        } else {
-            return (
-                <div className="bcn-0 pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
-                    {this.renderHostErrorMessage()}
-                    {this.renderBody()}
-                    {this.renderDeleteDialog()}
-                    {this.remderModifyRecipients()}
-                    {this.state.confirmation && this.renderDeleteDialog()}
-                </div>
-            )
         }
+        return (
+            <div className="bcn-0 pt-16" style={{ minHeight: 'calc(100vh - 215px)' }}>
+                {this.renderHostErrorMessage()}
+                {this.renderBody()}
+                {this.renderDeleteDialog()}
+                {this.remderModifyRecipients()}
+                {this.state.confirmation && this.renderDeleteDialog()}
+            </div>
+        )
     }
 }

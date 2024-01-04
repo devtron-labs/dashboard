@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import IndexStore from '../index.store'
-import { useState } from 'react'
 import { NodeStatus, StatusFilterButtonType } from '../appDetails.type'
 import { RadioGroup } from '../../../common'
 import './k8resources.scss'
@@ -14,11 +13,11 @@ interface TabState {
 export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: StatusFilterButtonType) => {
     const [selectedTab, setSelectedTab] = useState('all')
 
-    let allNodeCount = 0,
-        healthyNodeCount = 0,
-        progressingNodeCount = 0,
-        failedNodeCount = 0,
-        missingNodeCount = 0
+    let allNodeCount = 0
+    let healthyNodeCount = 0
+    let progressingNodeCount = 0
+    let failedNodeCount = 0
+    let missingNodeCount = 0
 
     nodes?.forEach((_node) => {
         const _nodeHealth = _node.health?.status
@@ -36,7 +35,7 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
     })
 
     const filters = [
-        { status: 'all', count: allNodeCount, isSelected: 'all' == selectedTab },
+        { status: 'all', count: allNodeCount, isSelected: selectedTab == 'all' },
         { status: NodeStatus.Missing, count: missingNodeCount, isSelected: NodeStatus.Missing == selectedTab },
         { status: NodeStatus.Degraded, count: failedNodeCount, isSelected: NodeStatus.Degraded == selectedTab },
         {
@@ -55,12 +54,10 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
             (selectedTab === NodeStatus.Missing && missingNodeCount === 0)
         ) {
             setSelectedTab('all')
+        } else if (handleFilterClick) {
+            handleFilterClick(selectedTab)
         } else {
-            if (handleFilterClick) {
-                handleFilterClick(selectedTab)
-            } else {
-                IndexStore.updateFilterType(selectedTab.toUpperCase())
-            }
+            IndexStore.updateFilterType(selectedTab.toUpperCase())
         }
     }, [nodes, selectedTab])
 

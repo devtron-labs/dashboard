@@ -14,7 +14,7 @@ export function getVersionArr(version: string): number[] {
 }
 
 export function isVersionLessThanOrEqualToTarget(version: string, target: number[]): boolean {
-    //Comparing with v1.15.xxx
+    // Comparing with v1.15.xxx
     const versionNum = getVersionArr(version)
     for (let i = 0; i < target.length; i++) {
         if (versionNum[i] === target[i]) {

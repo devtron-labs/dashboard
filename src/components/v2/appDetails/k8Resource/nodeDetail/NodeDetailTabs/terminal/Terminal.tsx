@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
-import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import moment from 'moment'
+import CopyToast, { handleSelectionChange } from '../CopyToast'
+import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
@@ -203,11 +203,9 @@ export default function TerminalView({
         if (!window.location.origin) {
             // Some browsers (mainly IE) do not have this property, so we need to build it manually...
             // @ts-ignore
-            window.location.origin =
-                window.location.protocol +
-                '//' +
-                window.location.hostname +
-                (window.location.port ? ':' + window.location.port : '')
+            window.location.origin = `${window.location.protocol}//${window.location.hostname}${
+                window.location.port ? `:${window.location.port}` : ''
+            }`
         }
 
         setSocketConnection(SocketConnectionType.CONNECTING)

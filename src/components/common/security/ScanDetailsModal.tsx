@@ -7,10 +7,10 @@ import {
     ScanVulnerabilitiesTable,
     VulnerabilityType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Link } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ViewType, URLS } from '../../../config'
 import { getLastExecutionByImageScanDeploy } from '../../../services/service'
-import { Link } from 'react-router-dom'
 import { ScannedByToolModal } from './ScannedByToolModal'
 import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails'
 
@@ -188,33 +188,37 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                     <div
                         className="scanned-object__critical-count"
                         style={{ width: `${(100 * this.state.severityCount.critical) / total}%` }}
-                    ></div>
+                    />
                     <div
                         className="scanned-object__moderate-count"
                         style={{ width: `${(100 * this.state.severityCount.moderate) / total}%` }}
-                    ></div>
+                    />
                     <div
                         className="scanned-object__low-count"
                         style={{ width: `${(100 * this.state.severityCount.low) / total}%` }}
-                    ></div>
+                    />
                 </div>
                 <div className="flexbox">
                     <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__critical-count"></span>Critical
+                        <span className="scanned-object__icon scanned-object__critical-count" />
+                        Critical
                         <span className="fw-6 ml-5 mr-20">{this.state.severityCount.critical}</span>
                     </p>
                     <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__moderate-count"></span>Moderate
+                        <span className="scanned-object__icon scanned-object__moderate-count" />
+                        Moderate
                         <span className="fw-6 ml-5 mr-20">{this.state.severityCount.moderate}</span>
                     </p>
                     <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__low-count"></span>Low
+                        <span className="scanned-object__icon scanned-object__low-count" />
+                        Low
                         <span className="fw-6 ml-5 mr-20">{this.state.severityCount.low}</span>
                     </p>
                 </div>
             </>
         )
     }
+
     renderTable() {
         return (
             <div className="scanned-object__results">
@@ -235,7 +239,8 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                     </div>
                 </VisibleModal>
             )
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <VisibleModal className="">
                     <div className="modal-body--scan-details">
@@ -246,7 +251,8 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                     </div>
                 </VisibleModal>
             )
-        } else if (this.state.view === ViewType.FORM && this.state.vulnerabilities.length === 0) {
+        }
+        if (this.state.view === ViewType.FORM && this.state.vulnerabilities.length === 0) {
             return (
                 <VisibleModal className="">
                     <div className="modal-body--scan-details">
@@ -257,18 +263,17 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                     </div>
                 </VisibleModal>
             )
-        } else {
-            return (
-                <VisibleModal className="">
-                    <div className="modal-body--scan-details">
-                        {this.renderHeader()}
-                        <div className="trigger-modal__body trigger-modal__body--security-scan">
-                            {this.renderScannedObjectInfo()}
-                            {this.renderTable()}
-                        </div>
-                    </div>
-                </VisibleModal>
-            )
         }
+        return (
+            <VisibleModal className="">
+                <div className="modal-body--scan-details">
+                    {this.renderHeader()}
+                    <div className="trigger-modal__body trigger-modal__body--security-scan">
+                        {this.renderScannedObjectInfo()}
+                        {this.renderTable()}
+                    </div>
+                </div>
+            </VisibleModal>
+        )
     }
 }

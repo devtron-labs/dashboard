@@ -8,7 +8,7 @@ import { VulnerabilityExposure } from './VulnerabilityExposure'
 
 export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
     renderRouter() {
-        const path = this.props.match.path
+        const { path } = this.props.match
         return (
             <Switch>
                 <Route path={`${path}/global`} component={SecurityPolicyGlobal} />
@@ -22,7 +22,7 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
     }
 
     render() {
-        const path = this.props.match.path
+        const { path } = this.props.match
         return (
             <div className="security-policy">
                 <div className="dc__secondary-nav">

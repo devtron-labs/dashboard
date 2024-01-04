@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
 import { Terminal } from 'xterm'
 import { get, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetails } from '../app/types'
 import SockJS from 'sockjs-client'
-import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
 import moment, { duration } from 'moment'
 import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import ReactGA from 'react-ga4'
+import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
+import { AppDetails } from '../app/types'
 import './terminal.scss'
 import { Scroller } from '../app/details/cicdHistory/History.components'
 import { SocketConnectionType } from '../app/details/appDetails/appDetails.type'
@@ -33,8 +33,11 @@ interface TerminalViewState {
 }
 export class TerminalView extends Component<TerminalViewProps, TerminalViewState> {
     _terminal
+
     _socket
+
     _fitAddon
+
     _ga_session_duration
 
     constructor(props) {
@@ -55,11 +58,9 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         if (!window.location.origin) {
             // Some browsers (mainly IE) do not have this property, so we need to build it manually...
             // @ts-ignore
-            window.location.origin =
-                window.location.protocol +
-                '//' +
-                window.location.hostname +
-                (window.location.port ? ':' + window.location.port : '')
+            window.location.origin = `${window.location.protocol}//${window.location.hostname}${
+                window.location.port ? `:${window.location.port}` : ''
+            }`
         }
         this.props.setSocketConnection('CONNECTING')
         ReactGA.event({
@@ -146,7 +147,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         get(url)
             .then((response: any) => {
                 const sessionId = response?.result.SessionID
-                this.setState({ sessionId: sessionId }, () => {
+                this.setState({ sessionId }, () => {
                     this.initialize(sessionId)
                 })
             })
@@ -223,12 +224,12 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
 
         this._socket = new SockJS(socketURL)
 
-        const setSocketConnection = this.props.setSocketConnection
+        const { setSocketConnection } = this.props
         const socket = this._socket
         const terminal = this._terminal
         const fitAddon = this._fitAddon
-        const isReconnection = this.props.isReconnection
-        const setIsReconnection = this.props.setIsReconnection
+        const { isReconnection } = this.props
+        const { setIsReconnection } = this.props
         const self = this
 
         terminal.onData(function (data) {
@@ -281,7 +282,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         return (
             <AutoSizer>
                 {({ height, width }) => (
-                    <div className={'terminal-view pt-24'} style={{ overflow: 'auto' }}>
+                    <div className="terminal-view pt-24" style={{ overflow: 'auto' }}>
                         <p style={{ zIndex: 11, textTransform: 'capitalize' }} className={statusBarClasses}>
                             <span className={this.props.socketConnection === 'CONNECTING' ? 'dc__loading-dots' : ''}>
                                 {this.props.socketConnection.toLowerCase()}
@@ -312,7 +313,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                         {this.props.socketConnection === 'CONNECTED' && (
                             <p
                                 style={{ position: 'relative', bottom: '10px' }}
-                                className={`dc__ff-monospace pt-2 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}
+                                className="dc__ff-monospace pt-2 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4"
                             >
                                 {this.props.socketConnection}
                             </p>
@@ -325,7 +326,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     }
 }
 
-function TerminalContent(props) {
+const TerminalContent = (props) => {
     useThrottledEffect(
         () => {
             if (props.fitAddon) {
@@ -335,5 +336,5 @@ function TerminalContent(props) {
         100,
         [props.height, props.width],
     )
-    return <div id="terminal" style={{ width: props.width, height: props.height - 110 }}></div>
+    return <div id="terminal" style={{ width: props.width, height: props.height - 110 }} />
 }

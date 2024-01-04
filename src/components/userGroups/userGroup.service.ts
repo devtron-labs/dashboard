@@ -1,5 +1,5 @@
-import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { get, post, put, trash, ResponseType, getTeamListMin, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { CreateGroup, CreateUser, Custom_Roles } from './userGroups.types'
 import { Routes } from '../../config'
 
@@ -54,7 +54,7 @@ export function getParsedData(teamList, appList, environmentList) {
         action: getActionList().result,
     }
     const response = {
-        lists: lists,
+        lists,
         code: teamList.code || appList.code || environmentList.code,
     }
     return response
@@ -66,9 +66,8 @@ export function saveUser(request: CreateUser) {
     }
     if (window._env_.CONFIGURABLE_TIMEOUT) {
         return request.id ? put('user', request, options) : post('user', request, options)
-    } else {
-        return request.id ? put('user', request) : post('user', request)
     }
+    return request.id ? put('user', request) : post('user', request)
 }
 
 export function saveGroup(request: CreateGroup) {
@@ -77,9 +76,8 @@ export function saveGroup(request: CreateGroup) {
     }
     if (window._env_.CONFIGURABLE_TIMEOUT) {
         return request.id ? put(Routes.USER_ROLE_GROUP, request, options) : post('user/role/group', request, options)
-    } else {
-        return request.id ? put(Routes.USER_ROLE_GROUP, request) : post('user/role/group', request)
     }
+    return request.id ? put(Routes.USER_ROLE_GROUP, request) : post('user/role/group', request)
 }
 
 export function userModal(user) {

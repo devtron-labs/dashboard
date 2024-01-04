@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
-import CopyToast, { handleSelectionChange } from './CopyToast'
 import * as XtermWebfont from 'xterm-webfont'
 import { SearchAddon } from 'xterm-addon-search'
 import { AutoSizer } from 'react-virtualized'
+import CopyToast, { handleSelectionChange } from './CopyToast'
 import '../../../../../../../node_modules/xterm/css/xterm.css'
 import './nodeDetailTab.scss'
 import { Subject } from '../../../../../../util/Subject'
@@ -26,8 +26,8 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
     highlightString = '',
     reset = false,
 }) => {
-    let subscribed = false,
-        unsubscribe: () => boolean = null
+    let subscribed = false
+    let unsubscribe: () => boolean = null
     const terminal = useRef<Terminal>(null)
     const fitAddon = useRef<FitAddon>(null)
     const searchAddon = useRef<SearchAddon>(null)

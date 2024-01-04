@@ -5,14 +5,14 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import { getCIConfigDiffValues } from './CIConfig.utils'
 import { CIBuildConfigDiffProps, CIConfigDiffType } from './types'
 
-export function CIBuildConfigDiff({
+export const CIBuildConfigDiff = ({
     configOverridenWorkflows,
     wfId,
     configOverridenPipelines,
     materials,
     globalCIConfig,
     gitMaterials,
-}: CIBuildConfigDiffProps) {
+}: CIBuildConfigDiffProps) => {
     const [showOverrides, setShowOverrides] = useState(false)
     const [ciConfigDiffValues, setCIConfigDiffValues] = useState<CIConfigDiffType[]>([])
 
@@ -45,8 +45,8 @@ export function CIBuildConfigDiff({
                             value={overridenValue}
                             mode={MODES.DOCKERFILE}
                             height="300px"
-                            readOnly={true}
-                            diffView={true}
+                            readOnly
+                            diffView
                             noParsing
                         />
                     </td>

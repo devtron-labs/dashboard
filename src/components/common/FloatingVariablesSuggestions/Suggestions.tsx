@@ -9,7 +9,7 @@ import { SuggestionsProps, SuggestionType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
 import { NO_DEFINED_DESCRIPTION, NO_DEFINED_VALUE } from './constants'
 
-function Suggestions({ handleDeActivation, loading, variables, reloadVariables, error }: SuggestionsProps) {
+const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, error }: SuggestionsProps) => {
     const [suggestions, setSuggestions] = useState<SuggestionType[]>(variables)
     const [clearSearch, setClearSearch] = useState<boolean>(false)
     const [highlightText, setHighlightText] = useState<string>('')

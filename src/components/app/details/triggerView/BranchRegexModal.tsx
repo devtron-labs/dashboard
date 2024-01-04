@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
@@ -11,7 +12,6 @@ import { TriggerViewContext } from './config'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ButtonWithLoader } from '../../../common'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function BranchRegexModal({
     material,
@@ -104,11 +104,11 @@ export default function BranchRegexModal({
     const getErrorMessage = (regexValue) => {
         if (!regexValue.value) {
             return REQUIRED_FIELD_MSG
-        } else if (regexValue.isInvalid) {
-            return BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
-        } else {
-            return ''
         }
+        if (regexValue.isInvalid) {
+            return BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
+        }
+        return ''
     }
 
     return (

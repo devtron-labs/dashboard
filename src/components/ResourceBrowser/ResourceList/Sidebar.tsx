@@ -1,5 +1,8 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
+import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
+import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
+import { withShortcut, IWithShortcut } from 'react-keybind'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import {
@@ -11,12 +14,9 @@ import {
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
-import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
-import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
-import { withShortcut, IWithShortcut } from 'react-keybind'
 
-function Sidebar({
+const Sidebar = ({
     k8SObjectMap,
     selectedResource,
     handleGroupHeadingClick,
@@ -24,7 +24,7 @@ function Sidebar({
     updateResourceSelectionData,
     shortcut,
     isCreateModalOpen,
-}: SidebarType & IWithShortcut) {
+}: SidebarType & IWithShortcut) => {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
         clusterId: string
@@ -72,7 +72,8 @@ function Sidebar({
     }
 
     const covertK8sMapToOptionsList = () => {
-        let isNamespacesAvailable, isEventsAvailable
+        let isNamespacesAvailable
+        let isEventsAvailable
         const _k8sObjectOptionsList = [...k8SObjectMap.values()].flatMap((k8sObject) => {
             return [...k8sObject.child.entries()].flatMap(([key, value]) => {
                 const keyLowerCased = key.toLowerCase()
@@ -192,7 +193,7 @@ function Sidebar({
                 {
                     currentTarget: {
                         dataset: {
-                            groupName: groupName,
+                            groupName,
                         },
                     },
                 },
@@ -246,30 +247,28 @@ function Sidebar({
             keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
         ) {
             return null
-        } else if (value.data.length === 1) {
-            return renderChild(value.data[0])
-        } else {
-            return (
-                <Fragment key={`${k8sObject.name}/${key}-child`}>
-                    <div
-                        className="flex pointer"
-                        data-group-name={`${k8sObject.name}/${key}`}
-                        onClick={handleGroupHeadingClick}
-                    >
-                        <DropDown
-                            className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
-                            style={{
-                                ['--rotateBy' as any]: value.isExpanded ? '0deg' : '-90deg',
-                            }}
-                        />
-                        <span className={`fs-14 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>
-                            {key}
-                        </span>
-                    </div>
-                    {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
-                </Fragment>
-            )
         }
+        if (value.data.length === 1) {
+            return renderChild(value.data[0])
+        }
+        return (
+            <Fragment key={`${k8sObject.name}/${key}-child`}>
+                <div
+                    className="flex pointer"
+                    data-group-name={`${k8sObject.name}/${key}`}
+                    onClick={handleGroupHeadingClick}
+                >
+                    <DropDown
+                        className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
+                        style={{
+                            ['--rotateBy' as any]: value.isExpanded ? '0deg' : '-90deg',
+                        }}
+                    />
+                    <span className={`fs-14 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>{key}</span>
+                </div>
+                {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
+            </Fragment>
+        )
     }
 
     const handleInputChange = (newValue: string, actionMeta: InputActionMeta): void => {
@@ -389,7 +388,7 @@ function Sidebar({
                             data-group={SIDEBAR_KEYS.eventGVK.Group}
                             data-version={SIDEBAR_KEYS.eventGVK.Version}
                             data-kind={SIDEBAR_KEYS.eventGVK.Kind}
-                            data-namespaced={true}
+                            data-namespaced
                             data-selected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
                             onClick={selectNode}
                         >

@@ -10,6 +10,9 @@ import {
     ToastBodyWithButton,
     ToastBody,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import ReactGA from 'react-ga4'
+import { withRouter, NavLink } from 'react-router-dom'
 import {
     getCIMaterialList,
     triggerCINode,
@@ -40,9 +43,6 @@ import {
     NO_COMMIT_SELECTED,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { toast } from 'react-toastify'
-import ReactGA from 'react-ga4'
-import { withRouter, NavLink } from 'react-router-dom'
 import { getEnvironmentListMinPublic, getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
@@ -72,7 +72,9 @@ const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'f
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
+
     inprogressStatusTimer
+
     abortController: AbortController
 
     constructor(props: TriggerViewProps) {
@@ -323,14 +325,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 this.setState({
-                    workflows: workflows,
+                    workflows,
                 })
             })
             .catch((error: ServerErrors) => {
                 showError(error)
                 _selectedMaterial.isMaterialLoading = false
                 this.setState({
-                    workflows: workflows,
+                    workflows,
                 })
             })
     }
@@ -355,9 +357,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         return material
                     })
                     return node
-                } else {
-                    return node
                 }
+                return node
             })
             return workflow
         })
@@ -372,12 +373,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 this.setState({
-                    workflows: workflows,
+                    workflows,
                 })
             } else {
                 this.setState(
                     {
-                        workflows: workflows,
+                        workflows,
                     },
                     () => {
                         this.getCommitHistory(ciPipelineMaterialId, commitHash, workflows, _selectedMaterial)
@@ -387,7 +388,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         } else {
             this.setState(
                 {
-                    workflows: workflows,
+                    workflows,
                 },
                 () => {
                     this.abortController = new AbortController()
@@ -426,7 +427,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
         this.setState(
             {
-                workflows: workflows,
+                workflows,
             },
             () => {
                 this.abortController = new AbortController()
@@ -449,7 +450,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         const params = {
             pipelineId: ciNodeId,
             materialId: gitMaterialId,
-            showExcluded: showExcluded,
+            showExcluded,
         }
         return getCIMaterialList(params, abortSignal).then((response) => {
             let showRegexModal = false
@@ -479,9 +480,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                     searchText: mat.searchText,
                                     showAllCommits: showExcluded,
                                 }
-                            } else {
-                                return mat
                             }
+                            return mat
                         })
                     }
                     return node
@@ -490,7 +490,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             this.setState(
                 {
-                    workflows: workflows,
+                    workflows,
                     showCIModal: !showRegexModal,
                     showMaterialRegexModal: showRegexModal,
                 },
@@ -502,7 +502,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    //NOTE: GIT MATERIAL ID
+    // NOTE: GIT MATERIAL ID
     refreshMaterial(ciNodeId: number, gitMaterialId: number) {
         let showExcluded = false
         const workflows = [...this.state.workflows].map((wf) => {
@@ -605,9 +605,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             node.inputMaterialList = response.result
                         }
                         return node
-                    } else {
-                        return node
                     }
+                    return node
                 })
                 return workflow
             })
@@ -627,14 +626,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
             this.setState(
                 {
-                    workflows: workflows,
+                    workflows,
                     ciNodeId: +ciNodeId,
                     code: response.code,
-                    ciPipelineName: ciPipelineName,
+                    ciPipelineName,
                     materialType: 'inputMaterialList',
                     showCIModal: !showRegexModal,
                     showMaterialRegexModal: showRegexModal,
-                    workflowId: workflowId,
+                    workflowId,
                 },
                 () => {
                     this.getWorkflowStatus()
@@ -752,9 +751,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
         this.setState(
             {
-                workflows: workflows,
+                workflows,
                 materialType: 'rollbackMaterialList',
-                cdNodeId: cdNodeId,
+                cdNodeId,
                 nodeType: 'CD',
                 showCDModal: true,
             },
@@ -774,7 +773,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     onClickTriggerCINode = () => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CITriggered)
         this.setState({ isLoading: true })
-        let node, dockerfileConfiguredGitMaterialId
+        let node
+        let dockerfileConfiguredGitMaterialId
         for (let i = 0; i < this.state.workflows.length; i++) {
             node = this.state.workflows[i].nodes.find((node) => {
                 return node.type === 'CI' && +node.id == this.state.ciNodeId
@@ -835,7 +835,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         const payload = {
             pipelineId: +this.state.ciNodeId,
-            ciPipelineMaterials: ciPipelineMaterials,
+            ciPipelineMaterials,
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
@@ -892,6 +892,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState({ code: errors.code, isLoading: false })
             })
     }
+
     redirectToCIPipeline = () => {
         this.props.history.push(
             getCIPipelineURL(
@@ -904,6 +905,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             ),
         )
     }
+
     selectCommit = (materialId: string, hash: string): void => {
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
@@ -1313,9 +1315,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return <ErrorScreenManager code={this.state.code} />
-        } else if (!this.state.workflows.length) {
+        }
+        if (!this.state.workflows.length) {
             return (
                 <div>
                     {this.props.isJobView ? (

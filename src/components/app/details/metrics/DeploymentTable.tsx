@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import ReactGA from 'react-ga4'
 import { ReactComponent as Sort } from '../../../../assets/icons/ic-sort.svg'
 import { ReactComponent as SortUp } from '../../../../assets/icons/ic-sort-up.svg'
 import { ReactComponent as SortDown } from '../../../../assets/icons/ic-sort-down.svg'
@@ -6,9 +8,7 @@ import { ReactComponent as Success } from '../../../../assets/icons/appstatus/he
 import { ReactComponent as Help } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { Pagination } from '../../../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../../../config'
-import ReactGA from 'react-ga4'
 
 export interface DeploymentTableCellType {
     value: number
@@ -72,7 +72,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
     }
 
     sort(rowName: string): void {
-        let order = this.state.sort.order
+        let { order } = this.state.sort
         if (this.state.sort.rowName === rowName) {
             order = order === 'ASC' ? 'DSC' : 'ASC'
         } else {
@@ -89,32 +89,26 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                 if (order === 'ASC') {
                     if (a[rowName].value >= b[rowName].value) {
                         return 1
-                    } else {
-                        return -1
                     }
-                } else {
-                    if (a[rowName].value <= b[rowName].value) {
-                        return 1
-                    } else {
-                        return -1
-                    }
+                    return -1
                 }
+                if (a[rowName].value <= b[rowName].value) {
+                    return 1
+                }
+                return -1
             })
         } else {
             newRows = newRows.sort((a, b) => {
                 if (order === 'ASC') {
                     if (a.deploymentSize >= b.deploymentSize) {
                         return 1
-                    } else {
-                        return -1
                     }
-                } else {
-                    if (a.deploymentSize <= b.deploymentSize) {
-                        return 1
-                    } else {
-                        return -1
-                    }
+                    return -1
                 }
+                if (a.deploymentSize <= b.deploymentSize) {
+                    return 1
+                }
+                return -1
             })
         }
         ReactGA.event({
@@ -125,8 +119,8 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
         this.setState({
             rows: newRows,
             sort: {
-                rowName: rowName,
-                order: order,
+                rowName,
+                order,
             },
             pagination: {
                 ...this.state.pagination,
@@ -157,7 +151,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
         this.setState({
             pagination: {
                 ...this.state.pagination,
-                offset: offset,
+                offset,
             },
         })
     }
@@ -242,7 +236,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                 >
                     Recovery Time {this.renderSortIcon('recoveryTime')}
                 </th>
-                <th className="deployment-table__header-cell deployment-table__cell-image"></th>
+                <th className="deployment-table__header-cell deployment-table__cell-image" />
             </tr>
         )
     }
@@ -265,7 +259,8 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                     </div>
                 </>
             )
-        } else if (this.props.deploymentTableView === ViewType.FORM && this.state.rows.length === 0) {
+        }
+        if (this.props.deploymentTableView === ViewType.FORM && this.state.rows.length === 0) {
             return (
                 <>
                     <table className="deployment-table">
@@ -277,38 +272,37 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
                     </div>
                 </>
             )
-        } else {
-            return (
-                <>
-                    <table className="deployment-table">
-                        <tbody>
-                            {this.renderTableHeader()}
-                            {rows.map((row, index) => {
-                                return (
-                                    <tr key={index + row.releaseTime.value} className="deployment-table__row">
-                                        <td className="deployment-table__cell-deployed">
-                                            {row.releaseStatus === 1 ? (
-                                                <Fail className="icon-dim-20 dc__vertical-align-middle mr-10" />
-                                            ) : (
-                                                <Success className="icon-dim-20 dc__vertical-align-middle mr-10" />
-                                            )}
-                                            {row.releaseTime.label}
-                                        </td>
-                                        <td className="deployment-table__cell-cycle">{row.cycleTime.label}</td>
-                                        <td className="deployment-table__cell-lead">{row.leadTime.label}</td>
-                                        <td className="deployment-table__cell-size">
-                                            {`${row.deploymentSize} lines`}&nbsp;
-                                        </td>
-                                        <td className="deployment-table__cell-recovery">{row.recoveryTime.label}</td>
-                                        <td className="deployment-table__cell-image"></td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                    {this.renderPagination()}
-                </>
-            )
         }
+        return (
+            <>
+                <table className="deployment-table">
+                    <tbody>
+                        {this.renderTableHeader()}
+                        {rows.map((row, index) => {
+                            return (
+                                <tr key={index + row.releaseTime.value} className="deployment-table__row">
+                                    <td className="deployment-table__cell-deployed">
+                                        {row.releaseStatus === 1 ? (
+                                            <Fail className="icon-dim-20 dc__vertical-align-middle mr-10" />
+                                        ) : (
+                                            <Success className="icon-dim-20 dc__vertical-align-middle mr-10" />
+                                        )}
+                                        {row.releaseTime.label}
+                                    </td>
+                                    <td className="deployment-table__cell-cycle">{row.cycleTime.label}</td>
+                                    <td className="deployment-table__cell-lead">{row.leadTime.label}</td>
+                                    <td className="deployment-table__cell-size">
+                                        {`${row.deploymentSize} lines`}&nbsp;
+                                    </td>
+                                    <td className="deployment-table__cell-recovery">{row.recoveryTime.label}</td>
+                                    <td className="deployment-table__cell-image" />
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+                {this.renderPagination()}
+            </>
+        )
     }
 }

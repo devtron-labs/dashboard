@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
 import { ConnectingToClusterStateProps } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
-import { useHistory, useParams } from 'react-router-dom'
 import { URLS } from '../../../config'
 
 export default function ConnectingToClusterState({
@@ -96,7 +96,8 @@ export default function ConnectingToClusterState({
                     {renderInfo(`Connecting to ‘${selectedCluster.label}’`, infoText)}
                 </>
             )
-        } else if (errorMsg) {
+        }
+        if (errorMsg) {
             return (
                 <>
                     <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />

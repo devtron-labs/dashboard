@@ -22,9 +22,8 @@ export function getChartValuesURL(chartId: number | string, chartValueId?: numbe
 export function getChartGroupURL(chartGroupId: number | string | null) {
     if (chartGroupId) {
         return `${URLS.CHARTS}/discover/group/${chartGroupId}`
-    } else {
-        return `${URLS.CHARTS}/group`
     }
+    return `${URLS.CHARTS}/group`
 }
 
 export function getChartGroupEditURL(chartGroupId: number | string) {
@@ -70,9 +69,9 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
             url: subArr.join('/'),
         }
     })
-    //filter if label is a number
+    // filter if label is a number
     crumbs = crumbs.filter((crumb) => !parseInt(crumb.label))
-    //last element not required
+    // last element not required
     crumbs.pop()
     return crumbs
 }

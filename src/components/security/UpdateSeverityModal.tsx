@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
+import ReactSelect from 'react-select'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { VulnerabilityAction, Severity } from './security.types'
 import { styles, DropdownIndicator } from './security.util'
-import ReactSelect from 'react-select'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface UpdateSeverityModalProps {
     name: string
@@ -45,7 +45,7 @@ export class UpdateSeverityModal extends Component<UpdateSeverityModalProps, Upd
     render() {
         return (
             <VisibleModal className="">
-                <div className={`modal__body modal__body--w-600 modal__body--no-padding`}>
+                <div className="modal__body modal__body--w-600 modal__body--no-padding">
                     {this.renderHeader()}
                     <form
                         className="whitelist-cve ml-24 mr-24"

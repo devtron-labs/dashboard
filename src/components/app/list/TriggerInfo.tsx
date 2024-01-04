@@ -82,7 +82,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             }
             return material
         })
-        this.setState({ materials: materials })
+        this.setState({ materials })
     }
 
     toggleChanges(materialId: string, commit: string): void {
@@ -97,7 +97,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             }
             return material
         })
-        this.setState({ materials: materials })
+        this.setState({ materials })
     }
 
     renderWithBackDrop(headerDescription: string, body) {
@@ -125,7 +125,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     }
 
     render() {
-        let headerDescription, body
+        let headerDescription
+        let body
         if (this.state.view === ViewType.LOADING) {
             headerDescription = null
             body = (
@@ -164,7 +165,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                         <Artifacts
                             status=""
                             artifact={this.state.image}
-                            blobStorageEnabled={true}
+                            blobStorageEnabled
                             isArtifactUploaded={false}
                             isJobView={false}
                             type={HistoryComponentType.CI}

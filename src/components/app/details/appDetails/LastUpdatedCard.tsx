@@ -1,8 +1,8 @@
 import React from 'react'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 import { validateMomentDate } from './utils'
 import { URLS } from '../../../../config'
 import { LastUpdatedCardType } from './appDetails.type'
-import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-clock-counterclockwise.svg'
 import LoadingCard from './LoadingCard'
 

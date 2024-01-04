@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { ChartGroup, CreateChartGroupProps } from '../charts.types'
 import { showError, Progressing, DialogForm } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { ChartGroup, CreateChartGroupProps } from '../charts.types'
 import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service'
 import { getChartGroupEditURL } from '../charts.helper'
-import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { REGEX_ERROR_MESSAGES, REQ_FIELD } from '../constants'
+
 interface ChartGroupCreateState {
     name: { value: string; error: any[] }
     description: string
@@ -129,6 +130,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 this.setState({ loading: false })
             })
     }
+
     async getInitCharts() {
         this.setState({
             loading: true,
@@ -145,7 +147,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         }
     }
 
-    //TODO: setting state from props is anti-pattern. what is the need of name and description in if condition?
+    // TODO: setting state from props is anti-pattern. what is the need of name and description in if condition?
     componentDidMount() {
         if (this.props.chartGroupId && this.props.name) {
             this.setState({ name: { value: this.props.name, error: [] }, description: this.props.description || '' })
@@ -159,7 +161,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             <DialogForm
                 title={this.props.chartGroupId ? 'Update Chart Group' : `Create Chart Group`}
                 className=""
-                closeOnESC={true}
+                closeOnESC
                 isLoading={this.state.loading}
                 close={this.props.closeChartGroupModal}
                 onSave={this.saveChartGroup}
@@ -176,7 +178,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         value={this.state.name.value}
                         data-testid="create-group-name-value"
                         placeholder="e.g. elastic-stack"
-                        autoFocus={true}
+                        autoFocus
                         tabIndex={1}
                         onChange={this.handleNameChange}
                         required
@@ -201,13 +203,13 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         name="description"
                         value={this.state.description}
                         placeholder="Enter a short description for this group."
-                        autoFocus={true}
+                        autoFocus
                         tabIndex={2}
                         data-testid="create-group-desc"
                         onChange={this.handleDescriptionChange}
                         required
                     />
-                    <span className="form__error"></span>
+                    <span className="form__error" />
                 </label>
                 <button
                     type="button"

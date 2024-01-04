@@ -7,6 +7,7 @@ import {
     InfoColourBar,
     CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_clockwise.svg'
 import {
@@ -22,7 +23,6 @@ import IndexStore from '../../index.store'
 import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
 import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
-import { toast } from 'react-toastify'
 import RotateResponseModal from './RotateResponseModal'
 import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
 
@@ -126,7 +126,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
 
         for (const [key, value] of _workloadsList) {
             value.value = !_nameSelection.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE
-            value.isChecked = !_nameSelection.isChecked ? true : false
+            value.isChecked = !_nameSelection.isChecked
             _workloadsList.set(key, value)
         }
 
@@ -157,7 +157,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
         setNameSelection({
             ...nameSelection,
             [_nameSelectionKey]: {
-                isChecked: areAllSelected || isAnySelected ? true : false,
+                isChecked: !!(areAllSelected || isAnySelected),
                 value: !areAllSelected && isAnySelected ? CHECKBOX_VALUE.INTERMEDIATE : CHECKBOX_VALUE.CHECKED,
             },
         })
@@ -196,7 +196,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
             setRotatingInProgress(false)
             setNameSelection({
                 ...nameSelection,
-                ['rotate']: {
+                rotate: {
                     isChecked: false,
                     value: CHECKBOX_VALUE.CHECKED,
                 },
@@ -298,23 +298,22 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
                     callAppDetailsAPI={callAppDetailsAPI}
                 />
             )
-        } else {
-            return (
-                <>
-                    {renderRestartModalHeader()}
-                    {showHelp && (
-                        <InfoColourBar
-                            message={`Pods for selected workloads will be restarted. Configured deployment strategy "${strategy}" will be used
-                to restart selected workloads.`}
-                            classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
-                            Icon={Help}
-                            iconClass="icon-dim-16 mr-12 fcv-5"
-                        />
-                    )}
-                    {renderRestartWorkloadsList()}
-                </>
-            )
         }
+        return (
+            <>
+                {renderRestartModalHeader()}
+                {showHelp && (
+                    <InfoColourBar
+                        message={`Pods for selected workloads will be restarted. Configured deployment strategy "${strategy}" will be used
+                to restart selected workloads.`}
+                        classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
+                        Icon={Help}
+                        iconClass="icon-dim-16 mr-12 fcv-5"
+                    />
+                )}
+                {renderRestartWorkloadsList()}
+            </>
+        )
     }
 
     return (

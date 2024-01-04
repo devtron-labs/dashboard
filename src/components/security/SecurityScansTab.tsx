@@ -1,5 +1,12 @@
 import React, { Component } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager as ErrorScreen,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
@@ -7,15 +14,8 @@ import { getInitData, getSecurityScanList } from './security.service'
 import { Option as SelectSingleOption } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator, styles, ValueContainer, Option } from './security.util'
 import { ScanDetailsModal, Pagination } from '../common'
-import {
-    showError,
-    Progressing,
-    ErrorScreenManager as ErrorScreen,
-    GenericEmptyState,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config'
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types'
-import ReactSelect from 'react-select'
 import AppNotDeployed from '../../assets/img/app-not-deployed.png'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
@@ -361,7 +361,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                                     className={`dc__security-scan__filter dc__security-scan__filter--${filter}`}
                                     name={filter}
                                     tabIndex={index + 2}
-                                    isMulti={true}
+                                    isMulti
                                     isClearable={false}
                                     value={this.state.filtersApplied[filter]}
                                     options={this.state.filters[filter]}
@@ -371,7 +371,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                                     components={{
                                         DropdownIndicator,
                                         ValueContainer,
-                                        Option: Option,
+                                        Option,
                                     }}
                                     styles={{
                                         container: (base, state) => {
@@ -400,7 +400,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             return (
                 <ScanDetailsModal
                     {...this.props}
-                    showAppInfo={true}
+                    showAppInfo
                     uniqueId={this.state.uniqueId}
                     name={this.state.name}
                     close={() => {
@@ -432,13 +432,15 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="flex" style={{ height: 'calc(100vh - 212px)' }}>
                     <ErrorScreen code={this.state.responseCode} />
                 </div>
             )
-        } else if (
+        }
+        if (
             this.state.view === ViewType.FORM &&
             this.state.size === 0 &&
             (this.state.searchApplied ||
@@ -459,12 +461,13 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                         image={NoResults}
                         title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
                         subTitle={EMPTY_STATE_STATUS.SECURITY_SCANS.SUBTITLE}
-                        isButtonAvailable={true}
+                        isButtonAvailable
                         renderButton={handleButton}
                     />
                 </div>
             )
-        } else if (this.state.view === ViewType.FORM && this.state.size === 0) {
+        }
+        if (this.state.view === ViewType.FORM && this.state.size === 0) {
             return (
                 <div className="dc__position-rel" style={{ height: 'calc(100vh - 175px)' }}>
                     <GenericEmptyState image={AppNotDeployed} title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE} />

@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react'
-import { ButtonWithLoader } from '../common'
 import { showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { ButtonWithLoader } from '../common'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import { uploadChart, validateChart } from './customChart.service'
 import errorImage from '../../assets/img/ic_upload_chart_error.png'
 import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_ERROR_CODES } from '../../config'
 import { ChartUploadResponse, ChartUploadType, UploadChartModalType, UPLOAD_STATE } from './types'
 
@@ -58,7 +58,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
         if (uploadState === UPLOAD_STATE.SUCCESS) {
             onCancelUpload('Save')
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
-            inputFileRef.current.value = null //to upload the same chart
+            inputFileRef.current.value = null // to upload the same chart
             inputFileRef.current.click()
         } else {
             resetCustomChart()
@@ -143,7 +143,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                             value={chartDetail.description}
                             onChange={handleDescriptionChange}
                             disabled={loadingData}
-                        ></textarea>
+                        />
                         {isDescriptionLengthError && (
                             <span className="form__error">
                                 <Error className="form__icon form__icon--error" />
@@ -199,15 +199,16 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
     const renderPageContent = (): JSX.Element => {
         if (uploadState === UPLOAD_STATE.SUCCESS) {
             return renderSuccessPage()
-        } else if (uploadState === UPLOAD_STATE.UPLOAD) {
+        }
+        if (uploadState === UPLOAD_STATE.UPLOAD) {
             return renderPreRequisitePage()
-        } else if (uploadState === UPLOAD_STATE.UPLOADING) {
+        }
+        if (uploadState === UPLOAD_STATE.UPLOADING) {
             return renderImageWithTitleDescription(uploadingImage, 'Uploading chart...', [
                 'Hold tight! We’re uploading your chart.',
             ])
-        } else {
-            return renderImageWithTitleDescription(errorImage, errorData.title, errorData.message)
         }
+        return renderImageWithTitleDescription(errorImage, errorData.title, errorData.message)
     }
 
     const renderFooter = (): JSX.Element => {

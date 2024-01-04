@@ -1,27 +1,26 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { showError, Progressing, get, Host, useSearchString, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react'
+import { toast } from 'react-toastify'
+import YamljsParser from 'yaml'
+import { useParams } from 'react-router'
+import moment from 'moment'
+import Tippy from '@tippyjs/react'
+import MonacoEditor from 'react-monaco-editor'
+import { editor } from 'monaco-editor'
+import { AutoSizer } from 'react-virtualized'
+import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import LogViewer from '../LogViewer/LogViewer'
 import { NoPod } from './ResourceTreeNodes'
 import { getNodeStatus } from './service'
 import { Routes } from '../../config'
-import { toast } from 'react-toastify'
-import YamljsParser from 'yaml'
 import sseWorker from './grepSSEworker'
 import WebWorker from './WebWorker'
-import { useParams } from 'react-router'
-import moment from 'moment'
 import { Subject } from '../../util/Subject'
-import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType, Nodes } from './types'
-import { AppDetails } from '../app/types'
+import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType, Nodes, AppDetails } from './types'
 import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-cancelled.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg'
-import Tippy from '@tippyjs/react'
 import { TerminalView } from '../terminal'
-import MonacoEditor from 'react-monaco-editor'
-import { editor } from 'monaco-editor'
-import { AutoSizer } from 'react-virtualized'
 import { getSelectedNodeItems } from './details/appDetails/utils'
 import { useKeyDown } from '../common'
 import { SocketConnectionType } from './details/appDetails/appDetails.type'
@@ -74,9 +73,8 @@ export function getGrepTokens(expression) {
     }
     if (_args) {
         return { _args: _args[0], a: Number(A || a), b: Number(B || b), v }
-    } else {
-        return null
     }
+    return null
 }
 
 const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({
@@ -169,7 +167,7 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
             ? nodes.nodes[searchParams.kind].get(nodeName)
             : null
     const [loadingManifest, manifestResult, error, reload] = useAsync(
-        () => getNodeStatus({ ...node, appName: appName, envName: environmentName }),
+        () => getNodeStatus({ ...node, appName, envName: environmentName }),
         [node, searchParams?.kind],
         !!nodeName && !!node && !!searchParams.kind,
     )
@@ -178,7 +176,7 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
         base: 'vs-dark',
         inherit: true,
         rules: [
-            //@ts-ignore
+            // @ts-ignore
             { background: '#0B0F22' },
         ],
         colors: {
@@ -209,13 +207,15 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
 
     if (!node) {
         return null
-    } else if (loadingManifest && !manifest) {
+    }
+    if (loadingManifest && !manifest) {
         return (
             <div className="flex w-100" style={{ gridColumn: '1 / span 2' }} data-testid="manifest-container">
                 <Progressing data-testid="manifest-loader" pageLoader />;
             </div>
         )
-    } else if (!manifest) {
+    }
+    if (!manifest) {
         return (
             <div style={{ gridColumn: '1 / span 2' }} className="flex">
                 <NoEvents title="Manifest not available" />
@@ -232,9 +232,9 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
                     }}
                 >
                     <MonacoEditor
-                        language={'yaml'}
+                        language="yaml"
                         value={YamljsParser.stringify(manifest, { indent: 2 })}
-                        theme={'vs-dark--dt'}
+                        theme="vs-dark--dt"
                         options={{
                             selectOnLineNumbers: true,
                             roundedSelection: false,
@@ -308,7 +308,7 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails; no
                 <div className="flex" style={{ height: '100%', width: '100%' }}>
                     {loading && (
                         <div style={{ width: '100%', textAlign: 'center' }}>
-                            <Spinner loading></Spinner>
+                            <Spinner loading />
                             <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
                         </div>
                     )}
@@ -320,7 +320,7 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails; no
     )
 }
 
-function NoEvents({ title = 'Events not available' }) {
+const NoEvents = ({ title = 'Events not available' }) => {
     return (
         <div style={{ width: '100%', textAlign: 'center' }}>
             <img src={InfoIcon} />
@@ -462,7 +462,7 @@ export const LogsView: React.FC<LogsView> = ({
         workerRef.current['addEventListener' as any]('message', handleMessage)
         workerRef.current['postMessage' as any]({
             type: 'start',
-            payload: { urls: urls, grepTokens: grepTokens, timeout: 300, pods: pods },
+            payload: { urls, grepTokens, timeout: 300, pods },
         })
     }
 
@@ -601,14 +601,14 @@ export const LogsView: React.FC<LogsView> = ({
     )
 }
 
-function NoContainer({ selectMessage = 'Select a container to view events', style = {} }) {
+const NoContainer = ({ selectMessage = 'Select a container to view events', style = {} }) => {
     return (
         <div className="no-pod no-pod--container" style={{ ...style }}>
             <div className="no-pod__container-icon">
                 {Array(6)
                     .fill(0)
                     .map((z, idx) => (
-                        <span key={idx} className="no-pod__container-sub-icon"></span>
+                        <span key={idx} className="no-pod__container-sub-icon" />
                     ))}
             </div>
             <p>{selectMessage}</p>

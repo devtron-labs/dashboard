@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import CordonIcon from '../../../assets/icons/ic-cordon-medium.svg'
 import UncordonIcon from '../../../assets/icons/ic-play-medium.svg'
 import { CordonNodeModalType } from '../types'
-import { toast } from 'react-toastify'
 import { cordonNodeCapacity } from '../clusterNodes.service'
 import { CORDON_NODE_MODAL_MESSAGING } from '../constants'
 
@@ -21,9 +21,9 @@ export default function CordonNodeModal({ name, version, kind, unschedulable, cl
             setAPICallInProgress(true)
             const payload = {
                 clusterId: Number(clusterId),
-                name: name,
-                version: version,
-                kind: kind,
+                name,
+                version,
+                kind,
                 nodeCordonOptions: {
                     unschedulableDesired: !unschedulable,
                 },

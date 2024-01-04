@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { CSVLink } from 'react-csv'
+import { ConditionalWrap, VisibleModal, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
+import Tippy from '@tippyjs/react'
 import { CSV_HEADERS, ExportToCsvProps, FILE_NAMES } from './constants'
 import { ReactComponent as ExportIcon } from '../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ConditionalWrap, VisibleModal, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
 import { Moment12HourExportFormat } from '../../../config'
-import Tippy from '@tippyjs/react'
 import './exportToCsv.scss'
 
 export default function ExportToCsv({ apiPromise, fileName, className, disabled }: ExportToCsvProps) {
@@ -132,7 +132,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
             <ConditionalWrap
                 condition={disabled}
                 wrap={(children) => (
-                    <Tippy className="default-tt" arrow={true} placement="top" content="Nothing to export">
+                    <Tippy className="default-tt" arrow placement="top" content="Nothing to export">
                         {children}
                     </Tippy>
                 )}
@@ -140,7 +140,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
                 <button
                     className={`flex cta ghosted w-100 h-36 ${disabled ? 'nothing-to-export' : ''}`}
                     onClick={generateDataToExport}
-                    data-testid={'export-csv-button'}
+                    data-testid="export-csv-button"
                 >
                     <ExportIcon className="icon-dim-16 mr-8" />
                     <span>Export CSV</span>

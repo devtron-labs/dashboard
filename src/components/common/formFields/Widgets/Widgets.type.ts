@@ -1,6 +1,6 @@
 import { GroupBase, StylesConfig } from 'react-select'
-import { OptionType } from '../../../app/types'
 import { CheckboxProps } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType } from '../../../app/types'
 
 interface WidgetPropsType {
     title: string

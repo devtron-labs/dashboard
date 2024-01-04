@@ -1,7 +1,7 @@
 import React from 'react'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { InfoIconWithTippyType } from './Types'
 
 export default function InfoIconWithTippy({ titleText, infoText, documentationLink }: InfoIconWithTippyType) {
@@ -13,9 +13,9 @@ export default function InfoIconWithTippy({ titleText, infoText, documentationLi
             Icon={QuestionFilled}
             heading={titleText}
             infoText={infoText}
-            showCloseButton={true}
+            showCloseButton
             trigger="click"
-            interactive={true}
+            interactive
             documentationLink={documentationLink}
             documentationLinkText="View Documentation"
         >

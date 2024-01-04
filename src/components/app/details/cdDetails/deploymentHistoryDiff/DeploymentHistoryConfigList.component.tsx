@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { ReactComponent as RightArrow } from '../../../../../assets/icons/ic-arrow-left.svg'
 import { NavLink } from 'react-router-dom'
 import { useRouteMatch, useParams } from 'react-router'
+import { Progressing, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as RightArrow } from '../../../../../assets/icons/ic-arrow-left.svg'
 import { DeploymentTemplateList } from '../cd.type'
 import { DeploymentHistoryParamsType } from './types'
 import { getDeploymentHistoryList } from '../service'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
-import { Progressing, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 
 interface TemplateConfiguration {
@@ -18,7 +18,7 @@ interface TemplateConfiguration {
 export default function DeploymentHistoryConfigList({
     setFullScreenView,
     deploymentHistoryList,
-    setDeploymentHistoryList: setDeploymentHistoryList,
+    setDeploymentHistoryList,
 }: TemplateConfiguration) {
     const match = useRouteMatch()
     const { appId, pipelineId, triggerId } = useParams<DeploymentHistoryParamsType>()
@@ -54,7 +54,7 @@ export default function DeploymentHistoryConfigList({
                 data-testid={`configuration-link-option-${index}`}
                 className="bcb-1 dc__no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-12 flex dc__content-space cursor lh-20"
             >
-                {childComponentName ? childComponentName : currentComponent.DISPLAY_NAME}
+                {childComponentName || currentComponent.DISPLAY_NAME}
                 <RightArrow className="rotate icon-dim-20" style={{ ['--rotateBy' as any]: '180deg' }} />
             </NavLink>
         )

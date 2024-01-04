@@ -1,15 +1,15 @@
 import React from 'react'
 import ReactSelect from 'react-select'
 import moment from 'moment'
+import { InfoColourBar, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { MomentDateFormat } from '../../config'
 import { SingleDatePickerComponent } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import { getOptions, getDateInMilliseconds } from './authorization.utils'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { InfoColourBar, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
-function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) {
+const ExpirationDate = ({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) => {
     return (
         <div className="w-100">
             <span className="form__label dc__required-field">Expiration</span>
@@ -55,8 +55,8 @@ function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handle
                         <SingleDatePickerComponent
                             date={customDate}
                             handleDatesChange={handleDatesChange}
-                            readOnly={true}
-                            isTodayBlocked={true}
+                            readOnly
+                            isTodayBlocked
                         />
                     </div>
                 )}

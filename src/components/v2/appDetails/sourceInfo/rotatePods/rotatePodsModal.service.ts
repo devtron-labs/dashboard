@@ -1,5 +1,5 @@
-import { Routes } from '../../../../../config'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../../../../config'
 import { DeploymentStrategyResponse, RotatePodsRequest, RotatePodsResponse } from './rotatePodsModal.type'
 
 export function RotatePods(request: RotatePodsRequest): Promise<RotatePodsResponse> {
@@ -7,5 +7,5 @@ export function RotatePods(request: RotatePodsRequest): Promise<RotatePodsRespon
 }
 
 export function GetDeploymentStrategy(appId: number, envId: number): Promise<DeploymentStrategyResponse> {
-    return get(Routes.DEFAULT_STRATEGY + appId + '/' + envId)
+    return get(`${Routes.DEFAULT_STRATEGY + appId}/${envId}`)
 }

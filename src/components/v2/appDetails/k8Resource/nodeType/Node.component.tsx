@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
 import { TippyCustomized, TippyTheme, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
-import IndexStore from '../../index.store'
 import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
+import IndexStore from '../../index.store'
 import { getElapsedTime } from '../../../../common'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
@@ -12,7 +13,6 @@ import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
-import { toast } from 'react-toastify'
 import { getNodeStatus } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
 import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
@@ -22,7 +22,7 @@ import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
 
-function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
+const NodeComponent = ({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
@@ -83,7 +83,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     useEffect(() => {
         if (params.nodeType) {
-            let tableHeader: string[], _fcw: string
+            let tableHeader: string[]
+            let _fcw: string
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
@@ -248,15 +249,15 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             />
                         </span>
                         <TippyCustomized
-                            hideHeading={true}
-                            noHeadingBorder={true}
+                            hideHeading
+                            noHeadingBorder
                             theme={TippyTheme.white}
                             className="default-tt p-12"
                             arrow={false}
                             placement="bottom"
                             trigger="click"
                             additionalContent={additionalTippyContent(node)}
-                            interactive={true}
+                            interactive
                         >
                             <div>
                                 <span className="dc__link dc__link_over dc__ellipsis-right cursor" data-key={node.name}>
@@ -266,11 +267,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </TippyCustomized>
                     </>
                 )
-            } else if (node.port?.length === 1) {
-                return `${node.name}.${node.namespace}:${node.port}`
-            } else {
-                return 'Port Number is missing'
             }
+            if (node.port?.length === 1) {
+                return `${node.name}.${node.namespace}:${node.port}`
+            }
+            return 'Port Number is missing'
         }
 
         let _currentNodeHeader = ''
@@ -331,15 +332,15 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             }
 
             return (
-                <React.Fragment key={'grt' + index}>
+                <React.Fragment key={`grt${index}`}>
                     {showHeader && !!_currentNodeHeader && (
                         <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
-                            <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
+                            <div className="flex left col-10 pt-9 pb-9">{node.kind}</div>
                             {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
-                                <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div>
+                                <div className="flex left col-1 pt-9 pb-9 pl-9 pr-9">Links</div>
                             )}
                             {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
-                                <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div>
+                                <div className="flex left col-1 pt-9 pb-9 pl-9 pr-9">Links</div>
                             )}
                         </div>
                     )}
@@ -363,7 +364,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             />
                                         </span>
                                     ) : (
-                                        <span className="pl-12 pr-12"></span>
+                                        <span className="pl-12 pr-12" />
                                     )}
                                     <div>
                                         <div className="resource__title-name flex left dc__align-start">
@@ -387,9 +388,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
                                                         return (
                                                             <div
-                                                                key={'tab__' + index}
+                                                                key={`tab__${index}`}
                                                                 data-name={kind}
-                                                                data-testid={kind.toLowerCase() + '-tab'}
+                                                                data-testid={`${kind.toLowerCase()}-tab`}
                                                                 onClick={onClickNodeDetailsTab}
                                                                 className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
                                                                     node.kind === NodeType.Containers
@@ -432,7 +433,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             </span>
                                             {node?.health?.message && (
                                                 <>
-                                                    <div className="dc__bullet ml-4 mr-4 mw-4"></div>
+                                                    <div className="dc__bullet ml-4 mr-4 mw-4" />
                                                     <span className="dc__truncate">
                                                         {node.health.message.toLowerCase()}
                                                     </span>
@@ -446,32 +447,32 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {params.nodeType === NodeType.Service.toLowerCase() &&
                             node.kind !== 'Endpoints' &&
                             node.kind !== 'EndpointSlice' && (
-                                <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
+                                <div className="col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon">
                                     {portNumberPlaceHolder(node)}
                                     {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
                                 </div>
                             )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div data-testid="pod-ready-count" className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-ready-count" className="flex left col-1 pt-9 pb-9">
                                 {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}
                             </div>
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div data-testid="pod-restart-count" className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-restart-count" className="flex left col-1 pt-9 pb-9">
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
                             </div>
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div data-testid="pod-age-count" className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-age-count" className="flex left col-1 pt-9 pb-9">
                                 {getElapsedTime(new Date(node.createdAt))}
                             </div>
                         )}
 
                         {params.nodeType !== NodeType.Service.toLocaleLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                            <div className="flex left col-1 pt-9 pb-9">
                                 {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
                                     <NodeLevelExternalLinks
                                         helmAppDetails={appDetails}
@@ -486,7 +487,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         nodeLevelExternalLinks={containerLevelExternalLinks}
                                         podName={node['pNode']?.name}
                                         containerName={node.name}
-                                        addExtraSpace={true}
+                                        addExtraSpace
                                     />
                                 )}
                             </div>
@@ -532,7 +533,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {tableHeader.map((cell, index) => {
                             return (
                                 <div
-                                    key={'gpt_' + index}
+                                    key={`gpt_${index}`}
                                     className={`${
                                         index === 0 ? `node-row__pdding ${firstColWidth}` : 'col-1'
                                     } pt-9 pb-9`}

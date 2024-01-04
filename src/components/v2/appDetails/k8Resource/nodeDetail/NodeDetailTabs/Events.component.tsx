@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../../index.store'
 import { NodeDetailTab } from '../nodeDetail.type'
 import { getEvent } from '../nodeDetail.api'
 import { ResourceInfoActionPropsType, NodeType } from '../../../appDetails.type'
 import MessageUI from '../../../../common/message.ui'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { EventsTable } from './EventsTable'
 import { MESSAGING_UI } from '../../../../../../config/constants'
 
-function EventsComponent({
+const EventsComponent = ({
     selectedTab,
     isDeleted,
     isResourceBrowserView,
     selectedResource,
-}: ResourceInfoActionPropsType) {
+}: ResourceInfoActionPropsType) => {
     const params = useParams<{
         actionName: string
         podName: string
@@ -32,7 +32,7 @@ function EventsComponent({
         selectedTab(NodeDetailTab.EVENTS, url)
 
         if (!appDetails) {
-            //Refresh case -- need to sent to k8 , histrory push
+            // Refresh case -- need to sent to k8 , histrory push
         }
     }, [params.podName, params.node, params.namespace])
 

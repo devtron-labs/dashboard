@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { handleUTCTime } from '../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
-import Tippy from '@tippyjs/react'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
@@ -50,9 +50,9 @@ export default function ClusterSelectionList({
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
+        setLastDataSyncTimeString(`Last refreshed ${handleUTCTime(_lastDataSyncTime, true)}`)
         const interval = setInterval(() => {
-            setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
+            setLastDataSyncTimeString(`Last refreshed ${handleUTCTime(_lastDataSyncTime, true)}`)
         }, 1000)
         return () => {
             clearInterval(interval)
@@ -198,28 +198,28 @@ export default function ClusterSelectionList({
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (noResults) {
-            return <ClusterNodeEmptyState actionHandler={clearSearch} />
-        } else {
-            return (
-                <div
-                    data-testid="cluster-list-container"
-                    className="dc__overflow-scroll"
-                    style={{ height: '100vh - 112px)' }}
-                >
-                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                        <div>Cluster</div>
-                        <div data-testid="cluster-list-connection-status">Connection status</div>
-                        <div>Nodes</div>
-                        <div>NODE Errors</div>
-                        <div>K8S version</div>
-                        <div>CPU Capacity</div>
-                        <div>Memory Capacity</div>
-                    </div>
-                    {filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))}
-                </div>
-            )
         }
+        if (noResults) {
+            return <ClusterNodeEmptyState actionHandler={clearSearch} />
+        }
+        return (
+            <div
+                data-testid="cluster-list-container"
+                className="dc__overflow-scroll"
+                style={{ height: '100vh - 112px)' }}
+            >
+                <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
+                    <div>Cluster</div>
+                    <div data-testid="cluster-list-connection-status">Connection status</div>
+                    <div>Nodes</div>
+                    <div>NODE Errors</div>
+                    <div>K8S version</div>
+                    <div>CPU Capacity</div>
+                    <div>Memory Capacity</div>
+                </div>
+                {filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))}
+            </div>
+        )
     }
 
     return (

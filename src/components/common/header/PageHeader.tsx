@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import './pageHeader.css'
+import ReactGA from 'react-ga4'
+import { getLoginInfo, getRandomColor, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import LogoutCard from '../LogoutCard'
 import { setActionWithExpiry } from '../helpers/Helpers'
 import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
-import ReactGA from 'react-ga4'
 import {
     handlePostHogEventUpdate,
     MAX_LOGIN_COUNT,
@@ -19,11 +20,10 @@ import { ReactComponent as QuestionFilled } from '../../../assets/icons/ic-help.
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
-import { getLoginInfo, getRandomColor, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { BULK_EDIT_HEADER } from './constants'
 import AnnouncementBanner from '../AnnouncementBanner'
 
-function PageHeader({
+const PageHeader = ({
     headerName,
     additionalHeaderInfo,
     isTippyShown = false,
@@ -40,7 +40,7 @@ function PageHeader({
     onClose,
     markAsBeta,
     showAnnouncementHeader,
-}: PageHeaderType) {
+}: PageHeaderType) => {
     const { loginCount, setLoginCount, showGettingStartedCard, setShowGettingStartedCard, setGettingStartedClicked } =
         useContext(mainContext)
     const [showHelpCard, setShowHelpCard] = useState(false)
@@ -156,7 +156,7 @@ function PageHeader({
                 showTabs ? 'dc__page-header-tabs__height' : 'dc__page-header__height flex'
             }`}
         >
-            <h1 className={`dc__page-header__title dc__content-space  flex fs-16 fw-6 lh-20`}>
+            <h1 className="dc__page-header__title dc__content-space  flex fs-16 fw-6 lh-20">
                 <div className="flex left">
                     {showCloseButton && (
                         <button className="dc__transparent flex mr-8" onClick={onClose}>
@@ -195,9 +195,9 @@ function PageHeader({
                             Icon={QuestionFilled}
                             heading={headerName}
                             infoText={tippyMessage}
-                            showCloseButton={true}
+                            showCloseButton
                             trigger="click"
-                            interactive={true}
+                            interactive
                             documentationLink={tippyRedirectLink}
                             documentationLinkText="Learn More"
                         >
@@ -238,7 +238,7 @@ function PageHeader({
                 )}
             {showLogOutCard && (
                 <LogoutCard
-                    className={'logout-card__more-option'}
+                    className="logout-card__more-option"
                     userFirstLetter={email}
                     setShowLogOutCard={setShowLogOutCard}
                     showLogOutCard={showLogOutCard}

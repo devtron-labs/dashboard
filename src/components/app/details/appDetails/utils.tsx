@@ -1,8 +1,15 @@
 import moment from 'moment'
-import { Nodes, NodeType, AggregationKeys, AggregatedNodes, PodMetadatum } from '../../types'
-import { getVersionArr, handleUTCTime, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common'
 import React from 'react'
 import { components } from 'react-select'
+import CreatableSelect from 'react-select/creatable'
+import { Nodes, NodeType, AggregationKeys, AggregatedNodes, PodMetadatum } from '../../types'
+import {
+    getVersionArr,
+    handleUTCTime,
+    isVersionLessThanOrEqualToTarget,
+    mapByKey,
+    DayPickerRangeControllerPresets,
+} from '../../../common'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import {
     ChartTypes,
@@ -12,8 +19,6 @@ import {
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
 } from './appDetails.type'
-import CreatableSelect from 'react-select/creatable'
-import { DayPickerRangeControllerPresets } from '../../../common'
 import { DEPLOYMENT_STATUS, TIMELINE_STATUS, ZERO_TIME_STRING } from '../../../../config'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
@@ -129,7 +134,7 @@ export function aggregateNodes(nodes: any[], podMetadata: PodMetadatum[]): Aggre
     )
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 fcn-6" />
@@ -171,7 +176,7 @@ const throughputAndLatencySelectStyle = {
     }),
 }
 
-export function ThroughputSelect(props) {
+export const ThroughputSelect = (props) => {
     return (
         <CreatableSelect
             className=""
@@ -190,13 +195,13 @@ export function ThroughputSelect(props) {
             styles={throughputAndLatencySelectStyle}
             components={{
                 IndicatorSeparator: null,
-                DropdownIndicator: DropdownIndicator,
+                DropdownIndicator,
             }}
         />
     )
 }
 
-export function LatencySelect(props) {
+export const LatencySelect = (props) => {
     return (
         <CreatableSelect
             className=""
@@ -212,7 +217,7 @@ export function LatencySelect(props) {
             styles={throughputAndLatencySelectStyle}
             components={{
                 IndicatorSeparator: null,
-                DropdownIndicator: DropdownIndicator,
+                DropdownIndicator,
             }}
             formatCreateLabel={(inputValue) => inputValue}
         />
@@ -251,7 +256,7 @@ export function isK8sVersionValid(k8sVersion: string): boolean {
 }
 
 export function isK8sVersion115OrBelow(k8sVersion: string): boolean {
-    //Comparing with v1.15.xxx
+    // Comparing with v1.15.xxx
     const target = [1, 15]
     return isVersionLessThanOrEqualToTarget(k8sVersion, target)
 }
@@ -405,18 +410,18 @@ export function addQueryParamToGrafanaURL(
     url += `&var-datasource=Prometheus-${environmentName}`
     if (chartName === 'status') {
         if (statusCode === StatusType.Throughput) {
-            //Throughput Graph
+            // Throughput Graph
             url += `&var-response_code_class=.*`
             url += `&var-response_code=`
         } else {
-            //Status Code
+            // Status Code
             url += statusCode.includes('xx') ? `&var-response_code_class=${statusCode}` : `&var-response_code_class=`
             url += statusCode.includes('xx') ? `&var-response_code=` : `&var-response_code=${statusCode}`
         }
     }
     if (chartName === 'latency') {
         if (!isNaN(latency)) {
-            latency = latency / 100
+            latency /= 100
         }
         url += `&var-percentile=${latency}`
     }
@@ -550,7 +555,7 @@ export const processDeploymentStatusDetailsData = (
                                 }
                                 tableData.currentTableData.push({
                                     icon: 'success',
-                                    phase: phase,
+                                    phase,
                                     message: `${phase}: Create and update resources based on manifest`,
                                 })
                                 return
@@ -828,7 +833,7 @@ export const ValueContainer = (props) => {
     const { children, ...rest } = props
     return (
         <components.ValueContainer {...rest}>
-            {'' + props.getValue()[0].value}
+            {`${props.getValue()[0].value}`}
             {React.cloneElement(children[1])}
         </components.ValueContainer>
     )

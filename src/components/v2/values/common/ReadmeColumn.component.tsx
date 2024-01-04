@@ -1,12 +1,12 @@
 import React from 'react'
 import ReactGA from 'react-ga4'
-import { DropdownIcon, Page } from '../../../common'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { DropdownIcon, Page } from '../../../common'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import '../../../charts/modal/DeployChart.scss'
 import MessageUI, { MsgUIType } from '../../common/message.ui'
 
-function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, loading = false, ...props }) {
+const ReadmeColumn = ({ readmeCollapsed, toggleReadmeCollapsed, readme, loading = false, ...props }) => {
     return (
         <div className="deploy-chart__readme-column">
             {loading && (

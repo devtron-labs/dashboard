@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
+import ReactSelect, { MultiValue } from 'react-select'
+import { useLocation, useHistory } from 'react-router-dom'
+import * as queryString from 'query-string'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import ReactSelect, { MultiValue } from 'react-select'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 import { ShortcutKeyBadge } from '../common/formFields/Widgets/Widgets'
-import { useLocation, useHistory } from 'react-router-dom'
-import * as queryString from 'query-string'
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -216,7 +216,7 @@ export default function NodeListSearchFliter({
                 </div>
                 {openFilterPopup && (
                     <>
-                        <div className="dc__transparent-div" onClick={toggleSelectPopup}></div>
+                        <div className="dc__transparent-div" onClick={toggleSelectPopup} />
                         {!selectedSearchTextType && (
                             <div className="search-popup w-100 bcn-0 dc__position-abs  br-4 en-2 bw-1">
                                 <div className="search-title pt-4 pb-4 pl-10 pr-10">Search by</div>
@@ -254,7 +254,7 @@ export default function NodeListSearchFliter({
                 options={[
                     defaultVersion,
                     ...(nodeK8sVersions?.map((version) => ({
-                        label: 'K8s version: ' + version,
+                        label: `K8s version: ${version}`,
                         value: version,
                     })) || []),
                 ]}
@@ -281,7 +281,7 @@ export default function NodeListSearchFliter({
                     }),
                 }}
             />
-            <div className="dc__border-left h-20 mt-6"></div>
+            <div className="dc__border-left h-20 mt-6" />
             <ColumnFilterContext.Provider
                 value={{
                     appliedColumns,

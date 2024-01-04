@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader } from '../../common'
 import {
     ServerErrors,
     showError,
@@ -15,28 +14,33 @@ import {
     RadioGroupItem,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import ReactSelect from 'react-select'
+import AsyncSelect from 'react-select/async'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader } from '../../common'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
 import { ValidationRules } from './validationRules'
 import { getHostURLConfiguration } from '../../../services/service'
 import { createApp } from './service'
-import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import ReactSelect from 'react-select'
-import AsyncSelect from 'react-select/async'
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
+
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
+
     _inputAppName: HTMLInputElement
+
     createAppRef = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -99,6 +103,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.props.close(evt)
         }
     }
+
     outsideClickHandler(evt): void {
         if (
             !this.state.createAppLoader &&
@@ -303,7 +308,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.rules.description(this.state.form.description),
         ]
         const showError = this.state.showErrors
-        const appNameErrors = this.state.appNameErrors
+        const { appNameErrors } = this.state
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
@@ -320,7 +325,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             value={this.state.form.appName}
                             placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
                             autoComplete="off"
-                            autoFocus={true}
+                            autoFocus
                             tabIndex={1}
                             onChange={this.handleAppname}
                             required
@@ -464,7 +469,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     </span>
                 </div>
                 <TagsContainer
-                    isCreateApp={true}
+                    isCreateApp
                     labelTags={this.state.tags}
                     setLabelTags={this.setTags}
                     tabIndex={5}
@@ -498,16 +503,16 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderPageDetails = (): JSX.Element => {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
-            return <Reload />
-        } else {
-            return (
-                <>
-                    {this.renderBodySection()}
-                    {this.renderFooterSection()}
-                </>
-            )
         }
+        if (this.state.view === ViewType.ERROR) {
+            return <Reload />
+        }
+        return (
+            <>
+                {this.renderBodySection()}
+                {this.renderFooterSection()}
+            </>
+        )
     }
 
     render() {

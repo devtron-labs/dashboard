@@ -12,8 +12,9 @@ import {
     CHECKBOX_VALUE,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { MaterialViewProps, MaterialViewState } from './material.types'
 import { URLS } from '../../config'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
@@ -28,7 +29,6 @@ import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import Tippy from '@tippyjs/react'
 import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
@@ -107,7 +107,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             <div
                 className="white-card white-card--add-new-item mb-16 dashed"
                 onClick={this.props.toggleCollapse}
-                data-testid={`add-multi-git-repo`}
+                data-testid="add-multi-git-repo"
             >
                 <Add className="icon-dim-24 mr-5 fcb-5 dc__vertical-align-middle" />
                 <span className="dc__artifact-add">Add Git Repository</span>
@@ -134,7 +134,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 url: this.props.material.url,
                 checkoutPath: this.props.material.checkoutPath,
                 gitProviderId: this.props.material.gitProvider.id,
-                fetchSubmodules: this.props.material.fetchSubmodules ? true : false,
+                fetchSubmodules: !!this.props.material.fetchSubmodules,
             },
         }
     }
@@ -733,7 +733,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
-                            data-testid={`git-repo-url-text-box`}
+                            data-testid="git-repo-url-text-box"
                             error={this.props.isError.url}
                         />
                     </div>
@@ -771,10 +771,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     Icon={QuestionFilled}
                                     heading="Exclude file/folders"
                                     infoText=""
-                                    showCloseButton={true}
+                                    showCloseButton
                                     additionalContent={this.tippyContent()}
                                     trigger="click"
-                                    interactive={true}
+                                    interactive
                                 >
                                     <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
                                 </TippyCustomized>
@@ -802,7 +802,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     {this.props.isLearnHowClicked && (
                                         <div data-testid="exclude-include-learn-how-steps" className="ml-8 mt-8">
                                             <div className="flex left">
-                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <div className="dc__bullet mr-6 ml-6" />
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
                                                 </span>
@@ -818,7 +818,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <br />
                                             </div>
                                             <div className="flex left mt-4">
-                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <div className="dc__bullet mr-6 ml-6" />
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
                                                 </span>
@@ -842,10 +842,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                         placement="bottom"
                                                         Icon={QuestionFilled}
                                                         infoText=""
-                                                        showCloseButton={true}
+                                                        showCloseButton
                                                         additionalContent={this.regexInfoSteps()}
                                                         trigger="click"
-                                                        interactive={true}
+                                                        interactive
                                                     >
                                                         <span
                                                             data-testid="exclude-include-use-regex"
@@ -858,7 +858,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <br />
                                             </div>
                                             <div className="flex left mt-6">
-                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <div className="dc__bullet mr-6 ml-6" />
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}
                                                 </span>
@@ -876,7 +876,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <textarea
                                     data-testid="exclude-include-commit-textbox"
                                     className="form__textarea dc__no-border-imp mxh-140"
-                                    autoComplete={'off'}
+                                    autoComplete="off"
                                     autoFocus
                                     placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
                                     rows={3}
@@ -910,7 +910,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 className="default-tt w-200"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content={'Devtron will create the directory and clone the code in it'}
+                                                content="Devtron will create the directory and clone the code in it"
                                             >
                                                 <Question className="icon-dim-16 ml-4" />
                                             </Tippy>
@@ -939,7 +939,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     <div className="pt-16 ">
                         <Checkbox
                             isChecked={this.props.material.fetchSubmodules}
-                            value={'CHECKED'}
+                            value="CHECKED"
                             tabIndex={5}
                             onChange={this.props.handleSubmoduleCheckbox}
                             rootClassName="fs-14 cn-9 flex top"
@@ -951,7 +951,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         className="default-tt w-200"
                                         arrow={false}
                                         placement="bottom"
-                                        content={'This will use credentials from default remote of parent repository.'}
+                                        content="This will use credentials from default remote of parent repository."
                                     >
                                         <Question className="icon-dim-16 ml-4" />
                                     </Tippy>

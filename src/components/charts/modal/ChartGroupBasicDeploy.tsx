@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { DialogForm, DialogFormSubmit, showError } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { styles, smallMenuList, menuList, DropdownIndicator } from '../charts.util'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import ReactSelect from 'react-select'
 import { getEnvironmentListMin } from '../../../services/service'
 
 interface ChartGroupBasicDeployProps {
@@ -137,7 +137,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                 className={rootClassName}
                 title="Deploy Selected Charts"
                 isLoading={this.props.loading}
-                closeOnESC={true}
+                closeOnESC
                 close={this.props.closeDeployModal}
                 onSave={this.deployChartGroup}
             >
@@ -229,7 +229,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
     }
 }
 
-function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
+const ApplicationNameList = ({ charts, handleNameChange, showAppNames }) => {
     function handleImageError(e) {
         const target = e.target as HTMLImageElement
         target.onerror = null
@@ -267,7 +267,7 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
                                         handleNameChange(index, event.target.value)
                                     }}
                                 />
-                                <span className={`form__error`}>
+                                <span className="form__error">
                                     {chart.name.error && (
                                         <>
                                             <Error className="form__icon form__icon--error" />
@@ -275,8 +275,7 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
                                                 {chart.name.error}.
                                                 {chart.name.suggestedName && (
                                                     <>
-                                                        &nbsp;
-                                                        Suggested Name:
+                                                        &nbsp; Suggested Name:
                                                         <span
                                                             className="anchor pointer"
                                                             onClick={(e) =>
@@ -295,9 +294,8 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
                             </div>
                         </div>
                     )
-                } else {
-                    return null
                 }
+                return null
             })}
         </div>
     )

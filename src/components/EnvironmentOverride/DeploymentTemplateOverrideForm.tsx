@@ -129,14 +129,16 @@ export default function DeploymentTemplateOverrideForm({
         if (!obj && state.yamlMode) {
             toast.error(error)
             return
-        } else if (
+        }
+        if (
             (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
             !state.yamlMode &&
             !state.basicFieldValuesErrorObj.isValid
         ) {
             toast.error('Some required fields are missing')
             return
-        } else if (isConfigProtectionEnabled) {
+        }
+        if (isConfigProtectionEnabled) {
             toggleSaveChangesModal()
             return
         }
@@ -184,10 +186,12 @@ export default function DeploymentTemplateOverrideForm({
                 toggleYamlMode(!state.yamlMode)
             }
             return
-        } else if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
+        }
+        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             return
-        } else if (state.isBasicLocked) {
+        }
+        if (state.isBasicLocked) {
             return
         }
 
@@ -207,11 +211,11 @@ export default function DeploymentTemplateOverrideForm({
                     },
                 })
                 return
-            } else {
-                const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
-                updateTemplateFromBasicValue(newTemplate)
-                editorOnChange(YAML.stringify(newTemplate, { indent: 2 }), state.yamlMode)
             }
+            const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
+            updateTemplateFromBasicValue(newTemplate)
+            editorOnChange(YAML.stringify(newTemplate, { indent: 2 }), state.yamlMode)
+
             dispatch({
                 type: DeploymentConfigStateActionTypes.yamlMode,
                 payload: true,
@@ -336,11 +340,11 @@ export default function DeploymentTemplateOverrideForm({
     const getOverrideActionState = () => {
         if (state.loading) {
             return <Progressing />
-        } else if (overridden) {
-            return 'Delete override'
-        } else {
-            return 'Allow override'
         }
+        if (overridden) {
+            return 'Delete override'
+        }
+        return 'Allow override'
     }
 
     const renderOverrideInfoStrip = () => (
@@ -491,45 +495,45 @@ export default function DeploymentTemplateOverrideForm({
             return (
                 <DeploymentTemplateReadOnlyEditorView
                     value={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
-                    isEnvOverride={true}
+                    isEnvOverride
                 />
             )
-        } else if (state.loadingManifestOverride) {
+        }
+        if (state.loadingManifestOverride) {
             return (
                 <div className="h-100vh">
                     <Progressing pageLoader />
                 </div>
             )
-        } else {
-            return (
-                <DeploymentTemplateEditorView
-                    isEnvOverride={true}
-                    value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
-                    defaultValue={
-                        state.data && state.openComparison
-                            ? isValuesOverride
-                                ? getCodeEditorValue(true)
-                                : manifestDataLHS
-                            : ''
-                    }
-                    editorOnChange={editorOnChange}
-                    environmentName={environmentName}
-                    readOnly={
-                        !state.duplicate ||
-                        isCompareAndApprovalState ||
-                        !overridden ||
-                        !isValuesOverride ||
-                        convertVariablesOverride
-                    }
-                    globalChartRefId={state.data.globalChartRefId}
-                    handleOverride={handleOverride}
-                    isValues={isValuesOverride}
-                    convertVariables={convertVariablesOverride}
-                    setConvertVariables={setConvertVariables}
-                    groupedData={groupedData}
-                />
-            )
         }
+        return (
+            <DeploymentTemplateEditorView
+                isEnvOverride
+                value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
+                defaultValue={
+                    state.data && state.openComparison
+                        ? isValuesOverride
+                            ? getCodeEditorValue(true)
+                            : manifestDataLHS
+                        : ''
+                }
+                editorOnChange={editorOnChange}
+                environmentName={environmentName}
+                readOnly={
+                    !state.duplicate ||
+                    isCompareAndApprovalState ||
+                    !overridden ||
+                    !isValuesOverride ||
+                    convertVariablesOverride
+                }
+                globalChartRefId={state.data.globalChartRefId}
+                handleOverride={handleOverride}
+                isValues={isValuesOverride}
+                convertVariables={convertVariablesOverride}
+                setConvertVariables={setConvertVariables}
+                groupedData={groupedData}
+            />
+        )
     }
 
     const clusterId = useMemo(
@@ -548,14 +552,14 @@ export default function DeploymentTemplateOverrideForm({
                 <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
             </div>
             <DeploymentTemplateOptionsTab
-                isEnvOverride={true}
+                isEnvOverride
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                 codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : manifestDataRHS}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA
                 loading={state.loading || state.chartConfigLoading}
-                isEnvOverride={true}
+                isEnvOverride
                 disableButton={!state.duplicate}
                 disableCheckbox={!state.duplicate}
                 showAppMetricsToggle={
@@ -585,8 +589,8 @@ export default function DeploymentTemplateOverrideForm({
         dispatch,
         isConfigProtectionEnabled,
         environments: environments || [],
-        changeEditorMode: changeEditorMode,
-        reloadEnvironments: reloadEnvironments,
+        changeEditorMode,
+        reloadEnvironments,
     })
 
     return (
@@ -606,7 +610,7 @@ export default function DeploymentTemplateOverrideForm({
                 isDraftMode={isConfigProtectionEnabled && !!state.latestDraft}
                 isApprovalPending={state.latestDraft?.draftState === 4}
                 approvalUsers={state.latestDraft?.approvers}
-                showValuesPostfix={true}
+                showValuesPostfix
                 reload={reload}
                 isValues={isValuesOverride}
                 setIsValues={setIsValuesOverride}

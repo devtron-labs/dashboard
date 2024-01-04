@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { saveGitHost } from './gitProvider.service'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
 
 interface GitHostConfigModalProps {
     closeGitConfigModal: () => void
@@ -63,7 +63,7 @@ export class GitHostConfigModal extends Component<GitHostConfigModalProps, GitHo
                         value={this.state.name}
                         onChange={this.handleFilterInput}
                         placeholder="Enter name"
-                        autoFocus={true}
+                        autoFocus
                         tabIndex={1}
                     />
                 </div>

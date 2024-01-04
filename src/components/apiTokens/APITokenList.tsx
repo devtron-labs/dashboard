@@ -1,21 +1,21 @@
 import moment from 'moment'
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
+import { TippyCustomized, TippyTheme, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, MomentDateFormat } from '../../config'
 import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
-import { useHistory } from 'react-router-dom'
 import { APITokenListType, TokenListType } from './authorization.type'
 import { isTokenExpired } from './authorization.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import { TippyCustomized, TippyTheme, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
-function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType) {
+const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
     const history = useHistory()
     const [showDeleteConfirmation, setDeleteConfirmation] = useState(false)
     const [selectedToken, setSelectedToken] = useState<TokenListType>()
@@ -36,11 +36,11 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 className="w-300 h-100 fcv-5"
                 placement="right"
                 Icon={QuestionFilled}
-                heading={'API tokens'}
+                heading="API tokens"
                 infoText="Tokens you have generated that can be used to access the Devtron API."
-                showCloseButton={true}
+                showCloseButton
                 trigger="click"
-                interactive={true}
+                interactive
                 documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
                 documentationLinkText="View Documentation"
             >
@@ -56,7 +56,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
     }
 
     const handleEditRowAction = (e) => {
-        const id = tokenList[e.currentTarget.dataset.index].id
+        const { id } = tokenList[e.currentTarget.dataset.index]
         handleGenerateRowActionButton('edit', id)
     }
 
@@ -95,12 +95,12 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
             </div>
             <div className="api-token__list">
                 <div className="api-list__row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pl-20 pr-20 dc__uppercase">
-                    <div></div>
+                    <div />
                     <div>Name</div>
                     <div>Last Used On</div>
                     <div>Last used by Ip add.</div>
                     <div>Expires on</div>
-                    <div></div>
+                    <div />
                 </div>
                 <div className="dc__overflow-scroll api__list__height dc__position-rel">
                     {!tokenList || tokenList.length === 0
@@ -124,11 +124,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                           }`}
                                       />
                                   </button>
-                                  <div
-                                      className={`flexbox cb-5 cursor`}
-                                      data-index={index}
-                                      onClick={handleEditRowAction}
-                                  >
+                                  <div className="flexbox cb-5 cursor" data-index={index} onClick={handleEditRowAction}>
                                       <span className="dc__ellipsis-right">{list.name}</span>
                                   </div>
                                   <div className="dc__ellipsis-right">

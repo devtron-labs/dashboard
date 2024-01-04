@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
+import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router'
+import { showError, Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import ChartSelect from './util/ChartSelect'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
 import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
 import { updateChartGroupEntries, getChartGroups, getChartProviderList } from './charts.service'
 import useChartGroup from './useChartGroup'
-import { showError, Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config'
-import { toast } from 'react-toastify'
-import { Prompt } from 'react-router'
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
 import { ChartSelector } from '../AppSelector'
 import ChartHeaderFilters from './ChartHeaderFilters'
@@ -257,18 +256,18 @@ export default function ChartGroupUpdate({}) {
         <>
             <div className="chart-group--details-page">
                 <PageHeader
-                    isBreadcrumbs={true}
+                    isBreadcrumbs
                     breadCrumbs={renderBreadcrumbs}
                     renderActionButtons={renderChartGroupEditActionButton}
                 />
                 <Prompt
                     when={isLeavingPageNotAllowed.current}
-                    message={'Your changes will be lost. Do you want to leave without saving?'}
+                    message="Your changes will be lost. Do you want to leave without saving?"
                 />
 
                 {!state.loading ? (
-                    <div className={`chart-group--details-body summary-show`}>
-                        {typeof state.configureChartIndex != 'number' ? (
+                    <div className="chart-group--details-body summary-show">
+                        {typeof state.configureChartIndex !== 'number' ? (
                             <ChartHeaderFilters
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
@@ -357,7 +356,7 @@ export default function ChartGroupUpdate({}) {
     )
 }
 
-function ChartList({ availableCharts, selectedInstances, addChart, subtractChart, isGrid }) {
+const ChartList = ({ availableCharts, selectedInstances, addChart, subtractChart, isGrid }) => {
     return (
         <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
             {[...availableCharts.values()].map((chart: Chart, idx) => (

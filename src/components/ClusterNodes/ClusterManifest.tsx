@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
+import YAML from 'yaml'
+import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
-import YAML from 'yaml'
 import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
 import { ClusterManifestType, ManifestPopuptype } from './types'
 import { ReactComponent as Pencil } from '../../assets/icons/ic-pencil.svg'
-import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { defaultManifestErrorText, manifestCommentsRegex } from './constants'
@@ -95,16 +95,14 @@ export default function ClusterManifest({
                 const parsedManifest = YAML.parse(manifestValue)
                 if (parsedManifest) {
                     const trimmedManifest = YAML.stringify(getTrimmedManifestData(parsedManifest))
-                    const errorDetails = errorMessage?.length
-                        ? defaultManifestErrorText + '# ' + errorMessage + '\n#\n'
-                        : ''
+                    const errorDetails = errorMessage?.length ? `${defaultManifestErrorText}# ${errorMessage}\n#\n` : ''
                     setManifest(errorDetails + trimmedManifest)
                 } else {
                     setManifest(defaultManifestErrorText)
                 }
             } catch (error) {
                 // Should we directly use error object here?
-                setManifest(defaultManifestErrorText + '# ' + error + '\n#\n' + manifestValue)
+                setManifest(`${defaultManifestErrorText}# ${error}\n#\n${manifestValue}`)
             }
         }
     }, [manifestMode, hideManagedFields])
@@ -116,48 +114,48 @@ export default function ClusterManifest({
     const renderManifest = () => {
         if (isResourceMissing) {
             return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} minHeight="100%" />
-        } else if (loading) {
+        }
+        if (loading) {
             return (
                 <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} minHeight="100%" />
             )
-        } else {
-            return (
-                <div className="h-100 flexbox-col">
-                    {manifestMode === EditModeType.REVIEW && (
-                        <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
-                            <div className="pl-12 flex dc__content-space">
-                                Pod manifest
-                                <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
-                                    <Close className="icon-dim-16 cursor fcn-0" />
-                                </span>
-                            </div>
-                            <div className="pl-12 flex left">
-                                <Pencil className="icon-dim-16 mr-10 scn-0" /> Manifest (Editing)
-                            </div>
-                        </div>
-                    )}
-                    <div className="pt-8 pb-8 flex-1 dc__overflow-hidden">
-                        <CodeEditor
-                            defaultValue={defaultManifest}
-                            theme="vs-dark--dt"
-                            height="100%"
-                            value={manifestValue}
-                            mode={MODES.YAML}
-                            noParsing
-                            onChange={setManifest}
-                            readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
-                            diffView={manifestMode === EditModeType.REVIEW}
-                        />
-                    </div>
-                </div>
-            )
         }
+        return (
+            <div className="h-100 flexbox-col">
+                {manifestMode === EditModeType.REVIEW && (
+                    <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
+                        <div className="pl-12 flex dc__content-space">
+                            Pod manifest
+                            <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
+                                <Close className="icon-dim-16 cursor fcn-0" />
+                            </span>
+                        </div>
+                        <div className="pl-12 flex left">
+                            <Pencil className="icon-dim-16 mr-10 scn-0" /> Manifest (Editing)
+                        </div>
+                    </div>
+                )}
+                <div className="pt-8 pb-8 flex-1 dc__overflow-hidden">
+                    <CodeEditor
+                        defaultValue={defaultManifest}
+                        theme="vs-dark--dt"
+                        height="100%"
+                        value={manifestValue}
+                        mode={MODES.YAML}
+                        noParsing
+                        onChange={setManifest}
+                        readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
+                        diffView={manifestMode === EditModeType.REVIEW}
+                    />
+                </div>
+            </div>
+        )
     }
 
     return <div className="dc__overflow-hidden h-100">{renderManifest()}</div>
 }
 
-export function ManifestPopupMenu({ closePopup, podName, namespace, forceDeletePod }: ManifestPopuptype) {
+export const ManifestPopupMenu = ({ closePopup, podName, namespace, forceDeletePod }: ManifestPopuptype) => {
     const closePopupDoNothing = (): void => {
         closePopup(false)
     }

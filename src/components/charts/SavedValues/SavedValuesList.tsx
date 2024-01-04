@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useHistory, RouteComponentProps } from 'react-router'
-import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
-import emptyCustomChart from '../../../assets/img/app-not-configured.png'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Launch } from '../../../assets/icons/ic-nav-rocket.svg'
 import {
     showError,
     Progressing,
@@ -19,6 +10,18 @@ import {
     EmptyState,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import moment from 'moment'
+import Tippy from '@tippyjs/react'
+import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
+import emptyCustomChart from '../../../assets/img/app-not-configured.png'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
+import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
+import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Launch } from '../../../assets/icons/ic-nav-rocket.svg'
 import { SavedValueType } from './types'
 import {
     deleteChartValues,
@@ -28,9 +31,6 @@ import {
 } from '../charts.service'
 import './savedValues.scss'
 import PageHeader from '../../common/header/PageHeader'
-import { toast } from 'react-toastify'
-import moment from 'moment'
-import Tippy from '@tippyjs/react'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
 export default function SavedValuesList() {
@@ -302,7 +302,7 @@ export default function SavedValuesList() {
                                                 className="default-tt"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content={'Use value to deploy'}
+                                                content="Use value to deploy"
                                             >
                                                 <Launch
                                                     className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon scn-6"
@@ -314,7 +314,7 @@ export default function SavedValuesList() {
                                                 className="default-tt"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content={'Edit value'}
+                                                content="Edit value"
                                             >
                                                 <Edit
                                                     className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon"
@@ -326,7 +326,7 @@ export default function SavedValuesList() {
                                                 className="default-tt"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content={'Delete value'}
+                                                content="Delete value"
                                             >
                                                 <Delete
                                                     className="icon-dim-18 dc__vertical-align-middle pointer action-icon"
@@ -379,7 +379,7 @@ export default function SavedValuesList() {
     }
     return (
         <>
-            <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
             {renderSavedValuesList()}
             {showDeleteDialog && renderDeleteDialog()}
         </>

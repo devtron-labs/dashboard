@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { GuideCommonHeaderType } from './OnboardingGuide.type'
 
-function GuideCommonHeader({ loginCount, title, subtitle, isGettingStartedClicked }: GuideCommonHeaderType) {
+const GuideCommonHeader = ({ loginCount, title, subtitle, isGettingStartedClicked }: GuideCommonHeaderType) => {
     const history = useHistory()
     const showCloseIcon = loginCount > 0 || isGettingStartedClicked
 
@@ -13,7 +13,7 @@ function GuideCommonHeader({ loginCount, title, subtitle, isGettingStartedClicke
 
     return (
         <div className="common-guide__container">
-            <div className={`deploy-manage__header mh-300 dc__window-bg bcn-1`}>
+            <div className="deploy-manage__header mh-300 dc__window-bg bcn-1">
                 {showCloseIcon && (
                     <button
                         type="button"

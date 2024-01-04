@@ -1,12 +1,12 @@
 import React from 'react'
-import { createClusterEnvGroup } from '../common'
 import ReactSelect, { components } from 'react-select'
+import { createClusterEnvGroup } from '../common'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { DropdownIndicator } from '../cdPipeline/cdpipeline.util'
 import { buildStageStyles, groupHeading, triggerStageStyles } from './Constants'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
-export function EnvironmentList({
+export const EnvironmentList = ({
     isBuildStage,
     environments,
     selectedEnv,
@@ -16,7 +16,7 @@ export function EnvironmentList({
     environments: any[]
     selectedEnv: Environment
     setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>>
-}) {
+}) => {
     const selectEnvironment = (selection: Environment) => {
         const _selectedEnv = environments.find((env) => env.id == selection.id)
         setSelectedEnv(_selectedEnv)
@@ -27,7 +27,7 @@ export function EnvironmentList({
     const environmentListControl = (props): JSX.Element => {
         return (
             <components.Control {...props}>
-                {!isBuildStage && <div className={'dc__environment-icon ml-10'}></div>}
+                {!isBuildStage && <div className="dc__environment-icon ml-10" />}
                 {props.children}
             </components.Control>
         )
@@ -58,7 +58,7 @@ export function EnvironmentList({
             <div className={`${!isBuildStage ? 'w-200 dc__align-items-center' : ''}`}>
                 <ReactSelect
                     menuPlacement="auto"
-                    closeMenuOnScroll={true}
+                    closeMenuOnScroll
                     classNamePrefix="job-pipeline-environment-dropdown"
                     placeholder="Select Environment"
                     options={envList}

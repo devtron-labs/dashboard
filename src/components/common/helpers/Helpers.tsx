@@ -7,9 +7,9 @@ import {
     getLoginInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { useWindowSize } from './UseWindowSize'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
+import { useWindowSize } from './UseWindowSize'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
@@ -66,7 +66,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     // in every re-render in component
     const validateState = useCallback(
         (state) => {
-            //check errors in all fields
+            // check errors in all fields
             const hasErrorInState = Object.keys(validationSchema).some((key) => {
                 const isInputFieldRequired = validationSchema[key].required
                 const stateValue = state[key].value // state value
@@ -316,7 +316,8 @@ export function compareObjectLength(objA: any, objB: any): boolean {
 
     if ((isArrayA && !isArrayB) || (!isArrayA && isArrayB)) {
         return false
-    } else if (!isArrayA && !isArrayB) {
+    }
+    if (!isArrayA && !isArrayB) {
         return Object.keys(objA).length === Object.keys(objB).length
     }
 
@@ -327,21 +328,21 @@ export function deepEqual(configA: any, configB: any): boolean {
     try {
         if (configA === configB) {
             return true
-        } else if ((configA && !configB) || (!configA && configB) || !compareObjectLength(configA, configB)) {
-            return false
-        } else {
-            let isEqual = true
-            for (const idx in configA) {
-                if (!isEqual) {
-                    break
-                } else if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {
-                    isEqual = deepEqual(configA[idx], configB[idx])
-                } else if (configA[idx] !== configB[idx]) {
-                    isEqual = false
-                }
-            }
-            return isEqual
         }
+        if ((configA && !configB) || (!configA && configB) || !compareObjectLength(configA, configB)) {
+            return false
+        }
+        let isEqual = true
+        for (const idx in configA) {
+            if (!isEqual) {
+                break
+            } else if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {
+                isEqual = deepEqual(configA[idx], configB[idx])
+            } else if (configA[idx] !== configB[idx]) {
+                isEqual = false
+            }
+        }
+        return isEqual
     } catch (err) {
         showError(err)
         return true
@@ -718,7 +719,7 @@ export function asyncWrap(promise): any[] {
     return promise.then((result) => [null, result]).catch((err) => [err])
 }
 
-export function Td({ children, to = null, ...props }) {
+export const Td = ({ children, to = null, ...props }) => {
     return (
         <td>
             {to ? (
@@ -732,19 +733,16 @@ export function Td({ children, to = null, ...props }) {
     )
 }
 
-export function FragmentHOC({ children, ...props }) {
+export const FragmentHOC = ({ children, ...props }) => {
     // passes props to children
-    return (
-        <React.Fragment>
-            {React.Children.map(children, (child) => React.cloneElement(child, { ...props }))}
-        </React.Fragment>
-    )
+    return <>{React.Children.map(children, (child) => React.cloneElement(child, { ...props }))}</>
 }
 
 export const sortOptionsByLabel = (optionA, optionB) => {
     if (optionA.label < optionB.label) {
         return -1
-    } else if (optionA.label > optionB.label) {
+    }
+    if (optionA.label > optionB.label) {
         return 1
     }
     return 0
@@ -753,7 +751,8 @@ export const sortOptionsByLabel = (optionA, optionB) => {
 export const sortOptionsByValue = (optionA, optionB) => {
     if (optionA.value < optionB.value) {
         return -1
-    } else if (optionA.value > optionB.value) {
+    }
+    if (optionA.value > optionB.value) {
         return 1
     }
     return 0
@@ -874,10 +873,10 @@ export const importComponentFromFELibrary = (componentName: string, defaultCompo
 export const getElapsedTime = (createdAt: Date) => {
     const elapsedTime = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000)
     if (elapsedTime >= 0) {
-        const days = Math.floor(elapsedTime / (24 * 60 * 60)),
-            hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
-            mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
-            secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
+        const days = Math.floor(elapsedTime / (24 * 60 * 60))
+        const hrs = Math.floor((elapsedTime / (60 * 60)) % 24) // hrs mod (%) 24 hrs to get elapsed hrs
+        const mins = Math.floor((elapsedTime / 60) % 60) // mins mod (%) 60 mins to get elapsed mins
+        const secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
 
         const dh = `${days}d ${hrs}h`
             .split(' ')
@@ -887,7 +886,7 @@ export const getElapsedTime = (createdAt: Date) => {
         if (dh.length > 0) {
             return dh
         }
-        //return age in minutes and seconds
+        // return age in minutes and seconds
         return `${mins}m ${secs}s`
             .split(' ')
             .filter((a) => !a.startsWith('0'))
@@ -909,9 +908,9 @@ export const processK8SObjects = (
     disableGroupFilter?: boolean,
 ): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceGroupType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
-    let _selectedResource: ApiResourceGroupType,
-        isShowNamespace = false,
-        isShowEvent = false
+    let _selectedResource: ApiResourceGroupType
+    const isShowNamespace = false
+    const isShowEvent = false
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
         const groupParent = disableGroupFilter
@@ -968,7 +967,7 @@ export function createClusterEnvGroup<T>(
             optionLabel
                 ? {
                       label: obj[optionLabel],
-                      value: obj[optionValue ? optionValue : optionLabel],
+                      value: obj[optionValue || optionLabel],
                       description: obj['description'],
                       isVirtualEnvironment: obj['isVirtualEnvironment'],
                       isClusterCdActive: obj['isClusterCdActive'],
@@ -992,7 +991,7 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
     if (!duration) {
         return totalTimeInSec
     }
-    //Parses time(format:- ex. 4h20m) in second
+    // Parses time(format:- ex. 4h20m) in second
     const matchesNumber = duration.match(/\d+/g)
     const matchesChar = duration.match(/[dhms]/g)
     for (let i = 0; i < matchesNumber.length; i++) {
@@ -1038,8 +1037,8 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
 
 export const trackByGAEvent = (category: string, action: string): void => {
     ReactGA.event({
-        category: category,
-        action: action,
+        category,
+        action,
     })
 }
 
@@ -1125,9 +1124,11 @@ export const getDeploymentAppType = (
 ): string => {
     if (isVirtualEnvironment) {
         return DeploymentAppTypes.MANIFEST_DOWNLOAD
-    } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
+    }
+    if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
         return ''
-    } else if (
+    }
+    if (
         selectedDeploymentAppType &&
         allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
     ) {

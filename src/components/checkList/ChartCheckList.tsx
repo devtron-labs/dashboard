@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { ChartCheckListProps } from './checklist.type'
 import { NavLink } from 'react-router-dom'
+import { ChartCheckListProps } from './checklist.type'
 import { URLS } from '../../config'
 
 export class ChartCheckList extends Component<ChartCheckListProps, {}> {
@@ -17,7 +17,7 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                         <NavLink
                             to={`${URLS.GLOBAL_CONFIG_PROJECT}`}
                             className="dc__no-decor  mt-8 flex left"
-                            style={{ ['color']: project ? `var(--N500)` : `var(--B500)` }}
+                            style={{ color: project ? `var(--N500)` : `var(--B500)` }}
                         >
                             Add project
                         </NavLink>
@@ -26,7 +26,7 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                         <NavLink
                             to={`${URLS.GLOBAL_CONFIG_CLUSTER}`}
                             className="dc__no-decor mt-8 pb-8 flex left"
-                            style={{ ['color']: environment ? `var(--N500)` : `var(--B500)` }}
+                            style={{ color: environment ? `var(--N500)` : `var(--B500)` }}
                         >
                             Add cluster & environment
                         </NavLink>

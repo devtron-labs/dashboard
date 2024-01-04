@@ -1,5 +1,5 @@
-import { Routes } from '../../../../config'
 import { ResponseType, get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../../../config'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
 import { ClusterConnectionResponse, DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
 import { AppType } from '../../../v2/appDetails/appDetails.type'

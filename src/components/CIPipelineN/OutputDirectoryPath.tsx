@@ -1,12 +1,12 @@
 import React, { useContext } from 'react'
+import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
-function OutputDirectoryPath() {
+const OutputDirectoryPath = () => {
     const { selectedTaskIndex, formData, setFormData, activeStageName } = useContext(pipelineContext)
 
     const addOutputDirectoryPath = (): void => {

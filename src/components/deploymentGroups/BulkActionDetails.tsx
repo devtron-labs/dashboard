@@ -9,21 +9,21 @@ import {
     DeploymentNodeType,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useInterval, Td } from '../common'
-import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
-import { ReactComponent as DeployButton } from '../../assets/icons/ic-deploy.svg'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
 import { Switch, Route, useLocation } from 'react-router-dom'
 import moment from 'moment'
-import BulkActionEdit from './BulkActionEdit'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import { useInterval, Td } from '../common'
+import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
+import { ReactComponent as DeployButton } from '../../assets/icons/ic-deploy.svg'
+import BulkActionEdit from './BulkActionEdit'
 import { getCDMaterialList, triggerGroupDeploy, getDeploymentGroupDetail, pauseResumeDeploymentGroup } from './service'
 import CDMaterial from '../app/details/triggerView/cdMaterial'
 import { Routes, URLS, getAppTriggerURL } from '../../config'
 import Trash2 from '../../assets/img/warning-medium.svg'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import restoreIcon from '../../assets/icons/ic-restore.svg'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as DropDown } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 
 export default function BulkActionDetails() {
@@ -267,7 +267,7 @@ export default function BulkActionDetails() {
                 <CDMaterial
                     material={materials}
                     isLoading={isLoading}
-                    envName={''}
+                    envName=""
                     stageType={DeploymentNodeType.CD}
                     materialType="none"
                     triggerDeploy={triggerDeploy}
@@ -285,7 +285,7 @@ export default function BulkActionDetails() {
     )
 }
 
-function BulkActionsList({ apps }) {
+const BulkActionsList = ({ apps }) => {
     return (
         <div style={{ overflow: 'hidden', padding: '0' }} className="white-card">
             <table className="group-details">
@@ -349,7 +349,7 @@ function joinByhyphen(status) {
     }
 }
 
-function MultiStatus({ pre, post, deploy }) {
+const MultiStatus = ({ pre, post, deploy }) => {
     ;[pre, post, deploy] = [pre, post, deploy].map((st) => {
         if (st === '') {
             return 'not-triggered'
@@ -376,11 +376,11 @@ function MultiStatus({ pre, post, deploy }) {
     )
 }
 
-function MaterialList({ name, value, type }) {
+const MaterialList = ({ name, value, type }) => {
     return (
         <div className="bulk-action-list__cell bulk-action-list__cell--source">
             <p className="deployment-group__repo-list">
-                <span className="icon-dim-18 git dc__inline-block mr-5"></span>
+                <span className="icon-dim-18 git dc__inline-block mr-5" />
                 <span className="deployment-group__repo-name mr-5"> {name}/</span>
                 <span className="icon-dim-16 dc__inline-block mr-5">
                     {type === 'SOURCE_TYPE_BRANCH_FIXED' ? <Branch className="hw-100" /> : null}

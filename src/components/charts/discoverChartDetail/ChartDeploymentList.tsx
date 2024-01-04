@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Td } from '../../common'
 import moment from 'moment'
 import {
     get,
@@ -13,9 +12,10 @@ import {
     DeploymentAppTypes,
     AppStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { Td } from '../../common'
 import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config'
 import { deleteInstalledChart } from '../charts.service'
-import { toast } from 'react-toastify'
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png'
 import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import trash from '../../../assets/icons/ic-delete.svg'
@@ -23,7 +23,7 @@ import deleteIcon from '../../../assets/img/warning-medium.svg'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
-export function ChartDeploymentList({ chartId }) {
+export const ChartDeploymentList = ({ chartId }) => {
     const [installs, setInstalls] = React.useState([])
     const [view, setView] = useState(ViewType.LOADING)
     const timerId = useRef(null)
@@ -51,7 +51,7 @@ export function ChartDeploymentList({ chartId }) {
         return (
             <div className="white-card white-card--no-padding deployments flex">
                 <div className="chart-store-card__header">Deployments</div>
-                <Progressing pageLoader={true} />
+                <Progressing pageLoader />
             </div>
         )
     }
@@ -69,7 +69,7 @@ export function ChartDeploymentList({ chartId }) {
                             <th>Environment</th>
                             <th>Deployed By</th>
                             <th>Deployed at</th>
-                            <th></th>
+                            <th />
                         </tr>
                     </thead>
                     <tbody>
@@ -99,7 +99,7 @@ export function ChartDeploymentList({ chartId }) {
     )
 }
 
-export function DeploymentRow({
+export const DeploymentRow = ({
     installedAppId,
     appName,
     status,
@@ -113,7 +113,7 @@ export function DeploymentRow({
     namespace,
     setView,
     fetchDeployments,
-}) {
+}) => {
     const link = _buildAppDetailUrl()
     const [confirmation, toggleConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false)
@@ -135,9 +135,8 @@ export function DeploymentRow({
     function _buildAppDetailUrl() {
         if (appOfferingMode == SERVER_MODE.EA_ONLY) {
             return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(clusterId, namespace, appName)}/${appName}`
-        } else {
-            return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
         }
+        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
     }
 
     async function handleDelete(deleteAction: DELETE_ACTION) {
@@ -237,7 +236,7 @@ export function DeploymentRow({
                     <ConfirmationDialog.Icon src={deleteIcon} />
                     <ConfirmationDialog.Body
                         title={`Delete app ‘${appName}’`}
-                        subtitle={`This will delete all resources associated with this application.`}
+                        subtitle="This will delete all resources associated with this application."
                     >
                         <p className="mt-20">Deleted applications cannot be restored.</p>
                     </ConfirmationDialog.Body>
@@ -273,11 +272,11 @@ export function DeploymentRow({
     )
 }
 
-export function NoDeployments({
+export const NoDeployments = ({
     imageComponent,
     title = 'No Deployments',
     subtitle = "You haven't deployed this chart",
-}) {
+}) => {
     return (
         <div className="white-card--no-deployments flex column" style={{ width: '100%', height: '100%' }}>
             {imageComponent}

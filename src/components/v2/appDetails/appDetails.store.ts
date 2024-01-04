@@ -63,7 +63,7 @@ const AppDetailsStore = {
             aots.push(
                 addAOT(
                     AppDetailsTabs.log_analyzer,
-                    _url + '/' + URLS.APP_DETAILS_LOG,
+                    `${_url}/${URLS.APP_DETAILS_LOG}`,
                     isLogAnalyserURL,
                     AppDetailsTabs.log_analyzer,
                 ),
@@ -84,7 +84,7 @@ const AppDetailsStore = {
         const applicationObjectTabs = applicationObjectTabsSubject.getValue()
 
         let alreadyAdded = false
-        const title = objectKind + '/' + objectName
+        const title = `${objectKind}/${objectName}`
         objectName = `${objectKind.length <= 7 ? objectKind : `${objectKind.slice(0, 7)}...`}/...${objectName.slice(
             -6,
         )}`
@@ -143,7 +143,7 @@ const AppDetailsStore = {
         const applicationObjectTabs = applicationObjectTabsSubject.getValue()
         let title = objectName
         if (objectKind) {
-            title = objectKind + '/' + objectName
+            title = `${objectKind}/${objectName}`
         }
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
@@ -165,7 +165,7 @@ const AppDetailsStore = {
 
         let title = objectName
         if (objectKind) {
-            title = objectKind + '/' + objectName
+            title = `${objectKind}/${objectName}`
         }
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {

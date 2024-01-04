@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ButtonWithLoader } from '../../common'
 import {
     showError,
     Progressing,
@@ -10,6 +8,12 @@ import {
     copyToClipboard,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { components } from 'react-select'
+import { useParams } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { ButtonWithLoader } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -19,12 +23,10 @@ import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
-import ReactSelect, { components } from 'react-select'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '../../apiTokens/service'
-import { useParams } from 'react-router-dom'
 import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
 import {
     CURL_PREFIX,
@@ -36,12 +38,10 @@ import {
 } from './webhook.utils'
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
-import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 
-export function WebhookDetailsModal({ close }: WebhookDetailType) {
+export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
@@ -150,7 +150,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setModifiedSamplePayload(_modifiedPayload)
             setModifiedSampleString(modifiedJSONString)
             setSampleJSON(modifiedJSONString)
-            //creating sample curl by replacing the actuall wehook url and appending sample data
+            // creating sample curl by replacing the actuall wehook url and appending sample data
             setSampleCURL(
                 CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', modifiedJSONString),
             )
@@ -297,13 +297,12 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     <Progressing />
                 </div>
             )
-        } else {
-            return (
-                <span className="cb-5 cursor top fw-6" onClick={generateToken}>
-                    Generate token
-                </span>
-            )
         }
+        return (
+            <span className="cb-5 cursor top fw-6" onClick={generateToken}>
+                Generate token
+            </span>
+        )
     }
 
     const renderWebhookURLContainer = (): JSX.Element => {
@@ -321,7 +320,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         onShow={(instance) => {
                             setCopied(false)
                         }}
-                        interactive={true}
+                        interactive
                     >
                         <Clipboard
                             className="pointer hover-only icon-dim-16"
@@ -402,7 +401,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         onShow={(instance) => {
                             setCopied(false)
                         }}
-                        interactive={true}
+                        interactive
                     >
                         <Clipboard
                             className="ml-8 mt-5 pointer hover-only icon-dim-16"
@@ -489,19 +488,18 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     How to generate API tokens?
                 </a>
             )
-        } else {
-            return !showTokenSection ? (
-                <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
-                    Select or auto-generate token with required permissions
-                </div>
-            ) : (
-                <div className="mt-16">
-                    {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
-                    {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
-                    {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
-                </div>
-            )
         }
+        return !showTokenSection ? (
+            <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
+                Select or auto-generate token with required permissions
+            </div>
+        ) : (
+            <div className="mt-16">
+                {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
+                {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
+                {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
+            </div>
+        )
     }
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
@@ -517,7 +515,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                         onShow={(instance) => {
                             setCopied(false)
                         }}
-                        interactive={true}
+                        interactive
                     >
                         <Clipboard
                             className="pointer hover-only icon-dim-16 dc__position-abs"
@@ -564,7 +562,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                 {data.createLink ? (
                                     <span
                                         className="cb-5 cursor"
-                                        onClick={() => handleSchemaClick(schemaName + '-' + key)}
+                                        onClick={() => handleSchemaClick(`${schemaName}-${key}`)}
                                     >
                                         {key}
                                     </span>
@@ -584,19 +582,18 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const renderSchemaSection = (schema: Record<string, SchemaType>, schemaName: string): JSX.Element => {
         return (
             <div>
-                {renderSchema(schema['root'], schemaName + '-root')}
+                {renderSchema(schema['root'], `${schemaName}-root`)}
                 {Object.keys(schema).map((key) => {
                     const data = schema[key]
                     if (key === 'root') {
                         return null
-                    } else {
-                        return (
-                            <>
-                                <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
-                                {renderSchema(schema[key], schemaName + '-root' + '-' + key)}
-                            </>
-                        )
                     }
+                    return (
+                        <>
+                            <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
+                            {renderSchema(schema[key], `${schemaName}-root` + `-${key}`)}
+                        </>
+                    )
                 })}
             </div>
         )
@@ -818,7 +815,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                 {webhookDetails.responses[index].selectedTab === RESPONSE_TAB_LIST[0].key &&
                                     renderCodeSnippet(formatSampleJson(response.description.exampleValue))}
                                 {webhookDetails.responses[index].selectedTab === RESPONSE_TAB_LIST[1].key &&
-                                    renderSchemaSection(response.description.schema, 'response-' + index)}
+                                    renderSchemaSection(response.description.schema, `response-${index}`)}
                             </div>
                         </div>
                     ))}
@@ -883,29 +880,28 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const renderActualResponseSection = (): JSX.Element | null => {
         if (!webhookResponse) {
             return null
-        } else {
-            return (
-                <div className="mt-16" ref={responseSectionRef}>
-                    <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
-                    <div className="cn-9 fs-13 fw-6 mb-8">
-                        <div className="response-row dc__border-bottom pt-8 pb-8">
-                            <div>Code</div>
-                            <div>Description</div>
-                        </div>
-                        <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
-                            <div>
-                                <div className="fs-13 fw-4 cn-9 mb-16">{webhookResponse?.['result'] || '-'}</div>
-                                <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
-                                {renderCodeSnippet(webhookResponse?.['bodyText'])}
-                                <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
-                                {renderCodeSnippet(webhookResponse?.['headers'])}
-                            </div>
+        }
+        return (
+            <div className="mt-16" ref={responseSectionRef}>
+                <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
+                <div className="cn-9 fs-13 fw-6 mb-8">
+                    <div className="response-row dc__border-bottom pt-8 pb-8">
+                        <div>Code</div>
+                        <div>Description</div>
+                    </div>
+                    <div className="response-row pt-8 pb-8">
+                        <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
+                        <div>
+                            <div className="fs-13 fw-4 cn-9 mb-16">{webhookResponse?.['result'] || '-'}</div>
+                            <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
+                            {renderCodeSnippet(webhookResponse?.['bodyText'])}
+                            <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
+                            {renderCodeSnippet(webhookResponse?.['headers'])}
                         </div>
                     </div>
                 </div>
-            )
-        }
+            </div>
+        )
     }
 
     const renderHeaderSection = (): JSX.Element => {
@@ -959,16 +955,16 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const renderPageDetails = (): JSX.Element => {
         if (loader) {
             return <Progressing pageLoader />
-        } else if (errorInGetData) {
-            return <Reload />
-        } else {
-            return (
-                <>
-                    {renderBodySection()}
-                    {!isSuperAdmin && renderFooterSection()}
-                </>
-            )
         }
+        if (errorInGetData) {
+            return <Reload />
+        }
+        return (
+            <>
+                {renderBodySection()}
+                {!isSuperAdmin && renderFooterSection()}
+            </>
+        )
     }
 
     return (

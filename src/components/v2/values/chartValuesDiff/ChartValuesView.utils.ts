@@ -1,8 +1,8 @@
-import { getGeneratedHelmManifest } from '../common/chartValues.api'
-import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 import YAML from 'yaml'
 import { Collection } from 'yaml/types'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
+import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import {
     ChartDeploymentManifestDetailResponse,
     getDeploymentManifestDetails,
@@ -190,7 +190,7 @@ export const updateGeneratedManifest = (
 const getFieldType = (type: string, renderType: string, containsEnum): string => {
     switch (type) {
         case 'string':
-            return containsEnum ? 'select' : renderType ? renderType : 'input'
+            return containsEnum ? 'select' : renderType || 'input'
         case 'object':
             return 'formBox'
         case 'boolean':
@@ -206,7 +206,8 @@ const getFieldType = (type: string, renderType: string, containsEnum): string =>
 const isFieldEnabled = (property: any, isChild: boolean): boolean => {
     if (property.form && (isChild || !property.properties)) {
         return true
-    } else if (!isChild && property.properties) {
+    }
+    if (!isChild && property.properties) {
         return Object.values(property.properties).some((_prop) => {
             if (_prop['properties']) {
                 return isFieldEnabled(_prop, isChild)
@@ -225,7 +226,8 @@ export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map
 
         if (_parentValue?.required) {
             return _parentValue.required.includes(property.key.split('/').slice(1).join('/'))
-        } else if (property.parentRef) {
+        }
+        if (property.parentRef) {
             return isRequiredField(_parentValue, true, schemaJson)
         }
     }
@@ -242,8 +244,8 @@ const convertItemsToObj = (items) => {
 }
 
 const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed): string[] => {
-    let currentPath: string[] = [],
-        noValueInCurrentPath = false
+    let currentPath: string[] = []
+    let noValueInCurrentPath = false
     for (const _pathKey of parentPathKey) {
         if (noValueInCurrentPath) {
             break
@@ -275,8 +277,8 @@ export const getPathAndValueToSetIn = (
     pathToSetIn: string[]
     valueToSetIn: any
 } => {
-    let pathToSetIn = [],
-        valueToSetIn
+    let pathToSetIn = []
+    let valueToSetIn
     const parentPathKey = pathKey.slice(0, pathKey.length - 1)
     const parentValue = valuesYamlDocument.getIn(parentPathKey)
     if (
@@ -335,7 +337,7 @@ const getPathKeyAndPropsPair = (
     pathKeyAndPropsPair = new Map<string, any>(),
 ): Map<string, any> => {
     if (schema?.properties) {
-        const properties = schema.properties
+        const { properties } = schema
         Object.keys(properties).forEach((propertyKey) => {
             const propertyPath = `${parentRef}${parentRef ? '/' : ''}${propertyKey}`
             const property = properties[propertyKey]
@@ -347,7 +349,7 @@ const getPathKeyAndPropsPair = (
                 showBox: property.type === 'object' && property.form,
                 value: property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
                 showField: property.required || isFieldEnabled(property, !!parentRef),
-                parentRef: parentRef,
+                parentRef,
                 children: haveChildren && Object.keys(property.properties).map((key) => `${propertyPath}/${key}`),
             }
 

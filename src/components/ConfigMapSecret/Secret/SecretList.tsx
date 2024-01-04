@@ -58,8 +58,8 @@ export default function SecretList({
                 getSecretList(appId, envId),
                 isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 2) : { result: null },
             ])
-            const draftDataMap = {},
-                draftDataArr = []
+            const draftDataMap = {}
+            const draftDataArr = []
             let configData = []
             if (draftData?.length) {
                 for (const data of draftData) {
@@ -104,29 +104,29 @@ export default function SecretList({
         }
         try {
             setList((list) => {
-                const configData = list.configData
+                const { configData } = list
                 if (result === null) {
-                    //delete
+                    // delete
                     configData.splice(index, 1)
                     list.configData = [...configData]
                     return { ...list }
-                } else if (typeof index !== 'number' && Array.isArray(result.configData)) {
-                    //insert after create success
+                }
+                if (typeof index !== 'number' && Array.isArray(result.configData)) {
+                    // insert after create success
                     configData.unshift({
                         ...result.configData[0],
                         data: result.configData[0].data,
                     })
                     list.configData = [...configData]
                     return { ...list }
-                } else {
-                    const updatedConfigData = result.configData[0]
-                    updatedConfigData.global = list.configData[index].global
-                    updatedConfigData.secretMode = false
-                    updatedConfigData.unAuthorized = result.configData[0].unAuthorized ?? false
-                    delete updatedConfigData.isNew
-                    list.configData[index] = updatedConfigData
-                    return { ...list }
                 }
+                const updatedConfigData = result.configData[0]
+                updatedConfigData.global = list.configData[index].global
+                updatedConfigData.secretMode = false
+                updatedConfigData.unAuthorized = result.configData[0].unAuthorized ?? false
+                delete updatedConfigData.isNew
+                list.configData[index] = updatedConfigData
+                return { ...list }
             })
         } catch (err) {}
     }

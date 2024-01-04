@@ -1,7 +1,7 @@
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
-import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
 

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useCallback, memo, useEffect } from 'react'
 import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import Draggable from 'react-draggable'
+import Tippy from '@tippyjs/react'
 import { useWindowSize } from '../helpers/UseWindowSize'
 import Suggestions from './Suggestions'
 import { getScopedVariables } from './service'
@@ -8,7 +9,6 @@ import { FloatingVariablesSuggestionsProps } from './types'
 import { ReactComponent as ICDrag } from '../../../assets/icons/drag.svg'
 import { ReactComponent as ICVariable } from '../../../assets/icons/ic-variable.svg'
 import { SUGGESTIONS_SIZE } from './constants'
-import Tippy from '@tippyjs/react'
 
 /**
  * Component uses react-draggable and handles the re-sizing and positioning of the suggestions on the assumption that the suggestions are going to expand to the right and bottom of the collapsed state
@@ -19,7 +19,13 @@ import Tippy from '@tippyjs/react'
  * @param bounds - (Optional) To set the bounds of the suggestions
  * @returns
  */
-function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds }: FloatingVariablesSuggestionsProps) {
+const FloatingVariablesSuggestions = ({
+    zIndex,
+    appId,
+    envId,
+    clusterId,
+    bounds,
+}: FloatingVariablesSuggestionsProps) => {
     const [isActive, setIsActive] = useState<boolean>(false)
     const [collapsedPosition, setCollapsedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
     const [expandedPosition, setExpandedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })

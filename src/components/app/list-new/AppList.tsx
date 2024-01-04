@@ -9,6 +9,8 @@ import {
     ServerErrors,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import * as queryString from 'query-string'
+import moment from 'moment'
 import { Filter, FilterOption, handleUTCTime } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
@@ -17,7 +19,6 @@ import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat,
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
-import * as queryString from 'query-string'
 import { AppListPropType, EnvironmentClusterList, OrderBy, SortBy } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
@@ -26,7 +27,6 @@ import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmpt
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
-import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
@@ -97,7 +97,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
                     applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab)
-                    getModuleInfo(ModuleNameMap.CICD) //To check the latest status and show user reload toast
+                    getModuleInfo(ModuleNameMap.CICD) // To check the latest status and show user reload toast
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -119,9 +119,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             setLastDataSyncTimeString(renderDataSyncingText)
         } else {
             const _lastDataSyncTime = Date()
-            setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+            setLastDataSyncTimeString(`Last synced ${handleUTCTime(_lastDataSyncTime, true)}`)
             interval = setInterval(() => {
-                setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
+                setLastDataSyncTimeString(`Last synced ${handleUTCTime(_lastDataSyncTime, true)}`)
             }, 1000)
         }
         return () => {
@@ -255,7 +255,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             }
         })
         setMasterFilters(_masterFilters)
-        ////// update master filters data ends (check/uncheck)
+        /// /// update master filters data ends (check/uncheck)
 
         const sortBy = params.orderBy || SortBy.APP_NAME
         const sortOrder = params.sortOrder || OrderBy.ASC
@@ -265,15 +265,15 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         const pageSizes = new Set([20, 40, 50])
 
         if (!pageSizes.has(pageSize)) {
-            //handle invalid pageSize
+            // handle invalid pageSize
             pageSize = 20
         }
         if (offset % pageSize != 0) {
-            //pageSize must be a multiple of offset
+            // pageSize must be a multiple of offset
             offset = 0
         }
         if (hOffset % pageSize != 0) {
-            //pageSize must be a multiple of offset
+            // pageSize must be a multiple of offset
             hOffset = 0
         }
 
@@ -286,10 +286,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 .filter((item) => item != ''),
             appNameSearch: search,
             appStatuses: appStatusArr,
-            sortBy: sortBy,
-            sortOrder: sortOrder,
-            offset: offset,
-            hOffset: hOffset,
+            sortBy,
+            sortOrder,
+            offset,
+            hOffset,
             size: showExportCsvButton ? appCount : +pageSize,
         }
 
@@ -549,7 +549,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         delete query['appStatus']
         delete query['search']
 
-        //delete search string
+        // delete search string
         setSearchApplied(false)
         setSearchString('')
 
@@ -731,10 +731,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 type={AppListConstants.FilterType.APP_STATUS}
                                 applyFilter={applyFilter}
                                 onShowHideFilterContent={onShowHideFilterContent}
-                                isFirstLetterCapitalize={true}
-                                dataTestId={'app-status-filter'}
+                                isFirstLetterCapitalize
+                                dataTestId="app-status-filter"
                             />
-                            <span className="filter-divider"></span>
+                            <span className="filter-divider" />
                         </>
                     )}
                     <Filter
@@ -748,11 +748,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         type={AppListConstants.FilterType.PROJECT}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
-                        dataTestId={'projects-filter'}
+                        dataTestId="projects-filter"
                     />
                     {serverMode == SERVER_MODE.FULL && (
                         <>
-                            <span className="filter-divider"></span>
+                            <span className="filter-divider" />
                             <Filter
                                 list={masterFilters.environments}
                                 isDisabled={dataStateType === AppListViewType.LOADING}
@@ -764,11 +764,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 type={AppListConstants.FilterType.ENVIRONMENT}
                                 applyFilter={applyFilter}
                                 onShowHideFilterContent={onShowHideFilterContent}
-                                dataTestId={'environment-filter'}
+                                dataTestId="environment-filter"
                             />
                         </>
                     )}
-                    <span className="filter-divider"></span>
+                    <span className="filter-divider" />
                     <Filter
                         list={masterFilters.clusters}
                         labelKey="label"
@@ -781,7 +781,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
                         showPulsatingDot={showPulsatingDot}
-                        dataTestId={'cluster-filter'}
+                        dataTestId="cluster-filter"
                     />
                     <Filter
                         rootClassName="ml-0-imp"
@@ -796,18 +796,18 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         type={AppListConstants.FilterType.NAMESPACE}
                         applyFilter={applyFilter}
                         isDisabled={!_isAnyClusterFilterApplied}
-                        disableTooltipMessage={'Select a cluster first'}
-                        isLabelHtml={true}
+                        disableTooltipMessage="Select a cluster first"
+                        isLabelHtml
                         onShowHideFilterContent={onShowHideFilterContent}
                         loading={fetchingNamespaces}
                         errored={fetchingNamespacesErrored}
-                        errorMessage={'Could not load namespaces'}
+                        errorMessage="Could not load namespaces"
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
-                        dataTestId={'namespace-filter'}
+                        dataTestId="namespace-filter"
                     />
                     {showExportCsvButton && (
                         <>
-                            <span className="filter-divider"></span>
+                            <span className="filter-divider" />
                             <ExportToCsv
                                 className="ml-10"
                                 apiPromise={getAppListDataToExport}
@@ -850,19 +850,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             count++
                             const _text =
                                 filterType == AppListConstants.FilterType.NAMESPACE
-                                    ? filter.actualName + ' (' + filter.clusterName + ')'
+                                    ? `${filter.actualName} (${filter.clusterName})`
                                     : filter.label
                             return (
                                 <div key={filter.key} className="saved-filter">
                                     <span className="fw-6 mr-5">{_filterKey}</span>
-                                    <span className="saved-filter-divider"></span>
+                                    <span className="saved-filter-divider" />
                                     <span className="ml-5">{_text}</span>
                                     <button
                                         type="button"
                                         className="saved-filter__close-btn"
                                         onClick={(event) => removeFilter(filter, filterType)}
                                     >
-                                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                                        <i className="fa fa-times-circle" aria-hidden="true" />
                                     </button>
                                 </div>
                             )
@@ -881,7 +881,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             </div>
         )
 
-        return <React.Fragment>{count > 0 ? appliedFilters : null}</React.Fragment>
+        return <>{count > 0 ? appliedFilters : null}</>
     }
 
     function renderAppTabs() {

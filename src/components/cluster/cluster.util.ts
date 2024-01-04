@@ -11,7 +11,7 @@ import {
 export function getEnvName(components: ClusterComponentType[], agentInstallationStage): string {
     let nonTerminatingStatus: ClusterComponentStatusType[] = []
     if (agentInstallationStage === 1) {
-        //progressing
+        // progressing
         nonTerminatingStatus = [
             ClusterComponentStatus.REQUEST_ACCEPTED,
             ClusterComponentStatus.ENQUEUED,
@@ -20,10 +20,10 @@ export function getEnvName(components: ClusterComponentType[], agentInstallation
             ClusterComponentStatus.ACD_SUCCESS,
         ]
     } else if (agentInstallationStage === 2) {
-        //success
+        // success
         nonTerminatingStatus = [ClusterComponentStatus.DEPLOY_SUCCESS]
     } else if (agentInstallationStage === 3) {
-        //failed
+        // failed
         nonTerminatingStatus = [
             ClusterComponentStatus.QUE_ERROR,
             ClusterComponentStatus.DEQUE_ERROR,

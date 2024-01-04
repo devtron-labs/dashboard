@@ -176,7 +176,7 @@ const SummaryComponent = ({ selectedTab }) => {
                                 <div className="mt-7 mb-7">Name</div>
                                 <div className="mt-7 mb-7">MountPath</div>
                             </div>
-                            <div className="o-02" style={{ borderBottom: '1px solid white' }}></div>
+                            <div className="o-02" style={{ borderBottom: '1px solid white' }} />
                             {container.volumeMounts.map((volume) => {
                                 return (
                                     <div

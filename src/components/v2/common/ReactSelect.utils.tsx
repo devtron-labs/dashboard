@@ -1,8 +1,8 @@
 import React from 'react'
-import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { multiSelectStyles, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
@@ -95,7 +95,7 @@ export const styles = {
     },
 }
 
-export function Option(props) {
+export const Option = (props) => {
     const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
@@ -120,7 +120,7 @@ export function Option(props) {
     )
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n5" data-testid="overview-project-edit-dropdown" />
@@ -137,13 +137,13 @@ export function customOption(label: string, icon: string, className = '', onImag
     )
 }
 
-export function OptionWithIcon(props) {
+export const OptionWithIcon = (props) => {
     const { selectProps, data, style } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     return <components.Option {...props}>{customOption(data.label, data.icon)}</components.Option>
 }
 
-export function ValueContainerWithIcon(props) {
+export const ValueContainerWithIcon = (props) => {
     const { selectProps } = props
     return (
         <components.ValueContainer {...props}>
@@ -214,7 +214,7 @@ export const noMatchingPlatformOptions = (): string => {
     return 'No matching options'
 }
 
-export function GroupHeading(props) {
+export const GroupHeading = (props) => {
     const { data, hideClusterName } = props
     if (!data.label) {
         return null
@@ -231,7 +231,7 @@ export function GroupHeading(props) {
     )
 }
 
-export function EnvFormatOptions(props) {
+export const EnvFormatOptions = (props) => {
     const { data, environmentfieldName } = props
     return <components.SingleValue {...props}>{data[environmentfieldName]}</components.SingleValue>
 }
@@ -271,9 +271,9 @@ export function formatHighlightedTextDescription(
                 <small
                     className="cn-6"
                     dangerouslySetInnerHTML={{
-                        __html: (option.description + '').replace(regex, highLightText),
+                        __html: `${option.description}`.replace(regex, highLightText),
                     }}
-                ></small>
+                />
             )}
         </div>
     )

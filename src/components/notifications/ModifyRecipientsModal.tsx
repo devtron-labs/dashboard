@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { showError, Progressing, VisibleModal, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'
@@ -7,8 +9,6 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { updateNotificationRecipients } from './notifications.service'
 import { multiSelectStyles, DropdownIndicator, MultiValueLabel, Option } from './notifications.util'
-import { toast } from 'react-toastify'
-import CreatableSelect from 'react-select/creatable'
 import './notifications.scss'
 import { EMAIL_AGENT } from './types'
 
@@ -229,7 +229,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                                                 this.removeRecipient(p)
                                             }}
                                         >
-                                            <i className="fa fa-close ml-5"></i>
+                                            <i className="fa fa-close ml-5" />
                                         </button>
                                     </div>
                                 )
@@ -262,7 +262,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                             }}
                         />
                         {(this.state.selectedRecipient.length === 0 || !this.state.recipientWithoutEmailAgent) && (
-                            <div style={{ marginBottom: '60px' }}></div>
+                            <div style={{ marginBottom: '60px' }} />
                         )}
                     </div>
                     <div>{this.renderEmailAgentSelector()}</div>

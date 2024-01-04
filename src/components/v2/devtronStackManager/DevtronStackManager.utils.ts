@@ -67,7 +67,7 @@ export const handleAction = async (
         const actionRequest: ModuleActionRequest = {
             action: isUpgradeView ? ModuleActions.UPGRADE : ModuleActions.INSTALL,
             version: upgradeVersion,
-            moduleType: moduleType,
+            moduleType,
         }
 
         const { result } = isUpgradeView
@@ -134,7 +134,7 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
         }
     }
 
-    return currentVersionLevels.length >= newVersionLevels.length ? false : true
+    return !(currentVersionLevels.length >= newVersionLevels.length)
 }
 
 export const DEVTRON_UPGRADE_MESSAGE =

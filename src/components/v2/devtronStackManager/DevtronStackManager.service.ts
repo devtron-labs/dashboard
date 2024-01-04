@@ -1,5 +1,6 @@
-import { ModuleNameMap, Routes } from '../../../config'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { ModuleNameMap, Routes } from '../../../config'
 import {
     AllModuleInfoResponse,
     LogPodNameResponse,
@@ -12,11 +13,10 @@ import {
     ServerInfoResponse,
 } from './DevtronStackManager.type'
 import { reloadToastBody } from '../../common'
-import { toast } from 'react-toastify'
 
-let moduleStatusMap: Record<string, ModuleInfo> = {},
-    serverInfo: ServerInfoResponse,
-    isReloadToastShown = false
+let moduleStatusMap: Record<string, ModuleInfo> = {}
+let serverInfo: ServerInfoResponse
+let isReloadToastShown = false
 
 const getSavedModuleStatus = (): Record<string, ModuleInfo> => {
     let _moduleStatusMaps = moduleStatusMap
@@ -95,7 +95,7 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
         }
         moduleStatusMap = _savedModuleStatusMap
     }
-    return Promise.resolve({ status: '', code: 200, result: result })
+    return Promise.resolve({ status: '', code: 200, result })
 }
 
 export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> => {

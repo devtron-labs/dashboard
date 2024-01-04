@@ -190,7 +190,6 @@ export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus =>
         case BULK_VIRTUAL_RESPONSE_STATUS.unauthorized:
             return BulkResponseStatus.UNAUTHORIZE
         default:
-            return
     }
 }
 

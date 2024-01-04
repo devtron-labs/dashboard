@@ -1,10 +1,10 @@
-//@description: Is 'subset' subset of 'json'
+// @description: Is 'subset' subset of 'json'
 export const isSubset = (json: any, subset: any): boolean => {
     let valid = true
 
-    //Case json is Array
+    // Case json is Array
     if (Array.isArray(json)) {
-        //For empty array
+        // For empty array
         if (!json.length) {
             return subset.length <= json.length
         }
@@ -16,7 +16,7 @@ export const isSubset = (json: any, subset: any): boolean => {
         }
         const childrenSet = new Set(keysOfAllElements)
 
-        //Case both Arrays and subset Array is non empty
+        // Case both Arrays and subset Array is non empty
         if (Array.isArray(subset) && subset.length <= json.length && childrenSet.size <= parentSet.size) {
             json = json[0]
             for (let i = 0; i < subset.length; i++) {
@@ -26,13 +26,12 @@ export const isSubset = (json: any, subset: any): boolean => {
                 }
             }
             return valid
-        } else {
-            return false
         }
+        return false
     }
 
-    //Case Both Objects
-    else if (typeof json == 'object' && typeof subset == 'object' && !Array.isArray(subset) && !Array.isArray(json)) {
+    // Case Both Objects
+    if (typeof json === 'object' && typeof subset === 'object' && !Array.isArray(subset) && !Array.isArray(json)) {
         const key = new Set(Object.keys(json))
         const keySubset = new Set(Object.keys(subset))
 
@@ -40,11 +39,10 @@ export const isSubset = (json: any, subset: any): boolean => {
             valid =
                 valid &&
                 key.has(element) &&
-                typeof json[element] == typeof subset[element] &&
+                typeof json[element] === typeof subset[element] &&
                 isSubset(json[element], subset[element])
         })
         return !!valid
-    } else {
-        return typeof json == typeof subset && !Array.isArray(subset) && !Array.isArray(json)
     }
+    return typeof json === typeof subset && !Array.isArray(subset) && !Array.isArray(json)
 }

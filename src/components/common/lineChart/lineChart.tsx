@@ -16,7 +16,7 @@ export default class LineChart extends Component<LineChartProps> {
         d3.select(this.props.svgRef).select('g').remove()
 
         const offset = 40
-        //height, width excludes offset
+        // height, width excludes offset
         const height = 320
         const width = 420
 
@@ -34,7 +34,7 @@ export default class LineChart extends Component<LineChartProps> {
             return element.display
         })
 
-        //Scales
+        // Scales
         const xScale = d3
             .scaleTime()
             .domain([this.props.lineData.interval.start, this.props.lineData.interval.end])
@@ -48,7 +48,7 @@ export default class LineChart extends Component<LineChartProps> {
         const xAxis = d3.axisBottom(xScale)
         const yAxis = d3.axisLeft(yScale)
 
-        //Draw grid lines and boundary
+        // Draw grid lines and boundary
         const yTicks = yScale.ticks()
         const gridGroup = svg.append('g')
 
@@ -56,7 +56,7 @@ export default class LineChart extends Component<LineChartProps> {
             return xScale(data.time)
         })
 
-        //Compute rectangle width for hover
+        // Compute rectangle width for hover
         let rectWidth
         const dataset = []
         if (xValues[0] > xValues[1] - xValues[0]) {
@@ -86,7 +86,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('stroke-width', 1)
             .attr('opacity', 0)
 
-        //boundary
+        // boundary
         gridGroup
             .append('rect')
             .attr('x', '0')
@@ -95,7 +95,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('height', height)
             .attr('stroke', '#d1d1d1')
             .attr('fill', '#fafafa')
-        //grid lines
+        // grid lines
         gridGroup
             .selectAll('line')
             .data(yTicks)
@@ -111,7 +111,7 @@ export default class LineChart extends Component<LineChartProps> {
             })
             .attr('stroke', '#d1d1d1')
 
-        //Draw X axis
+        // Draw X axis
         svg.append('g')
             .attr('transform', `translate(${0},${height})`)
             .call(xAxis)
@@ -122,7 +122,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('y', offset * 0.7)
             .attr('fill', 'black')
 
-        //Draw Y Axis
+        // Draw Y Axis
         svg.append('g')
             .call(yAxis)
             .attr('class', 'y-axis')
@@ -133,7 +133,7 @@ export default class LineChart extends Component<LineChartProps> {
             .attr('y', -offset * 0.7)
             .attr('fill', 'black')
 
-        //Line function
+        // Line function
         const line = d3
             .line<Point>()
             .x(function (d, i) {
@@ -143,7 +143,7 @@ export default class LineChart extends Component<LineChartProps> {
                 return yScale(d.display)
             })
 
-        //graph
+        // graph
         svg.append('path')
             .datum(dataset)
             .attr('class', 'line')

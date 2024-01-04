@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerPrePostCDNodeProps } from '../../types'
 import { TriggerStatus } from '../../../../config'
-import { URLS } from './../../../../../../config'
-import { Link } from 'react-router-dom'
-import { DEFAULT_STATUS } from '../../../../../../config'
+import { URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps> {
     constructor(props) {
@@ -44,13 +43,12 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps> {
                     )}
                 </div>
             )
-        } else {
-            return (
-                <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    <span>{this.props.status}</span>
-                </div>
-            )
         }
+        return (
+            <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                <span>{this.props.status}</span>
+            </div>
+        )
     }
 
     renderCardContent() {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router'
 import DeploymentHistoryHeader from './DeploymentHistoryHeader'
 import { getDeploymentHistoryDetail, prepareHistoryData } from '../service'
-import { useParams } from 'react-router'
 import { DeploymentHistoryDetail } from '../cd.type'
 import { DeploymentTemplateOptions, CompareViewDeploymentType, DeploymentHistoryParamsType } from './types'
 import DeploymentHistorySidebar from './DeploymentHistorySidebar'
@@ -67,8 +67,8 @@ export default function DeploymentHistoryDetailedView({
     }, [baseConfigurationId, historyComponent, historyComponentName])
 
     useEffect(() => {
-        //show template showing historical diff detailed view
-        //in case if !showTemplate CD detail component being rendered
+        // show template showing historical diff detailed view
+        // in case if !showTemplate CD detail component being rendered
         setFullScreenView(true)
 
         return (): void => {

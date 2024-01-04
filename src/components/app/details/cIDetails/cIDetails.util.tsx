@@ -1,13 +1,13 @@
+import React from 'react'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import notScanned from '../../../../assets/img/not-scanned.png'
 import scannedDisabled from '../../../../assets/img/ic-empty-scanner-disabled.png'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
-import React from 'react'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
-export function ScanDisabledView(props) {
+export const ScanDisabledView = (props) => {
     const renderScanedViewButton = () => {
         return (
             <button className="flex cta h-36" onClick={props.redirectToCreate}>
@@ -21,14 +21,14 @@ export function ScanDisabledView(props) {
             image={notScanned}
             title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
             subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_SCANNED_DISABLED}
-            isButtonAvailable={true}
+            isButtonAvailable
             renderButton={renderScanedViewButton}
             classname="dc__position-rel-imp"
         />
     )
 }
 
-export function ImageNotScannedView() {
+export const ImageNotScannedView = () => {
     return (
         <GenericEmptyState
             image={scannedDisabled}
@@ -38,7 +38,7 @@ export function ImageNotScannedView() {
     )
 }
 
-export function NoVulnerabilityView() {
+export const NoVulnerabilityView = () => {
     return (
         <GenericEmptyState
             SvgImage={NoVulnerability}
@@ -48,7 +48,7 @@ export function NoVulnerabilityView() {
     )
 }
 
-export function CIRunningView(props) {
+export const CIRunningView = (props) => {
     return (
         <GenericEmptyState
             SvgImage={MechanicalOperation}

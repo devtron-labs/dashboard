@@ -14,7 +14,7 @@ export const getTreeNodesWithChild = (_nodes: Node[]): iNode[] => {
             if (!nodesByAggregator.get(agg).get(node.kind)) {
                 nodesByAggregator.get(agg).set(node.kind, node.health?.status ?? '')
             } else {
-                //At this stage we know status in string therefore we can safely cast it to string
+                // At this stage we know status in string therefore we can safely cast it to string
                 nodesByAggregator
                     .get(agg)
                     .set(
@@ -32,7 +32,7 @@ export const getTreeNodesWithChild = (_nodes: Node[]): iNode[] => {
             const _inode = {} as iNode
             _inode.name = AggregationKeys[key]
             _inode.childNodes = Array.from(nodesByAggregator.get(AggregationKeys[key]), ([name, value]) => {
-                const _node = { name: name, status: value, isSelected: false } as iNode
+                const _node = { name, status: value, isSelected: false } as iNode
                 if (name.toLowerCase() == NodeType.Pod.toLowerCase() && podParents.length > 0) {
                     _node.childNodes = podParents.map((_podParent) => {
                         const pParts = _podParent[0].split('/')

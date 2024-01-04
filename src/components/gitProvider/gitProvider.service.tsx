@@ -1,5 +1,5 @@
-import { Routes } from '../../config'
 import { post, put, get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config'
 
 export const getGitProviderConfig = (id: number): Promise<any> => {
     const URL = `${Routes.GIT_PROVIDER}/${id}`

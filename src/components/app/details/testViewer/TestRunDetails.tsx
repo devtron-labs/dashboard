@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Progressing, Drawer, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { useDebouncedEffect } from '../../../common/'
 import { useParams } from 'react-router'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { useDebouncedEffect } from '../../../common'
 import './TestRunDetails.scss'
 import List from './List'
 import { ReactComponent as Folder } from '../../../../assets/icons/ic-folder.svg'
@@ -14,7 +15,6 @@ import { ReactComponent as FileIcon } from '../../../../assets/icons/ic-file.svg
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
 import { getTestSuites, getTestCase, getSuiteDetail } from './service'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { SelectedNames } from './Test.types'
 
 const computeHistogram = require('compute-histogram')
@@ -295,7 +295,7 @@ const TestSuite: React.FC<{
         </List>
     )
 }
-function Properties({ testSuiteId, testSuitesId, hideDrawer }) {
+const Properties = ({ testSuiteId, testSuitesId, hideDrawer }) => {
     const [loading, result, error, reload] = useAsync(
         () => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)),
         [testSuiteId],
@@ -343,7 +343,7 @@ function Properties({ testSuiteId, testSuitesId, hideDrawer }) {
     )
 }
 
-function SystemOutput({ testSuiteId, testSuitesId, hideDrawer }) {
+const SystemOutput = ({ testSuiteId, testSuitesId, hideDrawer }) => {
     const [loading, result, error, reload] = useAsync(
         () => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)),
         [testSuiteId],
@@ -370,7 +370,7 @@ function SystemOutput({ testSuiteId, testSuitesId, hideDrawer }) {
     )
 }
 
-function SystemError({ testSuiteId, testSuitesId, hideDrawer }) {
+const SystemError = ({ testSuiteId, testSuitesId, hideDrawer }) => {
     const [loading, result, error, reload] = useAsync(
         () => getSuiteDetail(Number(testSuitesId), Number(testSuiteId)),
         [testSuiteId],
@@ -399,7 +399,7 @@ function SystemError({ testSuiteId, testSuitesId, hideDrawer }) {
     )
 }
 
-function StatusIcon({ status, width = '24', height = '24' }) {
+const StatusIcon = ({ status, width = '24', height = '24' }) => {
     switch (status?.toLowerCase()) {
         case 'success':
         case 'passed':
@@ -417,7 +417,7 @@ function StatusIcon({ status, width = '24', height = '24' }) {
     }
 }
 
-function TestStats({ testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount }) {
+const TestStats = ({ testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount }) => {
     const statusMap = {
         testCount: 'tests',
         disabledCount: 'disabled',
@@ -443,7 +443,7 @@ function TestStats({ testCount, disabledCount, errorCount, failureCount, skipped
     )
 }
 
-function TestCaseStatus({ testcaseId = 0, testSuitesId, testSuiteId, hideDrawer }) {
+const TestCaseStatus = ({ testcaseId = 0, testSuitesId, testSuiteId, hideDrawer }) => {
     const [testCaseDetail, setTestCaseDetail] = useState(null)
     const [loading, result, error, reload] = useAsync(() => getTestCase(Number(testcaseId)), [testcaseId])
     function handleClose(e) {
@@ -513,7 +513,7 @@ function TestCaseStatus({ testcaseId = 0, testSuitesId, testSuiteId, hideDrawer 
     )
 }
 
-function MessageTypeViewer({ nodeType, message = null, type = null, text }) {
+const MessageTypeViewer = ({ nodeType, message = null, type = null, text }) => {
     return (
         <section>
             <b>{nodeType}</b>
@@ -538,7 +538,7 @@ function MessageTypeViewer({ nodeType, message = null, type = null, text }) {
     )
 }
 
-function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount }) {
+const TestsChart = ({ testCount, disabledCount, errorCount, failureCount, skippedCount, unknownCount }) => {
     const passedCount = testCount - disabledCount - errorCount - failureCount - skippedCount - unknownCount
     const data = [
         { label: 'disabled', value: disabledCount },
@@ -583,7 +583,7 @@ function TestsChart({ testCount, disabledCount, errorCount, failureCount, skippe
                                     borderRadius: '50%',
                                     backgroundColor: colorMap[label],
                                 }}
-                            ></div>
+                            />
                             {label} <span className="fw-6 ml-6">{value}</span>
                         </span>
                     ))}
@@ -621,9 +621,9 @@ const TestsDuration: React.FC<{ timeAggregation: any }> = ({ timeAggregation }) 
                 <BarChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <YAxis />
-                    <XAxis dataKey="time spent" unit={'ms'} scale={'linear'} />
+                    <XAxis dataKey="time spent" unit="ms" scale="linear" />
                     <Tooltip />
-                    <Bar radius={8} dataKey={'number of tests'} fill={'var(--B500)'} />
+                    <Bar radius={8} dataKey="number of tests" fill="var(--B500)" />
                 </BarChart>
             </ResponsiveContainer>
         </div>

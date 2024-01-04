@@ -11,6 +11,11 @@ import {
     useSearchString,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router'
+import Tippy from '@tippyjs/react'
+import Select, { components } from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
     URLS,
@@ -24,17 +29,14 @@ import {
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC, ScanDetailsModal } from '../../../common'
-import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
+import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from '../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironmentMin,
     stopStartApp,
     getLastExecutionMinByAppAndEnv,
 } from '../../../../services/service'
-import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router'
-//@ts-check
+// @ts-check
 import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
 import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
 import restoreIcon from '../../../../assets/icons/ic-restore.svg'
@@ -46,8 +48,6 @@ import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 
-import Tippy from '@tippyjs/react'
-import Select, { components } from 'react-select'
 import { SourceInfo } from './SourceInfo'
 import { AppStreamData, Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
 import {
@@ -195,7 +195,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
             {!params.envId && otherEnvsLoading && <Progressing pageLoader fullHeight />}
             <Route path={`${path.replace(':envId(\\d+)?', ':envId(\\d+)')}`}>
                 <Details
-                    key={params.appId + '-' + params.envId}
+                    key={`${params.appId}-${params.envId}`}
                     appDetailsAPI={fetchAppDetailsInTime}
                     isAppDeployment
                     environment={environment}
@@ -519,7 +519,6 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(() => {
         if (appDetailsError) {
             showError(appDetailsError)
-            return
         }
     }, [appDetailsError])
 
@@ -613,13 +612,13 @@ export const Details: React.FC<DetailsType> = ({
                 appDetails={appDetails}
                 externalLinks={externalLinksAndTools.externalLinks}
                 monitoringTools={externalLinksAndTools.monitoringTools}
-                isDevtronApp={true}
+                isDevtronApp
             />
         )
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg-gradient">
                 <SourceInfo
                     appDetails={appDetails}
@@ -664,7 +663,7 @@ export const Details: React.FC<DetailsType> = ({
                     )}
                 </>
             ) : (
-                <div className="mb-9"></div>
+                <div className="mb-9" />
             )}
             {loadingResourceTree ? (
                 <div className="bcn-0 dc__border-top h-100">
@@ -770,7 +769,7 @@ export const Details: React.FC<DetailsType> = ({
             {rotateModal && (
                 <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} />
             )}
-        </React.Fragment>
+        </>
     )
 }
 
@@ -795,7 +794,7 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
     return <AppDetailsEmptyState envType={EnvType.APPLICATION} />
 }
 
-export function EnvSelector({
+export const EnvSelector = ({
     environments,
     disabled,
     controlStyleOverrides,
@@ -803,7 +802,7 @@ export function EnvSelector({
     environments: any
     disabled: boolean
     controlStyleOverrides?: React.CSSProperties
-}) {
+}) => {
     const { push } = useHistory()
     const { path } = useRouteMatch()
     const { appId, envId } = useParams<{ appId: string; envId?: string }>()
@@ -907,12 +906,12 @@ export function EnvSelector({
                     components={{
                         IndicatorSeparator: null,
                         Option,
-                        GroupHeading: (props) => <GroupHeading {...props} hideClusterName={true} />,
+                        GroupHeading: (props) => <GroupHeading {...props} hideClusterName />,
                         DropdownIndicator: components.DropdownIndicator,
                         ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
                     }}
                     styles={envSelectorStyle}
-                    isSearchable={true}
+                    isSearchable
                     classNamePrefix="app-environment-select"
                     formatOptionLabel={formatOptionLabel}
                 />
@@ -921,7 +920,7 @@ export function EnvSelector({
     )
 }
 
-export function EventsLogsTabSelector({ onMouseDown = null }) {
+export const EventsLogsTabSelector = ({ onMouseDown = null }) => {
     const params = useParams<{ appId: string; envId: string; tab?: NodeDetailTabs; kind?: NodeDetailTabs }>()
     const { queryParams, searchParams } = useSearchString()
     const history = useHistory()
@@ -971,9 +970,10 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                         e.stopPropagation()
                         queryParams.delete('kind')
                         history.push(
-                            generatePath(path, { ...params, tab: params.tab ? null : NodeDetailTabs.MANIFEST }) +
-                                '?' +
-                                queryParams.toString(),
+                            `${generatePath(path, {
+                                ...params,
+                                tab: params.tab ? null : NodeDetailTabs.MANIFEST,
+                            })}?${queryParams.toString()}`,
                         )
                     }}
                 >
@@ -1019,7 +1019,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
 
     if (!searchParams?.kind) {
         queryParams.set('kind', params.kind)
-        history.replace(url + '?' + queryParams.toString())
+        history.replace(`${url}?${queryParams.toString()}`)
         return null
     }
     const kind: Nodes = searchParams.kind as Nodes
@@ -1077,10 +1077,8 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
             if (contAvailable && !selectedContainer) {
                 selectContainer(contAvailable[0])
             }
-        } else {
-            if (!selectedContainer) {
-                selectContainer(null)
-            }
+        } else if (!selectedContainer) {
+            selectContainer(null)
         }
     })
 
@@ -1117,7 +1115,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
         <div className="pl-20 flex left" style={{ background: '#2c3354' }}>
             {params.tab === NodeDetailTabs.TERMINAL && (
                 <>
-                    <div className={`flex mr-12`}>
+                    <div className="flex mr-12">
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -1131,7 +1129,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                             )}
                         </Tippy>
 
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
                             <Abort className="icon-dim-20 mr-8 ml-8" onClick={onClickAbort} />
                         </Tippy>
                     </div>
@@ -1155,7 +1153,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                         </div>
                     </Tippy>
 
-                    <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
                         <Abort className="icon-dim-20 mr-16 ml-8" onClick={onLogsCleared} />
                     </Tippy>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
@@ -1326,7 +1324,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
     )
 }
 
-export function AppNotConfigured({
+export const AppNotConfigured = ({
     image,
     title,
     subtitle,
@@ -1342,7 +1340,7 @@ export function AppNotConfigured({
     appConfigTabs?: string
     style?: React.CSSProperties
     isJobView?: boolean
-}) {
+}) => {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     function handleEditApp(e) {
@@ -1361,9 +1359,7 @@ export function AppNotConfigured({
             <img src={image || AppNotConfiguredIcon} />
             <h3 className="mb-8 mt-20 fs-16 fw-600 w-300">{title || 'Finish configuring this application'}</h3>
             <p className="mb-20 fs-13 w-300">
-                {subtitle ? (
-                    subtitle
-                ) : (
+                {subtitle || (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
                         <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noreferrer">
@@ -1382,7 +1378,7 @@ export function AppNotConfigured({
     )
 }
 
-export function EnvironmentNotConfigured({ environments, ...props }) {
+export const EnvironmentNotConfigured = ({ environments, ...props }) => {
     const environmentsMap = Array.isArray(environments)
         ? environments.reduce((agg, curr) => {
               agg[curr.environmentId] = curr.environmentName
@@ -1413,7 +1409,7 @@ export function EnvironmentNotConfigured({ environments, ...props }) {
     )
 }
 
-export function TimeRangeSelector({
+export const TimeRangeSelector = ({
     value = '',
     onSelect = null,
     options = [
@@ -1429,7 +1425,7 @@ export function TimeRangeSelector({
         '7 days',
     ],
     prefix = '',
-}) {
+}) => {
     const [selectedRange, selectRange] = React.useState<string>(value)
 
     useEffectAfterMount(() => {
@@ -1460,16 +1456,16 @@ export function TimeRangeSelector({
     )
 }
 
-export function SyncStatusMessage(app: Application) {
+export const SyncStatusMessage = (app: Application) => {
     let message = app.spec.source.targetRevision || 'HEAD'
     if (app.status.sync.revision) {
         if (app.spec.source?.chart) {
-            message += ' (' + app.status.sync.revision + ')'
+            message += ` (${app.status.sync.revision})`
         } else if (
             app.status.sync.revision.length >= 7 &&
             !app.status.sync.revision.startsWith(app.spec.source.targetRevision)
         ) {
-            message += ' (' + app.status.sync.revision.substr(0, 7) + ')'
+            message += ` (${app.status.sync.revision.substr(0, 7)})`
         }
     }
     switch (app.status.sync.status) {
@@ -1511,7 +1507,8 @@ export const getAppOperationState = (app: Application) => {
             phase: 'Running',
             startedAt: app.metadata.deletionTimestamp,
         }
-    } else if (app.operation) {
+    }
+    if (app.operation) {
         return {
             phase: 'Running',
             startedAt: new Date().toISOString(),
@@ -1519,9 +1516,8 @@ export const getAppOperationState = (app: Application) => {
                 sync: {},
             },
         }
-    } else {
-        return app.status.operationState
     }
+    return app.status.operationState
 }
 export function getOperationType(application: Application) {
     if (application.metadata.deletionTimestamp) {

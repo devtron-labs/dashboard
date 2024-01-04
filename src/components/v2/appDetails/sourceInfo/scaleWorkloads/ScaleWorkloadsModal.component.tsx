@@ -228,7 +228,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
         for (const [key, value] of _workloadsList) {
             value.value = !_nameSelection.isChecked ? 'CHECKED' : 'INTERMEDIATE'
-            value.isChecked = !_nameSelection.isChecked ? true : false
+            value.isChecked = !_nameSelection.isChecked
             _workloadsList.set(key, value)
         }
 
@@ -260,7 +260,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         setNameSelection({
             ...nameSelection,
             [_nameSelectionKey]: {
-                isChecked: areAllSelected || isAnySelected ? true : false,
+                isChecked: !!(areAllSelected || isAnySelected),
                 value: !areAllSelected && isAnySelected ? 'INTERMEDIATE' : 'CHECKED',
             },
         })
@@ -324,24 +324,18 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         let loadingText = ''
         if (isFetchingDetails) {
             loadingText = LoadingText.LOOKING_FOR_SCALABLE_WORKLOADS
-        } else {
-            if (fetchingLatestDetails || scalingInProgress) {
-                if (isActiveWorkloadsTab) {
-                    loadingText = LoadingText.SCALING_DOWN_WORKLOADS
-                } else {
-                    loadingText = LoadingText.RESTORING_WORKLOADS
-                }
+        } else if (fetchingLatestDetails || scalingInProgress) {
+            if (isActiveWorkloadsTab) {
+                loadingText = LoadingText.SCALING_DOWN_WORKLOADS
             } else {
-                if (!canScaleWorkloads) {
-                    loadingText = LoadingText.NO_SCALABLE_WORKLOADS
-                } else {
-                    if (isActiveWorkloadsTab) {
-                        loadingText = LoadingText.NO_ACTIVE_WORKLOADS
-                    } else {
-                        loadingText = LoadingText.NO_SCALED_DOWN_WORKLOADS
-                    }
-                }
+                loadingText = LoadingText.RESTORING_WORKLOADS
             }
+        } else if (!canScaleWorkloads) {
+            loadingText = LoadingText.NO_SCALABLE_WORKLOADS
+        } else if (isActiveWorkloadsTab) {
+            loadingText = LoadingText.NO_ACTIVE_WORKLOADS
+        } else {
+            loadingText = LoadingText.NO_SCALED_DOWN_WORKLOADS
         }
         return loadingText
     }
@@ -361,11 +355,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             flexDirection: 'column',
                         }}
                     >
-                        <DetailsProgressing
-                            pageLoader
-                            fullHeight={true}
-                            loadingText={getLoadingText(isActiveWorkloadsTab)}
-                        />
+                        <DetailsProgressing pageLoader fullHeight loadingText={getLoadingText(isActiveWorkloadsTab)} />
                     </div>
                 ) : (
                     <>
@@ -472,7 +462,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     return (
         <VisibleModal className="scale-workload-modal">
-            <div className={`modal__body br-4`}>
+            <div className="modal__body br-4">
                 {renderScaleModalHeader()}
                 {!isFetchingDetails && canScaleWorkloads && renderScaleWorkloadTabs()}
                 {renderScaleWorkloadsList(selectedDeploymentTabIndex === 0)}

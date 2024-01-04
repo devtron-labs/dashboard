@@ -5,7 +5,7 @@ import { useHistory } from 'react-router'
 import { DeleteComponentProps } from '../components/app/types'
 import info from '../assets/icons/ic-info-filled.svg'
 
-function DeleteComponent({
+const DeleteComponent = ({
     setDeleting,
     toggleConfirmation,
     deleteComponent,
@@ -18,7 +18,7 @@ function DeleteComponent({
     reload,
     configuration = '',
     closeCustomComponent,
-}: DeleteComponentProps) {
+}: DeleteComponentProps) => {
     const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false)
     const { push } = useHistory()
 
@@ -84,7 +84,7 @@ function DeleteComponent({
                 dataTestId="delete-dialog"
             >
                 <DeleteDialog.Description>
-                    <p>Are you sure you want to delete this {configuration ? configuration : component}? </p>
+                    <p>Are you sure you want to delete this {configuration || component}? </p>
                 </DeleteDialog.Description>
             </DeleteDialog>
         )

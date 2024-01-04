@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import {
     showError,
     Progressing,
@@ -8,10 +7,11 @@ import {
     copyToClipboard,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../config/constants'
 import { toast } from 'react-toastify'
-import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ViewType } from '../../config/constants'
+import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
@@ -234,7 +234,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                             this.setCopied(false)
                         }, 4000)
                     }}
-                    interactive={true}
+                    interactive
                 >
                     <Clipboard
                         data-value={this.state.webhookAttribute[attribute]}
@@ -318,120 +318,117 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     <Progressing pageLoader />
                 </div>
             )
-        } else {
-            return (
-                <>
-                    <div className="flex" style={{ height: 'calc(100vh - 120px' }}>
-                        <div
-                            className="w-600 p-20 flex column dc__align-start dc__content-start dc__overflow-scroll"
-                            style={{ height: 'calc(100vh - 120px)' }}
-                        >
-                            <label className="form__row w-100-imp">
-                                <CustomInput
-                                    label="Configuration name"
-                                    data-testid="add-webhook-config-name"
-                                    name="app-name"
-                                    value={this.state.form.configName}
-                                    onChange={this.handleWebhookConfigNameChange}
-                                    data-field="configName"
-                                    handleOnBlur={this.onBlur}
-                                    placeholder="Enter name"
-                                    autoFocus={true}
-                                    tabIndex={1}
-                                    error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
-                                    isRequiredField={true}
-                                />
-                            </label>
-                            <label className="form__row w-100-imp">
-                                <CustomInput
-                                    label="Webhook URL"
-                                    type="text"
-                                    name="app-name"
-                                    value={this.state.form.webhookUrl}
-                                    autoFocus={true}
-                                    placeholder="Enter Incoming Webhook URL"
-                                    tabIndex={2}
-                                    onChange={this.handleWebhookUrlChange}
-                                    data-field="webhookUrl"
-                                    handleOnBlur={this.onBlur}
-                                    isRequiredField={true}
-                                    error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
-                                    data-testid="webhook-url-error"
-                                />
-                            </label>
-                            <div className="form__row w-100-imp">
-                                <div className="flex ml-0 dc__content-space">
-                                    <span className="form__label">Headers</span>
-                                    <span
-                                        className="flex dc__align-end dc__content-end cb-5 fw-6 fs-13 flex right mb-4 cursor"
-                                        data-testid="add-new-header-button"
-                                        onClick={this.addNewHeader}
-                                    >
-                                        <Add className="icon-dim-20 fcb-5" /> Add
-                                    </span>
-                                </div>
-                                {this.renderHeadersList()}
-                            </div>
-                            <label className="form__row w-100-imp">
-                                <span className="form__label dc__required-field">
-                                    Data to be shared through Webhook
+        }
+        return (
+            <>
+                <div className="flex" style={{ height: 'calc(100vh - 120px' }}>
+                    <div
+                        className="w-600 p-20 flex column dc__align-start dc__content-start dc__overflow-scroll"
+                        style={{ height: 'calc(100vh - 120px)' }}
+                    >
+                        <label className="form__row w-100-imp">
+                            <CustomInput
+                                label="Configuration name"
+                                data-testid="add-webhook-config-name"
+                                name="app-name"
+                                value={this.state.form.configName}
+                                onChange={this.handleWebhookConfigNameChange}
+                                data-field="configName"
+                                handleOnBlur={this.onBlur}
+                                placeholder="Enter name"
+                                autoFocus
+                                tabIndex={1}
+                                error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
+                                isRequiredField
+                            />
+                        </label>
+                        <label className="form__row w-100-imp">
+                            <CustomInput
+                                label="Webhook URL"
+                                type="text"
+                                name="app-name"
+                                value={this.state.form.webhookUrl}
+                                autoFocus
+                                placeholder="Enter Incoming Webhook URL"
+                                tabIndex={2}
+                                onChange={this.handleWebhookUrlChange}
+                                data-field="webhookUrl"
+                                handleOnBlur={this.onBlur}
+                                isRequiredField
+                                error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
+                                data-testid="webhook-url-error"
+                            />
+                        </label>
+                        <div className="form__row w-100-imp">
+                            <div className="flex ml-0 dc__content-space">
+                                <span className="form__label">Headers</span>
+                                <span
+                                    className="flex dc__align-end dc__content-end cb-5 fw-6 fs-13 flex right mb-4 cursor"
+                                    data-testid="add-new-header-button"
+                                    onClick={this.addNewHeader}
+                                >
+                                    <Add className="icon-dim-20 fcb-5" /> Add
                                 </span>
-                                <div className="dc__border pt-8 pb-8 br-4" data-field="payload" onBlur={this.onBlur}>
-                                    <CodeEditor
-                                        value={this.state.form.payload}
-                                        theme="vs-alice-blue"
-                                        mode="json"
-                                        onChange={this.handleWebhookPaylodChange}
-                                        inline
-                                        height={200}
-                                    ></CodeEditor>
-                                </div>
-                                <span className="form__error">
-                                    {!this.state.isValid.payload ? (
-                                        this.state.form.payload !== '' && (
-                                            <>
-                                                <Error className="form__icon form__icon--error" />
-                                                Write valid JSON.
-                                                <br />
-                                            </>
-                                        )
-                                    ) : (
+                            </div>
+                            {this.renderHeadersList()}
+                        </div>
+                        <label className="form__row w-100-imp">
+                            <span className="form__label dc__required-field">Data to be shared through Webhook</span>
+                            <div className="dc__border pt-8 pb-8 br-4" data-field="payload" onBlur={this.onBlur}>
+                                <CodeEditor
+                                    value={this.state.form.payload}
+                                    theme="vs-alice-blue"
+                                    mode="json"
+                                    onChange={this.handleWebhookPaylodChange}
+                                    inline
+                                    height={200}
+                                />
+                            </div>
+                            <span className="form__error">
+                                {!this.state.isValid.payload ? (
+                                    this.state.form.payload !== '' && (
                                         <>
                                             <Error className="form__icon form__icon--error" />
-                                            This is a required field.
+                                            Write valid JSON.
                                             <br />
                                         </>
-                                    )}
-                                </span>
-                            </label>
-                        </div>
-                        {this.renderConfigureLinkInfoColumn()}
+                                    )
+                                ) : (
+                                    <>
+                                        <Error className="form__icon form__icon--error" />
+                                        This is a required field.
+                                        <br />
+                                    </>
+                                )}
+                            </span>
+                        </label>
                     </div>
-                    <div className="pt-16 pb-16 pl-24 pr-24 flex right dc__border-top">
-                        <div className="flex right">
-                            <button
-                                type="button"
-                                className="cta cancel mr-16"
-                                tabIndex={5}
-                                onClick={this.props.closeWebhookConfigModal}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={this.onClickSave}
-                                data-testid="add-webhook-save-button"
-                                type="submit"
-                                className="cta"
-                                tabIndex={4}
-                                disabled={this.state.form.isLoading}
-                            >
-                                {this.state.form.isLoading ? <Progressing /> : 'Save'}
-                            </button>
-                        </div>
+                    {this.renderConfigureLinkInfoColumn()}
+                </div>
+                <div className="pt-16 pb-16 pl-24 pr-24 flex right dc__border-top">
+                    <div className="flex right">
+                        <button
+                            type="button"
+                            className="cta cancel mr-16"
+                            tabIndex={5}
+                            onClick={this.props.closeWebhookConfigModal}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={this.onClickSave}
+                            data-testid="add-webhook-save-button"
+                            type="submit"
+                            className="cta"
+                            tabIndex={4}
+                            disabled={this.state.form.isLoading}
+                        >
+                            {this.state.form.isLoading ? <Progressing /> : 'Save'}
+                        </button>
                     </div>
-                </>
-            )
-        }
+                </div>
+            </>
+        )
     }
 
     render() {

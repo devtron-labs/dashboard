@@ -16,32 +16,28 @@ export class ValidationRules {
                 isValid: false,
                 message: `Max 50 characters allowed; Start and end with lowercase; Use (a-z), (0-9), (-), (_)`,
             }
-        } else {
-            return { message: null, isValid: true }
         }
+        return { message: null, isValid: true }
     }
 
     description = (value: string): { isValid: boolean; message: string } => {
         if (value.length > 350) {
             return { isValid: false, message: `Max 350 characters allowed` }
-        } else {
-            return { message: null, isValid: true }
         }
+        return { message: null, isValid: true }
     }
 
     expireAtInMs = (value: number): { isValid: boolean; message: string } => {
         if (!value) {
             return { message: 'This is required field', isValid: false }
-        } else {
-            return { message: null, isValid: true }
         }
+        return { message: null, isValid: true }
     }
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: 'This is required field', isValid: false }
-        } else {
-            return { message: null, isValid: true }
         }
+        return { message: null, isValid: true }
     }
 }

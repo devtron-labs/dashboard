@@ -43,7 +43,7 @@ export const styles = {
     dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
 }
 
-export function Option(props) {
+export const Option = (props) => {
     return (
         <components.Option {...props}>
             <div className={`flex left pt-8 pb-8 pl-8 pr-8 ${props.isSelected ? 'bcb-1' : ''}`}>
@@ -51,7 +51,7 @@ export function Option(props) {
                     className={`dc__app-summary__icon icon-dim-22 ${props.data.status
                         .toLocaleLowerCase()
                         .replace(/\s+/g, '')} mr-8`}
-                ></div>
+                />
                 <div>
                     <div className="cn-9 fs-13"> {props.label}</div>
                     <div className="cn-7 flex left">

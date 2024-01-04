@@ -2,7 +2,7 @@ export const EA_MANIFEST_SECRET_INFO_TEXT = 'The values for all keys in the data
 export const EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT =
     'The values for all keys in the data field have to be base64-encoded strings.'
 
-//DELETE COMPONENET STARTS
+// DELETE COMPONENET STARTS
 export const DC_MATERIAL_VIEW_CONFIRMATION_MESSAGE =
     'Checkout path for this repository is being used in docker build config. Please change checkout path in use and try again.'
 export const DC_CHART_REPO_CONFIRMATION_MESSAGE = 'Some deployed helm apps are using this repository.'
@@ -44,7 +44,7 @@ export const enum DeleteComponentsName {
     GitRepo = 'Repo',
 }
 
-//DELETE COMPONENT ENDS
+// DELETE COMPONENT ENDS
 
 export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
@@ -121,7 +121,7 @@ export const ERROR_EMPTY_SCREEN = {
         'Looks like you don’t have access to information on this page. Please contact your manager to request access.',
 }
 
-//Confirmation Dialog messgaes
+// Confirmation Dialog messgaes
 export const CONFIRMATION_DIALOG_MESSAGING = {
     DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
 }
@@ -159,7 +159,7 @@ export const BUTTON_TEXT = {
     CANCEL: 'Cancel',
 }
 
-//Deployment App Types
+// Deployment App Types
 export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',

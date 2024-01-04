@@ -1,12 +1,12 @@
 import React, { useContext } from 'react'
+import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { MountPathMap } from '../ciPipeline/types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
-function MountFromHost() {
+const MountFromHost = () => {
     const { selectedTaskIndex, formData, setFormData, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const addMountDirectoryfromHost = () => {
         const _formData = { ...formData }
@@ -36,7 +36,7 @@ function MountFromHost() {
     return (
         <>
             <div className="row-container mb-12">
-                <div className="fw-6 fs-13 lh-32 cn-7 "></div>
+                <div className="fw-6 fs-13 lh-32 cn-7 " />
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addMountDirectoryfromHost}>
                     <Add className="add-icon mt-6" />
                     Add mapping
@@ -51,7 +51,7 @@ function MountFromHost() {
                     return (
                         <>
                             <div className="mount-row mb-4 mt-4">
-                                <div className="fw-6 fs-13 lh-32 cn-7 "></div>
+                                <div className="fw-6 fs-13 lh-32 cn-7 " />
                                 <CustomInput
                                     data-testid="script-mount-host-file-path-host"
                                     rootClassName="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__left-radius-4 dc__no-right-border"

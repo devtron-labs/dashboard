@@ -1,12 +1,12 @@
 import React, { useState, useContext, Fragment, useEffect } from 'react'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import Tippy from '@tippyjs/react'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-export function VariableContainer({ type }: { type: PluginVariableType }) {
+export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
     const { formData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const variableLength =

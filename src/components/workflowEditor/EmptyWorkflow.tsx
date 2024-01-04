@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
 import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { createWorkflow } from './service'
 import { toast } from 'react-toastify'
+import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
+import { createWorkflow } from './service'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { FILTER_NAME_REGEX } from '../ApplicationGroup/Constants'
 import { NO_WORKFLOW_NAME, INVALID_WORKFLOW_NAME, MIN_3CHARS, MAX_30CHARS, SUCCESS_CREATION } from './constants'
@@ -51,7 +51,7 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
     }
 
     const isNameValid = (): { errorMsg: string; isValid: boolean } => {
-        const name = state.name
+        const { name } = state
         if (!name) {
             return {
                 errorMsg: NO_WORKFLOW_NAME,
@@ -91,7 +91,7 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
                 close={(event) => props.onClose()}
                 onSave={saveWorkflow}
                 isLoading={state.loading}
-                closeOnESC={true}
+                closeOnESC
             >
                 <label className="form__row" htmlFor="workflow-name">
                     <CustomInput
@@ -101,7 +101,7 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
                         value={state.name}
                         placeholder="Eg. my-job-workflow"
                         onChange={handleWorkflowName}
-                        isRequiredField={true}
+                        isRequiredField
                         error={state.showError && !isNameValid().isValid && isNameValid().errorMsg}
                     />
                 </label>

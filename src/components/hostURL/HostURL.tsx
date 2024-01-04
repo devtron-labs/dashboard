@@ -1,8 +1,4 @@
 import React, { Component } from 'react'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { HostURLConfigState, HostURLConfigProps } from './hosturl.type'
 import {
     showError,
     Progressing,
@@ -11,12 +7,17 @@ import {
     InfoColourBar,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NO_HOST_URL, ViewType } from '../../config'
 import { toast } from 'react-toastify'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { HostURLConfigState, HostURLConfigProps } from './hosturl.type'
+import { NO_HOST_URL, ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg'
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service'
 import './hosturl.scss'
+
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
     constructor(props) {
         super(props)
@@ -66,7 +67,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     } else {
                         this.setState({
                             view: ViewType.FORM,
-                            form: form,
+                            form,
                         })
                     }
                 })
@@ -92,7 +93,8 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         if (!this.state.form.value.length) {
             toast.error('Some required fields are missing')
             return
-        } else if (!this.state.form.id) {
+        }
+        if (!this.state.form.id) {
             return
         }
         this.setState({ saveLoading: true })
@@ -126,7 +128,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         this.setState({
             form: {
                 ...this.state.form,
-                value: value,
+                value,
             },
             isHostUrlValid: value?.length > 0,
         })
@@ -163,7 +165,8 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         }
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <section className="dc__align-reload-center">
                     <ErrorScreenManager code={this.state.statusCode} />
@@ -205,7 +208,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 placeholder="Enter Host URL"
                                 onChange={this.handleChange}
                                 data-testid="host-url-textbox"
-                                isRequiredField={true}
+                                isRequiredField
                                 error={!this.state.isHostUrlValid && NO_HOST_URL}
                             />
                             <div className="hosturl__autodetection flex fs-12 left pt-4">

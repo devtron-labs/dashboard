@@ -1,6 +1,6 @@
+import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { getNamespaceListMin as getNamespaceList, getAppFilters } from '../../../services/service'
 import { Routes, SERVER_MODE } from '../../../config'
-import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     EnvironmentListHelmResult,
     EnvironmentHelmResult,
@@ -17,7 +17,7 @@ export interface AppListResponse extends ResponseType {
 
 interface AppsListResult {
     clusterIds: number[]
-    applicationType: string //DEVTRON-CHART-STORE, DEVTRON-APP ,HELM-APP
+    applicationType: string // DEVTRON-CHART-STORE, DEVTRON-APP ,HELM-APP
     errored: boolean
     errorMsg: string
     helmApps: HelmApp[]
@@ -48,11 +48,10 @@ export interface AppEnvironmentDetail {
 async function commonAppFilters(serverMode) {
     if (serverMode === SERVER_MODE.FULL) {
         return getAppFilters()
-    } else {
-        return Promise.all([getProjectList(), getClusterList()]).then(([projectListRes, clusterListResp]) => {
-            return { result: { Teams: projectListRes?.result, Clusters: clusterListResp?.result } }
-        })
     }
+    return Promise.all([getProjectList(), getClusterList()]).then(([projectListRes, clusterListResp]) => {
+        return { result: { Teams: projectListRes?.result, Clusters: clusterListResp?.result } }
+    })
 }
 
 export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Promise<any> => {
@@ -77,7 +76,7 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             })
         }
 
-        ////// set master filters data starts (check/uncheck)
+        /// /// set master filters data starts (check/uncheck)
         const filterApplied = {
             teams: new Set(payloadParsedFromUrl.teams),
             environments: new Set(payloadParsedFromUrl.environments),
@@ -149,9 +148,9 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
         filters.namespaces = _namespaces.sort((a, b) => {
             return sortByLabel(a, b)
         })
-        //set filter namespace ends
+        // set filter namespace ends
 
-        //set filter appStatus starts
+        // set filter appStatus starts
 
         filters.appStatus = Object.entries(APP_STATUS).map(([keys, values]) => {
             return {
@@ -162,7 +161,7 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             }
         })
 
-        ////// set master filters data ends (check/uncheck)
+        /// /// set master filters data ends (check/uncheck)
 
         // set list data for env cluster & namespace
         const environmentClusterAppListData = new Map()
@@ -195,9 +194,9 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
 
         return {
             projectsRes: projectList,
-            projectMap: projectMap,
-            environmentClusterAppListData: environmentClusterAppListData,
-            filters: filters,
+            projectMap,
+            environmentClusterAppListData,
+            filters,
         }
     })
 }
@@ -274,13 +273,8 @@ const _buildNamespaces = (
             // avoid pushing same namespace for same cluster multiple times (can be data bug in backend)
             if (_namespace && !_namespaces.some((_ns) => _ns.clusterId == _clusterId && _ns.actualName == _namespace)) {
                 _namespaces.push({
-                    key: _clusterId + '_' + _namespace,
-                    label:
-                        '<div><div class="dc__truncate-text">' +
-                        _namespace +
-                        '</div><div class="cn-6 fs-11 fw-n dc__truncate-text"> cluster: ' +
-                        _clusterName +
-                        '</div></div>',
+                    key: `${_clusterId}_${_namespace}`,
+                    label: `<div><div class="dc__truncate-text">${_namespace}</div><div class="cn-6 fs-11 fw-n dc__truncate-text"> cluster: ${_clusterName}</div></div>`,
                     isSaved: true,
                     isChecked:
                         _isClusterSelected && clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),

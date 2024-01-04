@@ -5,9 +5,9 @@ import {
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { DOCUMENTATION, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
-import { toast } from 'react-toastify'
 import { Project } from './Project'
 import { ProjectListState, ProjectType, ProjectListProps } from './types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -101,19 +101,20 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         const project = this.state.projects[index]
         if (!isValid?.[key]) {
             return
-        } else {
-            if (!project.name) {
-                isValid[key] = false
-                errorMessage[key] = REQUIRED_FIELD_MSG
-                this.setState({ isValid })
-                return
-            } else if (this.isProjectNameExists(index, project.name)) {
-                isValid[key] = false
-                errorMessage[key] = PROJECT_EXIST_MSG
-                this.setState({ isValid })
-                return
-            }
         }
+        if (!project.name) {
+            isValid[key] = false
+            errorMessage[key] = REQUIRED_FIELD_MSG
+            this.setState({ isValid })
+            return
+        }
+        if (this.isProjectNameExists(index, project.name)) {
+            isValid[key] = false
+            errorMessage[key] = PROJECT_EXIST_MSG
+            this.setState({ isValid })
+            return
+        }
+
         this.setState({ loadingData: true, isValid })
         createProject(project)
             .then((response) => {
@@ -196,26 +197,26 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         }
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__align-reload-center">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )
-        } else {
-            return (
-                <section className="global-configuration__component flex-1">
-                    {this.renderPageHeader()}
-                    {this.renderAddProject()}
-                    {this.state.projects.map((project, index) => {
-                        return (
-                            <React.Fragment key={`${project.name}-${index}`}>
-                                {this.renderProjects(project, index)}
-                            </React.Fragment>
-                        )
-                    })}
-                </section>
-            )
         }
+        return (
+            <section className="global-configuration__component flex-1">
+                {this.renderPageHeader()}
+                {this.renderAddProject()}
+                {this.state.projects.map((project, index) => {
+                    return (
+                        <React.Fragment key={`${project.name}-${index}`}>
+                            {this.renderProjects(project, index)}
+                        </React.Fragment>
+                    )
+                })}
+            </section>
+        )
     }
 }

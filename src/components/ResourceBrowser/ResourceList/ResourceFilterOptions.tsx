@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
+import { withShortcut, IWithShortcut } from 'react-keybind'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
@@ -9,10 +10,9 @@ import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.com
 import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
 import { ConditionalWrap } from '../../common'
 import { OptionType } from '../../app/types'
-import { withShortcut, IWithShortcut } from 'react-keybind'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 
-function ResourceFilterOptions({
+const ResourceFilterOptions = ({
     selectedResource,
     resourceList,
     namespaceOptions,
@@ -30,7 +30,7 @@ function ResourceFilterOptions({
     shortcut,
     isCreateModalOpen,
     renderCallBackSync,
-}: ResourceFilterOptionsProps & IWithShortcut) {
+}: ResourceFilterOptionsProps & IWithShortcut) => {
     const { push } = useHistory()
     const location = useLocation()
     const { namespace } = useParams<{
@@ -146,7 +146,7 @@ function ResourceFilterOptions({
                                     : NAMESPACE_NOT_APPLICABLE_OPTION
                             }
                             onChange={handleNamespaceChange}
-                            blurInputOnSelect={true}
+                            blurInputOnSelect
                             isDisabled={isNamespaceSelectDisabled ?? !selectedResource?.namespaced}
                             styles={FILTER_SELECT_COMMON_STYLES}
                             components={{

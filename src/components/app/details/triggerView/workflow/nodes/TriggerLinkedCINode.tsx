@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
+import { RouteComponentProps } from 'react-router'
+import { Link } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../../../../assets/icons/ic-node-build-linked.svg'
 import { TriggerStatus } from '../../../../config'
-import { RouteComponentProps } from 'react-router'
-import { Link } from 'react-router-dom'
 import { DEFAULT_STATUS, URLS } from '../../../../../../config'
-import Tippy from '@tippyjs/react'
 
 export interface CINodeProps extends RouteComponentProps<{}> {
     x: number
@@ -56,25 +56,24 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                     {this.props.status}
                 </div>
             )
-        } else {
-            return (
-                <div
-                    data-testid="cd-trigger-status"
-                    className="dc__cd-trigger-status"
-                    style={{ color: TriggerStatus[status] }}
-                >
-                    {this.props.status}
-                    {!this.props.fromAppGrouping && (
-                        <>
-                            {this.props.status && <span className="mr-5 ml-5">/</span>}
-                            <Link to={url} className="workflow-node__details-link">
-                                Details
-                            </Link>
-                        </>
-                    )}
-                </div>
-            )
         }
+        return (
+            <div
+                data-testid="cd-trigger-status"
+                className="dc__cd-trigger-status"
+                style={{ color: TriggerStatus[status] }}
+            >
+                {this.props.status}
+                {!this.props.fromAppGrouping && (
+                    <>
+                        {this.props.status && <span className="mr-5 ml-5">/</span>}
+                        <Link to={url} className="workflow-node__details-link">
+                            Details
+                        </Link>
+                    </>
+                )}
+            </div>
+        )
     }
 
     renderCardContent() {
@@ -111,7 +110,7 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                         <span className="workflow-node__text-light" data-testid="linked-indication-name">
                             Build: Linked
                         </span>
-                        <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
+                        <Tippy className="default-tt" arrow placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
                     </div>

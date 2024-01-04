@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { getChartVersionDetailsV2 } from '../../charts/charts.service'
 import { DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import { getChartVersionDetailsV2 } from '../../charts/charts.service'
 import IndexStore from '../appDetails/index.store'
 import ChartValuesView from './chartValuesDiff/ChartValuesView'
 // TODO: appDetails from useSharedState
@@ -11,7 +11,7 @@ export interface ValueComponentTypes {
     init: () => void
 }
 
-function ValuesComponent({ appId, init }: ValueComponentTypes) {
+const ValuesComponent = ({ appId, init }: ValueComponentTypes) => {
     const [installedConfig, setInstalledConfig] = useState(null)
     const appDetails = IndexStore.getAppDetails()
 

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Progressing, VisibleModal, GenericEmptyState, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as CopyText } from '../../../assets/icons/ic-copy.svg'
-import Tippy from '@tippyjs/react'
 import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
 import { CopyToClipboardTextProps, ManifestUrlList, TriggerURL } from './types'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
-export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) {
+export const TriggerUrlModal = ({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) => {
     const [result, setResponse] = useState<ManifestUrlList[]>()
     const [loading, setLoading] = useState(true)
     const data = { Ingress: [], Service: [] }
@@ -24,7 +24,6 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                 }
                 if (item.kind === KIND.INGRESS && item.urls?.length) {
                     data.Ingress.push(item)
-                    return
                 }
             }
         })
@@ -115,7 +114,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                                 placement="top"
                                                             >
                                                                 <a
-                                                                    href={'//' + url}
+                                                                    href={`//${url}`}
                                                                     className="url-box dc__ellipsis-right mr-6"
                                                                     target="_blank"
                                                                     rel="noreferrer noopener"
@@ -165,12 +164,12 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
     )
 }
 
-export function CopyToClipboardTextWithTippy({
+export const CopyToClipboardTextWithTippy = ({
     text,
     rootClassName,
     iconClass,
     placement = 'bottom',
-}: CopyToClipboardTextProps) {
+}: CopyToClipboardTextProps) => {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
@@ -191,7 +190,7 @@ export function CopyToClipboardTextWithTippy({
                     setCopied(false)
                 }, 2000)
             }}
-            interactive={true}
+            interactive
         >
             <div className={`cluster-clipboard cursor ${rootClassName ?? ''}`} onClick={copyClipboard}>
                 <CopyText className={`${iconClass ?? 'icon-dim-16'}`} />
@@ -200,7 +199,7 @@ export function CopyToClipboardTextWithTippy({
     )
 }
 
-function EmptyUrlState({ title = '', subtitle = '' }) {
+const EmptyUrlState = ({ title = '', subtitle = '' }) => {
     return (
         <GenericEmptyState
             title={title || EMPTY_STATE_STATUS.TRIGGER_URL.TITLE}

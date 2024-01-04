@@ -1,5 +1,7 @@
 import React from 'react'
 import { components } from 'react-select'
+import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { getOptionBGClass } from './AppGroup.utils'
 import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
@@ -12,8 +14,6 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactiv
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
-import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 
 export const ValueContainer = (props): JSX.Element => {
     const {
@@ -23,8 +23,8 @@ export const ValueContainer = (props): JSX.Element => {
         selectedGroupFilter,
         filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
-    let selectorText,
-        selectedAppsLength = props.getValue().length
+    let selectorText
+    const selectedAppsLength = props.getValue().length
     if (selectedFilterTab === AppFilterTabs.GROUP_FILTER && selectedGroupFilter[0]) {
         selectorText = selectedGroupFilter[0]?.label
     } else {
@@ -105,7 +105,8 @@ export const Option = (props): JSX.Element => {
                         </Tippy>
                     </div>
                 )
-            } else if (props.isSelected) {
+            }
+            if (props.isSelected) {
                 return <CheckIcon className="icon-dim-16 mr-4 mw-18 cursor scb-5" onClick={selectData} />
             }
         }

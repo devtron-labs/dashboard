@@ -291,8 +291,8 @@ export interface NodeCordonRequest extends NodeActionRequest {
 }
 
 export interface ClusteNotePatchRequest {
-    id: number //this is mandatory to send in the request
-    identifier: number //equals clusterId for cluster description and appId for app/job description
+    id: number // this is mandatory to send in the request
+    identifier: number // equals clusterId for cluster description and appId for app/job description
     description: string
 }
 

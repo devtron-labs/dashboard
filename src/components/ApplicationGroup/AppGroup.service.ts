@@ -1,4 +1,13 @@
 import {
+    get,
+    post,
+    put,
+    ResponseType,
+    trash,
+    WorkflowNodeType,
+    PipelineType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
     WorkflowType,
     CdPipelineResult,
     CiPipelineResult,
@@ -10,15 +19,6 @@ import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
-import {
-    get,
-    post,
-    put,
-    ResponseType,
-    trash,
-    WorkflowNodeType,
-    PipelineType,
-} from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppGroupList,
     CIConfigListType,
@@ -125,7 +125,7 @@ export const getCIConfigList = (envID: string, appIds: string): Promise<CIConfig
 const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowType[]) => WorkflowType[] {
     return (workflows: WorkflowType[]): WorkflowType[] => {
         workflows.forEach((wf) => {
-            const nodes = new Map(wf.nodes.map((node) => [node.type + '-' + node.id, node] as [string, NodeAttr]))
+            const nodes = new Map(wf.nodes.map((node) => [`${node.type}-${node.id}`, node] as [string, NodeAttr]))
             let node = wf.nodes.find((node) => node.environmentId === +envID)
             if (!node) {
                 wf.nodes = []
@@ -159,15 +159,15 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
         parentType = WorkflowNodeType.WEBHOOK
     }
 
-    const parentNode = nodes.get(parentType + '-' + node.parentPipelineId)
+    const parentNode = nodes.get(`${parentType}-${node.parentPipelineId}`)
 
     const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
 
     if (parentNode) {
         if (parentNode.postNode) {
-            parentNode.postNode.downstreams = [type + '-' + node.id]
+            parentNode.postNode.downstreams = [`${type}-${node.id}`]
         } else {
-            parentNode.downstreams = [type + '-' + node.id]
+            parentNode.downstreams = [`${type}-${node.id}`]
         }
         parentNode.downstreamNodes = [node]
     }

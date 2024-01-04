@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ButtonWithLoader } from '../../components/common'
+import { ButtonWithLoader } from '../common'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import folder from '../../assets/icons/ic-folder.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
@@ -100,8 +100,8 @@ export class Project extends Component<ProjectProps, ProjectState> {
     }
 
     renderForm() {
-        const isValid = this.props.isValid
-        const errorMessage = this.props.errorMessage
+        const { isValid } = this.props
+        const { errorMessage } = this.props
         return (
             <div>
                 <form className="white-card p-24 mb-16 dashed" onSubmit={this.saveProjectData}>
@@ -112,9 +112,9 @@ export class Project extends Component<ProjectProps, ProjectState> {
                         value={this.props.name}
                         placeholder="e.g. My Project"
                         onChange={this.handleActionChange}
-                        autoFocus={true}
+                        autoFocus
                         data-testid="project-name-input"
-                        isRequiredField={true}
+                        isRequiredField
                         error={!isValid.name && errorMessage.name}
                     />
                     <div className="form__buttons mt-16">
@@ -144,8 +144,7 @@ export class Project extends Component<ProjectProps, ProjectState> {
     render() {
         if (this.props.isCollapsed) {
             return this.renderCollapsedView()
-        } else {
-            return this.renderForm()
         }
+        return this.renderForm()
     }
 }

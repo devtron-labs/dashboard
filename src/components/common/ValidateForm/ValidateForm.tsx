@@ -1,6 +1,6 @@
 import React from 'react'
-import Help from '../../../assets/icons/ic-help-green.svg'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import Help from '../../../assets/icons/ic-help-green.svg'
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import './validateForm.css'
@@ -21,7 +21,7 @@ function renderOnClickValidate(onClickValidate) {
     )
 }
 
-function ValidateDryRun({ onClickValidate, configName }) {
+const ValidateDryRun = ({ onClickValidate, configName }) => {
     return (
         <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
             <div className="flex flex-justify">
@@ -39,7 +39,7 @@ function ValidateDryRun({ onClickValidate, configName }) {
     )
 }
 
-function ValidateLoading({ message }) {
+const ValidateLoading = ({ message }) => {
     return (
         <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
             <div className="flex left">
@@ -54,7 +54,7 @@ function ValidateLoading({ message }) {
     )
 }
 
-function ValidateSuccess({ onClickValidate, warning }) {
+const ValidateSuccess = ({ onClickValidate, warning }) => {
     return (
         <div className="mb-16">
             <div
@@ -81,14 +81,14 @@ function ValidateSuccess({ onClickValidate, warning }) {
     )
 }
 
-function ValidateFailure({
+const ValidateFailure = ({
     formId,
     validationError,
     onClickValidate,
     validatedTime = '',
     isChartRepo = false,
     warning,
-}) {
+}) => {
     return (
         <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
             <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
@@ -136,7 +136,7 @@ function ValidateFailure({
     )
 }
 
-export function ValidateForm({
+export const ValidateForm = ({
     id,
     onClickValidate,
     validationError,
@@ -144,7 +144,7 @@ export function ValidateForm({
     validationStatus = '',
     configName,
     warning = '',
-}) {
+}) => {
     return (
         <div className="mt-16">
             {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER}

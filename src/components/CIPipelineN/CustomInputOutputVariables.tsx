@@ -1,21 +1,21 @@
 import React, { useContext } from 'react'
 import { ConditionType, CustomInput, RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
 import { TaskFieldDescription, VariableFieldType, PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import ReactSelect from 'react-select'
 import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
-import Tippy from '@tippyjs/react'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
+const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
     const {
         formData,
         setFormData,
@@ -102,8 +102,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         if (
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].length === 0
         ) {
-            const conditionDetails =
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails
+            const { conditionDetails } = _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
             for (let i = 0; i < conditionDetails?.length; i++) {
                 if (
                     (type === PluginVariableType.OUTPUT &&
@@ -174,7 +173,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         rel="noreferrer"
                                     >
                                         Standardized date formats
-                                    </a>&nbsp;
+                                    </a>
+                                    &nbsp;
                                     <span className="cn-9">identified by Devtron</span>&nbsp;
                                 </span>
                             </div>
@@ -190,7 +190,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     <Add className="add-icon mt-6" />
                     Add variable
                 </div>
-                <div style={{ lineHeight: '4px' }}></div>
+                <div style={{ lineHeight: '4px' }} />
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => {
@@ -256,7 +256,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     />
                                                 </div>
                                             )}
-                                        </div>&nbsp;
+                                        </div>
+                                        &nbsp;
                                     </div>
                                     {type === PluginVariableType.INPUT && (
                                         <div className="flexbox">

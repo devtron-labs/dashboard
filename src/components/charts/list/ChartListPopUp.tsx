@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { ChartListPopUpType } from '../charts.types'
 import {
     showError,
     Progressing,
@@ -8,15 +7,16 @@ import {
     ImageType,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
+import { NavLink } from 'react-router-dom'
+import { ChartListPopUpType } from '../charts.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessaging'
 import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import EmptyFolder from '../../../assets/img/Empty-folder.png'
@@ -25,14 +25,14 @@ import AddChartSource from './AddChartSource'
 import ChartListPopUpRow from './ChartListPopUpRow'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 
-function ChartListPopUp({
+const ChartListPopUp = ({
     onClose,
     chartList,
     filteredChartList,
     isLoading,
     setFilteredChartList,
     setShowSourcePopoUp,
-}: ChartListPopUpType) {
+}: ChartListPopUpType) => {
     const [searchApplied, setSearchApplied] = useState<boolean>(false)
     const [searchText, setSearchText] = useState<string>('')
     const [fetching, setFetching] = useState<boolean>(false)
@@ -113,7 +113,8 @@ function ChartListPopUp({
                     <>Add a {renderNavigationeToOCIRepository()} to view and deploy helm charts.</>
                 ) : (
                     <>
-                        Showing Chart repositories and OCI Registries (used as chart repositories). You can add other&nbsp;
+                        Showing Chart repositories and OCI Registries (used as chart repositories). You can add
+                        other&nbsp;
                         {renderNavigationeToOCIRepository()} as chart sources.
                     </>
                 )}
@@ -190,7 +191,7 @@ function ChartListPopUp({
                     onChange={setStore}
                     data-testid="chart-store-list-search-box"
                     onKeyDown={handleFilterKeyPress}
-                    autoFocus={true}
+                    autoFocus
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>
@@ -220,7 +221,8 @@ function ChartListPopUp({
                     <span className="dc__loading-dots mt-12">Loading Chart source</span>
                 </div>
             )
-        } else if (!chartList.length) {
+        }
+        if (!chartList.length) {
             return renderEmptyState()
         }
         return (

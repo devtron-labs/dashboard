@@ -2,14 +2,14 @@ import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 
 export function updateBulkList(request): Promise<any> {
-    const apiVersion = request.apiVersion
+    const { apiVersion } = request
     const kind = request.kind.toLocaleLowerCase()
     const URL = `${apiVersion}/${kind} `
     return post(URL, request)
 }
 
 export function updateImpactedObjectsList(request): Promise<any> {
-    const apiVersion = request.apiVersion
+    const { apiVersion } = request
     const kind = request.kind.toLocaleLowerCase()
     const URL = `${apiVersion}/${kind}/dryrun `
     return post(URL, request)

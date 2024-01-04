@@ -13,8 +13,10 @@ import {
     PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
+import yamlJsParser from 'yaml'
+import { toast } from 'react-toastify'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, FloatingVariablesSuggestions, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
@@ -29,7 +31,6 @@ import {
     updateCDPipeline,
 } from './cdPipeline.service'
 import { getEnvironmentListMinPublic } from '../../services/service'
-import yamlJsParser from 'yaml'
 import { Sidebar } from '../CIPipelineN/Sidebar'
 import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
@@ -37,7 +38,6 @@ import { getGlobalVariable, getPluginsData } from '../ciPipeline/ciPipeline.serv
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import './cdPipeline.scss'
-import { toast } from 'react-toastify'
 import {
     CHANGE_TO_EXTERNAL_SOURCE,
     CREATE_DEPLOYMENT_PIPELINE,
@@ -381,9 +381,8 @@ export default function NewCDPipeline({
     const getPrePostStageInEnv = (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean): boolean => {
         if (isVirtualEnvironment) {
             return true
-        } else {
-            return isRunPrePostStageInEnv ?? false
         }
+        return isRunPrePostStageInEnv ?? false
     }
 
     const getSecret = (secret: any) => {
@@ -554,7 +553,7 @@ export default function NewCDPipeline({
             namespace: formData.namespace,
             id: +cdPipelineId,
             strategies: formData.savedStrategies,
-            parentPipelineType: parentPipelineType,
+            parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
             deploymentAppType: formData.deploymentAppType,
@@ -612,7 +611,7 @@ export default function NewCDPipeline({
         }
 
         if (formData.preBuildStage.steps.length > 0) {
-            let preBuildStage = formData.preBuildStage
+            let { preBuildStage } = formData
             if (isVirtualEnvironment) {
                 preBuildStage = {
                     ...preBuildStage,
@@ -625,7 +624,7 @@ export default function NewCDPipeline({
             pipeline.preDeployStage = preBuildStage
         }
         if (formData.postBuildStage.steps.length > 0) {
-            let postBuildStage = formData.postBuildStage
+            let { postBuildStage } = formData
             if (isVirtualEnvironment) {
                 postBuildStage = {
                     ...postBuildStage,
@@ -890,13 +889,14 @@ export default function NewCDPipeline({
                 <button
                     data-testid="ci-delete-pipeline-button"
                     type="button"
-                    className={`cta cta--workflow delete mr-16`}
+                    className="cta cta--workflow delete mr-16"
                     onClick={openDeleteModal}
                 >
                     Delete Pipeline
                 </button>
             )
-        } else if (!isAdvanced) {
+        }
+        if (!isAdvanced) {
             return (
                 !isWebhookCD && (
                     <button

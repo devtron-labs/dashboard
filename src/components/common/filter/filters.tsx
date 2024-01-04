@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { FilterProps, FilterState } from './types'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { FilterProps, FilterState } from './types'
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import './filter.css'
 import Tippy from '@tippyjs/react'
@@ -42,7 +42,7 @@ export class Filter extends Component<FilterProps, FilterState> {
         event.stopPropagation()
         const _show = false
         const list = JSON.parse(JSON.stringify(this.props.list))
-        this.setState({ list: list, filteredList: list, searchStr: '', show: _show })
+        this.setState({ list, filteredList: list, searchStr: '', show: _show })
         this.notifiyShowHideFilterContent(_show)
     }
 
@@ -63,7 +63,7 @@ export class Filter extends Component<FilterProps, FilterState> {
     }
 
     handleSelection = (event) => {
-        let list = this.state.list
+        let { list } = this.state
         list = list.map((item) => {
             return {
                 ...item,
@@ -73,7 +73,7 @@ export class Filter extends Component<FilterProps, FilterState> {
         })
         const searchStr = replaceLastOddBackslash(this.state.searchStr)
         const filteredList = list.filter((item) => item.label.search(searchStr.toLocaleLowerCase()) != -1)
-        this.setState({ list, filteredList: filteredList })
+        this.setState({ list, filteredList })
     }
 
     shouldApplyFilter = (): boolean => {
@@ -144,14 +144,14 @@ export class Filter extends Component<FilterProps, FilterState> {
                         <span>{env[this.props.labelKey]}</span>
                     )}
 
-                    <span className="filter-element__checkmark"></span>
+                    <span className="filter-element__checkmark" />
                 </label>
             )
         })
 
         if (filterOptions.length == 0) {
             filterOptions = [
-                <p key={'none'} className="filter__no-result">
+                <p key="none" className="filter__no-result">
                     {this.state.searchStr.length ? 'No Matching Results' : 'No Filters Found'}
                 </p>,
             ]
@@ -161,7 +161,7 @@ export class Filter extends Component<FilterProps, FilterState> {
             <div className={`filter ${this.props.rootClassName || ''}`}>
                 {(!this.props.isDisabled || !this.props.disableTooltipMessage) && (
                     <div>
-                        {this.props.showPulsatingDot && !this.state.show && <div className="pulse-highlight"></div>}
+                        {this.props.showPulsatingDot && !this.state.show && <div className="pulse-highlight" />}
                         <button
                             data-testid={`${this.props.dataTestId}-button`}
                             type="button"
@@ -171,7 +171,7 @@ export class Filter extends Component<FilterProps, FilterState> {
                             {this.props.buttonText}
                             {badge > 0 ? <span className="badge">{badge}</span> : null}
                             <span className="filter-icon">
-                                <i className={faIcon}></i>
+                                <i className={faIcon} />
                             </span>
                         </button>
                     </div>
@@ -179,7 +179,7 @@ export class Filter extends Component<FilterProps, FilterState> {
                 {this.props.isDisabled && this.props.disableTooltipMessage && (
                     <Tippy
                         className="default-tt"
-                        arrow={true}
+                        arrow
                         placement="top"
                         content={this.props.disableTooltipMessage}
                         hideOnClick={false}
@@ -187,16 +187,14 @@ export class Filter extends Component<FilterProps, FilterState> {
                         <button type="button" className="filter__trigger disable__button">
                             {this.props.buttonText}
                             <span className="filter-icon">
-                                <i className={faIcon}></i>
+                                <i className={faIcon} />
                             </span>
                         </button>
                     </Tippy>
                 )}
                 {!this.props.isDisabled && (
                     <>
-                        {this.state.show ? (
-                            <div className="dc__transparent-div" onClick={this.handleClick}></div>
-                        ) : null}
+                        {this.state.show ? <div className="dc__transparent-div" onClick={this.handleClick} /> : null}
                         <div className={classNames} ref={(node) => (this.node = node)}>
                             {this.props.loading ? (
                                 <Progressing />

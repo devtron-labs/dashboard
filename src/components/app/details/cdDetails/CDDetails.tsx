@@ -8,12 +8,12 @@ import {
     DeploymentAppTypes,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
+import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { useInterval, useScrollable, mapByKey, asyncWrap, importComponentFromFELibrary } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import { getTagDetails } from '../../service'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
@@ -176,8 +176,8 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
             const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
-            let _selectedEnvironment,
-                isEnvDeleted = false
+            let _selectedEnvironment
+            let isEnvDeleted = false
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
             const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || [])
                 .filter((env) => {
@@ -286,12 +286,11 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
 
     if ((!hasMoreLoading && loading) || (loadingDeploymentHistory && triggerHistory.size === 0)) {
         return <Progressing pageLoader />
-    } else if (
-        result &&
-        (!Array.isArray(result[0]?.['value']?.result) || !Array.isArray(result[1]?.['value']?.pipelines))
-    ) {
+    }
+    if (result && (!Array.isArray(result[0]?.['value']?.result) || !Array.isArray(result[1]?.['value']?.pipelines))) {
         return <AppNotConfigured />
-    } else if (!result || (envId && dependencyState[2] !== envId)) {
+    }
+    if (!result || (envId && dependencyState[2] !== envId)) {
         return null
     }
     return (
@@ -344,7 +343,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                             subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
                         />
                     )}
-                    {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
+                    <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
                 </div>
             </div>
         </>
@@ -514,12 +513,7 @@ export const TriggerOutput: React.FC<{
                             )}
                             {!(triggerDetails.stage === 'DEPLOY' || triggerDetails.IsVirtualEnvironment) && (
                                 <li className="tab-list__tab" data-testid="deployment-history-logs-link">
-                                    <NavLink
-                                        replace
-                                        className="tab-list__tab-link"
-                                        activeClassName="active"
-                                        to={`logs`}
-                                    >
+                                    <NavLink replace className="tab-list__tab-link" activeClassName="active" to="logs">
                                         Logs
                                     </NavLink>
                                 </li>
@@ -529,7 +523,7 @@ export const TriggerOutput: React.FC<{
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`source-code`}
+                                    to="source-code"
                                 >
                                     Source
                                 </NavLink>
@@ -540,7 +534,7 @@ export const TriggerOutput: React.FC<{
                                         replace
                                         className="tab-list__tab-link"
                                         activeClassName="active"
-                                        to={`configuration`}
+                                        to="configuration"
                                     >
                                         Configuration
                                     </NavLink>
@@ -552,7 +546,7 @@ export const TriggerOutput: React.FC<{
                                         replace
                                         className="tab-list__tab-link"
                                         activeClassName="active"
-                                        to={`artifacts`}
+                                        to="artifacts"
                                     >
                                         Artifacts
                                     </NavLink>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react'
-import { mapByKey, validateEmail, deepEqual } from '../common'
 import {
     showError,
     Progressing,
@@ -12,9 +11,9 @@ import {
     RadioGroup,
     RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { saveUser, deleteUser } from './userGroup.service'
 import Creatable from 'react-select/creatable'
 import Select from 'react-select'
+import { toast } from 'react-toastify'
 import {
     DirectPermissionsRoleFilter,
     ChartGroupPermissionsFilter,
@@ -24,7 +23,8 @@ import {
     OptionType,
     ViewChartGroupPermission,
 } from './userGroups.types'
-import { toast } from 'react-toastify'
+import { saveUser, deleteUser } from './userGroup.service'
+import { mapByKey, validateEmail, deepEqual } from '../common'
 import { useUserGroupContext } from './UserGroup'
 import './UserGroup.scss'
 import AppPermissions from './AppPermissions'
@@ -148,20 +148,19 @@ export default function UserForm({
             return permission.environment.find((env) => env.value === '*')
                 ? ''
                 : permission.environment.map((env) => env.value).join(',')
-        } else {
-            const allFutureCluster = {}
-            let envList = ''
-            permission.environment.forEach((element) => {
-                if (element.clusterName === '' && element.value.startsWith('#')) {
-                    const clusterName = element.value.substring(1)
-                    allFutureCluster[clusterName] = true
-                    envList += (envList !== '' ? ',' : '') + clusterName + '__*'
-                } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                    envList += (envList !== '' ? ',' : '') + element.value
-                }
-            })
-            return envList
         }
+        const allFutureCluster = {}
+        let envList = ''
+        permission.environment.forEach((element) => {
+            if (element.clusterName === '' && element.value.startsWith('#')) {
+                const clusterName = element.value.substring(1)
+                allFutureCluster[clusterName] = true
+                envList += `${(envList !== '' ? ',' : '') + clusterName}__*`
+            } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+                envList += (envList !== '' ? ',' : '') + element.value
+            }
+        })
+        return envList
     }
 
     async function handleSubmit(e) {
@@ -517,7 +516,7 @@ export default function UserForm({
                 <DeleteDialog
                     dataTestId="user-form-delete-dialog"
                     title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
-                    description={'Deleting this user will remove the user and revoke all their permissions.'}
+                    description="Deleting this user will remove the user and revoke all their permissions."
                     delete={handleDelete}
                     closeDelete={() => setDeleteConfirmationModal(false)}
                 />

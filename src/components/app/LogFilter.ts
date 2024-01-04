@@ -1,15 +1,19 @@
 export class LogFilter {
     private indexFromLastMatch = -1000000
+
     private buffer: Array<string> = []
+
     private trailingLines: Array<string> = []
+
     private grepTokens: any
+
     private prefix: string
 
     constructor(grepTokens: any, prefix = '') {
         this.grepTokens = grepTokens
         prefix = prefix.trimEnd()
         if (prefix.length > 0) {
-            this.prefix = prefix.trimEnd() + ': '
+            this.prefix = `${prefix.trimEnd()}: `
         } else {
             this.prefix = ''
         }

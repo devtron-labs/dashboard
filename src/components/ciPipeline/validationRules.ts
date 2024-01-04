@@ -21,14 +21,14 @@ export class ValidationRules {
         }
         if (value.length > 50) {
             return { isValid: false, message: CHARACTER_ERROR_MAX }
-        } else if (!regExp.test(value)) {
+        }
+        if (!regExp.test(value)) {
             return {
                 isValid: false,
                 message: ERROR_MESSAGE_FOR_VALIDATION,
             }
-        } else {
-            return { isValid: true, message: '' }
         }
+        return { isValid: true, message: '' }
     }
 
     namespace = (name: string): { isValid: boolean; message: string } => {
@@ -38,30 +38,28 @@ export class ValidationRules {
         }
         if (name.length > 50) {
             return { isValid: false, message: CHARACTER_ERROR_MAX }
-        } else if (!regExp.test(name)) {
+        }
+        if (!regExp.test(name)) {
             return {
                 isValid: false,
                 message: ERROR_MESSAGE_FOR_VALIDATION,
             }
-        } else {
-            return { isValid: true, message: '' }
         }
+        return { isValid: true, message: '' }
     }
 
     environment = (id: number): { isValid: boolean; message: string } => {
         if (!id) {
             return { isValid: false, message: REQUIRED_FIELD_MSG }
-        } else {
-            return { isValid: true, message: null }
         }
+        return { isValid: true, message: null }
     }
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: REQUIRED_FIELD_MSG, isValid: false }
-        } else {
-            return { message: null, isValid: true }
         }
+        return { message: null, isValid: true }
     }
 
     inputVariable = (
@@ -80,19 +78,23 @@ export class ValidationRules {
                         value['refVariableStage'])))
         if (!value['name'] && !variableValue && !value['description']) {
             return { message: 'Please complete or remove this variable', isValid: false }
-        } else if (!value['name'] && !variableValue) {
-            return { message: 'Variable name and Value both are required', isValid: false }
-        } else if (!value['name']) {
-            return { message: 'Variable name is required', isValid: false }
-        } else if (availableInputVariables.get(value['name'])) {
-            return { message: 'Variable name should be unique', isValid: false }
-        } else if (!re.test(value['name'])) {
-            return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
-        } else if (!variableValue) {
-            return { message: 'Variable value is required', isValid: false }
-        } else {
-            return { message: null, isValid: true }
         }
+        if (!value['name'] && !variableValue) {
+            return { message: 'Variable name and Value both are required', isValid: false }
+        }
+        if (!value['name']) {
+            return { message: 'Variable name is required', isValid: false }
+        }
+        if (availableInputVariables.get(value['name'])) {
+            return { message: 'Variable name should be unique', isValid: false }
+        }
+        if (!re.test(value['name'])) {
+            return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
+        }
+        if (!variableValue) {
+            return { message: 'Variable value is required', isValid: false }
+        }
+        return { message: null, isValid: true }
     }
 
     outputVariable = (
@@ -102,64 +104,66 @@ export class ValidationRules {
         const re = new RegExp(PATTERNS.VARIABLE)
         if (!value['name']) {
             return { message: 'Variable name is required', isValid: false }
-        } else if (availableInputVariables.get(value['name'])) {
-            return { message: 'Variable name should be unique', isValid: false }
-        } else if (!re.test(value['name'])) {
-            return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
-        } else {
-            return { message: null, isValid: true }
         }
+        if (availableInputVariables.get(value['name'])) {
+            return { message: 'Variable name should be unique', isValid: false }
+        }
+        if (!re.test(value['name'])) {
+            return { message: `Invalid name. Only alphanumeric chars and (_) is allowed`, isValid: false }
+        }
+        return { message: null, isValid: true }
     }
 
     conditionDetail = (value: object): { message: string | null; isValid: boolean } => {
         if (!value['conditionOnVariable'] && !value['conditionalValue']) {
             return { message: 'Please complete or remove this condition', isValid: false }
-        } else if (!value['conditionOnVariable']) {
-            return { message: 'Condition on variable is required', isValid: false }
-        } else if (!value['conditionOperator']) {
-            return { message: 'Condition operator is required', isValid: false }
-        } else if (!value['conditionalValue']) {
-            return { message: 'Conditional value is required', isValid: false }
-        } else {
-            return { message: null, isValid: true }
         }
+        if (!value['conditionOnVariable']) {
+            return { message: 'Condition on variable is required', isValid: false }
+        }
+        if (!value['conditionOperator']) {
+            return { message: 'Condition operator is required', isValid: false }
+        }
+        if (!value['conditionalValue']) {
+            return { message: 'Conditional value is required', isValid: false }
+        }
+        return { message: null, isValid: true }
     }
 
     sourceValue = (value: string, doRegexValidation = true): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: `This is required`, isValid: false }
-        } else {
-            if (doRegexValidation) {
-                try {
-                    new RegExp(value)
-                    return { message: null, isValid: true }
-                } catch (err) {
-                    return { message: 'This is not a valid regular expression.', isValid: false }
-                }
-            } else {
+        }
+        if (doRegexValidation) {
+            try {
+                new RegExp(value)
                 return { message: null, isValid: true }
+            } catch (err) {
+                return { message: 'This is not a valid regular expression.', isValid: false }
             }
+        } else {
+            return { message: null, isValid: true }
         }
     }
 
     mountPathMap = (value: object): { message: string | null; isValid: boolean } => {
         if (!value['filePathOnDisk'] && !value['filePathOnContainer']) {
             return { message: 'File path on disk and File path on container, both are required', isValid: false }
-        } else if (!value['filePathOnDisk']) {
-            return { message: 'File path on disk is required', isValid: false }
-        } else if (!value['filePathOnContainer']) {
-            return { message: `File path on container is required`, isValid: false }
-        } else {
-            return { message: null, isValid: true }
         }
+        if (!value['filePathOnDisk']) {
+            return { message: 'File path on disk is required', isValid: false }
+        }
+        if (!value['filePathOnContainer']) {
+            return { message: `File path on container is required`, isValid: false }
+        }
+        return { message: null, isValid: true }
     }
 
     containerRegistry = (containerRegistry: string): { isValid: boolean; message: string } => {
         if (!containerRegistry.length) {
             return { isValid: false, message: REQUIRED_FIELD_MSG }
-        } else {
-            return { isValid: true, message: null }
         }
+        return { isValid: true, message: null }
     }
 
     repository = (repository: string): { isValid: boolean; message: string } => {
@@ -184,30 +188,30 @@ export class ValidationRules {
 
         if (!value?.length) {
             return { isValid: false, message: [REQUIRED_FIELD_MSG] }
-        } else {
-            if (value.length >= 128) {
-                _message.push(CustomErrorMessage.CUSTOM_TAG_LIMIT)
-            }
-            if (!(value.includes('{x}') || value.includes('{X}'))) {
-                _message.push(CustomErrorMessage.CUSTOM_TAG_MANDATORY_X)
-            } else if (!checkIfOne(value)) {
-                _message.push(CustomErrorMessage.VARIABLE_X_ONLY_ONCE)
-            }
-            if (!regExp.test(value)) {
-                _message.push(CustomErrorMessage.CUSTOM_TAG_ERROR_MSG)
-            }
         }
+        if (value.length >= 128) {
+            _message.push(CustomErrorMessage.CUSTOM_TAG_LIMIT)
+        }
+        if (!(value.includes('{x}') || value.includes('{X}'))) {
+            _message.push(CustomErrorMessage.CUSTOM_TAG_MANDATORY_X)
+        } else if (!checkIfOne(value)) {
+            _message.push(CustomErrorMessage.VARIABLE_X_ONLY_ONCE)
+        }
+        if (!regExp.test(value)) {
+            _message.push(CustomErrorMessage.CUSTOM_TAG_ERROR_MSG)
+        }
+
         if (_message.length) {
             return { isValid: false, message: _message }
-        } else {
-            return { isValid: true, message: [] }
         }
+        return { isValid: true, message: [] }
     }
 
     counterX = (value: string): { message: string; isValid: boolean } => {
         if (!value.length) {
             return { isValid: false, message: REQUIRED_FIELD_MSG }
-        } else if (value.includes('-') || value.includes('+')) {
+        }
+        if (value.includes('-') || value.includes('+')) {
             return { isValid: false, message: CustomErrorMessage.USE_ONLY_NON_NEGATIVE_INTERGER }
         }
         return { isValid: true, message: '' }

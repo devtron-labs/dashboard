@@ -64,6 +64,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
             this.props.selectCommit(this.props.material.id.toString(), _commitId, this.props.ciPipelineId)
         }
     }
+
     render() {
         return (
             <>

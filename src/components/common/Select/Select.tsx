@@ -1,4 +1,4 @@
-//@ts-nocheck
+// @ts-nocheck
 
 import React, { useEffect } from 'react'
 import { showError, Progressing, PopupMenu, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
@@ -18,7 +18,7 @@ function useSelectContext() {
     return context
 }
 
-const Select: React.FC<SelectProps> & SelectComposition = function ({
+const Select: React.FC<SelectProps> & SelectComposition = ({
     children = null,
     onChange,
     value = null,
@@ -30,7 +30,7 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     autoWidth = true,
     isKebab = false,
     dataTestId = '',
-}) {
+}) => {
     const [selected, select] = React.useState(value)
     const [popupOpen, togglePopup] = React.useState(false)
     const [searchString, search] = React.useState('')
@@ -116,7 +116,7 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     )
 }
 
-function Option({
+const Option = ({
     dataTestIdMenuList,
     children,
     value,
@@ -125,7 +125,7 @@ function Option({
     active = false,
     name = '',
     rootClassName = '',
-}) {
+}) => {
     const { selected, searchString, valueComparator, handleClick } = useSelectContext()
     active = active || selected === value
     if (typeof value === 'object') {
@@ -148,7 +148,7 @@ function Option({
     ) : null
 }
 
-const OptionGroup: React.SFC<OptionGroupProps> = function ({ children, label, rootClassName = '' }) {
+const OptionGroup: React.SFC<OptionGroupProps> = ({ children, label, rootClassName = '' }) => {
     return (
         <div className={`select__option-group ${rootClassName}`}>
             <span className="option-group__label">{label}</span>
@@ -157,7 +157,14 @@ const OptionGroup: React.SFC<OptionGroupProps> = function ({ children, label, ro
     )
 }
 
-function Button({ dataTestIdDropdown, children, style = {}, rootClassName = '', arrowAsset = '', hideArrow = false }) {
+const Button = ({
+    dataTestIdDropdown,
+    children,
+    style = {},
+    rootClassName = '',
+    arrowAsset = '',
+    hideArrow = false,
+}) => {
     const { popupOpen, loading } = useSelectContext()
     return (
         <div
@@ -182,7 +189,7 @@ function Button({ dataTestIdDropdown, children, style = {}, rootClassName = '', 
     )
 }
 
-function Search({ placeholder = 'search', style = {}, inputStyle = {}, rootClassName = '' }) {
+const Search = ({ placeholder = 'search', style = {}, inputStyle = {}, rootClassName = '' }) => {
     const { searchString, search } = useSelectContext()
     return (
         <div
@@ -191,7 +198,7 @@ function Search({ placeholder = 'search', style = {}, inputStyle = {}, rootClass
             style={{ ...style }}
         >
             <span className="search__icon">
-                <i className="fa fa-search"></i>
+                <i className="fa fa-search" />
             </span>
             <input
                 autoFocus
@@ -224,7 +231,7 @@ const Async: React.FC<SelectAsync> = ({ api }) => {
     return null
 }
 
-function All({ rootClassName = '', style = {} }) {
+const All = ({ rootClassName = '', style = {} }) => {
     const { handleClick } = useSelectContext()
     return (
         <div

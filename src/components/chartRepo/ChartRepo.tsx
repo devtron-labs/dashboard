@@ -11,10 +11,11 @@ import {
     RadioGroupItem,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useForm, getNonEditableChartRepoText } from '../common'
 import { toast } from 'react-toastify'
-import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react'
+import { NavLink } from 'react-router-dom'
+import { useForm, getNonEditableChartRepoText } from '../common'
+import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import {
     saveChartProviderConfig,
     updateChartProviderConfig,
@@ -31,7 +32,6 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
 import { ChartRepoType } from './chartRepo.types'
-import { NavLink } from 'react-router-dom'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
@@ -59,54 +59,51 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
 
     if (!isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
-    } else {
-        return (
-            <section className="global-configuration__component" data-testid="chart-repository-wrapper">
-                <h2 className="form__title" data-testid="chart-repository-heading">
-                    Chart Repository
-                </h2>
-                <p className="form__subtitle">
-                    Manage your organization’s chart repositories.
-                    <span>
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className="dc__link"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
-                        >
-                            LEARN_MORE
-                        </a>
-                    </span>
-                </p>
-                <CollapsedList
-                    id={null}
-                    default={true}
-                    url={''}
-                    name={''}
-                    active={true}
-                    authMode={'ANONYMOUS'}
-                    key={getRandomInt().toString()}
-                    reload={reload}
-                    isEditable={true}
-                />
-                <div className="chartRepo_form__subtitle dc__float-left dc__bold">
-                    Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
-                </div>
-                {[]
-                    .concat(result && Array.isArray(result.result) ? result.result : [])
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map(
-                        (chart) =>
-                            chart.id != 1 && (
-                                <CollapsedList {...chart} key={chart.id || getRandomInt()} reload={reload} />
-                            ),
-                    )}
-            </section>
-        )
     }
+    return (
+        <section className="global-configuration__component" data-testid="chart-repository-wrapper">
+            <h2 className="form__title" data-testid="chart-repository-heading">
+                Chart Repository
+            </h2>
+            <p className="form__subtitle">
+                Manage your organization’s chart repositories.
+                <span>
+                    <a
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="dc__link"
+                        href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
+                    >
+                        LEARN_MORE
+                    </a>
+                </span>
+            </p>
+            <CollapsedList
+                id={null}
+                default
+                url=""
+                name=""
+                active
+                authMode="ANONYMOUS"
+                key={getRandomInt().toString()}
+                reload={reload}
+                isEditable
+            />
+            <div className="chartRepo_form__subtitle dc__float-left dc__bold">
+                Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
+            </div>
+            {[]
+                .concat(result && Array.isArray(result.result) ? result.result : [])
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(
+                    (chart) =>
+                        chart.id != 1 && <CollapsedList {...chart} key={chart.id || getRandomInt()} reload={reload} />,
+                )}
+        </section>
+    )
 }
 
-function CollapsedList({
+const CollapsedList = ({
     id,
     name,
     active,
@@ -118,7 +115,7 @@ function CollapsedList({
     password = '',
     reload,
     ...props
-}) {
+}) => {
     const [collapsed, toggleCollapse] = useState(true)
 
     const setToggleCollapse = () => {
@@ -194,7 +191,7 @@ function CollapsedList({
     )
 }
 
-function ChartForm({
+const ChartForm = ({
     id = null,
     name = '',
     active = false,
@@ -208,7 +205,7 @@ function ChartForm({
     collapsed,
     isEditable,
     ...props
-}) {
+}) => {
     const [validationError, setValidationError] = useState({ errtitle: '', errMessage: '' })
     const [validationStatus, setValidationStatus] = useState(
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
@@ -409,7 +406,7 @@ function ChartForm({
                 label={isNameField ? 'Name' : 'URL'}
                 placeholder={isNameField ? 'Enter Repository name' : 'Enter repo URL'}
                 disabled={!isEditable}
-                isRequiredField={true}
+                isRequiredField
             />
         )
     }
@@ -451,7 +448,7 @@ function ChartForm({
                 id={id}
                 onClickValidate={onClickValidate}
                 validationError={validationError}
-                isChartRepo={true}
+                isChartRepo
                 validationStatus={validationStatus}
                 configName="chart repo"
             />
@@ -470,7 +467,7 @@ function ChartForm({
                             error={customState.username.error}
                             label="Username"
                             labelClassName="mt-12"
-                            isRequiredField={true}
+                            isRequiredField
                         />
                         <ProtectedInput
                             dataTestid="add-chart-repo-password"
@@ -480,7 +477,7 @@ function ChartForm({
                             error={customState.password.error}
                             label="Password"
                             labelClassName="mt-12"
-                            isRequiredField={true}
+                            isRequiredField
                         />
                         <Checkbox
                             rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"

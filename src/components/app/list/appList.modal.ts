@@ -1,6 +1,6 @@
+import moment from 'moment'
 import { handleUTCTime } from '../../common'
 import { Environment } from './types'
-import moment from 'moment'
 
 export const buildInitState = (appListPayload): Promise<any> => {
     return new Promise((resolve) => {
@@ -62,11 +62,11 @@ export const appListModal = (appList) => {
 }
 
 const environmentModal = (env) => {
-    let status = env.status
+    let { status } = env
     if (env.status.toLocaleLowerCase() == 'deployment initiated') {
         status = 'Progressing'
     }
-    let appStatus = env.appStatus
+    let { appStatus } = env
     if (!env.appStatus) {
         if (env.lastDeployedTime) {
             appStatus = ''
@@ -85,14 +85,14 @@ const environmentModal = (env) => {
         ciArtifactId: env.ciArtifactId || 0,
         clusterName: env?.clusterName || '',
         namespace: env?.namespace || '',
-        appStatus: appStatus,
+        appStatus,
         isVirtualEnvironment: env?.isVirtualEnvironment,
     }
 }
 
 const getDefaultEnvironment = (envList): Environment => {
     const env = envList[0]
-    let status = env.status
+    let { status } = env
     if (env.status.toLowerCase() === 'deployment initiated') {
         status = 'Progressing'
     }
@@ -145,7 +145,6 @@ const getStatus = () => {
 const handleDeploymentInitiatedStatus = (status: string): string => {
     if (status.replace(/\s/g, '').toLowerCase() == 'deploymentinitiated') {
         return 'progressing'
-    } else {
-        return status
     }
+    return status
 }

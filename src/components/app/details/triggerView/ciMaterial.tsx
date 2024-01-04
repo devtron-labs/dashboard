@@ -15,6 +15,7 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
 import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
+
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
@@ -30,7 +31,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             }
         })
         this.state = {
-            regexValue: regexValue,
+            regexValue,
             savingRegexValue: false,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
@@ -70,7 +71,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     </div>
                 </div>
             )
-        } else if (!this.state.isBlobStorageConfigured) {
+        }
+        if (!this.state.isBlobStorageConfigured) {
             return (
                 <div className="flexbox flex-align-center">
                     <Storage className="icon-dim-24 mr-8" />
@@ -91,7 +93,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     </div>
                 </div>
             )
-        } else if (!this.props.isCacheAvailable) {
+        }
+        if (!this.props.isCacheAvailable) {
             return (
                 <div className="flexbox">
                     <Info className="icon-dim-20 mr-8" />
@@ -101,23 +104,22 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     </div>
                 </div>
             )
-        } else {
-            return (
-                <Checkbox
-                    isChecked={this.context.invalidateCache}
-                    onClick={this.onClickStopPropagation}
-                    rootClassName="form__checkbox-label--ignore-cache mb-0"
-                    value={'CHECKED'}
-                    onChange={this.context.toggleInvalidateCache}
-                    data-testid="set-clone-directory"
-                >
-                    <div className="mr-5">
-                        <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
-                        <div className="fs-12 fw-4">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</div>
-                    </div>
-                </Checkbox>
-            )
         }
+        return (
+            <Checkbox
+                isChecked={this.context.invalidateCache}
+                onClick={this.onClickStopPropagation}
+                rootClassName="form__checkbox-label--ignore-cache mb-0"
+                value="CHECKED"
+                onChange={this.context.toggleInvalidateCache}
+                data-testid="set-clone-directory"
+            >
+                <div className="mr-5">
+                    <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
+                    <div className="fs-12 fw-4">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</div>
+                </div>
+            </Checkbox>
+        )
     }
 
     renderEnvironments = () => {
@@ -347,7 +349,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     savingRegexValue={this.state.savingRegexValue}
                 />
             )
-        } else if (this.props.showCIModal) {
+        }
+        if (this.props.showCIModal) {
             return this.renderCIModal()
         }
         return <></>

@@ -1,8 +1,5 @@
 import React from 'react'
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { components } from 'react-select'
-import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
 import {
     BuildStageVariable,
     ConditionType,
@@ -14,6 +11,9 @@ import {
     TaskErrorObj,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
+import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 
@@ -53,7 +53,7 @@ export const styles = {
     },
 }
 
-export function Option(props) {
+export const Option = (props) => {
     const { selectOption, data } = props
     const style = { flex: '0 0', alignText: 'left' }
     const onClick = (e) => selectOption(data)
@@ -69,7 +69,7 @@ export function Option(props) {
     )
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n5" />
@@ -210,7 +210,7 @@ const checkStepsUniqueness = (list): boolean => {
                     taskData.inlineStepDetail['mountPathMap'] = null
                 }
                 taskData.inlineStepDetail.outputVariables = null
-                const conditionDetails = taskData.inlineStepDetail.conditionDetails
+                const { conditionDetails } = taskData.inlineStepDetail
                 for (let i = 0; i < conditionDetails?.length; i++) {
                     if (
                         conditionDetails[i].conditionType === ConditionType.PASS ||
@@ -235,10 +235,9 @@ export const checkUniqueness = (formData, isCDPipeline?: boolean): boolean => {
         const preStageValidation: boolean = checkStepsUniqueness(formData.preBuildStage.steps)
         const postStageValidation: boolean = checkStepsUniqueness(formData.postBuildStage.steps)
         return preStageValidation && postStageValidation
-    } else {
-        const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
-        return checkStepsUniqueness(list)
     }
+    const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
+    return checkStepsUniqueness(list)
 }
 
 export const calculateLastStepDetailsLogic = (
@@ -255,8 +254,8 @@ export const calculateLastStepDetailsLogic = (
         _formData[activeStageName].steps = []
     }
     const stepsLength = _formData[activeStageName].steps?.length
-    const _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
-        _inputVariablesListPerTask: Map<string, VariableType>[] = []
+    const _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map()
+    const _inputVariablesListPerTask: Map<string, VariableType>[] = []
     for (let i = 0; i < stepsLength; i++) {
         if (!_formDataErrorObj[activeStageName].steps[i]) {
             _formDataErrorObj[activeStageName].steps.push({ isValid: true })
@@ -296,7 +295,7 @@ export const calculateLastStepDetailsLogic = (
         for (let j = 0; j < outputVariablesLength; j++) {
             if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
                 _outputVariablesFromPrevSteps.set(
-                    i + 1 + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
+                    `${i + 1}.${_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name}`,
                     {
                         ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
                         refVariableStepIndex: i + 1,

@@ -1,14 +1,14 @@
 import React from 'react'
 import { components } from 'react-select'
-import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
 import { OptionType, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { SECRET_TOAST_INFO, CM_SECRET_STATE } from '../Constants'
 import YAML from 'yaml'
+import { NavLink } from 'react-router-dom'
+import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
+import { SECRET_TOAST_INFO, CM_SECRET_STATE } from '../Constants'
 import { ConfigMapAction, ConfigMapActionTypes, SecretState } from '../Types'
 import { processCurrentData } from '../ConfigMapSecret.reducer'
-import { NavLink } from 'react-router-dom'
 import { DOCUMENTATION, URLS } from '../../../config'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
@@ -203,29 +203,32 @@ export const dataHeaders = {
     ),
     default: (
         <div>
-            # Sample Data<br></br># key: Secret key in backend<br></br># name: Name for this key in the generated secret
-            <br></br># property: Property to extract if secret in backend is a JSON object(optional)<br></br># isBinary:
-            Set this to true if configuring an item for a binary file stored(optional)<br></br>
+            # Sample Data
+            <br /># key: Secret key in backend
+            <br /># name: Name for this key in the generated secret
+            <br /># property: Property to extract if secret in backend is a JSON object(optional)
+            <br /># isBinary: Set this to true if configuring an item for a binary file stored(optional)
+            <br />
         </div>
     ),
 }
 
 export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
     const noGroups: any[] = [
-            { value: '', label: 'Kubernetes Secret' },
-            { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
-        ],
-        esoGroups: any[] = [
-            { value: 'ESO_GoogleSecretsManager', label: 'Google Secrets Manager' },
-            { value: 'ESO_AWSSecretsManager', label: 'AWS Secrets Manager' },
-            { value: 'ESO_AzureSecretsManager', label: 'Azure Secrets Manager' },
-            { value: 'ESO_HashiCorpVault', label: 'Hashi Corp Vault' },
-        ],
-        ksoGroups: any[] = [
-            { value: 'AWSSecretsManager', label: 'AWS Secrets Manager', deprecated: true },
-            { value: 'AWSSystemManager', label: 'AWS System Manager', deprecated: true },
-            { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
-        ]
+        { value: '', label: 'Kubernetes Secret' },
+        { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
+    ]
+    const esoGroups: any[] = [
+        { value: 'ESO_GoogleSecretsManager', label: 'Google Secrets Manager' },
+        { value: 'ESO_AWSSecretsManager', label: 'AWS Secrets Manager' },
+        { value: 'ESO_AzureSecretsManager', label: 'Azure Secrets Manager' },
+        { value: 'ESO_HashiCorpVault', label: 'Hashi Corp Vault' },
+    ]
+    const ksoGroups: any[] = [
+        { value: 'AWSSecretsManager', label: 'AWS Secrets Manager', deprecated: true },
+        { value: 'AWSSystemManager', label: 'AWS System Manager', deprecated: true },
+        { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
+    ]
     const groupList = isJobView ? noGroups : [...noGroups, ...esoGroups, ...ksoGroups]
     const externalType = groupList.find((x) => x.value === typeValue)
 
@@ -260,7 +263,7 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
     ]
 }
 
-export function SecretOptions(props) {
+export const SecretOptions = (props) => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (
         <components.Option {...props}>
@@ -272,7 +275,7 @@ export function SecretOptions(props) {
     )
 }
 
-export function GroupHeading(props) {
+export const GroupHeading = (props) => {
     if (!props.data.label) {
         return null
     }
@@ -438,7 +441,8 @@ export function handleSecretDataYamlChange(
 }
 
 export const getSecretInitState = (configMapSecretData, draftMode: boolean): SecretState => {
-    let tempSecretData, jsonForSecretDataYaml
+    let tempSecretData
+    let jsonForSecretDataYaml
     if (configMapSecretData?.secretData?.length) {
         tempSecretData = configMapSecretData.secretData
         jsonForSecretDataYaml = configMapSecretData.secretData

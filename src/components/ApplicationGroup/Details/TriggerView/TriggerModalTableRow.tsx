@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ResponseRowType, TriggerModalRowType } from '../../AppGroup.types'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ICInfoFilled } from '../../../../assets/icons/ic-info-filled.svg'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { BulkResponseStatus } from '../../Constants'
 import { importComponentFromFELibrary } from '../../../common'
 
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
-export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDownloadPopupOpen }: TriggerModalRowType) {
+export const TriggerModalRow = ({
+    rowData,
+    index,
+    isVirtualEnv,
+    envName,
+    setDownloadPopupOpen,
+}: TriggerModalRowType) => {
     const [downloader, setDownLoader] = useState(false)
     const [isDownloaded, setIsDownLoad] = useState(false)
     const params = {
@@ -23,13 +29,14 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
     const renderStatusIcon = (rowData: ResponseRowType): JSX.Element => {
         if (rowData.status === BulkResponseStatus.SKIP) {
             return <ICInfoFilled className="mr-8 icon-dim-18" />
-        } else if (rowData.status === BulkResponseStatus.UNAUTHORIZE) {
-            return <UnAuthorized className="mr-8 icon-dim-18 fcy-7" />
-        } else if (rowData.status === BulkResponseStatus.PASS) {
-            return <Success className="mr-8 icon-dim-18" />
-        } else {
-            return <Error className="mr-8 icon-dim-18" />
         }
+        if (rowData.status === BulkResponseStatus.UNAUTHORIZE) {
+            return <UnAuthorized className="mr-8 icon-dim-18 fcy-7" />
+        }
+        if (rowData.status === BulkResponseStatus.PASS) {
+            return <Success className="mr-8 icon-dim-18" />
+        }
+        return <Error className="mr-8 icon-dim-18" />
     }
 
     const downloadPackage = (e) => {

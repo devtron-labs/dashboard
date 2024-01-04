@@ -68,7 +68,7 @@ export const multiSelectStyles = {
     },
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n5" />
@@ -76,7 +76,7 @@ export function DropdownIndicator(props) {
     )
 }
 
-export function MultiValueLabel(props) {
+export const MultiValueLabel = (props) => {
     const item = props.data
     return (
         <components.MultiValueLabel {...props} validator={validateEmail}>
@@ -107,42 +107,40 @@ export const MultiValueContainer = ({ validator, ...props }) => {
                 {children[1]}
             </components.MultiValueContainer>
         )
-    } else {
-        return (
-            <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
-                <div className="flex fs-12 ml-4">
-                    {data.data.dest === 'slack' && <Slack className="icon-dim-20 mr-5" />}
-                    {data.data.dest === 'webhook' && <Webhook className="icon-dim-20 mr-5" />}
-                    <div className="cn-9">{label}</div>
-                </div>
-                {children[1]}
-            </components.MultiValueContainer>
-        )
     }
+    return (
+        <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
+            <div className="flex fs-12 ml-4">
+                {data.data.dest === 'slack' && <Slack className="icon-dim-20 mr-5" />}
+                {data.data.dest === 'webhook' && <Webhook className="icon-dim-20 mr-5" />}
+                <div className="cn-9">{label}</div>
+            </div>
+            {children[1]}
+        </components.MultiValueContainer>
+    )
 }
 
-export function Option(props) {
+export const Option = (props) => {
     const item = props.data
     if (item && item?.__isNew__) {
         return <components.Option {...props}>{props.children}</components.Option>
-    } else {
-        return (
-            <components.Option {...props}>
-                {item.data.dest === 'ses' || item.data.dest === 'email' ? <Email className="icon-dim-20 mr-5" /> : null}
-                {item.data.dest === 'slack' && <Slack className="icon-dim-20 mr-5" />}
-                {item.data.dest === 'webhook' && <Webhook className="icon-dim-20 mr-5" />}
-                {props.children}
-            </components.Option>
-        )
     }
+    return (
+        <components.Option {...props}>
+            {item.data.dest === 'ses' || item.data.dest === 'email' ? <Email className="icon-dim-20 mr-5" /> : null}
+            {item.data.dest === 'slack' && <Slack className="icon-dim-20 mr-5" />}
+            {item.data.dest === 'webhook' && <Webhook className="icon-dim-20 mr-5" />}
+            {props.children}
+        </components.Option>
+    )
 }
 
 export const renderPipelineTypeIcon = (row) => {
     if (row.isVirtualEnvironment) {
         return <Rocket className="icon-dim-24" />
-    } else if (row.pipelineType === 'CI' || row.type === 'CI') {
-        return <CI className="icon-dim-20 dc__flip" />
-    } else {
-        return <CD className="icon-dim-20 dc__flip" />
     }
+    if (row.pipelineType === 'CI' || row.type === 'CI') {
+        return <CI className="icon-dim-20 dc__flip" />
+    }
+    return <CD className="icon-dim-20 dc__flip" />
 }

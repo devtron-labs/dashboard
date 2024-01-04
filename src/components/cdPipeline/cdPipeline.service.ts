@@ -1,5 +1,5 @@
-import { Routes, TriggerType } from '../../config'
 import { post, get, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes, TriggerType } from '../../config'
 import { getEnvironmentSecrets, getEnvironmentListMinPublic, getEnvironmentConfigs } from '../../services/service'
 
 export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {

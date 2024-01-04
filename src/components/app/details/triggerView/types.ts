@@ -1,7 +1,4 @@
 import { RouteComponentProps } from 'react-router'
-import { HostURLConfig } from '../../../../services/service.types'
-import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { CIMaterialType } from './MaterialHistory'
 import {
     CDMaterialType,
     CDModalTabType,
@@ -18,6 +15,9 @@ import {
     CDMaterialResponseType,
     PipelineType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { HostURLConfig } from '../../../../services/service.types'
+import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
+import { CIMaterialType } from './MaterialHistory'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
@@ -396,7 +396,7 @@ export interface TriggerViewState {
     resourceFilters?: FilterConditionsListType[]
 }
 
-//-- begining of response type objects for trigger view
+// -- begining of response type objects for trigger view
 
 export interface TriggerViewResponse {
     ciPipelineId: number
@@ -433,7 +433,7 @@ export interface Task {
     args?: Array<string>
 }
 
-//Start Workflow Response
+// Start Workflow Response
 export interface Tree {
     id: number
     appWorkflowId: number
@@ -456,9 +456,9 @@ export interface WorkflowResult {
     appName: string
     workflows: Workflow[]
 }
-//End Workflow Response
+// End Workflow Response
 
-//Start CI Response
+// Start CI Response
 export interface DockerBuildConfig {
     gitMaterialId: number
     dockerfileRelativePath: string
@@ -550,9 +550,9 @@ export interface CiPipelineResult {
     afterDockerBuild?: Array<Task>
     ciGitConfiguredId?: number
 }
-//End CI Response
+// End CI Response
 
-//Start CD response
+// Start CD response
 export interface Strategy {
     deploymentTemplate: string
     config: any
@@ -616,7 +616,7 @@ export interface CdPipelineResult {
     appId: number
 }
 
-//End CD response
+// End CD response
 
 type PartialNodeAttr = Partial<NodeAttr>
 

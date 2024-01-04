@@ -8,7 +8,7 @@ import { useColumnFilterContext } from './NodeListSearchFilter'
 import { COLUMN_METADATA } from './constants'
 
 const ValueContainer = (props: any): JSX.Element => {
-    const length = props.getValue().length
+    const { length } = props.getValue()
 
     return (
         <components.ValueContainer {...props}>
@@ -106,7 +106,7 @@ export default function ColumnSelector() {
             value={selectedColumns}
             options={columnOptions}
             onChange={setSelectedColumns}
-            isMulti={true}
+            isMulti
             autoFocus={false}
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
@@ -123,7 +123,7 @@ export default function ColumnSelector() {
                 }
             }}
             components={{
-                Option: Option,
+                Option,
                 ValueContainer,
                 IndicatorSeparator: null,
                 ClearIndicator: null,

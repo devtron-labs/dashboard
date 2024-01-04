@@ -5,7 +5,7 @@ import checkGreen from '../../assets/icons/misc/checkGreen.svg'
 import arrowSquareout from '../../assets/icons/misc/arrowSquareOut.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import './deploymentConfig.scss'
-import { MODES } from '../../../src/config/constants'
+import { MODES } from '../../config/constants'
 
 interface Readme {
     readme: any
@@ -18,7 +18,7 @@ interface Readme {
     defaultValue?: string
 }
 
-function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, readOnly, defaultValue }: Readme) {
+const ReadmeConfig = ({ readme, value, handleClose, loading, onChange, schema, readOnly, defaultValue }: Readme) => {
     const key = useKeyDown()
     const [tempForm, setTempForm] = useState()
     useEffect(() => {
@@ -57,7 +57,7 @@ function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, r
                     <CodeEditor
                         value={value}
                         defaultValue={defaultValue}
-                        height={'calc(100% - 42px)'}
+                        height="calc(100% - 42px)"
                         readOnly={readOnly}
                         validatorSchema={schema}
                         onChange={setTempForm}

@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import ReactSelect from 'react-select'
+import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { NavLink } from 'react-router-dom'
 import { styles, portalStyles, DropdownIndicator } from './security.util'
 import {
     VulnerabilityUIMetaData,
@@ -16,10 +18,8 @@ import { AddCveModal } from './AddCveModal'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { getVulnerabilities, savePolicy, updatePolicy } from './security.service'
-import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
-import { NavLink } from 'react-router-dom'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 
 export class SecurityPolicyEdit extends Component<
@@ -112,7 +112,7 @@ export class SecurityPolicyEdit extends Component<
         let payload = {}
         let promise
         if (cve.policy.inherited) {
-            //create
+            // create
             payload = this.createCVEPayload(this.props.level, cve.name, action, envId)
             promise = savePolicy(payload)
         } else {
@@ -164,14 +164,14 @@ export class SecurityPolicyEdit extends Component<
         let promise
 
         if (actionLowerCase === VulnerabilityAction.inherit) {
-            //update
+            // update
             payload = {
                 id: policy.id,
                 action: actionLowerCase,
             }
             promise = updatePolicy(payload)
         } else if (policy.policy.inherited) {
-            //Create if inherited from higher
+            // Create if inherited from higher
             payload = this.createSeverityPayload(this.props.level, policy.severity, action, envId)
             promise = savePolicy(payload)
         } else {
@@ -194,9 +194,9 @@ export class SecurityPolicyEdit extends Component<
 
     toggleCollapse(cardIndex: number): void {
         if (this.state.result.policies[cardIndex]) {
-            const result = this.state.result
+            const { result } = this.state
             result.policies[cardIndex].isCollapsed = !result.policies[cardIndex].isCollapsed
-            this.setState({ result: result })
+            this.setState({ result })
         }
     }
 
@@ -232,7 +232,7 @@ export class SecurityPolicyEdit extends Component<
             case 'application':
                 return {
                     appId: this.props.id,
-                    envId: envId,
+                    envId,
                     action: action.toLowerCase(),
                     cveId: cveId.toUpperCase(),
                 }
@@ -266,7 +266,7 @@ export class SecurityPolicyEdit extends Component<
             case 'application':
                 return {
                     appId: this.props.id,
-                    envId: envId,
+                    envId,
                     action: action.toLowerCase(),
                     severity,
                 }
@@ -287,7 +287,7 @@ export class SecurityPolicyEdit extends Component<
     }
 
     private renderVulnerability(props: VulnerabilityUIMetaData, v: VulnerabilityPolicy, severity: SeverityPolicy) {
-        let actions = this.actions
+        let { actions } = this
         if (this.props.level !== 'global') {
             actions = this.actions.concat(this.inheritAction)
         }
@@ -303,7 +303,7 @@ export class SecurityPolicyEdit extends Component<
                         data-testid={`vulnerability-title-${props.className}`}
                         className={`vulnerability__title vulnerability__title--${props.className}`}
                     >
-                        {props.title + ' : ' + permission}
+                        {`${props.title} : ${permission}`}
                     </h3>
                     <p className="vulnerability__subtitle" data-testid={`vulnerability-subtitle-${props.className}`}>
                         {props.subTitle}
@@ -347,7 +347,7 @@ export class SecurityPolicyEdit extends Component<
                         <p className="security-policy-card__subtitle" data-testid="CVE-policy-subtitle">
                             Block or allow specific Common Vulnerabilities and Exposures (CVEs) policies.
                             <a
-                                href={`https://cve.mitre.org/cve/search_cve_list.html`}
+                                href="https://cve.mitre.org/cve/search_cve_list.html"
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
@@ -378,7 +378,7 @@ export class SecurityPolicyEdit extends Component<
                                 <th className="security-policy__header-cell">Policy Last Defined</th>
                                 <th className="security-policy__header-cell">Policy</th>
                                 <th className="security-policy__header-cell">
-                                    <span className="icon-dim-20"></span>
+                                    <span className="icon-dim-20" />
                                 </th>
                             </tr>
                         </thead>
@@ -386,7 +386,7 @@ export class SecurityPolicyEdit extends Component<
                             {cves.map((cve) => {
                                 const selectedValue = this.actions.find((data) => data.value === cve.policy.action)
 
-                                //inherited is created at parent level
+                                // inherited is created at parent level
                                 return (
                                     <tr key={cve.name} className="security-policy__table-row">
                                         <td className="security-policy__data-cell security-policy__cve-cell dc__cve-cell">
@@ -407,7 +407,7 @@ export class SecurityPolicyEdit extends Component<
                                         <td className="security-policy__data-cell">
                                             <ReactSelect
                                                 menuPosition="fixed"
-                                                closeMenuOnScroll={true}
+                                                closeMenuOnScroll
                                                 value={selectedValue}
                                                 onChange={(selected) => {
                                                     this.updateCVE((selected as any).value, cve, envId)
@@ -483,7 +483,7 @@ export class SecurityPolicyEdit extends Component<
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
                         <h1 className="form__title">
-                            <NavLink to={`/security/policies/clusters`}>Clusters</NavLink>
+                            <NavLink to="/security/policies/clusters">Clusters</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0].name}
                         </h1>
@@ -493,7 +493,7 @@ export class SecurityPolicyEdit extends Component<
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
                         <h1 className="form__title">
-                            <NavLink to={`/security/policies/environments`}>Environments</NavLink>
+                            <NavLink to="/security/policies/environments">Environments</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0].name}
                         </h1>
@@ -504,7 +504,7 @@ export class SecurityPolicyEdit extends Component<
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
                         <h1 className="form__title">
-                            <NavLink to={`/security/policies/apps`}>Applications</NavLink>
+                            <NavLink to="/security/policies/apps">Applications</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0]?.name.substring(0, i)}
                         </h1>
@@ -516,52 +516,50 @@ export class SecurityPolicyEdit extends Component<
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return <Reload />
-        } else {
-            const isCollapsible = this.props.level === 'application'
-            return (
-                <>
-                    {this.renderHeader()}
-                    {this.state.result?.policies.map((v: VulnerabilityPolicy, cardIndex) => {
-                        const showCardContent = isCollapsible ? !v.isCollapsed : true
-                        const envNameIndex = v?.name?.search('/')
-                        return (
-                            <div key={v.name} className="security-policy__card mb-20">
-                                <div className="flexbox flex-justify">
-                                    {isCollapsible ? (
-                                        <p className="security-polic__app-env-name">
-                                            env{v?.name.substr(envNameIndex)}
-                                        </p>
-                                    ) : null}
-                                    {isCollapsible ? (
-                                        <Arrow
-                                            className="icon-dim-24 cursor fwn-9 rotate"
-                                            style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
-                                            onClick={() => {
-                                                this.toggleCollapse(cardIndex)
-                                            }}
-                                        />
-                                    ) : null}
-                                </div>
-                                {showCardContent ? (
-                                    <>
-                                        {isCollapsible ? <div className="mb-20"></div> : null}
-                                        {this.renderVulnerabilitiesCard(v, v.severities)}
-                                        {this.renderPolicyListHeader()}
-                                        {v.cves.length
-                                            ? this.renderPolicyList(v.cves, v.envId)
-                                            : this.renderEmptyPolicyList()}
-                                    </>
+        }
+        const isCollapsible = this.props.level === 'application'
+        return (
+            <>
+                {this.renderHeader()}
+                {this.state.result?.policies.map((v: VulnerabilityPolicy, cardIndex) => {
+                    const showCardContent = isCollapsible ? !v.isCollapsed : true
+                    const envNameIndex = v?.name?.search('/')
+                    return (
+                        <div key={v.name} className="security-policy__card mb-20">
+                            <div className="flexbox flex-justify">
+                                {isCollapsible ? (
+                                    <p className="security-polic__app-env-name">env{v?.name.substr(envNameIndex)}</p>
+                                ) : null}
+                                {isCollapsible ? (
+                                    <Arrow
+                                        className="icon-dim-24 cursor fwn-9 rotate"
+                                        style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
+                                        onClick={() => {
+                                            this.toggleCollapse(cardIndex)
+                                        }}
+                                    />
                                 ) : null}
                             </div>
-                        )
-                    })}
-                    {this.state.showWhitelistModal ? (
-                        <AddCveModal saveCVE={this.saveCVE} close={this.toggleAddCveModal} />
-                    ) : null}
-                </>
-            )
-        }
+                            {showCardContent ? (
+                                <>
+                                    {isCollapsible ? <div className="mb-20" /> : null}
+                                    {this.renderVulnerabilitiesCard(v, v.severities)}
+                                    {this.renderPolicyListHeader()}
+                                    {v.cves.length
+                                        ? this.renderPolicyList(v.cves, v.envId)
+                                        : this.renderEmptyPolicyList()}
+                                </>
+                            ) : null}
+                        </div>
+                    )
+                })}
+                {this.state.showWhitelistModal ? (
+                    <AddCveModal saveCVE={this.saveCVE} close={this.toggleAddCveModal} />
+                ) : null}
+            </>
+        )
     }
 }

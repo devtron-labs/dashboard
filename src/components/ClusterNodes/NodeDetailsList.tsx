@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import * as queryString from 'query-string'
+import { MultiValue } from 'react-select'
 import { getNodeList } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { Pagination } from '../common'
 import { showError, Progressing, ConditionalWrap, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFilter'
 import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
-import Tippy from '@tippyjs/react'
 import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
-import * as queryString from 'query-string'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
@@ -60,13 +60,14 @@ export default function NodeDetailsList({
     function getInitialSearchType(name: string, label: string, group: string): string {
         if (name) {
             return NODE_SEARCH_TEXT.NAME
-        } else if (label) {
-            return NODE_SEARCH_TEXT.LABEL
-        } else if (group) {
-            return NODE_SEARCH_TEXT.NODE_GROUP
-        } else {
-            return ''
         }
+        if (label) {
+            return NODE_SEARCH_TEXT.LABEL
+        }
+        if (group) {
+            return NODE_SEARCH_TEXT.NODE_GROUP
+        }
+        return ''
     }
 
     const getSearchTextMap = (searchText: string): Map<string, string> => {
@@ -154,7 +155,7 @@ export default function NodeDetailsList({
                         if (_updatedLocalMetaData.isSortingAllowed && !_updatedLocalMetaData.sortingFieldName) {
                             _updatedLocalMetaData.sortingFieldName = sortableColumnMap.get(
                                 _updatedLocalMetaData.value,
-                            ).sortingFieldName //updating column meta data when sortingFieldName is missing
+                            ).sortingFieldName // updating column meta data when sortingFieldName is missing
                             isMissingColumn = true
                         }
                     }
@@ -178,14 +179,14 @@ export default function NodeDetailsList({
                 continue
             }
             const currentElement = ob[i]
-            if (typeof currentElement == 'object' && currentElement !== null && !Array.isArray(currentElement)) {
+            if (typeof currentElement === 'object' && currentElement !== null && !Array.isArray(currentElement)) {
                 const flatObject = flattenObject(currentElement)
                 for (const x in flatObject) {
                     if (!flatObject.hasOwnProperty(x)) {
                         continue
                     }
 
-                    toReturn[i + '.' + x] = flatObject[x]
+                    toReturn[`${i}.${x}`] = flatObject[x]
                 }
             } else {
                 toReturn[i] = currentElement
@@ -308,9 +309,8 @@ export default function NodeDetailsList({
             (sortOrder === OrderBy.DESC && sortByColumn.sortingFieldName === 'createdAt')
         ) {
             return firstValue.localeCompare(secondValue)
-        } else {
-            return secondValue.localeCompare(firstValue)
         }
+        return secondValue.localeCompare(firstValue)
     }
 
     const clearFilter = (): void => {
@@ -349,10 +349,9 @@ export default function NodeDetailsList({
     const renderSortDirection = (column: ColumnMetadataType): JSX.Element => {
         if (column.isSortingAllowed) {
             if (sortByColumn.value === column.value) {
-                return <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`}></span>
-            } else {
-                return <span className="sort-column dc__opacity-0_5 ml-4"></span>
+                return <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`} />
             }
+            return <span className="sort-column dc__opacity-0_5 ml-4" />
         }
     }
 
@@ -410,19 +409,19 @@ export default function NodeDetailsList({
             return (
                 <span className="flex left">
                     <span>{nodeData[column.value]}</span>
-                    <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
+                    <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
                     <span className="cr-5"> SchedulingDisabled</span>
                 </span>
             )
-        } else if (column.value === 'k8sVersion') {
+        }
+        if (column.value === 'k8sVersion') {
             return (
                 <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
                 </Tippy>
             )
-        } else {
-            return nodeData[column.value]
         }
+        return nodeData[column.value]
     }
 
     const renderNodeRow = (column, nodeData) => {
@@ -435,9 +434,11 @@ export default function NodeDetailsList({
                     </>
                 )
             )
-        } else if (column.sortType === 'boolean') {
-            return nodeData[column.value] + ''
-        } else if (nodeData[column.value] !== undefined) {
+        }
+        if (column.sortType === 'boolean') {
+            return `${nodeData[column.value]}`
+        }
+        if (nodeData[column.value] !== undefined) {
             return (
                 <ConditionalWrap
                     condition={column.value.indexOf('.usagePercentage') > 0}
@@ -446,9 +447,8 @@ export default function NodeDetailsList({
                     {renderConditionalWrap(column, nodeData)}
                 </ConditionalWrap>
             )
-        } else {
-            return '-'
         }
+        return '-'
     }
 
     const renderNodeList = (nodeData: Object): JSX.Element => {

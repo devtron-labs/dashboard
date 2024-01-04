@@ -1,24 +1,24 @@
 import React, { useState } from 'react'
-import { List } from '../../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react'
 import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { List } from '../../globalConfigurations/GlobalConfiguration'
 import { updateChartProviderList, updateSyncSpecificChart } from '../charts.service'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Helm } from '../../../assets/icons/ic-helmchart.svg'
 import { ChartListType } from '../charts.types'
-import { toast } from 'react-toastify'
 import { getNonEditableChartRepoText } from '../../common'
 import { TOAST_INFO } from '../../../config/constantMessaging'
 
-function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType }) {
+const ChartListPopUpRow = ({ index, list }: { index: number; list: ChartListType }) => {
     const [isSpecificChartRefetchLoading, setSpecificChartRefetchLoading] = useState(false)
     const [isToggleLoading, setToggleLoading] = useState(false)
     const [enabled, toggleEnabled] = useState<boolean>(list.active)
 
     function refetchSpecificChart(id: number, isOCIRegistry: boolean) {
         const payload = {
-            id: id,
-            isOCIRegistry: isOCIRegistry,
+            id,
+            isOCIRegistry,
         }
         setSpecificChartRefetchLoading(true)
 
@@ -37,7 +37,7 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
         if (list.isEditable) {
             const _toggleEnabled = !enabled
             const payload = {
-                id: list.id, //eg: OCI registry: “test-registry” ; for chart repo: “1”
+                id: list.id, // eg: OCI registry: “test-registry” ; for chart repo: “1”
                 isOCIRegistry: list.isOCIRegistry, // for chart-repo: false
                 active: _toggleEnabled,
             }
@@ -62,7 +62,7 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
             <List key={`chart-row-${index}`}>
                 <List.Logo>
                     {list.isOCIRegistry ? (
-                        <div className={'dc__registry-icon ' + list.registryProvider}></div>
+                        <div className={`dc__registry-icon ${list.registryProvider}`} />
                     ) : (
                         <Helm className="icon-dim-20 fcb-5 dc__vertical-align-middle " />
                     )}

@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import moment from 'moment'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Commit } from '../../assets/icons/ic-commit.svg'
 import { ReactComponent as CommitIcon } from '../../assets/icons/ic-code-commit.svg'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg'
@@ -9,11 +12,8 @@ import { ReactComponent as BranchMain } from '../../assets/icons/ic-branch-main.
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { SourceTypeMap, Moment12HourFormat } from '../../config'
-import { createGitCommitUrl } from '../common/helpers/git'
+import { createGitCommitUrl } from './helpers/git'
 import { GitMaterialInfoHeader } from './GitMaterialInfo'
-import moment from 'moment'
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import { MATERIAL_EXCLUDE_TIPPY_TEXT } from '../material/constants'
 
 export default function GitCommitInfoGeneric({
@@ -168,7 +168,7 @@ export default function GitCommitInfoGeneric({
                     arrow={false}
                     placement="bottom"
                     content={MATERIAL_EXCLUDE_TIPPY_TEXT}
-                    interactive={true}
+                    interactive
                 >
                     <span data-testid="excluded-git-commit" className="flex left cr-5 cursor-not-allowed">
                         <Abort className="mr-4 fcr-5" />
@@ -281,7 +281,8 @@ export default function GitCommitInfoGeneric({
                                 <div className="flex left mb-8">
                                     {_webhookData.data['source branch name'] ? (
                                         <div className=" mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
-                                            <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />&nbsp;
+                                            <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />
+                                            &nbsp;
                                             {_webhookData.data['source branch name']}
                                         </div>
                                     ) : null}
@@ -307,7 +308,8 @@ export default function GitCommitInfoGeneric({
                                     <div className="mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
                                         {_webhookData.data['target branch name'] ? (
                                             <>
-                                                <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />&nbsp;
+                                                <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />
+                                                &nbsp;
                                                 {_webhookData.data['target branch name']}&nbsp;
                                             </>
                                         ) : null}

@@ -6,7 +6,7 @@ export const mockSuccessResponseWithOutNote = {
     status: 'Ok',
     result: {
         clusterName: 'default_cluster_with_out_note',
-        clusterId: clusterId,
+        clusterId,
         clusterCreatedOn: new Date().toISOString(),
         clusterCreatedBy: 'System',
     },
@@ -16,7 +16,7 @@ export const mockSuccessResponseWithNote = {
     status: 'Ok',
     result: {
         clusterName: 'default_cluster_with_note',
-        clusterId: clusterId,
+        clusterId,
         clusterCreatedOn: new Date().toISOString(),
         clusterCreatedBy: 'System',
         clusterNote: {

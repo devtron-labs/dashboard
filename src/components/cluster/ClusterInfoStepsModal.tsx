@@ -8,7 +8,7 @@ import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
 import { ClusterStepModal } from './cluster.type'
 import { DOCUMENTATION } from '../../config'
 
-function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
+const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
@@ -45,7 +45,7 @@ function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
                                 setCopied(false)
                             }, 5000)
                         }}
-                        interactive={true}
+                        interactive
                     >
                         <div className="cluster-clipboard dc__position-abs cursor" onClick={copyClipboard}>
                             <ClipboardIcon className="icon-dim-16" />

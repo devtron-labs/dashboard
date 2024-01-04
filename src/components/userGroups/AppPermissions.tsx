@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
+import { useRouteMatch } from 'react-router'
 import {
     APPROVER_ACTION,
     CONFIG_APPROVER_ACTION,
@@ -8,7 +9,6 @@ import {
     useUserGroupContext,
 } from './UserGroup'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
-import { useRouteMatch } from 'react-router'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../config'
 import {
     ActionTypes,
@@ -105,9 +105,8 @@ export default function AppPermissions({
                     }
                 }),
             ]
-        } else {
-            return [{ label: 'All applications', value: '*' }]
         }
+        return [{ label: 'All applications', value: '*' }]
     }
 
     async function setAllWorkflows(jobOptions) {
@@ -141,16 +140,16 @@ export default function AppPermissions({
                 return directRolefilter.environment
                     .split(',')
                     .map((directRole) => ({ value: directRole, label: directRole }))
-            } else {
-                return [
-                    { label: 'All environments', value: '*' },
-                    ...environmentsList.map((env) => ({
-                        label: env.environment_name,
-                        value: env.environmentIdentifier,
-                    })),
-                ]
             }
-        } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+            return [
+                { label: 'All environments', value: '*' },
+                ...environmentsList.map((env) => ({
+                    label: env.environment_name,
+                    value: env.environmentIdentifier,
+                })),
+            ]
+        }
+        if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
             const returnArr = []
             const envArr = directRolefilter.environment.split(',')
             const envMap: Map<string, boolean> = new Map()
@@ -182,36 +181,36 @@ export default function AppPermissions({
                         })
                 })
             return returnArr
-        } else if (directRolefilter.entity === EntityTypes.JOB) {
+        }
+        if (directRolefilter.entity === EntityTypes.JOB) {
             if (directRolefilter.environment) {
                 return directRolefilter.environment
                     .split(',')
                     .map((directRole) => ({ value: directRole, label: directRole }))
-            } else {
-                const environmentListWithClusterCdActive = environmentsList.filter((env) => env.isClusterCdActive)
-                return [
-                    { label: 'All environments', value: '*' },
-                    {
-                        label: DEFAULT_ENV,
-                        value: DEFAULT_ENV,
-                    },
-                    ...environmentListWithClusterCdActive.map((env) => ({
-                        label: env.environment_name,
-                        value: env.environmentIdentifier,
-                    })),
-                ]
             }
+            const environmentListWithClusterCdActive = environmentsList.filter((env) => env.isClusterCdActive)
+            return [
+                { label: 'All environments', value: '*' },
+                {
+                    label: DEFAULT_ENV,
+                    value: DEFAULT_ENV,
+                },
+                ...environmentListWithClusterCdActive.map((env) => ({
+                    label: env.environment_name,
+                    value: env.environmentIdentifier,
+                })),
+            ]
         }
     }
 
     async function populateDataFromAPI(roleFilters: APIRoleFilter[]) {
         const projectsMap = projectsList ? mapByKey(projectsList, 'name') : new Map()
-        let foundDevtronApps = false,
-            foundHelmApps = false,
-            foundJobs = false,
-            uniqueProjectIdsDevtronApps = [],
-            uniqueProjectIdsHelmApps = [],
-            uniqueProjectIdsJobs = []
+        let foundDevtronApps = false
+        let foundHelmApps = false
+        let foundJobs = false
+        const uniqueProjectIdsDevtronApps = []
+        const uniqueProjectIdsHelmApps = []
+        const uniqueProjectIdsJobs = []
         for (const element of roleFilters || []) {
             if (element.entity === EntityTypes.DIRECT) {
                 const projectId = projectsMap.get(element.team)?.id
@@ -352,15 +351,15 @@ export default function AppPermissions({
         const defaultValueArr = []
         if (startsWithHash) {
             defaultValueArr.push({
-                label: 'All existing + future environments in ' + clusterName,
-                value: '#' + clusterName,
+                label: `All existing + future environments in ${clusterName}`,
+                value: `#${clusterName}`,
                 namespace: '',
                 clusterName: '',
             })
         }
         defaultValueArr.push({
-            label: 'All existing environments in ' + clusterName,
-            value: '*' + clusterName,
+            label: `All existing environments in ${clusterName}`,
+            value: `*${clusterName}`,
             namespace: '',
             clusterName: '',
         })
@@ -372,7 +371,7 @@ export default function AppPermissions({
                 label: env.environmentName,
                 value: env.environmentIdentifier,
                 namespace: env.namespace,
-                clusterName: clusterName,
+                clusterName,
             })),
         ]
     }
@@ -388,8 +387,8 @@ export default function AppPermissions({
                 tempPermissions[index][name] = tempPermissions[index][name]?.filter(
                     (env) =>
                         env.clusterName !== clusterName &&
-                        env.value !== '#' + clusterName &&
-                        env.value !== '*' + clusterName,
+                        env.value !== `#${clusterName}` &&
+                        env.value !== `*${clusterName}`,
                 )
                 if (action === 'select-option') {
                     // check all environments
@@ -399,36 +398,34 @@ export default function AppPermissions({
                     ]
                     tempPermissions[index]['environmentError'] = null
                 }
-            } else {
-                if (action === 'select-option') {
-                    // check all environments
-                    const environmentListWithClusterCdActive = environmentsList.filter((env) => env.isClusterCdActive)
-                    tempPermissions[index][name] = [
-                        { label: 'All environments', value: '*' },
-                        ...(tempPermissions[index].entity === EntityTypes.JOB
-                            ? environmentListWithClusterCdActive
-                            : environmentsList
-                        ).map((env) => ({
-                            label: env.environment_name,
-                            value: env.environmentIdentifier,
-                        })),
-                    ]
-                    if (tempPermissions[index].entity === EntityTypes.JOB) {
-                        tempPermissions[index][name].push({
-                            label: DEFAULT_ENV,
-                            value: DEFAULT_ENV,
-                        })
-                    }
-                    tempPermissions[index]['environmentError'] = null
-                } else {
-                    // uncheck all environments
-                    tempPermissions[index][name] = []
+            } else if (action === 'select-option') {
+                // check all environments
+                const environmentListWithClusterCdActive = environmentsList.filter((env) => env.isClusterCdActive)
+                tempPermissions[index][name] = [
+                    { label: 'All environments', value: '*' },
+                    ...(tempPermissions[index].entity === EntityTypes.JOB
+                        ? environmentListWithClusterCdActive
+                        : environmentsList
+                    ).map((env) => ({
+                        label: env.environment_name,
+                        value: env.environmentIdentifier,
+                    })),
+                ]
+                if (tempPermissions[index].entity === EntityTypes.JOB) {
+                    tempPermissions[index][name].push({
+                        label: DEFAULT_ENV,
+                        value: DEFAULT_ENV,
+                    })
                 }
+                tempPermissions[index]['environmentError'] = null
+            } else {
+                // uncheck all environments
+                tempPermissions[index][name] = []
             }
         } else {
             if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                 tempPermissions[index][name] = selectedValue.filter(
-                    ({ value, label }) => value !== '*' + clusterName && value !== '#' + clusterName,
+                    ({ value, label }) => value !== `*${clusterName}` && value !== `#${clusterName}`,
                 )
             } else {
                 tempPermissions[index][name] = selectedValue.filter(({ value, label }) => value !== '*')
@@ -538,9 +535,9 @@ export default function AppPermissions({
 
     function removeDirectPermissionRow(index) {
         setDirectPermission((permission) => {
-            let foundDevtronApps = false,
-                foundHelmApps = false,
-                foundJobs = false
+            let foundDevtronApps = false
+            let foundHelmApps = false
+            let foundJobs = false
 
             const permissionArr = removeItemsFromArray(permission, index, 1)
             for (let i = 0; i < permissionArr.length; i++) {
@@ -690,14 +687,14 @@ export default function AppPermissions({
     )
 }
 
-function AppPermissionDetail({
+const AppPermissionDetail = ({
     accessType,
     handleDirectPermissionChange,
     removeDirectPermissionRow,
     AddNewPermissionRow,
     directPermission,
     hideInfoLegend,
-}: AppPermissionsDetailType) {
+}: AppPermissionsDetailType) => {
     return (
         <>
             {!hideInfoLegend && accessType !== ACCESS_TYPE_MAP.JOBS && (

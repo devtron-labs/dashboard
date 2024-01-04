@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { RouteComponentProps, NavLink } from 'react-router-dom'
+import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { getAppListMin } from '../../services/service'
-import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config'
 import { SecurityPolicyAppState } from './security.types'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
@@ -39,53 +39,53 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
     }
 
     renderList() {
-        const url = this.props.match.url
+        const { url } = this.props.match
         if (this.state.view === ViewType.LOADING) {
             return (
                 <div style={{ height: '280px' }}>
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.view === ViewType.LOADING) {
-            return <Reload />
-        } else {
-            return (
-                <table className="security-policy-cluster__table">
-                    <tbody>
-                        <tr>
-                            <td className="security-policy-cluster__title w-100">
-                                <div className="dc__search-with-dropdown">
-                                    <Search className="icon-dim-20 ml-8" />
-                                    <input
-                                        type="text"
-                                        className="search-with-dropdown__search"
-                                        data-testid="search-application"
-                                        onChange={this.handleSearchChange}
-                                        autoFocus
-                                        placeholder="Search application"
-                                    />
-                                </div>
-                            </td>
-                        </tr>
-                        {this.state.appList
-                            .filter((app) => app.name.includes(this.state.appSearch))
-                            .map((app) => {
-                                return (
-                                    <tr
-                                        key={app.id}
-                                        className="security-policy-cluster__content-row"
-                                        data-testid="select-application-from-list"
-                                    >
-                                        <td className="pl-20 pr-20 pt-16 pb-16">
-                                            <NavLink to={`${url}/${app.id}`}>{app.name}</NavLink>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                    </tbody>
-                </table>
-            )
         }
+        if (this.state.view === ViewType.LOADING) {
+            return <Reload />
+        }
+        return (
+            <table className="security-policy-cluster__table">
+                <tbody>
+                    <tr>
+                        <td className="security-policy-cluster__title w-100">
+                            <div className="dc__search-with-dropdown">
+                                <Search className="icon-dim-20 ml-8" />
+                                <input
+                                    type="text"
+                                    className="search-with-dropdown__search"
+                                    data-testid="search-application"
+                                    onChange={this.handleSearchChange}
+                                    autoFocus
+                                    placeholder="Search application"
+                                />
+                            </div>
+                        </td>
+                    </tr>
+                    {this.state.appList
+                        .filter((app) => app.name.includes(this.state.appSearch))
+                        .map((app) => {
+                            return (
+                                <tr
+                                    key={app.id}
+                                    className="security-policy-cluster__content-row"
+                                    data-testid="select-application-from-list"
+                                >
+                                    <td className="pl-20 pr-20 pt-16 pb-16">
+                                        <NavLink to={`${url}/${app.id}`}>{app.name}</NavLink>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                </tbody>
+            </table>
+        )
     }
 
     renderContent() {
@@ -97,20 +97,19 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
                     key={`${this.props.match.params.appId}`}
                 />
             )
-        } else {
-            return (
-                <>
-                    <div className="ml-24 mr-24 mt-20 mb-20">
-                        <h1 className="form__title">Application Security Policies</h1>
-                        <p className="form__subtitle">
-                            Manage security policies for specific applications. Global policies would be applicable if
-                            not denied
-                        </p>
-                    </div>
-                    <div className="white-card white-card--cluster">{this.renderList()}</div>
-                </>
-            )
         }
+        return (
+            <>
+                <div className="ml-24 mr-24 mt-20 mb-20">
+                    <h1 className="form__title">Application Security Policies</h1>
+                    <p className="form__subtitle">
+                        Manage security policies for specific applications. Global policies would be applicable if not
+                        denied
+                    </p>
+                </div>
+                <div className="white-card white-card--cluster">{this.renderList()}</div>
+            </>
+        )
     }
 
     render() {

@@ -1,8 +1,8 @@
 import React, { Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
+import { showError, Progressing, ErrorScreenManager, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, useInterval } from '../../common'
-import { showError, Progressing, ErrorScreenManager, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
@@ -156,7 +156,7 @@ export default function DevtronStackManager({
         if (serverMode === SERVER_MODE.FULL) {
             return
         }
-        //Check for CICD status to update SERVER_MODE on every route change if Current SERVER_MODE is EA_ONLY
+        // Check for CICD status to update SERVER_MODE on every route change if Current SERVER_MODE is EA_ONLY
         getModuleInfo(ModuleNameMap.CICD)
     }, [location])
 
@@ -407,7 +407,7 @@ export default function DevtronStackManager({
                         serverInfo={serverInfo}
                         upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
                         logPodName={logPodName}
-                        fromDiscoverModules={true}
+                        fromDiscoverModules
                         isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
                         handleActionTrigger={handleActionTrigger}
                         history={history}
@@ -457,7 +457,7 @@ export default function DevtronStackManager({
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>
                     <ModulesListingView
                         modulesList={stackDetails.discoverModulesList}
-                        isDiscoverModulesView={true}
+                        isDiscoverModulesView
                         handleModuleCardClick={handleModuleSelection}
                     />
                 </Route>
@@ -558,11 +558,11 @@ export default function DevtronStackManager({
                                         appStreamData={buildResourceStatusModalData(
                                             selectedModule.moduleResourcesStatus,
                                         )}
-                                        showAppStatusMessage={true}
+                                        showAppStatusMessage
                                         title="Integration installation status"
                                         appStatusText={selectedModule.installationStatus}
                                         appStatus={AppStatusClass[selectedModule.installationStatus] || ''}
-                                        showFooter={true}
+                                        showFooter
                                     />
                                 )}
                             </ErrorBoundary>

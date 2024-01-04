@@ -1,7 +1,7 @@
 import React, { Component, createContext } from 'react'
 import dropdown from '../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { isArrayEqual } from '../helpers/util'
-//id must exist
+// id must exist
 const TypeaheadContext = createContext({
     name: '',
     search: '',
@@ -59,7 +59,7 @@ export class Typeahead extends Component<
             selections = []
         }
         selections.push(item)
-        this.setState({ selections, showMenu: this.props.multi ? true : false }, () => {
+        this.setState({ selections, showMenu: !!this.props.multi }, () => {
             this.props.onChange(selections)
         })
     }
@@ -99,7 +99,7 @@ export class Typeahead extends Component<
                             data-testid={this.props.dataTestIdInput}
                             type="text"
                             value={this.state.search}
-                            placeholder={'Select'}
+                            placeholder="Select"
                             disabled={this.props.disabled}
                             className={classes}
                             onClick={() => {
@@ -148,9 +148,9 @@ export class Typeahead extends Component<
                     <input
                         type="text"
                         value={this.state.search}
-                        placeholder={'Select'}
+                        placeholder="Select"
                         disabled={this.props.disabled}
-                        className={'typeahead__search-multi'}
+                        className="typeahead__search-multi"
                         onClick={() => {
                             this.setState({ showMenu: true })
                         }}
@@ -175,7 +175,7 @@ export class Typeahead extends Component<
                     onChange: this.props.onChange,
                 }}
             >
-                {this.state.showMenu ? <div className="dc__transparent-div" onClick={this.handleClick}></div> : null}
+                {this.state.showMenu ? <div className="dc__transparent-div" onClick={this.handleClick} /> : null}
                 {this.props.multi ? this.renderMultiSelection() : this.renderSingleSelection()}
                 {this.state.showMenu ? <ul className="typeahead__menu">{this.props.children}</ul> : null}
             </TypeaheadContext.Provider>
@@ -190,22 +190,21 @@ export class TypeaheadOption extends Component<{ dataTestIdMenuList?: string; it
                 {(context) => {
                     if (context.search.length && this.props.item[context.labelKey].search(context.search) === -1) {
                         return null
-                    } else {
-                        return (
-                            <>
-                                <li
-                                    data-testid={this.props.dataTestIdMenuList}
-                                    className="typeahead__menu-item"
-                                    key={this.props.id}
-                                    onClick={(event) => {
-                                        context.selectItem(this.props.item)
-                                    }}
-                                >
-                                    {this.props.children}
-                                </li>
-                            </>
-                        )
                     }
+                    return (
+                        <>
+                            <li
+                                data-testid={this.props.dataTestIdMenuList}
+                                className="typeahead__menu-item"
+                                key={this.props.id}
+                                onClick={(event) => {
+                                    context.selectItem(this.props.item)
+                                }}
+                            >
+                                {this.props.children}
+                            </li>
+                        </>
+                    )
                 }}
             </TypeaheadContext.Consumer>
         )

@@ -1,10 +1,10 @@
 import * as jsonpatch from 'fast-json-patch'
 import { getValueByPointer, applyPatch } from 'fast-json-patch'
+import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
 import { BASIC_FIELDS, BASIC_FIELD_MAPPING, BASIC_FIELD_PARENT_PATH } from './constants'
 import { BasicFieldErrorObj, DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
 import { ValidationRules } from './validationRules'
-import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
 
 const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
 let templateFromBasicValue
@@ -18,7 +18,7 @@ export const isBasicValueChanged = (modifiedTemplate, defaultTemplate?): boolean
     if (templateFromBasicValue || defaultTemplate) {
         const _patchData = jsonpatch.compare(defaultTemplate || templateFromBasicValue, modifiedTemplate)
         for (let index = 0; index < _patchData.length; index++) {
-            const path = _patchData[index].path
+            const { path } = _patchData[index]
             for (let index = 0; index < basicFieldArray.length; index++) {
                 if (
                     (path.indexOf(BASIC_FIELD_MAPPING[basicFieldArray[index]]) === 0 && !path.includes('pathType')) ||
@@ -117,7 +117,7 @@ export function groupDataByType(data) {
 
     // Iterate through the data and group objects by type
     data.forEach((item) => {
-        const type = item.type
+        const { type } = item
 
         if (!groupedData.has(type)) {
             groupedData.set(type, [])

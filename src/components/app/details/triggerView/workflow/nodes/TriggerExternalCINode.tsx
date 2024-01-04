@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import link from '../../../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
+import link from '../../../../../../assets/icons/ic-link.svg'
 
 export interface CINodeProps {
     x: number
@@ -38,7 +38,7 @@ export class TriggerExternalCINode extends Component<CINodeProps> {
                 <div className="workflow-node__title flex">
                     <div className="workflow-node__full-width-minus-Icon">
                         <span className="workflow-node__text-light">Build: External</span>
-                        <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
+                        <Tippy className="default-tt" arrow placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
                     </div>

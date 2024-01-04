@@ -125,8 +125,8 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
 }
 
 export const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
-    const warningEvents: Record<string, any>[] = [],
-        otherEvents: Record<string, any>[] = []
+    const warningEvents: Record<string, any>[] = []
+    const otherEvents: Record<string, any>[] = []
     eventList = eventList.reverse()
     for (const iterator of eventList) {
         if (iterator.type === 'Warning') {

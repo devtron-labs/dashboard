@@ -6,10 +6,10 @@ import {
     MultiValueRemove,
     Option,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Select from 'react-select'
 import { mapByKey } from '../common'
 import AppPermissions from '../userGroups/AppPermissions'
 import { useUserGroupContext } from '../userGroups/UserGroup'
-import Select from 'react-select'
 import { OptionType } from '../app/types'
 import {
     ChartGroupPermissionsFilter,
@@ -18,7 +18,7 @@ import {
     K8sPermissionFilter,
 } from '../userGroups/userGroups.types'
 
-function GroupPermission({
+const GroupPermission = ({
     userData,
     userGroups,
     setUserGroups,
@@ -38,7 +38,7 @@ function GroupPermission({
     setChartPermission: React.Dispatch<React.SetStateAction<ChartGroupPermissionsFilter>>
     k8sPermission: K8sPermissionFilter[]
     setK8sPermission: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
-}) {
+}) => {
     const { userGroupsList } = useUserGroupContext()
     const userGroupsMap = mapByKey(userGroupsList, 'name')
     const availableGroups = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
@@ -109,7 +109,7 @@ function GroupPermission({
                 setDirectPermission={setDirectPermission}
                 chartPermission={chartPermission}
                 setChartPermission={setChartPermission}
-                hideInfoLegend={true}
+                hideInfoLegend
                 k8sPermission={k8sPermission}
                 setK8sPermission={setK8sPermission}
             />

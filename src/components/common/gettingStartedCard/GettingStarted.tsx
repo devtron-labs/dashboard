@@ -11,7 +11,7 @@ import { GettingStartedType } from '../../onboardingGuide/OnboardingGuide.type'
 import { setActionWithExpiry } from '../helpers/Helpers'
 import './gettingStarted.scss'
 
-function GettingStartedCard({ className, hideGettingStartedCard }: GettingStartedType) {
+const GettingStartedCard = ({ className, hideGettingStartedCard }: GettingStartedType) => {
     const onClickedOkay = (e) => {
         setActionWithExpiry('clickedOkay', 1)
         hideGettingStartedCard()

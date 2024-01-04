@@ -1,9 +1,9 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import LoadingCard from './LoadingCard'
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
@@ -72,7 +72,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                     <figure
                         className={`${status.toLowerCase()} h-24 w-24`}
                         style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
-                    ></figure>
+                    />
                 </div>
             </div>
             <div className="app-details-info-card__bottom-container">{renderBottomContainer()}</div>

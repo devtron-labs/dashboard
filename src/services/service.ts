@@ -1,6 +1,6 @@
 import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import moment from 'moment'
+import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import {
     CDPipelines,
     AppListMin,
@@ -114,7 +114,7 @@ export function getAvailableCharts(
     let url = `${Routes.CHART_AVAILABLE}/discover/`
 
     if (pageOffset >= 0 && pageSize) {
-        queryString = `${queryString ? queryString : '?'}&offset=${pageOffset}&size=${pageSize}`
+        queryString = `${queryString || '?'}&offset=${pageOffset}&size=${pageSize}`
     }
 
     if (queryString) {
@@ -380,24 +380,22 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
         .then((response) => {
             if (response.result?.status === ModuleStatus.INSTALLED) {
                 return isGitopsConfigured()
-            } else {
-                return {
-                    code: 200,
-                    status: response.status,
-                    result: { isInstalled: false, isConfigured: false, noInstallationStatus: true },
-                }
+            }
+            return {
+                code: 200,
+                status: response.status,
+                result: { isInstalled: false, isConfigured: false, noInstallationStatus: true },
             }
         })
         .then((response) => {
             if (response.result.noInstallationStatus) {
                 delete response.result.noInstallationStatus
                 return response
-            } else {
-                return {
-                    code: response.code,
-                    status: response.status,
-                    result: { isInstalled: true, isConfigured: response.result.exists },
-                }
+            }
+            return {
+                code: response.code,
+                status: response.status,
+                result: { isInstalled: true, isConfigured: response.result.exists },
             }
         })
 }

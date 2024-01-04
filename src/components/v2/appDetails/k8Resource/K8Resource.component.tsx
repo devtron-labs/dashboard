@@ -57,7 +57,7 @@ export default function K8ResourceComponent({
     )
 }
 
-export function EmptyK8sResourceComponent({ emptyStateMessage }: { emptyStateMessage: string }) {
+export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMessage: string }) => {
     return (
         <>
             <div

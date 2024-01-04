@@ -1,5 +1,5 @@
-import { PATTERNS } from '../../config'
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
+import { PATTERNS } from '../../config'
 
 export function validateTags(tag) {
     const re = PATTERNS.APP_LABEL_CHIP
@@ -13,7 +13,7 @@ export const TAG_VALIDATION_MESSAGE = {
 }
 
 export const createOption = (label: string) => ({
-    label: label,
+    label,
     value: label,
 })
 

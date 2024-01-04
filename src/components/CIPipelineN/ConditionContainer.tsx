@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
+import { RadioGroup, RadioGroupItem, ConditionType, PluginType, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { components } from 'react-select'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
-import { RadioGroup, RadioGroupItem, ConditionType, PluginType, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import ReactSelect, { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { selectOperatorStyle, selectVariableStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
@@ -12,7 +12,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormType } from '../workflowEditor/types'
 
-export function ConditionContainer({ type }: { type: ConditionContainerType }) {
+export const ConditionContainer = ({ type }: { type: ConditionContainerType }) => {
     const {
         formData,
         setFormData,
@@ -47,8 +47,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     }, [activeStageName])
 
     useEffect(() => {
-        const conditionDetails =
-            formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails
+        const { conditionDetails } = formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
         if (conditionDetails?.length) {
             const errorConditionIndexArr = []
             for (let i = 0; i < conditionDetails.length; i++) {
@@ -103,8 +102,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         } else {
             conditionTypeToRemove = conditionType === ConditionType.TRIGGER ? ConditionType.SKIP : ConditionType.TRIGGER
         }
-        let conditionDetails =
-            _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails
+        let { conditionDetails } = _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
         if (!conditionDetails) {
             conditionDetails = []
         }
@@ -117,10 +115,10 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
             }
         }
         const newCondition = {
-            id: id,
+            id,
             conditionOnVariable: '',
             conditionOperator: operatorOptions[0].label,
-            conditionType: conditionType,
+            conditionType,
             conditionalValue: '',
         }
         conditionDetails.push(newCondition)
@@ -176,14 +174,14 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         return (
             <components.ValueContainer {...props}>
                 <>
-                    {!props.selectProps.menuIsOpen && (value ? value : <span className="cn-5">Select variable</span>)}
+                    {!props.selectProps.menuIsOpen && (value || <span className="cn-5">Select variable</span>)}
                     {React.cloneElement(props.children[1])}
                 </>
             </components.ValueContainer>
         )
     }
 
-    function Option(_props) {
+    const Option = (_props) => {
         const { selectProps, selectOption, data } = _props
         selectProps.styles.option = getCustomOptionSelectionStyle({ padding: '4px 10px' })
         return (
@@ -198,8 +196,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         if (collapsedSection) {
             const _formData = { ...formData }
             let conditionType
-            let conditionDetails =
-                _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails
+            let { conditionDetails } = _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
             let addNewRow = false
             if (!conditionDetails) {
                 conditionDetails = []
@@ -243,7 +240,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                     id: conditionDetails.length,
                     conditionOnVariable: '',
                     conditionOperator: operatorOptions[0].label,
-                    conditionType: conditionType,
+                    conditionType,
                     conditionalValue: '',
                 }
                 conditionDetails.push(newCondition)

@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
+import { Moment } from 'moment'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { DatePickerType2 as DateRangePicker } from '../../../common'
 import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type'
 import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue, LatencySelect } from './utils'
-import { Moment } from 'moment'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { DEFAULTK8SVERSION } from '../../../../config'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ChartNames = {
     cpu: 'CPU Usage',
@@ -105,7 +105,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
     }
 
     getNewGraphs(tab: AppMetricsTabType) {
-        let k8sVersion = this.props.k8sVersion
+        let { k8sVersion } = this.props
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
         }
@@ -114,7 +114,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
             envId: this.props.envId,
             environmentName: this.props.environmentName,
             newPodHash: this.props.newPodHash,
-            k8sVersion: k8sVersion,
+            k8sVersion,
         }
 
         const cpu = getIframeSrc(appInfo, ChartType.Cpu, this.state.calendarInputs, tab, false)
@@ -201,8 +201,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
     handleCalendarInputs = ({ startDate, endDate }): void => {
         this.setState({
             calendarInputs: {
-                startDate: startDate,
-                endDate: endDate,
+                startDate,
+                endDate,
             },
         })
     }
@@ -243,7 +243,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         const mainChartUrl = this.buildMainChart(chartName, statusCode, this.state.selectedLatency)
         this.setState({
             mainChartName: chartName,
-            statusCode: statusCode,
+            statusCode,
             mainChartUrl,
         })
     }
@@ -282,7 +282,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
     }
 
     buildMainChart(chartType: ChartTypes, statusCode?: StatusTypes, selectedLatency?: number): string {
-        let k8sVersion = this.props.k8sVersion
+        let { k8sVersion } = this.props
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
         }
@@ -291,7 +291,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
             envId: this.props.envId,
             environmentName: this.props.environmentName,
             newPodHash: this.props.newPodHash,
-            k8sVersion: k8sVersion,
+            k8sVersion,
         }
         return getIframeSrc(
             appInfo,
@@ -326,7 +326,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                 >
                                     <h3 className="app-details-graph__title pl-16">CPU Usage</h3>
                                     <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div"></div>
+                                        <div className="app-details-graph__transparent-div" />
                                         <iframe src={this.state.cpu} title="cpu" className={iframeClasses} />
                                     </div>
                                 </div>
@@ -340,7 +340,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                 >
                                     <h3 className="app-details-graph__title pl-16">Memory Usage</h3>
                                     <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div"></div>
+                                        <div className="app-details-graph__transparent-div" />
                                         <iframe src={this.state.ram} title="ram" className={iframeClasses} />
                                     </div>
                                 </div>
@@ -357,7 +357,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                 >
                                     <h3 className="app-details-graph__title pl-16">Throughput</h3>
                                     <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div"></div>
+                                        <div className="app-details-graph__transparent-div" />
                                         <iframe
                                             src={this.state.throughput}
                                             title="throughput"
@@ -378,7 +378,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                 >
                                     <h3 className="app-details-graph__title pl-16">Status 2xx</h3>
                                     <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div"></div>
+                                        <div className="app-details-graph__transparent-div" />
                                         <iframe src={this.state.status2xx} title="2xx" className={iframeClasses} />
                                     </div>
                                 </div>
@@ -395,7 +395,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                 >
                                     <h3 className="app-details-graph__title pl-16">Status 4xx</h3>
                                     <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div"></div>
+                                        <div className="app-details-graph__transparent-div" />
                                         <iframe
                                             src={this.state.status4xx}
                                             title="4xx"
@@ -416,7 +416,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                 >
                                     <h3 className="app-details-graph__title pl-16">Status 5xx</h3>
                                     <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div"></div>
+                                        <div className="app-details-graph__transparent-div" />
                                         <iframe src={this.state.status5xx} title="5xx" className={iframeClasses} />
                                     </div>
                                 </div>
@@ -434,7 +434,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                         Latency {this.state.selectedLatency}
                                     </h3>
                                     <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div"></div>
+                                        <div className="app-details-graph__transparent-div" />
                                         <iframe src={this.state.latency} title="Latency" className={iframeClasses} />
                                     </div>
                                 </div>
@@ -465,7 +465,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                         <label className="dc__tertiary-tab__radio">
                                             <input
                                                 type="radio"
-                                                value={'aggregate'}
+                                                value="aggregate"
                                                 checked={this.state.tab === AppMetricsTab.Aggregate}
                                                 onChange={this.handleTabChange}
                                             />
@@ -474,7 +474,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                         <label className="dc__tertiary-tab__radio">
                                             <input
                                                 type="radio"
-                                                value={'pod'}
+                                                value="pod"
                                                 checked={this.state.tab === AppMetricsTab.Pod}
                                                 onChange={this.handleTabChange}
                                             />

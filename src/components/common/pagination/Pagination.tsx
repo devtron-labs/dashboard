@@ -26,8 +26,8 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
         })
         this.state = {
             show: false,
-            options: options,
-            pages: pages,
+            options,
+            pages,
         }
     }
 
@@ -41,14 +41,15 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
     componentDidUpdate(prevProps) {
         if (prevProps.size !== this.props.size || prevProps.pageSize !== this.props.pageSize) {
             const pages = this.createPageArr(this.props.size, this.props.pageSize, 1)
-            this.setState({ pages: pages })
+            this.setState({ pages })
         }
         if (prevProps.offset !== this.props.offset) {
             const pageNo = 1 + Math.floor(this.props.offset / this.props.pageSize)
             const pages = this.createPageArr(this.props.size, this.props.pageSize, pageNo)
-            this.setState({ pages: pages })
+            this.setState({ pages })
         }
     }
+
     componentWillUnmount() {
         window.removeEventListener('mousedown', this.handleClick)
     }
@@ -122,7 +123,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
                         }}
                     >
                         <span className="left-icon">
-                            <i className="fa fa-chevron-left"></i>
+                            <i className="fa fa-chevron-left" />
                         </span>
                     </button>
                 </li>
@@ -150,7 +151,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
                         }}
                     >
                         <span className="left-icon">
-                            <i className="fa fa-chevron-right"></i>
+                            <i className="fa fa-chevron-right" />
                         </span>
                     </button>
                 </li>
@@ -192,7 +193,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
                     >
                         <span>{pageSize ? pageSize.value : ''}</span>
                         <span className="select__icon">
-                            <i className={font}></i>
+                            <i className={font} />
                         </span>
                     </button>
                 </div>

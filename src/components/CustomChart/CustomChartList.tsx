@@ -112,7 +112,7 @@ export default function CustomChartList() {
                         <div>{renderLearnMoreLink()}</div>
                     </>
                 }
-                isButtonAvailable={true}
+                isButtonAvailable
                 renderButton={renderUploadButton}
             />
         )
@@ -207,9 +207,9 @@ export default function CustomChartList() {
                             additionalContent={additionalRegistryTitleTippyContent()}
                             documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
                             documentationLink={DOCUMENTATION.CUSTOM_CHART}
-                            showCloseButton={true}
+                            showCloseButton
                             trigger="click"
-                            interactive={true}
+                            interactive
                         >
                             <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
                         </TippyCustomized>
@@ -302,7 +302,7 @@ export default function CustomChartList() {
     return (
         <>
             {chartList.length === 0 ? renderEmptyState() : renderChartList()}
-            {showUploadPopup && <UploadChartModal closeUploadPopup={closeUploadPopup}></UploadChartModal>}
+            {showUploadPopup && <UploadChartModal closeUploadPopup={closeUploadPopup} />}
         </>
     )
 }

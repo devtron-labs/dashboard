@@ -64,8 +64,7 @@ export default class Notifications extends Component<NotificationsProps, {}> {
     render() {
         if (!this.props.isSuperAdmin) {
             return <ErrorScreenNotAuthorized />
-        } else {
-            return this.renderNotificationHeader()
         }
+        return this.renderNotificationHeader()
     }
 }

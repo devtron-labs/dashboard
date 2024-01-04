@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Var } from '../../assets/icons/ic-var-initial.svg'
-import Tippy from '@tippyjs/react'
 import { TIPPY_VAR_MSG } from './Constants'
 
 export const InputPluginSelection = ({
@@ -49,9 +49,8 @@ export const InputPluginSelection = ({
                                 return _option
                             }),
                         }
-                    } else {
-                        return null
                     }
+                    return null
                 })
                 .filter((val) => val !== null) // remove empty categories
             totalLength.current = _uniqueIdx // set total length of list
@@ -243,8 +242,8 @@ export const InputPluginSelection = ({
             {popupMenuBody && (
                 <PopupMenu.Body
                     rootClassName={`mxh-210 dc__overflow-auto tag-${selectedVariableIndex}-class`}
-                    autoWidth={true}
-                    preventWheelDisable={true}
+                    autoWidth
+                    preventWheelDisable
                     noBackDrop={noBackDrop}
                 >
                     {popupMenuBody}

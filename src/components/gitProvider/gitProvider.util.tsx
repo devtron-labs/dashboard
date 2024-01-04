@@ -26,7 +26,7 @@ export const styles = {
     },
 }
 
-export function Option(props) {
+export const Option = (props) => {
     const { selectOption, data } = props
     const style = { height: '16px', width: '16px', flex: '0 0 16px' }
     const onClick = (e) => selectOption(data)
@@ -42,7 +42,7 @@ export function Option(props) {
     )
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n5" />

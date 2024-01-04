@@ -1,5 +1,5 @@
-import { Routes } from '../../../../config'
 import { get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../../../config'
 
 export const getGitProviderMin = () => {
     const URL = `${Routes.GIT_PROVIDER_MIN}`

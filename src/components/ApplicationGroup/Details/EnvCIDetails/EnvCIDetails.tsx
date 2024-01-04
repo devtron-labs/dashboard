@@ -187,7 +187,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     if ((!hasMoreLoading && loading) || ciGroupLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
-    } else if (!buildId && pipelineId && triggerHistory.size > 0) {
+    }
+    if (!buildId && pipelineId && triggerHistory.size > 0) {
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, pipelineId }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelineList || []).map((item) => {
@@ -219,7 +220,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     />
                 </Route>
             )
-        } else if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {
+        }
+        if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {
             return (
                 <EmptyView
                     title={APP_GROUP_CI_DETAILS.linkedCI.title}
@@ -228,16 +230,16 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     linkText={APP_GROUP_CI_DETAILS.linkedCI.linkText}
                 />
             )
-        } else {
-            if (!loading) {
-                return (
-                    <EmptyView
-                        title={APP_GROUP_CI_DETAILS.noBuild.title}
-                        subTitle={APP_GROUP_CI_DETAILS.noBuild.subTitle}
-                    />
-                )
-            }
         }
+        if (!loading) {
+            return (
+                <EmptyView
+                    title={APP_GROUP_CI_DETAILS.noBuild.title}
+                    subTitle={APP_GROUP_CI_DETAILS.noBuild.subTitle}
+                />
+            )
+        }
+
         return null
     }
 

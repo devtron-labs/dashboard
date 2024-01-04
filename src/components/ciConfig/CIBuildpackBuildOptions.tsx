@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import {
+    stopPropagation,
+    CIBuildType,
+    TippyCustomized,
+    TippyTheme,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
     DropdownIndicator,
     getCommonSelectStyle,
     getCustomOptionSelectionStyle,
@@ -26,13 +33,6 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import {
-    stopPropagation,
-    CIBuildType,
-    TippyCustomized,
-    TippyTheme,
-    CustomInput,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
@@ -195,9 +195,9 @@ export default function CIBuildpackBuildOptions({
             ciBuildType: CIBuildType.BUILDPACK_BUILD_TYPE,
         }
 
-        let _language = buildersAndFrameworks.selectedLanguage,
-            _version = buildersAndFrameworks.selectedVersion,
-            _builder = buildersAndFrameworks.selectedBuilder
+        let _language = buildersAndFrameworks.selectedLanguage
+        let _version = buildersAndFrameworks.selectedVersion
+        let _builder = buildersAndFrameworks.selectedBuilder
 
         // Update buildersAndFrameworks & buildPackConfig only on the first mount of the component
         if (!_language || !_version || !_builder) {
@@ -219,7 +219,7 @@ export default function CIBuildpackBuildOptions({
                 _currentCIBuildConfig[DockerConfigOverrideKeys.buildPackConfig] = {
                     ...ciBuildConfig.buildPackConfig,
                     builderLangEnvParam: currentBuilderLangEnvParam,
-                    currentBuilderLangEnvParam: currentBuilderLangEnvParam,
+                    currentBuilderLangEnvParam,
                 }
 
                 // Update BuilderLanguageMetadata with previously saved custom option
@@ -262,7 +262,7 @@ export default function CIBuildpackBuildOptions({
                     language: initOption.language,
                     languageVersion: initOption.version,
                     builderLangEnvParam: initOption.BuilderLangEnvParam,
-                    currentBuilderLangEnvParam: currentBuilderLangEnvParam,
+                    currentBuilderLangEnvParam,
                 }
             }
 
@@ -379,9 +379,8 @@ export default function CIBuildpackBuildOptions({
                 _buildEnvArgs[0].v = version
                 setBuildEnvArgs(_buildEnvArgs)
                 return
-            } else {
-                _buildEnvArgs.splice(0, 1)
             }
+            _buildEnvArgs.splice(0, 1)
         }
 
         /**
@@ -409,8 +408,8 @@ export default function CIBuildpackBuildOptions({
             (currentCIBuildConfig.buildPackConfig.builderId !== builder.value ||
                 currentCIBuildConfig.buildPackConfig.languageVersion !== version)
         ) {
-            let isArgPresent = false,
-                argIdx
+            let isArgPresent = false
+            let argIdx
             _buildEnvArgs.forEach((_arg, idx) => {
                 if (
                     !isArgPresent &&
@@ -535,9 +534,9 @@ export default function CIBuildpackBuildOptions({
                             iconClass="fcv-5"
                             heading={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.heading}
                             infoText={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.infoText}
-                            showCloseButton={true}
+                            showCloseButton
                             trigger="click"
-                            interactive={true}
+                            interactive
                         >
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
                         </TippyCustomized>
@@ -646,9 +645,9 @@ export default function CIBuildpackBuildOptions({
                             additionalContent={additionalBuilderTippyContent()}
                             documentationLinkText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.documentationLinkText}
                             documentationLink={DOCUMENTATION.APP_CI_CONFIG_BUILD_WITHOUT_DOCKER}
-                            showCloseButton={true}
+                            showCloseButton
                             trigger="click"
-                            interactive={true}
+                            interactive
                         >
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
                         </TippyCustomized>

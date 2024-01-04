@@ -2,6 +2,15 @@ import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
 import {
+    Progressing,
+    DeleteDialog,
+    RadioGroup,
+    RadioGroupItem,
+    ConditionalWrap,
+    DeploymentAppTypes,
+} from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import {
     DropdownIndicator,
     EnvFormatOptions,
     formatHighlightedText,
@@ -12,14 +21,6 @@ import {
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
-import {
-    Progressing,
-    DeleteDialog,
-    RadioGroup,
-    RadioGroupItem,
-    ConditionalWrap,
-    DeploymentAppTypes,
-} from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -47,7 +48,6 @@ import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.s
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION } from '../../../../config'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -92,7 +92,7 @@ export const ChartEnvironmentSelector = ({
             return (
                 <div className="flex left">
                     <div className="ml-4 mr-4">(Virtual)</div>
-                    <VirtualEnvHelpTippy showVirtualText={true} />
+                    <VirtualEnvHelpTippy showVirtualText />
                 </div>
             )
         }
@@ -114,9 +114,7 @@ export const ChartEnvironmentSelector = ({
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
                     {installedAppInfo
                         ? installedAppInfo.environmentName
-                        : releaseInfo.deployedAppDetail.environmentDetail.clusterName +
-                          '__' +
-                          releaseInfo.deployedAppDetail.environmentDetail.namespace}
+                        : `${releaseInfo.deployedAppDetail.environmentDetail.clusterName}__${releaseInfo.deployedAppDetail.environmentDetail.namespace}`}
                 </span>
             ) : (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9" data-testid="environemnt-value">

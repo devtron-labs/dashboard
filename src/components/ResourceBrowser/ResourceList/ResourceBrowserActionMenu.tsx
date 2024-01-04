@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
+import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
 import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType } from '../Types'
 import { Nodes } from '../../app/types'
@@ -28,7 +28,7 @@ export default function ResourceBrowserActionMenu({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto" isKebab={true}>
+                <PopupMenu.Button rootClassName="flex ml-auto" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-120">

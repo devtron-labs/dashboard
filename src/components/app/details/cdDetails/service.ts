@@ -80,15 +80,12 @@ export function getTriggerDetails({ appId, envId, pipelineId, triggerId, fetchId
                 fetchIdData,
             )}`,
         )
-    } else {
-        return get(
-            `${
-                Routes.APP
-            }/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last${getTriggerDetailsQuery(
-                fetchIdData,
-            )}`,
-        )
     }
+    return get(
+        `${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last${getTriggerDetailsQuery(
+            fetchIdData,
+        )}`,
+    )
 }
 
 export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
@@ -240,7 +237,7 @@ export const getDeploymentHistoryDetail = (
     return get(
         `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent
             .replace('-', '_')
-            .toUpperCase()}${historyComponentName ? '&historyComponentName=' + historyComponentName : ''}`,
+            .toUpperCase()}${historyComponentName ? `&historyComponentName=${historyComponentName}` : ''}`,
     )
 }
 export interface DeploymentConfigurationsRes extends ResponseType {
@@ -269,6 +266,6 @@ export const getDeploymentDiffSelector = (
     return get(
         `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent
             .replace('-', '_')
-            .toUpperCase()}${historyComponentName ? '&historyComponentName=' + historyComponentName : ''}`,
+            .toUpperCase()}${historyComponentName ? `&historyComponentName=${historyComponentName}` : ''}`,
     )
 }

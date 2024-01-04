@@ -1,6 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    VisibleModal,
+    ToastBody,
+    Checkbox,
+    CHECKBOX_VALUE,
+    Toggle,
+    toastAccessDenied,
+    ConfirmationDialog,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import {
     InstallationType,
     InstallationWrapperType,
     ModuleDetails,
@@ -26,24 +41,10 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import {
-    showError,
-    Progressing,
-    ConditionalWrap,
-    VisibleModal,
-    ToastBody,
-    Checkbox,
-    CHECKBOX_VALUE,
-    Toggle,
-    toastAccessDenied,
-    ConfirmationDialog,
-    GenericEmptyState,
-} from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 import { DOCUMENTATION, MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
-import { toast } from 'react-toastify'
 import {
     AboutSection,
     DEVTRON_UPGRADE_MESSAGE,
@@ -59,13 +60,13 @@ import {
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
-import Tippy from '@tippyjs/react'
 import trivy from '../../../assets/icons/ic-clair-to-trivy.svg'
 import clair from '../../../assets/icons/ic-trivy-to-clair.svg'
 import warn from '../../../assets/icons/ic-error-medium.svg'
 import { SuccessModalComponent } from './SuccessModalComponent'
 import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+
 const getInstallationStatusLabel = (
     installationStatus: ModuleStatus,
     enableStatus: boolean,
@@ -83,7 +84,8 @@ const getInstallationStatusLabel = (
                 </span>
             </div>
         )
-    } else if (installationStatus === ModuleStatus.INSTALLED) {
+    }
+    if (installationStatus === ModuleStatus.INSTALLED) {
         return (
             <div className={`module-details__installation-status flex column ${installationStatus}`}>
                 <div className="flex">
@@ -99,9 +101,10 @@ const getInstallationStatusLabel = (
                 )}
             </div>
         )
-    } else if (installationStatus === ModuleStatus.INSTALL_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
+    }
+    if (installationStatus === ModuleStatus.INSTALL_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
         return (
-            <div className={`module-details__installation-status flex installFailed`}>
+            <div className="module-details__installation-status flex installFailed">
                 <ErrorIcon className="icon-dim-20" />
                 <span className="fs-13 fw-6 ml-8" data-testid={`status-${dataTestId}`}>
                     {MODULE_STATUS.Failed}
@@ -246,7 +249,7 @@ export const NavItem = ({
                 {...(route.name === 'About Devtron' && { onClick: () => handleTabChange(0) })}
             >
                 <div className="flex left">
-                    <route.icon className={`stack-manager__navlink-icon icon-dim-20`} />
+                    <route.icon className="stack-manager__navlink-icon icon-dim-20" />
                     {route.name !== 'Installed' && route.name !== 'About Devtron' && (
                         <span data-testid={`${route.name.toLowerCase()}-link`} className="fs-13 ml-12">
                             {route.name}
@@ -322,14 +325,11 @@ export const StackPageHeader = ({
         <>
             {!detailsMode && <PageHeader headerName="Devtron Stack Manager" />}
             {detailsMode === 'discover' && (
-                <PageHeader
-                    isBreadcrumbs={true}
-                    breadCrumbs={() => renderBreadcrumbs('Discover integrations', 'discover')}
-                />
+                <PageHeader isBreadcrumbs breadCrumbs={() => renderBreadcrumbs('Discover integrations', 'discover')} />
             )}
             {detailsMode === 'installed' && (
                 <PageHeader
-                    isBreadcrumbs={true}
+                    isBreadcrumbs
                     breadCrumbs={() => renderBreadcrumbs('Installed integrations', 'installed')}
                 />
             )}
@@ -340,13 +340,14 @@ export const StackPageHeader = ({
 const getProgressingLabel = (isUpgradeView: boolean, canViewLogs: boolean, logPodName: string): string => {
     if (isUpgradeView && (!canViewLogs || (canViewLogs && logPodName))) {
         return 'Updating'
-    } else if (!isUpgradeView && logPodName) {
+    }
+    if (!isUpgradeView && logPodName) {
         return 'Installing'
     }
 
     return 'Initializing'
 }
-export function EnableModuleConfirmation({
+export const EnableModuleConfirmation = ({
     moduleDetails,
     setDialog,
     retryState,
@@ -354,7 +355,7 @@ export function EnableModuleConfirmation({
     setToggled,
     setSuccessState,
     moduleNotEnabledState,
-}: ModuleEnableType) {
+}: ModuleEnableType) => {
     const [progressing, setProgressing] = useState<boolean>(false)
 
     const handleCancelAction = () => {
@@ -539,12 +540,7 @@ const InstallationStatus = ({
                                     </div>
                                 </div>
                                 {moduleNotEnabled ? (
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={true}
-                                        placement="top"
-                                        content="Enable integration"
-                                    >
+                                    <Tippy className="default-tt" arrow placement="top" content="Enable integration">
                                         <div className="ml-auto" style={{ width: '30px', height: '19px' }}>
                                             <Toggle
                                                 dataTestId="toggle-button"
@@ -746,29 +742,23 @@ export const InstallationWrapper = ({
 
     const handleActionButtonClick = () => {
         if (isActionTriggered) {
-            return
-        } else {
-            if (!isUpgradeView || preRequisiteChecked || preRequisiteList.length === 0) {
-                if (
-                    !isUpgradeView &&
-                    (belowMinSupportedVersion || isPendingDependency || otherInstallationInProgress)
-                ) {
-                    return
-                }
-                setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
-                updateActionTrigger(true)
-                handleAction(
-                    moduleName,
-                    isUpgradeView,
-                    upgradeVersion,
-                    updateActionTrigger,
-                    history,
-                    location,
-                    moduleDetails && (moduleDetails.moduleType ? moduleDetails.moduleType : undefined),
-                )
-            } else {
-                setShowPreRequisiteConfirmationModal(true)
+        } else if (!isUpgradeView || preRequisiteChecked || preRequisiteList.length === 0) {
+            if (!isUpgradeView && (belowMinSupportedVersion || isPendingDependency || otherInstallationInProgress)) {
+                return
             }
+            setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
+            updateActionTrigger(true)
+            handleAction(
+                moduleName,
+                isUpgradeView,
+                upgradeVersion,
+                updateActionTrigger,
+                history,
+                location,
+                moduleDetails && (moduleDetails.moduleType ? moduleDetails.moduleType : undefined),
+            )
+        } else {
+            setShowPreRequisiteConfirmationModal(true)
         }
     }
 
@@ -803,7 +793,7 @@ export const InstallationWrapper = ({
                                 <div>Pre-requisites for {preRequisite.version}:</div>
                                 <MarkDown
                                     className="pre-requisite-modal__mark-down"
-                                    breaks={true}
+                                    breaks
                                     markdown={preRequisite.prerequisiteMessage}
                                 />
                                 <a className="cb-5" href={preRequisite.tagLink} target="_blank" rel="noreferrer">
@@ -849,11 +839,11 @@ export const InstallationWrapper = ({
     const getDisabledButtonTooltip = (): string => {
         if (belowMinSupportedVersion) {
             return DEVTRON_UPGRADE_MESSAGE
-        } else if (otherInstallationInProgress) {
-            return OTHER_INSTALLATION_IN_PROGRESS_MESSAGE
-        } else {
-            return PENDING_DEPENDENCY_MESSAGE
         }
+        if (otherInstallationInProgress) {
+            return OTHER_INSTALLATION_IN_PROGRESS_MESSAGE
+        }
+        return PENDING_DEPENDENCY_MESSAGE
     }
 
     return (
@@ -1051,7 +1041,7 @@ export const ModuleDetailsView = ({
                     <div className="module-details__divider mt-24 mb-24" />
                     <MarkDown
                         className="module-details__feature-info fs-14 fw-4 cn-9"
-                        breaks={true}
+                        breaks
                         markdown={moduleDetails.description}
                     />
                 </div>
@@ -1112,7 +1102,7 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
                 classname="fs-16"
                 title={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.TITLE}
                 subTitle={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.SUBTITLE}
-                isButtonAvailable={true}
+                isButtonAvailable
                 renderButton={renderDiscoverIntegrationsButton}
             />
         </div>

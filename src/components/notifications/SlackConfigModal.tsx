@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { Select } from '../common'
 import {
     showError,
     Progressing,
@@ -8,11 +6,13 @@ import {
     Drawer,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../config/constants'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { Select } from '../common'
+import { ViewType } from '../../config/constants'
 import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service'
 import { ReactComponent as Help } from '../../assets/icons/ic-help-outline.svg'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
@@ -207,9 +207,9 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                 onChange={this.handleSlackChannelChange}
                                 handleOnBlur={(event) => this.isValid(event, 'configName')}
                                 placeholder="channel name"
-                                autoFocus={true}
+                                autoFocus
                                 tabIndex={1}
-                                isRequiredField={true}
+                                isRequiredField
                                 error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
                             />
                         </label>
@@ -218,9 +218,9 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                 Webhook URL
                                 <Tippy
                                     className="default-tt"
-                                    arrow={true}
-                                    trigger={'click'}
-                                    interactive={true}
+                                    arrow
+                                    trigger="click"
+                                    interactive
                                     placement="top"
                                     content={
                                         <a
@@ -245,7 +245,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                 tabIndex={2}
                                 onChange={this.handleWebhookUrlChange}
                                 handleOnBlur={(event) => this.isValid(event, 'webhookUrl')}
-                                isRequiredField={true}
+                                isRequiredField
                                 error={!this.state.isValid.webhookUrl && REQUIRED_FIELD_MSG}
                             />
                         </label>
@@ -254,9 +254,9 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                 Project
                                 <Tippy
                                     className="default-tt"
-                                    arrow={true}
-                                    trigger={'click'}
-                                    interactive={true}
+                                    arrow
+                                    trigger="click"
+                                    interactive
                                     placement="top"
                                     content="Required to control user Acccess"
                                 >

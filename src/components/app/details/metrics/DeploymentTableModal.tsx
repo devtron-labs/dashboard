@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentTable } from './DeploymentTable'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ViewType } from '../../../../config'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface DeploymentTableModalProps {
     close: (event) => void
@@ -40,7 +40,7 @@ export class DeploymentTableModal extends Component<DeploymentTableModalProps, {
                         </button>
                     </div>
                     <DeploymentTable rows={this.props.rows} deploymentTableView={ViewType.FORM} />
-                    <div style={{ marginBottom: '40px' }}></div>
+                    <div style={{ marginBottom: '40px' }} />
                 </div>
             </VisibleModal>
         )

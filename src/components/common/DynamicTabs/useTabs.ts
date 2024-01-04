@@ -236,9 +236,8 @@ export function useTabs(persistanceKey: string) {
                         url: tab.url.split('?')[0],
                         isSelected: false,
                     }
-                } else {
-                    return tab
                 }
+                return tab
             })
             if (selectedRemoved) {
                 _tabs[0].isSelected = true
@@ -269,7 +268,7 @@ export function useTabs(persistanceKey: string) {
         let isTabFound = false
         let title = name
         if (kind) {
-            title = kind + '/' + name
+            title = `${kind}/${name}`
         }
 
         const _id = `${idPrefix}-${title}`
@@ -300,7 +299,7 @@ export function useTabs(persistanceKey: string) {
     const markTabResourceDeletedByIdentifier = (idPrefix: string, name: string, kind?: string) => {
         let title = name
         if (kind) {
-            title = kind + '/' + name
+            title = `${kind}/${name}`
         }
 
         const _id = `${idPrefix}-${title}`

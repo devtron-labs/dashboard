@@ -1,4 +1,16 @@
 import React, { Component } from 'react'
+import { RouteComponentProps } from 'react-router'
+import { Link } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import {
+    CommonNodeAttr,
+    AddCDPositions,
+    noop,
+    WorkflowNodeType,
+    PipelineType,
+    AddPipelineType,
+    SelectedNode,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CINode } from './nodes/CINode'
 import { CDNode } from './nodes/CDNode'
 import { StaticNode } from './nodes/StaticNode'
@@ -12,25 +24,13 @@ import {
     ConditionalWrap,
     importComponentFromFELibrary,
 } from '../common'
-import { RouteComponentProps } from 'react-router'
-import { CIPipelineNodeType, NodeAttr } from '../../components/app/details/triggerView/types'
+import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
-import { Link } from 'react-router-dom'
 import { WebhookNode } from './nodes/WebhookNode'
-import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
-import {
-    CommonNodeAttr,
-    AddCDPositions,
-    noop,
-    WorkflowNodeType,
-    PipelineType,
-    AddPipelineType,
-    SelectedNode,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
@@ -181,7 +181,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             return _nodes.map((node: NodeAttr) => {
                 if (node.isLinkedCD && LinkedCDNode) {
                     return this.renderLinkedCD(node)
-                } else if (_nodesData.cdNamesList.length > 0) {
+                }
+                if (_nodesData.cdNamesList.length > 0) {
                     return (
                         <>
                             {this.renderAdditionalEdge()}
@@ -192,13 +193,16 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
                 return this.renderCDNodes(node, linkedCD.id, false)
             })
-        } else if (ci) {
+        }
+        if (ci) {
             return _nodes.map((node: NodeAttr) => {
                 if (node.type == WorkflowNodeType.GIT) {
                     return this.renderSourceNode(node, ci)
-                } else if (node.type == WorkflowNodeType.CI) {
+                }
+                if (node.type == WorkflowNodeType.CI) {
                     return this.renderCINodes(node)
-                } else if (_nodesData.cdNamesList.length > 0) {
+                }
+                if (_nodesData.cdNamesList.length > 0) {
                     return (
                         <>
                             {this.renderAdditionalEdge()}
@@ -209,11 +213,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
                 return this.renderCDNodes(node, ci.id, false)
             })
-        } else if (webhook) {
+        }
+        if (webhook) {
             return _nodes.map((node: NodeAttr) => {
                 if (node.type == WorkflowNodeType.WEBHOOK) {
                     return this.renderWebhookNode(node)
-                } else if (_nodesData.cdNamesList.length > 0) {
+                }
+                if (_nodesData.cdNamesList.length > 0) {
                     return (
                         <>
                             {this.renderAdditionalEdge()}
@@ -224,9 +230,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
                 return this.renderCDNodes(node, webhook.id, true)
             })
-        } else {
-            return this.renderAddCIpipeline()
         }
+        return this.renderAddCIpipeline()
     }
 
     renderAddCIpipeline() {
@@ -245,7 +250,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         const { bottom, left } = event.target.getBoundingClientRect()
                         this.setState({
                             showCIMenu: !this.state.showCIMenu,
-                            left: left,
+                            left,
                             top: bottom,
                         })
                     }}
@@ -255,6 +260,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             </foreignObject>
         )
     }
+
     renderSourceNode(node, ci) {
         return (
             <StaticNode
@@ -272,13 +278,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 sourceType={node.sourceType}
                 regex={node.regex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
-                to={this.openCIPipeline(ci)} //ci attribites for a git material
+                to={this.openCIPipeline(ci)} // ci attribites for a git material
                 handleGoToWorkFlowEditor={() => {
                     this.goToWorkFlowEditor(node)
                 }}
             />
         )
     }
+
     renderWebhookNode(node) {
         return (
             <WebhookNode
@@ -305,17 +312,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     openCDPipeline(node: NodeAttr, isWebhookCD: boolean) {
         const { appId } = this.props.match.params
-        return (
-            this.props.match.url +
-            '/' +
-            getCDPipelineURL(
-                appId,
-                this.props.id.toString(),
-                String(node.connectingCiPipelineId ?? 0),
-                isWebhookCD,
-                node.id,
-            )
-        )
+        return `${this.props.match.url}/${getCDPipelineURL(
+            appId,
+            this.props.id.toString(),
+            String(node.connectingCiPipelineId ?? 0),
+            isWebhookCD,
+            node.id,
+        )}`
     }
 
     openCIPipeline(node: NodeAttr) {
@@ -461,10 +464,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     getEdges({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
         return nodesWithBufferHeight.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                const endNode = nodesWithBufferHeight.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const endNode = nodesWithBufferHeight.find((val) => `${val.type}-${val.id}` == downStreamNodeId)
                 edgeList.push({
                     startNode: node,
-                    endNode: endNode,
+                    endNode,
                 })
             })
             return edgeList
@@ -551,7 +554,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             let endNode = null
             let maxY = 0
             startNode.downstreams.forEach((downStreamNodeId) => {
-                const node = nodesWithBufferHeight.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const node = nodesWithBufferHeight.find((val) => `${val.type}-${val.id}` == downStreamNodeId)
                 if (node.y > maxY) {
                     maxY = node.y
                     endNode = node
@@ -714,10 +717,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 wrap={(children) => (
                     <Tippy
                         placement="top-start"
-                        arrow={true}
+                        arrow
                         // TODO: Move this Tippy into a separate block/component so we get rid of arrow function
                         render={() => this.renderWebhookTippyContent({ nodesWithBufferHeight })}
-                        showOnCreate={true}
+                        showOnCreate
                         interactive
                         onClickOutside={this.props.hideWebhookTippy}
                         delay={500}
@@ -849,6 +852,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     render() {
-        return <React.Fragment>{this.renderWorkflow()}</React.Fragment>
+        return <>{this.renderWorkflow()}</>
     }
 }

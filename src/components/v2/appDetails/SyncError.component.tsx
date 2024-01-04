@@ -1,10 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
-import IndexStore from './index.store'
-import { renderErrorHeaderMessage } from '../../common/error/error.utils'
-import { AppType, SyncErrorType } from './appDetails.type'
-import { AppDetailsErrorType } from '../../../config'
 import {
     DeploymentAppTypes,
     ForceDeleteDialog,
@@ -13,12 +7,18 @@ import {
     not,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
+import IndexStore from './index.store'
+import { renderErrorHeaderMessage } from '../../common/error/error.utils'
+import { AppType, SyncErrorType } from './appDetails.type'
+import { AppDetailsErrorType } from '../../../config'
 import {
     deleteArgoCDAppWithNonCascade,
     getClusterConnectionStatus,
 } from '../../app/details/appDetails/appDetails.service'
 import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetails.type'
-import { toast } from 'react-toastify'
 import { TOAST_INFO } from '../../../config/constantMessaging'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 

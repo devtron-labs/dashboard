@@ -1,4 +1,12 @@
 import React, { Component } from 'react'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    DeploymentNodeType,
+    noop,
+    WorkflowNodeType,
+    PipelineType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { StaticNode } from './nodes/staticNode'
 import { TriggerCINode } from './nodes/triggerCINode'
 import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
@@ -10,14 +18,6 @@ import { WorkflowProps, NodeAttr, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
-import {
-    Checkbox,
-    CHECKBOX_VALUE,
-    DeploymentNodeType,
-    noop,
-    WorkflowNodeType,
-    PipelineType,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerViewContext } from '../config'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
@@ -52,13 +52,17 @@ export class Workflow extends Component<WorkflowProps> {
         return this.props.nodes.map((node: any) => {
             if (node.type === WorkflowNodeType.GIT) {
                 return this.renderSourceNode(node)
-            } else if (node.type === WorkflowNodeType.CI) {
+            }
+            if (node.type === WorkflowNodeType.CI) {
                 return this.renderCINodes(node)
-            } else if (node.type === PipelineType.WEBHOOK) {
+            }
+            if (node.type === PipelineType.WEBHOOK) {
                 return this.renderWebhookNode(node)
-            } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
+            }
+            if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
                 return this.renderPrePostCDNodes(node)
-            } else if (node.type === WorkflowNodeType.CD) {
+            }
+            if (node.type === WorkflowNodeType.CD) {
                 return this.renderCDNodes(node)
             }
         })
@@ -89,6 +93,7 @@ export class Workflow extends Component<WorkflowProps> {
             />
         )
     }
+
     renderWebhookNode(node) {
         return (
             <WebhookNode
@@ -146,7 +151,8 @@ export class Workflow extends Component<WorkflowProps> {
                     isCITriggerBlocked={node.isCITriggerBlocked}
                 />
             )
-        } else if (node.isExternalCI) {
+        }
+        if (node.isExternalCI) {
             return (
                 <TriggerExternalCINode
                     key={`${node.type}-${node.id}`}
@@ -169,42 +175,41 @@ export class Workflow extends Component<WorkflowProps> {
                     inputMaterialsNew={[]}
                 />
             )
-        } else {
-            return (
-                <TriggerCINode
-                    workflowId={this.props.id}
-                    key={`${node.type}-${node.id}`}
-                    x={node.x}
-                    y={node.y}
-                    status={node.status}
-                    height={node.height}
-                    width={node.width}
-                    id={node.id}
-                    type={node.type}
-                    downstreams={node.downstreams}
-                    title={node.title}
-                    triggerType={node.triggerType}
-                    colorCode={node.colorCode}
-                    isExternalCI={node.isExternalCI}
-                    isLinkedCI={node.isLinkedCI}
-                    isJobCI={node.isJobCI}
-                    description={node.description}
-                    linkedCount={node.linkedCount}
-                    inputMaterialsNew={[]}
-                    history={this.props.history}
-                    location={this.props.location}
-                    match={this.props.match}
-                    branch={node.branch}
-                    fromAppGrouping={this.props.fromAppGrouping}
-                    isJobView={this.props.isJobView}
-                    index={this.props.index}
-                    isCITriggerBlocked={node.isCITriggerBlocked}
-                    ciBlockState={node.ciBlockState}
-                    filteredCIPipelines={this.props.filteredCIPipelines}
-                    environmentLists={this.props.environmentLists}
-                />
-            )
         }
+        return (
+            <TriggerCINode
+                workflowId={this.props.id}
+                key={`${node.type}-${node.id}`}
+                x={node.x}
+                y={node.y}
+                status={node.status}
+                height={node.height}
+                width={node.width}
+                id={node.id}
+                type={node.type}
+                downstreams={node.downstreams}
+                title={node.title}
+                triggerType={node.triggerType}
+                colorCode={node.colorCode}
+                isExternalCI={node.isExternalCI}
+                isLinkedCI={node.isLinkedCI}
+                isJobCI={node.isJobCI}
+                description={node.description}
+                linkedCount={node.linkedCount}
+                inputMaterialsNew={[]}
+                history={this.props.history}
+                location={this.props.location}
+                match={this.props.match}
+                branch={node.branch}
+                fromAppGrouping={this.props.fromAppGrouping}
+                isJobView={this.props.isJobView}
+                index={this.props.index}
+                isCITriggerBlocked={node.isCITriggerBlocked}
+                ciBlockState={node.ciBlockState}
+                filteredCIPipelines={this.props.filteredCIPipelines}
+                environmentLists={this.props.environmentLists}
+            />
+        )
     }
 
     renderCDNodes(node) {
@@ -272,10 +277,10 @@ export class Workflow extends Component<WorkflowProps> {
     getEdges() {
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                const endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
+                const endNode = this.props.nodes.find((val) => `${val.type}-${val.id}` == downStreamNodeId)
                 edgeList.push({
                     startNode: node,
-                    endNode: endNode,
+                    endNode,
                 })
             })
             return edgeList

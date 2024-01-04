@@ -1,11 +1,11 @@
 import React from 'react'
 import { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Smiley } from '../../../../assets/icons/ic-smiley-party.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
 import { ReactComponent as Help } from '../../../../assets/icons/ic-help-outline.svg'
 import { createTimestamp } from './deploymentMetrics.service'
-import Tippy from '@tippyjs/react'
 
 export const styles = {
     control: (base, state) => ({
@@ -36,7 +36,7 @@ export const styles = {
     },
 }
 
-export function Option(props) {
+export const Option = (props) => {
     const { selectOption, data } = props
     const style = { height: '16px', width: '16px', flex: '0 0 16px' }
     const onClick = (e) => selectOption(data)
@@ -52,7 +52,7 @@ export function Option(props) {
     )
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n5" />
@@ -100,8 +100,8 @@ export function recoveryTimeLabel(props) {
     )
 }
 
-export function BenchmarkLine(props) {
-    const category = props.category
+export const BenchmarkLine = (props) => {
+    const { category } = props
     switch (category) {
         case 'LOW':
             return (
@@ -128,7 +128,7 @@ export function BenchmarkLine(props) {
                 </svg>
             )
         default:
-            return <span></span>
+            return <span />
     }
 }
 
@@ -145,7 +145,7 @@ export function renderCategoryTag(category: string) {
     }
 }
 
-export function ReferenceLineLegend() {
+export const ReferenceLineLegend = () => {
     return (
         <svg height="10" width="30">
             <line stroke="var(--N900)" strokeWidth="2" strokeDasharray="8,3" x1="0" y1="5" x2="30" y2="5" />
@@ -153,7 +153,7 @@ export function ReferenceLineLegend() {
     )
 }
 
-export function EliteCategoryMessage(props) {
+export const EliteCategoryMessage = (props) => {
     return (
         <div className="cursor" onClick={props.onClick}>
             <p className="graph-legend__secondary-label"> You are in elite category </p>
@@ -162,7 +162,7 @@ export function EliteCategoryMessage(props) {
     )
 }
 
-export function FailureLegendEmptyState(props) {
+export const FailureLegendEmptyState = (props) => {
     return (
         <div>
             <p className="graph-legend__primary-label">
@@ -174,7 +174,7 @@ export function FailureLegendEmptyState(props) {
             <div className="mt-16">
                 <Smiley className="mr-8 dc__inline-block dc__vertical-align-middle" style={{ width: '39px' }} />
                 <p className="m-0 fw-6 dc__inline-block dc__vertical-align-middle">
-                    Good Job! <br></br>
+                    Good Job! <br />
                     No pipeline failures in this period
                 </p>
             </div>
@@ -182,24 +182,26 @@ export function FailureLegendEmptyState(props) {
     )
 }
 
-export function FrequencyTooltip(props) {
+export const FrequencyTooltip = (props) => {
     if (!props.active) {
-        return <div></div>
+        return <div />
     }
-    const success = props.payload[0].payload.success
-    const failures = props.payload[0].payload.failures
+    const { success } = props.payload[0].payload
+    const { failures } = props.payload[0].payload
     return (
         <div className="graph-tooltip">
             <p className="">{props.label}</p>
             <p className="m-0 flexbox flex-justify">
                 <span>
-                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--G300)' }}></span>Succeeded
+                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--G300)' }} />
+                    Succeeded
                 </span>
                 <span>{success}</span>
             </p>
             <p className="m-0 flexbox flex-justify">
                 <span>
-                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--R300)' }}></span>Failed&nbsp;
+                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--R300)' }} />
+                    Failed&nbsp;
                 </span>
                 <span>{failures}</span>
             </p>
@@ -207,9 +209,9 @@ export function FrequencyTooltip(props) {
     )
 }
 
-export function LeadTimeTooltip(props) {
+export const LeadTimeTooltip = (props) => {
     if (!props.active) {
-        return <div></div>
+        return <div />
     }
     const yAxisLabel = props?.payload[0]?.payload?.yAxisLabel
     return (
@@ -217,8 +219,7 @@ export function LeadTimeTooltip(props) {
             <p className="">{props.label}</p>
             <p className="m-0 flexbox flex-justify">
                 <span>
-                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--B300)' }}></span> Max Lead
-                    Time
+                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--B300)' }} /> Max Lead Time
                 </span>
                 <span>{yAxisLabel}</span>
             </p>
@@ -226,9 +227,9 @@ export function LeadTimeTooltip(props) {
     )
 }
 
-export function RecoveryTimeTooltip(props) {
+export const RecoveryTimeTooltip = (props) => {
     if (!props.active) {
-        return <div></div>
+        return <div />
     }
     let yAxisLabel
     try {
@@ -241,8 +242,8 @@ export function RecoveryTimeTooltip(props) {
             <p className="">{props.label}</p>
             <p className="m-0 flexbox flex-justify">
                 <span>
-                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--Y300)' }}></span>Recovery
-                    Time
+                    <span className="graph-tooltip__icon" style={{ backgroundColor: 'var(--Y300)' }} />
+                    Recovery Time
                 </span>
                 <span>{yAxisLabel}</span>
             </p>

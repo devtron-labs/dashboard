@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router'
+import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
@@ -11,18 +15,14 @@ import { AppType, TerminalComponentProps, Options } from '../../../appDetails.ty
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
-import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 import { TerminalWrapperType } from './terminal/constants'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
-import { toast } from 'react-toastify'
-import { components } from 'react-select'
 import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
-import Tippy from '@tippyjs/react'
 
 let clusterTimeOut
 
-function TerminalComponent({
+const TerminalComponent = ({
     selectedTab,
     isDeleted,
     isResourceBrowserView,
@@ -35,7 +35,7 @@ function TerminalComponent({
     switchSelectedContainer,
     setContainers,
     showTerminal,
-}: TerminalComponentProps) {
+}: TerminalComponentProps) => {
     const params = useParams<{
         actionName: string
         podName: string
@@ -67,7 +67,7 @@ function TerminalComponent({
                 clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
                 podName: isResourceBrowserView ? params.node : params.podName,
                 basicData: {
-                    containerName: containerName,
+                    containerName,
                 },
             }
             return payload
@@ -162,7 +162,7 @@ function TerminalComponent({
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return url + `?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
+            return `${url}?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
         }
         return url
     }
@@ -261,7 +261,7 @@ function TerminalComponent({
         firstRow: [
             {
                 type: TerminalWrapperType.CONNECTION_BUTTON,
-                connectTerminal: connectTerminal,
+                connectTerminal,
                 closeTerminalModal: handleDisconnect,
                 reconnectTerminal: handleConnect,
             },
@@ -302,12 +302,12 @@ function TerminalComponent({
         ],
         tabSwitcher: {
             terminalData: {
-                terminalRef: terminalRef,
+                terminalRef,
                 dataTestId: 'app-terminal-container',
                 clearTerminal: terminalCleared,
-                setSocketConnection: setSocketConnection,
-                socketConnection: socketConnection,
-                sessionId: sessionId,
+                setSocketConnection,
+                socketConnection,
+                sessionId,
             },
         },
     }

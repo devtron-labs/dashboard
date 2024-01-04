@@ -1,5 +1,4 @@
 import React from 'react'
-import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import {
     ServerErrors,
     showError,
@@ -7,6 +6,7 @@ import {
     ConsequenceType,
     ConsequenceAction,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { getEnvAppList } from './AppGroup.service'
@@ -24,7 +24,7 @@ export const processWorkflowStatuses = (
     const preCDMap = {}
     const postCDMap = {}
     let cicdInProgress = false
-    //Create maps from Array
+    // Create maps from Array
     if (allCIs.length) {
         allCIs.forEach((pipeline) => {
             ciMap[pipeline.ciPipelineId] = {
@@ -59,7 +59,7 @@ export const processWorkflowStatuses = (
             }
         })
     }
-    //Update Workflow using maps
+    // Update Workflow using maps
     const _workflows = workflowsList.map((wf) => {
         wf.nodes = wf.nodes.map((node) => {
             switch (node.type) {
@@ -81,7 +81,7 @@ export const processWorkflowStatuses = (
         })
         return wf
     })
-    return { cicdInProgress: cicdInProgress, workflows: _workflows }
+    return { cicdInProgress, workflows: _workflows }
 }
 
 export const handleSourceNotConfigured = (
@@ -115,7 +115,7 @@ export const handleSourceNotConfigured = (
             isSelected: _materialList.length === 0,
             lastFetchTime: '',
             isRegex: false,
-            isDockerFileError: isDockerFileError,
+            isDockerFileError,
             dockerFileErrorMsg: isDockerFileError ? DOCKER_FILE_ERROR_TITLE : '',
             isMaterialSelectionError: false,
             materialSelectionErrorMsg: '',
@@ -218,7 +218,8 @@ export const appGroupAppSelectorStyle = {
 const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
     if (isSelected) {
         return 'var(--B100)'
-    } else if (isFocused) {
+    }
+    if (isFocused) {
         return 'var(--N50)'
     }
     return 'white'
@@ -227,7 +228,8 @@ const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
 export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): string => {
     if (isSelected) {
         return 'bcb-1'
-    } else if (isFocused) {
+    }
+    if (isFocused) {
         return 'bc-n50'
     }
     return 'bcn-0'
@@ -255,9 +257,9 @@ export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], fil
 export const processConsequenceData = (data: BlockedStateData): ConsequenceType | null => {
     if (!data.isOffendingMandatoryPlugin) {
         return null
-    } else if (data.isCITriggerBlocked) {
-        return { action: ConsequenceAction.BLOCK, metadataField: null }
-    } else {
-        return data.ciBlockState
     }
+    if (data.isCITriggerBlocked) {
+        return { action: ConsequenceAction.BLOCK, metadataField: null }
+    }
+    return data.ciBlockState
 }

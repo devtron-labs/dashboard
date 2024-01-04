@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactSelect from 'react-select'
+import { CustomInput, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
-import { CustomInput, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
-export function WebhookSelectorCondition({
+export const WebhookSelectorCondition = ({
     conditionIndex,
     masterSelectorList,
     selectorCondition,
@@ -12,7 +12,7 @@ export function WebhookSelectorCondition({
     onSelectorValueChange,
     deleteWebhookCondition,
     canEditSelectorCondition,
-}) {
+}) => {
     return (
         <div className="ci-webhook-condition mb-16 flex left">
             <ReactSelect
@@ -23,7 +23,7 @@ export function WebhookSelectorCondition({
                     Option,
                 }}
                 classNamePrefix={`build-webhook-select-key-dropdown-${conditionIndex}`}
-                isSearchable={true}
+                isSearchable
                 tabIndex={1}
                 placeholder="Select Key"
                 styles={{

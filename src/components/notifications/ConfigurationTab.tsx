@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { SlackConfigModal } from './SlackConfigModal'
-import { SESConfigModal } from './SESConfigModal'
-import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg'
 import {
     showError,
     Progressing,
     ErrorScreenNotAuthorized,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { SlackConfigModal } from './SlackConfigModal'
+import { SESConfigModal } from './SESConfigModal'
+import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg'
 import {
     deleteNotification,
     getSESConfiguration,
@@ -29,7 +30,6 @@ import {
     DeleteComponentsName,
     EMPTY_STATE_STATUS,
 } from '../../config/constantMessaging'
-import Tippy from '@tippyjs/react'
 import { SMTPConfigModal } from './SMTPConfigModal'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { ConfigurationTabState } from './types'
@@ -149,78 +149,73 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.slackConfigurationList.length === 0) {
+        }
+        if (this.state.slackConfigurationList.length === 0) {
             return (
                 <div className="empty-state-height">
-                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage />
                 </div>
             )
-        } else {
-            return (
-                <table className="w-100">
-                    <thead>
-                        <tr className="configuration-tab__table-header">
-                            <td className="slack-config-table__name dc__truncate-text ">Name</td>
-                            <td className="slack-config-table__webhook dc__truncate-text ">Webhook URL</td>
-                            <td className="slack-config-table__action"></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="mb-8">
-                            {this.state.slackConfigurationList.map((slackConfig) => {
-                                return (
-                                    <td key={slackConfig.id} className="configuration-tab__table-row">
-                                        <div className="slack-config-table__name dc__truncate-text ">
-                                            {slackConfig.slackChannel}
-                                        </div>
-                                        <div className="slack-config-table__webhook dc__truncate-text ">
-                                            {slackConfig.webhookUrl}
-                                        </div>
-                                        <div className="slack-config-table__action">
-                                            <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                                <button
-                                                    type="button"
-                                                    className="dc__transparent dc__align-right mr-16"
-                                                    onClick={(event) => {
-                                                        this.setState({
-                                                            showSlackConfigModal: true,
-                                                            slackConfigId: slackConfig.id,
-                                                        })
-                                                    }}
-                                                    data-testid="slack-configure-edit-button"
-                                                >
-                                                    <Edit className="icon-dim-20" />
-                                                </button>
-                                            </Tippy>
-                                            <Tippy
-                                                className="default-tt"
-                                                arrow={false}
-                                                placement="top"
-                                                content="Delete"
-                                            >
-                                                <button
-                                                    type="button"
-                                                    className="dc__transparent dc__align-right"
-                                                    onClick={() => {
-                                                        this.deleteClickHandler(
-                                                            slackConfig.id,
-                                                            DeleteComponentsName.SlackConfigurationTab,
-                                                        )
-                                                    }}
-                                                    data-testid="slack-configure-delete-button"
-                                                >
-                                                    <Trash className="scn-5 icon-dim-20" />
-                                                </button>
-                                            </Tippy>
-                                        </div>
-                                    </td>
-                                )
-                            })}
-                        </tr>
-                    </tbody>
-                </table>
-            )
         }
+        return (
+            <table className="w-100">
+                <thead>
+                    <tr className="configuration-tab__table-header">
+                        <td className="slack-config-table__name dc__truncate-text ">Name</td>
+                        <td className="slack-config-table__webhook dc__truncate-text ">Webhook URL</td>
+                        <td className="slack-config-table__action" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr className="mb-8">
+                        {this.state.slackConfigurationList.map((slackConfig) => {
+                            return (
+                                <td key={slackConfig.id} className="configuration-tab__table-row">
+                                    <div className="slack-config-table__name dc__truncate-text ">
+                                        {slackConfig.slackChannel}
+                                    </div>
+                                    <div className="slack-config-table__webhook dc__truncate-text ">
+                                        {slackConfig.webhookUrl}
+                                    </div>
+                                    <div className="slack-config-table__action">
+                                        <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                            <button
+                                                type="button"
+                                                className="dc__transparent dc__align-right mr-16"
+                                                onClick={(event) => {
+                                                    this.setState({
+                                                        showSlackConfigModal: true,
+                                                        slackConfigId: slackConfig.id,
+                                                    })
+                                                }}
+                                                data-testid="slack-configure-edit-button"
+                                            >
+                                                <Edit className="icon-dim-20" />
+                                            </button>
+                                        </Tippy>
+                                        <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                            <button
+                                                type="button"
+                                                className="dc__transparent dc__align-right"
+                                                onClick={() => {
+                                                    this.deleteClickHandler(
+                                                        slackConfig.id,
+                                                        DeleteComponentsName.SlackConfigurationTab,
+                                                    )
+                                                }}
+                                                data-testid="slack-configure-delete-button"
+                                            >
+                                                <Trash className="scn-5 icon-dim-20" />
+                                            </button>
+                                        </Tippy>
+                                    </div>
+                                </td>
+                            )
+                        })}
+                    </tr>
+                </tbody>
+            </table>
+        )
     }
 
     editWebhookHandler(e) {
@@ -234,84 +229,79 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.webhookConfigurationList.length === 0) {
+        }
+        if (this.state.webhookConfigurationList.length === 0) {
             return (
                 <div className="empty-state-height">
-                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage />
                 </div>
             )
-        } else {
-            return (
-                <table className="w-100">
-                    <thead>
-                        <tr className="configuration-tab__table-header">
-                            <td className="slack-config-table__name dc__truncate-text ">Name</td>
-                            <td className="slack-config-table__webhook dc__truncate-text ">Webhook URL</td>
-                            <td className="slack-config-table__action"></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="mb-8">
-                            {this.state.webhookConfigurationList.map((webhookConfig) => {
-                                return (
-                                    <td
-                                        key={webhookConfig.id}
-                                        className="configuration-tab__table-row"
-                                        data-testid={`webhook-container-${webhookConfig.name}`}
-                                    >
-                                        <div
-                                            className="slack-config-table__name dc__truncate-text"
-                                            data-testid={`webhook-config-name-${webhookConfig.name}`}
-                                        >
-                                            {webhookConfig.name}
-                                        </div>
-                                        <div
-                                            className="slack-config-table__webhook dc__truncate-text"
-                                            data-testid={`webhook-url-${webhookConfig.webhookUrl}`}
-                                        >
-                                            {webhookConfig.webhookUrl}
-                                        </div>
-                                        <div className="slack-config-table__action">
-                                            <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                                <button
-                                                    type="button"
-                                                    className="dc__transparent dc__align-right mr-16"
-                                                    data-webhookid={webhookConfig.id}
-                                                    onClick={this.editWebhookHandler}
-                                                    data-testid={`webhook-configure-edit-button-${webhookConfig.name}`}
-                                                >
-                                                    <Edit className="icon-dim-20" />
-                                                </button>
-                                            </Tippy>
-                                            <Tippy
-                                                className="default-tt"
-                                                arrow={false}
-                                                placement="top"
-                                                content="Delete"
-                                            >
-                                                <button
-                                                    type="button"
-                                                    className="dc__transparent dc__align-right"
-                                                    onClick={() => {
-                                                        this.deleteClickHandler(
-                                                            webhookConfig.id,
-                                                            DeleteComponentsName.WebhookConfigurationTab,
-                                                        )
-                                                    }}
-                                                    data-testid={`webhook-configure-delete-button-${webhookConfig.name}`}
-                                                >
-                                                    <Trash className="scn-5 icon-dim-20" />
-                                                </button>
-                                            </Tippy>
-                                        </div>
-                                    </td>
-                                )
-                            })}
-                        </tr>
-                    </tbody>
-                </table>
-            )
         }
+        return (
+            <table className="w-100">
+                <thead>
+                    <tr className="configuration-tab__table-header">
+                        <td className="slack-config-table__name dc__truncate-text ">Name</td>
+                        <td className="slack-config-table__webhook dc__truncate-text ">Webhook URL</td>
+                        <td className="slack-config-table__action" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr className="mb-8">
+                        {this.state.webhookConfigurationList.map((webhookConfig) => {
+                            return (
+                                <td
+                                    key={webhookConfig.id}
+                                    className="configuration-tab__table-row"
+                                    data-testid={`webhook-container-${webhookConfig.name}`}
+                                >
+                                    <div
+                                        className="slack-config-table__name dc__truncate-text"
+                                        data-testid={`webhook-config-name-${webhookConfig.name}`}
+                                    >
+                                        {webhookConfig.name}
+                                    </div>
+                                    <div
+                                        className="slack-config-table__webhook dc__truncate-text"
+                                        data-testid={`webhook-url-${webhookConfig.webhookUrl}`}
+                                    >
+                                        {webhookConfig.webhookUrl}
+                                    </div>
+                                    <div className="slack-config-table__action">
+                                        <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                            <button
+                                                type="button"
+                                                className="dc__transparent dc__align-right mr-16"
+                                                data-webhookid={webhookConfig.id}
+                                                onClick={this.editWebhookHandler}
+                                                data-testid={`webhook-configure-edit-button-${webhookConfig.name}`}
+                                            >
+                                                <Edit className="icon-dim-20" />
+                                            </button>
+                                        </Tippy>
+                                        <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                            <button
+                                                type="button"
+                                                className="dc__transparent dc__align-right"
+                                                onClick={() => {
+                                                    this.deleteClickHandler(
+                                                        webhookConfig.id,
+                                                        DeleteComponentsName.WebhookConfigurationTab,
+                                                    )
+                                                }}
+                                                data-testid={`webhook-configure-delete-button-${webhookConfig.name}`}
+                                            >
+                                                <Trash className="scn-5 icon-dim-20" />
+                                            </button>
+                                        </Tippy>
+                                    </div>
+                                </td>
+                            )
+                        })}
+                    </tr>
+                </tbody>
+            </table>
+        )
     }
 
     renderSESConfigurations() {
@@ -428,6 +418,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             showError(e)
         }
     }
+
     renderSESConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -435,95 +426,89 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.sesConfigurationList.length === 0) {
+        }
+        if (this.state.sesConfigurationList.length === 0) {
             return (
                 <div className="empty-state-height">
-                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage />
                 </div>
             )
-        } else {
-            return (
-                <table className="w-100">
-                    <thead>
-                        <tr className="configuration-tab__table-header">
-                            <th className="ses-config-table__name dc__truncate-text ">Name</th>
-                            <th className="ses-config-table__access-key dc__truncate-text ">Access key Id</th>
-                            <th className="ses-config-table__email dc__truncate-text ">Sender's Email</th>
-                            <th className="ses-config-table__action"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="mb-8">
-                            {this.state.sesConfigurationList.map((sesConfig) => {
-                                return (
-                                    <td
-                                        data-testid={`ses-container-${sesConfig.name}`}
-                                        key={sesConfig.id}
-                                        className="configuration-tab__table-row"
-                                    >
-                                        <div
-                                            data-testid={`ses-config-name-${sesConfig.name}`}
-                                            className="ses-config-table__name dc__truncate-text "
-                                        >
-                                            {sesConfig.name}
-                                            {sesConfig.isDefault ? (
-                                                <span className="dc__ses_config-table__tag">Default</span>
-                                            ) : null}
-                                        </div>
-                                        <div
-                                            data-testid={`ses-access-key-${sesConfig.accessKeyId}`}
-                                            className="ses-config-table__access-key dc__truncate-text "
-                                        >
-                                            {sesConfig.accessKeyId}
-                                        </div>
-                                        <div className="ses-config-table__email dc__truncate-text ">
-                                            {sesConfig.email}
-                                        </div>
-                                        <div className="ses-config-table__action">
-                                            <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                                <button
-                                                    type="button"
-                                                    className="dc__transparent dc__align-right mr-16"
-                                                    onClick={(event) => {
-                                                        this.setState({
-                                                            showSESConfigModal: true,
-                                                            sesConfigId: sesConfig.id,
-                                                        })
-                                                    }}
-                                                    data-testid="ses-config-edit-button"
-                                                >
-                                                    <Edit className="icon-dim-20" />
-                                                </button>
-                                            </Tippy>
-                                            <Tippy
-                                                className="default-tt"
-                                                arrow={false}
-                                                placement="top"
-                                                content="Delete"
-                                            >
-                                                <button
-                                                    type="button"
-                                                    className="dc__transparent dc__align-right"
-                                                    onClick={() => {
-                                                        this.deleteClickHandler(
-                                                            sesConfig.id,
-                                                            DeleteComponentsName.SesConfigurationTab,
-                                                        )
-                                                    }}
-                                                    data-testid="ses-config-delete-button"
-                                                >
-                                                    <Trash className="scn-5 icon-dim-20" />
-                                                </button>
-                                            </Tippy>&nbsp;
-                                        </div>
-                                    </td>
-                                )
-                            })}
-                        </tr>
-                    </tbody>
-                </table>
-            )
         }
+        return (
+            <table className="w-100">
+                <thead>
+                    <tr className="configuration-tab__table-header">
+                        <th className="ses-config-table__name dc__truncate-text ">Name</th>
+                        <th className="ses-config-table__access-key dc__truncate-text ">Access key Id</th>
+                        <th className="ses-config-table__email dc__truncate-text ">Sender's Email</th>
+                        <th className="ses-config-table__action" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr className="mb-8">
+                        {this.state.sesConfigurationList.map((sesConfig) => {
+                            return (
+                                <td
+                                    data-testid={`ses-container-${sesConfig.name}`}
+                                    key={sesConfig.id}
+                                    className="configuration-tab__table-row"
+                                >
+                                    <div
+                                        data-testid={`ses-config-name-${sesConfig.name}`}
+                                        className="ses-config-table__name dc__truncate-text "
+                                    >
+                                        {sesConfig.name}
+                                        {sesConfig.isDefault ? (
+                                            <span className="dc__ses_config-table__tag">Default</span>
+                                        ) : null}
+                                    </div>
+                                    <div
+                                        data-testid={`ses-access-key-${sesConfig.accessKeyId}`}
+                                        className="ses-config-table__access-key dc__truncate-text "
+                                    >
+                                        {sesConfig.accessKeyId}
+                                    </div>
+                                    <div className="ses-config-table__email dc__truncate-text ">{sesConfig.email}</div>
+                                    <div className="ses-config-table__action">
+                                        <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                            <button
+                                                type="button"
+                                                className="dc__transparent dc__align-right mr-16"
+                                                onClick={(event) => {
+                                                    this.setState({
+                                                        showSESConfigModal: true,
+                                                        sesConfigId: sesConfig.id,
+                                                    })
+                                                }}
+                                                data-testid="ses-config-edit-button"
+                                            >
+                                                <Edit className="icon-dim-20" />
+                                            </button>
+                                        </Tippy>
+                                        <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                            <button
+                                                type="button"
+                                                className="dc__transparent dc__align-right"
+                                                onClick={() => {
+                                                    this.deleteClickHandler(
+                                                        sesConfig.id,
+                                                        DeleteComponentsName.SesConfigurationTab,
+                                                    )
+                                                }}
+                                                data-testid="ses-config-delete-button"
+                                            >
+                                                <Trash className="scn-5 icon-dim-20" />
+                                            </button>
+                                        </Tippy>
+                                        &nbsp;
+                                    </div>
+                                </td>
+                            )
+                        })}
+                    </tr>
+                </tbody>
+            </table>
+        )
     }
 
     renderSMTPConfigurationTable() {
@@ -533,99 +518,92 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.smtpConfigurationList.length === 0) {
+        }
+        if (this.state.smtpConfigurationList.length === 0) {
             return (
                 <div className="empty-state-height">
-                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage />
                 </div>
             )
-        } else {
-            return (
-                <table className="w-100">
-                    <thead>
-                        <tr className="configuration-tab__table-header">
-                            <th className="ses-config-table__name dc__truncate-text ">Name</th>
-                            <th className="smtp-config-table__host dc__truncate-text ">Host</th>
-                            <th className="smtp-config-table__port dc__truncate-text ">Port</th>
-                            <th className="smtp-config-table__email dc__truncate-text ">Sender's Email</th>
-                            <th className="ses-config-table__action"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="mb-8">
-                            {this.state.smtpConfigurationList.map((smtpConfig) => {
-                                return (
-                                    <td
-                                        data-testid={`smtp-container-${smtpConfig.name}`}
-                                        key={smtpConfig.id}
-                                        className="configuration-tab__table-row"
-                                    >
-                                        <div
-                                            data-testid={`smtp-config-name-${smtpConfig.name}`}
-                                            className="ses-config-table__name dc__truncate-text "
-                                        >
-                                            {smtpConfig.name}
-                                            {smtpConfig.isDefault ? (
-                                                <span className="dc__ses_config-table__tag">Default</span>
-                                            ) : null}
-                                        </div>
-                                        <div
-                                            data-testid={`smtp-config-host-${smtpConfig.host}`}
-                                            className="smtp-config-table__host dc__truncate-text "
-                                        >
-                                            {smtpConfig.host}
-                                        </div>
-                                        <div className="smtp-config-table__port dc__truncate-text ">
-                                            {smtpConfig.port}
-                                        </div>
-                                        <div className="smtp-config-table__email dc__truncate-text ">
-                                            {smtpConfig.email}
-                                        </div>
-                                        <div className="ses-config-table__action">
-                                            <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                                <button
-                                                    type="button"
-                                                    className="dc__transparent dc__align-right mr-16"
-                                                    onClick={() => {
-                                                        this.setState({
-                                                            showSMTPConfigModal: true,
-                                                            smtpConfigId: smtpConfig.id,
-                                                        })
-                                                    }}
-                                                    data-testid="smtp-config-edit-button"
-                                                >
-                                                    <Edit className="icon-dim-20" />
-                                                </button>
-                                            </Tippy>
-                                            <Tippy
-                                                className="default-tt"
-                                                arrow={false}
-                                                placement="top"
-                                                content="Delete"
-                                            >
-                                                <button
-                                                    type="button"
-                                                    className="dc__transparent dc__align-right"
-                                                    onClick={() => {
-                                                        this.deleteClickHandler(
-                                                            smtpConfig.id,
-                                                            DeleteComponentsName.SMTPConfigurationTab,
-                                                        )
-                                                    }}
-                                                    data-testid="smtp-config-delete-button"
-                                                >
-                                                    <Trash className="scn-5 icon-dim-20" />
-                                                </button>
-                                            </Tippy>
-                                        </div>
-                                    </td>
-                                )
-                            })}
-                        </tr>
-                    </tbody>
-                </table>
-            )
         }
+        return (
+            <table className="w-100">
+                <thead>
+                    <tr className="configuration-tab__table-header">
+                        <th className="ses-config-table__name dc__truncate-text ">Name</th>
+                        <th className="smtp-config-table__host dc__truncate-text ">Host</th>
+                        <th className="smtp-config-table__port dc__truncate-text ">Port</th>
+                        <th className="smtp-config-table__email dc__truncate-text ">Sender's Email</th>
+                        <th className="ses-config-table__action" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr className="mb-8">
+                        {this.state.smtpConfigurationList.map((smtpConfig) => {
+                            return (
+                                <td
+                                    data-testid={`smtp-container-${smtpConfig.name}`}
+                                    key={smtpConfig.id}
+                                    className="configuration-tab__table-row"
+                                >
+                                    <div
+                                        data-testid={`smtp-config-name-${smtpConfig.name}`}
+                                        className="ses-config-table__name dc__truncate-text "
+                                    >
+                                        {smtpConfig.name}
+                                        {smtpConfig.isDefault ? (
+                                            <span className="dc__ses_config-table__tag">Default</span>
+                                        ) : null}
+                                    </div>
+                                    <div
+                                        data-testid={`smtp-config-host-${smtpConfig.host}`}
+                                        className="smtp-config-table__host dc__truncate-text "
+                                    >
+                                        {smtpConfig.host}
+                                    </div>
+                                    <div className="smtp-config-table__port dc__truncate-text ">{smtpConfig.port}</div>
+                                    <div className="smtp-config-table__email dc__truncate-text ">
+                                        {smtpConfig.email}
+                                    </div>
+                                    <div className="ses-config-table__action">
+                                        <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                            <button
+                                                type="button"
+                                                className="dc__transparent dc__align-right mr-16"
+                                                onClick={() => {
+                                                    this.setState({
+                                                        showSMTPConfigModal: true,
+                                                        smtpConfigId: smtpConfig.id,
+                                                    })
+                                                }}
+                                                data-testid="smtp-config-edit-button"
+                                            >
+                                                <Edit className="icon-dim-20" />
+                                            </button>
+                                        </Tippy>
+                                        <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                            <button
+                                                type="button"
+                                                className="dc__transparent dc__align-right"
+                                                onClick={() => {
+                                                    this.deleteClickHandler(
+                                                        smtpConfig.id,
+                                                        DeleteComponentsName.SMTPConfigurationTab,
+                                                    )
+                                                }}
+                                                data-testid="smtp-config-delete-button"
+                                            >
+                                                <Trash className="scn-5 icon-dim-20" />
+                                            </button>
+                                        </Tippy>
+                                    </div>
+                                </td>
+                            )
+                        })}
+                    </tr>
+                </tbody>
+            </table>
+        )
     }
 
     renderSESConfigModal() {
@@ -735,7 +713,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__height-reduce-172">
                     <ErrorScreenNotAuthorized />

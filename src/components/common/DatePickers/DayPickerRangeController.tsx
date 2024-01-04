@@ -4,8 +4,7 @@ import 'react-dates/lib/css/_datepicker.css'
 import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCalendarDay.js'
 import ReactGA from 'react-ga4'
 import moment, { Moment } from 'moment'
-import { isInclusivelyBeforeDay } from 'react-dates'
-import { DayPickerRangeController } from 'react-dates'
+import { isInclusivelyBeforeDay, DayPickerRangeController } from 'react-dates'
 import './calendar.css'
 import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg'
 
@@ -49,7 +48,7 @@ const selectedSpanStyles = {
 const customDayStyles = {
     selectedStartStyles: selectedStyles,
     selectedEndStyles: selectedStyles,
-    hoveredSpanStyles: hoveredSpanStyles,
+    hoveredSpanStyles,
     selectedSpanStyles,
     selectedStyles,
     border: 'none',
@@ -240,12 +239,12 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                         onDatesChange={this.props.handleDatesChange}
                         onFocusChange={this.props.handleFocusChange}
                         numberOfMonths={1}
-                        withPortal={true}
-                        appendToBody={true}
+                        withPortal
+                        appendToBody
                         renderCalendarInfo={this.renderDatePresets}
                         calendarInfoPosition="after"
-                        hideKeyboardShortcutsPanel={true}
-                        isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())} //enable past dates
+                        hideKeyboardShortcutsPanel
+                        isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())} // enable past dates
                         renderCalendarDay={(props) => <CustomizableCalendarDay {...props} {...customDayStyles} />}
                         onOutsideClick={() => {
                             this.setState({ showCalendar: false })

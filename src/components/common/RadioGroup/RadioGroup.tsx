@@ -53,7 +53,7 @@ const RadioGroup: React.FC<RadioGroupInterface> & RadioGroupComposition = React.
     )
 })
 
-function Radio({
+const Radio = ({
     value,
     children,
     className = '',
@@ -63,7 +63,7 @@ function Radio({
     isDisabled = false,
     tippyClass = '',
     dataTestId,
-}) {
+}) => {
     const { name, selected, select, disabled, onChange } = useRadioContext()
     return (
         <ConditionalWrap

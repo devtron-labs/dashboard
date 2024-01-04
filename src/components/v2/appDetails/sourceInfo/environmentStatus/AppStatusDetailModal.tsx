@@ -12,7 +12,7 @@ import { STATUS_SORTING_ORDER } from './constants'
 import AppStatusDetailsChart from './AppStatusDetailsChart'
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 
-function AppStatusDetailModal({
+const AppStatusDetailModal = ({
     close,
     appStreamData,
     showAppStatusMessage,
@@ -20,7 +20,7 @@ function AppStatusDetailModal({
     appStatus,
     appStatusText,
     showFooter,
-}: AppStatusDetailType) {
+}: AppStatusDetailType) => {
     const _appDetails = IndexStore.getAppDetails()
 
     const nodes: AggregatedNodes = useMemo(() => {
@@ -110,15 +110,15 @@ function AppStatusDetailModal({
                 <div className="app-status-detail__header dc__box-shadow pt-12 pr-20 pb-12 pl-20 bcn-0 flex dc__content-space">
                     <div>
                         <div data-testid="app-status-details-title" className="title cn-9 fs-16 fw-6 mb-4">
-                            {title ? title : 'App status detail'}
+                            {title || 'App status detail'}
                         </div>
                         <div
                             data-testid="app-status-details-subtitle"
                             className={`subtitle app-summary__status-name fw-6 fs-13 f-${
-                                appStatus ? appStatus : _appDetails.resourceTree?.status.toLowerCase()
+                                appStatus || _appDetails.resourceTree?.status.toLowerCase()
                             } mr-16`}
                         >
-                            {appStatusText ? appStatusText : _appDetails.resourceTree?.status.toUpperCase()}
+                            {appStatusText || _appDetails.resourceTree?.status.toUpperCase()}
                         </div>
                     </div>
                     <span className="cursor" onClick={close} data-testid="app-status-details-cross">

@@ -5,7 +5,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-function MultiplePort() {
+const MultiplePort = () => {
     const { selectedTaskIndex, formData, setFormData, activeStageName } = useContext(pipelineContext)
     const addMultiplePort = (): void => {
         const _formData = { ...formData }

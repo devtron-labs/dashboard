@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 import { components } from 'react-select'
 import AsyncSelect from 'react-select/async'
+import { NavLink } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import { getChartsByKeyword } from '../../../charts/charts.service'
 import { ChartRepoDetailsType, ChartRepoOptions, ChartRepoSelectorType } from './ChartValuesView.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-prple.svg'
-import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../../config'
-import Tippy from '@tippyjs/react'
 import { getCommonSelectStyle, noMatchingOptions } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
 
-export function ChartRepoSelector({
+export const ChartRepoSelector = ({
     isExternal,
     installedAppInfo,
     isUpdate,
@@ -21,7 +21,7 @@ export function ChartRepoSelector({
     chartDetails,
     showConnectToChartTippy,
     hideConnectToChartTippy,
-}: ChartRepoSelectorType) {
+}: ChartRepoSelectorType) => {
     const [repoChartAPIMade, setRepoChartAPIMade] = useState(false)
     const [repoChartOptions, setRepoChartOptions] = useState<ChartRepoOptions[] | null>(
         isExternal && !installedAppInfo ? [] : [chartDetails],

@@ -10,7 +10,7 @@ interface CustomScriptType {
     handleScriptChange: React.Dispatch<React.SetStateAction<unknown>>
 }
 
-function CustomScript({ handleScriptChange }: CustomScriptType) {
+const CustomScript = ({ handleScriptChange }: CustomScriptType) => {
     const { selectedTaskIndex, formData, activeStageName, formDataErrorObj } = useContext(pipelineContext)
 
     const [editorValue, setEditorValue] = useState<string>(
@@ -38,7 +38,7 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
                         inline
                         height={300}
                         value={editorValue}
-                    ></CodeEditor>
+                    />
                 </div>
             </div>
 

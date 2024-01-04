@@ -1,5 +1,5 @@
-import { Routes } from '../../config'
 import { get, post, trash, put, CDModalTab } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 
 export function deploymentGroupList() {

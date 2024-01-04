@@ -83,38 +83,36 @@ class Edge extends React.Component<EdgeProps> {
             pointCY = pointCX * complimentrySlope + complementryConstant
             pointDX = pointBX + this.props.nodeSizes.distanceC / sqrtCMPlusOne
             pointDY = pointDX * complimentrySlope + complementryConstant
+        } else if (slope != 0) {
+            complimentrySlope = -1 / slope
+            constant = lineEndY - slope * lineEndX
+            sqrtMPlusOne = Math.sqrt(1 + slope * slope)
+            sqrtCMPlusOne = Math.sqrt(1 + complimentrySlope * complimentrySlope)
+
+            pointAX = midPointX - this.props.nodeSizes.distanceA / sqrtMPlusOne
+            pointAY = pointAX * slope + constant
+            pointBX = midPointX - this.props.nodeSizes.distanceB / sqrtMPlusOne
+            pointBY = pointBX * slope + constant
+
+            complementryConstant = pointBY - complimentrySlope * pointBX
+
+            pointCX = pointBX - this.props.nodeSizes.distanceC / sqrtCMPlusOne
+            pointCY = pointCX * complimentrySlope + complementryConstant
+            pointDX = pointBX + this.props.nodeSizes.distanceC / sqrtCMPlusOne
+            pointDY = pointDX * complimentrySlope + complementryConstant
         } else {
-            if (slope != 0) {
-                complimentrySlope = -1 / slope
-                constant = lineEndY - slope * lineEndX
-                sqrtMPlusOne = Math.sqrt(1 + slope * slope)
-                sqrtCMPlusOne = Math.sqrt(1 + complimentrySlope * complimentrySlope)
+            constant = lineEndY
+            sqrtMPlusOne = Math.sqrt(1 + slope * slope)
 
-                pointAX = midPointX - this.props.nodeSizes.distanceA / sqrtMPlusOne
-                pointAY = pointAX * slope + constant
-                pointBX = midPointX - this.props.nodeSizes.distanceB / sqrtMPlusOne
-                pointBY = pointBX * slope + constant
+            pointAX = midPointX - this.props.nodeSizes.distanceA / sqrtMPlusOne
+            pointAY = pointAX * slope + constant
+            pointBX = midPointX - this.props.nodeSizes.distanceB / sqrtMPlusOne
+            pointBY = pointBX * slope + constant
 
-                complementryConstant = pointBY - complimentrySlope * pointBX
-
-                pointCX = pointBX - this.props.nodeSizes.distanceC / sqrtCMPlusOne
-                pointCY = pointCX * complimentrySlope + complementryConstant
-                pointDX = pointBX + this.props.nodeSizes.distanceC / sqrtCMPlusOne
-                pointDY = pointDX * complimentrySlope + complementryConstant
-            } else {
-                constant = lineEndY
-                sqrtMPlusOne = Math.sqrt(1 + slope * slope)
-
-                pointAX = midPointX - this.props.nodeSizes.distanceA / sqrtMPlusOne
-                pointAY = pointAX * slope + constant
-                pointBX = midPointX - this.props.nodeSizes.distanceB / sqrtMPlusOne
-                pointBY = pointBX * slope + constant
-
-                pointCX = pointBX
-                pointCY = pointBY + this.props.nodeSizes.distanceC
-                pointDX = pointBX
-                pointDY = pointBY - this.props.nodeSizes.distanceC
-            }
+            pointCX = pointBX
+            pointCY = pointBY + this.props.nodeSizes.distanceC
+            pointDX = pointBX
+            pointDY = pointBY - this.props.nodeSizes.distanceC
         }
 
         return `M${midPointX} ${midPointY} L ${pointCX} ${pointCY} L ${pointAX} ${pointAY} L ${pointDX} ${pointDY} Z`
@@ -125,10 +123,9 @@ class Edge extends React.Component<EdgeProps> {
             const { lineStartX, lineStartY, lineEndX, lineEndY } = this.getLineDots()
             const xPathId = `path-${this.props.startNode.id}-${this.props.endNode.id}`
             const componentString = `<textPath xlink:href="#${xPathId}" startOffset="25%" stroke="#232323">${this.props.text}</textPath>`
-            return <text dy="-5" dangerouslySetInnerHTML={{ __html: `${componentString}` }}></text>
-        } else {
-            return null
+            return <text dy="-5" dangerouslySetInnerHTML={{ __html: `${componentString}` }} />
         }
+        return null
     }
 
     render() {

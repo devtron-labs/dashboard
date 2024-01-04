@@ -1,5 +1,4 @@
-import React from 'react'
-import { useRef } from 'react'
+import React, { useRef } from 'react'
 import { useIntersection } from '../helpers/Helpers'
 
 const LazyImage: React.FC<React.ComponentProps<'img'>> = (props) => {

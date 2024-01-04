@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { ReactComponent as MegaphoneIcon } from '../../assets/icons/ic-megaphone.svg'
 import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as MegaphoneIcon } from '../../assets/icons/ic-megaphone.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { getDateInMilliseconds } from '../apiTokens/authorization.utils'
 import { setActionWithExpiry } from './helpers/Helpers'
@@ -11,7 +11,7 @@ export default function AnnouncementBanner({ parentClassName = '', isCDMaterial 
         const expiryDateOfHidingAnnouncementBanner: string =
             typeof Storage !== 'undefined' &&
             localStorage.getItem(
-                //it will store date and time of next day i.e, it will hide banner until this date
+                // it will store date and time of next day i.e, it will hide banner until this date
                 'expiryDateOfHidingAnnouncementBanner',
             )
         const showAnnouncementBannerNextDay: boolean =

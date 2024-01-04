@@ -1,6 +1,6 @@
+import { APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppListMin, getAppOtherEnvironmentMin, getAvailableCharts } from '../../services/service'
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types'
-import { APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 
 export const AllSuggestedArguments = [
@@ -73,18 +73,17 @@ export function getArgumentSuggestions(args, options: APIOptions): Promise<Comma
 
     if (obj[arg.value]) {
         return obj[arg.value](args, options)
-    } else {
-        return new Promise((resolve, reject) => {
-            resolve({
-                allSuggestionArguments: [],
-                groups: [],
-            })
-        })
     }
+    return new Promise((resolve, reject) => {
+        resolve({
+            allSuggestionArguments: [],
+            groups: [],
+        })
+    })
 }
 
 function getAppArguments(args, options): Promise<CommandSuggestionType> {
-    //["app", "appName", "envName", "pod", "podname"]
+    // ["app", "appName", "envName", "pod", "podname"]
     if (args.length === 1) {
         return getAppListMin(null, options).then((response) => {
             const list = response.result.map((a) => {
@@ -105,7 +104,8 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                 groups: [],
             }
         })
-    } else if (args[1] && args.length === 2) {
+    }
+    if (args[1] && args.length === 2) {
         // args[1] --> appName
         return getAppOtherEnvironmentMin(args[1].data.value).then((response) => {
             let list
@@ -179,7 +179,8 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                 groups: [COMMAND_REV.env],
             }
         })
-    } else if (args[2] && args.length === 3) {
+    }
+    if (args[2] && args.length === 3) {
         // args[2] --> envName
         return new Promise((resolve, reject) => {
             if (args[2].value === 'configure') {
@@ -253,7 +254,8 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
                 })
             }
         })
-    } else if (args[3] && args.length === 4) {
+    }
+    if (args[3] && args.length === 4) {
         // args[3] --> pod
         if (args[3].value === 'env-override') {
             return getAppOtherEnvironmentMin(args[1].data.value).then((response) => {
@@ -306,7 +308,8 @@ function getChartArguments(args, options): Promise<CommandSuggestionType> {
                 groups: [],
             })
         })
-    } else if (args.length === 2) {
+    }
+    if (args.length === 2) {
         if (args[1].value === 'discover') {
             return getAvailableCharts('', options).then((response) => {
                 let list = response?.result?.map((chart) => {
@@ -367,7 +370,8 @@ function getSecurityArguments(args, options): Promise<CommandSuggestionType> {
                 groups: [],
             })
         })
-    } else if (args.length === 2) {
+    }
+    if (args.length === 2) {
         if (args[1].value === 'policies') {
             return new Promise((resolve, reject) => {
                 resolve({
@@ -512,7 +516,8 @@ function getGlobalConfigArguments(args, options): Promise<CommandSuggestionType>
                 groups: [],
             })
         })
-    } else if (args.length === 2) {
+    }
+    if (args.length === 2) {
         if (args[1].value === 'user-access') {
             return new Promise((resolve, reject) => {
                 resolve({
@@ -539,7 +544,8 @@ function getGlobalConfigArguments(args, options): Promise<CommandSuggestionType>
                     groups: [],
                 })
             })
-        } else if (args[1].value === 'notification') {
+        }
+        if (args[1].value === 'notification') {
             return new Promise((resolve, reject) => {
                 resolve({
                     allSuggestionArguments: [

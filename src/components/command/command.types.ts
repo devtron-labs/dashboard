@@ -43,7 +43,7 @@ export interface CommandState {
     suggestedArguments: ArgumentType[]
     isLoading: boolean
     isSuggestionError: boolean
-    focussedArgument: number //index of the higlighted argument
+    focussedArgument: number // index of the higlighted argument
     tab: 'jump-to' | 'this-app'
     groupName: string | undefined
 }

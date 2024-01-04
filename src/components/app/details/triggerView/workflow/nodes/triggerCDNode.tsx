@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
+import Tippy from '@tippyjs/react'
+import { Link } from 'react-router-dom'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerCDNodeProps } from '../../types'
 import { statusColor, statusIcon } from '../../../../config'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'
-import Tippy from '@tippyjs/react'
-import { Link } from 'react-router-dom'
 import { TriggerViewContext } from '../../config'
 import { triggerStatus } from '../../../cicdHistory/History.components'
 import { envDescriptionTippy } from './workflow.utils'
-import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
@@ -45,30 +45,29 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     <span>{statusText}</span>
                 </div>
             )
-        } else {
-            return (
-                <div
-                    data-testid={`cd-trigger-status-${this.props.index}`}
-                    className="dc__cd-trigger-status"
-                    style={{ color: statusColor[status] }}
-                >
-                    <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
-                    <span>{statusText}</span>
-                    {!this.props.fromAppGrouping && (
-                        <>
-                            {statusText && <span className="mr-5 ml-5">/</span>}
-                            <Link
-                                data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
-                                to={url}
-                                className="workflow-node__details-link"
-                            >
-                                Details
-                            </Link>
-                        </>
-                    )}
-                </div>
-            )
         }
+        return (
+            <div
+                data-testid={`cd-trigger-status-${this.props.index}`}
+                className="dc__cd-trigger-status"
+                style={{ color: statusColor[status] }}
+            >
+                <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
+                <span>{statusText}</span>
+                {!this.props.fromAppGrouping && (
+                    <>
+                        {statusText && <span className="mr-5 ml-5">/</span>}
+                        <Link
+                            data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
+                            to={url}
+                            className="workflow-node__details-link"
+                        >
+                            Details
+                        </Link>
+                    </>
+                )}
+            </div>
+        )
     }
 
     renderCardContent() {
@@ -101,7 +100,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                             {this.renderStatus(this.props.title)}
                             <div className="workflow-node__btn-grp">
                                 {!this.props.isVirtualEnvironment && (
-                                    <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
+                                    <Tippy className="default-tt" arrow placement="bottom" content="Rollback">
                                         <button
                                             data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
                                             className="workflow-node__rollback-btn"

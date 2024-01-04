@@ -1,6 +1,6 @@
 import React from 'react'
 
-export function PluginCard({
+export const PluginCard = ({
     imgSource,
     title,
     subTitle,
@@ -12,7 +12,7 @@ export function PluginCard({
     subTitle: string
     tags?: string[]
     dataTestId?: string
-}) {
+}) => {
     return (
         <div data-testid={dataTestId} className="flex left top cursor plugin-card p-10">
             <div className="pc-icon-container bcn-1 br-8 mr-16 flexbox">

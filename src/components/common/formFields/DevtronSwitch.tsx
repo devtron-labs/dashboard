@@ -1,4 +1,5 @@
 import React, { Component, createContext } from 'react'
+
 const SwitchContext = createContext({ name: '', value: '', onChange: (event) => {} })
 
 export interface DevtronSwitchItemProps {

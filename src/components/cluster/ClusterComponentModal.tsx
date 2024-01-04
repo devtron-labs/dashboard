@@ -18,11 +18,14 @@ export class ClusterComponentModal extends Component<ClusterComponentModalProps,
                     </button>
                 </p>
             )
-        } else if (this.props.agentInstallationStage === 1) {
+        }
+        if (this.props.agentInstallationStage === 1) {
             return <p className="m-0 fw-6 fs-14 app-summary__status-name f-progressing">In progress...</p>
-        } else if (this.props.agentInstallationStage === 2) {
+        }
+        if (this.props.agentInstallationStage === 2) {
             return <p className="m-0 fw-6 fs-14 app-summary__status-name f-healthy">Installed</p>
-        } else if (this.props.agentInstallationStage === 3) {
+        }
+        if (this.props.agentInstallationStage === 3) {
             return (
                 <p className="m-0 fw-6 fs-14 app-summary__status-name f-failed">
                     Failed
@@ -74,7 +77,7 @@ export class ClusterComponentModal extends Component<ClusterComponentModalProps,
                             onClick={(e) => this.props.redirectToChartDeployment(c.installedAppId, c.envId)}
                         >
                             <div className="mr-16 flex">
-                                <span className={`icon-dim-20 dc__inline-block mr-16 ${status}`}></span>
+                                <span className={`icon-dim-20 dc__inline-block mr-16 ${status}`} />
                             </div>
                             <div className="flex-1">
                                 <p className="cluster-component__name m-0">{c.name}</p>

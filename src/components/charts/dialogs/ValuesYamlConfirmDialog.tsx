@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Warn } from '../../../assets/icons/ic-warning.svg'
 import close from '../../../assets/icons/ic-close.svg'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 export class ValuesYamlConfirmDialog extends Component<{
     className: string
@@ -35,7 +35,7 @@ export class ValuesYamlConfirmDialog extends Component<{
         return (
             <>
                 <VisibleModal className="">
-                    <div className={`modal__body`}>
+                    <div className="modal__body">
                         <div className="flexbox flex-justify">
                             <Warn className="modal__main-img" />
                             <img src={close} alt="close" className="icon-dim-24 cursor" onClick={this.props.close} />

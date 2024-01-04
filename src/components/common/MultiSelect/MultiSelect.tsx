@@ -122,7 +122,7 @@ const MultiSelect: React.FunctionComponent<multiSelectProps> = (props) => {
     )
 }
 
-function All() {
+const All = () => {
     const { selected, select, options } = useMultiSelectContext()
     const isAllSelected = Object.keys(selected).length === options.length
     return (
@@ -146,7 +146,7 @@ function All() {
     )
 }
 
-function SelectedButton({ label, value, icon = '' }) {
+const SelectedButton = ({ label, value, icon = '' }) => {
     const { selected, select } = useMultiSelectContext()
     return (
         <span className="multiselect-selected-button" onClick={(e) => e.stopPropagation()}>
@@ -160,12 +160,12 @@ function SelectedButton({ label, value, icon = '' }) {
                         return { ...selected }
                     })
                 }}
-            ></div>
+            />
         </span>
     )
 }
 
-function Option({ label, value, style = {}, ...rest }) {
+const Option = ({ label, value, style = {}, ...rest }) => {
     const { selected, select } = useMultiSelectContext()
     const active = selected.hasOwnProperty(value)
     function toggleSelection(e) {
@@ -183,7 +183,7 @@ function Option({ label, value, style = {}, ...rest }) {
             className={`multi-select-option ${active ? 'selected' : ''}`}
             onClick={toggleSelection}
         >
-            <span className="fa fa-check"></span>
+            <span className="fa fa-check" />
             {rest.icon && <img src={rest.icon} />}
             {label}
         </div>

@@ -1,5 +1,5 @@
-import { Routes } from '../../config/constants'
 import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config/constants'
 import { NotificationConfiguration } from './NotificationTab'
 import { PipelineType } from './AddNotification'
 import { SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
@@ -91,7 +91,7 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
             envId,
             pipelineId: config.pipelineId,
             pipelineType: config.type,
-            eventTypeIds: eventTypeIds,
+            eventTypeIds,
         }
     })
     providers = providers.map((p) => {
@@ -101,18 +101,17 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
                 dest: p.data.dest,
                 recipient: '',
             }
-        } else {
-            return {
-                configId: 0,
-                dest: p.data.dest || '',
-                recipient: p.data.recipient,
-            }
+        }
+        return {
+            configId: 0,
+            dest: p.data.dest || '',
+            recipient: p.data.recipient,
         }
     })
     return {
         notificationConfigRequest: allPipelines,
-        providers: providers,
-        sesConfigId: sesConfigId,
+        providers,
+        sesConfigId,
     }
 }
 
@@ -228,7 +227,7 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
                 success: config.eventTypes.includes(2),
                 failure: config.eventTypes.includes(3),
                 isSelected: false,
-                providers: providers,
+                providers,
                 appliedFilters: {
                     project: config.team || [],
                     application: config.app || [],
@@ -289,12 +288,11 @@ export function updateNotificationRecipients(
                     dest: r.dest === 'slack' || r.dest === 'webhook' ? r.dest : emailChannel,
                     recipient: '',
                 }
-            } else {
-                return {
-                    configId: 0,
-                    dest: emailChannel || '',
-                    recipient: r.recipient,
-                }
+            }
+            return {
+                configId: 0,
+                dest: emailChannel || '',
+                recipient: r.recipient,
             }
         })
         return {
@@ -304,7 +302,7 @@ export function updateNotificationRecipients(
     })
     const payload = {
         updateType: 'recipients',
-        notificationConfigRequest: notificationConfigRequest,
+        notificationConfigRequest,
     }
     return put(URL, payload)
 }
@@ -327,7 +325,7 @@ export function deleteNotifications(requestBody, singleDeletedId): Promise<Delet
 export function saveEmailConfiguration(data, channel: string): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
     const payload = {
-        channel: channel,
+        channel,
         configs: [data],
     }
     return post(URL, payload)
@@ -352,15 +350,14 @@ export function getSlackConfiguration(slackConfigId: number, isDeleteComponent?:
                 ...response,
                 result: config,
             }
-        } else {
-            return {
-                ...response,
-                result: {
-                    configName: config.configName,
-                    webhookUrl: config.webhookUrl,
-                    projectId: config.teamId,
-                },
-            }
+        }
+        return {
+            ...response,
+            result: {
+                configName: config.configName,
+                webhookUrl: config.webhookUrl,
+                projectId: config.teamId,
+            },
         }
     })
 }

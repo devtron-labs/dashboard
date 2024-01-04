@@ -155,7 +155,7 @@ const IndexStore = {
             })
         })
 
-        return { containers: containers, pods: pods }
+        return { containers, pods }
     },
 
     getAllNewContainers: () => {
@@ -169,7 +169,7 @@ const IndexStore = {
             })
         })
 
-        return { containers: containers, pods: pods }
+        return { containers, pods }
     },
 
     getAllOldContainers: () => {
@@ -183,7 +183,7 @@ const IndexStore = {
             })
         })
 
-        return { containers: containers, pods: pods }
+        return { containers, pods }
     },
 
     getAllPods: () => {
@@ -225,7 +225,7 @@ const IndexStore = {
     },
 
     updateFilterType: (filterType: string) => {
-        _nodeFilter = { ..._nodeFilter, filterType: filterType }
+        _nodeFilter = { ..._nodeFilter, filterType }
         publishFilteredNodes()
     },
 
@@ -233,7 +233,7 @@ const IndexStore = {
         if (searchString.length && searchString.length < 4) {
             return
         }
-        _nodeFilter = { ..._nodeFilter, searchString: searchString }
+        _nodeFilter = { ..._nodeFilter, searchString }
         publishFilteredNodes()
     },
 }
@@ -250,8 +250,8 @@ export function getiNodesByRootNodeWithChildNodes(
     rootNodes: Array<iNode>,
     podMetadata?: Array<PodMetaData>,
 ): Array<iNode> {
-    //if any node has childNode we have already processed this node during previous call to this node and there have been no api calls since then
-    //hence reusing it. After api call this is unset and we will process again.
+    // if any node has childNode we have already processed this node during previous call to this node and there have been no api calls since then
+    // hence reusing it. After api call this is unset and we will process again.
 
     if (rootNodes.some((_node) => _node.childNodes)) {
         return rootNodes
@@ -259,11 +259,11 @@ export function getiNodesByRootNodeWithChildNodes(
     let matchingNodes = rootNodes
 
     const _nodesByParent = new Map<string, Array<iNode>>()
-    //Create Map with every node listing against its parent
-    //structure is <group/kind: <name : [iNode]>>
+    // Create Map with every node listing against its parent
+    // structure is <group/kind: <name : [iNode]>>
     _nodes.forEach((_node) => {
         _node.parentRefs?.forEach((_parent) => {
-            const _groupKindName = _parent.group + '/' + _parent.kind + '/' + _parent.name
+            const _groupKindName = `${_parent.group}/${_parent.kind}/${_parent.name}`
             if (!_nodesByParent.has(_groupKindName)) {
                 _nodesByParent.set(_groupKindName, [_node as iNode])
             } else {
@@ -272,12 +272,12 @@ export function getiNodesByRootNodeWithChildNodes(
         })
     })
 
-    //Iterating through nodes that have matching nodes as parents repeatedly till we reach nodes
-    //which are not parent of any nodes
+    // Iterating through nodes that have matching nodes as parents repeatedly till we reach nodes
+    // which are not parent of any nodes
     while (matchingNodes.length > 0) {
         const _matchingNodes = [] as Array<iNode>
         matchingNodes.forEach((_node) => {
-            const _groupKindName = _node.group + '/' + _node.kind + '/' + _node.name
+            const _groupKindName = `${_node.group}/${_node.kind}/${_node.name}`
             if (_nodesByParent.get(_groupKindName)) {
                 _matchingNodes.push(..._nodesByParent.get(_groupKindName))
                 if (!_node.childNodes) {
@@ -289,7 +289,7 @@ export function getiNodesByRootNodeWithChildNodes(
         matchingNodes = _matchingNodes
     }
 
-    //sort each children array
+    // sort each children array
     let children = rootNodes
     while (children.length > 0) {
         children.forEach((_node) => {
@@ -304,7 +304,7 @@ export function getiNodesByRootNodeWithChildNodes(
             })
         })
 
-        //Add containers to Pod type nodes
+        // Add containers to Pod type nodes
         children
             .filter((_child) => _child.kind.toLowerCase() == NodeType.Pod.toLowerCase())
             .map((_pn) => {
@@ -329,17 +329,17 @@ export function getPodsRootParentNameAndStatus(_nodes: Array<Node>): Array<[stri
     const podNodes = [..._nodes.filter((_node) => _node.kind.toLowerCase() == NodeType.Pod.toLowerCase())]
     const _nodesById = new Map<string, Node>()
 
-    //Create Map with every node listing against its parent
-    //structure is <group/kind: <name : [iNode]>>
+    // Create Map with every node listing against its parent
+    // structure is <group/kind: <name : [iNode]>>
     _nodes.forEach((_node) => {
-        const _groupKindName = _node.group + '/' + _node.kind + '/' + _node.name
+        const _groupKindName = `${_node.group}/${_node.kind}/${_node.name}`
         _nodesById.set(_groupKindName, _node)
     })
 
     let uniqueParents = podNodes
         .flatMap((_pod) => {
             return (_pod.parentRefs ?? []).map((_parent) => {
-                return [_parent.group + '/' + _parent.kind + '/' + _parent.name, _pod.health?.status ?? '']
+                return [`${_parent.group}/${_parent.kind}/${_parent.name}`, _pod.health?.status ?? '']
             })
         })
         .reduce((acc, val) => {
@@ -356,18 +356,18 @@ export function getPodsRootParentNameAndStatus(_nodes: Array<Node>): Array<[stri
         const _uniqueParents = new Map<string, string>()
         uniqueParents.forEach((_status, _parent) => {
             ;(_nodesById.get(_parent)?.parentRefs ?? []).forEach((_parent) =>
-                _uniqueParents.set(_parent.group + '/' + _parent.kind + '/' + _parent.name, _status),
+                _uniqueParents.set(`${_parent.group}/${_parent.kind}/${_parent.name}`, _status),
             )
             if ((_nodesById.get(_parent)?.parentRefs ?? []).length == 0) {
                 const selfNode = _nodesById.get(_parent)
                 if (selfNode) {
-                    rootParents.set(selfNode.group + '/' + selfNode.kind + '/' + selfNode.name, _status)
+                    rootParents.set(`${selfNode.group}/${selfNode.kind}/${selfNode.name}`, _status)
                 }
             }
         })
         uniqueParents = _uniqueParents
     }
-    //value is status
+    // value is status
     return Array.from(rootParents, ([name, value]) => [name, value] as [string, string]).sort(
         (a: [string, string], b: [string, string]) => {
             if (a[0] > b[0]) {

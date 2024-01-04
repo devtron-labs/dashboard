@@ -4,7 +4,7 @@ import './environmentStatus.scss'
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
-import { AppType } from '../../../appDetails/appDetails.type'
+import { AppType } from '../../appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { useRouteMatch, useHistory, useParams } from 'react-router'
 import NotesDrawer from './NotesDrawer'
@@ -24,7 +24,7 @@ import IssuesListingModal from '../../../../app/details/appDetails/IssuesListing
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
-function EnvironmentStatusComponent({
+const EnvironmentStatusComponent = ({
     appStreamData,
     loadingDetails,
     loadingResourceTree,
@@ -32,7 +32,7 @@ function EnvironmentStatusComponent({
     isVirtualEnvironment,
     isHelmApp,
     refetchDeploymentStatus,
-}: EnvironmentStatusComponentType) {
+}: EnvironmentStatusComponentType) => {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
@@ -129,17 +129,16 @@ function EnvironmentStatusComponent({
                         cardLoading={cardLoading}
                     />
                 )
-            } else {
-                return (
-                    <DeploymentStatusCard
-                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                        cardLoading={cardLoading}
-                        hideDetails={false}
-                        refetchDeploymentStatus={refetchDeploymentStatus}
-                        isVirtualEnvironment={isVirtualEnvironment}
-                    />
-                )
             }
+            return (
+                <DeploymentStatusCard
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    cardLoading={cardLoading}
+                    hideDetails={false}
+                    refetchDeploymentStatus={refetchDeploymentStatus}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                />
+            )
         }
         return null
     }

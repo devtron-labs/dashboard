@@ -1,5 +1,16 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
+import {
+    CIBuildType,
+    ConditionalWrap,
+    showError,
+    TippyCustomized,
+    TippyTheme,
+    OptionType,
+    Progressing,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
@@ -17,17 +28,6 @@ import CIBuildpackBuildOptions, {
 } from './CIBuildpackBuildOptions'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
-import {
-    CIBuildType,
-    ConditionalWrap,
-    showError,
-    TippyCustomized,
-    TippyTheme,
-    OptionType,
-    Progressing,
-    CustomInput,
-} from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -107,8 +107,8 @@ export default function CIDockerFileConfig({
     ]
     const isDefaultBuildContext = (): boolean => {
         if (window._env_.ENABLE_BUILD_CONTEXT) {
-            let currentOverriddenGitMaterialId = 0,
-                currentOverriddenBuildContextGitMaterialId = 0
+            let currentOverriddenGitMaterialId = 0
+            let currentOverriddenBuildContextGitMaterialId = 0
             const currentOverriddenBuildContext =
                 ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
             currentOverriddenGitMaterialId =
@@ -276,10 +276,10 @@ export default function CIDockerFileConfig({
                 {
                     'To build all files from the root, use (.) as the build context, or set build context by referring a subdirectory path such as '
                 }
-                <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">{'/myfolder'}</span>
+                <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder</span>
                 {' or '}
                 <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
-                    {'/myfolder/buildhere'}
+                    /myfolder/buildhere
                 </span>
                 {'  if path not set, default path will be root dir of selected git repository'}
             </div>
@@ -306,7 +306,7 @@ export default function CIDockerFileConfig({
     }
 
     const getSelectedBuildContextGitMaterial = (): any => {
-        return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
+        return selectedBuildContextGitMaterial || currentMaterial
     }
     const getCheckoutPathValue = (
         selectedMaterial: any,
@@ -331,9 +331,9 @@ export default function CIDockerFileConfig({
                 Icon={QuestionFilled}
                 heading="Docker build context"
                 infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
-                showCloseButton={true}
+                showCloseButton
                 trigger="click"
-                interactive={true}
+                interactive
                 documentationLinkText="View Documentation"
                 additionalContent={getBuildContextAdditionalContent()}
             >
@@ -495,7 +495,7 @@ export default function CIDockerFileConfig({
                                             : formState.dockerfile.value
                                     }
                                     onChange={handleOnChangeConfig}
-                                    autoComplete={'off'}
+                                    autoComplete="off"
                                     autoFocus={!configOverrideView}
                                     disabled={configOverrideView && !allowOverride}
                                     error={formState.dockerfile.error}
@@ -718,13 +718,15 @@ export default function CIDockerFileConfig({
     const renderOptionBasedOnBuildType = () => {
         if (ciBuildTypeOption === CIBuildType.SELF_DOCKERFILE_BUILD_TYPE) {
             return renderSelfDockerfileBuildOption()
-        } else if (loadingTemplateData.loading) {
+        }
+        if (loadingTemplateData.loading) {
             return (
                 <div className="h-250">
                     <Progressing size={24} fillColor="var(--N500)" />
                 </div>
             )
-        } else if (loadingTemplateData.failed) {
+        }
+        if (loadingTemplateData.failed) {
             return (
                 <div className="flex column h-250 dc__gap-12">
                     <ErrorIcon className="icon-dim-20" />
@@ -734,13 +736,14 @@ export default function CIDockerFileConfig({
                     </span>
                 </div>
             )
-        } else if (ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE) {
-            return renderManagedDockerfile()
-        } else if (ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE) {
-            return renderBuildpackBuildOptions()
-        } else {
-            return null
         }
+        if (ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE) {
+            return renderManagedDockerfile()
+        }
+        if (ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE) {
+            return renderBuildpackBuildOptions()
+        }
+        return null
     }
 
     return (

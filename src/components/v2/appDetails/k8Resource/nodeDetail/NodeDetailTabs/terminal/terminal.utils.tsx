@@ -1,5 +1,8 @@
 import React from 'react'
 import CreatableSelect from 'react-select/creatable'
+import Tippy from '@tippyjs/react'
+import ReactSelect from 'react-select'
+import { TippyCustomized, TippyTheme, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
@@ -13,9 +16,6 @@ import { ReactComponent as Check } from '../../../../../../../assets/icons/ic-ch
 import { ReactComponent as Pencil } from '../../../../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as Stop } from '../../../../../../../assets/icons/ic-stop-filled.svg'
-import Tippy from '@tippyjs/react'
-import ReactSelect from 'react-select'
-import { TippyCustomized, TippyTheme, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import {
     SelectWrapperType,
     ReactSelectType,
@@ -42,11 +42,11 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
                     theme={TippyTheme.white}
                     heading="Image"
                     placement="top"
-                    interactive={true}
+                    interactive
                     trigger="click"
                     className="w-300"
                     Icon={Help}
-                    showCloseButton={true}
+                    showCloseButton
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={selectData.infoContent}
                 >
@@ -169,7 +169,7 @@ const closeExpandView = (viewData: CloseExpandView) => {
                     )}
                 </Tippy>
             )}
-            <Tippy className="default-tt" arrow={false} placement="top" content={'Close'}>
+            <Tippy className="default-tt" arrow={false} placement="top" content="Close">
                 <Close
                     className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
                     data-testid="cluster-terminal-close-screen-button"
@@ -232,11 +232,11 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
                     theme={TippyTheme.white}
                     heading="Debug mode"
                     placement="top"
-                    interactive={true}
+                    interactive
                     trigger="click"
                     className="w-300"
                     Icon={Help}
-                    showCloseButton={true}
+                    showCloseButton
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={
                         <div className="p-12 w-300 fs-13 fw-4">{CLUSTER_TERMINAL_MESSAGING.DEBUG_MODE_TEXT}</div>

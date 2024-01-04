@@ -7,18 +7,18 @@ import {
     noop,
     DockerConfigOverrideType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { Workflow } from '../workflowEditor/Workflow'
-import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
 import { CIConfigDiffViewProps } from './types'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { CIBuildConfigDiff } from './CIBuildConfigDiff'
-import Tippy from '@tippyjs/react'
 import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
-import { toast } from 'react-toastify'
 
 export default function CIConfigDiffView({
     parentReloading,
@@ -120,7 +120,8 @@ export default function CIConfigDiffView({
 
             if (gitMaterialCount === 1) {
                 return 110 + _cdNamesList.length * 20
-            } else if (gitMaterialCount === 2) {
+            }
+            if (gitMaterialCount === 2) {
                 return _cdNamesList.length <= 5
                     ? 200
                     : _cdNamesList.length <= 7
@@ -197,7 +198,7 @@ export default function CIConfigDiffView({
                                     startX={_wf.startX}
                                     startY={_wf.startY}
                                     height={getWorkflowHeight(_wf)}
-                                    width={'100%'}
+                                    width="100%"
                                     nodes={_wf.nodes}
                                     history={history}
                                     location={location}

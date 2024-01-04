@@ -11,7 +11,7 @@ function getFilteredPodStatus(podStatusObj) {
     return podStatusKeys.filter((n) => n !== 'all')
 }
 
-function PodTabSection({
+const PodTabSection = ({
     podTab,
     selectPodTab,
     podStatus,
@@ -21,7 +21,7 @@ function PodTabSection({
     selectPodTab: (string) => void
     podStatus: { running; all }
     isNew: boolean
-}) {
+}) => {
     const dataTestId = isNew ? 'all-pods-new' : 'all-pods-old'
 
     return (
@@ -44,7 +44,7 @@ function PodTabSection({
             <div className="flex left fs-12 cn-9 pb-12">
                 {getFilteredPodStatus(podStatus).map((status, idx) => (
                     <React.Fragment key={idx}>
-                        {!!idx && <span className="dc__bullet mr-4 ml-4"></span>}
+                        {!!idx && <span className="dc__bullet mr-4 ml-4" />}
                         <span key={idx} data-testid={isNew && `new-pod-status-${status}`}>
                             {podStatus[status]} {status}
                         </span>

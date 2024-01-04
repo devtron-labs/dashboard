@@ -22,7 +22,7 @@ export default function ClusterNodeEmptyState({
             image={emptyCustomChart}
             title={title || EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.TITLE}
             subTitle={EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.SUBTITLE}
-            isButtonAvailable={true}
+            isButtonAvailable
             renderButton={renderClearSearchButton}
             classname="dc__position-rel-imp"
         />

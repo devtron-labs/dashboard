@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { sortObjectArrayAlphabetically } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router-dom'
+import { sortObjectArrayAlphabetically } from '../common'
 import { getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails } from '../../services/service'
-import { useParams } from 'react-router-dom'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CIConfigProps } from './types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
@@ -30,7 +30,7 @@ export default function CIConfig({
     const [configOverrideWorkflows, setConfigOverrideWorkflows] = useState<ConfigOverrideWorkflowDetails[]>([])
     const [parentReloading, setParentReloading] = useState(false)
     const [loading, setLoading] = useState(
-        configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
+        !(configOverrideView && parentState?.loadingState === ComponentStates.loaded),
     )
     const { appId } = useParams<{ appId: string }>()
 
@@ -67,17 +67,14 @@ export default function CIConfig({
                 setParentState({
                     loadingState: ComponentStates.loaded,
                     selectedCIPipeline: parentState.selectedCIPipeline,
-                    dockerRegistries: dockerRegistries,
-                    sourceConfig: sourceConfig,
-                    ciConfig: ciConfig,
-                    defaultDockerConfigs: Object.assign(
-                        {},
-                        {
-                            dockerRegistry: ciConfig.dockerRegistry,
-                            dockerRepository: ciConfig.dockerRepository,
-                            ciBuildConfig: ciConfig.ciBuildConfig,
-                        },
-                    ),
+                    dockerRegistries,
+                    sourceConfig,
+                    ciConfig,
+                    defaultDockerConfigs: {
+                        dockerRegistry: ciConfig.dockerRegistry,
+                        dockerRepository: ciConfig.dockerRepository,
+                        ciBuildConfig: ciConfig.ciBuildConfig,
+                    },
                 })
             }
         } catch (err) {

@@ -74,11 +74,11 @@ export default class Edge extends Component<EdgeProps> {
             } V ${lineEndY} H ${lineEndX}`
             // this.props.deleteEdge();
             // return ``;
-        } else if (lineStartY != lineEndY) {
-            return `M${lineStartX} ${lineStartY} H ${midPointX} V ${lineEndY} H ${lineEndX}`
-        } else {
-            return `M${lineStartX} ${lineStartY} L ${lineEndX} ${lineEndY}`
         }
+        if (lineStartY != lineEndY) {
+            return `M${lineStartX} ${lineStartY} H ${midPointX} V ${lineEndY} H ${lineEndX}`
+        }
+        return `M${lineStartX} ${lineStartY} L ${lineEndX} ${lineEndY}`
     }
 
     getSegmentArrowEquationVertical(start: Point, end: Point, isDownward: boolean): string {
@@ -120,19 +120,18 @@ export default class Edge extends Component<EdgeProps> {
                 },
                 lineStartX < lineEndX,
             )
-        } else {
-            return this.getSegmentArrowEquationHorizontal(
-                {
-                    x: midPointX,
-                    y: lineEndY,
-                },
-                {
-                    x: lineEndX,
-                    y: lineStartY,
-                },
-                lineStartX < lineEndX,
-            )
         }
+        return this.getSegmentArrowEquationHorizontal(
+            {
+                x: midPointX,
+                y: lineEndY,
+            },
+            {
+                x: lineEndX,
+                y: lineStartY,
+            },
+            lineStartX < lineEndX,
+        )
     }
 
     handleAddCDClick = (position: AddCDPositions) => {

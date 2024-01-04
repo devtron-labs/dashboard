@@ -168,7 +168,7 @@ export interface ChartGroupEntry {
         error?: string
         suggestedName?: string
     }
-    isUnsaved: boolean //accounts only values and version selection
+    isUnsaved: boolean // accounts only values and version selection
 }
 
 export interface ChartMetaData {
@@ -176,7 +176,7 @@ export interface ChartMetaData {
     chartRepoName: string
     icon: string
     chartId: number
-    //TODO: add below keys
+    // TODO: add below keys
     // appStoreId: number;
     // appStoreApplicationVersion: string;
 }

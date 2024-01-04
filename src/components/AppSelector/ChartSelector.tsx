@@ -6,11 +6,11 @@ import { mapByKey } from '../common'
 import { appSelectorStyle, DropdownIndicator } from './AppSelectorUtil'
 
 interface ChartSelectorType {
-    primaryKey: string //url match
+    primaryKey: string // url match
     primaryValue: string
     matchedKeys: string[]
     api: () => Promise<any>
-    apiPrimaryKey?: string //primary key to generate map
+    apiPrimaryKey?: string // primary key to generate map
     onChange?: ({ label, value }) => void
     formatOptionLabel?: ({ label, value, ...rest }) => React.ReactNode
     filterOption?: (option: any, searchString: string) => boolean

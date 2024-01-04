@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
+import ReactGA from 'react-ga4'
+import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -20,13 +22,11 @@ import { ReactComponent as ChristmasLogo } from '../../../assets/icons/ic-sideba
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 
 const NavigationList = [
     {
@@ -148,6 +148,7 @@ export default class Navigation extends Component<
     }
 > {
     securityModuleStatusTimer = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -304,7 +305,8 @@ export default class Navigation extends Component<
         const allowedUser = !item.markOnlyForSuperAdmin || this.props.isSuperAdmin
         if (window._env_.K8S_CLIENT) {
             return item.isAvailableInDesktop
-        } else if (
+        }
+        if (
             allowedUser &&
             (!item.forceHideEnvKey || (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey]))
         ) {
@@ -350,9 +352,8 @@ export default class Navigation extends Component<
                             if (this.canShowNavOption(item)) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
-                                } else {
-                                    return this.renderNavLink(item)
                                 }
+                                return this.renderNavLink(item)
                             }
                         })}
                         {!window._env_.K8S_CLIENT && !this.props.isAirgapped && (

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import K8sPermissionModal from './K8sPermissionModal'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
@@ -6,7 +7,6 @@ import { ReactComponent as Delete } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { HEADER_OPTIONS } from './K8sPermissions.utils'
 import { K8sPermission } from '../userGroups.types'
-import Tippy from '@tippyjs/react'
 
 export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPermission) {
     const [togglePermissionModal, setPermissionToggleModal] = useState<boolean>()
@@ -82,7 +82,7 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                                     className="dc__truncate-text"
                                 >
                                     {element.resource.length > 1
-                                        ? element.resource.length + ' objects'
+                                        ? `${element.resource.length} objects`
                                         : element.resource[0].label}
                                 </span>
                                 <span data-testid={`k8s-permission-list-${index}-action`} className="dc__truncate-text">

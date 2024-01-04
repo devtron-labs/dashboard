@@ -1,5 +1,5 @@
-import { Routes } from '../../config'
 import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config'
 import {
     ExternalLink,
     ExternalLinkIdentifierType,
@@ -13,7 +13,7 @@ const getURLWithQueryParams = (clusterId?: number, identifier?: string, type?: E
     if (clusterId >= 0 || identifier || type) {
         const queryParams = {
             clusterId: clusterId >= 0 ? `${clusterId}` : '',
-            identifier: identifier,
+            identifier,
             type: type?.toString(),
         }
 

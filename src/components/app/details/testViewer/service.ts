@@ -33,7 +33,7 @@ export async function getTriggerList(pipelineId, selectedNames: SelectedNames, s
 }
 
 export async function getFilters(pipelineId: number | string, triggerId?: number | string) {
-    return post(`test/suites/proxy`, { link: `filters/${pipelineId}${triggerId ? '/' + triggerId : ''}` })
+    return post(`test/suites/proxy`, { link: `filters/${pipelineId}${triggerId ? `/${triggerId}` : ''}` })
 }
 // "test/suites/list"
 // "test/suites/list/details"

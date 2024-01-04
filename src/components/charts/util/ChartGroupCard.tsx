@@ -22,7 +22,7 @@ export default class ChartGroupCard extends Component<ChartGroupCardProps> {
     }
 
     render() {
-        const chartGroup = this.props.chartGroup
+        const { chartGroup } = this.props
         const chartGroupEntries = this.getChartGroupSubgroup()
         const GROUP_EDIT_LINK = getChartGroupURL(chartGroup.id)
         const classes = 'chart-grid-item chart-grid-item--chart-group white-card dc__no-decor'

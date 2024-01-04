@@ -1,8 +1,8 @@
 import React from 'react'
 import Select, { components } from 'react-select'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-import { Option } from '../../../v2/common/ReactSelect.utils'
 import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router'
+import { Option } from '../../../v2/common/ReactSelect.utils'
 import AppDetails from './AppDetails'
 
 export default function Index() {
@@ -13,7 +13,7 @@ export default function Index() {
     )
 }
 
-export function EnvSelector({ environments, disabled }) {
+export const EnvSelector = ({ environments, disabled }) => {
     const { push } = useHistory()
     const { path } = useRouteMatch()
     const { appId, envId } = useParams<{ appId: string; envId?: string }>()

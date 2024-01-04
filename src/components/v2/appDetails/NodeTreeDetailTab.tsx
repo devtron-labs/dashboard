@@ -11,12 +11,12 @@ import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
 import IndexStore from './index.store'
 import NodeTreeTabList from './k8Resource/NodeTreeTabList'
 
-function NodeTreeDetailTab({
+const NodeTreeDetailTab = ({
     appDetails,
     externalLinks,
     monitoringTools,
     isDevtronApp = false,
-}: NodeTreeDetailTabProps) {
+}: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const location = useLocation()
     const { path, url } = useRouteMatch()

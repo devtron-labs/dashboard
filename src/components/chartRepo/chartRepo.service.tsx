@@ -1,5 +1,5 @@
-import { Routes } from '../../config'
 import { post, get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config'
 
 export const getChartProviderConfig = (id: number): Promise<any> => {
     const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH}/${id}`

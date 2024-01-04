@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { DeploymentConfigContextType, DeploymentConfigFormCTAProps } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { DOCUMENTATION } from '../../../config'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outline-grey.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help-outline.svg'
@@ -38,7 +38,8 @@ export default function DeploymentConfigFormCTA({
         if (isApprovalPending) {
             if (!hasAccess) {
                 return 'You do not have permission to approve configuration changes for this application - environment combination.'
-            } else if (approveDisabled) {
+            }
+            if (approveDisabled) {
                 return 'You have made changes to this file. Users who have edited cannot approve the changes.'
             }
         }
@@ -103,7 +104,8 @@ export default function DeploymentConfigFormCTA({
     const renderApplicationMetrics = () => {
         if (!showAppMetricsToggle) {
             return null
-        } else if (isPublishedMode || isApprovalPending) {
+        }
+        if (isPublishedMode || isApprovalPending) {
             return (
                 <div className="form-app-metrics-cta flex left fs-13 fw-4 lh-20 cn-9">
                     <InfoIcon className="icon-dim-16 mr-8" />
@@ -111,86 +113,85 @@ export default function DeploymentConfigFormCTA({
                     <span className="fw-6 ml-4">{isAppMetricsEnabled ? 'Enabled' : 'Not enabled'}</span>
                 </div>
             )
-        } else {
-            return (
-                <div className="form-app-metrics-cta flex top left">
-                    {loading ? (
-                        <>
-                            <Progressing
-                                data-testid="app-metrics-checkbox-loading"
-                                styles={{
-                                    width: 'auto',
-                                    marginRight: '16px',
-                                }}
-                            />
-                            <span className="fs-13 fw-4 lh-20">Application metrics</span>
-                        </>
-                    ) : (
-                        <>
-                            <Checkbox
-                                rootClassName={`mt-2 mr-8 ${
-                                    !_selectedChart.isAppMetricsSupported ? 'dc__opacity-0_5' : ''
-                                }`}
-                                isChecked={isAppMetricsEnabled}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={toggleAppMetrics}
-                                dataTestId="app-metrics-checkbox"
-                                disabled={disableCheckbox || !_selectedChart.isAppMetricsSupported}
-                            />
-                            <div className="flex column left">
-                                <div className="flex left fs-13">
-                                    <b className="fw-6 lh-18 cn-9 mr-8">
-                                        {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
-                                    </b>
-                                    {compareTab || state.showReadme ? (
-                                        <Tippy
-                                            className="default-tt w-300"
-                                            arrow={false}
-                                            placement="top"
-                                            content={getInfoText()}
-                                        >
-                                            <span className="icon-dime-16">
-                                                <HelpIcon className="icon-dime-16" />
-                                            </span>
-                                        </Tippy>
-                                    ) : (
-                                        <a
-                                            data-testid="app-metrics-learnmore-link"
-                                            href={DOCUMENTATION.APP_METRICS}
-                                            target="_blank"
-                                            className="fw-4 cb-5 dc__underline-onhover"
-                                            rel="noreferrer"
-                                        >
-                                            {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
-                                        </a>
-                                    )}
-                                </div>
-                                {!compareTab && !state.showReadme && (
-                                    <div
-                                        data-testid="app-metrics-info-text"
-                                        className={`fs-13 fw-4 lh-18 ${
-                                            !_selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'
-                                        }`}
+        }
+        return (
+            <div className="form-app-metrics-cta flex top left">
+                {loading ? (
+                    <>
+                        <Progressing
+                            data-testid="app-metrics-checkbox-loading"
+                            styles={{
+                                width: 'auto',
+                                marginRight: '16px',
+                            }}
+                        />
+                        <span className="fs-13 fw-4 lh-20">Application metrics</span>
+                    </>
+                ) : (
+                    <>
+                        <Checkbox
+                            rootClassName={`mt-2 mr-8 ${
+                                !_selectedChart.isAppMetricsSupported ? 'dc__opacity-0_5' : ''
+                            }`}
+                            isChecked={isAppMetricsEnabled}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={toggleAppMetrics}
+                            dataTestId="app-metrics-checkbox"
+                            disabled={disableCheckbox || !_selectedChart.isAppMetricsSupported}
+                        />
+                        <div className="flex column left">
+                            <div className="flex left fs-13">
+                                <b className="fw-6 lh-18 cn-9 mr-8">
+                                    {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
+                                </b>
+                                {compareTab || state.showReadme ? (
+                                    <Tippy
+                                        className="default-tt w-300"
+                                        arrow={false}
+                                        placement="top"
+                                        content={getInfoText()}
                                     >
-                                        {getInfoText()}
-                                    </div>
+                                        <span className="icon-dime-16">
+                                            <HelpIcon className="icon-dime-16" />
+                                        </span>
+                                    </Tippy>
+                                ) : (
+                                    <a
+                                        data-testid="app-metrics-learnmore-link"
+                                        href={DOCUMENTATION.APP_METRICS}
+                                        target="_blank"
+                                        className="fw-4 cb-5 dc__underline-onhover"
+                                        rel="noreferrer"
+                                    >
+                                        {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
+                                    </a>
                                 )}
                             </div>
-                        </>
-                    )}
-                </div>
-            )
-        }
+                            {!compareTab && !state.showReadme && (
+                                <div
+                                    data-testid="app-metrics-info-text"
+                                    className={`fs-13 fw-4 lh-18 ${
+                                        !_selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'
+                                    }`}
+                                >
+                                    {getInfoText()}
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+        )
     }
 
     const getHeightClass = () => {
         if (compareTab || state.showReadme) {
             return 'h-56'
-        } else if (isPublishedMode) {
-            return 'h-44'
-        } else {
-            return 'h-64'
         }
+        if (isPublishedMode) {
+            return 'h-44'
+        }
+        return 'h-64'
     }
 
     return _selectedChart ? (

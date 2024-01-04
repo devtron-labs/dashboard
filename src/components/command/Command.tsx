@@ -1,17 +1,22 @@
 import React, { Component } from 'react'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import ReactGA from 'react-ga4'
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg'
 import { getArgumentSuggestions, AllSuggestedArguments } from './command.util'
 import { COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText } from './command.types'
-import ReactGA from 'react-ga4'
 import './command.css'
 
 const FlexSearch = require('flexsearch')
+
 export class Command extends Component<CommandProps, CommandState> {
     _inputText
+
     _inputPlaceholder
+
     _menu
+
     _flexsearchIndex
+
     controller: AbortController
 
     constructor(props) {
@@ -60,7 +65,7 @@ export class Command extends Component<CommandProps, CommandState> {
                 this.state.argumentInput !== prevState.argumentInput ||
                 this.props.isCommandBarActive)
         ) {
-            //Placeholder text handling
+            // Placeholder text handling
             this._inputPlaceholder.current.placeholder =
                 this.state.suggestedArguments[this.state.focussedArgument]?.value || PlaceholderText
             if (!this._inputPlaceholder.current.placeholder.startsWith(this.state.argumentInput)) {
@@ -131,13 +136,17 @@ export class Command extends Component<CommandProps, CommandState> {
     getDefaultArgs() {
         if (this.props.location.pathname.includes('/app')) {
             return [AllSuggestedArguments[0]]
-        } else if (this.props.location.pathname.includes('/chart-store')) {
+        }
+        if (this.props.location.pathname.includes('/chart-store')) {
             return [AllSuggestedArguments[1]]
-        } else if (this.props.location.pathname.includes('/security')) {
+        }
+        if (this.props.location.pathname.includes('/security')) {
             return [AllSuggestedArguments[2]]
-        } else if (this.props.location.pathname.includes('/global-config')) {
+        }
+        if (this.props.location.pathname.includes('/global-config')) {
             return [AllSuggestedArguments[3]]
-        } else if (this.props.location.pathname.includes('/stack-manager')) {
+        }
+        if (this.props.location.pathname.includes('/stack-manager')) {
             return [AllSuggestedArguments[4]]
         }
         return []
@@ -184,20 +193,18 @@ export class Command extends Component<CommandProps, CommandState> {
             this.setState({ arguments: allArgs }, () => {
                 this.navigate()
             })
-        } else {
-            if (this.state.argumentInput && candidateArg) {
-                allArgs = [...this.state.arguments, candidateArg]
-                this.setState({ arguments: allArgs }, () => {
-                    this.navigate()
-                })
-            } else if (this.state.argumentInput) {
-                this.setState({
-                    suggestedArguments: this.state.allSuggestedArguments,
-                    argumentInput: '',
-                })
-            } else {
+        } else if (this.state.argumentInput && candidateArg) {
+            allArgs = [...this.state.arguments, candidateArg]
+            this.setState({ arguments: allArgs }, () => {
                 this.navigate()
-            }
+            })
+        } else if (this.state.argumentInput) {
+            this.setState({
+                suggestedArguments: this.state.allSuggestedArguments,
+                argumentInput: '',
+            })
+        } else {
+            this.navigate()
         }
     }
 
@@ -252,7 +259,7 @@ export class Command extends Component<CommandProps, CommandState> {
                 )
                 this.setState({
                     arguments: args,
-                    suggestedArguments: suggestedArguments,
+                    suggestedArguments,
                     allSuggestedArguments: response.allSuggestionArguments,
                     focussedArgument: -1,
                     isLoading: false,
@@ -378,7 +385,7 @@ export class Command extends Component<CommandProps, CommandState> {
             )
             this.setState({
                 argumentInput: event.target.value,
-                suggestedArguments: suggestedArguments,
+                suggestedArguments,
                 isSuggestionError: false,
             })
         }
@@ -405,9 +412,8 @@ export class Command extends Component<CommandProps, CommandState> {
         suggestedArguments.sort((a, b) => {
             if (a.data?.group < b.data?.group) {
                 return -1
-            } else {
-                return 0
             }
+            return 0
         })
 
         return suggestedArguments
@@ -420,7 +426,8 @@ export class Command extends Component<CommandProps, CommandState> {
                     <Progressing />
                 </div>
             )
-        } else if (this.state.tab === 'this-app') {
+        }
+        if (this.state.tab === 'this-app') {
             const lastArg = this.state.arguments[this.state.arguments.length - 1]
             if (lastArg && lastArg.data.isEOC) {
                 return (
@@ -437,93 +444,89 @@ export class Command extends Component<CommandProps, CommandState> {
                         <p className="command-empty-state__subtitle">Hit enter to navigate</p>
                     </div>
                 )
-            } else {
-                const groupStart = this.state.suggestedArguments.findIndex((s) => s.data?.group !== 'misc')
-                const groupEnd = this.state.suggestedArguments.findIndex((s) => s.data?.group === 'misc')
-                return (
-                    <div ref={(node) => (this._menu = node)} className="command__suggested-args-container mt-8">
-                        <div className="suggested-arguments">
-                            {this.state.suggestedArguments.length && this.state.groupName && groupStart < 0 ? (
-                                <>
-                                    <h6 className="pl-20 pr-20 suggested-arguments__heading dc__uppercase mb-0">
-                                        {this.state.groupName}
-                                    </h6>
-                                    <div className="pl-20 pr-20 pt-20 pb-20 suggested-arguments__desc">
-                                        No Environments Configured
-                                    </div>
-                                </>
-                            ) : null}
-                            {this.state.suggestedArguments.map((a, index) => {
-                                return (
-                                    <>
-                                        {this.state.groupName && groupStart === index ? (
-                                            <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading dc__uppercase">
-                                                {this.state.groupName}
-                                            </h6>
-                                        ) : null}
-                                        {this.state.groupName && groupEnd === index ? (
-                                            <>
-                                                <hr className="m-0"></hr>
-                                                <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading">
-                                                    <span className="dc__uppercase">More in </span> "
-                                                    {this.state.arguments[1].value}"
-                                                </h6>
-                                            </>
-                                        ) : null}
-                                        <button
-                                            ref={(node) => (a['ref'] = node)}
-                                            key={`${index}-${a.value}`}
-                                            onMouseOver={(e) => this.setState({ focussedArgument: index })}
-                                            onClick={(event) => this.selectArgument(a)}
-                                            className={
-                                                this.state.focussedArgument === index
-                                                    ? 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-1 cursor'
-                                                    : 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-0 cursor'
-                                            }
-                                        >
-                                            <span>{a.value}</span>
-                                            <span
-                                                className="dc__ff-monospace command__control ml-20"
-                                                style={{
-                                                    display:
-                                                        this.state.focussedArgument === index
-                                                            ? 'dc__inline-block'
-                                                            : 'none',
-                                                }}
-                                            >
-                                                <ArrowRight className="icon-dim-16 dc__vertical-align-middle mr-5" />
-                                                <span>expand</span>
-                                            </span>
-                                        </button>
-                                    </>
-                                )
-                            })}
-                        </div>
-                    </div>
-                )
             }
-        } else {
+            const groupStart = this.state.suggestedArguments.findIndex((s) => s.data?.group !== 'misc')
+            const groupEnd = this.state.suggestedArguments.findIndex((s) => s.data?.group === 'misc')
             return (
                 <div ref={(node) => (this._menu = node)} className="command__suggested-args-container mt-8">
-                    <div className="pl-20 pr-20">
-                        <p className="mb-8">I'm looking for...</p>
-                        <p className="command-options mb-0">
-                            {this.state.command.map((opt) => {
-                                return (
-                                    <span
-                                        key={opt.label}
-                                        className="command-options__option"
-                                        onClick={() => this.selectFirstArgument(opt.argument)}
+                    <div className="suggested-arguments">
+                        {this.state.suggestedArguments.length && this.state.groupName && groupStart < 0 ? (
+                            <>
+                                <h6 className="pl-20 pr-20 suggested-arguments__heading dc__uppercase mb-0">
+                                    {this.state.groupName}
+                                </h6>
+                                <div className="pl-20 pr-20 pt-20 pb-20 suggested-arguments__desc">
+                                    No Environments Configured
+                                </div>
+                            </>
+                        ) : null}
+                        {this.state.suggestedArguments.map((a, index) => {
+                            return (
+                                <>
+                                    {this.state.groupName && groupStart === index ? (
+                                        <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading dc__uppercase">
+                                            {this.state.groupName}
+                                        </h6>
+                                    ) : null}
+                                    {this.state.groupName && groupEnd === index ? (
+                                        <>
+                                            <hr className="m-0" />
+                                            <h6 className="pl-20 pr-20 mb-0 suggested-arguments__heading">
+                                                <span className="dc__uppercase">More in </span> "
+                                                {this.state.arguments[1].value}"
+                                            </h6>
+                                        </>
+                                    ) : null}
+                                    <button
+                                        ref={(node) => (a['ref'] = node)}
+                                        key={`${index}-${a.value}`}
+                                        onMouseOver={(e) => this.setState({ focussedArgument: index })}
+                                        onClick={(event) => this.selectArgument(a)}
+                                        className={
+                                            this.state.focussedArgument === index
+                                                ? 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-1 cursor'
+                                                : 'pl-20 pr-20 pt-6 pb-6 flexbox suggested-arguments__arg bcn-0 cursor'
+                                        }
                                     >
-                                        {opt.label}
-                                    </span>
-                                )
-                            })}
-                        </p>
+                                        <span>{a.value}</span>
+                                        <span
+                                            className="dc__ff-monospace command__control ml-20"
+                                            style={{
+                                                display:
+                                                    this.state.focussedArgument === index ? 'dc__inline-block' : 'none',
+                                            }}
+                                        >
+                                            <ArrowRight className="icon-dim-16 dc__vertical-align-middle mr-5" />
+                                            <span>expand</span>
+                                        </span>
+                                    </button>
+                                </>
+                            )
+                        })}
                     </div>
                 </div>
             )
         }
+        return (
+            <div ref={(node) => (this._menu = node)} className="command__suggested-args-container mt-8">
+                <div className="pl-20 pr-20">
+                    <p className="mb-8">I'm looking for...</p>
+                    <p className="command-options mb-0">
+                        {this.state.command.map((opt) => {
+                            return (
+                                <span
+                                    key={opt.label}
+                                    className="command-options__option"
+                                    onClick={() => this.selectFirstArgument(opt.argument)}
+                                >
+                                    {opt.label}
+                                </span>
+                            )
+                        })}
+                    </p>
+                </div>
+            </div>
+        )
     }
 
     render() {
@@ -642,8 +645,7 @@ export class Command extends Component<CommandProps, CommandState> {
                     </div>
                 </div>
             )
-        } else {
-            return null
         }
+        return null
     }
 }

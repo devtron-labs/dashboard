@@ -1,9 +1,9 @@
+import React, { useState } from 'react'
 import { ReactComponent as Show } from '../../../assets/icons/ic-visibility-off.svg'
 import { ReactComponent as FormError } from '../../../assets/icons/ic-warning.svg'
-import React, { useState } from 'react'
 import './customPassword.css'
 
-export function CustomPassword({ name, value, error, onChange, label, disabled = false }) {
+export const CustomPassword = ({ name, value, error, onChange, label, disabled = false }) => {
     const [showPassword, setShowPassword] = useState(false)
     const type = showPassword ? 'text' : 'password'
     return (

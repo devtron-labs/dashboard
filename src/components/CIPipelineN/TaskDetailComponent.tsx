@@ -1,19 +1,19 @@
 import React, { useState, useContext } from 'react'
+import { CustomInput, PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
 import { ConfigurationType, BuildStageVariable } from '../../config'
 import { RadioGroup } from '../common'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
-import { CustomInput, PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
-import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-export function TaskDetailComponent() {
+export const TaskDetailComponent = () => {
     const {
         formData,
         setFormData,
@@ -180,7 +180,8 @@ export function TaskDetailComponent() {
                         <CustomInputOutputVariables type={PluginVariableType.INPUT} />
                     ) : (
                         <VariableContainer type={PluginVariableType.INPUT} />
-                    )}&nbsp;
+                    )}
+                    &nbsp;
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables
                         ?.length > 0 && (
@@ -217,7 +218,7 @@ export function TaskDetailComponent() {
                     editorValue={editorValue}
                     handleEditorValueChange={handleEditorValueChange}
                     height="calc(100vh - 320px)"
-                    showSample={true}
+                    showSample
                 />
             )}
         </div>

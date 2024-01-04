@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
 import {
     showError,
     Progressing,
@@ -7,13 +6,13 @@ import {
     ConfirmationDialog,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CodeEditor from '../CodeEditor/CodeEditor'
-import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
-import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
-import { SSOConfigType } from './ssoConfig.types'
-import { ViewType, DOCUMENTATION } from '../../config'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
+import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
+import CodeEditor from '../CodeEditor/CodeEditor'
+import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType } from './ssoConfig.types'
+import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
+import { ViewType, DOCUMENTATION } from '../../config'
 import sample from './sampleConfig.json'
 import { ReactComponent as Google } from '../../assets/icons/ic-google.svg'
 import Check from '../../assets/icons/ic-selected-corner.png'
@@ -261,7 +260,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config)
             configJSON = this.checkConfigJson(configJSON)
         } catch (error) {
-            //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            // Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error('Invalid Yaml')
             this.setState({ saveLoading: false })
         }
@@ -318,7 +317,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             configJSON = yamlJsParser.parse(this.state.ssoConfig.config.config)
             configJSON = this.checkConfigJson(configJSON)
         } catch (error) {
-            //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            // Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error('Invalid Yaml')
             this.setState({ saveLoading: false })
             return
@@ -336,7 +335,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             active: true,
         }
 
-        //Create SSO
+        // Create SSO
         if (!this.state.lastActiveSSO) {
             createSSOList(payload)
                 .then((response) => {
@@ -347,7 +346,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     this.setState({ saveLoading: false })
                 })
         }
-        //Update the same SSO
+        // Update the same SSO
         else if (this.state.lastActiveSSO) {
             if (this.state.sso === this.state.lastActiveSSO?.name) {
                 updateSSOList(payload)
@@ -373,7 +372,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             try {
                 config = yamlJsParser.parse(value)
             } catch (error) {
-                //Invalid YAML, couldn't be parsed to JSON. Show error toast
+                // Invalid YAML, couldn't be parsed to JSON. Show error toast
                 this.setState({
                     invalidYaml: true,
                 })
@@ -425,7 +424,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         try {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
         } catch (error) {
-            //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            // Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error('Invalid Yaml')
             return
         }
@@ -533,7 +532,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <CodeEditor.Header>
                             <Switch
                                 value={this.state.configMap}
-                                name={'tab'}
+                                name="tab"
                                 onChange={(event) => {
                                     this.handleCodeEditorTab(event.target.value)
                                 }}
@@ -578,7 +577,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__align-reload-center">
                     <ErrorScreenManager code={this.state.statusCode} />
@@ -649,7 +649,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             data-testid="sso-url-input"
                             name="sso-url"
                             label="URL"
-                            isRequiredField={true}
+                            isRequiredField
                             error={this.state.isError.url}
                         />
                         <div className="flex left fw-4 pt-4">
@@ -674,8 +674,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             tabIndex={5}
                             type="submit"
                             disabled={this.state.saveLoading}
-                            className={`cta`}
-                            data-testid={`sso-save-button`}
+                            className="cta"
+                            data-testid="sso-save-button"
                         >
                             {this.state.saveLoading ? <Progressing /> : this.renderButtonText()}
                         </button>

@@ -1,7 +1,8 @@
 import React, { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
-import { URLS } from './config'
 import { toast } from 'react-toastify'
+import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from './config'
 import 'patternfly/dist/css/patternfly.css'
 import 'patternfly/dist/css/patternfly-additions.css'
 import 'patternfly/dist/css/rcue.css'
@@ -13,7 +14,6 @@ import './css/formulae.scss'
 import './css/forms.scss'
 import 'tippy.js/dist/tippy.css'
 import { useOnline, ToastBody, ToastBody3 as UpdateToast, ErrorBoundary } from './components/common'
-import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import * as serviceWorker from './serviceWorker'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
@@ -224,15 +224,15 @@ export default function App() {
                         <ErrorBoundary>
                             <BreadcrumbStore>
                                 <Switch>
-                                    {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
+                                    {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
                                     <Route path="/" render={() => <NavigationRoutes />} />
                                     <Redirect
                                         to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
                                     />
                                 </Switch>
-                                <div id="full-screen-modal"></div>
-                                <div id="visible-modal"></div>
-                                <div id="visible-modal-2"></div>
+                                <div id="full-screen-modal" />
+                                <div id="visible-modal" />
+                                <div id="visible-modal-2" />
                                 {process.env.NODE_ENV === 'production' &&
                                     window._env_ &&
                                     window._env_.HOTJAR_ENABLED && <Hotjar />}

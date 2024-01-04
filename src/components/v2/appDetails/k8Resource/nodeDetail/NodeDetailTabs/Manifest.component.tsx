@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
+import YAML from 'yaml'
+import { toast } from 'react-toastify'
+import { DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
 import { iLink } from '../../../../utils/tabUtils/link.type'
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab'
@@ -15,9 +18,6 @@ import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
-import YAML from 'yaml'
-import { toast } from 'react-toastify'
-import { DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -30,14 +30,14 @@ import {
 } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getTrimmedManifestData } from '../nodeDetail.util'
 
-function ManifestComponent({
+const ManifestComponent = ({
     selectedTab,
     hideManagedFields,
     toggleManagedFields,
     isDeleted,
     isResourceBrowserView,
     selectedResource,
-}: ManifestActionPropsType) {
+}: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
@@ -346,7 +346,7 @@ function ManifestComponent({
                                         <></>
                                     ) : (
                                         <div
-                                            key={index + 'tab'}
+                                            key={`${index}tab`}
                                             className={` ${
                                                 tab.isDisabled || loading ? 'no-drop' : 'cursor'
                                             } pl-4 pt-8 pb-8 pr-4`}
@@ -429,7 +429,7 @@ function ManifestComponent({
                                     />
                                 )}
                                 {activeTab === 'Compare' && (
-                                    <CodeEditor.Header hideDefaultSplitHeader={true}>
+                                    <CodeEditor.Header hideDefaultSplitHeader>
                                         <div className="dc__split-header">
                                             <div className="dc__left-pane">Helm generated manifest </div>
                                             <div className="dc__right-pane">Live manifest</div>

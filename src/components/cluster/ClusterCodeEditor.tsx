@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
+import YAML from 'yaml'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
-import YAML from 'yaml'
 import { MODES } from '../../config/constants'
 
 export default function ClusterCodeEditor() {

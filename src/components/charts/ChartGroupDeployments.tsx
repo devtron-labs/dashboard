@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
-import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg'
 import { DeleteDialog, not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
+import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
+import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg'
 import NoDeploymentImg from '../../assets/img/app-not-configured.png'
 import { InstalledChartGroup, InstalledChart } from './charts.types'
 import { URLS } from '../../config'
@@ -17,7 +17,7 @@ interface ChartGroupDeploymentsProps {
     deleteInstalledChart: (e) => void
 }
 
-const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = function (props) {
+const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = (props) => {
     return (
         <>
             <div className="chart-group-deployments">
@@ -56,7 +56,7 @@ const CollapsibleDeployment: React.FC<{
     index?: number
     installedChartGroup: InstalledChartGroup
     deleteInstalledChart: (installedAppId: number) => void
-}> = function (props) {
+}> = (props) => {
     const defaultInstalledChart: InstalledChart = {
         chartName: '',
         chartRepoName: '',
@@ -75,7 +75,7 @@ const CollapsibleDeployment: React.FC<{
     })
     const allChartNames = chartNames.join(', ')
 
-    //TODO:move to helper
+    // TODO:move to helper
     function handleImageError(e) {
         const target = e.target as HTMLImageElement
         target.onerror = null
@@ -83,14 +83,14 @@ const CollapsibleDeployment: React.FC<{
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="chart-group-deployment__row" data-testid={`past-deployment-${props.index}`}>
                 <div className="chart-group-deployment__cell chart-group-deployment__cell--first-child">
                     {moment(props.installedChartGroup.installationTime).format('ddd, DD MMM YYYY, HH:mm a')}
                 </div>
                 <div className="chart-group-deployment__cell chart-group-deployment__cell--child-2">
                     <span className="dc__ellipsis-right">{allChartNames}</span>
-                    <span></span>
+                    <span />
                 </div>
                 <div className="chart-group-deployment__cell chart-group-deployment__cell--last-child">
                     <DownArrow
@@ -162,11 +162,11 @@ const CollapsibleDeployment: React.FC<{
                     </DeleteDialog.Description>
                 </DeleteDialog>
             ) : null}
-        </React.Fragment>
+        </>
     )
 }
 
-function EmptyStateChartDeploymentList() {
+const EmptyStateChartDeploymentList = () => {
     return (
         <GenericEmptyState
             image={NoDeploymentImg}

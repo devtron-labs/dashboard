@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { getGitHostList, getGitProviderList } from '../../services/service'
-import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
-import { useForm, handleOnBlur, handleOnFocus, parsePassword } from '../common'
 import {
     showError,
     Progressing,
@@ -15,13 +12,16 @@ import {
     useAsync,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { List } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import ReactSelect, { components } from 'react-select'
+import { getGitHostList, getGitProviderList } from '../../services/service'
+import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
+import { useForm, handleOnBlur, handleOnFocus, parsePassword } from '../common'
+import { List } from '../globalConfigurations/GlobalConfiguration'
 import { DOCUMENTATION } from '../../config'
 import { DropdownIndicator } from './gitProvider.util'
 import { Option } from '../v2/common/ReactSelect.utils'
-import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select'
 import './gitProvider.scss'
 import { GitHostConfigModal } from './AddGitHostConfigModal'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -179,7 +179,7 @@ export default function GitProvider({ ...props }) {
     )
 }
 
-function CollapsedList({
+const CollapsedList = ({
     id,
     name,
     active,
@@ -198,7 +198,7 @@ function CollapsedList({
     setGitProviderConfigModal,
     sshPrivateKey,
     ...props
-}) {
+}) => {
     const [collapsed, toggleCollapse] = useState(true)
     const [enabled, toggleEnabled] = useState<boolean>(active)
     const [loading, setLoading] = useState(false)
@@ -216,7 +216,7 @@ function CollapsedList({
                 gitHostId: +gitHostId,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
-                ...(authMode === 'SSH' ? { sshPrivateKey: sshPrivateKey } : {}),
+                ...(authMode === 'SSH' ? { sshPrivateKey } : {}),
             }
             try {
                 setLoading(true)
@@ -330,7 +330,7 @@ function CollapsedList({
     )
 }
 
-function GitForm({
+const GitForm = ({
     id = null,
     name = '',
     active = false,
@@ -353,7 +353,7 @@ function GitForm({
     setGithost,
     sshPrivateKey = '',
     ...props
-}) {
+}) => {
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: '' },
@@ -557,7 +557,7 @@ function GitForm({
                         name="name"
                         error={state.name.error}
                         label="Name"
-                        isRequiredField={true}
+                        isRequiredField
                     />
                 </div>
                 <div className="form__row form__row--two-third">
@@ -605,7 +605,7 @@ function GitForm({
                         name="url"
                         error={state.url.error}
                         label="URL"
-                        isRequiredField={true}
+                        isRequiredField
                     />
                 </div>
                 <div className="form__label dc__required-field">Authentication type</div>
@@ -662,7 +662,7 @@ function GitForm({
                             name="username"
                             error={customState.username.error}
                             label="Username"
-                            isRequiredField={true}
+                            isRequiredField
                         />
                         <div>
                             <CustomInput
@@ -673,7 +673,7 @@ function GitForm({
                                 name="password"
                                 error={customState.password.error}
                                 label="Password/Auth token"
-                                isRequiredField={true}
+                                isRequiredField
                                 handleOnBlur={id && handleOnBlur}
                             />
                             <div className="flex fs-12 left pt-4 mb-20" style={{ color: '#6b778c' }}>
@@ -700,10 +700,10 @@ function GitForm({
                         {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                     </div>
                 )}
-                <div className={`form__row form__buttons`}>
+                <div className="form__row form__buttons">
                     {id && (
                         <button
-                            className={`cta delete dc__m-auto ml-0`}
+                            className="cta delete dc__m-auto ml-0"
                             data-testid="delete-git-repo"
                             type="button"
                             onClick={() => toggleConfirmation(true)}

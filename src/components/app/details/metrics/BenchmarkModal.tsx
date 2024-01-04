@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Tip } from '../../../../assets/icons/ic-bulb.svg'
-import { renderCategoryTag } from './deploymentMetrics.util'
-import { getTimeperiod } from './deploymentMetrics.util'
 import ReactGA from 'react-ga4'
 import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as Tip } from '../../../../assets/icons/ic-bulb.svg'
+import { renderCategoryTag, getTimeperiod } from './deploymentMetrics.util'
 
 export interface BenchmarkModalProps {
     valueLabel: string
@@ -81,7 +80,8 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}> {
                 ),
                 tip: 'Reducing the size of deployments makes it easier to test and release.',
             }
-        } else if (this.props.metric === 'LEAD_TIME') {
+        }
+        if (this.props.metric === 'LEAD_TIME') {
             return {
                 top: 'Lead time is the time it takes to go from code committed to code successfully running in production. The goal is to have shorter lead times.',
                 metric: 'Mean Lead Time',
@@ -91,7 +91,8 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}> {
                 low: '> 14 days',
                 tip: 'Break large features into small releasable changes and release them continuously.',
             }
-        } else if (this.props.metric === 'RECOVERY_TIME') {
+        }
+        if (this.props.metric === 'RECOVERY_TIME') {
             return {
                 top: 'This metric helps you track how long it takes to recover from failures. A key metric for the business is keeping failures to a minimum and being able to recover from them quickly.',
                 metric: 'Mean Time To Recovery',
@@ -101,16 +102,15 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}> {
                 low: '> 8 hr',
                 tip: 'Use BlueGreen with the older version of code running for sometime after switchover to the newer version for faster rollback.',
             }
-        } else {
-            return {
-                top: 'The change failure rate is a measure of how often deployment failures occur in production that require immediate remedy (particularly, rollbacks).',
-                metric: 'Change Failure Rate',
-                elite: '< 15%',
-                high: '15 - 30%',
-                medium: '30 - 45%',
-                low: '> 45%',
-                tip: 'Release frequently and have adequate test coverage of changed code before deploying on production.',
-            }
+        }
+        return {
+            top: 'The change failure rate is a measure of how often deployment failures occur in production that require immediate remedy (particularly, rollbacks).',
+            metric: 'Change Failure Rate',
+            elite: '< 15%',
+            high: '15 - 30%',
+            medium: '30 - 45%',
+            low: '> 45%',
+            tip: 'Release frequently and have adequate test coverage of changed code before deploying on production.',
         }
     }
 
@@ -122,7 +122,7 @@ export class BenchmarkModal extends Component<BenchmarkModalProps, {}> {
         const benchmark = this.getData()
         return (
             <VisibleModal className="">
-                <div className={`modal__body`} style={{ width: '800px' }}>
+                <div className="modal__body" style={{ width: '800px' }}>
                     <div className="modal__header modal__header--benchmark">
                         <h1 className="modal__title modal__title--benchmark">{benchmark.metric}</h1>
                         <button type="button" className="dc__transparent" onClick={this.props.close}>

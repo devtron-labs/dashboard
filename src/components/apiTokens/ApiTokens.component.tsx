@@ -1,18 +1,18 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import './apiToken.scss'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getGeneratedAPITokenList } from './service'
-import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import emptyGeneratToken from '../../assets/img/ic-empty-generate-token.png'
-import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { TokenListType, TokenResponseType } from './authorization.type'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
-function ApiTokens() {
+const ApiTokens = () => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const { pathname } = useLocation()
@@ -133,7 +133,7 @@ function ApiTokens() {
 
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
-            <Fragment>
+            <>
                 <div data-testid="api-token-page" className="api-token-container bcn-0">
                     <Switch>
                         <Route path={`${path}/list`}>
@@ -171,7 +171,7 @@ function ApiTokens() {
                         <Redirect to={`${path}/list`} />
                     </Switch>
                 </div>
-            </Fragment>
+            </>
         )
     }
 
@@ -193,7 +193,7 @@ function ApiTokens() {
                 image={emptyGeneratToken}
                 title={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.TITLE}
                 subTitle={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.SUBTITLE}
-                isButtonAvailable={true}
+                isButtonAvailable
                 renderButton={renderGenerateButton}
             />
         )
@@ -201,7 +201,8 @@ function ApiTokens() {
 
     if (loader) {
         return <Progressing data-testid="api-token-page-loading" pageLoader />
-    } else if (errorStatusCode > 0) {
+    }
+    if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenManager
@@ -210,7 +211,8 @@ function ApiTokens() {
                 />
             </div>
         )
-    } else if (!pathname.includes('/create') && (!tokenList || tokenList.length === 0)) {
+    }
+    if (!pathname.includes('/create') && (!tokenList || tokenList.length === 0)) {
         return renderEmptyState()
     }
     return renderAPITokenRoutes()

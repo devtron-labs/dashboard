@@ -2,22 +2,23 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { stopPropagation, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
+import Select from 'react-select/dist/declarations/src/Select'
+import moment from 'moment'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
-import Tippy from '@tippyjs/react'
-import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData } from './Utils'
 import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu } from './DynamicTabs.component'
-import Select from 'react-select/dist/declarations/src/Select'
-import { AppDetailsTabs } from '../../../components/v2/appDetails/appDetails.store'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import './DynamicTabs.scss'
-import moment from 'moment'
 import { handleUTCTime, getTimeElapsed } from '../helpers/time'
 import { checkIfDataIsStale } from '../../ResourceBrowser/Utils'
+
 let interval
 
 /**
@@ -29,7 +30,7 @@ let interval
  *
  * Note: To be used with useTabs hook
  */
-function DynamicTabs({
+const DynamicTabs = ({
     tabs,
     removeTabByIdentifier,
     stopTabByIdentifier,
@@ -41,7 +42,7 @@ function DynamicTabs({
     lastDataSync,
     setLastDataSyncTimeString,
     isStaleDataRef,
-}: DynamicTabsProps & IWithShortcut) {
+}: DynamicTabsProps & IWithShortcut) => {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
@@ -297,27 +298,26 @@ function DynamicTabs({
                     <div className="fs-13 ml-8">Syncing...</div>
                 </div>
             )
-        } else {
-            return (
-                <>
-                    <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
-                        <div>
-                            <RefreshIcon
-                                className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
-                                onClick={() => {
-                                    clearInterval(interval)
-                                    setTimeElapsedLastSync('')
-                                    refreshData()
-                                }}
-                            />
-                        </div>
-                    </Tippy>
-                    {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
-                        <div className="flex">{timeElapsedLastSync} ago </div>
-                    )}
-                </>
-            )
         }
+        return (
+            <>
+                <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
+                    <div>
+                        <RefreshIcon
+                            className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
+                            onClick={() => {
+                                clearInterval(interval)
+                                setTimeElapsedLastSync('')
+                                refreshData()
+                            }}
+                        />
+                    </div>
+                </Tippy>
+                {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
+                    <div className="flex">{timeElapsedLastSync} ago </div>
+                )}
+            </>
+        )
     }
     return (
         <div ref={tabsSectionRef} className="dynamic-tabs-section flex left pl-12 pr-12 w-100 dc__outline-none-imp">

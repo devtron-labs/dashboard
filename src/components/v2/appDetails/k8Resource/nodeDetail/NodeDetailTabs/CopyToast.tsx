@@ -9,7 +9,7 @@ interface toastType {
     showCopyToast: boolean
 }
 
-function CopyToast({ showCopyToast }: toastType) {
+const CopyToast = ({ showCopyToast }: toastType) => {
     return (
         <span
             className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}

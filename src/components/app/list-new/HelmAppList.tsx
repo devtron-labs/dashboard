@@ -9,12 +9,13 @@ import {
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
+import { Link } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import { OrderBy, SortBy } from '../list/types'
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService'
 import { Pagination, LazyImage, handleUTCTime } from '../../common'
 import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
-import { Link } from 'react-router-dom'
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
@@ -22,7 +23,6 @@ import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { Empty } from '../list/emptyView/Empty'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
@@ -216,7 +216,7 @@ export default function HelmAppList({
             if (_cluster) {
                 _errorMsg = `${EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR} "${_cluster.label}". ERROR: `
             }
-            _errorMsg = _errorMsg + (externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR)
+            _errorMsg += externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR
             _externalAppFetchErrors.push(_errorMsg)
             setExternalHelmListFetchErrors([..._externalAppFetchErrors])
         }
@@ -344,9 +344,8 @@ export default function HelmAppList({
     function _buildAppDetailUrl(app: HelmApp) {
         if (app.isExternal) {
             return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
-        } else {
-            return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
         }
+        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
     }
 
     function _removeExternalAppFetchError(e) {
@@ -369,16 +368,16 @@ export default function HelmAppList({
     function renderHeaders() {
         return (
             <div className="app-list__header dc__position-sticky dc__top-47">
-                <div className="app-list__cell--icon"></div>
+                <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     {sseConnection && <span>{APP_LIST_HEADERS.ReleaseName}</span>}
                     {!sseConnection && (
                         <button className="app-list__cell-header flex" onClick={sortByAppName}>
                             {APP_LIST_HEADERS.AppName}
                             {sortBy == SortBy.APP_NAME ? (
-                                <span className={`sort ${sortOrder == OrderBy.ASC ? '' : 'sort-up'} ml-4`}></span>
+                                <span className={`sort ${sortOrder == OrderBy.ASC ? '' : 'sort-up'} ml-4`} />
                             ) : (
-                                <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                                <span className="sort-col dc__opacity-0_5 ml-4" />
                             )}
                         </button>
                     )}
@@ -390,12 +389,7 @@ export default function HelmAppList({
                 )}
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
-                    <Tippy
-                        className="default-tt"
-                        arrow={true}
-                        placement="top"
-                        content={ENVIRONMENT_HEADER_TIPPY_CONTENT}
-                    >
+                    <Tippy className="default-tt" arrow placement="top" content={ENVIRONMENT_HEADER_TIPPY_CONTENT}>
                         <HelpOutlineIcon className="icon-dim-20" />
                     </Tippy>
                 </div>
@@ -409,9 +403,9 @@ export default function HelmAppList({
                     <span className="app-list__cell-header flex cursor" onClick={sortByLastDeployed}>
                         {APP_LIST_HEADERS.LastDeployedAt}
                         {sortBy == SortBy.LAST_DEPLOYED ? (
-                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
+                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`} />
                         ) : (
-                            <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                            <span className="sort-col dc__opacity-0_5 ml-4" />
                         )}
                     </span>
                 </div>
@@ -422,7 +416,7 @@ export default function HelmAppList({
     const renderFetchError = (externalHelmListFetchError: string, index: number) => {
         return (
             <div className="bcn-0" key={index}>
-                <div className="h-8"></div>
+                <div className="h-8" />
                 <div className="ea-fetch-error-message above-header-message flex left">
                     <span className="mr-8 flex">
                         <ErrorExclamationIcon className="icon-dim-20" />
@@ -467,7 +461,7 @@ export default function HelmAppList({
                     >
                         {app.environmentDetail.environmentName
                             ? app.environmentDetail.environmentName
-                            : app.environmentDetail.clusterName + '__' + app.environmentDetail.namespace}
+                            : `${app.environmentDetail.clusterName}__${app.environmentDetail.namespace}`}
                     </p>
                 </div>
                 <div className="app-list__cell app-list__cell--cluster">
@@ -484,7 +478,7 @@ export default function HelmAppList({
                     {app.lastDeployedAt && (
                         <Tippy
                             className="default-tt"
-                            arrow={true}
+                            arrow
                             placement="top"
                             content={handleUTCTime(app.lastDeployedAt, false)}
                         >
@@ -501,7 +495,7 @@ export default function HelmAppList({
             <div data-testid="helm-app-list-container">
                 {!clusterIdsCsv && (
                     <div className="bcn-0" data-testid="helm-app-list">
-                        <div className="h-8"></div>
+                        <div className="h-8" />
                         <div className="cluster-select-message-strip above-header-message flex left">
                             <span className="mr-8 flex">
                                 <InfoFillPurple className="icon-dim-20" />
@@ -627,7 +621,7 @@ export default function HelmAppList({
                     image={noChartInClusterImage}
                     title={APPLIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}
                     subTitle={APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
-                    isButtonAvailable={true}
+                    isButtonAvailable
                     renderButton={handleButton}
                 />
             </div>
@@ -637,7 +631,7 @@ export default function HelmAppList({
     function renderHelmPermissionMessageStrip() {
         return (
             <>
-                <div className="h-8"></div>
+                <div className="h-8" />
                 <div className="helm-permission-message-strip above-header-message flex left">
                     <span className="mr-8 flex">
                         <AlertTriangleIcon className="icon-dim-20 icon" />
@@ -651,15 +645,17 @@ export default function HelmAppList({
     function renderNoApplicationState() {
         if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
             return askToClearFiltersWithSelectClusterTip()
-        } else if (_isOnlyAllClusterFilterationApplied()) {
-            return askToConnectAClusterForNoResult()
-        } else if (_isAnyFilterationApplied()) {
-            return askToClearFilters()
-        } else if (!clusterIdsCsv) {
-            return askToSelectClusterId()
-        } else {
-            return renderAllCheckModal()
         }
+        if (_isOnlyAllClusterFilterationApplied()) {
+            return askToConnectAClusterForNoResult()
+        }
+        if (_isAnyFilterationApplied()) {
+            return askToClearFilters()
+        }
+        if (!clusterIdsCsv) {
+            return askToSelectClusterId()
+        }
+        return renderAllCheckModal()
     }
 
     function renderFullModeApplicationListContainer() {
@@ -670,9 +666,8 @@ export default function HelmAppList({
                     {renderNoApplicationState()}
                 </>
             )
-        } else {
-            return renderApplicationList()
         }
+        return renderApplicationList()
     }
 
     function changePageSize(size: number): void {

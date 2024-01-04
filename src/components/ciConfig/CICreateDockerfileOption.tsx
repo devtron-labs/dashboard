@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
+import { showError, Progressing, CIBuildType, copyToClipboard, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { showError, Progressing, CIBuildType, copyToClipboard, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option, OptionWithIcon, ValueContainerWithIcon } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -44,7 +44,7 @@ export default function CICreateDockerfileOption({
     const [editorValue, setEditorValue] = useState<string>('')
     const [copied, setCopied] = useState(false)
     const controller = new AbortController()
-    const signal = controller.signal
+    const { signal } = controller
 
     useEffect(() => {
         if (frameworks.length > 0) {
@@ -129,7 +129,6 @@ export default function CICreateDockerfileOption({
         const _currentData = templateData?.[templateKey]
 
         if (_currentData?.fetching) {
-            return
         } else if (_currentData?.data) {
             setTemplateData({
                 ...templateData,
@@ -155,7 +154,7 @@ export default function CICreateDockerfileOption({
             try {
                 const respData = await fetch(_selectedFramework.templateUrl, {
                     method: 'get',
-                    signal: signal,
+                    signal,
                 }).then((res) => {
                     return res.text()
                 })
@@ -370,7 +369,7 @@ export default function CICreateDockerfileOption({
         }
     }
     const getSelectedBuildContextGitMaterial = (): any => {
-        return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
+        return selectedBuildContextGitMaterial || currentMaterial
     }
     const toggleCollapse = (e) => {
         setIsCollapsed(!isCollapsed)
@@ -393,7 +392,7 @@ export default function CICreateDockerfileOption({
                     }
                     value={editorValue || editorData?.data}
                     mode={MODES.DOCKERFILE}
-                    noParsing={true}
+                    noParsing
                     height="300px"
                     readOnly={configOverrideView && !allowOverride}
                     onChange={handleEditorValueChange}
@@ -414,7 +413,7 @@ export default function CICreateDockerfileOption({
                                             setCopied(false)
                                         }, 5000)
                                     }}
-                                    interactive={true}
+                                    interactive
                                 >
                                     <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
                                 </Tippy>
@@ -558,7 +557,7 @@ export default function CICreateDockerfileOption({
                                             : formState.buildContext.value
                                     }
                                     onChange={handleOnChangeConfig}
-                                    autoComplete={'off'}
+                                    autoComplete="off"
                                     autoFocus={!configOverrideView}
                                     disabled={configOverrideView && !allowOverride}
                                 />

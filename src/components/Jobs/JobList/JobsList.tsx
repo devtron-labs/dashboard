@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { URLS } from '../../../config'
 import {
     ErrorScreenManager,
     showError,
@@ -9,11 +8,12 @@ import {
     useAsync,
     DevtronProgressing,
 } from '@devtron-labs/devtron-fe-common-lib'
+import * as queryString from 'query-string'
+import { URLS } from '../../../config'
 import { Filter, FilterOption } from '../../common'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 import { JobListViewType, JobsFilterTypeText, JobsStatusConstants } from '../Constants'
 import JobListContainer from './JobListContainer'
-import * as queryString from 'query-string'
 import { OrderBy } from '../../app/list/types'
 import { onRequestUrlChange, populateQueryString } from '../Utils'
 import { AddNewApp } from '../../app/create/CreateApp'
@@ -102,7 +102,7 @@ export default function JobsList() {
                     path={`${path}/${URLS.CREATE_JOB}`}
                     render={(props) => (
                         <AddNewApp
-                            isJobView={true}
+                            isJobView
                             close={closeJobCreateModal}
                             history={props.history}
                             location={props.location}
@@ -161,7 +161,7 @@ export default function JobsList() {
         delete query['environment']
         delete query['search']
 
-        //delete search string
+        // delete search string
         setSearchApplied(false)
         setSearchString('')
 
@@ -234,7 +234,7 @@ export default function JobsList() {
                         type={JobsFilterTypeText.APP_STATUS}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
-                        isFirstLetterCapitalize={true}
+                        isFirstLetterCapitalize
                         dataTestId="job-status-filter"
                     />
                     <span className="filter-divider" />
@@ -298,14 +298,14 @@ export default function JobsList() {
                 return (
                     <div key={filter.key} className="saved-filter">
                         <span className="fw-6 mr-5">{_filterKey}</span>
-                        <span className="saved-filter-divider"></span>
+                        <span className="saved-filter-divider" />
                         <span className="ml-5">{filter.label}</span>
                         <button
                             type="button"
                             className="saved-filter__close-btn"
                             onClick={() => removeFilter(filter, filterType)}
                         >
-                            <i className="fa fa-times-circle" aria-hidden="true"></i>
+                            <i className="fa fa-times-circle" aria-hidden="true" />
                         </button>
                     </div>
                 )
@@ -342,14 +342,14 @@ export default function JobsList() {
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton headerName="Jobs" isSuperAdmin={true} />
+                    <HeaderWithCreateButton headerName="Jobs" isSuperAdmin />
                     {renderCreateJobRouter()}
                     <JobListContainer
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         clearAllFilters={removeAllFilters}
                         sortJobList={sortJobList}
                         jobListCount={jobCount}
-                        isSuperAdmin={true}
+                        isSuperAdmin
                         openJobCreateModel={openJobCreateModel}
                         setJobCount={setJobCount}
                         renderMasterFilters={renderMasterFilters}

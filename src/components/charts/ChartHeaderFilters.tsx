@@ -1,15 +1,15 @@
 import React from 'react'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { useRouteMatch, useHistory, useLocation } from 'react-router'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import { QueryParams } from './charts.util'
 import { Accordian } from '../common/Accordian/Accordian'
 import { URLS } from '../../config'
 
-function ChartHeaderFilter({
+const ChartHeaderFilter = ({
     selectedChartRepo,
     includeDeprecated,
     chartRepoList,
@@ -19,7 +19,7 @@ function ChartHeaderFilter({
     searchApplied,
     isGrid,
     setIsGrid,
-}) {
+}) => {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -209,7 +209,7 @@ function ChartHeaderFilter({
                 <Checkbox
                     rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 pl-8 ml-8"
                     isChecked={includeDeprecated === 1}
-                    value={'CHECKED'}
+                    value="CHECKED"
                     onChange={toggleDeprecated}
                     dataTestId="chart-store-filter-checkbox"
                 >

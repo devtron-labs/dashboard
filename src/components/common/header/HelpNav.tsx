@@ -2,6 +2,7 @@ import React, { Fragment, useContext } from 'react'
 import ReactGA from 'react-ga4'
 import { NavLink } from 'react-router-dom'
 import { SliderButton } from '@typeform/embed-react'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { DISCORD_LINK, DOCUMENTATION, URLS } from '../../../config'
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
@@ -10,17 +11,16 @@ import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-o
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
 import { mainContext } from '../navigation/NavigationRoutes'
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { EnterpriseHelpOptions, OSSHelpOptions } from './constants'
 
-function HelpNav({
+const HelpNav = ({
     className,
     setShowHelpCard,
     serverInfo,
     fetchingServerInfo,
     setGettingStartedClicked,
     showHelpCard,
-}: HelpNavType) {
+}: HelpNavType) => {
     const { currentServerInfo } = useContext(mainContext)
     const isEnterprise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
     const FEEDBACK_FORM_ID = `UheGN3KJ#source=${window.location.hostname}`

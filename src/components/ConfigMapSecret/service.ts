@@ -38,9 +38,8 @@ export function overRideConfigMap(id, appId, environmentId, configData, signal?)
 export function getConfigMapList(appId, envId?, signal?) {
     if (envId) {
         return getEnvironmentConfigs(appId, envId, { signal })
-    } else {
-        return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`, { signal })
     }
+    return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`, { signal })
 }
 
 export function updateSecret(id, appId, configData, signal?) {
@@ -78,9 +77,8 @@ export function getCMSecret(componentType, id, appId, name, envId?, signal?) {
 export function getSecretList(appId, envId?, signal?) {
     if (envId) {
         return getEnvironmentSecrets(appId, envId)
-    } else {
-        return get(`${Routes.APP_CREATE_SECRET}/${appId}`, { signal })
     }
+    return get(`${Routes.APP_CREATE_SECRET}/${appId}`, { signal })
 }
 
 export function overRideSecret(id, appId, environmentId, configData, signal?) {

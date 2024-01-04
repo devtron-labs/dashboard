@@ -1,4 +1,3 @@
-import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     get,
     post,
@@ -8,6 +7,7 @@ import {
     PluginType,
     RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { PatchAction } from './types'
@@ -55,7 +55,7 @@ export function getInitData(appId: string | number, includeWebhookData = false, 
                     afterDockerBuildScripts: [],
                     preBuildStage: emptyStepsData(),
                     postBuildStage: emptyStepsData(),
-                    scanEnabled: scanEnabled,
+                    scanEnabled,
                     ciPipelineEditable: true,
                 },
                 loadingData: false,
@@ -89,7 +89,7 @@ function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
         return {
             code: response.code,
             result: {
-                materials: materials,
+                materials,
                 gitHost: undefined,
                 webhookEvents: undefined,
                 webhookConditionList: undefined,
@@ -253,7 +253,7 @@ export function deleteCIPipeline(
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
     const request = {
-        appId: appId,
+        appId,
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
         ciPipeline: ci,
@@ -282,7 +282,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         externalCiConfig: ciPipeline.externalCiConfig,
         linkedCount: ciPipeline.linkedCount,
         isExternal: isExternalCI,
-        isManual: formData.triggerType == TriggerType.Manual ? true : false,
+        isManual: formData.triggerType == TriggerType.Manual,
         ciMaterial: formData.materials
             .filter((mat) => mat.isSelected)
             .map((mat) => {
@@ -308,8 +308,8 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                 }
             }),
         name: formData.name,
-        preBuildStage: preBuildStage,
-        postBuildStage: postBuildStage,
+        preBuildStage,
+        postBuildStage,
         scanEnabled: formData.scanEnabled,
         dockerArgs: formData.args
             .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
@@ -408,7 +408,7 @@ function migrateOldData(
                     script: data.script,
                     conditionDetails: [],
                     outputDirectoryPath: [],
-                    //Default variable introduced as these could be present in some old script
+                    // Default variable introduced as these could be present in some old script
                     inputVariables: [
                         {
                             id: 4,
@@ -488,17 +488,17 @@ function parseCIResponse(
             code: responseCode,
             view: ViewType.FORM,
             showError: false,
-            ciPipeline: ciPipeline,
+            ciPipeline,
             form: {
                 name: ciPipeline.name,
                 triggerType: ciPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
-                materials: materials,
+                materials,
                 args: args.length ? args : [],
                 externalCiConfig: createCurlRequest(ciPipeline.externalCiConfig),
                 scanEnabled: ciPipeline.scanEnabled,
-                gitHost: gitHost,
-                webhookEvents: webhookEvents,
-                ciPipelineSourceTypeOptions: ciPipelineSourceTypeOptions,
+                gitHost,
+                webhookEvents,
+                ciPipelineSourceTypeOptions,
                 webhookConditionList: _webhookConditionList,
                 ciPipelineEditable: true,
                 preBuildStage: ciPipeline.preBuildStage || emptyStepsData(),

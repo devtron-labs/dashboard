@@ -1,7 +1,6 @@
 import React from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom'
+import { Route, Switch, Redirect, NavLink } from 'react-router-dom'
 import DiscoverCharts from './list/DiscoverCharts'
-import { NavLink } from 'react-router-dom'
 import './list/list.scss'
 import '../app/details/appDetails/appDetails.scss'
 import './charts.scss'
@@ -18,11 +17,11 @@ export default function Charts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     )
 }
 
-export function GenericChartsHeader({ children = null }) {
+export const GenericChartsHeader = ({ children = null }) => {
     return <div className="dc__page-header dc__page-header__tabs">{children}</div>
 }
 
-export function ChartDetailNavigator() {
+export const ChartDetailNavigator = () => {
     return (
         <ul role="tablist" className="tab-list">
             <li className="tab-list__tab">
@@ -34,14 +33,14 @@ export function ChartDetailNavigator() {
     )
 }
 
-export function HeaderTitle({ children = null }) {
+export const HeaderTitle = ({ children = null }) => {
     return <h1 className="dc__page-header__title flex left">{children}</h1>
 }
 
-export function HeaderSubtitle({ children = null }) {
+export const HeaderSubtitle = ({ children = null }) => {
     return <div className="subtitle">{children}</div>
 }
 
-export function HeaderButtonGroup({ children = null }) {
+export const HeaderButtonGroup = ({ children = null }) => {
     return <div className="dc__page-header__cta-container flex right">{children}</div>
 }

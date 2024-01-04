@@ -67,8 +67,8 @@ export default function ConfigMapList({
                     ? getAllDrafts(appId, envId ?? -1, 1, configMapListAbortRef.current.signal)
                     : { result: null },
             ])
-            const draftDataMap = {},
-                draftDataArr = []
+            const draftDataMap = {}
+            const draftDataArr = []
             let configData = []
             if (draftData?.length) {
                 for (const data of draftData) {
@@ -119,28 +119,28 @@ export default function ConfigMapList({
         }
         try {
             setConfigMap((cmList) => {
-                const configData = cmList.configData
+                const { configData } = cmList
                 if (result === null) {
-                    //delete
+                    // delete
                     configData.splice(index, 1)
                     cmList.configData = [...configData]
                     return { ...cmList }
-                } else if (typeof index !== 'number' && Array.isArray(result.configData)) {
-                    //insert after create success
+                }
+                if (typeof index !== 'number' && Array.isArray(result.configData)) {
+                    // insert after create success
                     configData.unshift({
                         ...result.configData[0],
                         data: result.configData[0].data,
                     })
                     cmList.configData = [...configData]
                     return { ...cmList }
-                } else {
-                    const updatedConfigData = result.configData[0]
-                    updatedConfigData.secretMode = false
-                    updatedConfigData.unAuthorized = false
-                    delete updatedConfigData.isNew
-                    cmList.configData[index] = updatedConfigData
-                    return { ...cmList }
                 }
+                const updatedConfigData = result.configData[0]
+                updatedConfigData.secretMode = false
+                updatedConfigData.unAuthorized = false
+                delete updatedConfigData.isNew
+                cmList.configData[index] = updatedConfigData
+                return { ...cmList }
             })
         } catch (err) {}
     }

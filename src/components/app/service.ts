@@ -1,4 +1,3 @@
-import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import {
     get,
     post,
@@ -9,12 +8,12 @@ import {
     DeploymentNodeType,
     put,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
+import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
+import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, ArtifactsCiJob, EditAppRequest } from './types'
+import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
 import { DeploymentWithConfigType } from './details/triggerView/types'
-import { AppMetaInfo } from './types'
 
 const stageMap = {
     PRECD: 'PRE',
@@ -78,7 +77,7 @@ export function getCITriggerInfoModal(
         return {
             code: response.code,
             result: {
-                materials: materials,
+                materials,
                 triggeredByEmail: response.result.triggeredByEmail || '',
                 lastDeployedTime: response.result.lastDeployedTime
                     ? handleUTCTime(response.result.lastDeployedTime, false)
@@ -126,7 +125,7 @@ export function fetchAppDetailsInTime(
     reloadTimeOut: number,
     signal?: AbortSignal,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal })
 }
 
 export function fetchResourceTreeInTime(
@@ -137,7 +136,7 @@ export function fetchResourceTreeInTime(
 ): Promise<AppDetailsResponse> {
     return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, {
         timeout: reloadTimeOut,
-        signal: signal,
+        signal,
     })
 }
 
@@ -170,9 +169,8 @@ export function getCITriggerDetails(params: {
                         : [],
                 },
             }
-        } else {
-            throw new ServerErrors({ code: response.code, errors: response.errors })
         }
+        throw new ServerErrors({ code: response.code, errors: response.errors })
     })
 }
 
@@ -344,9 +342,9 @@ export const triggerCDNode = (
 
 export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
     const request = {
-        appIds: appIds,
+        appIds,
         environmentId: envId,
-        value: value,
+        value,
     }
     return put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, request)
 }

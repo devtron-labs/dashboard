@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
+import { getTeamListMin, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart, ChartGroup } from './charts.types'
 import {
     getChartVersionsMin,
@@ -7,12 +9,10 @@ import {
     getChartValues,
     getChartGroupDetail,
     createChartValues as createChartValuesService,
+    getChartGroups,
 } from './charts.service'
 import { getAvailableCharts, getChartRepoListMin } from '../../services/service'
-import { getTeamListMin, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey, sortOptionsByLabel } from '../common'
-import { toast } from 'react-toastify'
-import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { SERVER_MODE } from '../../config'
 import { PaginationParams } from './charts.util'
@@ -92,9 +92,9 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         populateCharts()
     }, [])
 
-    //TODO: use response
+    // TODO: use response
     async function reloadState() {
-        //causes whole state to reset
+        // causes whole state to reset
         await getChartGroupDetails()
     }
 
@@ -125,14 +125,14 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         installedId: id,
                         appStoreValuesVersionId,
                         appStoreApplicationVersionId,
-                        appStoreValuesVersionName: appStoreValuesVersionName,
-                        //TODO: must be in chart metadata
+                        appStoreValuesVersionName,
+                        // TODO: must be in chart metadata
                         appStoreApplicationVersion: chartMetaData.appStoreApplicationVersion,
-                        appStoreValuesChartVersion: appStoreValuesChartVersion,
+                        appStoreValuesChartVersion,
                         chartMetaData,
                         isEnabled: true,
                         kind: referenceType,
-                        //TODO: part of chart metadata
+                        // TODO: part of chart metadata
                         name: { value: chartMetaData.chartName, error: '', suggestedName: '' },
                         availableChartVersions: [],
                         availableChartValues: [],
@@ -337,13 +337,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             loading: false,
             appStoreValuesVersionId: appStoreApplicationVersionId,
             kind: 'DEFAULT',
-            appStoreApplicationVersionId: appStoreApplicationVersionId,
+            appStoreApplicationVersionId,
             appStoreValuesChartVersion: version,
             isEnabled: true,
             environment: {},
-            //TODO: must be in chart metadata
+            // TODO: must be in chart metadata
             appStoreApplicationVersion: version,
-            //TODO: part of chart metadata
+            // TODO: part of chart metadata
             name: { value: chartName, error: '', suggestedName: '' },
             isUnsaved: false,
             appStoreValuesVersionName: 'Default',
@@ -409,7 +409,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     function toggleChart(index: number): void {
         const tempCharts = [...state.charts]
         tempCharts[index].isEnabled = !tempCharts[index].isEnabled
-        //set default values
+        // set default values
         tempCharts[index].isUnsaved = false
         tempCharts[index].name.error = ''
         tempCharts[index].environment.error = ''
@@ -516,7 +516,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         tempCharts[index].name = { value: appName, error: '' }
         setState((state) => ({ ...state, charts: tempCharts }))
     }
-    //TODO: function name must be a verb
+    // TODO: function name must be a verb
     function chartListing() {
         setState((state) => ({ ...state, configureChartIndex: null, advanceVisited: false }))
     }

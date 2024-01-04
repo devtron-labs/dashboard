@@ -1,8 +1,4 @@
 import React, { Component } from 'react'
-import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service'
-import { TriggerType, ViewType, URLS } from '../../config'
-import { CIPipelineProps, CIPipelineState } from './types'
-import { getCIPipelineURL } from '../common'
 import {
     showError,
     Progressing,
@@ -17,12 +13,15 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
-import { Info } from '../common'
-import { getWorkflowList } from './../../services/service'
+import Tippy from '@tippyjs/react'
+import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service'
+import { TriggerType, ViewType, URLS } from '../../config'
+import { CIPipelineProps, CIPipelineState } from './types'
+import { getCIPipelineURL, Info } from '../common'
+import { getWorkflowList } from '../../services/service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { SourceMaterials } from './SourceMaterials'
-import Tippy from '@tippyjs/react'
 import './ciPipeline.scss'
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
@@ -126,7 +125,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         }
     }
 
-    //invoked on Done, Discard, collapse icon
+    // invoked on Done, Discard, collapse icon
     toggleCollapse(stageId, stageIndex: number, key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
         const stage = this.state.form[key].find((s) => s.id == stageId)
         if (stage.name.length && stage.script.length) {
@@ -196,7 +195,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 <label className="form__label form__label--sentence dc__required-field">
                     When do you want the pipeline to execute?
                 </label>
-                <RadioGroup value={this.state.form.triggerType} name="trigger-type" onChange={() => {}} disabled={true}>
+                <RadioGroup value={this.state.form.triggerType} name="trigger-type" onChange={() => {}} disabled>
                     <RadioGroupItem value={TriggerType.Auto}> Automatic </RadioGroupItem>
                     <RadioGroupItem value={TriggerType.Manual}> Manual </RadioGroupItem>
                 </RadioGroup>
@@ -225,7 +224,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 showError={this.state.showError}
                 includeWebhookEvents={false}
                 ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
-                canEditPipeline={true}
+                canEditPipeline
             />
         )
     }
@@ -282,26 +281,25 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                     <Progressing pageLoader />
                 </div>
             )
-        } else {
-            return (
-                <>
-                    <label className="form__row">
-                        <CustomInput
-                            name="name"
-                            label="Pipeline Name"
-                            disabled={!!this.state.ciPipeline.id}
-                            placeholder="Name"
-                            value={this.state.ciPipeline.name}
-                            onChange={noop}
-                            isRequiredField={true}
-                        />
-                    </label>
-                    {this.renderTriggerType()}
-                    {this.renderMaterials()}
-                    {this.renderDeleteCIModal()}
-                </>
-            )
         }
+        return (
+            <>
+                <label className="form__row">
+                    <CustomInput
+                        name="name"
+                        label="Pipeline Name"
+                        disabled={!!this.state.ciPipeline.id}
+                        placeholder="Name"
+                        value={this.state.ciPipeline.name}
+                        onChange={noop}
+                        isRequiredField
+                    />
+                </label>
+                {this.renderTriggerType()}
+                {this.renderMaterials()}
+                {this.renderDeleteCIModal()}
+            </>
+        )
     }
 
     render() {

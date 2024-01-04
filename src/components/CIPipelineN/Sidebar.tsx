@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
 import {
     RadioGroup,
     RadioGroupItem,
@@ -7,6 +6,9 @@ import {
     multiSelectStyles,
     CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
+import Tippy from '@tippyjs/react'
+import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
 import { TaskList } from './TaskList'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'
@@ -15,17 +17,15 @@ import { ReactComponent as File } from '../../assets/icons/ic-file-code.svg'
 import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Remove } from '../../assets/icons/ic-close.svg'
-import ReactSelect from 'react-select'
 import { groupHeaderStyle, GroupHeading } from '../v2/common/ReactSelect.utils'
 import { ValueContainer } from '../cdPipeline/cdpipeline.util'
-import Tippy from '@tippyjs/react'
 import { PipelineFormType } from '../workflowEditor/types'
 import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
 import { EnvironmentList } from './EnvironmentList'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
-export function Sidebar({
+export const Sidebar = ({
     isJobView,
     isJobCI,
     mandatoryPluginData,
@@ -35,7 +35,7 @@ export function Sidebar({
     environments,
     selectedEnv,
     setSelectedEnv,
-}: CIPipelineSidebarType) {
+}: CIPipelineSidebarType) => {
     const {
         formData,
         setFormData,
@@ -117,12 +117,10 @@ export function Sidebar({
                 } else if (activeStageName === BuildStageVariable.PostBuild) {
                     postConfigsMaps.push(item)
                 }
-            } else {
-                if (isPreBuildTab) {
-                    preSecrets.push(item)
-                } else if (activeStageName === BuildStageVariable.PostBuild) {
-                    postSecrets.push(item)
-                }
+            } else if (isPreBuildTab) {
+                preSecrets.push(item)
+            } else if (activeStageName === BuildStageVariable.PostBuild) {
+                postSecrets.push(item)
             }
         })
         if (isPreBuildTab) {
@@ -149,9 +147,8 @@ export function Sidebar({
         const listIcon = (type) => {
             if (type === 'configmaps') {
                 return <File className="icon-dim-20 mr-9" />
-            } else {
-                return <Key className="icon-dim-20 mr-8" />
             }
+            return <Key className="icon-dim-20 mr-8" />
         }
 
         const tempMultiSelectStyles = {
@@ -207,7 +204,7 @@ export function Sidebar({
                                 controlShouldRenderValue={false}
                                 components={{
                                     ClearIndicator: null,
-                                    ValueContainer: ValueContainer,
+                                    ValueContainer,
                                     IndicatorSeparator: null,
                                     Option,
                                     IndicatorsContainer: () => null,
@@ -360,7 +357,7 @@ export function Sidebar({
                     )}
                     {isJobView && (
                         <EnvironmentList
-                            isBuildStage={true}
+                            isBuildStage
                             environments={environments}
                             selectedEnv={selectedEnv}
                             setSelectedEnv={setSelectedEnv}

@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { VisibleModal, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Success } from '../../assets/icons/ic-success-outline.svg'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { GenerateTokenModalType } from './authorization.type'
-import Tippy from '@tippyjs/react'
 
-function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) {
+const GenerateModal = ({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) => {
     const [copied, setCopied] = useState(false)
     const modelType = isRegenerationModal ? 'regenerated' : 'generated'
     const handleCloseButton = () => {
@@ -30,7 +30,7 @@ function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerati
 
     return (
         <VisibleModal className="generate-token-modal">
-            <div className={`modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column`}>
+            <div className="modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column">
                 <button
                     type="button"
                     data-testid={`${modelType}-token-modal-close`}

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { RouteComponentProps, NavLink } from 'react-router-dom'
+import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { getClusterListMinNoAuth } from './security.service'
-import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config'
 import { SecurityPolicyClusterState } from './security.types'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
@@ -45,53 +45,53 @@ export class SecurityPolicyCluster extends Component<
     }
 
     renderList() {
-        const url = this.props.match.url
+        const { url } = this.props.match
         if (this.state.view === ViewType.LOADING) {
             return (
                 <div style={{ height: '280px' }}>
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.view === ViewType.LOADING) {
-            return <Reload />
-        } else {
-            return (
-                <table className="security-policy-cluster__table">
-                    <tbody>
-                        <tr>
-                            <td className="security-policy-cluster__title w-100">
-                                <div className="dc__search-with-dropdown">
-                                    <Search className="icon-dim-20 ml-8" />
-                                    <input
-                                        type="text"
-                                        className="search-with-dropdown__search"
-                                        data-testid="security-policy-cluster-search"
-                                        onChange={this.handleSearchChange}
-                                        autoFocus
-                                        placeholder="Search cluster"
-                                    />
-                                </div>
-                            </td>
-                        </tr>
-                        {this.state.clusterList
-                            .filter((cluster) => cluster.name.includes(this.state.clusterSearch))
-                            .map((cluster, i) => {
-                                return (
-                                    <tr
-                                        key={cluster.id}
-                                        className="security-policy-cluster__content-row"
-                                        data-testid="select-cluster-from-list"
-                                    >
-                                        <td className="pl-20 pr-20 pt-16 pb-16">
-                                            <NavLink to={`${url}/${cluster.id}`}>{cluster.name}</NavLink>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                    </tbody>
-                </table>
-            )
         }
+        if (this.state.view === ViewType.LOADING) {
+            return <Reload />
+        }
+        return (
+            <table className="security-policy-cluster__table">
+                <tbody>
+                    <tr>
+                        <td className="security-policy-cluster__title w-100">
+                            <div className="dc__search-with-dropdown">
+                                <Search className="icon-dim-20 ml-8" />
+                                <input
+                                    type="text"
+                                    className="search-with-dropdown__search"
+                                    data-testid="security-policy-cluster-search"
+                                    onChange={this.handleSearchChange}
+                                    autoFocus
+                                    placeholder="Search cluster"
+                                />
+                            </div>
+                        </td>
+                    </tr>
+                    {this.state.clusterList
+                        .filter((cluster) => cluster.name.includes(this.state.clusterSearch))
+                        .map((cluster, i) => {
+                            return (
+                                <tr
+                                    key={cluster.id}
+                                    className="security-policy-cluster__content-row"
+                                    data-testid="select-cluster-from-list"
+                                >
+                                    <td className="pl-20 pr-20 pt-16 pb-16">
+                                        <NavLink to={`${url}/${cluster.id}`}>{cluster.name}</NavLink>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                </tbody>
+            </table>
+        )
     }
 
     renderContent() {

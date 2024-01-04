@@ -1,4 +1,6 @@
 import React, { Fragment } from 'react'
+import YAML from 'yaml'
+import { Progressing, CHECKBOX_VALUE, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import {
     StyledInput,
     StyledSelect,
@@ -8,8 +10,6 @@ import {
 } from '../../../common/formFields/Widgets/Widgets'
 import { UpdateApplicationButton } from './ChartValuesView.component'
 import { ChaartValuesGUIFormType, ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
-import YAML from 'yaml'
-import { Progressing, CHECKBOX_VALUE, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils'
@@ -132,21 +132,20 @@ const renderChildGUIWidget = (
     const _childProps = schemaJson.get(_childKey)
     if (_childProps.type === 'formBox' && _childProps.children) {
         return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch, true)
-    } else {
-        if (isFieldHidden(_childProps, schemaJson)) {
-            return null
-        }
-        const isRequired = isRequiredField(_childProps, true, schemaJson)
-        if (_childProps.showField || isRequired) {
-            _childProps['isRequired'] = isRequired
-            return getGUIWidget(
-                _childProps,
-                (_newValue) => {
-                    updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
-                },
-                formValidationError,
-            )
-        }
+    }
+    if (isFieldHidden(_childProps, schemaJson)) {
+        return null
+    }
+    const isRequired = isRequiredField(_childProps, true, schemaJson)
+    if (_childProps.showField || isRequired) {
+        _childProps['isRequired'] = isRequired
+        return getGUIWidget(
+            _childProps,
+            (_newValue) => {
+                updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
+            },
+            formValidationError,
+        )
     }
 }
 
@@ -207,16 +206,15 @@ const renderGUIWidget = (
                     )}
                 </Fragment>
             )
-        } else {
-            props['isRequired'] = isRequiredField(props, fromParent, schemaJson)
-            return getGUIWidget(
-                props,
-                (_newValue) => {
-                    updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch)
-                },
-                formValidationError,
-            )
         }
+        props['isRequired'] = isRequiredField(props, fromParent, schemaJson)
+        return getGUIWidget(
+            props,
+            (_newValue) => {
+                updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch)
+            },
+            formValidationError,
+        )
     }
 
     return null
@@ -225,7 +223,8 @@ const renderGUIWidget = (
 const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
     if (props.fetchingSchemaJson) {
         return <Progressing size={32} fullHeight />
-    } else if (!props.schemaJson?.size) {
+    }
+    if (!props.schemaJson?.size) {
         return (
             <GenericEmptyState
                 SvgImage={Error}

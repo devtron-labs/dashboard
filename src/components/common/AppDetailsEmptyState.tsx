@@ -8,7 +8,7 @@ interface AppDetailsEmptyChart {
     envType?: string
 }
 
-export function AppDetailsEmptyState({ envType }: AppDetailsEmptyChart) {
+export const AppDetailsEmptyState = ({ envType }: AppDetailsEmptyChart) => {
     return (
         <GenericEmptyState
             image={notFound}

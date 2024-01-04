@@ -29,33 +29,31 @@ export class ValidationRules {
         }
         if (value.length > 30) {
             return { isValid: false, message: MAX_LENGTH_30 }
-        } else if (!test) {
+        }
+        if (!test) {
             return {
                 isValid: false,
                 message:
                     "Min 3 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use 'spaces'",
             }
-        } else {
-            return { isValid: true, message: '' }
         }
+        return { isValid: true, message: '' }
     }
 
     team = (projectId: number): { isValid: boolean; message: string } => {
         const found = !!projectId
         if (found) {
             return { isValid: true, message: '' }
-        } else {
-            return { isValid: false, message: 'Please select a project' }
         }
+        return { isValid: false, message: 'Please select a project' }
     }
 
     cloneApp = (cloneAppId: number): { isValid: boolean; message: string } => {
         const found = !!cloneAppId
         if (found) {
             return { isValid: true, message: '' }
-        } else {
-            return { isValid: false, message: 'Please select an application to clone' }
         }
+        return { isValid: false, message: 'Please select an application to clone' }
     }
 
     description = (description = ''): { isValid: boolean; message: string } => {

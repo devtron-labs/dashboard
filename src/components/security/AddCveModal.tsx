@@ -74,6 +74,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
             this.setState({ cveError: true })
         }
     }
+
     searchCVE(event): void {
         this.setState({ view: ViewType.LOADING })
         getCVEPolicies(this.state.cve)
@@ -107,7 +108,8 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.clusters.length) {
+        }
+        if (this.state.clusters.length) {
             return (
                 <div className="ml-24 mr-24">
                     <h3 className="whitelist-cve__section-name">This CVE policy is overriden at below levels</h3>
@@ -153,22 +155,21 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                     </ul>
                 </div>
             )
-        } else {
-            return (
-                <div className="ml-24 mr-24">
-                    <div className="whitelist-cve__empty-state flex column">
-                        <Info className="icon-dim-32 mb-8" />
-                        <p className="whitelist-cve__empty-state-text">Search CVE-ID to view configured CVE policies</p>
-                    </div>
-                </div>
-            )
         }
+        return (
+            <div className="ml-24 mr-24">
+                <div className="whitelist-cve__empty-state flex column">
+                    <Info className="icon-dim-32 mb-8" />
+                    <p className="whitelist-cve__empty-state-text">Search CVE-ID to view configured CVE policies</p>
+                </div>
+            </div>
+        )
     }
 
     render() {
         return (
             <VisibleModal className="">
-                <div className={`modal__body modal__body--w-600 modal__body--no-padding`}>
+                <div className="modal__body modal__body--w-600 modal__body--no-padding">
                     {this.renderHeader()}
                     <form
                         className="whitelist-cve"
@@ -188,7 +189,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     placeholder="Enter CVE ID"
                                     value={this.state.cve}
                                     onChange={this.handleCveChange}
-                                    isRequiredField={true}
+                                    isRequiredField
                                     error={this.state.cveError && CVE_ID_NOT_FOUND}
                                 />
                             </label>
@@ -203,7 +204,8 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
                                     tabIndex={1}
                                     onClick={this.handlePolicyChange}
                                     checked={this.state.policy === VulnerabilityAction.allow}
-                                />&nbsp;
+                                />
+                                &nbsp;
                                 <span className="ml-10 mr-5">Allow</span>
                             </label>
                             <label className="form__label form__label--flex cursor ml-10">

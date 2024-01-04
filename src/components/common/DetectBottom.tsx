@@ -14,5 +14,5 @@ export default function DetectBottom({ callback }: { callback: () => void }) {
         }
     }, [intersected])
 
-    return <span className="pb-5" ref={target}></span>
+    return <span className="pb-5" ref={target} />
 }

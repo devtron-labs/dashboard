@@ -1,14 +1,5 @@
 import React, { Component } from 'react'
 import {
-    getInitDataWithCIPipeline,
-    saveCIPipeline,
-    deleteCIPipeline,
-    getPipelineMetaConfiguration,
-} from './ciPipeline.service'
-import { SourceTypeMap, TriggerType, ViewType, URLS } from '../../config'
-import { CIPipelineProps, ExternalCIPipelineState } from './types'
-import { CopyButton, ButtonWithLoader } from '../common'
-import {
     ServerErrors,
     showError,
     Progressing,
@@ -17,10 +8,19 @@ import {
     DeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import error from '../../assets/icons/misc/errorInfo.svg'
 import Tippy from '@tippyjs/react'
-import { ValidationRules } from './validationRules'
 import { NavLink } from 'react-router-dom'
+import {
+    getInitDataWithCIPipeline,
+    saveCIPipeline,
+    deleteCIPipeline,
+    getPipelineMetaConfiguration,
+} from './ciPipeline.service'
+import { SourceTypeMap, TriggerType, ViewType, URLS } from '../../config'
+import { CIPipelineProps, ExternalCIPipelineState } from './types'
+import { CopyButton, ButtonWithLoader } from '../common'
+import error from '../../assets/icons/misc/errorInfo.svg'
+import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getHostURLConfiguration } from '../../services/service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -29,7 +29,9 @@ import './ciPipeline.scss'
 
 export default class ExternalCIPipeline extends Component<CIPipelineProps, ExternalCIPipelineState> {
     validationRules
+
     urlRef
+
     payloadRef
 
     constructor(props) {
@@ -153,9 +155,8 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                     ...mat,
                     value: event.target.value,
                 }
-            } else {
-                return mat
             }
+            return mat
         })
         form.materials = allMaterials
         this.setState({ form })
@@ -285,7 +286,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                 handleSourceChange={this.handleSourceChange}
                 includeWebhookEvents={false}
                 ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
-                canEditPipeline={true}
+                canEditPipeline
             />
         )
     }
@@ -328,7 +329,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                 >
                     <button
                         type="button"
-                        className={`cta cta--workflow delete mr-16`}
+                        className="cta cta--workflow delete mr-16"
                         disabled={!canDeletePipeline}
                         onClick={() => {
                             this.setState({ showDeleteModal: true })
@@ -355,7 +356,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                         <textarea
                             ref={(node) => (this.payloadRef = node)}
                             className="form__input form__input--textarea"
-                            disabled={true}
+                            disabled
                             value={this.state.form.externalCiConfig}
                         />
                         <CopyButton
@@ -369,7 +370,7 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                             type="text"
                             ref={(node) => (this.urlRef = node)}
                             className="form__input"
-                            disabled={true}
+                            disabled
                             value={`${this.state.ciPipeline.externalCiConfig.webhookUrl}/${this.state.ciPipeline.externalCiConfig.accessKey}`}
                         />
                         <CopyButton
@@ -412,49 +413,48 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                     </div>
                 </VisibleModal>
             )
-        } else {
-            return (
-                <VisibleModal className="">
-                    <div className="modal__body modal__body--ci br-0 modal__body--p-0">
-                        {this.renderHeader()}
-                        <div className="pl-20 pr-20">
-                            {this.renderHostErrorMessage()}
-                            <div className="form__row">
-                                <span className="form__label  mt-16 dc__required-field">Pipeline Name</span>
-                                <input
-                                    className="form__input"
-                                    disabled={!!this.state.ciPipeline.id}
-                                    placeholder="Name"
-                                    type="text"
-                                    value={this.state.form.name}
-                                    onChange={this.handlePipelineName}
-                                />
-                                {this.state.showError && !errorObj.isValid ? (
-                                    <span className="form__error">
-                                        <img src={error} alt="" className="form__icon" />
-                                        {this.validationRules.name(this.state.form.name).message}
-                                    </span>
-                                ) : null}
-                            </div>
-                            {this.renderMaterials()}
-                        </div>
-                        <div className="ci-button-container bcn-0 mt-20 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
-                            {this.renderDeleteCIButton()}
-                            <ButtonWithLoader
-                                rootClassName="cta cta--workflow flex flex-1"
-                                loaderColor="white"
-                                onClick={this.savePipeline}
-                                // disabled={!!this.props.match.params.ciPipelineId}
-                                isLoading={this.state.loadingData}
-                            >
-                                Save and Generate URL
-                            </ButtonWithLoader>
-                        </div>
-                        {this.renderExternalCIConfig()}
-                    </div>
-                    {this.renderDeleteCIModal()}
-                </VisibleModal>
-            )
         }
+        return (
+            <VisibleModal className="">
+                <div className="modal__body modal__body--ci br-0 modal__body--p-0">
+                    {this.renderHeader()}
+                    <div className="pl-20 pr-20">
+                        {this.renderHostErrorMessage()}
+                        <div className="form__row">
+                            <span className="form__label  mt-16 dc__required-field">Pipeline Name</span>
+                            <input
+                                className="form__input"
+                                disabled={!!this.state.ciPipeline.id}
+                                placeholder="Name"
+                                type="text"
+                                value={this.state.form.name}
+                                onChange={this.handlePipelineName}
+                            />
+                            {this.state.showError && !errorObj.isValid ? (
+                                <span className="form__error">
+                                    <img src={error} alt="" className="form__icon" />
+                                    {this.validationRules.name(this.state.form.name).message}
+                                </span>
+                            ) : null}
+                        </div>
+                        {this.renderMaterials()}
+                    </div>
+                    <div className="ci-button-container bcn-0 mt-20 pt-12 pb-12 pl-20 pr-20 flex flex-justify">
+                        {this.renderDeleteCIButton()}
+                        <ButtonWithLoader
+                            rootClassName="cta cta--workflow flex flex-1"
+                            loaderColor="white"
+                            onClick={this.savePipeline}
+                            // disabled={!!this.props.match.params.ciPipelineId}
+                            isLoading={this.state.loadingData}
+                        >
+                            Save and Generate URL
+                        </ButtonWithLoader>
+                    </div>
+                    {this.renderExternalCIConfig()}
+                </div>
+                {this.renderDeleteCIModal()}
+            </VisibleModal>
+        )
     }
 }

@@ -9,20 +9,20 @@ import {
     DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
+import { useParams, useHistory, useRouteMatch } from 'react-router'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 import IndexStore from '../index.store'
 import { AppEnvironment } from './environment.type'
-import { useParams, useHistory, useRouteMatch } from 'react-router'
 import { useSharedState } from '../../utils/useSharedState'
 import { AppType } from '../appDetails.type'
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
-import Tippy from '@tippyjs/react'
 import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { deleteInstalledChart } from '../../../charts/charts.service'
-import { toast } from 'react-toastify'
 import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component'
 import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
@@ -32,7 +32,7 @@ import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
-function EnvironmentSelectorComponent({
+const EnvironmentSelectorComponent = ({
     isExternalApp,
     _init,
     loadingResourceTree,
@@ -42,7 +42,7 @@ function EnvironmentSelectorComponent({
     _init?: () => void
     loadingResourceTree: boolean
     isVirtualEnvironment?: boolean
-}) {
+}) => {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -118,9 +118,8 @@ function EnvironmentSelectorComponent({
     const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
-        } else {
-            return deleteInstalledChart(params.appId, isGitops, deleteAction)
         }
+        return deleteInstalledChart(params.appId, isGitops, deleteAction)
     }
 
     const onClickHideNonCascadeDeletePopup = () => {
@@ -312,7 +311,7 @@ function EnvironmentSelectorComponent({
                             className="helm-delete-wrapper flex ml-8 mw-none cta cancel small"
                         >
                             <PopupMenu autoClose>
-                                <PopupMenu.Button rootClassName="flex" isKebab={true}>
+                                <PopupMenu.Button rootClassName="flex" isKebab>
                                     <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>

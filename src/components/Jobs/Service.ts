@@ -1,6 +1,6 @@
 import moment from 'moment'
-import { Moment12HourFormat, Routes, ZERO_TIME_STRING } from '../../config'
 import { get, post, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import { Moment12HourFormat, Routes, ZERO_TIME_STRING } from '../../config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
 import { JOB_STATUS } from './Constants'
@@ -73,9 +73,9 @@ export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Prom
         })
 
         return {
-            projectsRes: projectsRes,
-            environmentsRes: environmentsRes,
-            filters: filters,
+            projectsRes,
+            environmentsRes,
+            filters,
         }
     })
 }

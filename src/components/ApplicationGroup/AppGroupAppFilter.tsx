@@ -90,7 +90,7 @@ export default function AppGroupAppFilter() {
             value={selectedFilterTab === AppFilterTabs.APP_FILTER ? selectedAppList : selectedGroupFilter}
             options={selectedFilterTab === AppFilterTabs.APP_FILTER ? appListOptions : groupFilterOptions}
             onChange={onChangeFilter}
-            isMulti={true}
+            isMulti
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
             onMenuOpen={handleOpenFilter}
@@ -102,9 +102,9 @@ export default function AppGroupAppFilter() {
             components={{
                 IndicatorSeparator: null,
                 ClearIndicator: null,
-                Option: Option,
-                ValueContainer: ValueContainer,
-                MenuList: MenuList,
+                Option,
+                ValueContainer,
+                MenuList,
             }}
             placeholder={getPlaceHolder()}
             styles={appGroupAppSelectorStyle}

@@ -132,7 +132,7 @@ export default function DeploymentDetailSteps({
                 actionHandler={redirectToDeploymentStatus}
                 subtitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_PROGRESSING.SUBTITLE}
                 actionButtonText="Check live status"
-                actionButtonIconRight={true}
+                actionButtonIconRight
                 dataTestId="deployment-progress"
             />
         </div>

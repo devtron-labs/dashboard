@@ -1,11 +1,11 @@
 import { get } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../../../config'
 import moment from 'moment-timezone'
+import { Routes } from '../../../../config'
 import metrics from './deploymentMetrics.data.json'
 
 export function getDeploymentMetrics(startTime, endTime, appId: string | number, envId: string | number): Promise<any> {
-    startTime = startTime + 'Z'
-    endTime = endTime + 'Z'
+    startTime += 'Z'
+    endTime += 'Z'
 
     return get(`${Routes.DEPLOYMENT_METRICS}/?appId=${appId}&envId=${envId}&from=${startTime}&to=${endTime}`).then(
         (response) => {
@@ -117,16 +117,15 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
     recoveryTimeGraph = recoveryTimeGraph.sort((a, b) => {
         if (a.releaseTime.valueOf() < b.valueOf()) {
             return 1
-        } else {
-            return -1
         }
+        return -1
     })
     const avgFrequency = Math.round((100 * allDeployments.length) / numberOfDays) / 100
     const frequencies = frequencyGraph.map((f) => f.frequency)
     const frequencyBenchmark = getFrequencyBenchmark(avgFrequency)
     const maxFrequency = Math.max(...frequencies, frequencyBenchmark.targetValue)
     const stats = {
-        avgFrequency: avgFrequency,
+        avgFrequency,
         totalDeployments: allDeployments.length,
         failedDeployments: recoveryTimeGraph.length,
         maxFrequency,
@@ -201,27 +200,28 @@ export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
             targetValue: 0.06,
             color: 'var(--Y500)',
         }
-    } else if (frequencyInDays >= 0.06 && frequencyInDays < 0.13) {
+    }
+    if (frequencyInDays >= 0.06 && frequencyInDays < 0.13) {
         return {
             name: 'MEDIUM',
             targetName: 'HIGH',
             targetValue: 0.13,
             color: 'var(--G500)',
         }
-    } else if (frequencyInDays >= 0.13 && frequencyInDays < 1) {
+    }
+    if (frequencyInDays >= 0.13 && frequencyInDays < 1) {
         return {
             name: 'HIGH',
             targetName: 'ELITE',
             targetValue: 1,
             color: '#8930e8',
         }
-    } else {
-        return {
-            name: 'ELITE',
-            color: '',
-            targetName: '',
-            targetValue: 0,
-        }
+    }
+    return {
+        name: 'ELITE',
+        color: '',
+        targetName: '',
+        targetValue: 0,
     }
 }
 
@@ -242,27 +242,28 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
             targetValue: 46,
             color: 'var(--Y500)',
         }
-    } else if (failureRate <= 46 && failureRate > 30) {
+    }
+    if (failureRate <= 46 && failureRate > 30) {
         return {
             name: 'MEDIUM',
             targetName: 'HIGH',
             targetValue: 30,
             color: 'var(--G500)',
         }
-    } else if (failureRate <= 30 && failureRate > 15) {
+    }
+    if (failureRate <= 30 && failureRate > 15) {
         return {
             name: 'HIGH',
             targetName: 'ELITE',
             targetValue: 15,
             color: '#8930e8',
         }
-    } else {
-        return {
-            name: 'ELITE',
-            targetName: '',
-            targetValue: 0,
-            color: '',
-        }
+    }
+    return {
+        name: 'ELITE',
+        targetName: '',
+        targetValue: 0,
+        color: '',
     }
 }
 
@@ -286,7 +287,8 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetLabel: createTimestamp(14 * 60 * 24),
             color: 'var(--Y500)',
         }
-    } else if (leadTimeInDays <= 14 && leadTimeInDays > 7) {
+    }
+    if (leadTimeInDays <= 14 && leadTimeInDays > 7) {
         return {
             name: 'MEDIUM',
             targetName: 'HIGH',
@@ -294,7 +296,8 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetLabel: createTimestamp(7 * 60 * 24),
             color: 'var(--G500)',
         }
-    } else if (leadTimeInDays <= 7 && leadTimeInDays > 2) {
+    }
+    if (leadTimeInDays <= 7 && leadTimeInDays > 2) {
         return {
             name: 'HIGH',
             targetName: 'ELITE',
@@ -302,14 +305,13 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetLabel: createTimestamp(2 * 60 * 24),
             color: '#8930e8',
         }
-    } else {
-        return {
-            name: 'ELITE',
-            targetName: '',
-            targetValue: 0,
-            targetLabel: '',
-            color: '',
-        }
+    }
+    return {
+        name: 'ELITE',
+        targetName: '',
+        targetValue: 0,
+        targetLabel: '',
+        color: '',
     }
 }
 
@@ -323,7 +325,8 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetValue: 8 * 60,
             color: 'var(--Y500)',
         }
-    } else if (recoveryTimeInHours <= 8 && recoveryTimeInHours > 4) {
+    }
+    if (recoveryTimeInHours <= 8 && recoveryTimeInHours > 4) {
         return {
             name: 'MEDIUM',
             targetName: 'HIGH',
@@ -331,7 +334,8 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetLabel: createTimestamp(4 * 60),
             color: 'var(--G500)',
         }
-    } else if (recoveryTimeInHours <= 4 && recoveryTimeInHours > 1) {
+    }
+    if (recoveryTimeInHours <= 4 && recoveryTimeInHours > 1) {
         return {
             name: 'HIGH',
             targetName: 'ELITE',
@@ -339,14 +343,13 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetLabel: createTimestamp(1 * 60),
             color: '#8930e8',
         }
-    } else {
-        return {
-            name: 'ELITE',
-            targetName: '',
-            targetValue: 0,
-            targetLabel: '',
-            color: '',
-        }
+    }
+    return {
+        name: 'ELITE',
+        targetName: '',
+        targetValue: 0,
+        targetLabel: '',
+        color: '',
     }
 }
 
@@ -355,24 +358,24 @@ export function createTimestamp(timeInMinutes: number): string {
         return `0m`
     }
 
-    let q,
-        r,
-        result = '',
-        time = timeInMinutes
+    let q
+    let r
+    let result = ''
+    let time = timeInMinutes
     q = Math.floor(time / 60)
     r = Math.floor(time) - q * 60
     if (r > 0) {
         result = `${r}m`
     }
 
-    time = q //time is in days
+    time = q // time is in days
     q = Math.floor(time / 24)
     r = time - q * 24
     if (r > 0) {
         result = result ? `${r}h ${result}` : `${r}h`
     }
 
-    time = q //time is in days
+    time = q // time is in days
     if (time > 0) {
         result = result ? `${time}d ${result}` : `${time}d`
     }

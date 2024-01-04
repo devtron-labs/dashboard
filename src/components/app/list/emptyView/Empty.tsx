@@ -1,11 +1,11 @@
 import React, { Children, Component } from 'react'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../../config'
 import noapps from '../../../../assets/img/empty-applist@2x.png'
 import noresult from '../../../../assets/img/empty-noresult@2x.png'
 import { EmptyProps } from './types'
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
 import { DOCUMENTATION } from '../../../../config'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export class Empty extends Component<EmptyProps> {
     renderNoAppsView() {
@@ -36,7 +36,7 @@ export class Empty extends Component<EmptyProps> {
                             </a>
                         </>
                     }
-                    isButtonAvailable={true}
+                    isButtonAvailable
                     renderButton={renderButton}
                 />
             </div>
@@ -63,7 +63,7 @@ export class Empty extends Component<EmptyProps> {
                     image={noresult}
                     title={this.props.title}
                     subTitle={this.props.message}
-                    isButtonAvailable={true}
+                    isButtonAvailable
                     renderButton={renderButton}
                     children={children}
                 />
@@ -74,8 +74,7 @@ export class Empty extends Component<EmptyProps> {
     render() {
         if (this.props.view === AppListViewType.NO_RESULT) {
             return this.renderNoResultsView(this.props.children)
-        } else {
-            return this.renderNoAppsView()
         }
+        return this.renderNoAppsView()
     }
 }

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import ReactSelect from 'react-select'
+import { toast } from 'react-toastify'
+import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
+import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
 import { editApp } from '../service'
-import { toast } from 'react-toastify'
 
 export default function AboutAppInfoModal({
     isLoading,

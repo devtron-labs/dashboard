@@ -6,7 +6,7 @@ import { iNode } from '../../appDetails.type'
 import PodTabSection from './PodTabSection'
 import { useSharedState } from '../../../utils/useSharedState'
 
-function PodHeaderComponent({ callBack }) {
+const PodHeaderComponent = ({ callBack }) => {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new')
     const podMetaData = IndexStore.getPodMetaData()
     const pods: Array<iNode> = IndexStore.getiNodesByKind('pod')
@@ -44,7 +44,7 @@ function PodHeaderComponent({ callBack }) {
 
     return (
         <div className="pod-node-tab__wrapper flex left">
-            <PodTabSection podTab={podTab} selectPodTab={selectPodTab} podStatus={newPods} isNew={true} />
+            <PodTabSection podTab={podTab} selectPodTab={selectPodTab} podStatus={newPods} isNew />
             <PodTabSection podTab={podTab} selectPodTab={selectPodTab} podStatus={oldPods} isNew={false} />
         </div>
     )

@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router'
-import { getCIWebhookPayload } from './ciWebhook.service'
 import { showError, Progressing, sortCallback, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
+import { getCIWebhookPayload } from './ciWebhook.service'
 import { getCIPipelineURL } from '../../../common'
 import { Moment12HourFormat } from '../../../../config'
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg'
@@ -10,7 +11,6 @@ import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg'
 import { ReactComponent as Right } from '../../../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info-outlined.svg'
 import './ciWebhookModal.css'
-import moment from 'moment'
 
 export default function CiWebhookModal({
     context,
@@ -93,7 +93,8 @@ export default function CiWebhookModal({
                         onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}
                     >
                         <Edit className=" icon-dim-24" />
-                    </button>&nbsp;
+                    </button>
+                    &nbsp;
                 </div>
                 <div
                     className="cn-5 fs-12 fw-6 pt-8 pb-8 "
@@ -137,8 +138,7 @@ export default function CiWebhookModal({
                         target="_blank"
                         className="dc__link"
                     >
-                        &nbsp;
-                        /{repo}
+                        &nbsp; /{repo}
                     </a>
                 </div>
                 <div>
@@ -156,7 +156,7 @@ export default function CiWebhookModal({
                                 <div>
                                     Received at&nbsp;
                                     <button className="dc__transparent filter-icon">
-                                        <i className="fa fa-caret-down"></i>
+                                        <i className="fa fa-caret-down" />
                                     </button>
                                 </div>
                                 <div>Filters matched</div>
@@ -228,7 +228,8 @@ export default function CiWebhookModal({
                         {webhookPayloads.payloads
                             .filter((payload, index, array) => payload.parsedDataId == parsedDataId)
                             .map((payload) => moment(payload.eventTime).format(Moment12HourFormat))
-                            .toString()}&nbsp;
+                            .toString()}
+                        &nbsp;
                     </h1>
                 </div>
                 <button
@@ -326,7 +327,7 @@ export default function CiWebhookModal({
     const renderWebHookModal = () => {
         return (
             <>
-                <div className={`payload-wrapper-no-header pl-20`}>
+                <div className="payload-wrapper-no-header pl-20">
                     {isWebhookPayloadLoading ? (
                         <div style={{ height: 'calc(100vh - 200px)', width: 'calc(100vw - 650px)' }}>
                             {renderWebhookPayloadLoader()}

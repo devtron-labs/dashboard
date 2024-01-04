@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { ToastBodyWithButton } from '../common'
 import {
     showError,
     Progressing,
@@ -8,6 +7,14 @@ import {
     ErrorScreenManager,
     copyToClipboard,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams, useLocation, useHistory } from 'react-router'
+import Tippy from '@tippyjs/react'
+import YAML from 'yaml'
+import { toast } from 'react-toastify'
+import * as jsonpatch from 'fast-json-patch'
+import { applyPatch } from 'fast-json-patch'
+import { useRouteMatch } from 'react-router-dom'
+import { ToastBodyWithButton } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -24,11 +31,8 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Review } from '../../assets/icons/ic-visibility-on.svg'
-import { useParams, useLocation, useHistory } from 'react-router'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
-import Tippy from '@tippyjs/react'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,
@@ -39,11 +43,8 @@ import {
     TEXT_COLOR_CLASS,
     UpdateNodeRequestBody,
 } from './types'
-import { toast } from 'react-toastify'
 import { OrderBy } from '../app/list/types'
 import { MODES, URLS } from '../../config'
-import * as jsonpatch from 'fast-json-patch'
-import { applyPatch } from 'fast-json-patch'
 import { ReactComponent as TerminalLineIcon } from '../../assets/icons/ic-terminal-line.svg'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
@@ -51,7 +52,6 @@ import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
-import { useRouteMatch } from 'react-router-dom'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { getEventObjectTypeGVK } from '../ResourceBrowser/Utils'
@@ -142,12 +142,12 @@ export default function NodeDetails({
         const isTabFound = markTabActiveByIdentifier(K8S_EMPTY_GROUP, node, nodeType, url)
 
         if (!isTabFound) {
-            let _urlToCreate = url + '?' + _tabName.toLowerCase()
+            let _urlToCreate = `${url}?${_tabName.toLowerCase()}`
 
             const query = new URLSearchParams(window.location.search)
 
             if (query.get('container')) {
-                _urlToCreate = _urlToCreate + '?container=' + query.get('container')
+                _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
             }
 
             addTab(K8S_EMPTY_GROUP, nodeType, node, _urlToCreate)
@@ -267,7 +267,7 @@ export default function NodeDetails({
                     onShow={(instance) => {
                         setCopied(false)
                     }}
-                    interactive={true}
+                    interactive
                 >
                     <Clipboard
                         className="ml-8 mt-5 cursor hover-only icon-dim-16"
@@ -285,31 +285,29 @@ export default function NodeDetails({
     const renderLabelTab = (): JSX.Element => {
         if (nodeDetail.labels.length === 0) {
             return noDataInSubTab('Labels')
-        } else {
-            return (
-                <>
-                    {(showAllLabel ? nodeDetail.labels : nodeDetail.labels.slice(0, 10)).map((label) =>
-                        renderKeyValueLabel(label.key, label.value),
-                    )}
-                    {nodeDetail.labels.length > 10 && renderShowAll(showAllLabel, setShowAllLabel)}
-                </>
-            )
         }
+        return (
+            <>
+                {(showAllLabel ? nodeDetail.labels : nodeDetail.labels.slice(0, 10)).map((label) =>
+                    renderKeyValueLabel(label.key, label.value),
+                )}
+                {nodeDetail.labels.length > 10 && renderShowAll(showAllLabel, setShowAllLabel)}
+            </>
+        )
     }
 
     const renderAnnotationTab = (): JSX.Element => {
         if (nodeDetail.annotations.length === 0) {
             return noDataInSubTab('Annotations')
-        } else {
-            return (
-                <>
-                    {(showAllAnnotations ? nodeDetail.annotations : nodeDetail.annotations.slice(0, 10)).map(
-                        (annotation) => renderKeyValueLabel(annotation.key, annotation.value),
-                    )}
-                    {nodeDetail.annotations.length > 10 && renderShowAll(showAllAnnotations, setShowAllAnnotations)}
-                </>
-            )
         }
+        return (
+            <>
+                {(showAllAnnotations ? nodeDetail.annotations : nodeDetail.annotations.slice(0, 10)).map((annotation) =>
+                    renderKeyValueLabel(annotation.key, annotation.value),
+                )}
+                {nodeDetail.annotations.length > 10 && renderShowAll(showAllAnnotations, setShowAllAnnotations)}
+            </>
+        )
     }
 
     const renderWithCopy = (key: string): JSX.Element => {
@@ -325,7 +323,7 @@ export default function NodeDetails({
                     onShow={(instance) => {
                         setCopied(false)
                     }}
-                    interactive={true}
+                    interactive
                 >
                     <Clipboard
                         className="ml-8 mt-5 cursor hover-only icon-dim-16"
@@ -343,23 +341,22 @@ export default function NodeDetails({
     const renderTaintTab = (): JSX.Element => {
         if (!nodeDetail.taints?.length) {
             return noDataInSubTab('Taints')
-        } else {
-            return (
-                <div>
-                    <div className="subtab-grid mb-8 cn-7 fw-6 fs-13">
-                        <div>Key|Value</div>
-                        <div>Effect</div>
-                    </div>
-                    {(showAllTaints ? nodeDetail.taints : nodeDetail.taints.slice(0, 10)).map((taint) => (
-                        <div className="subtab-grid" key={taint.key}>
-                            {renderKeyValueLabel(taint.key, taint.value)}
-                            {renderWithCopy(taint['effect'])}
-                        </div>
-                    ))}
-                    {nodeDetail.taints.length > 10 && renderShowAll(showAllTaints, setShowAllTaints)}
-                </div>
-            )
         }
+        return (
+            <div>
+                <div className="subtab-grid mb-8 cn-7 fw-6 fs-13">
+                    <div>Key|Value</div>
+                    <div>Effect</div>
+                </div>
+                {(showAllTaints ? nodeDetail.taints : nodeDetail.taints.slice(0, 10)).map((taint) => (
+                    <div className="subtab-grid" key={taint.key}>
+                        {renderKeyValueLabel(taint.key, taint.value)}
+                        {renderWithCopy(taint['effect'])}
+                    </div>
+                ))}
+                {nodeDetail.taints.length > 10 && renderShowAll(showAllTaints, setShowAllTaints)}
+            </div>
+        )
     }
 
     const renderShowAll = (
@@ -501,7 +498,7 @@ export default function NodeDetails({
                 <span>{nodeDetail.status}</span>
                 {nodeDetail.unschedulable && (
                     <>
-                        <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
+                        <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
                         <span className="cr-5"> SchedulingDisabled</span>
                     </>
                 )}
@@ -559,7 +556,7 @@ export default function NodeDetails({
         return (
             <div className="en-2 bw-1 br-4 bcn-0">
                 <div className="resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
-                    <div></div>
+                    <div />
                     <div>Resource</div>
                     <div>Requests</div>
                     <div>Limits</div>
@@ -630,8 +627,8 @@ export default function NodeDetails({
             sortType === 'number'
                 ? (a, b) => {
                       const sortByColumnArr = columnName.split('.')
-                      let firstValue = 0,
-                          secondValue = 0
+                      let firstValue = 0
+                      let secondValue = 0
                       if (a[sortByColumnArr[0]][sortByColumnArr[1]]) {
                           firstValue = Number(a[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
                       }
@@ -651,9 +648,10 @@ export default function NodeDetails({
 
     const handleResourceClick = (e) => {
         const { name, tab, namespace } = e.currentTarget.dataset
-        let _nodeSelectionData, _group
+        let _nodeSelectionData
+        let _group
         _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-        _nodeSelectionData = { name: 'pod' + '_' + name, namespace, isFromNodeDetails: true }
+        _nodeSelectionData = { name: `${'pod' + '_'}${name}`, namespace, isFromNodeDetails: true }
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
             tab ? `/${tab.toLowerCase()}` : ''
         }`
@@ -695,9 +693,9 @@ export default function NodeDetails({
                     </span>
                 </Tippy>
                 {sortByColumnName === sortingFieldName ? (
-                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`}></span>
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`} />
                 ) : (
-                    <span className="sort-column dc__opacity-0_5 ml-4"></span>
+                    <span className="sort-column dc__opacity-0_5 ml-4" />
                 )}
             </div>
         )
@@ -742,7 +740,7 @@ export default function NodeDetails({
                                                 arrow={false}
                                                 placement="top"
                                                 content={pod.name}
-                                                interactive={true}
+                                                interactive
                                             >
                                                 <span
                                                     className="dc__inline-block dc__ellipsis-right lh-20 cb-5 cursor"
@@ -763,7 +761,7 @@ export default function NodeDetails({
                                                 onShow={(instance) => {
                                                     setCopied(false)
                                                 }}
-                                                interactive={true}
+                                                interactive
                                             >
                                                 <Clipboard
                                                     className="ml-5 mt-5 cursor hover-only icon-dim-14 mw-14"
@@ -838,7 +836,8 @@ export default function NodeDetails({
                     </span>
                 </>
             )
-        } else if (selectedTabIndex == 1) {
+        }
+        if (selectedTabIndex == 1) {
             if (!isEdit) {
                 return (
                     <span className="cb-5 fs-12 scb-5 fw-6 cursor flex" onClick={setYAMLEdit}>
@@ -986,7 +985,8 @@ export default function NodeDetails({
     const getCodeEditorHeight = (): string => {
         if (!isReviewState) {
             return 'calc(100vh - 115px)'
-        } else if (isShowWarning) {
+        }
+        if (isShowWarning) {
             return `calc(100vh - 180px)`
         }
         return `calc(100vh - 148px)`
@@ -1013,7 +1013,7 @@ export default function NodeDetails({
                         />
                     )}
                     {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader={true} className="node-code-editor-header">
+                        <CodeEditor.Header hideDefaultSplitHeader className="node-code-editor-header">
                             <div className="h-32 lh-32 fs-12 fw-6 flexbox w-100 cn-0">
                                 <div className=" pl-10 w-49">Current node YAML </div>
                                 <div className="pl-25 w-51 flexbox">
@@ -1059,11 +1059,11 @@ export default function NodeDetails({
     const renderTabs = (): JSX.Element => {
         if (selectedTabIndex === 1) {
             return renderYAMLEditor()
-        } else if (selectedTabIndex === 2) {
-            return renderConditions()
-        } else {
-            return renderSummary()
         }
+        if (selectedTabIndex === 2) {
+            return renderConditions()
+        }
+        return renderSummary()
     }
 
     const isAuthorized = (): boolean => {

@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import moment from 'moment'
+import { not } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl } from './index'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg'
 import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg'
@@ -7,9 +9,7 @@ import { ReactComponent as CommitIcon } from '../../assets/icons/ic-commit.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { GitTriggers, CiMaterial } from '../app/details/cicdHistory/types'
 import { Moment12HourFormat } from '../../config'
-import moment from 'moment'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
-import { not } from '@devtron-labs/devtron-fe-common-lib'
 
 function getGitIcon(repoUrl) {
     for (const gitProvider of ['github', 'gitlab', 'bitbucket']) {
@@ -20,14 +20,14 @@ function getGitIcon(repoUrl) {
     return 'git'
 }
 
-export function GitMaterialInfoHeader({
+export const GitMaterialInfoHeader = ({
     index,
     repoUrl = '',
     materialType = '',
     materialValue = '',
     style = {},
     ...props
-}) {
+}) => {
     repoUrl = repoUrl.replace('.git', '')
     const tokens = repoUrl.split('/')
     const { length, [length - 1]: repo } = tokens
@@ -37,13 +37,13 @@ export function GitMaterialInfoHeader({
             className="pl-16 dc__box-shadow mb-12 pb-12 fs-12 fw-6 "
             style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '12px', ...style }}
         >
-            <div className={getGitIcon(repoUrl)}></div>
+            <div className={getGitIcon(repoUrl)} />
             <div className="flex column left">
                 <div className="repo fs-12 cn-9 fw-6" data-testid={`deployment-history-source-code-repo${index}`}>
                     /{repo}
                 </div>
                 <div className="branch flex left fs-14 cn-7">
-                    <CiPipelineSourceConfig sourceType={materialType} sourceValue={materialValue} showTooltip={true} />
+                    <CiPipelineSourceConfig sourceType={materialType} sourceValue={materialValue} showTooltip />
                 </div>
             </div>
         </div>

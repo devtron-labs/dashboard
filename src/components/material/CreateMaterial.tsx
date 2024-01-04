@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { createMaterial } from './material.service'
 import { toast } from 'react-toastify'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { createMaterial } from './material.service'
 import { MaterialView } from './MaterialView'
 import { CreateMaterialState } from './material.types'
 
@@ -30,7 +30,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 includeExcludeFilePath: '',
                 isExcludeRepoChecked: false,
             },
-            isCollapsed: this.props.isMultiGit ? true : false,
+            isCollapsed: !!this.props.isMultiGit,
             isChecked: false,
             isLearnHowClicked: false,
             isLoading: false,

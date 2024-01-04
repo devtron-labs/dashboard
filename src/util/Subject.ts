@@ -1,6 +1,8 @@
 import { murmurhash3_32_gc } from './MurmurHash3'
+
 export class Subject<T> {
     private observers: Map<number, (t: T) => void> = new Map()
+
     private name: string
 
     constructor() {
@@ -19,15 +21,14 @@ export class Subject<T> {
                     return false
                 },
             ]
-        } else {
-            this.observers.set(hash, observer)
-            return [
-                true,
-                (): boolean => {
-                    return this.observers.delete(hash)
-                },
-            ]
         }
+        this.observers.set(hash, observer)
+        return [
+            true,
+            (): boolean => {
+                return this.observers.delete(hash)
+            },
+        ]
     }
 
     public publish(topic: T) {

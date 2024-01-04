@@ -1,15 +1,15 @@
 import React from 'react'
 import { NavLink, useHistory, useParams } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import ReactGA from 'react-ga4'
 import { useSharedState } from '../../utils/useSharedState'
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
 import { ApplicationObject, NodeTreeTabListProps, NodeType } from '../appDetails.type'
 import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-object.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg'
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
-import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '../../../common'
 import './NodeTreeTabList.scss'
-import ReactGA from 'react-ga4'
 
 export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
@@ -108,7 +108,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
             <ul className="tab-list">
                 {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
                     return (
-                        <li key={index + 'tab'} id={`${nodeType}_${tab.name}`} className="flex left dc__ellipsis-right">
+                        <li key={`${index}tab`} id={`${nodeType}_${tab.name}`} className="flex left dc__ellipsis-right">
                             <ConditionalWrap
                                 condition={
                                     tab.name !== AppDetailsTabs.log_analyzer &&

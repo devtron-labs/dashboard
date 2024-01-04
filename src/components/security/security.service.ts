@@ -1,8 +1,8 @@
+import { get, post, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
 import { getClusterListMin, getEnvironmentListMinPublic } from '../../services/service'
 import { Routes } from '../../config'
-import { get, post, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse } from './security.types'
-import moment from 'moment'
 
 export function getClusterListMinNoAuth() {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
@@ -42,8 +42,8 @@ export function getInitData(payload) {
                         { label: 'Moderate', value: 1 },
                         { label: 'Low', value: 0 },
                     ],
-                    clusters: clusters,
-                    environments: environments,
+                    clusters,
+                    environments,
                 },
                 ...securityScanResponse.result,
             }
@@ -82,8 +82,8 @@ export function getVulnerabilityFilterData() {
                     { label: 'Moderate', value: 1 },
                     { label: 'Low', value: 0 },
                 ],
-                clusters: clusters,
-                environments: environments,
+                clusters,
+                environments,
             },
         }
     })
@@ -178,7 +178,7 @@ export function getCVEControlList(payload): Promise<ResponseType> {
         }
     })
 }
-//mock api
+// mock api
 export function getCVEPolicies(cve: string): Promise<ResponseType> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {

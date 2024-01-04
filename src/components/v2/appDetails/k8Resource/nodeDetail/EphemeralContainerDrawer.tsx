@@ -1,5 +1,10 @@
 import { Drawer, OptionType, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
+import yamlJsParser from 'yaml'
+import ReactSelect from 'react-select'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import CreatableSelect from 'react-select/creatable'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import {
     EphemeralContainerDrawerType,
@@ -17,24 +22,19 @@ import {
     filterImageList,
 } from '../../../../common'
 import sampleConfig from './sampleConfig.json'
-import yamlJsParser from 'yaml'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
 import { DropdownIndicator, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
-import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { SwitchItemValues } from '../../../../login/SSOLogin'
 import { Options } from '../../appDetails.type'
 import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.svg'
-import { ReactComponent as QuestionIcon } from '../../../../v2/assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
-import Tippy from '@tippyjs/react'
-import CreatableSelect from 'react-select/creatable'
 import { selectStyles } from './nodeDetail.util'
 
-function EphemeralContainerDrawer({
+const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
     params,
     setResourceContainers,
@@ -50,7 +50,7 @@ function EphemeralContainerDrawer({
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
     selectedNamespaceByClickingPod,
-}: EphemeralContainerDrawerType) {
+}: EphemeralContainerDrawerType) => {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
@@ -110,7 +110,7 @@ function EphemeralContainerDrawer({
             if (!selectedimageValue) {
                 imageListOption.push(parsedImageOption)
             }
-            setSelectedImageList(selectedimageValue ? selectedimageValue : parsedImageOption)
+            setSelectedImageList(selectedimageValue || parsedImageOption)
         } catch (err) {}
     }
 
@@ -163,9 +163,9 @@ function EphemeralContainerDrawer({
                         iconClass="fcv-5"
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
-                        showCloseButton={true}
+                        showCloseButton
                         trigger="click"
-                        interactive={true}
+                        interactive
                     >
                         <div className="flex">
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-8 cursor" />

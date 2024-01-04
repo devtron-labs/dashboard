@@ -1,11 +1,12 @@
 import React, { useState, useEffect, ReactNode } from 'react'
+import Tippy from '@tippyjs/react'
 import branchIcon from '../../assets/icons/misc/branch.svg'
 import webhookIcon from '../../assets/icons/misc/webhook.svg'
-import Tippy from '@tippyjs/react'
 import { SourceTypeMap, GIT_BRANCH_NOT_CONFIGURED, DEFAULT_GIT_BRANCH_VALUE } from '../../config'
 import { getWebhookEventsForEventId } from '../../services/service'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import regexIcon from '../../assets/icons/misc/regex.svg'
+
 export interface CIPipelineSourceConfigInterface {
     sourceType
     sourceValue
@@ -17,7 +18,7 @@ export interface CIPipelineSourceConfigInterface {
     primaryBranchAfterRegex?: string
 }
 
-export function CiPipelineSourceConfig({
+export const CiPipelineSourceConfig = ({
     sourceType,
     sourceValue,
     showTooltip,
@@ -26,13 +27,13 @@ export function CiPipelineSourceConfig({
     regex,
     isRegex,
     primaryBranchAfterRegex,
-}: CIPipelineSourceConfigInterface) {
+}: CIPipelineSourceConfigInterface) => {
     const _isWebhook = sourceType === SourceTypeMap.WEBHOOK
     const _isRegex = sourceType === SourceTypeMap.BranchRegex || !!regex || isRegex
 
     const [sourceValueBase, setSourceValueBase] = useState<ReactNode>('')
     const [sourceValueAdv, setSourceValueAdv] = useState<ReactNode>('')
-    const [loading, setLoading] = useState(_isWebhook ? true : false)
+    const [loading, setLoading] = useState(!!_isWebhook)
 
     useEffect(() => {
         updateSourceValue()
@@ -55,7 +56,7 @@ export function CiPipelineSourceConfig({
         }
     }
 
-    //tippy content for regex type
+    // tippy content for regex type
     const rendeRegexSourceVal = (): JSX.Element => {
         return (
             <>
@@ -67,7 +68,7 @@ export function CiPipelineSourceConfig({
                 {window.location.href.includes('trigger') && (
                     <>
                         <div className="fw-6">Primary Branch</div>
-                        <p>{primaryBranchAfterRegex ? primaryBranchAfterRegex : 'Not set'}</p>
+                        <p>{primaryBranchAfterRegex || 'Not set'}</p>
                     </>
                 )}
             </>

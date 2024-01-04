@@ -1,8 +1,8 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey } from '../../common'
-import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
 import {
@@ -223,7 +223,8 @@ export default function AddExternalLink({
     const getSelectedIdentifiers = (link: LinkAction) => {
         if (!Array.isArray(link.identifiers)) {
             return []
-        } else if (link.identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
+        }
+        if (link.identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
             return link.identifiers
         }
 
@@ -346,7 +347,8 @@ export default function AddExternalLink({
                           clusterId: 0,
                       },
                   ]
-        } else if (identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
+        }
+        if (identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
             return identifiers.map((identifier) => ({
                 type: identifier.type,
                 identifier:

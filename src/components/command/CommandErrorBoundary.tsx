@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { toast } from 'react-toastify'
+
 export class CommandErrorBoundary extends Component<{ toggleCommandBar }, any> {
     constructor(props) {
         super(props)

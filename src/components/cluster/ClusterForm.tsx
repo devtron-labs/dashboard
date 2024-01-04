@@ -14,9 +14,11 @@ import {
     useAsync,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
+import { toast } from 'react-toastify'
+import TippyHeadless from '@tippyjs/react/headless'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
-import YAML from 'yaml'
 import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
@@ -36,7 +38,6 @@ import {
     DEFAULT_CLUSTER_ID,
     SSHAuthenticationType,
 } from './cluster.type'
-import { toast } from 'react-toastify'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -48,7 +49,6 @@ import {
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
-import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
@@ -113,7 +113,7 @@ export default function ClusterForm({
     toggleClusterDetails,
     isVirtualCluster,
 }) {
-    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
+    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheus_url)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
@@ -163,7 +163,7 @@ export default function ClusterForm({
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: { value: proxyUrl, error: '' },
-            isConnectedViaSSHTunnel: isConnectedViaSSHTunnel ? isConnectedViaSSHTunnel : false,
+            isConnectedViaSSHTunnel: isConnectedViaSSHTunnel || false,
             sshTunnelUser: { value: sshTunnelUser, error: '' },
             sshTunnelPassword: { value: sshTunnelPassword, error: '' },
             sshTunnelPrivateKey: { value: sshTunnelPrivateKey, error: '' },
@@ -194,17 +194,11 @@ export default function ClusterForm({
                 validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ },
             },
             userName: {
-                required:
-                    prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC
-                        ? true
-                        : false,
+                required: !!(prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
                 validator: { error: 'username is required', regex: /^(?!\s*$).+/ },
             },
             password: {
-                required:
-                    prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC
-                        ? true
-                        : false,
+                required: !!(prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
             prometheusTlsClientKey: {
@@ -267,7 +261,7 @@ export default function ClusterForm({
                           validator: { error: 'token is required', regex: /[^]+/ },
                       },
             endpoint: {
-                required: prometheusToggleEnabled ? true : false,
+                required: !!prometheusToggleEnabled,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
             },
         },
@@ -337,8 +331,8 @@ export default function ClusterForm({
 
                     return {
                         clusterName: _clusterSaveDetails['cluster_name'],
-                        status: status,
-                        message: message,
+                        status,
+                        message,
                     }
                 })
                 setSaveClusterList(_clusterList)
@@ -510,12 +504,11 @@ export default function ClusterForm({
             if (!isValid) {
                 toast.error('Please add both username and password')
                 return
-            } else {
-                payload.prometheusAuth['userName'] = state.userName.value || ''
-                payload.prometheusAuth['password'] = state.password.value || ''
-                payload.prometheusAuth['tlsClientKey'] = state.prometheusTlsClientKey.value || ''
-                payload.prometheusAuth['tlsClientCert'] = state.prometheusTlsClientCert.value || ''
             }
+            payload.prometheusAuth['userName'] = state.userName.value || ''
+            payload.prometheusAuth['password'] = state.password.value || ''
+            payload.prometheusAuth['tlsClientKey'] = state.prometheusTlsClientKey.value || ''
+            payload.prometheusAuth['tlsClientCert'] = state.prometheusTlsClientCert.value || ''
         }
         if (isTlsConnection) {
             if (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) {
@@ -581,7 +574,7 @@ export default function ClusterForm({
             sshServerAddress: state.sshTunnelUrl.value,
         },
         server_url,
-        defaultClusterComponent: defaultClusterComponent,
+        defaultClusterComponent,
         k8sversion: '',
         insecureSkipTlsVerify: !isTlsConnection,
     }
@@ -597,7 +590,7 @@ export default function ClusterForm({
                             theme="light"
                             placement="bottom"
                             trigger="click"
-                            interactive={true}
+                            interactive
                             render={() => (
                                 <ClusterInfoStepsModal
                                     subTitle={cluster.title}
@@ -783,7 +776,7 @@ export default function ClusterForm({
                             <Checkbox
                                 isChecked={isTlsConnection}
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
-                                value={'CHECKED'}
+                                value="CHECKED"
                                 onChange={toggleCheckTlsConnection}
                             >
                                 <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center">
@@ -813,7 +806,7 @@ export default function ClusterForm({
                                         onChange={handleOnChange}
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
-                                        placeholder={'Enter CA Data'}
+                                        placeholder="Enter CA Data"
                                     />
                                     {state.certificateAuthorityData.error && (
                                         <label htmlFor="" className="form__error">
@@ -838,7 +831,7 @@ export default function ClusterForm({
                                         onChange={handleOnChange}
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
-                                        placeholder={'Enter tls Key'}
+                                        placeholder="Enter tls Key"
                                     />
                                     {state.tlsClientKey.error && (
                                         <label htmlFor="" className="form__error">
@@ -1032,11 +1025,11 @@ export default function ClusterForm({
                     />
                 </div>
                 <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
-                    <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled={true}>
+                    <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled>
                         Cancel
                     </button>
-                    <button className="cta ml-12 h-36 lh-36" disabled={true}>
-                        {<Progressing />}
+                    <button className="cta ml-12 h-36 lh-36" disabled>
+                        <Progressing />
                     </button>
                 </div>
             </div>
@@ -1067,11 +1060,11 @@ export default function ClusterForm({
                             data-testid="cluster_list_page_after_selection"
                             className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
                         >
-                            <div></div>
+                            <div />
                             <div data-testid="cluster_validate">CLUSTER</div>
                             <div data-testid="status_validate">STATUS</div>
                             <div data-testid="message_validate">MESSAGE</div>
-                            <div></div>
+                            <div />
                         </div>
                         <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 161px)' }}>
                             {!saveClusterList || saveClusterList.length === 0 ? (
@@ -1082,7 +1075,7 @@ export default function ClusterForm({
                                         key={`api_${index}`}
                                         className="saved-cluster-list-row cluster-env-list_table flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                                     >
-                                        <div></div>
+                                        <div />
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
                                             className="flexbox dc__align-items-center ml-2"
@@ -1095,7 +1088,7 @@ export default function ClusterForm({
                                                 className={`dc__app-summary__icon icon-dim-16 mr-2 ${
                                                     clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
                                                 }`}
-                                            ></div>
+                                            />
                                             <div
                                                 data-testid={`validate-cluster-${clusterListDetail.status}`}
                                                 className="dc__ellipsis-right"
@@ -1203,7 +1196,8 @@ export default function ClusterForm({
     const getAllClustersCheckBoxValue = () => {
         if (Object.values(isClusterSelected).every((_selected) => _selected)) {
             return CHECKBOX_VALUE.CHECKED
-        } else if (Object.values(isClusterSelected).some((_selected) => _selected)) {
+        }
+        if (Object.values(isClusterSelected).some((_selected) => _selected)) {
             return CHECKBOX_VALUE.INTERMEDIATE
         }
     }
@@ -1258,7 +1252,7 @@ export default function ClusterForm({
                                     <div>CLUSTER</div>
                                     <div>USER</div>
                                     <div>MESSAGE</div>
-                                    <div></div>
+                                    <div />
                                 </div>
                                 <div style={{ height: 'auto' }}>
                                     {!dataList || dataList.length === 0 ? (
@@ -1404,9 +1398,8 @@ export default function ClusterForm({
     const clusterTitle = () => {
         if (!id) {
             return 'Add Cluster'
-        } else {
-            return 'Edit Cluster'
         }
+        return 'Edit Cluster'
     }
 
     const AddClusterHeader = () => {

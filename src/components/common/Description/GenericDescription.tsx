@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { patchApplicationNote, patchClusterNote } from '../../ClusterNodes/clusterNodes.service'
 import ReactMde from 'react-mde'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
+import moment from 'moment'
+import { patchApplicationNote, patchClusterNote } from '../../ClusterNodes/clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { showError, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
 import { MDEditorSelectedTabType } from '../../ClusterNodes/types'
@@ -16,10 +19,7 @@ import { ReactComponent as OrderedListIcon } from '../../../assets/icons/mdedito
 import { ReactComponent as UnorderedListIcon } from '../../../assets/icons/mdeditor/ic-unordered-list.svg'
 import { ReactComponent as CheckedListIcon } from '../../../assets/icons/mdeditor/ic-checked-list.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import Tippy from '@tippyjs/react'
 import { deepEqual } from '..'
-import { toast } from 'react-toastify'
-import moment from 'moment'
 import { Moment12HourFormat } from '../../../config'
 import {
     DEFAULT_MARKDOWN_EDITOR_PREVIEW_MESSAGE,
@@ -383,7 +383,7 @@ export default function GenericDescription({
                                     }`,
                                 },
                                 textArea: {
-                                    tabIndex: tabIndex,
+                                    tabIndex,
                                 },
                             }}
                         />

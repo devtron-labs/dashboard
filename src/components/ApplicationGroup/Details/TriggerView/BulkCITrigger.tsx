@@ -11,6 +11,7 @@ import {
     useAsync,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -34,7 +35,6 @@ import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { BulkCIDetailType, BulkCITriggerType } from '../../AppGroup.types'
 import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
-import Tippy from '@tippyjs/react'
 import TriggerResponseModal from './TriggerResponseModal'
 import { BULK_CI_MESSAGING } from '../../Constants'
 import { processConsequenceData } from '../../AppGroup.utils'
@@ -170,18 +170,17 @@ export default function BulkCITrigger({
         const policyPromiseList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
                 return null
-            } else {
-                let branchNames = ''
-                for (const material of _materialListMap[appDetails.appId]) {
-                    if (
-                        (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
-                        material.value !== '--'
-                    ) {
-                        branchNames += `${branchNames ? ',' : ''}${material.value}`
-                    }
-                }
-                return !branchNames ? null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
             }
+            let branchNames = ''
+            for (const material of _materialListMap[appDetails.appId]) {
+                if (
+                    (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
+                    material.value !== '--'
+                ) {
+                    branchNames += `${branchNames ? ',' : ''}${material.value}`
+                }
+            }
+            return !branchNames ? null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
         })
         if (policyPromiseList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
@@ -334,7 +333,7 @@ export default function BulkCITrigger({
                         handleRegexInputValue={handleRegexInputValueChange}
                         regexValue={regexValue}
                         onCloseBranchRegexModal={hideBranchEditModal}
-                        hideHeaderFooter={true}
+                        hideHeaderFooter
                         savingRegexValue={isLoading}
                     />
                     <div className="flex right pr-20 pb-20">
@@ -347,7 +346,8 @@ export default function BulkCITrigger({
                     </div>
                 </>
             )
-        } else if (selectedApp.isLinkedCD) {
+        }
+        if (selectedApp.isLinkedCD) {
             return (
                 <GenericEmptyState
                     title={`${BULK_CI_MESSAGING.linkedCD.title(selectedApp.title)}`}
@@ -355,7 +355,8 @@ export default function BulkCITrigger({
                     image={linkedCDBuildCIImg}
                 />
             )
-        } else if (selectedApp.isLinkedCI) {
+        }
+        if (selectedApp.isLinkedCI) {
             return (
                 <EmptyView
                     imgSrc={linkedCiImg}
@@ -365,7 +366,8 @@ export default function BulkCITrigger({
                     linkText={BULK_CI_MESSAGING.emptyLinkedCI.linkText}
                 />
             )
-        } else if (selectedApp.isWebhookCI) {
+        }
+        if (selectedApp.isWebhookCI) {
             return (
                 <EmptyView
                     imgSrc={externalCiImg}
@@ -373,32 +375,31 @@ export default function BulkCITrigger({
                     subTitle={BULK_CI_MESSAGING.webhookCI.subTitle}
                 />
             )
-        } else {
-            const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
-            return (
-                <GitInfoMaterial
-                    material={selectedMaterialList}
-                    title={selectedApp.ciPipelineName}
-                    pipelineId={selectedApp.ciPipelineId}
-                    pipelineName={selectedApp.ciPipelineName}
-                    selectedMaterial={selectedMaterial}
-                    showWebhookModal={showWebhookModal}
-                    hideWebhookModal={hideWebhookModal}
-                    toggleWebhookModal={toggleWebhookModal}
-                    webhookPayloads={webhookPayloads}
-                    isWebhookPayloadLoading={isWebhookPayloadLoading}
-                    workflowId={selectedApp.workFlowId}
-                    onClickShowBranchRegexModal={showBranchEditModal}
-                    fromAppGrouping={true}
-                    appId={selectedApp.appId}
-                    fromBulkCITrigger={true}
-                    hideSearchHeader={selectedApp.hideSearchHeader}
-                    isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
-                    ciBlockState={appPolicy[selectedApp.appId]}
-                    isJobCI={selectedApp.isJobCI}
-                />
-            )
         }
+        const selectedMaterial = selectedMaterialList?.find((mat) => mat.isSelected)
+        return (
+            <GitInfoMaterial
+                material={selectedMaterialList}
+                title={selectedApp.ciPipelineName}
+                pipelineId={selectedApp.ciPipelineId}
+                pipelineName={selectedApp.ciPipelineName}
+                selectedMaterial={selectedMaterial}
+                showWebhookModal={showWebhookModal}
+                hideWebhookModal={hideWebhookModal}
+                toggleWebhookModal={toggleWebhookModal}
+                webhookPayloads={webhookPayloads}
+                isWebhookPayloadLoading={isWebhookPayloadLoading}
+                workflowId={selectedApp.workFlowId}
+                onClickShowBranchRegexModal={showBranchEditModal}
+                fromAppGrouping
+                appId={selectedApp.appId}
+                fromBulkCITrigger
+                hideSearchHeader={selectedApp.hideSearchHeader}
+                isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
+                ciBlockState={appPolicy[selectedApp.appId]}
+                isJobCI={selectedApp.isJobCI}
+            />
+        )
     }
 
     const handleChange = (e): void => {
@@ -440,13 +441,15 @@ export default function BulkCITrigger({
                     BULK_CI_MESSAGING.isFirstTrigger.title,
                     BULK_CI_MESSAGING.isFirstTrigger.subTitle,
                 )
-            } else if (!selectedApp.isCacheAvailable) {
+            }
+            if (!selectedApp.isCacheAvailable) {
                 return renderTippy(
                     BULK_CI_MESSAGING.cacheNotAvailable.infoText,
                     BULK_CI_MESSAGING.cacheNotAvailable.title,
                     BULK_CI_MESSAGING.cacheNotAvailable.subTitle,
                 )
-            } else if (blobStorageConfiguration?.result.enabled) {
+            }
+            if (blobStorageConfiguration?.result.enabled) {
                 return (
                     <div className="flex left mt-12 dc__border-top pt-12">
                         <input
@@ -460,9 +463,8 @@ export default function BulkCITrigger({
                         <label className="fs-13 fw-4 cn-9 ml-10 mb-0">Ignore cache</label>
                     </div>
                 )
-            } else {
-                return null
             }
+            return null
         }
     }
 
@@ -487,9 +489,8 @@ export default function BulkCITrigger({
                     {renderCacheSection()}
                 </>
             )
-        } else {
-            return null
         }
+        return null
     }
 
     const renderAppName = (app: BulkCIDetailType, index: number): JSX.Element | null => {

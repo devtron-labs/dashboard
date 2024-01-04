@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
-import { Select, Page, DropdownIcon, useJsonYaml } from '../../common'
 import {
     ServerErrors,
     showError,
@@ -11,12 +10,16 @@ import {
     ResponseType,
     DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
+import { useHistory, useParams } from 'react-router'
+import AsyncSelect from 'react-select/async'
+import ReactGA from 'react-ga4'
+import ReactSelect from 'react-select'
+import { Select, Page, DropdownIcon, useJsonYaml } from '../../common'
+import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { DeployChartProps } from './deployChart.types'
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
-import { useHistory, useParams } from 'react-router'
 import { URLS, SERVER_MODE, DELETE_ACTION } from '../../../config'
 import {
     installChart,
@@ -31,9 +34,6 @@ import { ChartValuesSelect } from '../util/ChartValueSelect'
 import { getChartValuesURL } from '../charts.helper'
 import { styles, menuList, DropdownIndicator } from '../charts.util'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import AsyncSelect from 'react-select/async'
-import ReactGA from 'react-ga4'
-import ReactSelect from 'react-select'
 import './DeployChart.scss'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
@@ -110,7 +110,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
             chartId: appStoreId,
             chartName: name,
             version: versions.get(selectedVersion)?.version,
-            deprecated: deprecated,
+            deprecated,
         },
     ])
     const [repoChartValue, setRepoChartValue] = useState<chartRepoOtions>({
@@ -119,7 +119,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         chartId: appStoreId,
         chartName: name,
         version: versions.get(selectedVersion)?.version,
-        deprecated: deprecated,
+        deprecated,
     })
     const [obj, json, yaml, error] = useJsonYaml(textRef, 4, 'yaml', true)
     const [chartValuesList, setChartValuesList] = useState([])
@@ -219,7 +219,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     referenceValueKind: chartValues.kind,
                     // valuesOverride: obj,
                     valuesOverrideYaml: textRef,
-                    installedAppId: installedAppId,
+                    installedAppId,
                     appStoreVersion: selectedVersionUpdatePage.id,
                 }
                 await updateChart(payload)
@@ -234,7 +234,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     environmentId: serverMode == SERVER_MODE.FULL ? selectedEnvironment.value : 0,
                     clusterId: selectedEnvironment.clusterId,
                     namespace: selectedEnvironment.namespace,
-                    deploymentAppType: deploymentAppType,
+                    deploymentAppType,
                     appStoreVersion: selectedVersion,
                     valuesOverride: obj,
                     valuesOverrideYaml: textRef,
@@ -348,9 +348,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 selectedEnvironment.namespace,
                 appName,
             )}/${appName}`
-        } else {
-            return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`
         }
+        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`
     }
 
     function setForceDeleteDialogData(serverError) {
@@ -703,7 +702,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                         </Select>
                                     </div>
                                 )}
-                                <span className="mr-16"></span>
+                                <span className="mr-16" />
                                 <div className="w-50">
                                     <span className="form__label dc__required-field">Chart Values</span>
                                     <ChartValuesSelect
@@ -789,7 +788,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     )
 }
 
-function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) {
+const ReadmeColumn = ({ readmeCollapsed, toggleReadmeCollapsed, readme, ...props }) => {
     return (
         <div className="deploy-chart__readme-column">
             <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />

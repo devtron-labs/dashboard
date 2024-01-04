@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
+import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../../v2/common/ReactSelect.utils'
-import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../../helpers/Helpers'
 import {
     CheckboxWithTippyProps,

@@ -1,10 +1,4 @@
 import React, { useState, useContext, Fragment } from 'react'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
-import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import {
     PopupMenu,
     BuildStageVariable,
@@ -12,6 +6,12 @@ import {
     RefVariableStageType,
     RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
+import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
+import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -19,12 +19,12 @@ import { PipelineFormType } from '../workflowEditor/types'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function TaskList({
+export const TaskList = ({
     withWarning,
     mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
     isJobView,
-}: TaskListType) {
+}: TaskListType) => {
     const {
         formData,
         setFormData,
@@ -231,7 +231,8 @@ export function TaskList({
     }
 
     const reCalculatePrevStepVar = (_formData: PipelineFormType, newTaskIndex: number): void => {
-        let preBuildVariable, postBuildVariable
+        let preBuildVariable
+        let postBuildVariable
         if (activeStageName === BuildStageVariable.PreBuild) {
             preBuildVariable = calculateLastStepDetail(
                 false,
@@ -364,7 +365,7 @@ export function TaskList({
                                 </PopupMenu.Body>
                             </PopupMenu>
                         </div>
-                        <div className="vertical-line-connector"></div>
+                        <div className="vertical-line-connector" />
                     </Fragment>
                 ))}
             </div>

@@ -1,6 +1,8 @@
 import React, { Reducer, createContext, useContext, useEffect, useReducer } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
+import { showError, useEffectAfterMount, useAsync, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
 import {
     getDeploymentTemplate,
     updateDeploymentTemplate,
@@ -10,7 +12,6 @@ import {
 } from './service'
 import { getChartReferences } from '../../services/service'
 import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'
-import { showError, useEffectAfterMount, useAsync, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DeploymentConfigContextType,
     DeploymentConfigProps,
@@ -19,7 +20,6 @@ import {
     DeploymentConfigStateWithDraft,
 } from './types'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
-import YAML from 'yaml'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
@@ -235,10 +235,10 @@ export default function DeploymentConfig({
                 chartRefId,
                 readme,
             },
-            isAppMetricsEnabled: isAppMetricsEnabled,
+            isAppMetricsEnabled,
             tempFormData: _codeEditorStringifyData,
             draftValues: _codeEditorStringifyData,
-            latestDraft: latestDraft,
+            latestDraft,
             selectedTabIndex: isApprovalPending ? 2 : 3,
             openComparison: isApprovalPending,
             currentEditorView: currentViewEditor,
@@ -370,7 +370,7 @@ export default function DeploymentConfig({
                 readme,
                 currentEditorView: currentViewEditor,
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
-                isAppMetricsEnabled: isAppMetricsEnabled,
+                isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
                 data: _codeEditorStringifyData,
             }
@@ -424,20 +424,22 @@ export default function DeploymentConfig({
         if (!obj) {
             toast.error(error)
             return
-        } else if (
+        }
+        if (
             (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
             !state.yamlMode &&
             !state.basicFieldValuesErrorObj.isValid
         ) {
             toast.error('Some required fields are missing')
             return
-        } else if (isProtected) {
+        }
+        if (isProtected) {
             toggleSaveChangesModal()
             return
         }
 
         if (state.chartConfig.id) {
-            //update flow, might have overridden
+            // update flow, might have overridden
             dispatch({
                 type: DeploymentConfigStateActionTypes.showConfirmation,
                 payload: true,
@@ -567,11 +569,13 @@ export default function DeploymentConfig({
                 toggleYamlMode(!state.yamlMode)
             }
             return
-        } else if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
+        }
+        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             toggleYamlMode(false)
             return
-        } else if (state.isBasicLocked) {
+        }
+        if (state.isBasicLocked) {
             return
         }
 
@@ -804,8 +808,8 @@ export default function DeploymentConfig({
         dispatch,
         isConfigProtectionEnabled: isProtected,
         environments: environments || [],
-        changeEditorMode: changeEditorMode,
-        reloadEnvironments: reloadEnvironments,
+        changeEditorMode,
+        reloadEnvironments,
     })
 
     return (
@@ -831,7 +835,7 @@ export default function DeploymentConfig({
                         isDraftMode={isProtected && !!state.latestDraft}
                         isApprovalPending={state.latestDraft?.draftState === 4}
                         approvalUsers={state.latestDraft?.approvers}
-                        showValuesPostfix={true}
+                        showValuesPostfix
                         reload={initialise}
                         isValues={state.isValues}
                         setIsValues={setIsValues}

@@ -144,7 +144,7 @@ export interface ClusterEnvironmentDetailList extends ResponseType {
 }
 
 export interface ClusterEnvironmentDetail {
-    id: number //envId
+    id: number // envId
     environment_name: string
     active: boolean
     cluster_id: number

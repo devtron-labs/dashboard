@@ -1,14 +1,15 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
-import { getTreeNodesWithChild } from './useNodeTreeReducer'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
+import { getTreeNodesWithChild } from './useNodeTreeReducer'
 import IndexStore from '../../index.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus, NodeType } from '../../appDetails.type'
 import { URLS } from '../../../../../config'
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg'
-function NodeTreeComponent({
+
+const NodeTreeComponent = ({
     clickedNodes,
     registerNodeClick,
     isDevtronApp,
@@ -16,7 +17,7 @@ function NodeTreeComponent({
     clickedNodes: Map<string, string>
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
     isDevtronApp?: boolean
-}) {
+}) => {
     const { url } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -27,7 +28,7 @@ function NodeTreeComponent({
     const _arr = url.split(URLS.APP_DETAILS_K8)
     const k8URL = _arr[0] + URLS.APP_DETAILS_K8
 
-    //This is used to re-render in case of click node update
+    // This is used to re-render in case of click node update
     const [reRender, setReRender] = useState(false)
     const _treeNodes = getTreeNodesWithChild(filteredNodes)
     const getPNodeName = (_string: string): AggregationKeys => {
@@ -43,7 +44,7 @@ function NodeTreeComponent({
     }
 
     useEffect(() => {
-        const _urlArray = window.location.href.split(URLS.APP_DETAILS_K8 + '/')
+        const _urlArray = window.location.href.split(`${URLS.APP_DETAILS_K8}/`)
         if (_urlArray?.length === 2) {
             const [_kind, _ignore, _name] = _urlArray[1].split('/')
             const parent = getPNodeName(_kind)
@@ -77,7 +78,7 @@ function NodeTreeComponent({
                         onClick={(e) => handleClickOnNodes(treeNode.name.toLowerCase(), parents, e)}
                     >
                         {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === NodeType.Pod) ? (
-                            <React.Fragment>
+                            <>
                                 <DropDown
                                     data-testid={`${treeNode.name.toLowerCase()}-dropdown`}
                                     className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
@@ -95,9 +96,9 @@ function NodeTreeComponent({
                                         />
                                     )}
                                 </div>
-                            </React.Fragment>
+                            </>
                         ) : (
-                            <React.Fragment>
+                            <>
                                 <NavLink
                                     to={`${k8URL}/${
                                         parents.includes('pod') ? 'pod/group/' : ''
@@ -115,14 +116,14 @@ function NodeTreeComponent({
                                         />
                                     )}
                                 </NavLink>
-                            </React.Fragment>
+                            </>
                         )}
                     </div>
 
                     {treeNode.childNodes?.length > 0 &&
                         treeNode.isSelected &&
                         !(isDevtronApp && treeNode.name === NodeType.Pod) && (
-                            <div className={`pl-24`}>
+                            <div className="pl-24">
                                 {makeNodeTree(
                                     treeNode.childNodes,
                                     [...parents, treeNode.name.toLowerCase()],
@@ -258,11 +259,11 @@ export function getRedirectURLExtension(
             .flatMap((_cn) => _cn.childNodes ?? [])
             .find((_cn, index) => index === 0)
         if (leafNode) {
-            return isDevtronApp ? '/pod' : '/pod/group/' + leafNode.name.toLowerCase()
+            return isDevtronApp ? '/pod' : `/pod/group/${leafNode.name.toLowerCase()}`
         }
         leafNode = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []).find((_cn, index) => index === 0)
         if (leafNode) {
-            return '/' + leafNode.name.toLowerCase()
+            return `/${leafNode.name.toLowerCase()}`
         }
     } else {
         const leafNodes = _treeNodes.flatMap(
@@ -275,7 +276,7 @@ export function getRedirectURLExtension(
         if (leafNodes.length > 1) {
             const leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() !== NodeType.Pod.toLowerCase())
             if (leafNode) {
-                return '/' + leafNode.name.toLowerCase()
+                return `/${leafNode.name.toLowerCase()}`
             }
         } else if (leafNodes.length === 1) {
             // case when clicked is a pod group
@@ -284,17 +285,17 @@ export function getRedirectURLExtension(
                 .flatMap((_ln) => _ln.childNodes ?? [])
                 .find((_ln) => clickedNodes.has(_ln.name.toLowerCase()))
             if (leafNode) {
-                return isDevtronApp ? '/pod' : '/pod/group/' + leafNode.name.toLowerCase()
-            } else {
-                leafNode = leafPodNode.flatMap((_ln) => _ln.childNodes ?? []).find((_ln, index) => index === 0)
-                if (leafNode) {
-                    return isDevtronApp ? '/pod' : '/pod/group/' + leafNode.name.toLowerCase()
-                }
+                return isDevtronApp ? '/pod' : `/pod/group/${leafNode.name.toLowerCase()}`
             }
+            leafNode = leafPodNode.flatMap((_ln) => _ln.childNodes ?? []).find((_ln, index) => index === 0)
+            if (leafNode) {
+                return isDevtronApp ? '/pod' : `/pod/group/${leafNode.name.toLowerCase()}`
+            }
+
             // case when clicked is not pod group
             leafNode = leafNodes.find((_ln) => _ln.name.toLowerCase() !== NodeType.Pod.toLowerCase())
             if (leafNode) {
-                return '/' + leafNode.name.toLowerCase()
+                return `/${leafNode.name.toLowerCase()}`
             }
         }
         // handle the case when none match, its same as clickedNodes size 0

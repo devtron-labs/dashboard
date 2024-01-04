@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { ReactComponent as Sort } from '../../../../assets/icons/misc/sort-up.svg'
 import { not } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Sort } from '../../../../assets/icons/misc/sort-up.svg'
 
 interface ListInterface {
     collapsible?: boolean
@@ -47,7 +47,7 @@ const List: React.FC<ListInterface> & ListComposition = ({ children, collapsible
         </ListContext.Provider>
     )
 }
-List.Icon = function ({ src = null, children = null, ...props }) {
+List.Icon = ({ src = null, children = null, ...props }) => {
     return (
         <>
             {src && <img src={src} {...props} />}
@@ -60,7 +60,7 @@ List.Body = function ({ children = null }) {
     return children
 }
 
-function Detail({ children = null }) {
+const Detail = ({ children = null }) => {
     const { collapsed } = useListContext()
     return collapsed ? null : children
 }

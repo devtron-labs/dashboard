@@ -1,7 +1,8 @@
 import React, { CSSProperties } from 'react'
+import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType } from '@devtron-labs/devtron-fe-common-lib'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType } from '@devtron-labs/devtron-fe-common-lib'
+
 export interface WebHookData {
     Id: number
     EventActionType: string

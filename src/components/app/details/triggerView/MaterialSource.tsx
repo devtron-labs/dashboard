@@ -1,5 +1,5 @@
 import React from 'react'
-import { CIMaterialType } from '../triggerView/MaterialHistory'
+import { CIMaterialType } from './MaterialHistory'
 import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { SourceTypeMap } from '../../../../config'
@@ -17,15 +17,17 @@ export default function MaterialSource({
     const renderErrorMessage = (mat: CIMaterialType): string => {
         if (mat.isRepoError) {
             return mat.repoErrorMsg
-        } else if (mat.isDockerFileError) {
-            return mat.dockerFileErrorMsg
-        } else if (mat.isBranchError) {
-            return mat.branchErrorMsg
-        } else if (mat.isMaterialSelectionError) {
-            return mat.materialSelectionErrorMsg
-        } else {
-            return ''
         }
+        if (mat.isDockerFileError) {
+            return mat.dockerFileErrorMsg
+        }
+        if (mat.isBranchError) {
+            return mat.branchErrorMsg
+        }
+        if (mat.isMaterialSelectionError) {
+            return mat.materialSelectionErrorMsg
+        }
+        return ''
     }
     const renderMaterialUpdateInfo = (mat: CIMaterialType) => {
         if (mat.isMaterialLoading) {
@@ -34,21 +36,21 @@ export default function MaterialSource({
                     <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
-        } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError || mat.isMaterialSelectionError) {
+        }
+        if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError || mat.isMaterialSelectionError) {
             return (
                 <div data-testid="material-error" className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
                     <div className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
                 </div>
             )
-        } else {
-            return (
-                <div data-testid="material-last-fetch-time" className="flex fs-10">
-                    {mat.lastFetchTime ? 'Updated' : ''}
-                    <span className="fw-6 ml-5"> {mat.lastFetchTime}</span>
-                </div>
-            )
         }
+        return (
+            <div data-testid="material-last-fetch-time" className="flex fs-10">
+                {mat.lastFetchTime ? 'Updated' : ''}
+                <span className="fw-6 ml-5"> {mat.lastFetchTime}</span>
+            </div>
+        )
     }
 
     const handleRefreshAction = (e) => {
@@ -95,13 +97,13 @@ export default function MaterialSource({
                     >
                         <div className="material-info">
                             <div className="material-info__name flex-1 dc__ellipsis-right">/{mat.gitMaterialName}</div>
-                            <div className="icon-dim-22 git"></div>
+                            <div className="icon-dim-22 git" />
                         </div>
                         <div className="branch-name">
                             <CiPipelineSourceConfig
                                 sourceType={mat.type}
                                 sourceValue={mat.value}
-                                showTooltip={true}
+                                showTooltip
                                 regex={mat.regex}
                                 primaryBranchAfterRegex={mat.value}
                             />

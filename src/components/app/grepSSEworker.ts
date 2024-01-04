@@ -16,7 +16,7 @@ export default () => {
         buffer: [],
         trailingLines: [],
         prefix: '',
-        eventListener: function (ev) {
+        eventListener(ev) {
             let log
             try {
                 log = JSON.parse(ev.data).result.content
@@ -104,7 +104,7 @@ export default () => {
                 })
                 for (let index = 0; index < urls.length; index++) {
                     const element = urls[index]
-                    wrappers[index] = Object.assign({}, bp)
+                    wrappers[index] = { ...bp }
                     wrappers[index].prefix = `${typeof pods[index] === 'object' ? pods[index].name : pods[index]}: `
                     wrappers[index].eventSrc = new EventSource(element, { withCredentials: true })
                     wrappers[index].grepTokens = grepTokens

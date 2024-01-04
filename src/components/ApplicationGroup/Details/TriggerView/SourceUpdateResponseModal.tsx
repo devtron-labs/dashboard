@@ -32,9 +32,7 @@ export default function SourceUpdateResponseModal({
     // ASK: Why there is no retry button for failed request?
     const renderFooterSection = (): JSX.Element => {
         return (
-            <div
-                className={`dc__border-top flex bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width right`}
-            >
+            <div className="dc__border-top flex bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width right">
                 <button className="cta cancel flex h-36" data-testid="close-popup" onClick={closePopup}>
                     Close
                 </button>

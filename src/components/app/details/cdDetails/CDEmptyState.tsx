@@ -28,7 +28,7 @@ export default function CDEmptyState({
         return actionButtonText ? (
             <div
                 className={`${
-                    actionButtonClass ? actionButtonClass : 'cb-5 bcn-0 en-2'
+                    actionButtonClass || 'cb-5 bcn-0 en-2'
                 } fcn-0 fw-6 fs-13 flexbox br-4 pl-16 pr-16 pt-8 pb-8 pointer`}
                 onClick={actionHandler}
                 data-testid={dataTestId}
@@ -44,9 +44,9 @@ export default function CDEmptyState({
             <GenericEmptyState
                 image={imgSource || AppNotDeployed}
                 classname="fs-16"
-                title={title ? title : EMPTY_STATE_STATUS.CD_EMPTY_STATE.TITLE}
-                subTitle={subtitle ? subtitle : EMPTY_STATE_STATUS.CD_EMPTY_STATE.SUBTITLE}
-                isButtonAvailable={true}
+                title={title || EMPTY_STATE_STATUS.CD_EMPTY_STATE.TITLE}
+                subTitle={subtitle || EMPTY_STATE_STATUS.CD_EMPTY_STATE.SUBTITLE}
+                isButtonAvailable
                 renderButton={handleCDEmptyStateButton}
             />
         </div>

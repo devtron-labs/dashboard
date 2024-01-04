@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useContext, useMemo } from 'react'
-import { Select, mapByKey, sortOptionsByLabel } from '../../common'
 import {
     showError,
     Progressing,
@@ -8,7 +7,10 @@ import {
     DevtronProgressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
-import { useHistory, useLocation, useRouteMatch } from 'react-router'
+import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import { Select, mapByKey, sortOptionsByLabel } from '../../common'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import ChartSelect from '../util/ChartSelect'
 import ChartGroupList from './ChartGroup'
@@ -19,13 +21,10 @@ import AdvancedConfig from '../AdvancedConfig'
 import useChartGroup from '../useChartGroup'
 import { DeployableCharts, deployChartGroup, getChartProviderList } from '../charts.service'
 import { ChartGroupEntry, Chart, EmptyCharts, ChartListType } from '../charts.types'
-import { toast } from 'react-toastify'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
-import { Prompt } from 'react-router'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import Tippy from '@tippyjs/react'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
@@ -43,7 +42,7 @@ import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
 
-//TODO: move to service
+// TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
     return charts
         .filter((chart) => chart.isEnabled)
@@ -60,7 +59,7 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
         })
 }
 
-function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
+const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useContext(mainContext)
     const location = useLocation()
     const history = useHistory()
@@ -183,12 +182,10 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     const handleContinueWithHelm = (_clickedOnAdvance: boolean): void => {
         if (_clickedOnAdvance) {
             configureChart(0)
+        } else if (state.advanceVisited) {
+            handleInstall()
         } else {
-            if (state.advanceVisited) {
-                handleInstall()
-            } else {
-                toggleDeployModal(true)
-            }
+            toggleDeployModal(true)
         }
     }
 
@@ -399,10 +396,10 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
             </ChartEmptyState>
         ) : (
             <ChartEmptyState
-                title={'No charts available right now'}
-                subTitle={'The connected chart repositories are syncing or no charts are available.'}
+                title="No charts available right now"
+                subTitle="The connected chart repositories are syncing or no charts are available."
                 onClickViewChartButton={handleViewAllCharts}
-                buttonText={'View connected chart repositories'}
+                buttonText="View connected chart repositories"
             />
         )
     }
@@ -411,16 +408,16 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
-                    <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
+                    <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                 </ConditionalWrap>
 
                 <Prompt
                     when={isLeavingPageNotAllowed.current}
-                    message={'Your changes will be lost. Do you want to leave without deploying?'}
+                    message="Your changes will be lost. Do you want to leave without deploying?"
                 />
                 {!state.loading ? (
                     <div className="discover-charts__body">
-                        {typeof state.configureChartIndex != 'number' && chartRepos?.length > 0 && (
+                        {typeof state.configureChartIndex !== 'number' && chartRepos?.length > 0 && (
                             <ChartHeaderFilter
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
@@ -543,7 +540,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                                 )}
                             </>
                         )}
-                        <aside className={`summary`}>
+                        <aside className="summary">
                             <MultiChartSummary
                                 charts={state.charts}
                                 configureChartIndex={state.configureChartIndex}
@@ -711,7 +708,7 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
     )
 }
 
-function ChartListHeader({ charts }) {
+const ChartListHeader = ({ charts }) => {
     return (
         <div>
             <h3 className="chart-grid__title pl-20 pr-20 pt-16" data-testid="chart-store-chart-heading">
@@ -733,7 +730,7 @@ function ChartListHeader({ charts }) {
     )
 }
 
-export function EmptyChartGroup({
+export const EmptyChartGroup = ({
     title,
     removeLearnMore = false,
     image,
@@ -743,7 +740,7 @@ export function EmptyChartGroup({
     styles,
     toggleChartGroupModal,
     showChartGroupModal,
-}: EmptyCharts) {
+}: EmptyCharts) => {
     const { url } = useRouteMatch()
     return (
         <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
@@ -785,7 +782,7 @@ export function EmptyChartGroup({
     )
 }
 
-export function ChartGroupListMin({
+export const ChartGroupListMin = ({
     chartGroups,
     toggleChartGroupModal,
     showChartGroupModal,
@@ -797,7 +794,7 @@ export function ChartGroupListMin({
     toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
     isGrid?: boolean
     renderCreateGroupButton?: () => JSX.Element
-}) {
+}) => {
     const history = useHistory()
     const match = useRouteMatch()
     if (chartGroups.length == 0) {
@@ -807,7 +804,7 @@ export function ChartGroupListMin({
     }
 
     const redirectToGroup = () => {
-        history.push(match.url + '/group')
+        history.push(`${match.url}/group`)
     }
 
     return (

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Select } from '../../common'
-import { ChartValuesType } from './../charts.types'
-import { getChartValuesFiltered } from './../charts.helper'
+import { ChartValuesType } from '../charts.types'
+import { getChartValuesFiltered } from '../charts.helper'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 
 export interface ChartValuesSelectProps {
@@ -33,7 +33,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
     renderNoResultsOption() {
         return (
             <div className="select__option-with-subtitle select__option-with-subtitle--empty-state">
-                <div className="select__check-icon"></div>
+                <div className="select__check-icon" />
                 No Results
             </div>
         )
@@ -44,7 +44,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
     }
 
     render() {
-        const chartValuesList = this.props.chartValuesList
+        const { chartValuesList } = this.props
         const chartValues = getChartValuesFiltered(this.props.chartValuesList)
         const selectedChartValue = chartValuesList.find(
             (chartValue) =>
@@ -78,7 +78,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                         )}
                     </div>
                 </Select.Button>
-                <Select.OptGroup label="DEPLOYED" key={'DEPLOYED'}>
+                <Select.OptGroup label="DEPLOYED" key="DEPLOYED">
                     {chartValues.deployedChartValues.length
                         ? chartValues.deployedChartValues.map((chartValue) => {
                               const env = chartValue.environmentName || ''
@@ -96,7 +96,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                           })
                         : this.renderNoResultsOption()}
                 </Select.OptGroup>
-                <Select.OptGroup label="PRESET VALUES" key={'SAVED'}>
+                <Select.OptGroup label="PRESET VALUES" key="SAVED">
                     {chartValues.savedChartValues.length
                         ? chartValues.savedChartValues.map((chartValue) => {
                               return (
@@ -110,7 +110,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                           })
                         : this.renderNoResultsOption()}
                 </Select.OptGroup>
-                <Select.OptGroup label="EXISTING" key={'EXISTING'}>
+                <Select.OptGroup label="EXISTING" key="EXISTING">
                     {chartValues.existingChartValues.length
                         ? chartValues.existingChartValues.map((chartValue) => {
                               return (
@@ -121,7 +121,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                           })
                         : this.renderNoResultsOption()}
                 </Select.OptGroup>
-                <Select.OptGroup label="DEFAULT" key={'DEFAULT'}>
+                <Select.OptGroup label="DEFAULT" key="DEFAULT">
                     {chartValues.defaultChartValues.length
                         ? chartValues.defaultChartValues.map((chartValue) => {
                               return (

@@ -1,4 +1,5 @@
 import React from 'react'
+import { noop, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { Select, Pencil } from '../common'
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'
 import { ChartGroupEntry, ChartValuesNativeType, ChartVersionType, MultiChartSummaryProps } from './charts.types'
@@ -7,7 +8,6 @@ import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as EmptyFolder } from '../../assets/icons/img-folder-empty.svg'
 import DropDownFilled from '../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { noop, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
     charts,
@@ -213,8 +213,8 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
         version: appStoreApplicationVersion,
     }
 
-    //appStoreValuesVersionId does not exist in case of default chart Value
-    //availableChartValues Async Call
+    // appStoreValuesVersionId does not exist in case of default chart Value
+    // availableChartValues Async Call
     if (appStoreValuesVersionId && availableChartValues.length) {
         const chartValuesArr = availableChartValues.find(({ kind: k }) => kind === k)
         selectedChartValue = chartValuesArr?.values.find(({ id }) => id === appStoreValuesVersionId)

@@ -1,6 +1,7 @@
 # Ignoring the test files for the time beinggi
 *.test.ts
 *.test.tsx
+.eslintrc.js
 
 # The following files have eslint errors/warnings
 src/App.tsx
@@ -34,6 +35,7 @@ src/components/ApplicationGroup/Details/TriggerView/SourceUpdateResponseModal.ts
 src/components/ApplicationGroup/Details/TriggerView/TriggerModalTableRow.tsx
 src/components/ApplicationGroup/Details/TriggerView/TriggerResponseModal.tsx
 src/components/ApplicationGroup/Details/TriggerView/types.ts
+src/components/ApplicationGroup/Details/TriggerView/utils.ts
 src/components/ApplicationGroup/EnvEmptyStates.tsx
 src/components/ApplicationGroup/EnvSelector.tsx
 src/components/ApplicationGroup/List/EnvironmentListView.tsx
@@ -95,6 +97,7 @@ src/components/ConfigMapSecret/Secret/secret.utils.tsx
 src/components/ConfigMapSecret/Types.ts
 src/components/ConfigMapSecret/service.ts
 src/components/CustomChart/CustomChartList.tsx
+src/components/CustomChart/CustomChartList.utils.ts
 src/components/CustomChart/UploadChartModal.tsx
 src/components/EnvironmentOverride/DeploymentTemplateOverride.tsx
 src/components/EnvironmentOverride/DeploymentTemplateOverrideForm.tsx
@@ -142,9 +145,11 @@ src/components/apiTokens/GenerateActionButton.tsx
 src/components/apiTokens/GenerateModal.tsx
 src/components/apiTokens/GroupPermission.tsx
 src/components/apiTokens/RegenerateModal.tsx
+src/components/apiTokens/__mocks__/ApiTokens.mock.ts
 src/components/apiTokens/authorization.type.ts
 src/components/apiTokens/authorization.utils.ts
 src/components/apiTokens/service.ts
+src/components/apiTokens/validationRules.ts
 src/components/app/EventsLogs.tsx
 src/components/app/LogFilter.ts
 src/components/app/Overview/EnvironmentList.tsx
@@ -157,6 +162,7 @@ src/components/app/WebWorker.ts
 src/components/app/appLabelCommon.tsx
 src/components/app/create/CreateApp.tsx
 src/components/app/create/service.tsx
+src/components/app/create/validationRules.ts
 src/components/app/details/AboutAppInfoModal.tsx
 src/components/app/details/AboutTagEditModal.tsx
 src/components/app/details/AppHeader.tsx
@@ -169,7 +175,9 @@ src/components/app/details/appConfig/appConfig.service.ts
 src/components/app/details/appConfig/appConfig.type.ts
 src/components/app/details/appDetails/AppDetails.tsx
 src/components/app/details/appDetails/AppMetrics.tsx
+src/components/app/details/appDetails/AppStatusCard.tsx
 src/components/app/details/appDetails/DeploymentStatusBreakdown.tsx
+src/components/app/details/appDetails/DeploymentStatusCard.tsx
 src/components/app/details/appDetails/DeploymentStatusDetailModal.tsx
 src/components/app/details/appDetails/DeploymentStatusDetailRow.tsx
 src/components/app/details/appDetails/ErrorInfoStatusBar.tsx
@@ -224,6 +232,7 @@ src/components/app/details/triggerView/MaterialHistory.tsx
 src/components/app/details/triggerView/MaterialSource.tsx
 src/components/app/details/triggerView/TriggerView.tsx
 src/components/app/details/triggerView/TriggerView.utils.ts
+src/components/app/details/triggerView/__mocks__/trigger.view.mock.ts
 src/components/app/details/triggerView/cdMaterial.tsx
 src/components/app/details/triggerView/cdMaterials.utils.ts
 src/components/app/details/triggerView/ciMaterial.tsx
@@ -242,6 +251,7 @@ src/components/app/details/triggerView/workflow/nodes/workflow.utils.tsx
 src/components/app/details/triggerView/workflow.service.ts
 src/components/app/grepSSEworker.ts
 src/components/app/list/AppListView.tsx
+src/components/app/list/DevtronAppListContainer.tsx
 src/components/app/list/TriggerInfo.tsx
 src/components/app/list/TriggerUrl.tsx
 src/components/app/list/appList.modal.ts
@@ -268,6 +278,7 @@ src/components/cdPipeline/cdpipeline.util.tsx
 src/components/cdPipeline/types.ts
 src/components/cdPipeline/validationRules.ts
 src/components/chartRepo/ChartRepo.tsx
+src/components/chartRepo/ChartRepoType.tsx
 src/components/chartRepo/chartRepo.service.tsx
 src/components/charts/AdvancedConfig.tsx
 src/components/charts/ChartGroupAdvanceDeploy.tsx
@@ -302,6 +313,7 @@ src/components/charts/modal/DeployChart.tsx
 src/components/charts/modal/deployChart.types.ts
 src/components/charts/useChartGroup.ts
 src/components/charts/util/ChartGroupCard.tsx
+src/components/charts/util/ChartSelect.tsx
 src/components/charts/util/ChartValueSelect.tsx
 src/components/checkList/AllChartsCheck.tsx
 src/components/checkList/AllCheckModal.tsx
@@ -377,16 +389,19 @@ src/components/common/DynamicTabs/useTabs.ts
 src/components/common/EditableTextArea/EditableTextArea.tsx
 src/components/common/ExportToCsv/ExportToCsv.tsx
 src/components/common/ExportToCsv/constants.ts
+src/components/common/FloatingVariablesSuggestions/FloatingVariablesSuggestions.tsx
 src/components/common/FloatingVariablesSuggestions/SuggestionItem.tsx
+src/components/common/FloatingVariablesSuggestions/Suggestions.tsx
+src/components/common/FloatingVariablesSuggestions/mocks.ts
 src/components/common/FloatingVariablesSuggestions/service.ts
 src/components/common/GitCommitInfoGeneric.tsx
 src/components/common/GitInfoMaterial.tsx
 src/components/common/GitMaterialInfo.tsx
 src/components/common/HiddenInput/HiddenInput.tsx
-src/components/common/LazyImage/LazyImage.tsx
 src/components/common/List/List.tsx
 src/components/common/LogoutCard.tsx
 src/components/common/MultiSelect/MultiSelect.tsx
+src/components/common/MultiSelect/index.tsx
 src/components/common/RadioGroup/RadioGroup.tsx
 src/components/common/Select/Select.tsx
 src/components/common/Select/types.ts
@@ -394,6 +409,7 @@ src/components/common/ShowMoreText.tsx
 src/components/common/ToastBody.tsx
 src/components/common/ValidateForm/ValidateForm.tsx
 src/components/common/eaEmptyState/EAEmptyState.tsx
+src/components/common/edge/colors.tsx
 src/components/common/edge/rectangularEdge.tsx
 src/components/common/edge/straightEdge.tsx
 src/components/common/emptyState/ChartEmptyState.tsx
@@ -416,6 +432,7 @@ src/components/common/header/header.type.ts
 src/components/common/helpers/Helpers.tsx
 src/components/common/helpers/UseWindowSize.tsx
 src/components/common/helpers/compareVersion.ts
+src/components/common/helpers/git.ts
 src/components/common/helpers/isEmpty.ts
 src/components/common/helpers/isSubset.ts
 src/components/common/helpers/time.ts
@@ -425,9 +442,11 @@ src/components/common/hooks/FileReader.ts
 src/components/common/hooks/types.ts
 src/components/common/icons/Icons.tsx
 src/components/common/lineChart/lineChart.tsx
+src/components/common/lineChart/types.tsx
 src/components/common/navigation/Navigation.tsx
 src/components/common/navigation/NavigationRoutes.tsx
 src/components/common/pagination/Pagination.tsx
+src/components/common/pagination/types.tsx
 src/components/common/security/ScanDetailsModal.tsx
 src/components/common/security/ScannedByToolModal.tsx
 src/components/deploymentConfig/ChartSelectorDropdown.tsx
@@ -457,11 +476,13 @@ src/components/dockerRegistry/service.tsx
 src/components/external-apps/ExternalAppService.ts
 src/components/external-apps/ExternalApps.tsx
 src/components/externalLinks/ExternalLinks.component.tsx
+src/components/externalLinks/ExternalLinks.service.ts
 src/components/externalLinks/ExternalLinks.tsx
 src/components/externalLinks/ExternalLinks.type.ts
 src/components/externalLinks/ExternalLinks.utils.ts
 src/components/externalLinks/ExternalLinksCRUD/AddExternalLink.tsx
 src/components/externalLinks/ExternalLinksCRUD/ConfigureLinkAction.tsx
+src/components/externalLinks/ExternalLinksCRUD/DeleteExternalLinkDialog.tsx
 src/components/externalLinks/ExternalLinksCRUD/IdentifierSelector.tsx
 src/components/externalLinks/ExternalLinksFilters.tsx
 src/components/gitOps/GitOpsConfiguration.tsx
@@ -588,6 +609,7 @@ src/components/v2/appDetails/k8Resource/nodeType/NodeTree.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/PodHeader.component.tsx
 src/components/v2/appDetails/k8Resource/nodeType/PodTabSection.tsx
 src/components/v2/appDetails/k8Resource/nodeType/nodeType.util.ts
+src/components/v2/appDetails/k8Resource/nodeType/useNodeTreeReducer.ts
 src/components/v2/appDetails/logAnalyzer/LogAnalyzer.component.tsx
 src/components/v2/appDetails/sourceInfo/EnvironmentSelector.component.tsx
 src/components/v2/appDetails/sourceInfo/environment.type.ts
@@ -598,18 +620,23 @@ src/components/v2/appDetails/sourceInfo/environmentStatus/ConfigStatusModal.comp
 src/components/v2/appDetails/sourceInfo/environmentStatus/EnvironmentStatus.component.tsx
 src/components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard.tsx
 src/components/v2/appDetails/sourceInfo/environmentStatus/NotesDrawer.tsx
+src/components/v2/appDetails/sourceInfo/environmentStatus/constants.ts
 src/components/v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component.tsx
 src/components/v2/appDetails/sourceInfo/rotatePods/RotateResponseModal.tsx
+src/components/v2/appDetails/sourceInfo/rotatePods/rotatePodsModal.type.ts
 src/components/v2/appDetails/sourceInfo/scaleWorkloads/ScaleWorkloadsModal.component.tsx
 src/components/v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type.ts
 src/components/v2/chartDeploymentHistory/ChartDeploymentHistory.component.tsx
 src/components/v2/chartDeploymentHistory/DockerListModal.tsx
+src/components/v2/chartDeploymentHistory/chartDeploymentHistory.service.ts
 src/components/v2/common/ReactSelect.utils.tsx
 src/components/v2/common/ReactSelectCustomization.tsx
 src/components/v2/common/message.ui.tsx
+src/components/v2/devtronStackManager/AboutDevtronView.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.component.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.service.ts
 src/components/v2/devtronStackManager/DevtronStackManager.tsx
+src/components/v2/devtronStackManager/DevtronStackManager.type.ts
 src/components/v2/devtronStackManager/DevtronStackManager.utils.ts
 src/components/v2/devtronStackManager/SuccessModalComponent.tsx
 src/components/v2/headers/AppHeader.component.tsx
@@ -629,6 +656,7 @@ src/components/v2/values/chartValuesDiff/ChartValuesView.tsx
 src/components/v2/values/chartValuesDiff/ChartValuesView.type.ts
 src/components/v2/values/chartValuesDiff/ChartValuesView.utils.ts
 src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
+src/components/v2/values/chartValuesDiff/constant.ts
 src/components/v2/values/common/ReadmeColumn.component.tsx
 src/components/v2/values/common/chartValues.api.ts
 src/components/workflowEditor/CDSuccessModal.tsx
@@ -652,7 +680,9 @@ src/components/workflowEditor/types.ts
 src/components/workflowEditor/workflowEditor.tsx
 src/config/constantMessaging.ts
 src/config/constants.ts
+src/config/routes.ts
 src/config/searchWorker.ts
+src/config/utils.ts
 src/index.tsx
 src/serviceWorker.ts
 src/services/fetchWithFullRoute.ts

@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION } from '../../config'
-import { getWorkflowList } from '../../services/service'
-import { OptionType } from '../app/types'
-import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { useForm } from '../common'
 import {
     CIBuildConfigType,
     CIBuildType,
@@ -12,6 +7,12 @@ import {
     Progressing,
     ConfirmationDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
+import { DOCUMENTATION } from '../../config'
+import { getWorkflowList } from '../../services/service'
+import { OptionType } from '../app/types'
+import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'
 import { CIBuildArgType, CIConfigFormProps, LoadingState, ProcessedWorkflowsType } from './types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
@@ -29,7 +30,6 @@ import {
     initCurrentCIBuildConfig,
     processBuildArgs,
 } from './CIConfig.utils'
-import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 
 export default function CIConfigForm({
@@ -72,7 +72,7 @@ export default function CIConfigForm({
                   (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
               )
             : sourceConfig.material[0]
-    const currentBuildContextGitMaterial = buildCtxGitMaterial ? buildCtxGitMaterial : currentMaterial
+    const currentBuildContextGitMaterial = buildCtxGitMaterial || currentMaterial
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
     const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
         useState(currentBuildContextGitMaterial)

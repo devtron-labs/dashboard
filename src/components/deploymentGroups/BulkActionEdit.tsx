@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useReducer, useMemo } from 'react'
 import { useParams, useHistory, useLocation } from 'react-router'
-import { useKeyDown, Info } from '../common'
 import {
     showError,
     Progressing,
@@ -9,12 +8,13 @@ import {
     GenericEmptyState,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { useKeyDown, Info } from '../common'
 import { ReactComponent as EnvIcon } from '../../assets/icons/ic-env.svg'
 import { ReactComponent as BranchIcon } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as Error } from '../../assets/icons/misc/errorInfo.svg'
 import WarningIcon from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as SearchIcon } from '../../assets/icons/ic-search.svg'
-import { toast } from 'react-toastify'
 import {
     getCiPipelineApps,
     getLinkedCiPipelines,
@@ -23,7 +23,7 @@ import {
 } from './service'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
-export function BulkActionEdit() {
+export const BulkActionEdit = () => {
     const { id } = useParams<{ id: string }>()
     const location = useLocation()
     const [loading, result, error, reload] = useAsync(() => getLinkedCiPipelines(id), [id])
@@ -205,19 +205,15 @@ export function BulkActionEdit() {
     function handleSelectApp(id, name) {
         if (state.prevEnvId && state.environmentId !== state.prevEnvId) {
             dispatch({ type: 'getConfirmation', value: id })
+        } else if (id === 0) {
+            dispatch({ type: 'selectAllApplications' })
+        } else if (
+            Array.isArray(state.selectedApplications[state.environmentId]) &&
+            state.selectedApplications[state.environmentId].includes(id)
+        ) {
+            dispatch({ type: 'unselectApplication', value: id })
         } else {
-            if (id === 0) {
-                dispatch({ type: 'selectAllApplications' })
-            } else {
-                if (
-                    Array.isArray(state.selectedApplications[state.environmentId]) &&
-                    state.selectedApplications[state.environmentId].includes(id)
-                ) {
-                    dispatch({ type: 'unselectApplication', value: id })
-                } else {
-                    dispatch({ type: 'selectApplication', value: [id] })
-                }
-            }
+            dispatch({ type: 'selectApplication', value: [id] })
         }
     }
 
@@ -378,19 +374,17 @@ export function BulkActionEdit() {
                                     <>
                                         <div className="apps-select">
                                             <h5>Connected Applications</h5>
-                                            {
-                                                <div className="app-search flex left">
-                                                    <SearchIcon />
-                                                    <input
-                                                        autoComplete="off"
-                                                        type="text"
-                                                        value={state.appSearchString}
-                                                        onChange={(e) =>
-                                                            dispatch({ type: 'appSearch', value: e.target.value })
-                                                        }
-                                                    />
-                                                </div>
-                                            }
+                                            <div className="app-search flex left">
+                                                <SearchIcon />
+                                                <input
+                                                    autoComplete="off"
+                                                    type="text"
+                                                    value={state.appSearchString}
+                                                    onChange={(e) =>
+                                                        dispatch({ type: 'appSearch', value: e.target.value })
+                                                    }
+                                                />
+                                            </div>
                                             {!state.appSearchString &&
                                                 state.applications.filter((app) => app.envId === state.environmentId)
                                                     .length !== selectedAppIds.length && (
@@ -400,7 +394,7 @@ export function BulkActionEdit() {
                                                         select={(e) => handleSelectApp(0, null)}
                                                         selectedEnvId={state.environmentId}
                                                         envId={state.environmentId}
-                                                        searchString={'Select All'}
+                                                        searchString="Select All"
                                                     />
                                                 )}
                                             {Array.isArray(state.applications) &&
@@ -475,7 +469,7 @@ export function BulkActionEdit() {
     )
 }
 
-function EnvSelect({ envName = '', appCount, active = false, select }) {
+const EnvSelect = ({ envName = '', appCount, active = false, select }) => {
     const { id: deploymentGroupId } = useParams<{ id: string }>()
     if (Number(deploymentGroupId) > 0 && !active) {
         return null
@@ -491,7 +485,7 @@ function EnvSelect({ envName = '', appCount, active = false, select }) {
     )
 }
 
-function AppSelect({ name, selected, select, selectedEnvId, envId, searchString }) {
+const AppSelect = ({ name, selected, select, selectedEnvId, envId, searchString }) => {
     if (envId !== selectedEnvId) {
         return null
     }
@@ -506,7 +500,7 @@ function AppSelect({ name, selected, select, selectedEnvId, envId, searchString 
     )
 }
 
-function SelectedApp({ id, name, select, selected, selectedEnvId, envId }) {
+const SelectedApp = ({ id, name, select, selected, selectedEnvId, envId }) => {
     if (!selected) {
         return null
     }
@@ -521,7 +515,7 @@ function SelectedApp({ id, name, select, selected, selectedEnvId, envId }) {
     )
 }
 
-function PipelineSelect({ id, name, connections, isActive, select, repositories }) {
+const PipelineSelect = ({ id, name, connections, isActive, select, repositories }) => {
     const { id: deploymentGroupId } = useParams<{ id: string }>()
     if (Number(deploymentGroupId) > 0 && !isActive) {
         return null
@@ -541,7 +535,7 @@ function PipelineSelect({ id, name, connections, isActive, select, repositories 
     )
 }
 
-function Repo({ gitMaterialName, source }) {
+const Repo = ({ gitMaterialName, source }) => {
     return (
         <div className="flex left repo w-100">
             <div className="repo-name">{gitMaterialName}</div> /&nbsp;
@@ -553,7 +547,7 @@ function Repo({ gitMaterialName, source }) {
     )
 }
 
-function TitledCard({ number, completed = false, title, next, onClick, children }) {
+const TitledCard = ({ number, completed = false, title, next, onClick, children }) => {
     return (
         <div className="white-card--titled" onClick={onClick}>
             <div className={`title-container ${completed ? 'active' : ''}`}>

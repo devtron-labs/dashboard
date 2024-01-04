@@ -1,15 +1,18 @@
 import React, { Component } from 'react'
-import { getDeploymentMetrics } from './deploymentMetrics.service'
-import { DatePicker } from '../../../common'
 import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../../../config'
 import { generatePath } from 'react-router'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
+import moment from 'moment'
+import ReactSelect from 'react-select'
+import Tippy from '@tippyjs/react'
+import ReactGA from 'react-ga4'
+import { getDeploymentMetrics } from './deploymentMetrics.service'
+import { DatePicker } from '../../../common'
+import { ViewType } from '../../../../config'
 import { DeploymentTable } from './DeploymentTable'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import { DeploymentTableModal } from './DeploymentTableModal'
 import { BenchmarkModal } from './BenchmarkModal'
-import moment from 'moment'
 import {
     DropdownIndicator,
     styles,
@@ -25,16 +28,13 @@ import {
     EliteCategoryMessage,
     FailureLegendEmptyState,
 } from './deploymentMetrics.util'
-import ReactSelect from 'react-select'
 import { Option } from '../../../v2/common/ReactSelect.utils'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Help } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Deploy } from '../../../../assets/icons/ic-deploy.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg'
-import ReactGA from 'react-ga4'
 import './deploymentMetrics.scss'
 import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -46,7 +46,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         this.state = {
             code: 0,
             view: ViewType.LOADING,
-            //used by ReactSelect Menu
+            // used by ReactSelect Menu
             selectedEnvironment: undefined,
             environments: [],
             frequencyAndLeadTimeGraph: [],
@@ -288,7 +288,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     content={
                                         <FrequencyGraphLegend
                                             noFailures={this.state.recoveryTimeGraph.length === 0}
-                                            label={`Deployment Frequency`}
+                                            label="Deployment Frequency"
                                             frequencyBenchmark={this.state.frequencyBenchmark}
                                             failureRateBenchmark={this.state.failureRateBenchmark}
                                             frequency={`${this.state.avgFrequency} / day`}
@@ -321,12 +321,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                         />
                                     }
                                 />
-                                <YAxis
-                                    type="number"
-                                    dataKey="frequency"
-                                    domain={[0, this.state.maxFrequency]}
-                                    hide={true}
-                                />
+                                <YAxis type="number" dataKey="frequency" domain={[0, this.state.maxFrequency]} hide />
                                 <XAxis
                                     dataKey="xAxisLabel"
                                     tickLine={false}
@@ -375,7 +370,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     y={this.state.avgFrequency}
                                     stroke="var(--N900)"
                                     strokeWidth="0.5"
-                                    strokeDasharray={'3 3'}
+                                    strokeDasharray="3 3"
                                     label=""
                                 />
                             </BarChart>
@@ -392,9 +387,9 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     content={
                                         <RecoveryAndLeadTimeGraphLegend
                                             noFailures={false}
-                                            label={`Mean Lead Time`}
+                                            label="Mean Lead Time"
                                             benchmark={this.state.leadTimeBenchmark}
-                                            tooltipText={'How long it takes to deliver a change to production?'}
+                                            tooltipText="How long it takes to deliver a change to production?"
                                             valueLabel={`${this.state.meanLeadTimeLabel}`}
                                             setMetric={() => {
                                                 ReactGA.event({
@@ -422,7 +417,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                 >
                                     <Label position="insideBottomLeft" offset={15} content={leadTimeXAxisLabel} />
                                 </XAxis>
-                                <YAxis type="number" dataKey="maxLeadTime" hide={true} />
+                                <YAxis type="number" dataKey="maxLeadTime" hide />
                                 <Bar
                                     dataKey="maxLeadTime"
                                     fill="var(--B300)"
@@ -448,7 +443,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     y={this.state.meanLeadTime}
                                     stroke="var(--N900)"
                                     strokeWidth="0.5"
-                                    strokeDasharray={'3 3'}
+                                    strokeDasharray="3 3"
                                     label=""
                                 />
                             </BarChart>
@@ -465,7 +460,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     content={
                                         <RecoveryAndLeadTimeGraphLegend
                                             noFailures={this.state.recoveryTimeGraph.length === 0}
-                                            label={`Mean Time to Recovery`}
+                                            label="Mean Time to Recovery"
                                             setMetric={() => {
                                                 ReactGA.event({
                                                     category: 'Deployment Metrics',
@@ -482,7 +477,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                                 })
                                             }}
                                             benchmark={this.state.recoveryTimeBenchmark}
-                                            tooltipText={'How long does it take to fix a failed pipeline?'}
+                                            tooltipText="How long does it take to fix a failed pipeline?"
                                             valueLabel={`${this.state.meanRecoveryTimeLabel}`}
                                         />
                                     }
@@ -495,13 +490,13 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                 >
                                     <Label position="insideBottomLeft" offset={15} content={recoveryTimeLabel} />
                                 </XAxis>
-                                <YAxis type="number" dataKey="recoveryTime" hide={true} />
+                                <YAxis type="number" dataKey="recoveryTime" hide />
                                 <Bar
                                     dataKey="recoveryTime"
                                     fill="var(--Y300)"
                                     style={{ cursor: 'pointer' }}
                                     onClick={(data) => {
-                                        //NOTE: startDate, and endDate [releasetTime-2, releaseTime+2]
+                                        // NOTE: startDate, and endDate [releasetTime-2, releaseTime+2]
                                         this.setState({
                                             filterBy: {
                                                 startDate: moment(data.releaseTime),
@@ -522,7 +517,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     y={this.state.meanRecoveryTime}
                                     stroke="var(--N900)"
                                     strokeWidth="0.5"
-                                    strokeDasharray={'3 3'}
+                                    strokeDasharray="3 3"
                                     label=""
                                 />
                             </BarChart>
@@ -620,85 +615,85 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )
-        } else if (this.state.view === ViewType.FORM && this.state.environments.length === 0) {
-            return this.renderNoEnvironmentView()
-        } else if (this.state.view === ViewType.FORM && !this.props.match.params.envId) {
-            return this.renderSelectEnvironmentView()
-        } else if (this.state.view === ViewType.FORM && this.state.frequencyAndLeadTimeGraph.length === 0) {
-            return this.renderEmptyState()
-        } else {
-            let deploymentTableRows = this.state.rows
-            if (this.state.statusFilter > -1) {
-                deploymentTableRows = deploymentTableRows.filter((row) => {
-                    if (row.releaseStatus === this.state.statusFilter) {
-                        return row
-                    }
-                })
-            }
-            return (
-                <div>
-                    {this.renderGraphs()}
-                    <div className="deployment-metrics__body">
-                        <div className="deployment-table__header mb-16">
-                            <p className="deployment-table__title m-0">
-                                <Deploy className="icon-dim-20 dc__vertical-align-middle mr-5 scn-7 fcn-7" />
-                                Deployments
-                            </p>
-                            <div className="flex right">
-                                <label className="dc__tertiary-tab__radio">
-                                    <input
-                                        type="radio"
-                                        name="status"
-                                        checked={this.state.statusFilter === -1}
-                                        value={-1}
-                                        onClick={this.handleTableFilter}
-                                    />
-                                    <span className="dc__tertiary-tab">All ({this.state.totalDeployments})</span>
-                                </label>
-                                <label className="dc__tertiary-tab__radio" data-testid="success-deployment-status">
-                                    <input
-                                        type="radio"
-                                        name="status"
-                                        checked={this.state.statusFilter === 0}
-                                        value={0}
-                                        onClick={this.handleTableFilter}
-                                    />
-                                    <span className="dc__tertiary-tab">
-                                        <Success className="icon-dim-16 dc__vertical-align-middle mr-4" />
-                                        Success ({this.state.totalDeployments - this.state.failedDeployments})
-                                    </span>
-                                </label>
-                                <label className="dc__tertiary-tab__radio" data-testid="failed-deployment-status">
-                                    <input
-                                        type="radio"
-                                        name="status"
-                                        checked={this.state.statusFilter === 1}
-                                        value={1}
-                                        onClick={this.handleTableFilter}
-                                    />
-                                    <span className="dc__tertiary-tab">
-                                        <Fail className="icon-dim-16 dc__vertical-align-middle mr-4" />
-                                        Failed ({this.state.failedDeployments})
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-                        <DeploymentTable
-                            rows={deploymentTableRows}
-                            deploymentTableView={this.state.deploymentTableView}
-                        />
-                    </div>
-                    {this.renderModal()}
-                    {this.renderBenchmarkModal()}
-                </div>
-            )
         }
+        if (this.state.view === ViewType.FORM && this.state.environments.length === 0) {
+            return this.renderNoEnvironmentView()
+        }
+        if (this.state.view === ViewType.FORM && !this.props.match.params.envId) {
+            return this.renderSelectEnvironmentView()
+        }
+        if (this.state.view === ViewType.FORM && this.state.frequencyAndLeadTimeGraph.length === 0) {
+            return this.renderEmptyState()
+        }
+        let deploymentTableRows = this.state.rows
+        if (this.state.statusFilter > -1) {
+            deploymentTableRows = deploymentTableRows.filter((row) => {
+                if (row.releaseStatus === this.state.statusFilter) {
+                    return row
+                }
+            })
+        }
+        return (
+            <div>
+                {this.renderGraphs()}
+                <div className="deployment-metrics__body">
+                    <div className="deployment-table__header mb-16">
+                        <p className="deployment-table__title m-0">
+                            <Deploy className="icon-dim-20 dc__vertical-align-middle mr-5 scn-7 fcn-7" />
+                            Deployments
+                        </p>
+                        <div className="flex right">
+                            <label className="dc__tertiary-tab__radio">
+                                <input
+                                    type="radio"
+                                    name="status"
+                                    checked={this.state.statusFilter === -1}
+                                    value={-1}
+                                    onClick={this.handleTableFilter}
+                                />
+                                <span className="dc__tertiary-tab">All ({this.state.totalDeployments})</span>
+                            </label>
+                            <label className="dc__tertiary-tab__radio" data-testid="success-deployment-status">
+                                <input
+                                    type="radio"
+                                    name="status"
+                                    checked={this.state.statusFilter === 0}
+                                    value={0}
+                                    onClick={this.handleTableFilter}
+                                />
+                                <span className="dc__tertiary-tab">
+                                    <Success className="icon-dim-16 dc__vertical-align-middle mr-4" />
+                                    Success ({this.state.totalDeployments - this.state.failedDeployments})
+                                </span>
+                            </label>
+                            <label className="dc__tertiary-tab__radio" data-testid="failed-deployment-status">
+                                <input
+                                    type="radio"
+                                    name="status"
+                                    checked={this.state.statusFilter === 1}
+                                    value={1}
+                                    onClick={this.handleTableFilter}
+                                />
+                                <span className="dc__tertiary-tab">
+                                    <Fail className="icon-dim-16 dc__vertical-align-middle mr-4" />
+                                    Failed ({this.state.failedDeployments})
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <DeploymentTable rows={deploymentTableRows} deploymentTableView={this.state.deploymentTableView} />
+                </div>
+                {this.renderModal()}
+                {this.renderBenchmarkModal()}
+            </div>
+        )
     }
 }
 
@@ -740,7 +735,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                         <div className="cursor" onClick={this.props.setFrequencyMetric}>
                             <p className="graph-legend__secondary-label">
                                 {this.props.frequencyBenchmark?.targetName} (Target Benchmark)
-                                <span className="mr-5"></span>
+                                <span className="mr-5" />
                                 <BenchmarkLine category={this.props.frequencyBenchmark.targetName} />
                             </p>
                             <p className="graph-legend__secondary-value">
@@ -809,36 +804,35 @@ export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndL
                     <p className="graph-legend__secondary-label">No recoveries were required during this period.</p>
                 </div>
             )
-        } else {
-            return (
-                <div className="graph-legend">
-                    <p className="graph-legend__primary-label">
-                        {this.props.label}
-                        <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
-                            <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
-                        </Tippy>
-                        <span className="cursor" onClick={this.props.setMetric}>
-                            {renderCategoryTag(this.props.benchmark?.name)}&nbsp;
-                        </span>
-                    </p>
-                    <p className="graph-legend__primary-value">
-                        <span className="mr-10">{this.props.valueLabel}</span>
-                        <ReferenceLineLegend />
-                    </p>
-                    {this.props.benchmark?.name !== 'ELITE' ? (
-                        <div className="cursor" onClick={this.props.setMetric}>
-                            <p className="graph-legend__secondary-label">
-                                {this.props.benchmark?.targetName} (Target Benchmark)
-                                <span className="mr-5"></span>
-                                <BenchmarkLine category={this.props.benchmark.targetName} />
-                            </p>
-                            <p className="graph-legend__secondary-value">{this.props.benchmark?.targetLabel}</p>
-                        </div>
-                    ) : (
-                        <EliteCategoryMessage className="cursor" onClick={this.props.setMetric} />
-                    )}
-                </div>
-            )
         }
+        return (
+            <div className="graph-legend">
+                <p className="graph-legend__primary-label">
+                    {this.props.label}
+                    <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
+                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                    </Tippy>
+                    <span className="cursor" onClick={this.props.setMetric}>
+                        {renderCategoryTag(this.props.benchmark?.name)}&nbsp;
+                    </span>
+                </p>
+                <p className="graph-legend__primary-value">
+                    <span className="mr-10">{this.props.valueLabel}</span>
+                    <ReferenceLineLegend />
+                </p>
+                {this.props.benchmark?.name !== 'ELITE' ? (
+                    <div className="cursor" onClick={this.props.setMetric}>
+                        <p className="graph-legend__secondary-label">
+                            {this.props.benchmark?.targetName} (Target Benchmark)
+                            <span className="mr-5" />
+                            <BenchmarkLine category={this.props.benchmark.targetName} />
+                        </p>
+                        <p className="graph-legend__secondary-value">{this.props.benchmark?.targetLabel}</p>
+                    </div>
+                ) : (
+                    <EliteCategoryMessage className="cursor" onClick={this.props.setMetric} />
+                )}
+            </div>
+        )
     }
 }

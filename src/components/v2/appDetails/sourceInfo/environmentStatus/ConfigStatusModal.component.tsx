@@ -3,7 +3,7 @@ import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-errorInfo.svg'
 
-function ConfigStatusModalComponent({ close, status }) {
+const ConfigStatusModalComponent = ({ close, status }) => {
     return (
         <div>
             <Drawer position="right" width="50%" onClose={close}>
@@ -46,7 +46,7 @@ function ConfigStatusModalComponent({ close, status }) {
                         </div>
                     </div>
 
-                    <div className="app-status-detail__header "></div>
+                    <div className="app-status-detail__header " />
                 </div>
             </Drawer>
         </div>

@@ -1,9 +1,9 @@
 import React from 'react'
 import { Progressing, BreadCrumb, useBreadcrumb, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { getChartGroups } from '../charts.service'
-import ChartGroupCard from '../util/ChartGroupCard'
 import { useRouteMatch, useHistory, useLocation, Switch } from 'react-router'
 import { Route, Link } from 'react-router-dom'
+import { getChartGroups } from '../charts.service'
+import ChartGroupCard from '../util/ChartGroupCard'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import ChartGroupUpdate from '../ChartGroupUpdate'
 import ChartGroupDetails from '../ChartGroupDetails'
@@ -11,7 +11,7 @@ import ChartGroupAdvanceDeploy from '../ChartGroupAdvanceDeploy'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import PageHeader from '../../common/header/PageHeader'
 
-function ChartGroupList() {
+const ChartGroupList = () => {
     const [loading, result, error, reload] = useAsync(getChartGroups, [])
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -44,11 +44,7 @@ function ChartGroupList() {
     }
     return (
         <div className="chart-group-list-page">
-            <PageHeader
-                isBreadcrumbs={true}
-                breadCrumbs={renderBreadcrumbs}
-                renderActionButtons={renderCreateGroupButton}
-            />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} renderActionButtons={renderCreateGroupButton} />
             <div className="chart-group-list-page__body">
                 {loading ? (
                     <Progressing pageLoader />

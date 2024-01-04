@@ -1,7 +1,7 @@
 import React from 'react'
+import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DeleteCross } from '../../assets/icons/ic-cross.svg'
 import { CreateHeaderDetailsType } from './types'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function CreateHeaderDetails({
     index,

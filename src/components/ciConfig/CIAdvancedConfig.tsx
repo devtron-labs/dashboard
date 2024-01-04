@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Cross } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { CIAdvancedConfigProps } from './types'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import TargetPlatformSelector from './TargetPlatformSelector'
 
 export default function CIAdvancedConfig({
@@ -41,13 +41,13 @@ export default function CIAdvancedConfig({
             return
         }
 
-        const isKey = _target.name === 'arg-key',
-            id = _target.dataset.id,
-            k = isKey ? _target.value : _target.dataset.value,
-            v = isKey ? _target.dataset.value : _target.value
+        const isKey = _target.name === 'arg-key'
+        const { id } = _target.dataset
+        const k = isKey ? _target.value : _target.dataset.value
+        const v = isKey ? _target.dataset.value : _target.value
 
         setArgs((arr) => {
-            arr[id] = { k: k, v: v, keyError: '', valueError: '' }
+            arr[id] = { k, v, keyError: '', valueError: '' }
             return Array.from(arr)
         })
     }
@@ -80,16 +80,17 @@ export default function CIAdvancedConfig({
                                         ? ' docker build arguments (--build-args).'
                                         : ' buildpack env arguments (--env).'
                                 }`}
-                        showCloseButton={true}
+                        showCloseButton
                         trigger="click"
-                        interactive={true}
+                        interactive
                     >
                         <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
                     </TippyCustomized>
                 </div>
                 {!updateNotAllowed && (
                     <div className="add-parameter fs-14 mb-8 cb-5 cursor dc__w-fit-content" onClick={addArg}>
-                        <span className="fa fa-plus mr-8"></span>Add{isDockerArgsSection ? ' parameter' : ' argument'}
+                        <span className="fa fa-plus mr-8" />
+                        Add{isDockerArgsSection ? ' parameter' : ' argument'}
                     </div>
                 )}
                 {args &&

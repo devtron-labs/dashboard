@@ -10,7 +10,7 @@ export interface SSOLoginState {
     view: string
     statusCode: number
     saveLoading: boolean
-    sso: string //lowercase
+    sso: string // lowercase
     lastActiveSSO: undefined | SSOLogin
     configMap: string
     showToggling: boolean
@@ -29,7 +29,7 @@ export interface SSOConfigType {
         type: string
         id: string
         name: string
-        config: string //YAML string
+        config: string // YAML string
     }
     active?: boolean
 }

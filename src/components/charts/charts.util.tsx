@@ -1,6 +1,6 @@
 import { components } from 'react-select'
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import React from 'react'
+import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 
 export const styles = {
     control: (base, state) => ({
@@ -42,7 +42,7 @@ export const smallMenuList = {
 }
 
 export const ValueContainer = (props) => {
-    const length = props.getValue().length
+    const { length } = props.getValue()
     let count = ''
     if (length === props.options.length) {
         count = 'All'
@@ -87,7 +87,7 @@ export const ValueContainer = (props) => {
     )
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n4" />

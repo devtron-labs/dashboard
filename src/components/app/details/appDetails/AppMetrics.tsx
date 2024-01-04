@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router'
 import { not, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Link, NavLink } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import moment, { Moment } from 'moment'
+import Tippy from '@tippyjs/react'
 import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect } from './utils'
 import {
     ChartTypes,
@@ -26,14 +30,10 @@ import {
     ModuleNameMap,
     URLS,
 } from '../../../../config'
-import { Link, NavLink } from 'react-router-dom'
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service'
 import { getHostURLConfiguration } from '../../../../services/service'
-import { toast } from 'react-toastify'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
-import moment, { Moment } from 'moment'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -86,8 +86,8 @@ export const AppMetrics: React.FC<{
 
     function handleDatesChange({ startDate, endDate }): void {
         setDateRange({
-            startDate: startDate,
-            endDate: endDate,
+            startDate,
+            endDate,
         })
         setCalendarInput({
             startDate: startDate?.format('DD-MM-YYYY hh:mm:ss'),
@@ -113,7 +113,9 @@ export const AppMetrics: React.FC<{
 
     async function checkDatasource() {
         try {
-            let datasourceConfiguredRes, datasourceHealthyRes, hostUrlRes
+            let datasourceConfiguredRes
+            let datasourceHealthyRes
+            let hostUrlRes
             hostUrlRes = await getHostURLConfiguration()
             setHostURLConfig(hostUrlRes.result)
             datasourceConfiguredRes = await isDatasourceConfigured(environmentName)
@@ -151,17 +153,17 @@ export const AppMetrics: React.FC<{
             k8sVersion = DEFAULTK8SVERSION
         }
         const appInfo = {
-            appId: appId,
-            envId: envId,
-            environmentName: environmentName,
-            newPodHash: newPodHash,
-            k8sVersion: k8sVersion,
+            appId,
+            envId,
+            environmentName,
+            newPodHash,
+            k8sVersion,
         }
         const throughput = getIframeSrc(appInfo, ChartType.Status, calendarInputs, tab, true, selected.value)
         setStatusCode(selected.value)
         setGraphs({
             ...graphs,
-            throughput: throughput,
+            throughput,
         })
     }
 
@@ -170,17 +172,17 @@ export const AppMetrics: React.FC<{
             k8sVersion = DEFAULTK8SVERSION
         }
         const appInfo = {
-            appId: appId,
-            envId: envId,
-            environmentName: environmentName,
-            newPodHash: newPodHash,
-            k8sVersion: k8sVersion,
+            appId,
+            envId,
+            environmentName,
+            newPodHash,
+            k8sVersion,
         }
         const latency = getIframeSrc(appInfo, ChartType.Latency, calendarInputs, tab, true, undefined, selected.value)
         setLatency(selected.value)
         setGraphs({
             ...graphs,
-            latency: latency,
+            latency,
         })
     }
 
@@ -201,11 +203,11 @@ export const AppMetrics: React.FC<{
         }
 
         const appInfo = {
-            appId: appId,
-            envId: envId,
-            environmentName: environmentName,
-            newPodHash: newPodHash,
-            k8sVersion: k8sVersion,
+            appId,
+            envId,
+            environmentName,
+            newPodHash,
+            k8sVersion,
         }
         const cpu = getIframeSrc(appInfo, ChartType.Cpu, calendarInputs, newTab, true)
         const ram = getIframeSrc(appInfo, ChartType.Ram, calendarInputs, newTab, true)
@@ -241,10 +243,11 @@ export const AppMetrics: React.FC<{
         getNewGraphs(tab)
     }, [datasource, calendarValue])
 
-    //@ts-ignore
+    // @ts-ignore
     if (grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED) {
         return <MonitoringModuleNotInstalled addSpace={addSpace} />
-    } else if (
+    }
+    if (
         !datasource.isConfigured ||
         !datasource.isHealthy ||
         !hostURLConfig ||
@@ -258,168 +261,167 @@ export const AppMetrics: React.FC<{
                 hostURLConfig={hostURLConfig}
             />
         )
-    } else {
-        return (
-            <section
-                data-testid="app-metrices-wrapper"
-                className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addSpace}`}
-                style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
-            >
-                {(appMetrics || infraMetrics) && (
-                    <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
-                        <span className="fs-14 fw-6 cn-7 flex left mr-9">
-                            <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
-                            APPLICATION METRICS
-                        </span>
-                        <div className="flex">
-                            <div className="mr-16">
-                                <label data-testid="app-metrics-aggregate-status" className="dc__tertiary-tab__radio">
-                                    <input
-                                        type="radio"
-                                        name="status"
-                                        checked={tab === AppMetricsTab.Aggregate}
-                                        value={AppMetricsTab.Aggregate}
-                                        onChange={handleTabChange}
+    }
+    return (
+        <section
+            data-testid="app-metrices-wrapper"
+            className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addSpace}`}
+            style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
+        >
+            {(appMetrics || infraMetrics) && (
+                <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
+                    <span className="fs-14 fw-6 cn-7 flex left mr-9">
+                        <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
+                        APPLICATION METRICS
+                    </span>
+                    <div className="flex">
+                        <div className="mr-16">
+                            <label data-testid="app-metrics-aggregate-status" className="dc__tertiary-tab__radio">
+                                <input
+                                    type="radio"
+                                    name="status"
+                                    checked={tab === AppMetricsTab.Aggregate}
+                                    value={AppMetricsTab.Aggregate}
+                                    onChange={handleTabChange}
+                                />
+                                <span className="dc__tertiary-tab">Aggregate</span>
+                            </label>
+                            <label data-testid="app-metrics-per-pod-status" className="dc__tertiary-tab__radio">
+                                <input
+                                    type="radio"
+                                    name="status"
+                                    checked={tab === AppMetricsTab.Pod}
+                                    value={AppMetricsTab.Pod}
+                                    onChange={handleTabChange}
+                                />
+                                <span className="dc__tertiary-tab">Per Pod</span>
+                            </label>
+                            {chartName ? (
+                                <GraphModal
+                                    appId={appId}
+                                    envId={envId}
+                                    appName={appName}
+                                    infraMetrics={environment.infraMetrics}
+                                    appMetrics={environment.appMetrics}
+                                    environmentName={environmentName}
+                                    chartName={chartName}
+                                    newPodHash={newPodHash}
+                                    calendar={calendar}
+                                    calendarInputs={calendarInputs}
+                                    tab={tab}
+                                    k8sVersion={k8sVersion}
+                                    selectedLatency={selectedLatency}
+                                    close={() => setChartName(null)}
+                                />
+                            ) : null}
+                        </div>
+                        <DateRangePicker
+                            calendar={calendar}
+                            calendarInputs={calendarInputs}
+                            focusedInput={focusedInput}
+                            calendarValue={calendarValue}
+                            handlePredefinedRange={handlePredefinedRange}
+                            handleDatesChange={handleDatesChange}
+                            handleFocusChange={handleFocusChange}
+                            handleDateInput={handleDateInput}
+                            handleApply={handleApply}
+                        />
+                    </div>
+                </div>
+            )}
+            <div className="chart-containers">
+                {infraMetrics ? (
+                    <>
+                        <div data-testid="app-metrics-cpu-usage" className="app-metrics-graph chart">
+                            <div className="app-metrics-graph__title flexbox flex-justify">
+                                CPU Usage
+                                <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                                    <Fullscreen
+                                        className="icon-dim-16 cursor fcn-5"
+                                        onClick={(e) => {
+                                            setChartName(ChartType.Cpu)
+                                        }}
                                     />
-                                    <span className="dc__tertiary-tab">Aggregate</span>
-                                </label>
-                                <label data-testid="app-metrics-per-pod-status" className="dc__tertiary-tab__radio">
-                                    <input
-                                        type="radio"
-                                        name="status"
-                                        checked={tab === AppMetricsTab.Pod}
-                                        value={AppMetricsTab.Pod}
-                                        onChange={handleTabChange}
-                                    />
-                                    <span className="dc__tertiary-tab">Per Pod</span>
-                                </label>
-                                {chartName ? (
-                                    <GraphModal
-                                        appId={appId}
-                                        envId={envId}
-                                        appName={appName}
-                                        infraMetrics={environment.infraMetrics}
-                                        appMetrics={environment.appMetrics}
-                                        environmentName={environmentName}
-                                        chartName={chartName}
-                                        newPodHash={newPodHash}
-                                        calendar={calendar}
-                                        calendarInputs={calendarInputs}
-                                        tab={tab}
-                                        k8sVersion={k8sVersion}
-                                        selectedLatency={selectedLatency}
-                                        close={() => setChartName(null)}
-                                    />
-                                ) : null}
+                                </Tippy>
                             </div>
-                            <DateRangePicker
-                                calendar={calendar}
-                                calendarInputs={calendarInputs}
-                                focusedInput={focusedInput}
-                                calendarValue={calendarValue}
-                                handlePredefinedRange={handlePredefinedRange}
-                                handleDatesChange={handleDatesChange}
-                                handleFocusChange={handleFocusChange}
-                                handleDateInput={handleDateInput}
-                                handleApply={handleApply}
+                            <iframe title={ChartType.Cpu} src={graphs.cpu} className="app-metrics-graph__iframe" />
+                        </div>
+                        <div data-testid="app-metrics-memory-usage" className="app-metrics-graph chart">
+                            <div className="app-metrics-graph__title flexbox flex-justify">
+                                Memory Usage
+                                <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                                    <Fullscreen
+                                        className="icon-dim-16 cursor fcn-5"
+                                        onClick={(e) => {
+                                            setChartName(ChartType.Ram)
+                                        }}
+                                    />
+                                </Tippy>
+                            </div>
+                            <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
+                        </div>
+                    </>
+                ) : (
+                    <PrometheusError />
+                )}
+                {appMetrics ? (
+                    <>
+                        <div data-testid="app-metrics-throughput" className="app-metrics-graph chart">
+                            <div className="flexbox flex-justify">
+                                <h3 className="app-details-graph__title flexbox m-0">
+                                    <ThroughputSelect status={statusCode} handleStatusChange={handleStatusChange} />
+                                </h3>
+                                <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                                    <Fullscreen
+                                        className="icon-dim-16 cursor fcn-5"
+                                        onClick={(e) => {
+                                            setChartName(ChartType.Status)
+                                        }}
+                                    />
+                                </Tippy>
+                            </div>
+                            <iframe
+                                title={StatusType.Throughput}
+                                src={graphs.throughput}
+                                className="app-metrics-graph__iframe"
                             />
                         </div>
-                    </div>
-                )}
-                <div className={`chart-containers`}>
-                    {infraMetrics ? (
-                        <>
-                            <div data-testid="app-metrics-cpu-usage" className={`app-metrics-graph chart`}>
-                                <div className="app-metrics-graph__title flexbox flex-justify">
-                                    CPU Usage
-                                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                        <Fullscreen
-                                            className="icon-dim-16 cursor fcn-5"
-                                            onClick={(e) => {
-                                                setChartName(ChartType.Cpu)
-                                            }}
-                                        />
-                                    </Tippy>
-                                </div>
-                                <iframe title={ChartType.Cpu} src={graphs.cpu} className="app-metrics-graph__iframe" />
-                            </div>
-                            <div data-testid="app-metrics-memory-usage" className={`app-metrics-graph chart`}>
-                                <div className="app-metrics-graph__title flexbox flex-justify">
-                                    Memory Usage
-                                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                        <Fullscreen
-                                            className="icon-dim-16 cursor fcn-5"
-                                            onClick={(e) => {
-                                                setChartName(ChartType.Ram)
-                                            }}
-                                        />
-                                    </Tippy>
-                                </div>
-                                <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
-                            </div>
-                        </>
-                    ) : (
-                        <PrometheusError />
-                    )}
-                    {appMetrics ? (
-                        <>
-                            <div data-testid="app-metrics-throughput" className={`app-metrics-graph chart`}>
-                                <div className="flexbox flex-justify">
+                        <div data-testid="app-metrics-latency" className="app-metrics-graph chart">
+                            <div className="app-metrics-graph__title flexbox flex-justify">
+                                <div className="flexbox">
+                                    <h3 className="app-details-graph__title flexbox m-0 pr-4">Latency</h3>
                                     <h3 className="app-details-graph__title flexbox m-0">
-                                        <ThroughputSelect status={statusCode} handleStatusChange={handleStatusChange} />
+                                        <LatencySelect
+                                            latency={selectedLatency}
+                                            handleLatencyChange={handleLatencyChange}
+                                        />
                                     </h3>
-                                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                        <Fullscreen
-                                            className="icon-dim-16 cursor fcn-5"
-                                            onClick={(e) => {
-                                                setChartName(ChartType.Status)
-                                            }}
-                                        />
-                                    </Tippy>
                                 </div>
-                                <iframe
-                                    title={StatusType.Throughput}
-                                    src={graphs.throughput}
-                                    className="app-metrics-graph__iframe"
-                                />
+                                <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                                    <Fullscreen
+                                        className="icon-dim-16 cursor fcn-5"
+                                        onClick={(e) => {
+                                            setChartName(ChartType.Latency)
+                                        }}
+                                    />
+                                </Tippy>
                             </div>
-                            <div data-testid="app-metrics-latency" className={`app-metrics-graph chart`}>
-                                <div className="app-metrics-graph__title flexbox flex-justify">
-                                    <div className="flexbox">
-                                        <h3 className="app-details-graph__title flexbox m-0 pr-4">Latency</h3>
-                                        <h3 className="app-details-graph__title flexbox m-0">
-                                            <LatencySelect
-                                                latency={selectedLatency}
-                                                handleLatencyChange={handleLatencyChange}
-                                            />
-                                        </h3>
-                                    </div>
-                                    <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                        <Fullscreen
-                                            className="icon-dim-16 cursor fcn-5"
-                                            onClick={(e) => {
-                                                setChartName(ChartType.Latency)
-                                            }}
-                                        />
-                                    </Tippy>
-                                </div>
-                                <iframe
-                                    title={ChartType.Latency}
-                                    src={graphs.latency}
-                                    className="app-metrics-graph__iframe"
-                                />
-                            </div>
-                        </>
-                    ) : (
-                        <EnableAppMetrics />
-                    )}
-                </div>
-            </section>
-        )
-    }
+                            <iframe
+                                title={ChartType.Latency}
+                                src={graphs.latency}
+                                className="app-metrics-graph__iframe"
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <EnableAppMetrics />
+                )}
+            </div>
+        </section>
+    )
 }
 
-function PrometheusError() {
+const PrometheusError = () => {
     return (
         <div className="flex upgrade-chart-container">
             <div className="upgrade-chart-main">
@@ -436,7 +438,7 @@ function PrometheusError() {
     )
 }
 
-function EnableAppMetrics() {
+const EnableAppMetrics = () => {
     const { appId } = useParams<AppDetailsPathParams>()
     const LINK = getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE)
     return (
@@ -456,7 +458,7 @@ function EnableAppMetrics() {
     )
 }
 
-function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
+const MonitoringModuleNotInstalled = ({ addSpace }: { addSpace: string }) => {
     return (
         <div
             data-testid="app-metrices-wrapper"
@@ -484,7 +486,7 @@ function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
     )
 }
 
-function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfig }) {
+const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfig }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
 
     const toggleHeader = () => {

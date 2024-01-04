@@ -1,10 +1,10 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ReactComponent as SuccessIcon } from '../../assets/icons/ic-success-with-light-background.svg'
 import { ReactComponent as GotToBuildDeploy } from '../../assets/icons/go-to-buildanddeploy.svg'
 import { ReactComponent as GoToEnvOverride } from '../../assets/icons/go-to-envoverride.svg'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 interface CDSuccessModalType {
     appId: string

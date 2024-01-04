@@ -1,8 +1,8 @@
 import React from 'react'
+import { components } from 'react-select'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as CheckSelected } from '../../assets/icons/ic-checkbox-selected.svg'
 import { ReactComponent as CheckNotSelected } from '../../assets/icons/ic-checkbox-unselected.svg'
-import { components } from 'react-select'
 
 export const styles = {
     control: (base, state) => ({
@@ -58,7 +58,7 @@ export const portalStyles = {
     },
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n5" />
@@ -66,22 +66,21 @@ export function DropdownIndicator(props) {
     )
 }
 
-export function ValueContainer(props) {
+export const ValueContainer = (props) => {
     if (!props.hasValue) {
-        return <components.ValueContainer {...props}></components.ValueContainer>
-    } else {
-        return (
-            <components.ValueContainer {...props}>
-                <p style={{ margin: '0px' }}>
-                    {props?.selectProps?.name}
-                    <span className="badge">{props.getValue()?.length}</span>
-                </p>
-            </components.ValueContainer>
-        )
+        return <components.ValueContainer {...props} />
     }
+    return (
+        <components.ValueContainer {...props}>
+            <p style={{ margin: '0px' }}>
+                {props?.selectProps?.name}
+                <span className="badge">{props.getValue()?.length}</span>
+            </p>
+        </components.ValueContainer>
+    )
 }
 
-export function Option(props) {
+export const Option = (props) => {
     return (
         <components.Option {...props}>
             <p className="m-0 dc__ellipsis-right dc__lowercase">
@@ -96,10 +95,10 @@ export function Option(props) {
     )
 }
 
-export function MultiValue(props) {
-    return <components.MultiValue {...props}></components.MultiValue>
+export const MultiValue = (props) => {
+    return <components.MultiValue {...props} />
 }
 
-export function MultiValueContainer(props) {
-    return <components.MultiValueContainer {...props}></components.MultiValueContainer>
+export const MultiValueContainer = (props) => {
+    return <components.MultiValueContainer {...props} />
 }

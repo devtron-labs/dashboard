@@ -41,7 +41,7 @@ export const MultiValueContainer = (props) => {
     const { label, value } = data
     return (
         <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
-            <div className={`flex fs-12 ml-4 cn-9`}>{label}</div>
+            <div className="flex fs-12 ml-4 cn-9">{label}</div>
             {children[1]}
         </components.MultiValueContainer>
     )
@@ -83,7 +83,7 @@ export const MultiValueChipContainer = ({ validator, ...props }) => {
     const isValidEmail = validator ? validator(value) : true
     return (
         <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
-            <div className={`flex fs-12`}>
+            <div className="flex fs-12">
                 {!isValidEmail && <RedWarning className="mr-4 icon-dim-16" />}
                 <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
             </div>

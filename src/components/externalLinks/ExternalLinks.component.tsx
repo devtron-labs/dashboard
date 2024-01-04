@@ -1,5 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
+import Tippy from '@tippyjs/react'
+import { TippyCustomized, TippyTheme, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
@@ -13,7 +15,6 @@ import {
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
-import Tippy from '@tippyjs/react'
 import {
     getMonitoringToolIcon,
     getParsedURL,
@@ -22,7 +23,6 @@ import {
     onImageLoadError,
 } from './ExternalLinks.utils'
 import { UserRoleType } from '../userGroups/userGroups.types'
-import { TippyCustomized, TippyTheme, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
@@ -68,10 +68,10 @@ export const NoExternalLinksView = ({
                     {`Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
                     ${isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
                     page. `}
-                    {<ExternalLinksLearnMore />}
+                    <ExternalLinksLearnMore />
                 </>
             }
-            isButtonAvailable={true}
+            isButtonAvailable
             renderButton={handleButton}
             children={isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
         />
@@ -90,7 +90,7 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
             Icon={InfoIcon}
             iconClass="h-20"
             linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
-            internalLink={true}
+            internalLink
             redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
         />
     )
@@ -267,7 +267,7 @@ export const NodeLevelExternalLinks = ({
                     options={nodeLevelExternalLinks}
                     isMulti={false}
                     isSearchable={false}
-                    closeMenuOnSelect={true}
+                    closeMenuOnSelect
                     components={{
                         IndicatorSeparator: null,
                         ClearIndicator: null,
@@ -281,7 +281,7 @@ export const NodeLevelExternalLinks = ({
 }
 
 export const ValueContainer = (props): JSX.Element => {
-    const length = props.getValue().length
+    const { length } = props.getValue()
 
     return (
         <components.ValueContainer {...props}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { PluginType, ScriptType, VariableType, RefVariableType, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
@@ -13,7 +14,6 @@ import CDEmptyState from '../app/details/cdDetails/CDEmptyState'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
-import YAML from 'yaml'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -73,7 +73,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         if (pluginType === PluginType.INLINE) {
             _form[activeStageName].steps[selectedTaskIndex].inlineStepDetail = {
                 scriptType: ScriptType.SHELL,
-                script: '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n', //default value for shell
+                script: '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n', // default value for shell
                 conditionDetails: [],
                 inputVariables: [],
                 outputVariables: [],
@@ -102,7 +102,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
-                pluginId: pluginId,
+                pluginId,
                 conditionDetails: [],
                 inputVariables: inputVariables.map(setVariableStepIndexInPlugin),
                 outputVariables: outputVariables.map(setVariableStepIndexInPlugin),
@@ -161,11 +161,11 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
     const getImgSource = () => {
         if (isJobView) {
             return nojobs
-        } else if (activeStageName === BuildStageVariable.PreBuild) {
-            return isCdPipeline ? EmptyPreDeployment : EmptyPreBuild
-        } else {
-            return isCdPipeline ? EmptyPostDeployment : EmptyPostBuild
         }
+        if (activeStageName === BuildStageVariable.PreBuild) {
+            return isCdPipeline ? EmptyPreDeployment : EmptyPreBuild
+        }
+        return isCdPipeline ? EmptyPostDeployment : EmptyPostBuild
     }
 
     function renderGUI(): JSX.Element {
@@ -191,17 +191,16 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                     dataTestId="pre-build-add-task-button"
                 />
             )
-        } else {
-            return (
-                <div className="p-20 ci-scrollable-content">
-                    {!formData[activeStageName].steps[selectedTaskIndex]?.stepType ? (
-                        renderPluginList()
-                    ) : (
-                        <TaskDetailComponent />
-                    )}
-                </div>
-            )
         }
+        return (
+            <div className="p-20 ci-scrollable-content">
+                {!formData[activeStageName].steps[selectedTaskIndex]?.stepType ? (
+                    renderPluginList()
+                ) : (
+                    <TaskDetailComponent />
+                )}
+            </div>
+        )
     }
 
     const renderComponent = () => {
@@ -211,17 +210,17 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (configurationType === ConfigurationType.GUI) {
-            return renderGUI()
-        } else {
-            return (
-                <YAMLScriptComponent
-                    editorValue={editorValue}
-                    handleEditorValueChange={handleEditorValueChange}
-                    showSample={true}
-                />
-            )
         }
+        if (configurationType === ConfigurationType.GUI) {
+            return renderGUI()
+        }
+        return (
+            <YAMLScriptComponent
+                editorValue={editorValue}
+                handleEditorValueChange={handleEditorValueChange}
+                showSample
+            />
+        )
     }
 
     return renderComponent()

@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
+import { Link, withRouter } from 'react-router-dom'
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { DeployedChartProps, DeployedChartState } from '../charts.types'
 import { URLS, ViewType } from '../../../config'
-import { Link, withRouter } from 'react-router-dom'
 import { LazyImage } from '../../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { UpdateWarn } from '../../common/DeprecatedUpdateWarn'
 import { getInstalledCharts } from '../charts.service'
-import { toast } from 'react-toastify'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { HeaderTitle, HeaderButtonGroup, GenericChartsHeader, ChartDetailNavigator } from '../Charts'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
@@ -70,13 +70,10 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     label: env.environment_name,
                 }
             })
-            this.setState(
-                { ...this.state, view: ViewType.FORM, chartRepos: chartRepos, environment: environment },
-                () => {
-                    this.initialiseFromQueryParams()
-                    this.callApplyFilterOnCharts()
-                },
-            )
+            this.setState({ ...this.state, view: ViewType.FORM, chartRepos, environment }, () => {
+                this.initialiseFromQueryParams()
+                this.callApplyFilterOnCharts()
+            })
         } catch (err) {
             showError(err)
             this.setState({ ...this.state, view: ViewType.LOADING })
@@ -192,7 +189,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
         const envId = searchParams.get(QueryParams.EnvironmentId)
 
-        const url = this.props.match.url
+        const { url } = this.props.match
 
         if (key == 'repository') {
             const chartRepoId = selected
@@ -319,7 +316,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
             }
         }
         if (selectedEnvironment) {
-            this.setState({ ...this.state, selectedEnvironment: selectedEnvironment })
+            this.setState({ ...this.state, selectedEnvironment })
         }
         if (deprecated) {
             this.setState({ onlyDeprecated: JSON.parse(deprecated) })
@@ -327,7 +324,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
         if (appStoreName) {
             this.setState({
                 searchApplied: true,
-                appStoreName: appStoreName,
+                appStoreName,
             })
         } else {
             this.setState({
@@ -359,7 +356,8 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                     </div>
                 </div>
             )
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="chart-list-page">
                     {this.renderPageHeader()}
@@ -380,28 +378,7 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         </div>
                     </div>
                 )
-            } else {
-                return (
-                    <div className="chart-list-page">
-                        {this.renderPageHeader()}
-                        <DeployedChartFilters
-                            handleFilterQueryChanges={this.handleFilterQueryChanges}
-                            appStoreName={this.state.appStoreName}
-                            searchApplied={this.state.searchApplied}
-                            handleCloseFilter={this.handleCloseFilter}
-                            onlyDeprecated={this.state.onlyDeprecated}
-                            chartRepos={this.state.chartRepos}
-                            handleAppStoreName={this.handleAppStoreName}
-                            environment={this.state.environment}
-                            handleSelectedFilters={this.handleSelectedFilters}
-                            selectedChartRepo={this.state.selectedChartRepo}
-                            selectedEnvironment={this.state.selectedEnvironment}
-                        />
-                        <ChartEmptyState onClickViewChartButton={this.handleViewAllCharts} heightToDeduct={160} />
-                    </div>
-                )
             }
-        } else {
             return (
                 <div className="chart-list-page">
                     {this.renderPageHeader()}
@@ -418,14 +395,33 @@ class Deployed extends Component<DeployedChartProps, DeployedChartState> {
                         selectedChartRepo={this.state.selectedChartRepo}
                         selectedEnvironment={this.state.selectedEnvironment}
                     />
-                    <div className="chart-grid">
-                        {this.state.installedCharts.map((chart) => {
-                            return this.renderCard(chart)
-                        })}
-                    </div>
+                    <ChartEmptyState onClickViewChartButton={this.handleViewAllCharts} heightToDeduct={160} />
                 </div>
             )
         }
+        return (
+            <div className="chart-list-page">
+                {this.renderPageHeader()}
+                <DeployedChartFilters
+                    handleFilterQueryChanges={this.handleFilterQueryChanges}
+                    appStoreName={this.state.appStoreName}
+                    searchApplied={this.state.searchApplied}
+                    handleCloseFilter={this.handleCloseFilter}
+                    onlyDeprecated={this.state.onlyDeprecated}
+                    chartRepos={this.state.chartRepos}
+                    handleAppStoreName={this.handleAppStoreName}
+                    environment={this.state.environment}
+                    handleSelectedFilters={this.handleSelectedFilters}
+                    selectedChartRepo={this.state.selectedChartRepo}
+                    selectedEnvironment={this.state.selectedEnvironment}
+                />
+                <div className="chart-grid">
+                    {this.state.installedCharts.map((chart) => {
+                        return this.renderCard(chart)
+                    })}
+                </div>
+            </div>
+        )
     }
 }
 export default withRouter((props) => <Deployed {...props} />)

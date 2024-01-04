@@ -14,7 +14,16 @@
  */
 
 export function murmurhash3_32_gc(key, seed) {
-    let remainder, bytes, h1, h1b, c1, c1b, c2, c2b, k1, i
+    let remainder
+    let bytes
+    let h1
+    let h1b
+    let c1
+    let c1b
+    let c2
+    let c2b
+    let k1
+    let i
 
     remainder = key.length & 3 // key.length % 4
     bytes = key.length - remainder

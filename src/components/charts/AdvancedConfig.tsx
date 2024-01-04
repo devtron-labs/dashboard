@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { showError, Progressing, VisibleModal, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getEnvironmentListMin } from '../../services/service'
@@ -9,7 +10,6 @@ import { getReadme, getChartValues } from './charts.service'
 import { ValuesYamlConfirmDialog } from './dialogs/ValuesYamlConfirmDialog'
 import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
-import { useHistory } from 'react-router'
 import { getSavedValuesListURL } from './charts.helper'
 
 interface AdvancedConfig extends AdvancedConfigHelpers {
@@ -52,7 +52,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
     const [showValuesYamlDialog, toggleValuesYamlDialog] = useState(false)
     const [valuesYamlSelection, setValuesYamlSelection] = useState({
         valuesId: appStoreApplicationVersionId,
-        kind: kind,
+        kind,
     })
     const [readmeLoading, readmeResult, error, reload] = useAsync(
         () => getReadme(appStoreApplicationVersionId),
@@ -161,7 +161,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
         chartValuesDropDown = chartValuesDropDown.filter((arr) => arr.kind !== 'DEPLOYED')
     }
 
-    //TODO: use default state for variables, so that you don't have to apply ?. before every object.
+    // TODO: use default state for variables, so that you don't have to apply ?. before every object.
     const warning: boolean = selectedChartValue.chartVersion !== selectedChartVersion.version
 
     return (
@@ -436,7 +436,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
                     className=""
                     title="Discard values yaml changes?"
                     description="Selecting a different value will discard changes made to yaml"
-                    closeOnESC={true}
+                    closeOnESC
                     close={() => toggleValuesYamlDialog(false)}
                     copyYamlToClipboard={copyValuesYamlToClipBoard}
                     discardYamlChanges={discardValuesYamlChangesAdvancedConfig}
@@ -448,7 +448,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({
 
 export default AdvancedConfig
 
-function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
+const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
     const key = useKeyDown()
     useEffect(() => {
         if (key.join().includes('Escape')) {
@@ -476,7 +476,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
                             mode="yaml"
                             noParsing
                             readOnly={!onChange}
-                            height={'100%'}
+                            height="100%"
                             onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
                         />
                     </div>
@@ -491,7 +491,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
     )
 }
 
-function ValuesDiffViewer({
+const ValuesDiffViewer = ({
     chartName,
     appName,
     valuesYaml,
@@ -501,7 +501,7 @@ function ValuesDiffViewer({
     fetchChartValues,
     onChange,
     handleClose,
-}) {
+}) => {
     const [versionId, setVersionId] = useState(selectedChartValue.id)
     const [kind, setKind] = useState(originalKind)
     const [originalValuesYaml, setOriginalValuesYaml] = useState('')
@@ -558,7 +558,7 @@ function ValuesDiffViewer({
                         <Select
                             rootClassName="values-select"
                             onChange={handleValuesChange}
-                            value={kind + '--' + versionId}
+                            value={`${kind}--${versionId}`}
                             autoWidth={false}
                         >
                             {availableChartValues?.length === 0 && <Select.Async api={fetchChartValues} />}
@@ -567,7 +567,11 @@ function ValuesDiffViewer({
                             </Select.Button>
                             <Select.OptGroup className="select__option-group" label="DEPLOYED VALUES">
                                 {DEPLOYED?.map((value) => (
-                                    <Select.Option key={value.id} value={'DEPLOYED' + '--' + value.id} id={value.id}>
+                                    <Select.Option
+                                        key={value.id}
+                                        value={`${'DEPLOYED' + '--'}${value.id}`}
+                                        id={value.id}
+                                    >
                                         <div className="flex column left">
                                             <div className="dc__ellipsis-right">
                                                 {value.name}
@@ -585,7 +589,11 @@ function ValuesDiffViewer({
                             </Select.OptGroup>
                             <Select.OptGroup className="select__option-group" label="CUSTOM VALUES">
                                 {TEMPLATE?.map((value) => (
-                                    <Select.Option key={value.id} value={'TEMPLATE' + '--' + value.id} id={value.id}>
+                                    <Select.Option
+                                        key={value.id}
+                                        value={`${'TEMPLATE' + '--'}${value.id}`}
+                                        id={value.id}
+                                    >
                                         {value.name} (v{value.chartVersion})
                                     </Select.Option>
                                 ))}
@@ -597,7 +605,11 @@ function ValuesDiffViewer({
                             </Select.OptGroup>
                             <Select.OptGroup className="select__option-group" label="DEFAULT VALUES">
                                 {DEFAULT?.map((value) => (
-                                    <Select.Option key={value.id} value={'DEFAULT' + '--' + value.id} id={value.id}>
+                                    <Select.Option
+                                        key={value.id}
+                                        value={`${'DEFAULT' + '--'}${value.id}`}
+                                        id={value.id}
+                                    >
                                         Default (v{value.chartVersion})
                                     </Select.Option>
                                 ))}
@@ -623,10 +635,10 @@ function ValuesDiffViewer({
                         noParsing
                         loading={loading && !originalValuesYaml}
                         readOnly={!onChange}
-                        height={'100%'}
+                        height="100%"
                         diffView
                         onChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
-                    ></CodeEditor>
+                    />
                 </div>
             </div>
             <div className="flex right">
