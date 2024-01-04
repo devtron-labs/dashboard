@@ -256,7 +256,7 @@ export default function GitCommitInfoGeneric({
                             {_webhookData.data['git url'] ? (
                                 <a
                                     href={`${_webhookData.data['git url']}`}
-                                    target="_blank noopener noreferrer"
+                                    target="_blank"
                                     rel="noopener noreferer"
                                     className="dc__no-decor cb-5"
                                 >
