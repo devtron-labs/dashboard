@@ -256,7 +256,7 @@ export default function GitCommitInfoGeneric({
                             {_webhookData.data['git url'] ? (
                                 <a
                                     href={`${_webhookData.data['git url']}`}
-                                    target="_blank"
+                                    target="_blank noopener noreferrer"
                                     rel="noopener noreferer"
                                     className="dc__no-decor cb-5"
                                 >
@@ -265,7 +265,7 @@ export default function GitCommitInfoGeneric({
                             ) : null}
                         </div>
                         {selectedCommitInfo ? (
-                            <div className="material-history__select-text material-history__header">
+                            <div className="material-history__select-text flexbox dc__align-items-center dc__content-end fs-12">
                                 {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : 'Select'}
                             </div>
                         ) : null}
