@@ -9,7 +9,7 @@ import {
     DeploymentNodeType,
     put,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
+import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest } from './types'
@@ -334,7 +334,9 @@ export const triggerCDNode = (
             request['wfrIdForDeploymentWithSpecificTrigger'] = wfrId
         }
     }
-    return post(Routes.CD_TRIGGER_POST, request)
+    const options = getAPIOptionsWithTriggerTimeout()
+
+    return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
 export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
