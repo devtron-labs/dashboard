@@ -1137,7 +1137,7 @@ export const getNonEditableChartRepoText = (name: string): string => {
 
 export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOptions => {
     const _options: APIOptions = options ? JSON.parse(JSON.stringify(options)) : {}
-    if (Number.isInteger(window._env_.TRIGGER_API_TIMEOUT)) {
+    if (window._env_.TRIGGER_API_TIMEOUT) {
         _options.timeout = window._env_.TRIGGER_API_TIMEOUT
     }
 
