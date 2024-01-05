@@ -1,8 +1,8 @@
 import React, { lazy, Suspense } from 'react'
-import { useRouteMatch, useHistory, Route, Switch } from 'react-router-dom'
+import { useRouteMatch, useHistory, Route, Switch, Redirect } from 'react-router-dom'
 
 import { URLS } from '../../../../config'
-import { ErrorBoundary, importComponentFromFELibrary, Redirect } from '../../../common'
+import { ErrorBoundary, importComponentFromFELibrary } from '../../../common'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { AppComposeRouterProps, NextButtonProps, STAGE_NAME } from './appConfig.type'
@@ -237,7 +237,7 @@ export default function AppComposeRouter({
                         )}
                     />,
                 ]}
-                {/* <Redirect to={`${path}/${defaultRoute()}`} /> */}
+                <Redirect to={`${path}/${defaultRoute()}`} />
             </Switch>
         )
     }
