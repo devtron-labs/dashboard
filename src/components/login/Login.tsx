@@ -186,7 +186,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                         onChange={this.handleChange}
                     />
                     <input
-                        type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'}
+                        type={import.meta.env.VITE_NODE_ENV !== 'development' ? 'password' : 'text'}
                         data-testid="password-textbox"
                         className="form__input fs-14"
                         placeholder="Password"

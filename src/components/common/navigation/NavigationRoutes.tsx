@@ -146,7 +146,7 @@ export default function NavigationRoutes() {
 
         if (!loginInfo) return
 
-        if (process.env.NODE_ENV === 'production' && window._env_) {
+        if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
                     scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] })

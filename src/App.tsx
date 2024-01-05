@@ -228,7 +228,7 @@ export default function App() {
                                 <div id="full-screen-modal"></div>
                                 <div id="visible-modal"></div>
                                 <div id="visible-modal-2"></div>
-                                {process.env.NODE_ENV === 'production' &&
+                                {import.meta.env.VITE_NODE_ENV === 'production' &&
                                     window._env_ &&
                                     window._env_.HOTJAR_ENABLED && <Hotjar />}
                             </BreadcrumbStore>

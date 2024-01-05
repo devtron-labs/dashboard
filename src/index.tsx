@@ -60,7 +60,7 @@ declare global {
 
 const root = document.getElementById('root')
 if (
-    process.env.NODE_ENV === 'production' &&
+    import.meta.env.VITE_NODE_ENV === 'production' &&
     window._env_ &&
     (window._env_.SENTRY_ERROR_ENABLED)
 ) {

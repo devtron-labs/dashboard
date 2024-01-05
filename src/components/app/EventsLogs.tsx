@@ -320,7 +320,7 @@ export const LogsView: React.FC<LogsView> = ({ subject, nodeName, selectedLogsNo
 
     function getLogsURL() {
         let prefix = '';
-        if (process.env.NODE_ENV === 'production') {
+        if (import.meta.env.VITE_NODE_ENV === 'production') {
             prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
         }
         let pods = getPods();
