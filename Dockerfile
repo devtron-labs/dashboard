@@ -8,7 +8,6 @@ RUN yarn install --network-timeout 600000
 COPY src/ src
 COPY types/ types
 COPY nginx.conf .
-COPY public/ public/
 COPY tsconfig.json .
 COPY . .
 RUN echo REACT_APP_GIT_SHA=`git rev-parse --short HEAD` >> .env.production
