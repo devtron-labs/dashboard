@@ -102,9 +102,6 @@ export default function App() {
         }
         async function validation() {
             try {
-                if (location.pathname && location.pathname.includes('approve?token')) {
-                    return
-                }
                 await validateToken()
                 defaultRedirection()
             } catch (err: any) {
@@ -124,8 +121,13 @@ export default function App() {
             }
         }
         // If not K8S_CLIENT then validateToken otherwise directly redirect
-        if (!window._env_.K8S_CLIENT) {     
-            validation()
+        if (!window._env_.K8S_CLIENT) {
+            // Pass validation for direct email approval notification
+            if (location.pathname && location.pathname.includes('approve?token')) {
+                return
+            } else{
+                validation()
+            }
         } else {
             setValidating(false)
             defaultRedirection()
