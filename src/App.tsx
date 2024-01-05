@@ -247,8 +247,9 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
-                                    <Route path="/" render={() => <NavigationRoutes />} />
+                                    <Route exact path="/" render={() => <NavigationRoutes />} />
                                     <Route
+                                    exact
                                         path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
                                         render={() =>
                                             GenericDirectApprovalModal && (
