@@ -89,6 +89,31 @@ export default function App() {
         }
     }
 
+    const redirectToDirectApprovalNotification = (): void => {
+        push(`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`)
+    }
+
+    async function validation() {
+        try {
+            await validateToken()
+            defaultRedirection()
+        } catch (err: any) {
+            // push to login without breaking search
+            if (err?.code === 401) {
+                const loginPath = URLS.LOGIN_SSO
+                const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
+                    ? location.search
+                    : `?continue=${location.pathname}`
+                push(`${loginPath}${newSearch}`)
+            } else {
+                setErrorPage(true)
+                showError(err)
+            }
+        } finally {
+            setValidating(false)
+        }
+    }
+
     useEffect(() => {
         let queryString = new URLSearchParams(location.search)
         let token = queryString.get('token')
@@ -100,31 +125,13 @@ export default function App() {
         } else {
             setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
         }
-        async function validation() {
-            try {
-                await validateToken()
-                defaultRedirection()
-            } catch (err: any) {
-                // push to login without breaking search
-                if (err?.code === 401) {
-                    const loginPath = URLS.LOGIN_SSO
-                    const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
-                        ? location.search
-                        : `?continue=${location.pathname}`
-                    push(`${loginPath}${newSearch}`)
-                } else {
-                    setErrorPage(true)
-                    showError(err)
-                }
-            } finally {
-                setValidating(false)
-            }
-        }
+
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         if (!window._env_.K8S_CLIENT) {
             // Pass validation for direct email approval notification
-            if (location.pathname && location.pathname.includes('approve')) return
-            else {
+            if (location.pathname && location.pathname.includes('approve')) {
+                redirectToDirectApprovalNotification()
+            } else {
                 validation()
             }
         } else {
