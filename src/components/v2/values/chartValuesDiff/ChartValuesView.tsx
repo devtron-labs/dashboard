@@ -55,6 +55,7 @@ import {
     AppNameInput,
     ValueNameInput,
     DeploymentAppSelector,
+    GitOpsDrawer,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -114,6 +115,7 @@ import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog
 import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
+import GitOpsConfiguration from '../../../gitOps/GitOpsConfiguration'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -152,6 +154,8 @@ function ChartValuesView({
     const [allowedCustomBool, setAllowedCustomBool] = useState<boolean>()
     const [staleData, setStaleData] = useState<boolean>(false)
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
+    const [visibleRepoURL, setVisibleRepoURL] = useState<string>("")
+    const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -1217,7 +1221,6 @@ function ChartValuesView({
 
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
         dispatch({ type: ChartValuesViewActionTypes.selectedProject, payload: selected })
-
         if (commonState.invalidProject) {
             dispatch({
                 type: ChartValuesViewActionTypes.invalidProject,
@@ -1227,6 +1230,7 @@ function ChartValuesView({
     }
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
+    setShowRepoSelector(true)
       if (selected.allowedDeploymentTypes.indexOf(commonState.deploymentAppType) >= 0) {
           dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
       } else {
@@ -1583,6 +1587,29 @@ function ChartValuesView({
                                     setIsDrawerOpen={setIsDrawerOpen}
                                 />
                             )}
+                        {!isExternalApp &&
+                            !isCreateValueView &&
+                            !isVirtualEnvironmentOnSelector &&
+                            (isDeployChartView || allowedDeploymentTypes.length > 0) &&
+                            !appDetails?.isVirtualEnvironment &&
+                            !commonState.installedConfig?.isOCICompliantChart && (
+                                <GitOpsDrawer
+                                    commonState={commonState}
+                                    deploymentAppType={commonState.deploymentAppType}
+                                    allowedDeploymentTypes={allowedDeploymentTypes}
+                                    envId={commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0}
+                                    teamId={1}
+                                    gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                                    staleData={staleData}
+                                    setStaleData={setStaleData}
+                                    dispatch={dispatch}
+                                    isDrawerOpen={isDrawerOpen}
+                                    setIsDrawerOpen={setIsDrawerOpen}
+                                    setVisibleRepoURL={setVisibleRepoURL}
+                                    visibleRepoURL={visibleRepoURL}
+                                    showRepoSelector={showRepoSelector}
+                                />
+                            )}
                         {/**
                          * ChartRepoSelector will be displayed only when,
                          * - It's not a deploy chart view
@@ -1604,6 +1631,7 @@ function ChartValuesView({
                                     hideConnectToChartTippy={hideConnectToChartTippy}
                                 />
                             )}
+                        
                         {!isDeployChartView &&
                             isExternalApp &&
                             !commonState.installedAppInfo &&

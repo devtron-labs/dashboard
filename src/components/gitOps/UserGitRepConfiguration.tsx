@@ -15,8 +15,6 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [isEditable, setIsEditable] = useState(false)
-    const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map())
-    const [displayValidation, setDisplayValidation] = useState(false)
     const [showReloadModal, setShowReloadModal] = useState(false)
     const [loading, setLoading] = useState(false)
     const history = useHistory()
@@ -85,6 +83,7 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
     }
 
     const reload = () => {
+        history.push(`/app/${props.appId}/edit/${URLS.APP_WORKFLOW_CONFIG}`)
         window.location.reload()
     }
 
@@ -97,8 +96,7 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
         gitOpsConfigDevtron(payload)
             .then((response) => {
                 if (Object.values(response.result.stageErrorMap).length > 0) {
-                    setDisplayValidation(true)
-                    setErrorInFetching(response.result.stageErrorMap)
+                    toast.error('Error saving GitRepo URL')
                 } else {
                     props.respondOnSuccess()
                     toast.success('Successfully saved.')
@@ -128,9 +126,6 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
                             selectedRepoType={selectedRepoType}
                             repoURL={gitOpsRepoURL}
                             setRepoURL={setGitOpsRepoURL}
-                            displayValidation={displayValidation}
-                            errorInFetching={errorInFetching}
-                            setDisplayValidation={setDisplayValidation}
                         />
                     ) : (
                         renderSavedGitOpsRepoState(gitOpsRepoURL)

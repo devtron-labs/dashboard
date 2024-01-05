@@ -81,8 +81,5 @@ export interface UserGitRepoProps {
     setSelectedRepoType: (string) => void
     repoURL: string
     selectedRepoType: string
-    errorInFetching: Map<string, any>
-    displayValidation: boolean
-    setDisplayValidation: React.Dispatch<React.SetStateAction<boolean>>
     staleData?: boolean
 }

@@ -24,8 +24,6 @@ import {
     ConditionalWrap,
     DeploymentAppTypes,
     Drawer,
-    showError,
-    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -58,8 +56,6 @@ import { DELETE_ACTION, repoType } from '../../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
-import { validateHelmAppGitOpsConfiguration } from '../../../gitOps/gitops.service'
-import { toast } from 'react-toastify'
 
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -163,18 +159,8 @@ export const DeploymentAppSelector = ({
     handleDeploymentAppTypeSelection,
     isDeployChartView,
     allowedDeploymentTypes,
-    allowedCustomBool,
     gitRepoURL,
-    envId,
-    teamId,
-    setStaleData,
-    staleData,
-    dispatch,
-    isDrawerOpen,
-    setIsDrawerOpen
 }: DeploymentAppSelectorType): JSX.Element => {
-    const [visibleRepoURL, setVisibleRepoURL] = useState<string>("")
-    
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
             <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
@@ -223,22 +209,6 @@ export const DeploymentAppSelector = ({
                     handleOnChange={handleDeploymentAppTypeSelection}
                     allowedDeploymentTypes={allowedDeploymentTypes}
                 />
-                {allowedCustomBool && (
-                    <GitOpsDrawer
-                        deploymentAppType={commonState.deploymentAppType}
-                        allowedDeploymentTypes={allowedDeploymentTypes}
-                        envId={envId}
-                        teamId={teamId}
-                        commonState={commonState}
-                        dispatch={dispatch}
-                        visibleRepoURL={visibleRepoURL}
-                        setVisibleRepoURL={setVisibleRepoURL}
-                        staleData={staleData}
-                        setStaleData={setStaleData}
-                        isDrawerOpen={isDrawerOpen}
-                        setIsDrawerOpen={setIsDrawerOpen}
-                    />
-                )}
             </div>
         </div>
     )
@@ -321,27 +291,21 @@ export const DeploymentAppRadioGroup = ({
     )
 }
 
-const GitOpsDrawer = ({
+export const GitOpsDrawer = ({
     deploymentAppType,
     allowedDeploymentTypes,
-    gitRepoURL,
     staleData,
-    envId,
-    teamId,
-    commonState,
     dispatch,
     visibleRepoURL,
-    setStaleData,
     setVisibleRepoURL,
     isDrawerOpen,
-    setIsDrawerOpen
+    setIsDrawerOpen,
+    showRepoSelector,
 }: gitOpsDrawerType): JSX.Element => {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
     const [repoURL, setRepoURL] = useState("")
-    const [errorInFetching, setErrorInFetching] = useState<Map<any, any>>(new Map());
-    const [displayValidation, setDisplayValidation] = useState(false)
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -350,7 +314,7 @@ const GitOpsDrawer = ({
         } else {
             setGitOpsState(false)
         }
-    }, [deploymentAppType, allowedDeploymentTypes])
+    }, [deploymentAppType, allowedDeploymentTypes, window._env_.HIDE_GITOPS_OR_HELM_OPTION])
 
     const handleRepoTypeChange = (newRepoType: string) => {
         setSelectedRepoType(newRepoType);
@@ -371,47 +335,16 @@ const GitOpsDrawer = ({
             type: ChartValuesViewActionTypes.setGitRepoURL,
             payload: { gitRepoURL: newRepoText },
         })
-      };
-
-    const getPayload = () => {
-        const payload = {
-            gitRepoURL: staleData ? 'Default' : selectedRepoType === repoType.DEFAULT ? 'Default' : repoURL.trim(),
-            environmentId: +envId,
-            teamId: +teamId,
-        }
-        return payload
-    }
+    };
 
     const handleSaveButton = () => {
         setGitOpsState(true)
-        const payload = getPayload()
-        validateHelmAppGitOpsConfiguration(payload)
-            .then((response) => {
-                if (Object.values(response.result.stageErrorMap).length) {
-                    setDisplayValidation(true)
-                    setErrorInFetching(response.result.stageErrorMap)
-                    return
-                }
-                setErrorInFetching(new Map())
-                setDisplayValidation(false)
-                setIsDeploymentAllowed(false)
-                setIsDrawerOpen(false)
-                setVisibleRepoURL(selectedRepoType === repoType.DEFAULT ? repoType.DEFAULT : repoURL)
-            })
-            .catch((err) => {
-                if (err instanceof TypeError && err.message.includes("Cannot convert undefined or null to object")) {
-                    toast.error("Some global configurations for GitOps has changed")
-                    setGitOpsState(false)
-                    setStaleData(true)
-                }
-                else {
-                    showError(err)
-                }
-            }).finally(() => {
-                if(selectedRepoType === repoType.DEFAULT) {
-                    setRepoURL("")
-                }
-            })
+        setIsDeploymentAllowed(false)
+        setIsDrawerOpen(false)
+        setVisibleRepoURL(selectedRepoType === repoType.DEFAULT ? repoType.DEFAULT : repoURL)
+        if (selectedRepoType === repoType.DEFAULT) {
+            setRepoURL('')
+        }
     }
 
     const toggleDrawer = () => {
@@ -443,9 +376,6 @@ const GitOpsDrawer = ({
                                     setSelectedRepoType={handleRepoTypeChange}
                                     repoURL={repoURL}
                                     selectedRepoType={selectedRepoType}
-                                    errorInFetching={errorInFetching}
-                                    displayValidation={displayValidation}
-                                    setDisplayValidation={setDisplayValidation}
                                     staleData={staleData}
                                 />
                             </div>
@@ -471,7 +401,7 @@ const GitOpsDrawer = ({
                     </Drawer>
                 </div>
             )}
-            {gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1 ? (
+            {(gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1) || (showRepoSelector && window._env_.HIDE_GITOPS_OR_HELM_OPTION) ? (
                 <div className="form__input dashed mt-10 flex" style={{ height: '54px' }}>
                     <div className="mb-10">
                         <span>

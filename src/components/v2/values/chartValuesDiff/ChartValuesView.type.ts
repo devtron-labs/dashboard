@@ -124,6 +124,7 @@ export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
     setStaleData?: (boolean) => void
     isDrawerOpen?: boolean
     setIsDrawerOpen?: (boolean) => void
+    showRepoSelector?: boolean
 }
 
 export interface ChartProjectSelectorType {

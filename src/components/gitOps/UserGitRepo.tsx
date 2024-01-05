@@ -3,7 +3,6 @@ import React from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { ValidateForm } from '../common/ValidateForm/ValidateForm';
 import { UserGitRepoProps } from './gitops.type';
 
 function UserGitRepo(props: UserGitRepoProps) {
@@ -11,9 +10,6 @@ function UserGitRepo(props: UserGitRepoProps) {
     const repoTypeChange = () => {
         const newRepoType = props.selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
         props.setSelectedRepoType(newRepoType)
-        if(props.displayValidation) {
-            props.setDisplayValidation(false)
-        }
     }
 
     const onChange = (event) => {
@@ -72,18 +68,6 @@ function UserGitRepo(props: UserGitRepoProps) {
                         <RadioGroupItem value={!props.staleData ? repoType.CONFIGURE : ''} disabled={props.staleData}>
                             Commit manifest to a desired repository.
                         </RadioGroupItem>
-                    </div>
-                    <div className="ml-26">
-                        {props.displayValidation && !props.staleData && (
-                            <ValidateForm
-                                id={1}
-                                validationError={props.errorInFetching}
-                                validationStatus={props.errorInFetching ? 'FAILURE' : 'SUCCESS'}
-                                configName="gitOps"
-                                showValidate={false}
-                                onClickValidate={() => {}}
-                            />
-                        )}
                     </div>
                 </RadioGroup>
                 {props.selectedRepoType === repoType.CONFIGURE && !props.staleData && InputUrlBox()}
