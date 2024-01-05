@@ -100,8 +100,6 @@ export default function App() {
         let token = queryString.get('token')
         if (token) {
             setApprovalToken(token)
-            push(`${approvalType?.toLocaleLowerCase()}/approve?token=${token}`)
-
         }
     }
 
