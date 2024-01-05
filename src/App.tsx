@@ -247,6 +247,7 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
+                                    <Route path="/" render={() => <NavigationRoutes />} />
                                     <Route
                                         path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
                                         render={() =>
@@ -255,7 +256,6 @@ export default function App() {
                                             )
                                         }
                                     />
-                                    <Route path="/" render={() => <NavigationRoutes />} />
                                     <Redirect
                                         to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
                                     />
