@@ -1,4 +1,4 @@
-import { defineConfig, PluginOption } from 'vite'
+import { defineConfig, PluginOption, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import svgr from 'vite-plugin-svgr'
@@ -9,7 +9,6 @@ import url from 'node:url'
 import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
-import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 // same usage inside defineConfig
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
@@ -38,60 +37,79 @@ function reactVirtualized(): PluginOption {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig({
-    base: '/',
-    plugins: [
-        react(),
-        viteTsconfigPaths(),
-        svgr({
-            svgrOptions: {},
-        }),
-        reactVirtualized(),
-        requireTransform(),
-        NodeGlobalsPolyfillPlugin({
-            process: true,
-        }),
-    ],
-    // test: {
-    //     globals: true,
-    //     environment: 'jsdom',
-    //     setupFiles: './src/setupTests.ts',
-    //     css: true,
-    //     reporters: ['verbose'],
-    //     coverage: {
-    //         reporter: ['text', 'json', 'html'],
-    //         include: ['src/**/*'],
-    //         exclude: [],
-    //     },
-    // },
-    server: {
-        port: 3000,
-        proxy: {
-            '/orchestrator': {
-                target: 'https://demo.devtron.info/',
-                changeOrigin: true,
-                // rewrite: (path) => {
-                //   console.log(path)
-                //   return path.replace(/^\/orchestrator/, '')},
+export default defineConfig(({command, mode}) => {
+    // const env = loadEnv(mode, process.cwd(), '');
+    return {
+        // define: {
+        //     NODE_ENV: JSON.stringify(env.VITE_NODE_ENV),
+        //     PUBLIC_URL: JSON.stringify(env.VITE_PUBLIC_URL),
+        // },
+        preview: {
+            port: 3000,
+        },
+        plugins: [
+            // @TODO: Check if we can remove the config object inside the react plugin
+            react({
+                // Use React plugin in all *.jsx and *.tsx files
+                include: '**/*.{jsx,tsx}',
+            }),
+            viteTsconfigPaths(),
+            svgr({
+                svgrOptions: {},
+            }),
+            reactVirtualized(),
+            requireTransform(),
+            NodeGlobalsPolyfillPlugin({
+                process: true,
+            }),
+        ],
+        // test: {
+        //     globals: true,
+        //     environment: 'jsdom',
+        //     setupFiles: './src/setupTests.ts',
+        //     css: true,
+        //     reporters: ['verbose'],
+        //     coverage: {
+        //         reporter: ['text', 'json', 'html'],
+        //         include: ['src/**/*'],
+        //         exclude: [],
+        //     },
+        // },
+        server: {
+            port: 3000,
+            proxy: {
+                '/orchestrator': {
+                    target: 'https://demo.devtron.info/',
+                    changeOrigin: true,
+                    // rewrite: (path) => {
+                    //   console.log(path)
+                    //   return path.replace(/^\/orchestrator/, '')},
+                },
+                '/grafana': 'https://demo.devtron.info/',
             },
-            '/grafana': 'https://demo.devtron.info/',
         },
-    },
-    define: {
-        global: 'globalThis',
-    },
-    resolve: {
-        alias: {
-            process: 'process/browser',
+        // define: {
+        //     global: 'globalThis',
+        // },
+        resolve: {
+            alias: {
+                // process: 'process/browser',
+                // @TODO: This can be removed
+                // src: path.resolve(__dirname, 'src')
+            },
         },
-    },
-    build: {
-        rollupOptions: {
-            plugins: [
-                // Enable rollup polyfills plugin
-                // used during production bundling
-                rollupNodePolyFill(),
-            ],
-        },
-    },
+        // build: {
+            // manifest: true,
+        //     rollupOptions: {
+        //         plugins: [
+        //             // Enable rollup polyfills plugin
+        //             // used during production bundling
+        //             // rollupNodePolyFill({exclude: ["node_modules/xlsx/**"]}),
+        //             // Add the inject plugin for Buffer
+        //             // inject({ Buffer: ['Buffer', 'Buffer'] }),
+        //         ],
+        //         external: ["Buffer"]
+        //     },
+        // },
+    }
 })
