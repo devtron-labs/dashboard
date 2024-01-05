@@ -90,7 +90,21 @@ export default function App() {
     }
 
     const redirectToDirectApprovalNotification = (): void => {
-        push(`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`)
+        if (location.pathname && location.pathname.includes('deployment')) {
+            setApprovalType(APPROVAL_MODAL_TYPE.IMAGE)
+        } else {
+            setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
+        }
+
+        let queryString = new URLSearchParams(location.search)
+        let token = queryString.get('token')
+        if (token) {
+            setApprovalToken(token)
+        }
+
+        if (approvalToken && approvalType) {
+            push(`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`)
+        }
     }
 
     async function validation() {
@@ -115,17 +129,7 @@ export default function App() {
     }
 
     useEffect(() => {
-        let queryString = new URLSearchParams(location.search)
-        let token = queryString.get('token')
-        if (token) {
-            setApprovalToken(token)
-        }
-        if (location.pathname && location.pathname.includes('deployment')) {
-            setApprovalType(APPROVAL_MODAL_TYPE.IMAGE)
-        } else {
-            setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
-        }
-
+       
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         if (!window._env_.K8S_CLIENT) {
             // Pass validation for direct email approval notification
