@@ -123,9 +123,8 @@ export default function App() {
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         if (!window._env_.K8S_CLIENT) {
             // Pass validation for direct email approval notification
-            if (location.pathname && location.pathname.includes('approve?token')) {
-                return
-            } else{
+            if (location.pathname && location.pathname.includes('approve')) return
+            else {
                 validation()
             }
         } else {
