@@ -230,6 +230,27 @@ export default function App() {
         }
     }, [bgUpdated])
 
+    const renderFirstNavigatedPage = () => {
+        if (location.pathname && location.pathname.includes('approve')) {
+            return (
+                <Route
+                    exact
+                    path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
+                    render={() => GenericDirectApprovalModal && <GenericDirectApprovalModal approvalType={approvalType} />}
+                />
+            )
+        } else {
+            return (
+                <>
+                    <Route path="/" render={() => <NavigationRoutes />} />
+                    <Redirect
+                        to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
+                    />
+                </>
+            )
+        }
+    }
+
     return (
         <Suspense fallback={null}>
             {validating ? (
@@ -247,8 +268,7 @@ export default function App() {
                             <BreadcrumbStore>
                                 <Switch>
                                     {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
-                                    <Route exact path="/" render={() => <NavigationRoutes />} />
-                                    <Route
+                                    {/* <Route
                                     exact
                                         path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
                                         render={() =>
@@ -256,10 +276,12 @@ export default function App() {
                                                 <GenericDirectApprovalModal approvalType={approvalType} />
                                             )
                                         }
-                                    />
+                                    /> */}
+                                    {/* <Route path="/" render={() => <NavigationRoutes />} />
                                     <Redirect
                                         to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
-                                    />
+                                    /> */}
+                                    {renderFirstNavigatedPage()}
                                 </Switch>
                                 <div id="full-screen-modal"></div>
                                 <div id="visible-modal"></div>
