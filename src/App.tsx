@@ -126,7 +126,6 @@ export default function App() {
     }
 
     useEffect(() => {
-       
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         if (!window._env_.K8S_CLIENT) {
             // Pass validation for direct email approval notification
@@ -236,16 +235,17 @@ export default function App() {
                 <Route
                     exact
                     path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
-                    render={() => GenericDirectApprovalModal && <GenericDirectApprovalModal approvalType={approvalType} />}
+                    render={() =>
+                        GenericDirectApprovalModal && <GenericDirectApprovalModal approvalType={approvalType} />
+                    }
                 />
             )
         } else {
             return (
                 <>
+                    {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
                     <Route path="/" render={() => <NavigationRoutes />} />
-                    <Redirect
-                        to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
-                    />
+                    <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
                 </>
             )
         }
@@ -267,7 +267,6 @@ export default function App() {
                         <ErrorBoundary>
                             <BreadcrumbStore>
                                 <Switch>
-                                    {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
                                     {/* <Route
                                     exact
                                         path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
