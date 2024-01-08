@@ -213,6 +213,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         }
         try {
             setInstalling(true)
+            // NOTE: This validation call also goes inside component as well discuss about it
             const validated = await validateData()
             if (!validated) {
                 toast.warn('Click on highlighted charts and resolve errors.', { autoClose: 5000 })

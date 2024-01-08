@@ -1208,7 +1208,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="form__row">
                     <label className="form__label form__label--sentence dc__bold">Select Configmap and Secrets</label>
                     <ReactSelect
-                        menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
+                        menuPosition={this.state.isAdvanced ? null : "fixed"}
                         closeMenuOnScroll={true}
                         classNamePrefix="select-config-secret-dropdown"
                         isMulti={true}
@@ -1483,7 +1483,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className="w-50 mr-8">
                         <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
-                            menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
+                            menuPosition={this.state.isAdvanced ? null : "fixed"}
                             closeMenuOnScroll={true}
                             isDisabled={!!this.props.match.params.cdPipelineId}
                             classNamePrefix="cd-pipeline-environment-dropdown"
@@ -1761,7 +1761,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <p className="fs-14 fw-6 cn-9 mb-8 mt-20">Deployment Strategy</p>
                         <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                         <ReactSelect
-                            menuPortalTarget={document.getElementById('visible-modal')}
+                            menuPosition="fixed"
                             closeMenuOnScroll={true}
                             classNamePrefix="deployment-strategy-dropdown"
                             isSearchable={false}
