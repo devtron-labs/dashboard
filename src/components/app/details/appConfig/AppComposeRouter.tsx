@@ -137,7 +137,7 @@ export default function AppComposeRouter({
         } else if (isUnlocked.workflowEditor) {
             return URLS.APP_WORKFLOW_CONFIG
         } else {
-            return URLS.APP_GITOPS_CONFIG
+            return URLS.APP_GIT_CONFIG
         }
     }
 

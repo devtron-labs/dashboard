@@ -232,7 +232,7 @@ export const DeploymentAppRadioGroup = ({
     rootClassName,
     isFromCDPipeline,
     isGitOpsRepoNotConfigured,
-    gitOtpsRepoConfigInfoBar,
+    gitOpsRepoConfigInfoBar,
 }: DeploymentAppRadioGroupType): JSX.Element => {
     const gitOpsNotCongiguredText =
         allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
@@ -285,7 +285,7 @@ export const DeploymentAppRadioGroup = ({
             {deploymentAppType === DeploymentAppTypes.GITOPS &&
                 isGitOpsRepoNotConfigured &&
                 !window._env_.HIDE_GITOPS_OR_HELM_OPTION && (
-                    <div className="mt-16">{gitOtpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
+                    <div className="mt-16">{gitOpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
                 )}
         </>
     )

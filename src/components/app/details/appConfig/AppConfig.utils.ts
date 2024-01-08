@@ -3,6 +3,14 @@ import { DOCUMENTATION } from '../../../../config'
 import { AppStageUnlockedType, STAGE_NAME } from './appConfig.type'
 
 //stage: last configured stage
+const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
+    stage === STAGE_NAME.CI_PIPELINE ||
+    (isGitOpsConfigurationRequired
+        ? stage === STAGE_NAME.GITOPS_CONFIG
+        : stage === STAGE_NAME.DEPLOYMENT_TEMPLATE) ||
+    stage === STAGE_NAME.CD_PIPELINE ||
+    stage === STAGE_NAME.CHART_ENV_CONFIG;
+
 export const isUnlocked = (stage: string, isGitOpsConfigurationRequired?: boolean): AppStageUnlockedType => {
     return {
         material:
@@ -36,33 +44,13 @@ export const isUnlocked = (stage: string, isGitOpsConfigurationRequired?: boolea
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
         workflowEditor:
-            stage === STAGE_NAME.CI_PIPELINE ||
-            (isGitOpsConfigurationRequired
-                ? stage === STAGE_NAME.GITOPS_CONFIG
-                : stage === STAGE_NAME.DEPLOYMENT_TEMPLATE) ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
+            isCommonUnlocked(stage, isGitOpsConfigurationRequired),
         configmap:
-            stage === STAGE_NAME.CI_PIPELINE ||
-            (isGitOpsConfigurationRequired
-                ? stage === STAGE_NAME.GITOPS_CONFIG
-                : stage === STAGE_NAME.DEPLOYMENT_TEMPLATE) ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
+            isCommonUnlocked(stage, isGitOpsConfigurationRequired),
         secret:
-            stage === STAGE_NAME.CI_PIPELINE ||
-            (isGitOpsConfigurationRequired
-                ? stage === STAGE_NAME.GITOPS_CONFIG
-                : stage === STAGE_NAME.DEPLOYMENT_TEMPLATE) ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
+            isCommonUnlocked(stage, isGitOpsConfigurationRequired),
         envOverride:
-            stage === STAGE_NAME.CI_PIPELINE ||
-            (isGitOpsConfigurationRequired
-                ? stage === STAGE_NAME.GITOPS_CONFIG
-                : stage === STAGE_NAME.DEPLOYMENT_TEMPLATE) ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
+            isCommonUnlocked(stage, isGitOpsConfigurationRequired),
     }
 }
 

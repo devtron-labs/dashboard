@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { TriggerPrePostCDNodeProps ,TriggerPrePostCDNodeState} from '../../types';
 import { TriggerStatus } from '../../../../config';
-import { URLS } from './../../../../../../config';
+import { BUILD_STATUS, URLS } from './../../../../../../config';
 import { Link } from 'react-router-dom';
 import { DEFAULT_STATUS } from '../../../../../../config';
 import { TriggerViewContext } from '../../config';
@@ -78,8 +78,8 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
         let stage = this.props.type === 'PRECD' ? 'Pre-deployment' : 'Post-deployment'
         let isClickable = !(
             status === DEFAULT_STATUS.toLowerCase() ||
-            status === 'not triggered' ||
-            status === 'not deployed'
+            status === BUILD_STATUS.NOT_TRIGGERED ||
+            status === BUILD_STATUS.NOT_DEPLOYED
         )
         return (
             <TriggerViewContext.Consumer>

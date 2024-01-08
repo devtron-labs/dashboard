@@ -87,6 +87,7 @@ export interface AppConfigNavigationProps {
     environmentList?: any[]
     isBaseConfigProtected?: boolean
     reloadEnvironments:()=> void
+    isGitOpsConfigurationRequired: Boolean
 }
 
 export interface AppComposeRouterProps {

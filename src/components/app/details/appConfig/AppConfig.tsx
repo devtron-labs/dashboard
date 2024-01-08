@@ -406,6 +406,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                             environmentList={state.environmentList}
                             isBaseConfigProtected={state.isBaseConfigProtected}
                             reloadEnvironments={reloadEnvironments}
+                            isGitOpsConfigurationRequired={isGitOpsConfigurationRequired}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -477,10 +478,10 @@ function Navigation({
     environmentList,
     isBaseConfigProtected,
     reloadEnvironments,
+    isGitOpsConfigurationRequired,
 }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
-    const isGitOpsConfigurationRequired = navItems.find((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)?.required
     const totalSteps = isGitOpsConfigurationRequired
         ? DEVTRON_APPS_STEPS.GITOPS_CONFIG
         : DEVTRON_APPS_STEPS.NO_GITOS_CONFIG

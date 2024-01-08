@@ -225,7 +225,7 @@ export default function BuildCD({
         } else return null
     }
     
-    const gitOtpsRepoConfigInfoBar = (content: string) => {
+    const gitOpsRepoConfigInfoBar = (content: string) => {
         return (
             <InfoColourBar
                 message={content}
@@ -415,7 +415,7 @@ export default function BuildCD({
                         />
                     </div>
                 </div>
-                {gitOpsRepoNotConfiguredAndOptionsHidden && gitOtpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
+                {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
                 {renderNamespaceInfo(namespaceEditable)}
                 {isVirtualEnvironment
                     ? HelmManifestPush && (
@@ -536,7 +536,7 @@ export default function BuildCD({
                     rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
                     isFromCDPipeline={true}
                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
-                    gitOtpsRepoConfigInfoBar={gitOtpsRepoConfigInfoBar}
+                    gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
                 />
             </div>
         )

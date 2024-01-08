@@ -109,7 +109,7 @@ export interface DeploymentAppRadioGroupType {
     rootClassName?: string
     isFromCDPipeline?: boolean
     isGitOpsRepoNotConfigured?: boolean
-    gitOtpsRepoConfigInfoBar?: (content:string) => JSX.Element
+    gitOpsRepoConfigInfoBar?: (content:string) => JSX.Element
 }
 
 export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
