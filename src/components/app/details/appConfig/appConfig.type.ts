@@ -74,7 +74,6 @@ export interface AppConfigNavigationProps {
     environmentList?: any[]
     isBaseConfigProtected?: boolean
     reloadEnvironments:()=> void
-    isSuperAdmin?: boolean
 }
 
 export interface AppComposeRouterProps {
@@ -97,7 +96,6 @@ export interface AppComposeRouterProps {
     reloadEnvironments:()=> void
     configProtectionData: any[]
     filteredEnvIds?: string
-    isSuperAdmin?: boolean
 }
 
 export interface EnvironmentOverridesProps {
@@ -119,7 +117,6 @@ export interface EnvironmentOverrideRouteProps {
     appId?: string
     workflowsRes?: WorkflowResult
     isEnvProtected?: boolean
-    isSuperAdmin?: boolean
 }
 
 export interface EnvironmentOverrideRouterProps {
@@ -128,7 +125,6 @@ export interface EnvironmentOverrideRouterProps {
     getWorkflows: () => void
     allEnvs?: any[]
     reloadEnvironments: ()=> void
-    isSuperAdmin?: boolean
 }
 
 export interface NextButtonProps {

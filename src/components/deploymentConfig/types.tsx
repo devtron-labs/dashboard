@@ -77,7 +77,6 @@ export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps
     environments: AppEnvironment[]
     isProtected: boolean
     reloadEnvironments: () => void
-    isSuperAdmin: boolean
 }
 
 export interface DeploymentChartVersionType {

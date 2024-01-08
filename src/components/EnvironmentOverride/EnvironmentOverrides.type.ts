@@ -37,7 +37,6 @@ export interface EnvironmentOverrideComponentProps {
     environments?: any
     reloadEnvironments: () => void
     envName?: string
-    isSuperAdmin: boolean
 }
 
 export interface CommonEnvironmentOverridesProps {
@@ -55,7 +54,6 @@ export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverri
     environmentName: string
     isProtected: boolean
     reloadEnvironments: () => void
-    isSuperAdmin?: boolean
 }
 export interface ListComponentType {
     name: string

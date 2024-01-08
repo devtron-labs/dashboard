@@ -399,7 +399,6 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                             environmentList={state.environmentList}
                             isBaseConfigProtected={state.isBaseConfigProtected}
                             reloadEnvironments={reloadEnvironments}
-                            isSuperAdmin={userRole === UserRoleType.SuperAdmin}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -423,7 +422,6 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                             reloadEnvironments={reloadEnvironments}
                             configProtectionData={state.configProtectionData}
                             filteredEnvIds={filteredEnvIds}
-                            isSuperAdmin={userRole === UserRoleType.SuperAdmin}
                         />
                     </div>
                 </div>
@@ -471,7 +469,6 @@ function Navigation({
     environmentList,
     isBaseConfigProtected,
     reloadEnvironments,
-    isSuperAdmin,
 }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
@@ -536,7 +533,6 @@ function Navigation({
                             getWorkflows={getWorkflows}
                             allEnvs={environmentList}
                             reloadEnvironments={reloadEnvironments}
-                            isSuperAdmin={isSuperAdmin}
                         />
                     )
                 }

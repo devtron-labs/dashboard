@@ -60,7 +60,6 @@ export default function AppComposeRouter({
     reloadEnvironments,
     configProtectionData,
     filteredEnvIds,
-    isSuperAdmin
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
     const renderJobViewRoutes = (): JSX.Element => {
@@ -117,7 +116,6 @@ export default function AppComposeRouter({
                                 environments={environments}
                                 isJobView={isJobView}
                                 reloadEnvironments={reloadEnvironments}
-                                isSuperAdmin={isSuperAdmin}
                             />
                         )}
                     />,
@@ -165,7 +163,6 @@ export default function AppComposeRouter({
                             environments={environments}
                             isProtected={isBaseConfigProtected}
                             reloadEnvironments={reloadEnvironments}
-                            isSuperAdmin={isSuperAdmin}
                         />
                     </Route>
                 )}
@@ -210,7 +207,7 @@ export default function AppComposeRouter({
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                         path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                         render={(props) => (
-                            <EnvironmentOverride environments={environments} reloadEnvironments={reloadEnvironments} isSuperAdmin={isSuperAdmin}/>
+                            <EnvironmentOverride environments={environments} reloadEnvironments={reloadEnvironments} />
                         )}
                     />,
                 ]}

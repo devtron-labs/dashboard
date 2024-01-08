@@ -69,11 +69,10 @@ export default function DeploymentConfig({
     environments,
     isProtected,
     reloadEnvironments,
-    isSuperAdmin,
 }: DeploymentConfigProps) {
     const history = useHistory()
     const { appId } = useParams<{ appId: string }>()
-    const { currentServerInfo } = useContext(mainContext)
+    const { currentServerInfo, isSuperAdmin } = useContext(mainContext)
     const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)
     const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
     const [lockedConfigKeysWithLockType, setLockedConfigKeysWithLockType] = useState<ConfigKeysWithLockType>({
