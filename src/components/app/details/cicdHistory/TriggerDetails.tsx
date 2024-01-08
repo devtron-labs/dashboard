@@ -176,7 +176,14 @@ const WorkerStatus = React.memo(
 const ProgressingStatus = React.memo(
     ({ status, message, podStatus, stage, type, finishedOn, workerPodName }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
-        const [abortConfirmation, setAbortConfiguration] = useState(false)
+        const [abortConfirmation, setAbortConfirmation] = useState(false)
+        const [abortError, setAbortError] = useState<{
+            status: boolean
+            message: string
+        }>({
+            status: false,
+            message: '',
+        })
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
             triggerId: string
@@ -184,25 +191,43 @@ const ProgressingStatus = React.memo(
         }>()
         let abort = null
         if (type === HistoryComponentType.CI) {
-            abort = () => cancelCiTrigger({ pipelineId, workflowId: buildId })
+            abort = (isForceAbort: boolean) => cancelCiTrigger({ pipelineId, workflowId: buildId }, isForceAbort)
         } else if (stage !== 'DEPLOY') {
             abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
         }
 
         async function abortRunning() {
             setAborting(true)
-            const [error] = await asyncWrap(abort())
-            setAborting(false)
-            if (error) {
-                showError(error)
-            } else {
+            try {
+                await abort(abortError.status)
                 toast.success('Build Aborted')
-                setAbortConfiguration(false)
+                setAbortConfirmation(false)
+                setAbortError({
+                    status: false,
+                    message: '',
+                })
+            } catch (error) {
+                setAborting(false)
+                setAbortConfirmation(false)
+                if (error['code'] === 400) {
+                    // code 400 is for aborting a running build
+                    const errors = error['errors']
+                    setAbortError({
+                        status: true,
+                        message: errors[0].userMessage,
+                    })
+                }
             }
         }
 
         const toggleAbortConfiguration = (): void => {
-            setAbortConfiguration(not)
+            setAbortConfirmation(not)
+        }
+        const closeForceAbortModal = (): void => {
+            setAbortError({
+                status: false,
+                message: '',
+            })
         }
         return (
             <>
@@ -248,6 +273,29 @@ const ProgressingStatus = React.memo(
                             </button>
                             <button type="button" className="cta delete" onClick={abortRunning}>
                                 {aborting ? <Progressing /> : 'Yes, Abort'}
+                            </button>
+                        </ConfirmationDialog.ButtonGroup>
+                    </ConfirmationDialog>
+                )}
+                {abortError.status && (
+                    <ConfirmationDialog>
+                        <ConfirmationDialog.Icon src={warn} />
+                        <ConfirmationDialog.Body title="Could not abort build!" />
+                        <div className="w-100 bc-n50 h-36 flexbox dc__align-items-center">
+                            <span className="pl-12">Error: {abortError.message}</span>
+                        </div>
+                        <div className="fs-13 fw-6 pt-12 cn-7 lh-1-54">
+                            <span>Please try to force abort</span>
+                        </div>
+                        <div className="pt-4 fw-4 cn-7 lh-1-54">
+                            <span>Some resource might get orphaned which will be cleaned up with Job-lifecycle</span>
+                        </div>
+                        <ConfirmationDialog.ButtonGroup>
+                            <button type="button" className="cta cancel" onClick={closeForceAbortModal}>
+                                Cancel
+                            </button>
+                            <button type="button" className="cta delete" onClick={abortRunning}>
+                                {aborting ? <Progressing /> : 'Force Abort'}
                             </button>
                         </ConfirmationDialog.ButtonGroup>
                     </ConfirmationDialog>
