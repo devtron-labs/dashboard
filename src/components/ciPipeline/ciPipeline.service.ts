@@ -54,7 +54,7 @@ export function getInitData(
                     webhookEvents: pipelineMetaConfig.result.webhookEvents,
                     ciPipelineSourceTypeOptions: pipelineMetaConfig.result.ciPipelineSourceTypeOptions,
                     webhookConditionList: pipelineMetaConfig.result.webhookConditionList,
-                    triggerType: TriggerType.Auto,
+                    triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
                     beforeDockerBuildScripts: [],
                     afterDockerBuildScripts: [],
                     preBuildStage: emptyStepsData(),
