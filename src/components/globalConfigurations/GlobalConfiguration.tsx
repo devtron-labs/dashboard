@@ -1,9 +1,9 @@
-import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
+import React, { lazy, useState, useEffect, Suspense, useContext, createContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
-import { showError, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Toggle, ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
@@ -25,6 +25,7 @@ import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 import CodeEditor from '../CodeEditor/CodeEditor'
+import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -35,7 +36,6 @@ const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
-const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
@@ -125,22 +125,24 @@ export default function GlobalConfiguration(props) {
         <main className="global-configuration">
             <PageHeader headerName="Global configurations" />
             <Router history={useHistory()}>
-                <section className="global-configuration__navigation">
-                    <NavItem serverMode={serverMode} />
-                </section>
-                <section className="global-configuration__component-wrapper">
-                    <Suspense fallback={<Progressing pageLoader />}>
-                        <ErrorBoundary>
-                            <Body
-                                isSuperAdmin={props.isSuperAdmin}
-                                getHostURLConfig={getHostURLConfig}
-                                checkList={checkList}
-                                serverMode={serverMode}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                            />
-                        </ErrorBoundary>
-                    </Suspense>
-                </section>
+                <GlobalConfigurationProvider>
+                    <section className="global-configuration__navigation">
+                        <NavItem serverMode={serverMode} />
+                    </section>
+                    <section className="global-configuration__component-wrapper">
+                        <Suspense fallback={<Progressing pageLoader />}>
+                            <ErrorBoundary>
+                                <Body
+                                    isSuperAdmin={props.isSuperAdmin}
+                                    getHostURLConfig={getHostURLConfig}
+                                    checkList={checkList}
+                                    serverMode={serverMode}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                />
+                            </ErrorBoundary>
+                        </Suspense>
+                    </section>
+                </GlobalConfigurationProvider>
             </Router>
         </main>
     )
@@ -154,6 +156,8 @@ function NavItem({ serverMode }) {
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
     })
+    const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
+
     let moduleStatusTimer = null
     const ConfigRequired = [
         {
@@ -193,12 +197,17 @@ function NavItem({ serverMode }) {
             component: CustomChartList,
             isAvailableInEA: false,
         },
-        { name: 'SSO Login Services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {
             name: 'Authorization',
             href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
             preventDefaultKey: URLS.GLOBAL_CONFIG_AUTH,
             group: [
+                {
+                    name: 'SSO Login Services',
+                    dataTestId: 'authorization-sso-login-link',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/login-service`,
+                    isAvailableInEA: true,
+                },
                 {
                     name: 'User Permissions',
                     dataTestId: 'authorization-user-permissions-link',
@@ -261,28 +270,57 @@ function NavItem({ serverMode }) {
     }
 
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
+        const onTippyClose = () => {
+            // Resetting the tippy state
+            setTippyConfig({
+                showTippy: false
+            })
+        }
+
         return (
-            <NavLink
-                to={`${route.href}`}
-                key={route.href}
-                activeClassName="active-route"
-                data-testid={route.dataTestId}
-                className={`${
-                    route.name === 'API tokens' &&
-                    location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                        ? 'active-route'
-                        : ''
-                }`}
-                onClick={(e) => {
-                    if (!preventOnClickOp) {
-                        handleGroupCollapsedState(e, route)
-                    }
-                }}
+            // FIXME: Reuse the renderNavItem function for all nav item to extend the tippy support to all links
+            <ConditionalWrap
+                condition={tippyConfig.showTippy && tippyConfig.showOnRoute === route.href}
+                wrap={(children) => (
+                    <TippyCustomized
+                        theme={TippyTheme.black}
+                        className="w-300 ml-2"
+                        placement="right"
+                        showCloseButton
+                        trigger="manual"
+                        interactive
+                        showOnCreate
+                        arrow
+                        animation="shift-toward-subtle"
+                        onClose={onTippyClose}
+                        {...tippyConfig}
+                    >
+                        {children}
+                    </TippyCustomized>
+                )}
             >
-                <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
-                    <div>{route.name}</div>
-                </div>
-            </NavLink>
+                <NavLink
+                    to={`${route.href}`}
+                    key={`${route.name}-${route.href}`}
+                    activeClassName="active-route"
+                    data-testid={route.dataTestId}
+                    className={`${
+                        route.name === 'API tokens' &&
+                        location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
+                            ? 'active-route'
+                            : ''
+                    }`}
+                    onClick={(e) => {
+                        if (!preventOnClickOp) {
+                            handleGroupCollapsedState(e, route)
+                        }
+                    }}
+                >
+                    <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
+                        <div>{route.name}</div>
+                    </div>
+                </NavLink>
+            </ConditionalWrap>
         )
     }
 
@@ -539,13 +577,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
                     <CustomChartList />
                 </Route>,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_LOGIN}
-                    path={URLS.GLOBAL_CONFIG_LOGIN}
-                    render={(props) => {
-                        return <SSOLogin {...props} />
-                    }}
-                />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_AUTH}
                     path={URLS.GLOBAL_CONFIG_AUTH}
