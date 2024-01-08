@@ -60,8 +60,7 @@ export default function AppComposeRouter({
     reloadEnvironments,
     configProtectionData,
     filteredEnvIds,
-    isSuperAdmin,
-,
+    isSuperAdmin
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
     const renderJobViewRoutes = (): JSX.Element => {
