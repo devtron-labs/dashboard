@@ -127,13 +127,33 @@ export default function App() {
 
     useEffect(() => {
         // If not K8S_CLIENT then validateToken otherwise directly redirect
+        async function validation() {
+            try {
+                await validateToken()
+                defaultRedirection()
+            } catch (err: any) {
+                // push to login without breaking search
+                if (err?.code === 401) {
+                    const loginPath = URLS.LOGIN_SSO
+                    const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
+                        ? location.search
+                        : `?continue=${location.pathname}`
+                    push(`${loginPath}${newSearch}`)
+                } else {
+                    setErrorPage(true)
+                    showError(err)
+                }
+            } finally {
+                setValidating(false)
+            }
+        }
         if (!window._env_.K8S_CLIENT) {
             // Pass validation for direct email approval notification
-            if (location.pathname && location.pathname.includes('approve')) {
-                redirectToDirectApprovalNotification()
-            } else {
-                validation()
-            }
+            // if (location.pathname && location.pathname.includes('approve')) {
+            //     redirectToDirectApprovalNotification()
+            // } else {
+            validation()
+            // }
         } else {
             setValidating(false)
             defaultRedirection()
@@ -229,29 +249,6 @@ export default function App() {
         }
     }, [bgUpdated])
 
-    const renderFirstNavigatedPage = () => {
-        if (location.pathname && location.pathname.includes('approve')) {
-            console.log(`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`)
-            return (
-                <Route
-                    exact
-                    path={`/${approvalType?.toLocaleLowerCase()}/approve`}
-                    render={() =>
-                        GenericDirectApprovalModal && <GenericDirectApprovalModal approvalType={approvalType} />
-                    }
-                />
-            )
-        } else {
-            return (
-                <>
-                    {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
-                    <Route path="/" render={() => <NavigationRoutes />} />
-                    <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
-                </>
-            )
-        }
-    }
-
     return (
         <Suspense fallback={null}>
             {validating ? (
@@ -268,20 +265,29 @@ export default function App() {
                         <ErrorBoundary>
                             <BreadcrumbStore>
                                 <Switch>
-                                    {/* <Route
-                                    exact
-                                        path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
-                                        render={() =>
-                                            GenericDirectApprovalModal && (
-                                                <GenericDirectApprovalModal approvalType={approvalType} />
-                                            )
-                                        }
-                                    /> */}
-                                    {/* <Route path="/" render={() => <NavigationRoutes />} />
-                                    <Redirect
-                                        to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
-                                    /> */}
-                                    {renderFirstNavigatedPage()}
+                                    {/* {location.pathname && location.pathname.includes('approve') ? (
+                                        <Route
+                                            exact
+                                            path={`/${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
+                                            render={() =>
+                                                GenericDirectApprovalModal && (
+                                                    <GenericDirectApprovalModal approvalType={approvalType} />
+                                                )
+                                            }
+                                        />
+                                    ) : ( */}
+                                        <>
+                                            {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
+                                            <Route path="/" render={() => <NavigationRoutes />} />
+                                            <Redirect
+                                                to={
+                                                    window._env_.K8S_CLIENT
+                                                        ? '/'
+                                                        : `${URLS.LOGIN_SSO}${location.search}`
+                                                }
+                                            />
+                                        </>
+                                    {/* )} */}
                                 </Switch>
                                 <div id="full-screen-modal"></div>
                                 <div id="visible-modal"></div>
