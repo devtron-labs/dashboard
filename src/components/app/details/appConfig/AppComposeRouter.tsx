@@ -127,20 +127,6 @@ export default function AppComposeRouter({
         )
     }
 
-    const defaultRoute = (): string => {
-        if (isUnlocked.gitOpsConfig) {
-            return URLS.APP_GITOPS_CONFIG
-        } else if (isUnlocked.deploymentTemplate) {
-            return URLS.APP_DEPLOYMENT_CONFIG
-        } else if (isUnlocked.dockerBuildConfig) {
-            return URLS.APP_DOCKER_CONFIG
-        } else if (isUnlocked.workflowEditor) {
-            return URLS.APP_WORKFLOW_CONFIG
-        } else {
-            return URLS.APP_GIT_CONFIG
-        }
-    }
-
     const renderAppViewRoutes = (): JSX.Element => {
         return (
             <Switch>
@@ -237,7 +223,6 @@ export default function AppComposeRouter({
                         )}
                     />,
                 ]}
-                <Redirect to={`${path}/${defaultRoute()}`} />
             </Switch>
         )
     }
