@@ -245,6 +245,7 @@ export default function App() {
                     ) : (
                         <ErrorBoundary>
                             <BreadcrumbStore>
+{                            console.log(approvalToken)}
                                 {location.pathname && location.pathname.includes('approve') ? (
                                     <Switch>
                                         <Route
@@ -252,7 +253,7 @@ export default function App() {
                                             path={`/${approvalType?.toLocaleLowerCase()}/approve`}
                                             render={() =>
                                                 GenericDirectApprovalModal && (
-                                                    <GenericDirectApprovalModal approvalType={approvalType} />
+                                                    <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />
                                                 )
                                             }
                                         />
