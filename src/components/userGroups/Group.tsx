@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useContext, useRef, ChangeEvent } from 'react'
 import { deepEqual } from '../common'
-import { showError, Progressing, DeleteDialog, ResizableTextarea, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, DeleteDialog, ResizableTextarea, CustomInput, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { saveGroup, deleteGroup } from './userGroup.service'
 
 import {
@@ -14,13 +14,18 @@ import './UserGroup.scss'
 import { toast } from 'react-toastify'
 import AppPermissions from './AppPermissions'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config'
+import { PermissionType } from '../apiTokens/authorization.utils'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils'
 
+enum PermissionTypeEnum {
+    SUPER_ADMIN = 'SUPERADMIN',
+    SPECIFIC = 'SPECIFIC'
+}
+
 export default function GroupForm({
     id = null,
-    index = null,
     groupData = null,
     updateCallback,
     deleteCallback,
@@ -40,10 +45,24 @@ export default function GroupForm({
     const [name, setName] = useState({ value: '', error: '' })
     const [description, setDescription] = useState('')
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
+    const [permissionType, setPermissionType] = useState<PermissionTypeEnum>(PermissionTypeEnum.SPECIFIC)
     const currentK8sPermissionRef = useRef<any[]>([])
+
+    const isSuperAdminPermission = permissionType === PermissionTypeEnum.SUPER_ADMIN
+
+    const handlePermissionTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setPermissionType(e.target.value as PermissionTypeEnum)
+    }
 
     function isFormComplete(): boolean {
         let isComplete: boolean = true
+
+        // Validation for super admin permission on the group
+        if (isSuperAdminPermission) {
+            return isComplete
+        }
+
+        // Validation for specific permissions on the group
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
                 isComplete = false
@@ -139,6 +158,7 @@ export default function GroupForm({
                         : permission.resource.map((entity) => entity.value).join(','),
                 })),
             ],
+            superAdmin: isSuperAdminPermission
         }
         if (serverMode !== SERVER_MODE.EA_ONLY) {
             payload.roleFilters.push({
@@ -153,11 +173,11 @@ export default function GroupForm({
             const { result } = await saveGroup(payload)
             if (id) {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                updateCallback(index, result)
+                updateCallback(id, result)
                 toast.success('Group updated')
             } else {
                 createCallback(result)
-                toast.success('Group createed')
+                toast.success('Group created')
             }
         } catch (err) {
             showError(err)
@@ -170,17 +190,19 @@ export default function GroupForm({
     }, [groupData])
 
     async function populateDataFromAPI(data: CreateGroup) {
-        const { id, name, description } = data
+        const { name, description, superAdmin } = data
         setName({ value: name, error: '' })
         setDescription(description)
+        setPermissionType(superAdmin ? PermissionTypeEnum.SUPER_ADMIN : PermissionTypeEnum.SPECIFIC)
     }
 
     async function handleDelete() {
         setSubmitting(true)
         try {
             await deleteGroup(id)
+            deleteCallback(id)
             toast.success('Group deleted')
-            deleteCallback(index)
+            setDeleteConfirmationModal(false)
         } catch (err) {
             showError(err)
         } finally {
@@ -210,16 +232,38 @@ export default function GroupForm({
                 onChange={(e) => setDescription(e.target.value)}
                 data-testid="permission-group-description-textbox"
             />
-            <AppPermissions
-                data={groupData}
-                directPermission={directPermission}
-                setDirectPermission={setDirectPermission}
-                chartPermission={chartPermission}
-                setChartPermission={setChartPermission}
-                k8sPermission={k8sPermission}
-                setK8sPermission={setK8sPermission}
-                currentK8sPermissionRef={currentK8sPermissionRef}
-            />
+            <RadioGroup
+                className="permission-type__radio-group mt-12"
+                value={permissionType}
+                name={`permission-type_${id}`}
+                onChange={handlePermissionTypeChange}
+            >
+                {PermissionType.map(({ label, value }) => (
+                    <RadioGroupItem
+                        dataTestId={`${
+                            value === PermissionTypeEnum.SPECIFIC ? 'specific-user' : 'super-admin'
+                        }-permission-radio-button`}
+                        value={value}
+                        key={label}
+                    >
+                        <span className={`dc__no-text-transform ${permissionType === value ? 'fw-6' : 'fw-4'}`}>
+                            {label}
+                        </span>
+                    </RadioGroupItem>
+                ))}
+            </RadioGroup>
+            {!isSuperAdminPermission && (
+                <AppPermissions
+                    data={groupData}
+                    directPermission={directPermission}
+                    setDirectPermission={setDirectPermission}
+                    chartPermission={chartPermission}
+                    setChartPermission={setChartPermission}
+                    k8sPermission={k8sPermission}
+                    setK8sPermission={setK8sPermission}
+                    currentK8sPermissionRef={currentK8sPermissionRef}
+                />
+            )}
             <div className="flex right mt-32">
                 {id && (
                     <button
@@ -262,6 +306,7 @@ export default function GroupForm({
                     description={'Deleting this group will revoke permissions from users added to this group.'}
                     closeDelete={() => setDeleteConfirmationModal(false)}
                     delete={handleDelete}
+                    apiCallInProgress={submitting}
                 />
             )}
         </div>

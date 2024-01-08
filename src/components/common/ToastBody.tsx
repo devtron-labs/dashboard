@@ -1,6 +1,6 @@
 import React from 'react'
 import { toast } from 'react-toastify'
-import { TOAST_ACCESS_DENIED } from '../../config/constantMessaging'
+import { TOAST_ACCESS_DENIED } from '@devtron-labs/devtron-fe-common-lib'
 
 export class ToastBody extends React.Component<{
     title: string
