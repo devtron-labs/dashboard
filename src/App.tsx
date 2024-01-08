@@ -231,10 +231,11 @@ export default function App() {
 
     const renderFirstNavigatedPage = () => {
         if (location.pathname && location.pathname.includes('approve')) {
+            console.log(`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`)
             return (
                 <Route
                     exact
-                    path={`${approvalType?.toLocaleLowerCase()}/approve?token=${approvalToken}`}
+                    path={`/${approvalType?.toLocaleLowerCase()}/approve`}
                     render={() =>
                         GenericDirectApprovalModal && <GenericDirectApprovalModal approvalType={approvalType} />
                     }
