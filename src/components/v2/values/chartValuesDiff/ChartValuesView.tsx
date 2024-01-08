@@ -613,7 +613,7 @@ function ChartValuesView({
                 // ends
 
                 // helm app OR external helm app delete initiated
-                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedApInfo)) {
+                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedAppInfo)) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                     init && init()
                     history.push( `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
@@ -940,7 +940,6 @@ function ChartValuesView({
                 const {
                     result: { environmentId: newEnvironmentId, installedAppId: newInstalledAppId },
                 } = res
-                console.log(isDeployChartView)
                 toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
@@ -1575,15 +1574,7 @@ function ChartValuesView({
                                     handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
                                     isDeployChartView={isDeployChartView}
                                     allowedDeploymentTypes={allowedDeploymentTypes}
-                                    allowedCustomBool={allowedCustomBool}
-                                    envId={commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0}
-                                    teamId={1}
                                     gitRepoURL={installedConfigFromParent['gitRepoURL']}
-                                    staleData={staleData}
-                                    setStaleData={setStaleData}
-                                    dispatch={dispatch}
-                                    isDrawerOpen={isDrawerOpen}
-                                    setIsDrawerOpen={setIsDrawerOpen}
                                 />
                             )}
                         {!isExternalApp &&
@@ -1593,12 +1584,8 @@ function ChartValuesView({
                             !appDetails?.isVirtualEnvironment &&
                             !commonState.installedConfig?.isOCICompliantChart && (
                                 <GitOpsDrawer
-                                    commonState={commonState}
                                     deploymentAppType={commonState.deploymentAppType}
                                     allowedDeploymentTypes={allowedDeploymentTypes}
-                                    envId={commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0}
-                                    teamId={1}
-                                    gitRepoURL={installedConfigFromParent['gitRepoURL']}
                                     staleData={staleData}
                                     setStaleData={setStaleData}
                                     dispatch={dispatch}

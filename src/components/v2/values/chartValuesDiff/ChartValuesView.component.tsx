@@ -401,19 +401,28 @@ export const GitOpsDrawer = ({
                     </Drawer>
                 </div>
             )}
-            {(gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1) || (showRepoSelector && window._env_.HIDE_GITOPS_OR_HELM_OPTION) ? (
+            {(gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1) ||
+            (showRepoSelector && window._env_.HIDE_GITOPS_OR_HELM_OPTION) ? (
                 <div className="form__input dashed mt-10 flex" style={{ height: '54px' }}>
-                    <div className="mb-10">
+                    <div className="">
                         <span>
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-16 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="dc__ellipsis-right flex left fs-13 fw-4 lh-20 cursor pb-4" onClick={toggleDrawer}>{`${
-                            visibleRepoURL.length > 0 ? ((visibleRepoURL === repoType.DEFAULT || staleData) ? 'Auto-create repository' : visibleRepoURL) : 'Set GitOps repository'
+                        <a
+                            className="dc__ellipsis-right flex left fs-13 fw-4 lh-20 cursor pb-4"
+                            onClick={toggleDrawer}
+                        >{`${
+                            visibleRepoURL.length > 0
+                                ? visibleRepoURL === repoType.DEFAULT || staleData
+                                    ? 'Auto-create repository'
+                                    : visibleRepoURL
+                                : 'Set GitOps repository'
                         }`}</a>
                     </div>
                 </div>
             ) : null}
+            <hr/>
         </>
     )
 }

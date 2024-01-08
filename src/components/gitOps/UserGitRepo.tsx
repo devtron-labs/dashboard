@@ -5,15 +5,15 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { UserGitRepoProps } from './gitops.type';
 
-function UserGitRepo(props: UserGitRepoProps) {
+function UserGitRepo({setRepoURL, staleData, repoURL, selectedRepoType, setSelectedRepoType}: UserGitRepoProps) {
 
     const repoTypeChange = () => {
-        const newRepoType = props.selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
-        props.setSelectedRepoType(newRepoType)
+        const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
+        setSelectedRepoType(newRepoType)
     }
 
     const onChange = (event) => {
-        props.setRepoURL(event.target.value)
+        setRepoURL(event.target.value)
     }
 
     const InputUrlBox = () => {
@@ -24,11 +24,11 @@ function UserGitRepo(props: UserGitRepoProps) {
                         type="text"
                         autoComplete="off"
                         name="name"
-                        value={props.repoURL.trim()}
+                        value={repoURL.trim()}
                         placeholder="Enter repository URL"
                         className="form__input"
-                        onChange={(event) => onChange(event)}
-                        disabled={props.staleData}
+                        onChange={onChange}
+                        disabled={staleData}
                     />
                 </div>
         )
@@ -55,7 +55,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                 <RadioGroup
                     className="radio-group-no-border mt-16"
                     name="trigger-type"
-                    value={props.staleData ? repoType.DEFAULT : props.selectedRepoType}
+                    value={staleData ? repoType.DEFAULT : selectedRepoType}
                     onChange={repoTypeChange}
                 >
                     <div>
@@ -65,13 +65,13 @@ function UserGitRepo(props: UserGitRepoProps) {
                         </div>
                     </div>
                     <div className="pt-12">
-                        <RadioGroupItem value={!props.staleData ? repoType.CONFIGURE : ''} disabled={props.staleData}>
+                        <RadioGroupItem value={!staleData ? repoType.CONFIGURE : ''} disabled={staleData}>
                             Commit manifest to a desired repository.
                         </RadioGroupItem>
                     </div>
                 </RadioGroup>
-                {props.selectedRepoType === repoType.CONFIGURE && !props.staleData && InputUrlBox()}
-                {props.staleData && (
+                {selectedRepoType === repoType.CONFIGURE && !staleData && InputUrlBox()}
+                {staleData && (
                     <div className="pt-16">
                         <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
                             <Error className="icon-dim-20 mr-8" />
@@ -83,7 +83,7 @@ function UserGitRepo(props: UserGitRepoProps) {
                     </div>
                 )}
             </div>
-            {!props.staleData && renderInfoColorBar()}
+            {!staleData && renderInfoColorBar()}
         </div>
     )
 }

@@ -59,12 +59,6 @@ import {
 } from '../gitOps/constants'
 import { NewCDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 
-export enum deleteDialogType {
-    showForceDeleteDialog = 'showForceDeleteDialog',
-    showNonCascadeDeleteDialog = 'showNonCascadeDeleteDialog',
-    showNormalDeleteDialog = 'showNormalDeleteDialog',
-}
-
 export default function NewCDPipeline({
     match,
     location,

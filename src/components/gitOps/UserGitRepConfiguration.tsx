@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import { URLS } from '../../config'
 import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
 
-export default function UserGitRepConfiguration(props: UserGitRepoConfigurationProps) {
+export default function UserGitRepConfiguration({respondOnSuccess, appId, navItems} : UserGitRepoConfigurationProps) {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [isEditable, setIsEditable] = useState(false)
@@ -21,7 +21,7 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
 
     useEffect(() => {
         setLoading(true)
-        getGitOpsRepoConfig(props.appId)
+        getGitOpsRepoConfig(appId)
             .then((response) => {
                 if (response.result) {
                     setGitOpsRepoURL(response.result.gitRepoURL)
@@ -83,13 +83,13 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
     }
 
     const reload = () => {
-        history.push(`/app/${props.appId}/edit/${URLS.APP_WORKFLOW_CONFIG}`)
+        history.push(`/app/${appId}/edit/${URLS.APP_WORKFLOW_CONFIG}`)
         window.location.reload()
     }
 
     function handleSaveButton() {
         const payload = {
-            appId: props.appId,
+            appId: appId,
             gitRepoURL: selectedRepoType === repoType.DEFAULT ? 'Default' : gitOpsRepoURL,
         }
         setLoading(true)
@@ -98,10 +98,10 @@ export default function UserGitRepConfiguration(props: UserGitRepoConfigurationP
                 if (Object.values(response.result.stageErrorMap).length > 0) {
                     toast.error('Error saving GitRepo URL')
                 } else {
-                    props.respondOnSuccess()
+                    respondOnSuccess()
                     toast.success('Successfully saved.')
-                    const stageIndex = props.navItems.findIndex((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)
-                    history.push(props.navItems[stageIndex + 1].href)
+                    const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)
+                    history.push(navItems[stageIndex + 1].href)
                 }
             })
             .catch((err) => {
