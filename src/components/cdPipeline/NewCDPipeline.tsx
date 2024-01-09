@@ -79,6 +79,7 @@ export default function NewCDPipeline({
     const allStrategies = useRef<{ [key: string]: any }>({})
     const noStrategyAvailable = useRef(false)
     const addType = urlParams.get('addType')
+    const childPipelineId = urlParams.get('childPipelineId')
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
     const parentPipelineId = urlParams.get('parentPipelineId')
     const [gitOpsRepoConfiguredWarning, setGitOpsRepoConfiguredWarning] = useState<{ show: boolean; text: string }>({
@@ -598,8 +599,8 @@ export default function NewCDPipeline({
         if (changeCIPayload?.switchFromCiPipelineId) {
             pipeline['switchFromCiPipelineId'] = changeCIPayload.switchFromCiPipelineId
         }
-        if (ciPipelineId) {
-            pipeline['childPipelineId'] = +ciPipelineId
+        if (childPipelineId) {
+            pipeline['childPipelineId'] = +childPipelineId
         }
         
         pipeline['addType'] = addType
