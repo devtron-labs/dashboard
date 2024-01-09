@@ -204,7 +204,7 @@ const EnvOverrideRoute = ({
                 onClick={handleNavItemClick}
             >
                 <div className="flex left">
-                    <Dropdown className={`icon-dim-18 rotate mr-8 ${collapsed ? 'dc__flip-90' : ''}`} />
+                    <Dropdown className={`icon-dim-18 rotate mr-8 ${collapsed ? 'dc__flip-270' : ''}`} />
                     {envOverride.environmentName}
                 </div>
                 <div className="flex">
@@ -263,6 +263,8 @@ export default function EnvironmentOverrideRouter({
         if (
             previousPathName &&
             ((previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) ||
+                // This is a serious potential bug. Need to handle this properly
+                (previousPathName.includes(URLS.LINKED_CD) && !pathname.includes(URLS.LINKED_CD)) ||
                 (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) ||
                 (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))
         ) {

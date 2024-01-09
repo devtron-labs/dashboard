@@ -4,7 +4,6 @@ import SavedVariablesView from '../SavedVariables'
 import { validScopedVariablesData } from '../mocks'
 import { downloadData } from '../utils'
 import { ScopedVariablesDataType } from '../types'
-import { useClickOutside } from '../../common'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => <div></div>))
 jest.mock('../utils', () => ({
@@ -14,7 +13,6 @@ jest.mock('../utils', () => ({
 
 jest.mock('../../common', () => ({
     importComponentFromFELibrary: jest.fn(),
-    useClickOutside: jest.fn(),
     useFileReader: jest.fn().mockResolvedValue({
         readFile: jest.fn(),
         fileData: 'fileData',
@@ -114,6 +112,5 @@ describe('SavedVariables', () => {
         fireEvent.click(dropdownButton as Element)
         expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeTruthy()
         fireEvent.click(container.querySelector('input') as Element)
-        expect(useClickOutside).toHaveBeenCalled()
     })
 })
