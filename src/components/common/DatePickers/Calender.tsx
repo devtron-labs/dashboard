@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
-import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCalendarDay.js'
+import CustomizableCalendarDay from 'react-dates/esm/components/CustomizableCalendarDay.js'
 import ReactGA from 'react-ga4'
 import moment, { Moment } from 'moment'
 import { isInclusivelyBeforeDay, DateRangePicker, SingleDatePicker } from 'react-dates'

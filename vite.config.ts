@@ -9,7 +9,6 @@ import url from 'node:url'
 import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
-// same usage inside defineConfig
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 
@@ -74,7 +73,8 @@ export default defineConfig({
             port: 3000,
             proxy: {
                 '/orchestrator': {
-                    target: 'https://demo.devtron.info/',
+                    // @TODO: Change this to a default value
+                    target: 'https://devtron-badal.devtron.info/',
                     changeOrigin: true,
                     // rewrite: (path) => {
                     //   console.log(path)
@@ -83,9 +83,9 @@ export default defineConfig({
                 '/grafana': 'https://demo.devtron.info/',
             },
         },
-        // define: {
-        //     global: 'globalThis',
-        // },
+        define: {
+            global: 'globalThis',
+        },
         resolve: {
             alias: {
                 // process: 'process/browser',
