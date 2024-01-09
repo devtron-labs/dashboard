@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
-import { APPROVAL_MODAL_TYPE, URLS } from './config'
+import { URLS } from './config'
 import { toast } from 'react-toastify'
 import 'patternfly/dist/css/patternfly.css'
 import 'patternfly/dist/css/patternfly-additions.css'
@@ -19,7 +19,7 @@ import {
     ErrorBoundary,
     importComponentFromFELibrary,
 } from './components/common'
-import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, BreadcrumbStore, Reload, DevtronProgressing, APPROVAL_MODAL_TYPE } from '@devtron-labs/devtron-fe-common-lib'
 import * as serviceWorker from './serviceWorker'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
@@ -50,10 +50,10 @@ export default function App() {
     const [forceUpdateOnLocationChange, setForceUpdateOnLocationChange] = useState(false)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
-
     const location = useLocation()
     const { push } = useHistory()
     const didMountRef = useRef(false)
+    const isDirectApprovalNotification = location.pathname && location.pathname.includes('approve') && location.search && location.search.includes('?token=')
 
     function onlineToast(toastBody: JSX.Element, options) {
         if (onlineToastRef.current && toast.isActive(onlineToastRef.current)) {
@@ -130,7 +130,7 @@ export default function App() {
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         if (!window._env_.K8S_CLIENT) {
             // Pass validation for direct email approval notification
-            if (location.pathname && location.pathname.includes('approve')) {
+            if (isDirectApprovalNotification) {
                 redirectToDirectApprovalNotification()
             } else {
             validation()
@@ -245,8 +245,7 @@ export default function App() {
                     ) : (
                         <ErrorBoundary>
                             <BreadcrumbStore>
-{                            console.log(approvalToken)}
-                                {location.pathname && location.pathname.includes('approve') ? (
+                                {isDirectApprovalNotification ? (
                                     <Switch>
                                         <Route
                                             exact
