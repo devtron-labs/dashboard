@@ -247,15 +247,14 @@ export default function App() {
                             <BreadcrumbStore>
                                 {isDirectApprovalNotification ? (
                                     <Switch>
-                                        <Route
-                                            exact
-                                            path={`/${approvalType?.toLocaleLowerCase()}/approve`}
-                                            render={() =>
-                                                GenericDirectApprovalModal && (
-                                                    <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />
-                                                )
-                                            }
-                                        />
+                                        {GenericDirectApprovalModal && (
+                                            <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
+                                                <GenericDirectApprovalModal
+                                                    approvalType={approvalType}
+                                                    approvalToken={approvalToken}
+                                                />
+                                            </Route>
+                                        )}
                                     </Switch>
                                 ) : (
                                     <Switch>
