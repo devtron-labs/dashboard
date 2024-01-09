@@ -245,26 +245,22 @@ export default function App() {
                     ) : (
                         <ErrorBoundary>
                             <BreadcrumbStore>
-                                {isDirectApprovalNotification ? (
                                     <Switch>
-                                        {GenericDirectApprovalModal && (
-                                            <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
-                                                <GenericDirectApprovalModal
-                                                    approvalType={approvalType}
-                                                    approvalToken={approvalToken}
-                                                />
-                                            </Route>
-                                        )}
-                                    </Switch>
-                                ) : (
-                                    <Switch>
+                                             {isDirectApprovalNotification && GenericDirectApprovalModal && (
+                                                <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
+                                                    <GenericDirectApprovalModal
+                                                        approvalType={approvalType}
+                                                        approvalToken={approvalToken}
+                                                    />
+                                                </Route>
+                                            )}
                                         {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
                                         <Route path="/" render={() => <NavigationRoutes />} />
                                         <Redirect
                                             to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
                                         />
                                     </Switch>
-                                )}
+                                {/* )} */}
                                 <div id="full-screen-modal"></div>
                                 <div id="visible-modal"></div>
                                 <div id="visible-modal-2"></div>
