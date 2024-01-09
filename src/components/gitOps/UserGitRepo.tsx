@@ -4,6 +4,7 @@ import { repoType } from '../../config/constants'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { UserGitRepoProps } from './gitops.type';
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 function UserGitRepo({setRepoURL, staleData, repoURL, selectedRepoType, setSelectedRepoType}: UserGitRepoProps) {
 
@@ -16,21 +17,33 @@ function UserGitRepo({setRepoURL, staleData, repoURL, selectedRepoType, setSelec
         setRepoURL(event.target.value)
     }
 
+    const renderValidationErrorLabel = (message?: string): JSX.Element => {
+        return (
+            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
+                <div className="error-label-icon">
+                    <Error className="icon-dim-16" />
+                </div>
+                <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
+            </div>
+        )
+    }
+
     const InputUrlBox = () => {
         return (
-                <div className="ml-26 mt-8">
-                    <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Git Repo URL</div>
-                    <input
-                        type="text"
-                        autoComplete="off"
-                        name="name"
-                        value={repoURL.trim()}
-                        placeholder="Enter repository URL"
-                        className="form__input"
-                        onChange={onChange}
-                        disabled={staleData}
-                    />
-                </div>
+            <div className="ml-26 mt-8">
+                <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Git Repo URL</div>
+                <input
+                    type="text"
+                    autoComplete="off"
+                    name="name"
+                    value={repoURL.trim()}
+                    placeholder="Enter repository URL"
+                    className="form__input"
+                    onChange={onChange}
+                    disabled={staleData}
+                />
+                {repoURL.length === 0 && renderValidationErrorLabel()}
+            </div>
         )
     }
 

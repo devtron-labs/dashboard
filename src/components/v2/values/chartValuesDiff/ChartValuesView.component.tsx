@@ -338,6 +338,9 @@ export const GitOpsDrawer = ({
     };
 
     const handleSaveButton = () => {
+        if(selectedRepoType === repoType.CONFIGURE && repoURL.length === 0) {
+            return
+        }
         setGitOpsState(true)
         setIsDeploymentAllowed(false)
         setIsDrawerOpen(false)

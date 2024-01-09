@@ -1577,7 +1577,7 @@ function ChartValuesView({
                                     gitRepoURL={installedConfigFromParent['gitRepoURL']}
                                 />
                             )}
-                        {!isExternalApp &&
+                        {allowedCustomBool && !isExternalApp &&
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
                             (isDeployChartView || allowedDeploymentTypes.length > 0) &&
