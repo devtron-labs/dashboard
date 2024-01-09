@@ -43,6 +43,18 @@ export default function TerminalView({
 
     const [myDivRef] = useHeightObserver(resizeSocket)
 
+    // To fix the scrollbar issue with Xterm in edit mode, we need to restrict the width and height of the xterm-accessibility div as same as xterm-screen div
+    // CON: In case of resize, we need to call this function again
+    const restrictXtermAccessibilityWidth = () => {
+        const xtermScreen = document.querySelector('.xterm-screen') as HTMLElement
+        const xtermAccessibility = document.querySelector('.xterm-accessibility') as HTMLElement
+
+        if (xtermScreen && xtermAccessibility) {
+            xtermAccessibility.style.width = xtermScreen.clientWidth + 'px'
+            xtermAccessibility.style.height = xtermScreen.clientHeight + 'px'
+        }
+    }
+
     useEffect(() => {
         if (!terminalRef.current) {
             elementDidMount('#terminal-id').then(() => {
@@ -51,6 +63,7 @@ export default function TerminalView({
         }
         if (sessionId && terminalRef.current) {
             setIsReconnection(true)
+            restrictXtermAccessibilityWidth()
             postInitialize(sessionId)
         } else {
             setSocketConnection(SocketConnectionType.DISCONNECTED)
