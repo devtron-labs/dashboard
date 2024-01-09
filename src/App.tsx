@@ -53,7 +53,7 @@ export default function App() {
     const location = useLocation()
     const { push } = useHistory()
     const didMountRef = useRef(false)
-    const isDirectApprovalNotification = location.pathname && location.pathname.includes('approve') && location.search && location.search.includes('?token=')
+    const isDirectApprovalNotification = location.pathname && location.pathname.includes('approve') && location.search && location.search.includes(`?token=${approvalToken}`)
 
     function onlineToast(toastBody: JSX.Element, options) {
         if (onlineToastRef.current && toast.isActive(onlineToastRef.current)) {
@@ -129,7 +129,7 @@ export default function App() {
     useEffect(() => {
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         if (!window._env_.K8S_CLIENT) {
-            // Pass validation for direct email approval notification
+            // By Passing validations for direct email approval notifications
             if (isDirectApprovalNotification) {
                 redirectToDirectApprovalNotification()
             } else {
