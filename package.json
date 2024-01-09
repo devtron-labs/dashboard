@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.50-beta-2",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.51-beta-4",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@sentry/browser": "7.50.0",
         "@sentry/integrations": "7.50.0",
@@ -45,7 +45,7 @@
         "rollup-plugin-node-polyfills": "0.2.1",
         "rxjs": "^7.5.4",
         "sockjs-client": "1.6.1",
-        "vite": "^4.3.3",
+        "vite": "^4.5.0",
         "vite-plugin-require-transform": "1.0.21",
         "vite-plugin-svgr": "^2.4.0",
         "vite-tsconfig-paths": "^4.2.0",

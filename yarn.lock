@@ -280,11 +280,12 @@
   dependencies:
     "@cspotcode/source-map-consumer" "0.8.0"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.41":
-  version "0.0.41"
-  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.41/e3c2839848253f88087fe3dba12d63388ad0cb55#e3c2839848253f88087fe3dba12d63388ad0cb55"
-  integrity sha512-CRFy06dx1uAZJV0wjdVSuXorjPB8glcEsYuAo70ODkLtIn31SrJ7KhIxhAFOE52TGL7FkzygkoUr94TSvMdFTg==
+"@devtron-labs/devtron-fe-common-lib@0.0.50-beta-2":
+  version "0.0.50-beta-2"
+  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.50-beta-2/9c1ab956e1fa5279d947dee807a4e22b411bde7b#9c1ab956e1fa5279d947dee807a4e22b411bde7b"
+  integrity sha512-ZoEQy2uZUoNggaX6vwCGIzH9/MdZkky9VH69Xze6QPnUSfIotr07N/QYYr61b+c9uOiqEGP7ElWWRCdRwzB1aQ==
   dependencies:
+    react-monaco-editor "^0.54.0"
     sass "^1.56.2"
     tslib "^2.4.1"
 
@@ -3866,10 +3867,10 @@ vite-tsconfig-paths@^4.2.0:
     globrex "^0.1.2"
     tsconfck "^2.1.0"
 
-vite@^4.3.3:
-  version "4.5.0"
-  resolved "https://registry.npmjs.org/vite/-/vite-4.5.0.tgz"
-  integrity sha512-ulr8rNLA6rkyFAlVWw2q5YJ91v098AFQ2R0PRFwPzREXOUJQPtFUG0t+/ZikhaOCDqFoDhN6/v8Sq0o4araFAw==
+vite@^4.5.0:
+  version "4.5.1"
+  resolved "https://registry.npmjs.org/vite/-/vite-4.5.1.tgz"
+  integrity sha512-AXXFaAJ8yebyqzoNB9fu2pHoo/nWX+xZlaRwoeYUxEqBO+Zj4msE5G+BhGBll9lYEKv9Hfks52PAF2X7qDYXQA==
   dependencies:
     esbuild "^0.18.10"
     postcss "^8.4.27"
