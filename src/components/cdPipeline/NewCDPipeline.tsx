@@ -71,7 +71,7 @@ export default function NewCDPipeline({
     noGitOpsModuleInstalledAndConfigured,
     changeCIPayload,
     isGitOpsRepoNotConfigured
-}) {
+}: NewCDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
     const validationRules = new ValidationRules()

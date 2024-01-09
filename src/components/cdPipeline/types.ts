@@ -10,6 +10,9 @@ export interface NewCDPipelineProps {
     refreshParentWorkflows: any
     envIds: any
     changeCIPayload?: ChangeCIPayloadType
+    isLastNode: any
+    noGitOpsModuleInstalledAndConfigured: any
+    isGitOpsRepoNotConfigured: any
 }
 
 export enum DeleteDialogType {
