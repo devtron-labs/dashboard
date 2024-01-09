@@ -67,6 +67,7 @@
       "config": {
         "clientID": "$MICROSOFT_APPLICATION_ID",
         "clientSecret": "$MICROSOFT_CLIENT_SECRET",
+        "tenant": "$MICROSOFT_TENANT",
         "redirectURI": "http://devtron.yourdomain.com/orchestrator/api/dex/callback"
       }
     }
