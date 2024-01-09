@@ -417,7 +417,7 @@ export default function CIPipeline({
                 const ciPipelineResponse = await getInitData(appId, true, !isJobCard)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
-                    await getAvailablePlugins(ciPipelineResponse.form)
+                    await getAvailablePlugins(ciPipelineResponse.result.form)
                     await getEnvironments(0)
                     setPageState(ViewType.FORM)
                 }
