@@ -37,13 +37,8 @@ function reactVirtualized(): PluginOption {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(({command, mode}) => {
-    // const env = loadEnv(mode, process.cwd(), '');
-    return {
-        // define: {
-        //     NODE_ENV: JSON.stringify(env.VITE_NODE_ENV),
-        //     PUBLIC_URL: JSON.stringify(env.VITE_PUBLIC_URL),
-        // },
+export default defineConfig({
+        base: '/dashboard/',
         preview: {
             port: 3000,
         },
@@ -111,5 +106,4 @@ export default defineConfig(({command, mode}) => {
         //         external: ["Buffer"]
         //     },
         // },
-    }
 })
