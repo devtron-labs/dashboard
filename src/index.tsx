@@ -159,7 +159,7 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={'local/'}>
+            <BrowserRouter basename={'dashboard/'}>
                 <App />
             </BrowserRouter>
         ) : null}
