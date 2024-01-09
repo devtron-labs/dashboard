@@ -92,7 +92,7 @@ export default function App() {
     const redirectToDirectApprovalNotification = (): void => {
         setValidating(false)
         if (location.pathname && location.pathname.includes('deployment')) {
-            setApprovalType(APPROVAL_MODAL_TYPE.IMAGE)
+            setApprovalType(APPROVAL_MODAL_TYPE.DEPLOYMENT)
         } else {
             setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
         }
