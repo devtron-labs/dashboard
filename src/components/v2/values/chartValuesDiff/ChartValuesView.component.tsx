@@ -353,6 +353,17 @@ export const GitOpsDrawer = ({
     const toggleDrawer = () => {
         setIsDeploymentAllowed(true)
     }
+    
+    const renderValidationErrorLabel = (message?: string): JSX.Element => {
+        return (
+            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
+                <div className="error-label-icon">
+                    <Error className="icon-dim-16" />
+                </div>
+                <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
+            </div>
+        )
+    }
 
     return (
         <>
@@ -406,7 +417,7 @@ export const GitOpsDrawer = ({
             )}
             {(gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1) ||
             (showRepoSelector && window._env_.HIDE_GITOPS_OR_HELM_OPTION) ? (
-                <div className="form__input dashed mt-10 flex" style={{ height: '54px' }}>
+                <div className="form__input dashed mt-10 flex">
                     <div className="">
                         <span>
                             Commit deployment manifests to
@@ -423,6 +434,7 @@ export const GitOpsDrawer = ({
                                 : 'Set GitOps repository'
                         }`}</a>
                     </div>
+                    {(visibleRepoURL.length === 0 && visibleRepoURL !== repoType.DEFAULT) && renderValidationErrorLabel()}
                 </div>
             ) : null}
             <hr/>

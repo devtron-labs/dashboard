@@ -379,8 +379,8 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
                     <div
-                        className={`${
-                            isGitOpsConfigurationRequired ? 'app-compose-with-gitops-config__nav' : 'app-compose__nav'
+                        className={`app-compose__nav ${
+                            isGitOpsConfigurationRequired ? 'app-compose-with-gitops-config__nav' : 'app-compose-with-no-gitops-config__nav'
                         } ${isJobView ? 'job-compose__side-nav' : ''} flex column left top ${
                             showCannotDeleteTooltip ? '' : 'dc__position-rel'
                         } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
