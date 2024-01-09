@@ -73,12 +73,9 @@ export default defineConfig({
             port: 3000,
             proxy: {
                 '/orchestrator': {
-                    // @TODO: Change this to a default value
+                    // @TODO: Change target to a default value
                     target: 'https://devtron-badal.devtron.info/',
                     changeOrigin: true,
-                    // rewrite: (path) => {
-                    //   console.log(path)
-                    //   return path.replace(/^\/orchestrator/, '')},
                 },
                 '/grafana': 'https://demo.devtron.info/',
             },
@@ -86,24 +83,4 @@ export default defineConfig({
         define: {
             global: 'globalThis',
         },
-        resolve: {
-            alias: {
-                // process: 'process/browser',
-                // @TODO: This can be removed
-                // src: path.resolve(__dirname, 'src')
-            },
-        },
-        // build: {
-            // manifest: true,
-        //     rollupOptions: {
-        //         plugins: [
-        //             // Enable rollup polyfills plugin
-        //             // used during production bundling
-        //             // rollupNodePolyFill({exclude: ["node_modules/xlsx/**"]}),
-        //             // Add the inject plugin for Buffer
-        //             // inject({ Buffer: ['Buffer', 'Buffer'] }),
-        //         ],
-        //         external: ["Buffer"]
-        //     },
-        // },
 })
