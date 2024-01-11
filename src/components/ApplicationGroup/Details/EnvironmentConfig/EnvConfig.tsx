@@ -71,7 +71,12 @@ export default function EnvConfig({ filteredAppIds, envName }: AppGroupDetailDef
                 </div>
             </div>
             <div className="env-compose__main">
-                <EnvironmentOverride appList={envAppList} environments={[]} reloadEnvironments={noop} envName={envName}/>
+                <EnvironmentOverride
+                    appList={envAppList}
+                    environments={[]}
+                    reloadEnvironments={noop}
+                    envName={envName}
+                />
             </div>
         </div>
     )

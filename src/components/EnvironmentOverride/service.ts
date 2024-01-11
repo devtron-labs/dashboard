@@ -5,6 +5,7 @@ export function getDeploymentTemplate(appId, envId, chartId){
     return get(`app/env/${appId}/${envId}/${chartId}`)
 }
 
+
 export function updateDeploymentTemplate(appId, envId, payload){
     return put(`app/env`, payload)
 }

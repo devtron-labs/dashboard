@@ -303,7 +303,6 @@ export default function NavigationRoutes() {
         return <Reload />
     } else {
         const _isOnboardingPage = isOnboardingPage()
-
         return (
             <mainContext.Provider
                 value={{
@@ -323,6 +322,7 @@ export default function NavigationRoutes() {
                     installedModuleMap,
                     currentServerInfo,
                     isAirgapped,
+                    isSuperAdmin
                 }}
             >
                 <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
