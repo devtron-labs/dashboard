@@ -446,9 +446,7 @@ function ManifestComponent({
                                         }
                                         className="flex left"
                                     >
-                                        {/* {!isEditmode && secretViewAccess && renderShowDecodedValueCheckbox()} */}
-                                        { renderShowDecodedValueCheckbox()}
-
+                                        {renderShowDecodedValueCheckbox()}
                                     </CodeEditor.Information>
                                 )}
                                 {activeTab === 'Compare' && (
