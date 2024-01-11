@@ -95,14 +95,10 @@ export default function UserGitRepConfiguration({respondOnSuccess, appId, navIte
         setLoading(true)
         gitOpsConfigDevtron(payload)
             .then((response) => {
-                if (Object.values(response.result.stageErrorMap).length > 0) {
-                    toast.error('Error saving GitRepo URL')
-                } else {
-                    respondOnSuccess()
-                    toast.success('Successfully saved.')
-                    const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)
-                    history.push(navItems[stageIndex + 1].href)
-                }
+                respondOnSuccess()
+                toast.success('Successfully saved.')
+                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)
+                history.push(navItems[stageIndex + 1].href)
             })
             .catch((err) => {
                 if (err['code'] === 408) {
