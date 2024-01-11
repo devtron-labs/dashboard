@@ -1383,6 +1383,7 @@ function ChartValuesView({
                     isDeployChartView={isDeployChartView}
                     isCreateValueView={isCreateValueView}
                     deployOrUpdateApplication={deployOrUpdateApplication}
+                    visibleRepoURL={visibleRepoURL}
                 />
             </div>
         )

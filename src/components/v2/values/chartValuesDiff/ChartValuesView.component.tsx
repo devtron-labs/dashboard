@@ -719,6 +719,7 @@ export const UpdateApplicationButton = ({
     isDeployChartView,
     isCreateValueView,
     deployOrUpdateApplication,
+    visibleRepoURL
 }: UpdateApplicationButtonProps) => {
     const { chartValueId } = useParams<{ chartValueId: string }>()
 
@@ -752,7 +753,7 @@ export const UpdateApplicationButton = ({
                 `${UPDATE_APP_BUTTON_TEXTS.Save} ${
                     chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
                 }`
-            ) : isDeployChartView ? (
+            ) : isDeployChartView && (visibleRepoURL.length === 0 && visibleRepoURL !== repoType.DEFAULT) ? (
                 UPDATE_APP_BUTTON_TEXTS.Deploy
             ) : (
                 UPDATE_APP_BUTTON_TEXTS.Update
