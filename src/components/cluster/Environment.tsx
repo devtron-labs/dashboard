@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary, useForm } from '../common'
-import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
@@ -145,7 +144,6 @@ export default function Environment({
                         <CustomInput
                             dataTestid="environment-name"
                             labelClassName="dc__required-field"
-                            autoComplete="off"
                             disabled={!!environment_name}
                             name="environment_name"
                             placeholder={id ? 'sample-env-name' : 'Eg. production'}
@@ -194,7 +192,6 @@ export default function Environment({
                     </div>}
                     <div className="mb-16">
                         <CustomInput
-                            autoComplete="off"
                             name="description"
                             placeholder={'Add a description for this environment'}
                             value={state.description.value}

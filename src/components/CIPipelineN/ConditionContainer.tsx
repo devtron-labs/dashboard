@@ -6,6 +6,7 @@ import {
     RadioGroupItem,
     ConditionType,
     PluginType,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -377,9 +378,9 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                         />
                                     </div>
                                     <div className="fs-13 mr-10">
-                                        <input
-                                            className="w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 br-4 h-32"
-                                            type="text"
+                                        <CustomInput
+                                            name="conditionalValue"
+                                            rootClassName="w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 br-4 h-32"
                                             value={conditionDetail.conditionalValue}
                                             onChange={(e) => {
                                                 handleConditionalValueChange(e, index)

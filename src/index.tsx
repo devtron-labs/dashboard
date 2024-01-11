@@ -48,6 +48,9 @@ interface customEnv {
     ANNOUNCEMENT_BANNER_MSG?: string
     LOGIN_PAGE_IMAGE?: string
     LOGIN_PAGE_IMAGE_BG?: string
+    HIDE_DEFAULT_CLUSTER?: boolean
+    GLOBAL_API_TIMEOUT?: number
+    TRIGGER_API_TIMEOUT?: number
 }
 declare global {
     interface Window {
@@ -146,13 +149,16 @@ if (!window || !window._env_) {
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
         ENABLE_BUILD_CONTEXT: false,
-        CLAIR_TOOL_VERSION:'V4',
+        CLAIR_TOOL_VERSION: 'V4',
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
         LOGIN_PAGE_IMAGE: '',
-        LOGIN_PAGE_IMAGE_BG: ''
+        LOGIN_PAGE_IMAGE_BG: '',
+        HIDE_DEFAULT_CLUSTER: false,
+        GLOBAL_API_TIMEOUT: 60000,
+        TRIGGER_API_TIMEOUT: 60000,
     }
 }
 

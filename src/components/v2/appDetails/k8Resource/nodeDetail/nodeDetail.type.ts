@@ -1,6 +1,7 @@
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib';
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import {Options, OptionsBase } from "../../appDetails.type";
+import {Options, OptionsBase } from '../../appDetails.type'
+import { MANIFEST_KEY_FIELDS } from '../../../../../config'
 
 export enum NodeDetailTab {
     EVENTS = 'EVENTS',
@@ -67,4 +68,19 @@ export interface ResponsePayload {
     advancedData?: {
         manifest: string
     }
+}
+
+
+interface ManagedFields {
+    [key: string]: any
+}
+
+interface ManifestMetadata {
+    [MANIFEST_KEY_FIELDS.MANAGED_FIELDS]?: ManagedFields[]
+    [key: string]: any
+}
+
+export interface ManifestData {
+    [MANIFEST_KEY_FIELDS.METADATA]?: ManifestMetadata
+    [key: string]: any
 }

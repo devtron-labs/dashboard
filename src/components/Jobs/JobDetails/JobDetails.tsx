@@ -30,9 +30,11 @@ export default function JobDetails() {
     const { appId } = useParams<{ appId: string }>()
     const [jobName, setJobName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
+    const [jobListLoading, setJobListLoading] = useState<boolean>(false)
 
     useEffect(() => {
-        getAppMetaInfoRes()
+        setJobListLoading(true)
+        getAppMetaInfoRes().finally(() => setJobListLoading(false))
     }, [appId])
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
@@ -46,6 +48,9 @@ export default function JobDetails() {
         } catch (err) {
             showError(err)
         }
+    }
+    if (jobListLoading) {
+        return <Progressing pageLoader />
     }
 
     return (

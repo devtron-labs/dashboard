@@ -86,14 +86,10 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     infoText:
         ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services',
     linkText: 'Go to SSO login services',
-    redirectLink: '/global-config/login-service',
+    redirectLink: '/global-config/auth/login-service',
 }
 
 export const ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a pipeline being deleted.'
-export const TOAST_ACCESS_DENIED = {
-    TITLE: 'Access denied',
-    SUBTITLE: 'You do not have required access to perform this action',
-}
 
 export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
 export const DELETE_DEPLOYMENT = 'Deleting deployment'
@@ -116,8 +112,6 @@ export const ERROR_EMPTY_SCREEN = {
     NOT_AUTHORIZED: 'Not authorized',
     UNAUTHORIZED: 'unauthorized',
     FORBIDDEN: 'forbidden',
-    REQUIRED_MANAGER_ACCESS:
-        'Looks like you don’t have access to information on this page. Please contact your manager to request access.',
 }
 
 //Confirmation Dialog messgaes
@@ -428,3 +422,6 @@ export const EPHEMERAL_CONTAINER = {
 export const NO_TASKS_CONFIGURED_ERROR = 'No tasks are configured in this job pipeline'
 
 export const FEATURE_DISABLED = 'This feature is disabled'
+
+export const DUPLICATE_PIPELINE_NAME_VALIDATION = "You cannot use same name for pipeline within an app."
+export const GENERATE_TOKEN_NAME_VALIDATION = "Token name is required to generate token"

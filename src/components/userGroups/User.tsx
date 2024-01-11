@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
-import { mapByKey, validateEmail, deepEqual } from '../common'
+import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../common'
 import {
     showError,
     Progressing,
@@ -34,6 +34,9 @@ import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { PermissionType } from '../apiTokens/authorization.utils';
 import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
 
+const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
+const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
+
 const CreatableChipStyle = {
     multiValue: (base, state) => {
         return {
@@ -60,11 +63,11 @@ const CreatableChipStyle = {
 export default function UserForm({
     id = null,
     userData = null,
-    index,
     updateCallback,
     deleteCallback,
     createCallback,
     cancelCallback,
+    isAutoAssignFlowEnabled
 }) {
     // id null is for create
     const { serverMode } = useContext(mainContext);
@@ -117,45 +120,49 @@ export default function UserForm({
     }
 
     function isFormComplete(): boolean {
-        let isComplete: boolean = true;
+        let isComplete: boolean = true
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
-                isComplete = false;
-                curr.entityNameError = 'Applications are mandatory';
+                isComplete = false
+                curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
             }
             if (curr.team && curr.environment.length === 0) {
-                isComplete = false;
-                curr.environmentError = 'Environments are mandatory';
+                isComplete = false
+                curr.environmentError = 'Environments are mandatory'
             }
-            agg.push(curr);
-            return agg;
-        }, []);
+            if (curr.team && curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
+                isComplete = false
+                curr.workflowError = 'Worflows are mandatory'
+            }
+            agg.push(curr)
+            return agg
+        }, [])
 
         if (!isComplete) {
-            setDirectPermission(tempPermissions);
+            setDirectPermission(tempPermissions)
         }
 
-        return isComplete;
+        return isComplete
     }
 
     function getSelectedEnvironments(permission) {
-        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
             return permission.environment.find((env) => env.value === '*')
                 ? ''
-                : permission.environment.map((env) => env.value).join(',');
+                : permission.environment.map((env) => env.value).join(',')
         } else {
-            let allFutureCluster = {};
-            let envList = '';
+            let allFutureCluster = {}
+            let envList = ''
             permission.environment.forEach((element) => {
                 if (element.clusterName === '' && element.value.startsWith('#')) {
-                    const clusterName = element.value.substring(1);
-                    allFutureCluster[clusterName] = true;
-                    envList += (envList !== '' ? ',' : '') + clusterName + '__*';
+                    const clusterName = element.value.substring(1)
+                    allFutureCluster[clusterName] = true
+                    envList += (envList !== '' ? ',' : '') + clusterName + '__*'
                 } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                    envList += (envList !== '' ? ',' : '') + element.value;
+                    envList += (envList !== '' ? ',' : '') + element.value
                 }
-            });
-            return envList;
+            })
+            return envList
         }
     }
 
@@ -174,45 +181,53 @@ export default function UserForm({
             groups: userGroups.map((group) => group.value),
             roleFilters: [
                 ...directPermission
-                    .filter(
-                        (permission) =>
-                            permission.team?.value && permission.environment.length && permission.entityName.length,
-                    )
-                    .map((permission) => ({
-                        ...permission,
-                        action: permission.action.configApprover
-                            ? `${permission.action.value},configApprover`
-                            : permission.action.value,
-                        team: permission.team.value,
-                        environment: getSelectedEnvironments(permission),
-                        entityName: permission.entityName.find((entity) => entity.value === '*')
-                            ? ''
-                            : permission.entityName.map((entity) => entity.value).join(','),
-                        entity: EntityTypes.DIRECT
-
-                    })),
-                    ...k8sPermission.map((permission) => ({
-                        ...permission,
-                        entity: EntityTypes.CLUSTER,
-                        action: permission.action.value,
-                        cluster: permission.cluster.label,
-                        group: permission.group.value === '*' ? '' : permission.group.value,
-                        kind: permission.kind.value === '*' ? '' : permission.kind.label,
-                        namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
-                        resource: permission.resource.find((entity) => entity.value === '*')
+                    .filter((permission) => {
+                        return permission.team?.value && permission.environment.length && permission.entityName.length
+                    })
+                    .map((permission) => {
+                        const payload = {
+                            ...permission,
+                            action: permission.action.configApprover
+                                ? `${permission.action.value},configApprover`
+                                : permission.action.value,
+                            team: permission.team.value,
+                            environment: getSelectedEnvironments(permission),
+                            entityName: permission.entityName.find((entity) => entity.value === '*')
+                                ? ''
+                                : permission.entityName.map((entity) => entity.value).join(','),
+                            entity: permission.entity,
+                            ...(permission.entity === EntityTypes.JOB && {
+                                workflow: permission.workflow?.length
+                                    ? permission.workflow.find((workflow) => workflow.value === '*')
+                                        ? ''
+                                        : permission.workflow.map((workflow) => workflow.value).join(',')
+                                    : '',
+                            }),
+                        }
+                        return payload
+                    }),
+                ...k8sPermission.map((permission) => ({
+                    ...permission,
+                    entity: EntityTypes.CLUSTER,
+                    action: permission.action.value,
+                    cluster: permission.cluster.label,
+                    group: permission.group.value === '*' ? '' : permission.group.value,
+                    kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                    namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                    resource: permission.resource.find((entity) => entity.value === '*')
                         ? ''
-                        : permission.resource.map((entity) => entity.value).join(',')
-                    }))
+                        : permission.resource.map((entity) => entity.value).join(','),
+                })),
             ],
             superAdmin: localSuperAdmin === 'SUPERADMIN',
-        };
+        }
         if (serverMode !== SERVER_MODE.EA_ONLY) {
             payload.roleFilters.push({
                 ...chartPermission,
                 team: '',
                 environment: '',
                 entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
-            });
+            })
             if (chartPermission.action != ActionTypes.VIEW) {
                 payload.roleFilters.push({
                     ...ViewChartGroupPermission,
@@ -225,7 +240,7 @@ export default function UserForm({
             const { result } = await saveUser(payload);
             if (id) {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                updateCallback(index, result);
+                updateCallback(id, result);
                 toast.success('User updated');
             } else {
                 createCallback(result);
@@ -309,8 +324,9 @@ export default function UserForm({
         setSubmitting(true);
         try {
             await deleteUser(id);
-            deleteCallback(index);
+            deleteCallback(id);
             toast.success('User deleted');
+            setDeleteConfirmationModal(false)
         } catch (err) {
             showError(err);
         } finally {
@@ -361,109 +377,119 @@ export default function UserForm({
     return (
         <div className="user-form">
             {!id && (
-                <div className="mb-16">
-                    <label htmlFor="" className="mb-8">
-                        Email addresses*
-                    </label>
-                    <Creatable
-                        classNamePrefix="email-address-dropdown"
-                        ref={creatableRef}
-                        options={creatableOptions}
-                        components={CreatableComponents}
-                        styles={CreatableChipStyle}
-                        autoFocus
-                        isMulti
-                        isClearable
-                        inputValue={emailState.inputEmailValue}
-                        placeholder="Type email and press enter..."
-                        isValidNewOption={() => false}
-                        backspaceRemovesValue
-                        value={emailState.emails}
-                        onBlur={handleCreatableBlur}
-                        onInputChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                        onChange={handleEmailChange}
-                    />
-                    {emailState.emailError && (
-                        <label className="form__error">
-                            <Error className="form__icon form__icon--error" />
-                            {emailState.emailError}
-                        </label>
-                    )}
-                </div>
-            )}
-            <div className="flex left mb-16">
-                <RadioGroup
-                    
-                    className="permission-type__radio-group"
-                    value={localSuperAdmin}
-                    name={`permission-type_${id}`}
-                    onChange={handlePermissionType}
-                    
-                >
-                    {PermissionType.map(({ label, value }) => (
-                        <RadioGroupItem
-                            dataTestId={`${
-                                value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
-                            }-permission-radio-button`}
-                            value={value}
-                            key={label}
-                        >
-                            <span className={`dc__no-text-transform ${localSuperAdmin === value ? 'fw-6' : 'fw-4'}`}>
-                                {label}
-                            </span>
-                        </RadioGroupItem>
-                    ))}
-                </RadioGroup>
-            </div>
-            {localSuperAdmin === 'SPECIFIC' && (
                 <>
-                    <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
-                    <Select
-                        value={userGroups}
-                        ref={groupPermissionsRef}
-                        classNamePrefix="group-permission-dropdown"
-                        components={{
-                            MultiValueContainer: ({ ...props }) => (
-                                <MultiValueChipContainer {...props} validator={null} />
-                            ),
-                            DropdownIndicator: null,
-                            ClearIndicator,
-                            MultiValueRemove,
-                            Option,
-                        }}
-                        styles={{
-                            ...multiSelectStyles,
-                            multiValue: (base) => ({
-                                ...base,
-                                border: `1px solid var(--N200)`,
-                                borderRadius: `4px`,
-                                background: 'white',
-                                height: '30px',
-                                margin: '0 8px 0 0',
-                                padding: '1px',
-                            }),
-                        }}
-                        formatOptionLabel={formatChartGroupOptionLabel}
-                        closeMenuOnSelect={false}
-                        isMulti
-                        autoFocus={!id}
-                        name="groups"
-                        options={availableGroups}
-                        hideSelectedOptions={false}
-                        onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
-                        className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
-                    />
-                    <AppPermissions
-                        data={userData}
-                        directPermission={directPermission}
-                        setDirectPermission={setDirectPermission}
-                        chartPermission={chartPermission}
-                        setChartPermission={setChartPermission}
-                        k8sPermission={k8sPermission}
-                        setK8sPermission={setK8sPermission}
-                        currentK8sPermissionRef={currentK8sPermissionRef}
-                    />
+                    {isAutoAssignFlowEnabled && <UserPermissionsInfoBar />}
+                    <div className="mb-16">
+                        <label htmlFor="" className="mb-8">
+                            Email addresses*
+                        </label>
+                        <Creatable
+                            classNamePrefix="email-address-dropdown"
+                            ref={creatableRef}
+                            options={creatableOptions}
+                            components={CreatableComponents}
+                            styles={CreatableChipStyle}
+                            autoFocus
+                            isMulti
+                            isClearable
+                            inputValue={emailState.inputEmailValue}
+                            placeholder="Type email and press enter..."
+                            isValidNewOption={() => false}
+                            backspaceRemovesValue
+                            value={emailState.emails}
+                            onBlur={handleCreatableBlur}
+                            onInputChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            onChange={handleEmailChange}
+                        />
+                        {emailState.emailError && (
+                            <label className="form__error">
+                                <Error className="form__icon form__icon--error" />
+                                {emailState.emailError}
+                            </label>
+                        )}
+                    </div>
+                </>
+            )}
+            {id && isAutoAssignFlowEnabled && <UserPermissionGroupTable permissionGroups={userData?.roleGroups} />}
+            {!isAutoAssignFlowEnabled && (
+                <>
+                    <div className="flex left mb-16">
+                        <RadioGroup
+                            className="permission-type__radio-group"
+                            value={localSuperAdmin}
+                            name={`permission-type_${id}`}
+                            onChange={handlePermissionType}
+                        >
+                            {PermissionType.map(({ label, value }) => (
+                                <RadioGroupItem
+                                    dataTestId={`${
+                                        value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
+                                    }-permission-radio-button`}
+                                    value={value}
+                                    key={label}
+                                >
+                                    <span
+                                        className={`dc__no-text-transform ${
+                                            localSuperAdmin === value ? 'fw-6' : 'fw-4'
+                                        }`}
+                                    >
+                                        {label}
+                                    </span>
+                                </RadioGroupItem>
+                            ))}
+                        </RadioGroup>
+                    </div>
+                    {localSuperAdmin === 'SPECIFIC' && (
+                        <>
+                            <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
+                            <Select
+                                value={userGroups}
+                                ref={groupPermissionsRef}
+                                classNamePrefix="group-permission-dropdown"
+                                components={{
+                                    MultiValueContainer: ({ ...props }) => (
+                                        <MultiValueChipContainer {...props} validator={null} />
+                                    ),
+                                    DropdownIndicator: null,
+                                    ClearIndicator,
+                                    MultiValueRemove,
+                                    Option,
+                                }}
+                                styles={{
+                                    ...multiSelectStyles,
+                                    multiValue: (base) => ({
+                                        ...base,
+                                        border: `1px solid var(--N200)`,
+                                        borderRadius: `4px`,
+                                        background: 'white',
+                                        height: '30px',
+                                        margin: '0 8px 0 0',
+                                        padding: '1px',
+                                    }),
+                                }}
+                                formatOptionLabel={formatChartGroupOptionLabel}
+                                closeMenuOnSelect={false}
+                                isMulti
+                                autoFocus={!id}
+                                name="groups"
+                                options={availableGroups}
+                                hideSelectedOptions={false}
+                                onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
+                                className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
+                            />
+                            <AppPermissions
+                                data={userData}
+                                directPermission={directPermission}
+                                setDirectPermission={setDirectPermission}
+                                chartPermission={chartPermission}
+                                setChartPermission={setChartPermission}
+                                k8sPermission={k8sPermission}
+                                setK8sPermission={setK8sPermission}
+                                currentK8sPermissionRef={currentK8sPermissionRef}
+                            />
+                        </>
+                    )}
                 </>
             )}
             <div className="flex right mt-32">
@@ -483,24 +509,29 @@ export default function UserForm({
                         Unsaved changes
                     </span>
                 )}
-                <button
-                    data-testid="user-form-cancel-button"
-                    disabled={submitting}
-                    onClick={cancelCallback}
-                    type="button"
-                    className="cta cancel mr-16"
-                >
-                    Cancel
-                </button>
-                <button
-                    disabled={submitting}
-                    data-testid="user-form-save-button"
-                    type="button"
-                    className="cta"
-                    onClick={handleSubmit}
-                >
-                    {submitting ? <Progressing /> : 'Save'}
-                </button>
+                {
+                    !(isAutoAssignFlowEnabled && id) &&
+                        <>
+                            <button
+                                data-testid="user-form-cancel-button"
+                                disabled={submitting}
+                                onClick={cancelCallback}
+                                type="button"
+                                className="cta cancel mr-16"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                disabled={submitting}
+                                data-testid="user-form-save-button"
+                                type="button"
+                                className="cta"
+                                onClick={handleSubmit}
+                            >
+                                {submitting ? <Progressing /> : 'Save'}
+                            </button>
+                        </>
+                }
             </div>
             {deleteConfirmationModal && (
                 <DeleteDialog
@@ -509,31 +540,9 @@ export default function UserForm({
                     description={'Deleting this user will remove the user and revoke all their permissions.'}
                     delete={handleDelete}
                     closeDelete={() => setDeleteConfirmationModal(false)}
+                    apiCallInProgress={submitting}
                 />
             )}
         </div>
     )
 }
-
-const SuperAdmin: React.FC<{
-    superAdmin: boolean;
-    setSuperAdmin: (checked: boolean) => any;
-}> = ({ superAdmin, setSuperAdmin }) => {
-    return (
-        <div className="flex left column top bcn-1 br-4 p-16 mb-24">
-            <div className="flex left">
-                <input
-                    type="checkbox"
-                    checked={!!superAdmin}
-                    onChange={(e) => setSuperAdmin(e.target.checked)}
-                    style={{ height: '13px', width: '13px' }}
-                />
-                <span className="fs-14 fw-6 cn-9 ml-16">Assign superadmin permissions</span>
-            </div>
-            <p className="fs-12 cn-7 mt-4">
-                Superadmins have complete access to all applications across projects. Only superadmins can add more
-                superadmins.
-            </p>
-        </div>
-    );
-};

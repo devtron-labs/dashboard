@@ -51,11 +51,3 @@ export const formatDurationDiff = (startedOn: string, finishedOn: string) => {
     const seconds = `${diff.seconds()}s`
     return `${hours}${minutes}${seconds}`
 }
-
-export const processDeployedTime = (lastDeployed, isAgroInstalled) => {
-    if (lastDeployed) {
-        return handleUTCTime(lastDeployed, true)
-    } else {
-        return isAgroInstalled ? '' : 'Not deployed'
-    }
-}

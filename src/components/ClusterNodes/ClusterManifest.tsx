@@ -11,6 +11,7 @@ import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { defaultManifestErrorText, manifestCommentsRegex } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { getTrimmedManifestData } from '../v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
 
 export default function ClusterManifest({
     terminalAccessId,
@@ -19,8 +20,12 @@ export default function ClusterManifest({
     setManifestData,
     errorMessage,
     setManifestAvailable,
-    selectTerminalTab
+    selectTerminalTab,
+    hideManagedFields,
 }: ClusterManifestType) {
+    // Manifest data with managed fields
+    const [originalManifest, setOriginalManifest] = useState('')
+    // Manifest data that we would be comparing with the edited manifest
     const [defaultManifest, setDefaultManifest] = useState('')
     const [manifestValue, setManifest] = useState('')
     const [loading, setLoading] = useState<boolean>(true)
@@ -32,8 +37,16 @@ export default function ClusterManifest({
             getClusterManifest(terminalAccessId)
                 .then((response) => {
                     const _manifest = YAML.stringify(response.result?.manifest)
-                    setDefaultManifest(_manifest)
-                    setManifest(_manifest)
+                    setOriginalManifest(_manifest)
+                    const trimmedManifest = YAML.stringify(getTrimmedManifestData(response.result?.manifest))
+                    setDefaultManifest(trimmedManifest)
+                    // Ideally should have been setManifest(trimmedManifest).
+                    if (hideManagedFields) {
+                        setManifest(trimmedManifest)
+                    }
+                    else {
+                        setManifest(_manifest)
+                    }
                     setLoading(false)
                     setManifestAvailable(true)
                 })
@@ -51,10 +64,14 @@ export default function ClusterManifest({
         }
     }, [terminalAccessId])
 
+    // NOTE: Need to remove this useEffect since manifestMode changes on events only.
+    // Since there can be alot of ways this useEffect interferes with other handlers, causing bugs.
+    // Plus it might be a case when this useEffect will run before we have manifest, which will cause issues.
     useEffect(() => {
         const regex = manifestCommentsRegex
         if (manifestMode === EditModeType.NON_EDIT) {
-            setManifest(defaultManifest)
+            const _manifest = hideManagedFields ? defaultManifest : originalManifest
+            setManifest(_manifest)
         } else if (manifestMode === EditModeType.APPLY) {
             const _manifestValue = manifestValue.replace(regex, 'apiVersion:')
             if (_manifestValue !== defaultManifest) {
@@ -63,9 +80,10 @@ export default function ClusterManifest({
                         setManifestData(JSON.stringify(YAML.parse(_manifestValue)))
                     } else {
                         setManifest(defaultManifestErrorText)
+                        setManifestMode(EditModeType.EDIT)
                     }
                 } catch (error) {
-                    setManifest(defaultManifestErrorText + '# ' + error + '\n#\n' + _manifestValue)
+                    // Since we check error in edit as well, we can ignore this error and somehow infinite loop is created if we setManifest here.
                     setManifestMode(EditModeType.EDIT)
                 }
             } else {
@@ -73,11 +91,24 @@ export default function ClusterManifest({
                 setManifestMode(EditModeType.NON_EDIT)
             }
         } else if (manifestMode === EditModeType.EDIT) {
-            if (errorMessage?.length) {
-                setManifest(defaultManifestErrorText + '# ' + errorMessage + '\n#\n' + manifestValue)
+            try {
+                // Parsing will remove earlier comments, which will fix internal issues of code, currently the errorMessage is not getting cleared due to line 83.
+                const parsedManifest = YAML.parse(manifestValue)
+                if (parsedManifest) {
+                    const trimmedManifest = YAML.stringify(getTrimmedManifestData(parsedManifest))
+                    const errorDetails = errorMessage?.length ? defaultManifestErrorText + '# ' + errorMessage + '\n#\n' : ''
+                    setManifest(errorDetails + trimmedManifest)
+                }
+                else {
+                    setManifest(defaultManifestErrorText)
+                }
+            }
+            catch (error) {
+                // Should we directly use error object here?
+                setManifest(defaultManifestErrorText + '# ' + error + '\n#\n' + manifestValue)
             }
         }
-    }, [manifestMode])
+    }, [manifestMode, hideManagedFields])
 
     const switchToEditMode = (): void => {
         setManifestMode(EditModeType.EDIT)
