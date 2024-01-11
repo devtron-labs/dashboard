@@ -4,11 +4,10 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import CIConfig from '../ciConfig/CIConfig'
-import { deepEqual } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { CIBuildConfigType, CIBuildType, noop, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildConfigType, CIBuildType, CustomInput, noop, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { OptionType } from '../app/types'
@@ -18,7 +17,6 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
-    setDockerConfigOverridden,
 }: AdvancedConfigOptionsProps) {
     const {
         formData,
@@ -151,9 +149,6 @@ export default function AdvancedConfigOptions({
 
         // set updated form data
         setFormData(_form)
-
-        // Check for diff in global & current CI config and set isDockerConfigOverridden flag accordingly
-        setDockerConfigOverridden(!deepEqual(_form.dockerConfigOverride, parentState.defaultDockerConfigs))
     }
 
     const renderDockerArgs = () => {
@@ -186,9 +181,10 @@ export default function AdvancedConfigOptions({
                         return (
                             <div className="flexbox justify-space" key={`build-${index}`}>
                                 <div className="mt-8 w-100">
-                                    <input
+                                    <CustomInput
+                                        name="arg-key"
                                         data-testid={`docker-arg-key-${index}`}
-                                        className="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
+                                        rootClassName="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                         autoComplete="off"
                                         placeholder="Key"
                                         type="text"

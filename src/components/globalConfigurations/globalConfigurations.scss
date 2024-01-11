@@ -312,6 +312,12 @@
             line-height: 20px;
             font-weight: 400;
         }
+
+        &.registry-disabled-checkbox {
+            input, .form__checkbox-container {
+                opacity: 0.5;
+            }
+        }
     }
 }
 

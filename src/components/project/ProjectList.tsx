@@ -191,7 +191,11 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         }
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.code} />
+            return (
+                <div className="dc__align-reload-center">
+                    <ErrorScreenManager code={this.state.code} />
+                </div>
+            )
         } else {
             return (
                 <section className="global-configuration__component flex-1">

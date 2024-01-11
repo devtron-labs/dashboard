@@ -59,7 +59,7 @@ export default function AppComposeRouter({
     isBaseConfigProtected,
     reloadEnvironments,
     configProtectionData,
-    filteredEnvIds
+    filteredEnvIds,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
     const renderJobViewRoutes = (): JSX.Element => {
@@ -94,6 +94,7 @@ export default function AppComposeRouter({
                                 getWorkflows={getWorkflows}
                                 isJobView={isJobView}
                                 envList={environments}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         )}
                     />,
@@ -192,6 +193,7 @@ export default function AppComposeRouter({
                                 respondOnSuccess={respondOnSuccess}
                                 getWorkflows={getWorkflows}
                                 filteredEnvIds={filteredEnvIds}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         )}
                     />,
@@ -203,7 +205,7 @@ export default function AppComposeRouter({
                     </Route>,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
-                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?/:name?`}
+                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                         render={(props) => (
                             <EnvironmentOverride environments={environments} reloadEnvironments={reloadEnvironments} />
                         )}

@@ -28,6 +28,8 @@ import {
     TippyTheme,
     sortCallback,
     DeploymentAppTypes,
+    PipelineType,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -61,7 +63,6 @@ import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionalWrap, createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
-import { PipelineType } from '../app/details/triggerView/types'
 import {
     DEPLOY_IMAGE_EXTERNALSOURCE,
     EDIT_DEPLOYMENT_PIPELINE,
@@ -1207,7 +1208,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="form__row">
                     <label className="form__label form__label--sentence dc__bold">Select Configmap and Secrets</label>
                     <ReactSelect
-                        menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
+                        menuPosition={this.state.isAdvanced ? null : "fixed"}
                         closeMenuOnScroll={true}
                         classNamePrefix="select-config-secret-dropdown"
                         isMulti={true}
@@ -1482,7 +1483,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className="w-50 mr-8">
                         <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
-                            menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
+                            menuPosition={this.state.isAdvanced ? null : "fixed"}
                             closeMenuOnScroll={true}
                             isDisabled={!!this.props.match.params.cdPipelineId}
                             classNamePrefix="cd-pipeline-environment-dropdown"
@@ -1514,13 +1515,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {renderVirtualEnvironmentInfo()}
                     </div>
                     <div className="flex-1 ml-8">
-                        <span className="form__label">Namespace</span>
-                        <input
-                            className="form__input"
-                            autoComplete="off"
+                        <CustomInput
+                            name="namespace"
+                            label="Namespace"
                             placeholder={getNamespaceplaceholder()}
                             data-testid="cd-pipeline-namespace-textbox"
-                            type="text"
                             disabled={!namespaceEditable}
                             value={
                                 selectedEnv && selectedEnv.namespace
@@ -1530,15 +1529,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             onChange={(event) => {
                                 this.handleNamespaceChange(event, selectedEnv)
                             }}
+                            error={
+                                !this.state.errorForm.nameSpaceError.isValid &&
+                                !this.state.pipelineConfig.isVirtualEnvironment &&
+                                this.state.errorForm.nameSpaceError.message
+                            }
                         />
-
-                        {!this.state.errorForm.nameSpaceError.isValid &&
-                        !this.state.pipelineConfig.isVirtualEnvironment ? (
-                            <span className="form__error">
-                                <img src={error} className="form__icon" />
-                                {this.state.errorForm.nameSpaceError.message}
-                            </span>
-                        ) : null}
                     </div>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
@@ -1585,23 +1581,20 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderPipelineNameInput = () => {
         return (
             <div className="form__row">
-                <label className="form__label dc__required-field">Pipeline Name</label>
-                <input
-                    className="form__input"
-                    autoComplete="off"
+                <CustomInput
+                    name="pipelineName"
+                    label="Pipeline Name"
                     disabled={!!this.state.pipelineConfig.id}
                     data-testid="advance-pipeline-name-textbox"
                     placeholder="Pipeline name"
-                    type="text"
+                    isRequiredField={true}
                     value={this.state.pipelineConfig.name}
                     onChange={this.handlePipelineName}
+                    error={
+                        !this.state.errorForm.pipelineNameError.isValid &&
+                        this.state.errorForm.pipelineNameError.message
+                    }
                 />
-                {!this.state.errorForm.pipelineNameError.isValid && (
-                    <span className="form__error">
-                        <img src={error} className="form__icon" />
-                        {this.state.errorForm.pipelineNameError.message}
-                    </span>
-                )}
             </div>
         )
     }
@@ -1768,7 +1761,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <p className="fs-14 fw-6 cn-9 mb-8 mt-20">Deployment Strategy</p>
                         <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                         <ReactSelect
-                            menuPortalTarget={document.getElementById('visible-modal')}
+                            menuPosition="fixed"
                             closeMenuOnScroll={true}
                             classNamePrefix="deployment-strategy-dropdown"
                             isSearchable={false}

@@ -266,6 +266,9 @@ a:focus {
 .dc__white-space-pre {
     white-space: pre;
 }
+.dc__white-space-pre-wrap {
+    white-space: pre-wrap;
+}
 
 .dc__hyphens-auto {
     -ms-hyphens: auto;
@@ -2119,10 +2122,22 @@ button.anchor {
 
 .dc__border-bottom-n1 {
     border-bottom: solid 1px var(--N100);
+
+    &--important {
+        border-bottom: solid 1px var(--N100) !important;
+    }
 }
 
 .dc__border-right-n1 {
     border-right: solid 1px var(--N100);
+}
+
+.dc__border-left-n1 {
+    border-left: solid 1px var(--N100);
+
+    &--important {
+        border-left: solid 1px var(--N100) !important;
+    }
 }
 
 .dc__border-bottom-y2 {
@@ -2204,8 +2219,16 @@ button.anchor {
     max-width: 500px;
 }
 
+.dc__mxw-600 {
+    max-width: 600px;
+}
+
 .dc__mxw-800 {
     max-width: 800px;
+}
+
+.dc__mxw-960 {
+    max-width: 960px;
 }
 
 .dc__mxw-1000 {
@@ -2795,6 +2818,10 @@ textarea,
     width: 200px;
 }
 
+.w-200-imp {
+    width: 200px !important;
+}
+
 .w-204 {
     width: 204px;
 }
@@ -2872,7 +2899,7 @@ textarea,
 }
 
 .w-500 {
-    width: 510px !important;
+    width: 500px !important;
 }
 
 .w-505 {
@@ -2924,7 +2951,7 @@ textarea,
     width: 90%;
 }
 
-.w-95 {
+.w-95-imp {
     width: 95% !important;
 }
 
@@ -3042,6 +3069,10 @@ textarea,
 
 .h-36 {
     height: 36px !important;
+}
+
+.h-38 {
+    height: 38px;
 }
 
 .h-40 {
@@ -3324,6 +3355,10 @@ textarea,
     padding-left: 28px !important;
 }
 
+.pt-5-imp{
+    padding-top: 5px !important;
+}
+
 .pt-40 {
     padding-top: 40px;
 }
@@ -3366,6 +3401,10 @@ textarea,
     padding-top: 4px !important;
 }
 
+.pb-5-imp{
+    padding-bottom: 5px !important;
+}
+
 .pb-6-imp {
     padding-bottom: 6px !important;
 }
@@ -3380,6 +3419,10 @@ textarea,
 
 .p-6-12-imp {
     padding: 6px 12px !important;
+}
+
+.p-0-8-imp {
+    padding: 0px 8px !important;
 }
 
 // Margin in pixels
@@ -3452,6 +3495,10 @@ textarea,
 
 .mt-120 {
     margin-top: 120px;
+}
+
+.ml-36-imp {
+    margin-left: 36px !important 
 }
 
 .ml-54 {
@@ -3661,6 +3708,10 @@ textarea::placeholder {
 
 .dc__hover-r100:hover {
     background-color: var(--R100);
+}
+
+.dc__hover-r500:hover {
+    background-color: var(--R500);
 }
 
 .dc__hover-cn1:hover {

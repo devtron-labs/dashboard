@@ -239,7 +239,7 @@ function TerminalComponent({
 
     if (isDeleted || !selectedContainerName.length) {
         return (
-            <div>
+            showTerminal &&  <div>
                 <MessageUI
                     msg="This resource no longer exists"
                     size={32}
@@ -307,12 +307,12 @@ function TerminalComponent({
     return (
         <div className={`${showTerminal ? '' : 'pod-terminal-hidden'}`}>
             <TerminalWrapper
-            dataTestId="terminal-editor-header"
-            selectionListData={selectionListData}
-            socketConnection={socketConnection}
-            setSocketConnection={setSocketConnection}
-            className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
-        />
+                dataTestId="terminal-editor-header"
+                selectionListData={selectionListData}
+                socketConnection={socketConnection}
+                setSocketConnection={setSocketConnection}
+                className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
+            />
         </div>
     )
 }

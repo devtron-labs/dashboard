@@ -29,10 +29,18 @@
     padding: 2px 8px;
     font-weight: 600;
     background-color: var(--N100);
+
+    &--include-add-cd {
+        right: 32px !important;
+    }
 }
 
 .workflow--create {
     min-width: 840px;
+
+    .add-cd-edge-btn:hover {
+        fill: var(--V700)
+    }
 }
 
 .workflow--trigger {
@@ -265,6 +273,46 @@
     text-overflow: ellipsis;
     overflow: hidden;
     text-align: left;
+
+    &--no-margin {
+        margin: 0px;
+    }
+
+    &--top-right-rad-8 {
+        border-top-right-radius: 8px;
+    }
+
+    &--bottom-right-rad-8 {
+        border-bottom-right-radius: 8px;
+    }
+
+    &--add-cd-icon {
+        fill: var(--N600);
+        path {
+            fill: var(--N600);
+        }
+
+        &:hover {
+            fill: var(--N0);
+            path {
+                fill: var(--N0);
+            }
+        }
+    }
+
+    &--delete-cd-icon {
+        stroke: var(--N600);
+        path {
+            stroke: var(--N600);
+        }
+
+        &:hover {
+            stroke: var(--N0);
+            path {
+                stroke: var(--N0);
+            }
+        }
+    }
 }
 
 .workflow-node__text-light {

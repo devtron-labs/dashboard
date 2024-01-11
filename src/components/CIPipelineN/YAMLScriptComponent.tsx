@@ -56,7 +56,7 @@ export function YAMLScriptComponent({
                         components={{
                             IndicatorSeparator: null,
                         }}
-                        menuPortalTarget={document.getElementById('visible-modal')}
+                        menuPosition="fixed"
                     />
                 )}
             </div>

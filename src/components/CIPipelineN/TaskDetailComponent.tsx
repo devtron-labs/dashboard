@@ -4,7 +4,7 @@ import { RadioGroup } from '../common'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
-import { PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
@@ -94,39 +94,40 @@ export function TaskDetailComponent() {
         setFormData(_formData)
     }
 
+    const renderTaskNameError = (): string => {
+        if (
+            formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name &&
+            !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name.isValid
+        ) {
+            return formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name.message
+        }
+    }
+
     return (
         <div>
             <div>
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
-                    <div>
-                        <input
-                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        <CustomInput
+                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                             data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
+                            name="task-name"
+                            error={renderTaskNameError()}
                         />
-                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name &&
-                            !formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name.isValid && (
-                                <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                    <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                    <span>
-                                        {formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.name.message}
-                                    </span>
-                                </span>
-                            )}
-                    </div>
                 </div>
                 <div className="row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
-                    <input
-                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                    <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>
+                    <CustomInput
+                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                         data-testid="preBuild-task-description-textbox"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
                         placeholder="Enter task description"
+                        name="task-description"
                     />
                 </div>
 
