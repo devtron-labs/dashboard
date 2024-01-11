@@ -439,7 +439,6 @@ export interface UpdateApplicationButtonProps {
     isDeployChartView: boolean
     isCreateValueView: boolean
     deployOrUpdateApplication: () => Promise<void>
-    visibleRepoURL?: string
 }
 
 export interface ErrorScreenWithInfoProps {
