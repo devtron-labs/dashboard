@@ -174,7 +174,7 @@ export default function AppComposeRouter({
                         <ExternalLinks isAppConfigView={true} userRole={userRole} />
                     </Route>
                 )}
-                {isUnlocked.gitOpsConfig && isGitOpsConfigurationRequired && (
+                {isGitOpsConfigurationRequired && (
                     <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
                         <UserGitRepoConfiguration
                             respondOnSuccess={respondOnSuccess}
