@@ -185,3 +185,4 @@ export const getPosition = (isValues: boolean, isEnv: boolean, type: number) => 
         if (type === 2) return 2
     }
 }
+
