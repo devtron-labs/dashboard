@@ -20,6 +20,8 @@ import {
     ERROR_EMPTY_SCREEN,
     TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Select, { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 import {
     NavigationArrow,
     useKeyDown,
@@ -62,10 +64,8 @@ import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SE
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg'
-import Select, { components } from 'react-select'
 import UserForm from './User'
 import GroupForm from './Group'
-import Tippy from '@tippyjs/react'
 import EmptyImage from '../../assets/img/empty-applist@2x.png'
 import EmptySearch from '../../assets/img/empty-noresult@2x.png'
 import './UserGroup.scss'
@@ -132,7 +132,7 @@ export function useUserGroupContext() {
     return context
 }
 
-function HeaderSection(type: 'user' | 'group') {
+const HeaderSection = (type: 'user' | 'group') => {
     const isUserPermissions = type === 'user'
 
     return (
@@ -182,7 +182,9 @@ export default function UserGroupRoute() {
     const [isAutoAssignFlowEnabled, setIsAutoAssignFlowEnabled] = useState(false)
 
     useEffect(() => {
-        if (!lists) return
+        if (!lists) {
+            return
+        }
         lists.forEach((list) => {
             if (list.status === 'rejected') {
                 showError(list.reason, true, true)
@@ -192,7 +194,9 @@ export default function UserGroupRoute() {
 
     async function fetchJobsList(projectIds: number[]) {
         const missingProjects = projectIds.filter((projectId) => !jobsList.has(projectId))
-        if (missingProjects.length === 0) return
+        if (missingProjects.length === 0) {
+            return
+        }
         setJobsList((jobsList) => {
             return missingProjects.reduce((jobsList, projectId) => {
                 jobsList.set(projectId, { loading: true, result: [], error: null })
@@ -231,9 +235,13 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppList(projectIds: number[]) {
-        if (serverMode === SERVER_MODE.EA_ONLY) return
+        if (serverMode === SERVER_MODE.EA_ONLY) {
+            return
+        }
         const missingProjects = projectIds.filter((projectId) => !appsList.has(projectId))
-        if (missingProjects.length === 0) return
+        if (missingProjects.length === 0) {
+            return
+        }
         setAppsList((appList) => {
             return missingProjects.reduce((appList, projectId) => {
                 appList.set(projectId, { loading: true, result: [], error: null })
@@ -268,7 +276,9 @@ export default function UserGroupRoute() {
 
     async function fetchAppListHelmApps(projectIds: number[]) {
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
-        if (missingProjects.length === 0) return
+        if (missingProjects.length === 0) {
+            return
+        }
         setAppsListHelmApps((appListHelmApps) => {
             return missingProjects.reduce((appListHelmApps, projectId) => {
                 appListHelmApps.set(projectId, { loading: true, result: [], error: null })
@@ -302,7 +312,9 @@ export default function UserGroupRoute() {
         }
     }
 
-    if (listsLoading) return <Progressing pageLoader />
+    if (listsLoading) {
+        return <Progressing pageLoader />
+    }
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList, customRolesList] = lists
     return (
         <div className="flex h-100">
@@ -440,7 +452,9 @@ const UserGroupList: React.FC<{
     }, [keys])
 
     useEffect(() => {
-        if (!error) return
+        if (!error) {
+            return
+        }
         showError(error, true, true)
     }, [error])
 
@@ -454,7 +468,9 @@ const UserGroupList: React.FC<{
     }, [type])
 
     useEffect(() => {
-        if (loading) return
+        if (loading) {
+            return
+        }
         if (!result || result.length === 0) {
             // do not show add item, empty placeholder visible
             setAddHash(null)
@@ -485,16 +501,14 @@ const UserGroupList: React.FC<{
         (payload) => {
             if (type === 'user') {
                 reloadLists()
+            } else if (Array.isArray(payload)) {
+                setState((state) => {
+                    return { ...state, result: [...payload, ...state.result] }
+                })
             } else {
-                if (Array.isArray(payload)) {
-                    setState((state) => {
-                        return { ...state, result: [...payload, ...state.result] }
-                    })
-                } else {
-                    setState((state) => {
-                        return { ...state, result: [payload, ...state.result] }
-                    })
-                }
+                setState((state) => {
+                    return { ...state, result: [payload, ...state.result] }
+                })
             }
         },
         [result.length],
@@ -628,85 +642,83 @@ const UserGroupList: React.FC<{
                 <Progressing pageLoader />
             </div>
         )
-    } else if (error && (error.code === 403 || error.code === 401)) {
+    }
+    if (error && (error.code === 403 || error.code === 401)) {
         return (
             <ErrorScreenNotAuthorized
                 subtitle={ERROR_EMPTY_SCREEN.REQUIRED_MANAGER_ACCESS}
                 title={TOAST_ACCESS_DENIED.TITLE}
             />
         )
-    } else if (!addHash) {
-        return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    } else if (type === 'user' && !isSSOConfigured) {
-        return <SSONotConfiguredState />
-    } else {
-        const filteredAndSorted = result.filter(
-            (userOrGroup) =>
-                userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
-                userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
-                userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
-        )
-        return (
-            <div
-                id="auth-page__body"
-                data-testid={`auth-${type}-page`}
-                className="auth-page__body-users__list-container"
-            >
-                {renderHeaders(type)}
-                {type === 'group' && isAutoAssignFlowEnabled && <PermissionGroupInfoBar />}
-                {result.length > 0 && (
-                    <div className="flex dc__content-space">
-                        <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
-                            <Search className="search__icon icon-dim-18" />
-                            <input
-                                value={searchString}
-                                autoComplete="off"
-                                ref={searchRef}
-                                type="search"
-                                placeholder={`Search ${type}`}
-                                data-testid={`${type}-search-box-input`}
-                                className="search__input bcn-0"
-                                onChange={(e) => setSearchString(e.target.value)}
-                            />
-                        </div>
-                        {roles?.indexOf('role:super-admin___') !== -1 && (
-                            <ExportToCsv
-                                className="mb-16"
-                                apiPromise={getPermissionsDataToExport}
-                                fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
-                            />
-                        )}
-                    </div>
-                )}
-                {!(filteredAndSorted.length === 0 && result.length > 0) && (
-                    <AddUser
-                        cancelCallback={cancelCallback}
-                        key={addHash}
-                        text={`Add ${type}`}
-                        type={type}
-                        collapsed={expandedTile !== ADD_USER_EXPANDED_SEARCH_VALUE && result?.length !== 0}
-                        setCollapsed={updateCollapsedTile}
-                        {...{ createCallback, updateCallback, deleteCallback }}
-                        isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
-                    />
-                )}
-                {filteredAndSorted.map((data) => (
-                    <CollapsedUserOrGroup
-                        key={data.id}
-                        {...data}
-                        type={type}
-                        {...{ updateCallback, deleteCallback, createCallback }}
-                        isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
-                        collapsed={expandedTile !== String(data.id)}
-                        setCollapsed={updateCollapsedTile}
-                    />
-                ))}
-                {filteredAndSorted.length === 0 && result.length > 0 && (
-                    <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
-                )}
-            </div>
-        )
     }
+    if (!addHash) {
+        return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
+    }
+    if (type === 'user' && !isSSOConfigured) {
+        return <SSONotConfiguredState />
+    }
+    const filteredAndSorted = result.filter(
+        (userOrGroup) =>
+            userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
+            userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
+            userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
+    )
+    return (
+        <div id="auth-page__body" data-testid={`auth-${type}-page`} className="auth-page__body-users__list-container">
+            {renderHeaders(type)}
+            {type === 'group' && isAutoAssignFlowEnabled && <PermissionGroupInfoBar />}
+            {result.length > 0 && (
+                <div className="flex dc__content-space">
+                    <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
+                        <Search className="search__icon icon-dim-18" />
+                        <input
+                            value={searchString}
+                            autoComplete="off"
+                            ref={searchRef}
+                            type="search"
+                            placeholder={`Search ${type}`}
+                            data-testid={`${type}-search-box-input`}
+                            className="search__input bcn-0"
+                            onChange={(e) => setSearchString(e.target.value)}
+                        />
+                    </div>
+                    {roles?.indexOf('role:super-admin___') !== -1 && (
+                        <ExportToCsv
+                            className="mb-16"
+                            apiPromise={getPermissionsDataToExport}
+                            fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
+                        />
+                    )}
+                </div>
+            )}
+            {!(filteredAndSorted.length === 0 && result.length > 0) && (
+                <AddUser
+                    cancelCallback={cancelCallback}
+                    key={addHash}
+                    text={`Add ${type}`}
+                    type={type}
+                    collapsed={expandedTile !== ADD_USER_EXPANDED_SEARCH_VALUE && result?.length !== 0}
+                    setCollapsed={updateCollapsedTile}
+                    {...{ createCallback, updateCallback, deleteCallback }}
+                    isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                />
+            )}
+            {filteredAndSorted.map((data) => (
+                <CollapsedUserOrGroup
+                    key={data.id}
+                    {...data}
+                    type={type}
+                    {...{ updateCallback, deleteCallback, createCallback }}
+                    isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                    collapsed={expandedTile !== String(data.id)}
+                    setCollapsed={updateCollapsedTile}
+                />
+            ))}
+            {filteredAndSorted.length === 0 && result.length > 0 && (
+                <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
+            )}
+        </div>
+    )
 }
 
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
@@ -730,7 +742,9 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     const isAdminOrSystemUser = email_id === DefaultUserKey.ADMIN || email_id === DefaultUserKey.SYSTEM
 
     useEffect(() => {
-        if (!dataError) return
+        if (!dataError) {
+            return
+        }
         setCollapsed()
         showError(dataError)
     }, [dataError])
@@ -870,9 +884,9 @@ const AddUser: React.FC<AddUser> = ({
                     <span className={`${collapsed ? 'anchor' : ''} fw-6`} style={{ fontSize: '14px' }}>
                         {text}
                     </span>
-                    <small></small>
+                    <small />
                 </span>
-                <span className="user-list__direction-container flex"></span>
+                <span className="user-list__direction-container flex" />
             </div>
             {!collapsed && (
                 <div className="user-list__form w-100">
@@ -1021,7 +1035,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }
 
     useEffect(() => {
-        let envOptions = createClusterEnvGroup(
+        const envOptions = createClusterEnvGroup(
             environmentsList,
             'cluster_name',
             'environment_name',
@@ -1067,14 +1081,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             label: cluster.clusterName,
             options: [
                 {
-                    label: 'All existing + future environments in ' + cluster.clusterName,
-                    value: '#' + cluster.clusterName,
+                    label: `All existing + future environments in ${cluster.clusterName}`,
+                    value: `#${cluster.clusterName}`,
                     namespace: '',
                     clusterName: '',
                 },
                 {
-                    label: 'All existing environments in ' + cluster.clusterName,
-                    value: '*' + cluster.clusterName,
+                    label: `All existing environments in ${cluster.clusterName}`,
+                    value: `*${cluster.clusterName}`,
                     namespace: '',
                     clusterName: '',
                 },
@@ -1112,7 +1126,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
     useEffect(() => {
-        if (openMenu || !projectId) return
+        if (openMenu || !projectId) {
+            return
+        }
         if ((environments && environments.length === 0) || applications.length === 0) {
             return
         }
@@ -1151,7 +1167,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             abortControllerRef.current = null
             setWorkflowList({ loading: false, options: workflowOptions })
         } catch (err: any) {
-            if (err.errors && err.errors[0].code != 0) showError(err)
+            if (err.errors && err.errors[0].code != 0) {
+                showError(err)
+            }
             setWorkflowList({ loading: false, options: [] })
         }
     }
@@ -1184,12 +1202,11 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     function formatOptionLabelClusterEnv(option, { inputValue }) {
         return (
             <div
-                className={
-                    'flex left column ' +
-                    (option.value &&
-                        (option.value.startsWith('#') || option.value.startsWith('*')) &&
-                        'cluster-label-all')
-                }
+                className={`flex left column ${
+                    option.value &&
+                    (option.value.startsWith('#') || option.value.startsWith('*')) &&
+                    'cluster-label-all'
+                }`}
             >
                 {!inputValue ? (
                     <>
@@ -1214,12 +1231,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             <small
                                 className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}
                                 dangerouslySetInnerHTML={{
-                                    __html: (option.clusterName + '/' + option.namespace).replace(
+                                    __html: `${option.clusterName}/${option.namespace}`.replace(
                                         new RegExp(inputValue, 'gi'),
                                         (highlighted) => `<mark>${highlighted}</mark>`,
                                     ),
                                 }}
-                            ></small>
+                            />
                         )}
                     </>
                 )}
@@ -1234,7 +1251,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && option.value === HELM_APP_UNASSIGNED_PROJECT && (
                     <>
                         <small className="light-color">Apps without an assigned project</small>
-                        <div className="unassigned-project-border"></div>
+                        <div className="unassigned-project-border" />
                     </>
                 )}
             </div>
@@ -1248,9 +1265,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
         ) {
             return true
-        } else {
-            return false
         }
+        return false
     }
 
     function onFocus(name: 'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow') {
@@ -1261,7 +1277,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         changeOpenMenu('')
     }
     return (
-        <React.Fragment>
+        <>
             <Select
                 value={permission.team}
                 name="team"
@@ -1299,7 +1315,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     setProjectInput('')
                 }}
                 onInputChange={(value, action) => {
-                    if (action.action === 'input-change') setProjectInput(value)
+                    if (action.action === 'input-change') {
+                        setProjectInput(value)
+                    }
                 }}
             />
             {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS ? (
@@ -1343,7 +1361,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             setClusterInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') setClusterInput(value)
+                            if (action.action === 'input-change') {
+                                setClusterInput(value)
+                            }
                         }}
                     />
                     {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
@@ -1378,7 +1398,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             setEnvInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') setEnvInput(value)
+                            if (action.action === 'input-change') {
+                                setEnvInput(value)
+                            }
                         }}
                     />
                     {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
@@ -1422,12 +1444,15 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     inputValue={appInput}
                     menuPlacement="auto"
                     onBlur={(e) => {
-                        setAppInput('') //send selected options to setWorkflowsForJobs function
-                        if (permission.entity === EntityTypes.JOB && !jobsList.get(projectId)?.loading)
+                        setAppInput('') // send selected options to setWorkflowsForJobs function
+                        if (permission.entity === EntityTypes.JOB && !jobsList.get(projectId)?.loading) {
                             setWorkflowsForJobs(permission)
+                        }
                     }}
                     onInputChange={(value, action) => {
-                        if (action.action === 'input-change') setAppInput(value)
+                        if (action.action === 'input-change') {
+                            setAppInput(value)
+                        }
                     }}
                 />
                 {permission.entityNameError && <span className="form__error">{permission.entityNameError}</span>}
@@ -1468,7 +1493,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             setWorkflowInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') setWorkflowInput(value)
+                            if (action.action === 'input-change') {
+                                setWorkflowInput(value)
+                            }
                         }}
                     />
                     {permission.workflowError && <span className="form__error">{permission.workflowError}</span>}
@@ -1486,7 +1513,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     onChange={handleDirectPermissionChange}
                     isDisabled={!permission.team}
                     menuPlacement="auto"
-                    blurInputOnSelect={true}
+                    blurInputOnSelect
                     styles={{
                         ...tempMultiSelectStyles,
                         option: (base, state) => ({
@@ -1520,11 +1547,11 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 />
             </div>
             <CloseIcon className="pointer margin-top-6px" onClick={(e) => removeRow(index)} style={{ order: 5 }} />
-        </React.Fragment>
+        </>
     )
 }
 const workflowGroupHeading = (props) => {
-    return <GroupHeading {...props} hideClusterName={true} />
+    return <GroupHeading {...props} hideClusterName />
 }
 
 const AppOption = ({ props, permission }) => {
@@ -1601,12 +1628,11 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
         const chartGroupEditOptions: OptionType[] = useMemo(() => {
             if (chartPermission.action === ActionTypes.ADMIN) {
                 return [{ label: 'All Chart Groups', value: 'All charts' }]
-            } else {
-                return [
-                    { label: 'Deny', value: 'Deny' },
-                    { label: 'Specific Chart Groups', value: 'Specific Charts' },
-                ]
             }
+            return [
+                { label: 'Deny', value: 'Deny' },
+                { label: 'Specific Chart Groups', value: 'Specific Charts' },
+            ]
         }, [chartPermission.action])
 
         return (
@@ -1687,7 +1713,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                             ClearIndicator: null,
                             IndicatorSeparator: null,
                             MultiValueRemove,
-                            MultiValueContainer: MultiValueContainer,
+                            MultiValueContainer,
                             Option,
                         }}
                     />
@@ -1698,7 +1724,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
 )
 
 const ValueContainer = (props) => {
-    let length = props.getValue().length
+    const { length } = props.getValue()
     let optionLength = props.options.length
     if (props.selectProps.name === 'environment' || props.selectProps.name === 'workflow') {
         let _optionLength = 0
@@ -1740,18 +1766,18 @@ const ValueContainer = (props) => {
 }
 
 const clusterValueContainer = (props) => {
-    let length = props
+    const { length } = props
         .getValue()
-        .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length
+        .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*'))
     let count = ''
-    let totalEnv = props.options.reduce((len, cluster) => {
+    const totalEnv = props.options.reduce((len, cluster) => {
         len += cluster.options.length - 2
         return len
     }, 0)
     if (length === totalEnv) {
         count = 'All environments'
     } else {
-        count = length + ' environment' + (length !== 1 ? 's' : '')
+        count = `${length} environment${length !== 1 ? 's' : ''}`
     }
     return (
         <components.ValueContainer {...props}>
@@ -1783,7 +1809,7 @@ export const projectValueContainer = (props) => {
     )
 }
 
-export function GroupRow({ name, description, removeRow }) {
+export const GroupRow = ({ name, description, removeRow }) => {
     return (
         <>
             <div className="anchor">{name}</div>
@@ -1793,7 +1819,7 @@ export function GroupRow({ name, description, removeRow }) {
     )
 }
 
-function NoUsers({ onClick }) {
+const NoUsers = ({ onClick }) => {
     const handleNoUserButton = () => {
         return (
             <button onClick={onClick} className="cta flex">
@@ -1807,7 +1833,7 @@ function NoUsers({ onClick }) {
             image={EmptyImage}
             title={EMPTY_STATE_STATUS.NO_USER.TITLE}
             subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
-            isButtonAvailable={true}
+            isButtonAvailable
             renderButton={handleNoUserButton}
         />
     )
@@ -1822,7 +1848,7 @@ const renderEmptySSOMessage = (): JSX.Element => {
     )
 }
 
-function SSONotConfiguredState() {
+const SSONotConfiguredState = () => {
     return (
         <GenericEmptyState
             image={EmptyImage}
@@ -1836,7 +1862,7 @@ function SSONotConfiguredState() {
                         classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
                         linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
                         redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
-                        internalLink={true}
+                        internalLink
                         Icon={ErrorIcon}
                     />
                 </>
@@ -1845,7 +1871,7 @@ function SSONotConfiguredState() {
     )
 }
 
-function NoGroups({ onClick }) {
+const NoGroups = ({ onClick }) => {
     const handleButton = () => {
         return (
             <button onClick={onClick} className="cta flex">
@@ -1859,13 +1885,13 @@ function NoGroups({ onClick }) {
             image={EmptyImage}
             title={EMPTY_STATE_STATUS.NO_GROUPS.TITLE}
             subTitle={EMPTY_STATE_STATUS.NO_GROUPS.SUBTITLE}
-            isButtonAvailable={true}
+            isButtonAvailable
             renderButton={handleButton}
         />
     )
 }
 
-function SearchEmpty({ searchString, setSearchString }) {
+const SearchEmpty = ({ searchString, setSearchString }) => {
     const handleSearchEmptyButton = () => {
         return (
             <button onClick={(e) => setSearchString('')} className="cta secondary">
@@ -1881,10 +1907,10 @@ function SearchEmpty({ searchString, setSearchString }) {
             subTitle={
                 <>
                     We couldn’t find any result for
-                    {<b>{searchString}</b>}
+                    <b>{searchString}</b>
                 </>
             }
-            isButtonAvailable={true}
+            isButtonAvailable
             renderButton={handleSearchEmptyButton}
         />
     )
@@ -1898,9 +1924,9 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
                     (role) =>
                         role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
                 )
-            } else {
-                return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
             }
+            return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
+
         case EntityTypes.CLUSTER:
             return dataList.filter((role) => role.entity === EntityTypes.CLUSTER)
         case EntityTypes.CHART_GROUP:

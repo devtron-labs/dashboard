@@ -88,7 +88,7 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.chartConfigLoading:
             return { ...state, chartConfigLoading: action.payload }
         case DeploymentConfigStateActionTypes.lockChangesLoading:
-            return { ...state, lockChangesLoading: action.payload}
+            return { ...state, lockChangesLoading: action.payload }
         case DeploymentConfigStateActionTypes.showConfirmation:
             return { ...state, showConfirmation: action.payload }
         case DeploymentConfigStateActionTypes.showReadme:

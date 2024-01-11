@@ -430,7 +430,6 @@ src/components/common/header/HelpNav.tsx
 src/components/common/header/PageHeader.tsx
 src/components/common/header/header.type.ts
 src/components/common/helpers/Helpers.tsx
-src/components/common/helpers/UseWindowSize.tsx
 src/components/common/helpers/compareVersion.ts
 src/components/common/helpers/git.ts
 src/components/common/helpers/isEmpty.ts
@@ -493,6 +492,7 @@ src/components/gitProvider/GitProvider.tsx
 src/components/gitProvider/gitProvider.service.tsx
 src/components/gitProvider/gitProvider.util.tsx
 src/components/globalConfigurations/GlobalConfiguration.tsx
+src/components/globalConfigurations/GlobalConfigurationProvider.tsx
 src/components/globalConfigurations/globalConfiguration.type.ts
 src/components/hostURL/HostURL.tsx
 src/components/hostURL/hosturl.service.ts

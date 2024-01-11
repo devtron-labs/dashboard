@@ -111,17 +111,17 @@ export interface UpdateAppReleaseRequest {
 }
 
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
-    let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
+    const url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
     return get(url)
 }
 
 export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
-    let url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
+    const url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
     return get(url)
 }
 
 export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {
-    let url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
+    const url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
     return trash(url)
 }
 
@@ -143,6 +143,6 @@ export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<Upda
 }
 
 export const getManifestUrlInfo = (appId: string): Promise<ResponseType> => {
-    let url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
+    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
     return get(url)
 }

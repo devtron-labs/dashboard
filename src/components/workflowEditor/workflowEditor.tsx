@@ -220,10 +220,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     deleteWorkflow = (appId?: string, workflowId?: number) => {
         deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
             .then((response) => {
-
-                if(response.errors){
-                    const {errors} = response
-                    const {userMessage} = errors[0]
+                if (response.errors) {
+                    const { errors } = response
+                    const { userMessage } = errors[0]
                     toast.error(userMessage)
                     return
                 }

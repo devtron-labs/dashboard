@@ -13,9 +13,9 @@ export interface DeploymentObject {
     valuesOverrride: any
     defaultAppOverride: any
 }
-export interface ConfigKeysWithLockType{
-    config:string[],
-    allowed:boolean
+export interface ConfigKeysWithLockType {
+    config: string[]
+    allowed: boolean
 }
 
 export interface DeploymentConfigState {

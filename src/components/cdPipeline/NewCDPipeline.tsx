@@ -828,8 +828,7 @@ export default function NewCDPipeline({
                         }
                         getWorkflows()
                     }
-                }
-                else if(response.errors){
+                } else if (response.errors) {
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                     setForceDeleteData({
                         forceDeleteDialogTitle: 'Something went wrong',

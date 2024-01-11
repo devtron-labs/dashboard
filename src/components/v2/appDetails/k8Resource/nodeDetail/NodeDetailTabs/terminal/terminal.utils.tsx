@@ -362,7 +362,7 @@ export const restrictXtermAccessibilityWidth = () => {
     const xtermAccessibility = document.querySelector('.xterm-accessibility') as HTMLElement
 
     if (xtermScreen && xtermAccessibility) {
-        xtermAccessibility.style.width = xtermScreen.clientWidth + 'px'
-        xtermAccessibility.style.height = xtermScreen.clientHeight + 'px'
+        xtermAccessibility.style.width = `${xtermScreen.clientWidth}px`
+        xtermAccessibility.style.height = `${xtermScreen.clientHeight}px`
     }
 }
