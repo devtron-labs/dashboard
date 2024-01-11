@@ -23,7 +23,7 @@ import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
-import { IS_NON_ADMIN_USER_DATA, MANIFEST_KEY_FIELDS, MODES } from '../../../../../../config'
+import { MODES } from '../../../../../../config'
 import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
 
@@ -106,9 +106,9 @@ function ManifestComponent({
             ])
                 .then((response) => {
                     let _manifest: string
-                    setSecretViewAccess(response[0]?.result?.manifest?.secretViewAccess || false)
-                    _manifest = JSON.stringify(response[0]?.result?.manifest?.manifestResponse)
-                    setDesiredManifest(response[1]?.result?.manifestResponse?.manifest || '')
+                    setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
+                    _manifest = JSON.stringify(response[0]?.result?.manifestResponse?.manifest || '')
+                    setDesiredManifest(response[1]?.result?.manifest || '')
 
                     if (_manifest) {
                         setManifest(_manifest)

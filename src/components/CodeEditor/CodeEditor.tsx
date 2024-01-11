@@ -37,7 +37,7 @@ window.MonacoEnvironment = {
 const { yaml } = monaco.languages || {};
 
 
-interface InformationBarProps { text?: string; className?: string; children?: React.ReactNode }
+interface InformationBarProps { text: string; className?: string; children?: React.ReactNode }
 
 interface CodeEditorInterface {
     value?: string;
