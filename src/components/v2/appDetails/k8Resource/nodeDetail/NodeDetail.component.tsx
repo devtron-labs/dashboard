@@ -117,7 +117,7 @@ function NodeDetailComponent({
                 },
             )
             const _resourceContainers = []
-            if (result?.manifest?.spec) {
+            if (result?.manifest?.manifestResponse?.spec) {
                 if (Array.isArray(result.manifest.spec.containers)) {
                     _resourceContainers.push(
                         ...result.manifest.spec.containers.map((_container) => ({

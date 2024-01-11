@@ -55,6 +55,7 @@ function ManifestComponent({
     const [isResourceMissing, setIsResourceMissing] = useState(false)
     const [showInfoText, setShowInfoText] = useState(false)
     const [showDecodedData, setShowDecodedData] = useState(false)
+    const [secretViewAccess, setSecretViewAccess] = useState(false)
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -105,9 +106,9 @@ function ManifestComponent({
             ])
                 .then((response) => {
                     let _manifest: string
-
-                    _manifest = JSON.stringify(response[0]?.result?.manifest)
-                    setDesiredManifest(response[1]?.result?.manifest || '')
+                    setSecretViewAccess(response[0]?.result?.manifest?.secretViewAccess || false)
+                    _manifest = JSON.stringify(response[0]?.result?.manifest?.manifestResponse)
+                    setDesiredManifest(response[1]?.result?.manifestResponse?.manifest || '')
 
                     if (_manifest) {
                         setManifest(_manifest)
@@ -312,22 +313,6 @@ function ManifestComponent({
         }
     }
 
-    const isDecodeRequired = (): boolean => {
-        let isDecodedRequired = true
-        // Don't decode in case of non admin user
-        const jsonManifestData = YAML.parse(trimedManifestEditorData)
-            jsonManifestData &&
-            Object.keys(jsonManifestData[MANIFEST_KEY_FIELDS.DATA])
-                .map((m) => {
-                    return {
-                        key: m,
-                        value: jsonManifestData[MANIFEST_KEY_FIELDS.DATA][m],
-                    }
-                })
-                ?.some((m) => {m.value === IS_NON_ADMIN_USER_DATA ? isDecodedRequired = false : isDecodedRequired = true})
-                return isDecodedRequired
-    }
-
     const renderShowDecodedValueCheckbox = (codeEditorData) => {
         return (
             <div className="flex left ml-8">
@@ -461,7 +446,7 @@ function ManifestComponent({
                                         }
                                         className="flex left"
                                     >
-                                        {!isEditmode && isDecodeRequired() && renderShowDecodedValueCheckbox(trimedManifestEditorData)}
+                                        {!isEditmode && secretViewAccess && renderShowDecodedValueCheckbox(trimedManifestEditorData)}
                                     </CodeEditor.Information>
                                 )}
                                 {activeTab === 'Compare' && (
