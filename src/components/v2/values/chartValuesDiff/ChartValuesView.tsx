@@ -890,7 +890,7 @@ function ChartValuesView({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
                     deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
-                    gitRepoURL: (staleData || commonState.gitRepoURL?.gitRepoURL === undefined)
+                    gitRepoURL: (staleData || !commonState.gitRepoURL?.gitRepoURL)
                     ? 'Default'
                     : commonState.gitRepoURL.gitRepoURL,
                 }            

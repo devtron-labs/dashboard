@@ -417,7 +417,7 @@ export const GitOpsDrawer = ({
             )}
             {(gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1) ||
             (showRepoSelector && window._env_.HIDE_GITOPS_OR_HELM_OPTION) ? (
-                <div className="form__input dashed mt-10 flex">
+                <div className="form__input dashed mt-10 flex bc-n50">
                     <div className="">
                         <span>
                             Commit deployment manifests to
