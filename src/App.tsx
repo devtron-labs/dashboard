@@ -260,7 +260,6 @@ export default function App() {
                                             to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
                                         />
                                     </Switch>
-                                {/* )} */}
                                 <div id="full-screen-modal"></div>
                                 <div id="visible-modal"></div>
                                 <div id="visible-modal-2"></div>
