@@ -829,6 +829,13 @@ export default function NewCDPipeline({
                         getWorkflows()
                     }
                 }
+                else if(response.errors){
+                    setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
+                    setForceDeleteData({
+                        forceDeleteDialogTitle: 'Something went wrong',
+                        forceDeleteDialogMessage: response.errors[0].userMessage,
+                    })
+                }
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC

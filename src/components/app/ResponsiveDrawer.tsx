@@ -1,6 +1,5 @@
-import { useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect } from 'react'
-import { useWindowSize } from '../common'
+import { useEffectAfterMount, useWindowSize } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ResponsiveDrawer({
     initialHeight = 36,
@@ -13,7 +12,7 @@ export default function ResponsiveDrawer({
     children,
     anchor = null,
 }) {
-    const dimensions = useWindowSize()
+    let dimensions = useWindowSize()
     const { height: windowHeight, width } = dimensions || { height: 0, width: 0 }
     const [height, setHeight] = React.useState(initialHeight)
     const maxHeight = windowHeight - minimumTopMargin
@@ -29,9 +28,7 @@ export default function ResponsiveDrawer({
                 setHeight(minHeight)
             } else if (height2 > maxHeight) {
                 setHeight(maxHeight)
-            } else {
-                setHeight(height2)
-            }
+            } else setHeight(height2)
         })
     }
 
@@ -45,9 +42,7 @@ export default function ResponsiveDrawer({
 
     useEffectAfterMount(() => {
         const maximumAllowedHeight = windowHeight - 200
-        if (height > maximumAllowedHeight && maximumAllowedHeight > minHeight) {
-            setHeight(maximumAllowedHeight)
-        }
+        if (height > maximumAllowedHeight && maximumAllowedHeight > minHeight) setHeight(maximumAllowedHeight)
     }, [windowHeight])
 
     useEffectAfterMount(() => {

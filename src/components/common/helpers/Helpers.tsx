@@ -5,11 +5,12 @@ import {
     OptionType,
     DeploymentAppTypes,
     getLoginInfo,
+    APIOptions,
+    useWindowSize,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { useWindowSize } from './UseWindowSize'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
@@ -1153,4 +1154,13 @@ export const hasApproverAccess = (approverList: string[]): boolean => {
 
 export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
+}
+
+export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOptions => {
+    const _options: APIOptions = options ? JSON.parse(JSON.stringify(options)) : {}
+    if (window._env_.TRIGGER_API_TIMEOUT) {
+        _options.timeout = window._env_.TRIGGER_API_TIMEOUT
+    }
+
+    return _options
 }

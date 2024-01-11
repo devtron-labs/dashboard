@@ -508,7 +508,7 @@ function getGlobalConfigArguments(args, options): Promise<CommandSuggestionType>
                         ref: null,
                         data: {
                             group: undefined,
-                            url: '/global-config/login-service',
+                            url: '/global-config/auth/login-service',
                             isEOC: false,
                         },
                     },

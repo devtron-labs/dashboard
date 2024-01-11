@@ -1,6 +1,11 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor'
-import { Progressing, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { useJsonYaml, Select, RadioGroup } from '../common'
+import { Progressing, copyToClipboard, useWindowSize } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import YAML from 'yaml'
 import './codeEditor.scss'
 import ReactGA from 'react-ga4'
@@ -14,13 +19,8 @@ import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worke
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import YamlWorker from 'worker-loader!monaco-yaml/lib/esm/yaml.worker'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
-import { useJsonYaml, Select, RadioGroup, useWindowSize } from '../common'
-import { MODES } from '../../config/constants'
-import { cleanKubeManifest } from '../../util/Util'
+import { MODES } from '../../../src/config/constants'
+import { cleanKubeManifest } from '../../../src/util/Util'
 
 // @ts-ignore
 window.MonacoEnvironment = {
@@ -51,7 +51,7 @@ interface CodeEditorInterface {
     onFocus?: () => void
     children?: any
     defaultValue?: string
-    mode?: 'json' | 'yaml' | 'shell' | 'dockerfile'
+    mode?: 'json' | 'yaml' | 'shell' | 'dockerfile' | 'plaintext'
     tabSize?: number
     readOnly?: boolean
     noParsing?: boolean
@@ -111,7 +111,7 @@ interface Action {
 }
 
 interface CodeEditorState {
-    mode: 'json' | 'yaml' | 'shell' | 'dockerfile'
+    mode: 'json' | 'yaml' | 'shell' | 'dockerfile' | 'plaintext'
     diffMode: boolean
     theme: 'vs' | 'vs-dark'
     code: string
@@ -187,7 +187,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         base: 'vs-dark',
         inherit: true,
         rules: [
-            // @ts-ignore
+            //@ts-ignore
             { background: '#0B0F22' },
         ],
         colors: {
@@ -240,16 +240,14 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     }
 
     useEffect(() => {
-        if (!validatorSchema) {
-            return
-        }
+        if (!validatorSchema) return
         yaml &&
             yaml.yamlDefaults.setDiagnosticsOptions({
                 validate: true,
                 enableSchemaRequest: true,
                 hover: true,
                 completion: true,
-                isKubernetes,
+                isKubernetes: isKubernetes,
                 format: true,
                 schemas: [
                     {
@@ -262,23 +260,17 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validatorSchema, chartVersion])
     useEffect(() => {
-        if (!editorRef.current) {
-            return
-        }
+        if (!editorRef.current) return
         editorRef.current.updateOptions({ readOnly })
     }, [readOnly])
 
     useEffect(() => {
-        if (!editorRef.current) {
-            return
-        }
+        if (!editorRef.current) return
         editorRef.current.layout()
     }, [width, windowHeight])
 
     useEffect(() => {
-        if (onChange) {
-            onChange(state.code)
-        }
+        if (onChange) onChange(state.code)
     }, [state.code])
 
     useEffect(() => {
@@ -288,9 +280,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             return
         }
         let obj
-        if (value === state.code) {
-            return
-        }
+        if (value === state.code) return
         try {
             obj = JSON.parse(value)
         } catch (err) {
@@ -328,7 +318,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         selectOnLineNumbers: true,
         roundedSelection: false,
         readOnly,
-        lineDecorationsWidth,
+        lineDecorationsWidth: lineDecorationsWidth,
         automaticLayout: true,
         scrollBeyondLastLine: false,
         minimap: {
@@ -338,7 +328,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             alwaysConsumeMouseWheel: false,
             vertical: inline ? 'hidden' : 'auto',
         },
-        lineNumbers(lineNumber) {
+        lineNumbers: function (lineNumber) {
             return `<span style="padding-right:6px">${lineNumber}</span>`
         },
     }
@@ -394,7 +384,7 @@ const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition 
     )
 }
 
-const ThemeChanger = ({}) => {
+function ThemeChanger({}) {
     const { readOnly, state, dispatch } = useCodeEditorContext()
     function handleChangeTheme(e) {
         dispatch({ type: 'setTheme', value: e.target.value })
@@ -416,11 +406,9 @@ const ThemeChanger = ({}) => {
     )
 }
 
-const LanguageChanger = ({}) => {
+function LanguageChanger({}) {
     const { readOnly, handleLanguageChange, state } = useCodeEditorContext()
-    if (state.noParsing) {
-        return null
-    }
+    if (state.noParsing) return null
     return (
         <div className="code-editor__toggle flex left">
             <RadioGroup
@@ -443,12 +431,12 @@ const LanguageChanger = ({}) => {
     )
 }
 
-const ValidationError = () => {
+function ValidationError() {
     const { error } = useCodeEditorContext()
     return error ? <div className="form__error">{error}</div> : null
 }
 
-const Warning: React.FC<InformationBarProps> = (props) => {
+const Warning: React.FC<InformationBarProps> = function (props) {
     return (
         <div className={`code-editor__warning ${props.className || ''}`}>
             <WarningIcon className="code-editor__information-info-icon" />
@@ -458,7 +446,7 @@ const Warning: React.FC<InformationBarProps> = (props) => {
     )
 }
 
-const ErrorBar: React.FC<InformationBarProps> = (props) => {
+const ErrorBar: React.FC<InformationBarProps> = function (props) {
     return (
         <div className={`code-editor__error ${props.className || ''}`}>
             <ErrorIcon className="code-editor__information-info-icon" />
@@ -468,7 +456,7 @@ const ErrorBar: React.FC<InformationBarProps> = (props) => {
     )
 }
 
-const Information: React.FC<InformationBarProps> = (props) => {
+const Information: React.FC<InformationBarProps> = function (props) {
     return (
         <div className={`code-editor__information ${props.className || ''}`}>
             <Info className="code-editor__information-info-icon" />
@@ -478,7 +466,7 @@ const Information: React.FC<InformationBarProps> = (props) => {
     )
 }
 
-const Clipboard = () => {
+function Clipboard() {
     const { state } = useCodeEditorContext()
     return (
         <button type="button" className="clipboard" onClick={(e) => copyToClipboard(state.code)}>
@@ -487,23 +475,21 @@ const Clipboard = () => {
     )
 }
 
-const SplitPane = ({}) => {
+function SplitPane({}) {
     const { state, dispatch, readOnly } = useCodeEditorContext()
     function handleToggle(e) {
-        if (readOnly) {
-            return
-        }
+        if (readOnly) return
         dispatch({ type: 'setDiff', value: !state.diffMode })
     }
     return (
         <div className="code-editor__split-pane flex pointer" onClick={handleToggle}>
-            <div className="diff-icon" />
+            <div className="diff-icon"></div>
             {state.diffMode ? 'Hide comparison' : 'Compare with default'}
         </div>
     )
 }
-// TODO: CodeEditor should be composed of CodeEditorPlaceholder
-const CodeEditorPlaceholder = ({ className = '', style = {}, customLoader }): JSX.Element => {
+//TODO: CodeEditor should be composed of CodeEditorPlaceholder
+function CodeEditorPlaceholder({ className = '', style = {}, customLoader }): JSX.Element {
     const { height } = useCodeEditorContext()
 
     if (customLoader) {

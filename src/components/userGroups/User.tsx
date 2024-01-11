@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react'
+import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../common'
 import {
     showError,
     Progressing,
@@ -11,9 +12,9 @@ import {
     RadioGroup,
     RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { saveUser, deleteUser } from './userGroup.service'
 import Creatable from 'react-select/creatable'
 import Select from 'react-select'
-import { toast } from 'react-toastify'
 import {
     DirectPermissionsRoleFilter,
     ChartGroupPermissionsFilter,
@@ -23,8 +24,7 @@ import {
     OptionType,
     ViewChartGroupPermission,
 } from './userGroups.types'
-import { saveUser, deleteUser } from './userGroup.service'
-import { mapByKey, validateEmail, deepEqual } from '../common'
+import { toast } from 'react-toastify'
 import { useUserGroupContext } from './UserGroup'
 import './UserGroup.scss'
 import AppPermissions from './AppPermissions'
@@ -33,6 +33,9 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { PermissionType } from '../apiTokens/authorization.utils'
 import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils'
+
+const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
+const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
 
 const CreatableChipStyle = {
     multiValue: (base, state) => {
@@ -60,12 +63,11 @@ const CreatableChipStyle = {
 export default function UserForm({
     id = null,
     userData = null,
-    index,
-    email_id = null,
     updateCallback,
     deleteCallback,
     createCallback,
     cancelCallback,
+    isAutoAssignFlowEnabled,
 }) {
     // id null is for create
     const { serverMode } = useContext(mainContext)
@@ -118,7 +120,7 @@ export default function UserForm({
     }
 
     function isFormComplete(): boolean {
-        let isComplete = true
+        let isComplete: boolean = true
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
                 isComplete = false
@@ -148,19 +150,20 @@ export default function UserForm({
             return permission.environment.find((env) => env.value === '*')
                 ? ''
                 : permission.environment.map((env) => env.value).join(',')
+        } else {
+            let allFutureCluster = {}
+            let envList = ''
+            permission.environment.forEach((element) => {
+                if (element.clusterName === '' && element.value.startsWith('#')) {
+                    const clusterName = element.value.substring(1)
+                    allFutureCluster[clusterName] = true
+                    envList += (envList !== '' ? ',' : '') + clusterName + '__*'
+                } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+                    envList += (envList !== '' ? ',' : '') + element.value
+                }
+            })
+            return envList
         }
-        const allFutureCluster = {}
-        let envList = ''
-        permission.environment.forEach((element) => {
-            if (element.clusterName === '' && element.value.startsWith('#')) {
-                const clusterName = element.value.substring(1)
-                allFutureCluster[clusterName] = true
-                envList += `${(envList !== '' ? ',' : '') + clusterName}__*`
-            } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                envList += (envList !== '' ? ',' : '') + element.value
-            }
-        })
-        return envList
     }
 
     async function handleSubmit(e) {
@@ -237,7 +240,7 @@ export default function UserForm({
             const { result } = await saveUser(payload)
             if (id) {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                updateCallback(index, result)
+                updateCallback(id, result)
                 toast.success('User updated')
             } else {
                 createCallback(result)
@@ -295,7 +298,7 @@ export default function UserForm({
                 case ',':
                 case ' ': // space
                     if (inputEmailValue) {
-                        const newEmails = inputEmailValue.split(',').map((e) => {
+                        let newEmails = inputEmailValue.split(',').map((e) => {
                             e = e.trim()
                             return createOption(e)
                         })
@@ -318,13 +321,13 @@ export default function UserForm({
         setSubmitting(true)
         try {
             await deleteUser(id)
-            deleteCallback(email_id)
+            deleteCallback(id)
             toast.success('User deleted')
+            setDeleteConfirmationModal(false)
         } catch (err) {
             showError(err)
         } finally {
             setSubmitting(false)
-            setDeleteConfirmationModal(false)
         }
     }
 
@@ -340,9 +343,7 @@ export default function UserForm({
     function handleCreatableBlur(e) {
         let { emails, inputEmailValue } = emailState
         inputEmailValue = inputEmailValue.trim()
-        if (!inputEmailValue) {
-            return
-        }
+        if (!inputEmailValue) return
         setEmailState({
             inputEmailValue: '',
             emails: [...emails, createOption(e.target.value)],
@@ -373,107 +374,119 @@ export default function UserForm({
     return (
         <div className="user-form">
             {!id && (
-                <div className="mb-16">
-                    <label htmlFor="" className="mb-8">
-                        Email addresses*
-                    </label>
-                    <Creatable
-                        classNamePrefix="email-address-dropdown"
-                        ref={creatableRef}
-                        options={creatableOptions}
-                        components={CreatableComponents}
-                        styles={CreatableChipStyle}
-                        autoFocus
-                        isMulti
-                        isClearable
-                        inputValue={emailState.inputEmailValue}
-                        placeholder="Type email and press enter..."
-                        isValidNewOption={() => false}
-                        backspaceRemovesValue
-                        value={emailState.emails}
-                        onBlur={handleCreatableBlur}
-                        onInputChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                        onChange={handleEmailChange}
-                    />
-                    {emailState.emailError && (
-                        <label className="form__error">
-                            <Error className="form__icon form__icon--error" />
-                            {emailState.emailError}
-                        </label>
-                    )}
-                </div>
-            )}
-            <div className="flex left mb-16">
-                <RadioGroup
-                    className="permission-type__radio-group"
-                    value={localSuperAdmin}
-                    name={`permission-type_${id}`}
-                    onChange={handlePermissionType}
-                >
-                    {PermissionType.map(({ label, value }) => (
-                        <RadioGroupItem
-                            dataTestId={`${
-                                value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
-                            }-permission-radio-button`}
-                            value={value}
-                            key={label}
-                        >
-                            <span className={`dc__no-text-transform ${localSuperAdmin === value ? 'fw-6' : 'fw-4'}`}>
-                                {label}
-                            </span>
-                        </RadioGroupItem>
-                    ))}
-                </RadioGroup>
-            </div>
-            {localSuperAdmin === 'SPECIFIC' && (
                 <>
-                    <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
-                    <Select
-                        value={userGroups}
-                        ref={groupPermissionsRef}
-                        classNamePrefix="group-permission-dropdown"
-                        components={{
-                            MultiValueContainer: ({ ...props }) => (
-                                <MultiValueChipContainer {...props} validator={null} />
-                            ),
-                            DropdownIndicator: null,
-                            ClearIndicator,
-                            MultiValueRemove,
-                            Option,
-                        }}
-                        styles={{
-                            ...multiSelectStyles,
-                            multiValue: (base) => ({
-                                ...base,
-                                border: `1px solid var(--N200)`,
-                                borderRadius: `4px`,
-                                background: 'white',
-                                height: '30px',
-                                margin: '0 8px 0 0',
-                                padding: '1px',
-                            }),
-                        }}
-                        formatOptionLabel={formatChartGroupOptionLabel}
-                        closeMenuOnSelect={false}
-                        isMulti
-                        autoFocus={!id}
-                        name="groups"
-                        options={availableGroups}
-                        hideSelectedOptions={false}
-                        onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
-                        className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
-                    />
-                    <AppPermissions
-                        data={userData}
-                        directPermission={directPermission}
-                        setDirectPermission={setDirectPermission}
-                        chartPermission={chartPermission}
-                        setChartPermission={setChartPermission}
-                        k8sPermission={k8sPermission}
-                        setK8sPermission={setK8sPermission}
-                        currentK8sPermissionRef={currentK8sPermissionRef}
-                    />
+                    {isAutoAssignFlowEnabled && <UserPermissionsInfoBar />}
+                    <div className="mb-16">
+                        <label htmlFor="" className="mb-8">
+                            Email addresses*
+                        </label>
+                        <Creatable
+                            classNamePrefix="email-address-dropdown"
+                            ref={creatableRef}
+                            options={creatableOptions}
+                            components={CreatableComponents}
+                            styles={CreatableChipStyle}
+                            autoFocus
+                            isMulti
+                            isClearable
+                            inputValue={emailState.inputEmailValue}
+                            placeholder="Type email and press enter..."
+                            isValidNewOption={() => false}
+                            backspaceRemovesValue
+                            value={emailState.emails}
+                            onBlur={handleCreatableBlur}
+                            onInputChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            onChange={handleEmailChange}
+                        />
+                        {emailState.emailError && (
+                            <label className="form__error">
+                                <Error className="form__icon form__icon--error" />
+                                {emailState.emailError}
+                            </label>
+                        )}
+                    </div>
+                </>
+            )}
+            {id && isAutoAssignFlowEnabled && <UserPermissionGroupTable permissionGroups={userData?.roleGroups} />}
+            {!isAutoAssignFlowEnabled && (
+                <>
+                    <div className="flex left mb-16">
+                        <RadioGroup
+                            className="permission-type__radio-group"
+                            value={localSuperAdmin}
+                            name={`permission-type_${id}`}
+                            onChange={handlePermissionType}
+                        >
+                            {PermissionType.map(({ label, value }) => (
+                                <RadioGroupItem
+                                    dataTestId={`${
+                                        value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
+                                    }-permission-radio-button`}
+                                    value={value}
+                                    key={label}
+                                >
+                                    <span
+                                        className={`dc__no-text-transform ${
+                                            localSuperAdmin === value ? 'fw-6' : 'fw-4'
+                                        }`}
+                                    >
+                                        {label}
+                                    </span>
+                                </RadioGroupItem>
+                            ))}
+                        </RadioGroup>
+                    </div>
+                    {localSuperAdmin === 'SPECIFIC' && (
+                        <>
+                            <div className="cn-9 fs-14 fw-6 mb-16">Group permissions</div>
+                            <Select
+                                value={userGroups}
+                                ref={groupPermissionsRef}
+                                classNamePrefix="group-permission-dropdown"
+                                components={{
+                                    MultiValueContainer: ({ ...props }) => (
+                                        <MultiValueChipContainer {...props} validator={null} />
+                                    ),
+                                    DropdownIndicator: null,
+                                    ClearIndicator,
+                                    MultiValueRemove,
+                                    Option,
+                                }}
+                                styles={{
+                                    ...multiSelectStyles,
+                                    multiValue: (base) => ({
+                                        ...base,
+                                        border: `1px solid var(--N200)`,
+                                        borderRadius: `4px`,
+                                        background: 'white',
+                                        height: '30px',
+                                        margin: '0 8px 0 0',
+                                        padding: '1px',
+                                    }),
+                                }}
+                                formatOptionLabel={formatChartGroupOptionLabel}
+                                closeMenuOnSelect={false}
+                                isMulti
+                                autoFocus={!id}
+                                name="groups"
+                                options={availableGroups}
+                                hideSelectedOptions={false}
+                                onChange={(selected, actionMeta) => setUserGroups((selected || []) as any)}
+                                className={`basic-multi-select ${id ? 'mt-8 mb-16' : ''}`}
+                            />
+                            <AppPermissions
+                                data={userData}
+                                directPermission={directPermission}
+                                setDirectPermission={setDirectPermission}
+                                chartPermission={chartPermission}
+                                setChartPermission={setChartPermission}
+                                k8sPermission={k8sPermission}
+                                setK8sPermission={setK8sPermission}
+                                currentK8sPermissionRef={currentK8sPermissionRef}
+                            />
+                        </>
+                    )}
                 </>
             )}
             <div className="flex right mt-32">
@@ -493,57 +506,39 @@ export default function UserForm({
                         Unsaved changes
                     </span>
                 )}
-                <button
-                    data-testid="user-form-cancel-button"
-                    disabled={submitting}
-                    onClick={cancelCallback}
-                    type="button"
-                    className="cta cancel mr-16"
-                >
-                    Cancel
-                </button>
-                <button
-                    disabled={submitting}
-                    data-testid="user-form-save-button"
-                    type="button"
-                    className="cta"
-                    onClick={handleSubmit}
-                >
-                    {submitting ? <Progressing /> : 'Save'}
-                </button>
+                {!(isAutoAssignFlowEnabled && id) && (
+                    <>
+                        <button
+                            data-testid="user-form-cancel-button"
+                            disabled={submitting}
+                            onClick={cancelCallback}
+                            type="button"
+                            className="cta cancel mr-16"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            disabled={submitting}
+                            data-testid="user-form-save-button"
+                            type="button"
+                            className="cta"
+                            onClick={handleSubmit}
+                        >
+                            {submitting ? <Progressing /> : 'Save'}
+                        </button>
+                    </>
+                )}
             </div>
             {deleteConfirmationModal && (
                 <DeleteDialog
                     dataTestId="user-form-delete-dialog"
                     title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
-                    description="Deleting this user will remove the user and revoke all their permissions."
+                    description={'Deleting this user will remove the user and revoke all their permissions.'}
                     delete={handleDelete}
                     closeDelete={() => setDeleteConfirmationModal(false)}
+                    apiCallInProgress={submitting}
                 />
             )}
-        </div>
-    )
-}
-
-const SuperAdmin: React.FC<{
-    superAdmin: boolean
-    setSuperAdmin: (checked: boolean) => any
-}> = ({ superAdmin, setSuperAdmin }) => {
-    return (
-        <div className="flex left column top bcn-1 br-4 p-16 mb-24">
-            <div className="flex left">
-                <input
-                    type="checkbox"
-                    checked={!!superAdmin}
-                    onChange={(e) => setSuperAdmin(e.target.checked)}
-                    style={{ height: '13px', width: '13px' }}
-                />
-                <span className="fs-14 fw-6 cn-9 ml-16">Assign superadmin permissions</span>
-            </div>
-            <p className="fs-12 cn-7 mt-4">
-                Superadmins have complete access to all applications across projects. Only superadmins can add more
-                superadmins.
-            </p>
         </div>
     )
 }

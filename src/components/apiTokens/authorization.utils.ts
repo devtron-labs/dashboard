@@ -24,7 +24,7 @@ export function getOptions(customDate) {
 export const PermissionType = [
     { value: 'SPECIFIC', label: 'Specific permissions' },
     { value: 'SUPERADMIN', label: 'Super admin permission' },
-]
+] as const
 
 const millisecondsInDay = 86400000
 

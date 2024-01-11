@@ -1,7 +1,4 @@
 import React, { useState } from 'react'
-import moment from 'moment'
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Commit } from '../../assets/icons/ic-commit.svg'
 import { ReactComponent as CommitIcon } from '../../assets/icons/ic-code-commit.svg'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg'
@@ -12,8 +9,11 @@ import { ReactComponent as BranchMain } from '../../assets/icons/ic-branch-main.
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { SourceTypeMap, Moment12HourFormat } from '../../config'
-import { createGitCommitUrl } from './helpers/git'
+import { createGitCommitUrl } from '../common/helpers/git'
 import { GitMaterialInfoHeader } from './GitMaterialInfo'
+import moment from 'moment'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { MATERIAL_EXCLUDE_TIPPY_TEXT } from '../material/constants'
 
 export default function GitCommitInfoGeneric({
@@ -25,28 +25,28 @@ export default function GitCommitInfoGeneric({
     showMaterialInfoHeader,
     canTriggerBuild = false,
     index,
-    isExcluded = false,
+    isExcluded = false
 }) {
     const [showSeeMore, setShowSeeMore] = useState(true)
-    const _lowerCaseCommitInfo = _lowerCaseObject(commitInfo)
-    const _isWebhook =
+    let _lowerCaseCommitInfo = _lowerCaseObject(commitInfo)
+    let _isWebhook =
         materialSourceType === SourceTypeMap.WEBHOOK ||
         (_lowerCaseCommitInfo && _lowerCaseCommitInfo.webhookdata && _lowerCaseCommitInfo.webhookdata.id !== 0)
-    const _webhookData = _isWebhook ? _lowerCaseCommitInfo.webhookdata : {}
-    const _commitUrl = _isWebhook
+    let _webhookData = _isWebhook ? _lowerCaseCommitInfo.webhookdata : {}
+    let _commitUrl = _isWebhook
         ? null
         : _lowerCaseCommitInfo.commiturl
         ? _lowerCaseCommitInfo.commiturl
         : createGitCommitUrl(materialUrl, _lowerCaseCommitInfo.commit)
 
     function _lowerCaseObject(input): any {
-        const _output = {}
+        let _output = {}
         if (!input) {
             return _output
         }
         Object.keys(input).forEach((_key) => {
-            const _modifiedKey = _key.toLowerCase()
-            const _value = input[_key]
+            let _modifiedKey = _key.toLowerCase()
+            let _value = input[_key]
             if (_value && typeof _value === 'object') {
                 _output[_modifiedKey] = _lowerCaseObject(_value)
             } else {
@@ -59,7 +59,7 @@ export default function GitCommitInfoGeneric({
     function renderBasicGitCommitInfoForWebhook() {
         let _date
         if (_webhookData.data.date) {
-            const _moment = moment(_webhookData.data.date, 'YYYY-MM-DDTHH:mm:ssZ')
+            let _moment = moment(_webhookData.data.date, 'YYYY-MM-DDTHH:mm:ssZ')
             _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : _webhookData.data.date
         }
         return (
@@ -86,27 +86,29 @@ export default function GitCommitInfoGeneric({
     }
 
     function renderMoreDataForWebhook(_moreData) {
-        return !showSeeMore ? (
-            <div className="material-history__all-changes">
-                <div className="material-history__body mt-4">
-                    {Object.keys(_moreData).map((_key, index) => {
-                        let classes
-                        if (index % 2 == 0) {
-                            classes = 'bcn-1'
-                        }
-                        return (
-                            <div
-                                key={_key}
-                                className={`material-history__text material-history__grid left pt-4 pb-4 ${classes}`}
-                            >
-                                <div>{_key}</div>
-                                <div>{_moreData[_key]}</div>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
-        ) : null
+        return (
+                !showSeeMore ? (
+                    <div className="material-history__all-changes">
+                        <div className="material-history__body mt-4">
+                            {Object.keys(_moreData).map((_key, index) => {
+                                let classes
+                                if (index % 2 == 0) {
+                                    classes = 'bcn-1'
+                                }
+                                return (
+                                    <div
+                                        key={_key}
+                                        className={`material-history__text material-history__grid left pt-4 pb-4 ${classes}`}
+                                    >
+                                        <div>{_key}</div>
+                                        <div>{_moreData[_key]}</div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                ) : null
+        )
     }
 
     function renderSeeMoreButtonForWebhook() {
@@ -126,7 +128,7 @@ export default function GitCommitInfoGeneric({
     }
 
     function handleMoreDataForWebhook() {
-        const _moreData = {}
+        let _moreData = {}
         if (_webhookData.eventactiontype == 'merged') {
             Object.keys(_webhookData.data).forEach((_key) => {
                 if (
@@ -150,7 +152,7 @@ export default function GitCommitInfoGeneric({
             })
         }
 
-        const _hasMoreData = Object.keys(_moreData).length > 0
+        let _hasMoreData = Object.keys(_moreData).length > 0
 
         return (
             <>
@@ -168,7 +170,7 @@ export default function GitCommitInfoGeneric({
                     arrow={false}
                     placement="bottom"
                     content={MATERIAL_EXCLUDE_TIPPY_TEXT}
-                    interactive
+                    interactive={true}
                 >
                     <span data-testid="excluded-git-commit" className="flex left cr-5 cursor-not-allowed">
                         <Abort className="mr-4 fcr-5" />
@@ -178,7 +180,7 @@ export default function GitCommitInfoGeneric({
             )
         }
 
-        return <span data-testid="valid-git-commit">Select</span>
+        return <span data-testid="valid-git-commit" >Select</span>
     }
 
     return (
@@ -200,7 +202,7 @@ export default function GitCommitInfoGeneric({
                                 <a
                                     href={_commitUrl}
                                     target="_blank"
-                                    rel="noopener noreferrer"
+                                    rel="noopener"
                                     className="commit-hash"
                                     onClick={stopPropagation}
                                     data-testid={`deployment-history-source-code-material-history${index}`}
@@ -236,12 +238,7 @@ export default function GitCommitInfoGeneric({
                         </div>
                     ) : null}
                     {_lowerCaseCommitInfo.message ? (
-                        <div
-                            data-testid={`${_lowerCaseCommitInfo.message.trim()}-${
-                                isExcluded ? 'excluded' : 'included'
-                            }`}
-                            className="material-history__text flex left top material-history-text--padded dc__word-break-all"
-                        >
+                        <div data-testid={`${_lowerCaseCommitInfo.message.trim()}-${isExcluded ? "excluded": "included"}`} className="material-history__text flex left top material-history-text--padded dc__word-break-all">
                             <MessageIcon className="icon-dim-16 mw-16 mr-8 mt-2" />
                             {_lowerCaseCommitInfo.message}
                         </div>
@@ -260,7 +257,7 @@ export default function GitCommitInfoGeneric({
                                 <a
                                     href={`${_webhookData.data['git url']}`}
                                     target="_blank"
-                                    rel="noopener noreferer noreferrer"
+                                    rel="noopener noreferrer"
                                     className="dc__no-decor cb-5"
                                 >
                                     View git url
@@ -268,7 +265,7 @@ export default function GitCommitInfoGeneric({
                             ) : null}
                         </div>
                         {selectedCommitInfo ? (
-                            <div className="material-history__select-text material-history__header">
+                            <div className="material-history__select-text flexbox dc__align-items-center dc__content-end fs-12">
                                 {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : 'Select'}
                             </div>
                         ) : null}
@@ -281,8 +278,7 @@ export default function GitCommitInfoGeneric({
                                 <div className="flex left mb-8">
                                     {_webhookData.data['source branch name'] ? (
                                         <div className=" mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
-                                            <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />
-                                            &nbsp;
+                                            <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />{' '}
                                             {_webhookData.data['source branch name']}
                                         </div>
                                     ) : null}
@@ -294,7 +290,7 @@ export default function GitCommitInfoGeneric({
                                                     _webhookData.data['source checkout'],
                                                 )}
                                                 target="_blank"
-                                                rel="noopener noreferrer"
+                                                rel="noopener"
                                                 className="commit-hash"
                                                 onClick={stopPropagation}
                                             >
@@ -308,9 +304,8 @@ export default function GitCommitInfoGeneric({
                                     <div className="mono cn-7 fs-12 lh-1-5 br-4 bcn-1 pl-6 pr-6">
                                         {_webhookData.data['target branch name'] ? (
                                             <>
-                                                <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />
-                                                &nbsp;
-                                                {_webhookData.data['target branch name']}&nbsp;
+                                                <BranchIcon className="icon-dim-12 dc__vertical-align-middle" />{' '}
+                                                {_webhookData.data['target branch name']}{' '}
                                             </>
                                         ) : null}
                                     </div>
@@ -328,7 +323,7 @@ export default function GitCommitInfoGeneric({
                                                     _webhookData.data['target checkout'],
                                                 )}
                                                 target="_blank"
-                                                rel="noopener noreferrer"
+                                                rel="noopener"
                                                 className="commit-hash"
                                                 onClick={stopPropagation}
                                             >

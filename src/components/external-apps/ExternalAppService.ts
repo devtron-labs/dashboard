@@ -1,7 +1,8 @@
-import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListService'
 import { ResourceTree } from '../v2/appDetails/appDetails.type'
+import { getAPIOptionsWithTriggerTimeout } from '../common'
 
 export interface ReleaseInfoResponse extends ResponseType {
     result?: ReleaseAndInstalledAppInfo
@@ -110,35 +111,38 @@ export interface UpdateAppReleaseRequest {
 }
 
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
-    const url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
+    let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
     return get(url)
 }
 
 export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
-    const url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
+    let url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
     return get(url)
 }
 
 export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {
-    const url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
+    let url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
     return trash(url)
 }
 
 export const updateAppReleaseWithoutLinking = (
     requestPayload: UpdateAppReleaseWithoutLinkingRequest,
 ): Promise<UpdateReleaseResponse> => {
-    return put(Routes.HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API, requestPayload)
+    const options = getAPIOptionsWithTriggerTimeout()
+    return put(Routes.HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API, requestPayload, options)
 }
 
 export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest): Promise<any> => {
-    return put(Routes.UPDATE_APP_API, requestPayload)
+    const options = getAPIOptionsWithTriggerTimeout()
+    return put(Routes.UPDATE_APP_API, requestPayload, options)
 }
 
 export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<UpdateReleaseResponse> => {
-    return put(Routes.HELM_LINK_TO_CHART_STORE_API, request)
+    const options = getAPIOptionsWithTriggerTimeout()
+    return put(Routes.HELM_LINK_TO_CHART_STORE_API, request, options)
 }
 
 export const getManifestUrlInfo = (appId: string): Promise<ResponseType> => {
-    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
+    let url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
     return get(url)
 }

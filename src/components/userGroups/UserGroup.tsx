@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
-import { Switch, Route, Redirect } from 'react-router-dom'
+import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, lazy } from 'react'
+import { Switch, Route, Redirect, useLocation, useHistory } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import {
     showError,
@@ -13,18 +13,16 @@ import {
     MultiValueRemove,
     multiSelectStyles,
     getRandomColor,
-    not,
     noop,
     useEffectAfterMount,
     GenericEmptyState,
     useAsync,
+    ERROR_EMPTY_SCREEN,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { components } from 'react-select'
-import Tippy from '@tippyjs/react'
 import {
     NavigationArrow,
     useKeyDown,
-    removeItemsFromArray,
     getRandomString,
     sortBySelected,
     mapByKey,
@@ -64,8 +62,10 @@ import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SE
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg'
+import Select, { components } from 'react-select'
 import UserForm from './User'
 import GroupForm from './Group'
+import Tippy from '@tippyjs/react'
 import EmptyImage from '../../assets/img/empty-applist@2x.png'
 import EmptySearch from '../../assets/img/empty-noresult@2x.png'
 import './UserGroup.scss'
@@ -76,17 +76,15 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
-import {
-    EMPTY_STATE_STATUS,
-    ERROR_EMPTY_SCREEN,
-    SSO_NOT_CONFIGURED_STATE_TEXTS,
-    TOAST_ACCESS_DENIED,
-    USER_NOT_EDITABLE,
-} from '../../config/constantMessaging'
+import { EMPTY_STATE_STATUS, SSO_NOT_CONFIGURED_STATE_TEXTS, USER_NOT_EDITABLE } from '../../config/constantMessaging'
 import { getJobs } from '../Jobs/Service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { ADD_USER_EXPANDED_SEARCH_VALUE, EXPANDED_TILE_SEARCH_KEY } from './constants'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
+const AuthorizationGlobalConfigWrapper = importComponentFromFELibrary('AuthorizationGlobalConfigWrapper')
+const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
+const SSOLogin = lazy(() => import('../login/SSOLogin'))
 
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
@@ -134,16 +132,16 @@ export function useUserGroupContext() {
     return context
 }
 
-const HeaderSection = (type: string) => {
-    const isUserPremissions = type === 'user'
+function HeaderSection(type: 'user' | 'group') {
+    const isUserPermissions = type === 'user'
 
     return (
         <div data-testid={`${type}-auth-page-header`} className="auth-page__header pt-20">
             <h2 className="auth-page__header-title form__title">
-                {isUserPremissions ? 'User permissions' : 'Permission groups'}
+                {isUserPermissions ? 'User permissions' : 'Permission groups'}
             </h2>
             <p className="form__subtitle">
-                {isUserPremissions
+                {isUserPermissions
                     ? "Manage your organization's users and their permissions."
                     : 'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'}
                 &nbsp;
@@ -151,10 +149,10 @@ const HeaderSection = (type: string) => {
                     data-testid={`${type}-auth-page-learn-more-link`}
                     className="dc__link"
                     rel="noreferrer noopener"
-                    href={isUserPremissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
+                    href={isUserPermissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
                     target="_blank"
                 >
-                    Learn more about {isUserPremissions ? 'User permissions' : 'Permission groups'}
+                    Learn more about {isUserPermissions ? 'User permissions' : 'Permission groups'}
                 </a>
             </p>
         </div>
@@ -180,11 +178,11 @@ export default function UserGroupRoute() {
     const [appsList, setAppsList] = useState(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState(new Map())
     const [jobsList, setJobsList] = useState(new Map())
+    // For handling the auto assign flow for enterprise
+    const [isAutoAssignFlowEnabled, setIsAutoAssignFlowEnabled] = useState(false)
 
     useEffect(() => {
-        if (!lists) {
-            return
-        }
+        if (!lists) return
         lists.forEach((list) => {
             if (list.status === 'rejected') {
                 showError(list.reason, true, true)
@@ -194,9 +192,7 @@ export default function UserGroupRoute() {
 
     async function fetchJobsList(projectIds: number[]) {
         const missingProjects = projectIds.filter((projectId) => !jobsList.has(projectId))
-        if (missingProjects.length === 0) {
-            return
-        }
+        if (missingProjects.length === 0) return
         setJobsList((jobsList) => {
             return missingProjects.reduce((jobsList, projectId) => {
                 jobsList.set(projectId, { loading: true, result: [], error: null })
@@ -213,7 +209,7 @@ export default function UserGroupRoute() {
             setJobsList(
                 (jobsList) =>
                     new Map(
-                        missingProjects.reduce((jobsList, projectId, index) => {
+                        missingProjects.reduce((jobsList, projectId) => {
                             jobsList.set(projectId, {
                                 loading: false,
                                 result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
@@ -235,13 +231,9 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppList(projectIds: number[]) {
-        if (serverMode === SERVER_MODE.EA_ONLY) {
-            return
-        }
+        if (serverMode === SERVER_MODE.EA_ONLY) return
         const missingProjects = projectIds.filter((projectId) => !appsList.has(projectId))
-        if (missingProjects.length === 0) {
-            return
-        }
+        if (missingProjects.length === 0) return
         setAppsList((appList) => {
             return missingProjects.reduce((appList, projectId) => {
                 appList.set(projectId, { loading: true, result: [], error: null })
@@ -253,7 +245,7 @@ export default function UserGroupRoute() {
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsList((appList) => {
                 return new Map(
-                    missingProjects.reduce((appList, projectId, index) => {
+                    missingProjects.reduce((appList, projectId) => {
                         appList.set(projectId, {
                             loading: false,
                             result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
@@ -276,9 +268,7 @@ export default function UserGroupRoute() {
 
     async function fetchAppListHelmApps(projectIds: number[]) {
         const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
-        if (missingProjects.length === 0) {
-            return
-        }
+        if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
             return missingProjects.reduce((appListHelmApps, projectId) => {
                 appListHelmApps.set(projectId, { loading: true, result: [], error: null })
@@ -291,7 +281,7 @@ export default function UserGroupRoute() {
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsListHelmApps((appListHelmApps) => {
                 return new Map(
-                    missingProjects.reduce((appListHelmApps, projectId, index) => {
+                    missingProjects.reduce((appListHelmApps, projectId) => {
                         appListHelmApps.set(projectId, {
                             loading: false,
                             result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
@@ -312,9 +302,7 @@ export default function UserGroupRoute() {
         }
     }
 
-    if (listsLoading) {
-        return <Progressing pageLoader />
-    }
+    if (listsLoading) return <Progressing pageLoader />
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList, customRolesList] = lists
     return (
         <div className="flex h-100">
@@ -358,11 +346,49 @@ export default function UserGroupRoute() {
                     }}
                 >
                     <Switch>
+                        <Route
+                            path={`${path}/login-service`}
+                            render={(props) => {
+                                return <SSOLogin {...props} />
+                            }}
+                        />
                         <Route path={`${path}/users`}>
-                            <UserGroupList type="user" reloadLists={reloadLists} renderHeaders={HeaderSection} />
+                            <ConditionalWrap
+                                condition={!!AuthorizationGlobalConfigWrapper}
+                                wrap={(children) => (
+                                    <AuthorizationGlobalConfigWrapper
+                                        setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}
+                                    >
+                                        {children}
+                                    </AuthorizationGlobalConfigWrapper>
+                                )}
+                            >
+                                <UserGroupList
+                                    type="user"
+                                    reloadLists={reloadLists}
+                                    renderHeaders={HeaderSection}
+                                    isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                                />
+                            </ConditionalWrap>
                         </Route>
                         <Route path={`${path}/groups`}>
-                            <UserGroupList type="group" reloadLists={reloadLists} renderHeaders={HeaderSection} />
+                            <ConditionalWrap
+                                condition={!!AuthorizationGlobalConfigWrapper}
+                                wrap={(children) => (
+                                    <AuthorizationGlobalConfigWrapper
+                                        setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}
+                                    >
+                                        {children}
+                                    </AuthorizationGlobalConfigWrapper>
+                                )}
+                            >
+                                <UserGroupList
+                                    type="group"
+                                    reloadLists={reloadLists}
+                                    renderHeaders={HeaderSection}
+                                    isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                                />
+                            </ConditionalWrap>
                         </Route>
                         <Route path={`${path}/${Routes.API_TOKEN}`}>
                             <ApiTokens />
@@ -378,8 +404,9 @@ export default function UserGroupRoute() {
 const UserGroupList: React.FC<{
     type: 'user' | 'group'
     reloadLists: () => void
-    renderHeaders: (type: string) => JSX.Element
-}> = ({ type, reloadLists, renderHeaders }) => {
+    renderHeaders: (type: 'user' | 'group') => JSX.Element
+    isAutoAssignFlowEnabled: boolean
+}> = ({ type, reloadLists, renderHeaders, isAutoAssignFlowEnabled }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
     const result = (data && data['result']) || []
@@ -390,6 +417,20 @@ const UserGroupList: React.FC<{
     const [addHash, setAddHash] = useState(null)
     const { roles, customRoles } = useUserGroupContext()
 
+    const location = useLocation()
+    const history = useHistory()
+    const searchParams = new URLSearchParams(location.search)
+    const expandedTile = searchParams.get(EXPANDED_TILE_SEARCH_KEY) || ''
+
+    const updateCollapsedTile = (id?: string) => {
+        if (id) {
+            searchParams.set(EXPANDED_TILE_SEARCH_KEY, id)
+        } else {
+            searchParams.delete(EXPANDED_TILE_SEARCH_KEY)
+        }
+        history.replace({ search: searchParams.toString() })
+    }
+
     useEffect(() => {
         switch (keys.join(',').toLowerCase()) {
             case 'control,f':
@@ -399,9 +440,7 @@ const UserGroupList: React.FC<{
     }, [keys])
 
     useEffect(() => {
-        if (!error) {
-            return
-        }
+        if (!error) return
         showError(error, true, true)
     }, [error])
 
@@ -415,9 +454,7 @@ const UserGroupList: React.FC<{
     }, [type])
 
     useEffect(() => {
-        if (loading) {
-            return
-        }
+        if (loading) return
         if (!result || result.length === 0) {
             // do not show add item, empty placeholder visible
             setAddHash(null)
@@ -428,8 +465,9 @@ const UserGroupList: React.FC<{
     }, [result.length, loading])
 
     const updateCallback = useCallback(
-        (index: number, payload) => {
+        (id: CreateUser['id'], payload) => {
             const newResult = [...result]
+            const index = result.findIndex((userOrGroup) => userOrGroup.id === id)
             newResult[index] = payload
             setState((state) => ({ ...state, result: newResult }))
         },
@@ -437,15 +475,8 @@ const UserGroupList: React.FC<{
     )
 
     const deleteCallback = useCallback(
-        (email_id: string) => {
-            // find index from the filtered list
-            const index = result.findIndex((userOrGroup) => userOrGroup.email_id === email_id)
-
-            // remove the item from the filtered list
-            const newResult = removeItemsFromArray(result, index, 1)
-
-            // update the state
-            setState((state) => ({ ...state, result: newResult }))
+        (id: CreateUser['id']) => {
+            setState((state) => ({ ...state, result: result.filter((userOrGroup) => userOrGroup.id !== id) }))
         },
         [result.length],
     )
@@ -454,14 +485,16 @@ const UserGroupList: React.FC<{
         (payload) => {
             if (type === 'user') {
                 reloadLists()
-            } else if (Array.isArray(payload)) {
-                setState((state) => {
-                    return { ...state, result: [...payload, ...state.result] }
-                })
             } else {
-                setState((state) => {
-                    return { ...state, result: [payload, ...state.result] }
-                })
+                if (Array.isArray(payload)) {
+                    setState((state) => {
+                        return { ...state, result: [...payload, ...state.result] }
+                    })
+                } else {
+                    setState((state) => {
+                        return { ...state, result: [payload, ...state.result] }
+                    })
+                }
             }
         },
         [result.length],
@@ -477,6 +510,7 @@ const UserGroupList: React.FC<{
         } else {
             setAddHash(getRandomString())
         }
+        updateCollapsedTile()
     }
 
     function processUsersDataToExport(result: CreateUser[]) {
@@ -594,82 +628,88 @@ const UserGroupList: React.FC<{
                 <Progressing pageLoader />
             </div>
         )
-    }
-    if (error && (error.code === 403 || error.code === 401)) {
+    } else if (error && (error.code === 403 || error.code === 401)) {
         return (
             <ErrorScreenNotAuthorized
                 subtitle={ERROR_EMPTY_SCREEN.REQUIRED_MANAGER_ACCESS}
                 title={TOAST_ACCESS_DENIED.TITLE}
             />
         )
-    }
-    if (!addHash) {
+    } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    }
-    if (type === 'user' && !isSSOConfigured) {
+    } else if (type === 'user' && !isSSOConfigured) {
         return <SSONotConfiguredState />
-    }
-    const filteredAndSorted = result.filter(
-        (userOrGroup) =>
-            userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
-            userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
-            userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
-    )
-    return (
-        <div id="auth-page__body" data-testid={`auth-${type}-page`} className="auth-page__body-users__list-container">
-            {renderHeaders(type)}
-            {result.length > 0 && (
-                <div className="flex dc__content-space">
-                    <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
-                        <Search className="search__icon icon-dim-18" />
-                        <input
-                            value={searchString}
-                            autoComplete="off"
-                            ref={searchRef}
-                            type="search"
-                            placeholder={`Search ${type}`}
-                            data-testid={`${type}-search-box-input`}
-                            className="search__input bcn-0"
-                            onChange={(e) => setSearchString(e.target.value)}
-                        />
+    } else {
+        const filteredAndSorted = result.filter(
+            (userOrGroup) =>
+                userOrGroup.name?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
+                userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
+                userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
+        )
+        return (
+            <div
+                id="auth-page__body"
+                data-testid={`auth-${type}-page`}
+                className="auth-page__body-users__list-container"
+            >
+                {renderHeaders(type)}
+                {type === 'group' && isAutoAssignFlowEnabled && <PermissionGroupInfoBar />}
+                {result.length > 0 && (
+                    <div className="flex dc__content-space">
+                        <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
+                            <Search className="search__icon icon-dim-18" />
+                            <input
+                                value={searchString}
+                                autoComplete="off"
+                                ref={searchRef}
+                                type="search"
+                                placeholder={`Search ${type}`}
+                                data-testid={`${type}-search-box-input`}
+                                className="search__input bcn-0"
+                                onChange={(e) => setSearchString(e.target.value)}
+                            />
+                        </div>
+                        {roles?.indexOf('role:super-admin___') !== -1 && (
+                            <ExportToCsv
+                                className="mb-16"
+                                apiPromise={getPermissionsDataToExport}
+                                fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
+                            />
+                        )}
                     </div>
-                    {roles?.indexOf('role:super-admin___') !== -1 && (
-                        <ExportToCsv
-                            className="mb-16"
-                            apiPromise={getPermissionsDataToExport}
-                            fileName={type === 'user' ? FILE_NAMES.Users : FILE_NAMES.Groups}
-                        />
-                    )}
-                </div>
-            )}
-
-            {!(filteredAndSorted.length === 0 && result.length > 0) && (
-                <AddUser
-                    cancelCallback={cancelCallback}
-                    key={addHash}
-                    text={`Add ${type}`}
-                    type={type}
-                    open={!result || result?.length === 0}
-                    {...{ createCallback, updateCallback, deleteCallback }}
-                />
-            )}
-            {filteredAndSorted.map((data, index) => (
-                <CollapsedUserOrGroup
-                    key={data.id}
-                    {...data}
-                    type={type}
-                    {...{ updateCallback, deleteCallback, createCallback, index }}
-                />
-            ))}
-            {filteredAndSorted.length === 0 && result.length > 0 && (
-                <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
-            )}
-        </div>
-    )
+                )}
+                {!(filteredAndSorted.length === 0 && result.length > 0) && (
+                    <AddUser
+                        cancelCallback={cancelCallback}
+                        key={addHash}
+                        text={`Add ${type}`}
+                        type={type}
+                        collapsed={expandedTile !== ADD_USER_EXPANDED_SEARCH_VALUE && result?.length !== 0}
+                        setCollapsed={updateCollapsedTile}
+                        {...{ createCallback, updateCallback, deleteCallback }}
+                        isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                    />
+                )}
+                {filteredAndSorted.map((data) => (
+                    <CollapsedUserOrGroup
+                        key={data.id}
+                        {...data}
+                        type={type}
+                        {...{ updateCallback, deleteCallback, createCallback }}
+                        isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                        collapsed={expandedTile !== String(data.id)}
+                        setCollapsed={updateCollapsedTile}
+                    />
+                ))}
+                {filteredAndSorted.length === 0 && result.length > 0 && (
+                    <SearchEmpty searchString={searchString} setSearchString={setSearchString} />
+                )}
+            </div>
+        )
+    }
 }
 
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
-    index,
     email_id = null,
     id = null,
     name = null,
@@ -678,8 +718,10 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     updateCallback,
     deleteCallback,
     createCallback,
+    isAutoAssignFlowEnabled,
+    collapsed,
+    setCollapsed,
 }) => {
-    const [collapsed, setCollapsed] = useState(true)
     const [dataLoading, data, dataError, reloadData, setData] = useAsync(
         type === 'group' ? () => getGroupId(id) : () => getUserId(id),
         [id, type],
@@ -688,20 +730,18 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     const isAdminOrSystemUser = email_id === DefaultUserKey.ADMIN || email_id === DefaultUserKey.SYSTEM
 
     useEffect(() => {
-        if (!dataError) {
-            return
-        }
-        setCollapsed(true)
+        if (!dataError) return
+        setCollapsed()
         showError(dataError)
     }, [dataError])
 
     function cancelCallback(e) {
-        setCollapsed(not)
+        setCollapsed(collapsed ? String(id) : undefined)
     }
 
-    function updateCallbackOverride(index, data) {
+    function updateCallbackOverride(id, data) {
         setData((state) => ({ ...state, result: data }))
-        updateCallback(index, data)
+        updateCallback(id, data)
     }
 
     function getToolTipContent(user: string): string {
@@ -719,7 +759,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         if (isAdminOrSystemUser) {
             noop()
         } else {
-            setCollapsed(not)
+            setCollapsed(collapsed ? String(id) : undefined)
         }
     }
 
@@ -774,10 +814,9 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 updateCallback: updateCallbackOverride,
                                 deleteCallback,
                                 createCallback,
-                                index,
-                                email_id,
                                 cancelCallback,
                             }}
+                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                         />
                     ) : (
                         <GroupForm
@@ -787,7 +826,6 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 updateCallback: updateCallbackOverride,
                                 deleteCallback,
                                 createCallback,
-                                index,
                                 cancelCallback,
                             }}
                         />
@@ -801,52 +839,51 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
 interface AddUser {
     text: string
     type: 'user' | 'group'
-    open: boolean
     updateCallback: (...args) => void
     deleteCallback: (...args) => void
     createCallback: (...args) => void
     cancelCallback: (...args) => void
+    collapsed: boolean
+    setCollapsed: (id?: string) => void
+    isAutoAssignFlowEnabled: boolean
 }
 const AddUser: React.FC<AddUser> = ({
     text = '',
     type = '',
-    open = false,
     updateCallback,
     deleteCallback,
     createCallback,
     cancelCallback,
+    collapsed,
+    setCollapsed,
+    isAutoAssignFlowEnabled,
 }) => {
-    const [collapsed, setCollapsed] = useState(!open)
     return (
         <article className={`user-list flex column left ${collapsed ? 'user-list--collapsed' : ''} user-list--add`}>
             <div
                 className={`${collapsed ? 'pointer' : ''} user-list__header user-list__header  w-100`}
                 data-testid={collapsed ? `add-${type}-button` : ''}
-                onClick={!collapsed ? noop : (e) => setCollapsed(not)}
+                onClick={!collapsed ? noop : () => setCollapsed(ADD_USER_EXPANDED_SEARCH_VALUE)}
             >
                 {collapsed && <AddIcon className="add-svg mr-16" />}
                 <span className="user-list__email-name flex left column">
                     <span className={`${collapsed ? 'anchor' : ''} fw-6`} style={{ fontSize: '14px' }}>
                         {text}
                     </span>
-                    <small />
+                    <small></small>
                 </span>
-                <span className="user-list__direction-container flex" />
+                <span className="user-list__direction-container flex"></span>
             </div>
             {!collapsed && (
                 <div className="user-list__form w-100">
                     {type === 'user' ? (
                         <UserForm
                             id={null}
-                            index={null}
                             {...{ updateCallback, deleteCallback, createCallback, cancelCallback }}
+                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                         />
                     ) : (
-                        <GroupForm
-                            id={null}
-                            index={null}
-                            {...{ updateCallback, deleteCallback, createCallback, cancelCallback }}
-                        />
+                        <GroupForm id={null} {...{ updateCallback, deleteCallback, createCallback, cancelCallback }} />
                     )}
                 </div>
             )}
@@ -984,7 +1021,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }
 
     useEffect(() => {
-        const envOptions = createClusterEnvGroup(
+        let envOptions = createClusterEnvGroup(
             environmentsList,
             'cluster_name',
             'environment_name',
@@ -1030,14 +1067,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             label: cluster.clusterName,
             options: [
                 {
-                    label: `All existing + future environments in ${cluster.clusterName}`,
-                    value: `#${cluster.clusterName}`,
+                    label: 'All existing + future environments in ' + cluster.clusterName,
+                    value: '#' + cluster.clusterName,
                     namespace: '',
                     clusterName: '',
                 },
                 {
-                    label: `All existing environments in ${cluster.clusterName}`,
-                    value: `*${cluster.clusterName}`,
+                    label: 'All existing environments in ' + cluster.clusterName,
+                    value: '*' + cluster.clusterName,
                     namespace: '',
                     clusterName: '',
                 },
@@ -1075,9 +1112,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
     useEffect(() => {
-        if (openMenu || !projectId) {
-            return
-        }
+        if (openMenu || !projectId) return
         if ((environments && environments.length === 0) || applications.length === 0) {
             return
         }
@@ -1116,9 +1151,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             abortControllerRef.current = null
             setWorkflowList({ loading: false, options: workflowOptions })
         } catch (err: any) {
-            if (err.errors && err.errors[0].code != 0) {
-                showError(err)
-            }
+            if (err.errors && err.errors[0].code != 0) showError(err)
             setWorkflowList({ loading: false, options: [] })
         }
     }
@@ -1151,11 +1184,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     function formatOptionLabelClusterEnv(option, { inputValue }) {
         return (
             <div
-                className={`flex left column ${
-                    option.value &&
-                    (option.value.startsWith('#') || option.value.startsWith('*')) &&
-                    'cluster-label-all'
-                }`}
+                className={
+                    'flex left column ' +
+                    (option.value &&
+                        (option.value.startsWith('#') || option.value.startsWith('*')) &&
+                        'cluster-label-all')
+                }
             >
                 {!inputValue ? (
                     <>
@@ -1180,12 +1214,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             <small
                                 className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}
                                 dangerouslySetInnerHTML={{
-                                    __html: `${option.clusterName}/${option.namespace}`.replace(
+                                    __html: (option.clusterName + '/' + option.namespace).replace(
                                         new RegExp(inputValue, 'gi'),
                                         (highlighted) => `<mark>${highlighted}</mark>`,
                                     ),
                                 }}
-                            />
+                            ></small>
                         )}
                     </>
                 )}
@@ -1200,7 +1234,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && option.value === HELM_APP_UNASSIGNED_PROJECT && (
                     <>
                         <small className="light-color">Apps without an assigned project</small>
-                        <div className="unassigned-project-border" />
+                        <div className="unassigned-project-border"></div>
                     </>
                 )}
             </div>
@@ -1214,8 +1248,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
         ) {
             return true
+        } else {
+            return false
         }
-        return false
     }
 
     function onFocus(name: 'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow') {
@@ -1226,7 +1261,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         changeOpenMenu('')
     }
     return (
-        <>
+        <React.Fragment>
             <Select
                 value={permission.team}
                 name="team"
@@ -1264,9 +1299,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     setProjectInput('')
                 }}
                 onInputChange={(value, action) => {
-                    if (action.action === 'input-change') {
-                        setProjectInput(value)
-                    }
+                    if (action.action === 'input-change') setProjectInput(value)
                 }}
             />
             {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS ? (
@@ -1310,9 +1343,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             setClusterInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') {
-                                setClusterInput(value)
-                            }
+                            if (action.action === 'input-change') setClusterInput(value)
                         }}
                     />
                     {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
@@ -1347,9 +1378,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             setEnvInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') {
-                                setEnvInput(value)
-                            }
+                            if (action.action === 'input-change') setEnvInput(value)
                         }}
                     />
                     {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
@@ -1393,15 +1422,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     inputValue={appInput}
                     menuPlacement="auto"
                     onBlur={(e) => {
-                        setAppInput('') // send selected options to setWorkflowsForJobs function
-                        if (permission.entity === EntityTypes.JOB && !jobsList.get(projectId)?.loading) {
+                        setAppInput('') //send selected options to setWorkflowsForJobs function
+                        if (permission.entity === EntityTypes.JOB && !jobsList.get(projectId)?.loading)
                             setWorkflowsForJobs(permission)
-                        }
                     }}
                     onInputChange={(value, action) => {
-                        if (action.action === 'input-change') {
-                            setAppInput(value)
-                        }
+                        if (action.action === 'input-change') setAppInput(value)
                     }}
                 />
                 {permission.entityNameError && <span className="form__error">{permission.entityNameError}</span>}
@@ -1442,9 +1468,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             setWorkflowInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') {
-                                setWorkflowInput(value)
-                            }
+                            if (action.action === 'input-change') setWorkflowInput(value)
                         }}
                     />
                     {permission.workflowError && <span className="form__error">{permission.workflowError}</span>}
@@ -1462,7 +1486,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     onChange={handleDirectPermissionChange}
                     isDisabled={!permission.team}
                     menuPlacement="auto"
-                    blurInputOnSelect
+                    blurInputOnSelect={true}
                     styles={{
                         ...tempMultiSelectStyles,
                         option: (base, state) => ({
@@ -1496,11 +1520,11 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 />
             </div>
             <CloseIcon className="pointer margin-top-6px" onClick={(e) => removeRow(index)} style={{ order: 5 }} />
-        </>
+        </React.Fragment>
     )
 }
 const workflowGroupHeading = (props) => {
-    return <GroupHeading {...props} hideClusterName />
+    return <GroupHeading {...props} hideClusterName={true} />
 }
 
 const AppOption = ({ props, permission }) => {
@@ -1577,11 +1601,12 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
         const chartGroupEditOptions: OptionType[] = useMemo(() => {
             if (chartPermission.action === ActionTypes.ADMIN) {
                 return [{ label: 'All Chart Groups', value: 'All charts' }]
+            } else {
+                return [
+                    { label: 'Deny', value: 'Deny' },
+                    { label: 'Specific Chart Groups', value: 'Specific Charts' },
+                ]
             }
-            return [
-                { label: 'Deny', value: 'Deny' },
-                { label: 'Specific Chart Groups', value: 'Specific Charts' },
-            ]
         }, [chartPermission.action])
 
         return (
@@ -1662,7 +1687,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                             ClearIndicator: null,
                             IndicatorSeparator: null,
                             MultiValueRemove,
-                            MultiValueContainer,
+                            MultiValueContainer: MultiValueContainer,
                             Option,
                         }}
                     />
@@ -1673,7 +1698,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
 )
 
 const ValueContainer = (props) => {
-    const { length } = props.getValue()
+    let length = props.getValue().length
     let optionLength = props.options.length
     if (props.selectProps.name === 'environment' || props.selectProps.name === 'workflow') {
         let _optionLength = 0
@@ -1715,18 +1740,18 @@ const ValueContainer = (props) => {
 }
 
 const clusterValueContainer = (props) => {
-    const { length } = props
+    let length = props
         .getValue()
-        .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*'))
+        .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length
     let count = ''
-    const totalEnv = props.options.reduce((len, cluster) => {
+    let totalEnv = props.options.reduce((len, cluster) => {
         len += cluster.options.length - 2
         return len
     }, 0)
     if (length === totalEnv) {
         count = 'All environments'
     } else {
-        count = `${length} environment${length !== 1 ? 's' : ''}`
+        count = length + ' environment' + (length !== 1 ? 's' : '')
     }
     return (
         <components.ValueContainer {...props}>
@@ -1758,7 +1783,7 @@ export const projectValueContainer = (props) => {
     )
 }
 
-export const GroupRow = ({ name, description, removeRow }) => {
+export function GroupRow({ name, description, removeRow }) {
     return (
         <>
             <div className="anchor">{name}</div>
@@ -1768,7 +1793,7 @@ export const GroupRow = ({ name, description, removeRow }) => {
     )
 }
 
-const NoUsers = ({ onClick }) => {
+function NoUsers({ onClick }) {
     const handleNoUserButton = () => {
         return (
             <button onClick={onClick} className="cta flex">
@@ -1782,7 +1807,7 @@ const NoUsers = ({ onClick }) => {
             image={EmptyImage}
             title={EMPTY_STATE_STATUS.NO_USER.TITLE}
             subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
-            isButtonAvailable
+            isButtonAvailable={true}
             renderButton={handleNoUserButton}
         />
     )
@@ -1797,7 +1822,7 @@ const renderEmptySSOMessage = (): JSX.Element => {
     )
 }
 
-const SSONotConfiguredState = () => {
+function SSONotConfiguredState() {
     return (
         <GenericEmptyState
             image={EmptyImage}
@@ -1811,7 +1836,7 @@ const SSONotConfiguredState = () => {
                         classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
                         linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
                         redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
-                        internalLink
+                        internalLink={true}
                         Icon={ErrorIcon}
                     />
                 </>
@@ -1820,7 +1845,7 @@ const SSONotConfiguredState = () => {
     )
 }
 
-const NoGroups = ({ onClick }) => {
+function NoGroups({ onClick }) {
     const handleButton = () => {
         return (
             <button onClick={onClick} className="cta flex">
@@ -1834,13 +1859,13 @@ const NoGroups = ({ onClick }) => {
             image={EmptyImage}
             title={EMPTY_STATE_STATUS.NO_GROUPS.TITLE}
             subTitle={EMPTY_STATE_STATUS.NO_GROUPS.SUBTITLE}
-            isButtonAvailable
+            isButtonAvailable={true}
             renderButton={handleButton}
         />
     )
 }
 
-const SearchEmpty = ({ searchString, setSearchString }) => {
+function SearchEmpty({ searchString, setSearchString }) {
     const handleSearchEmptyButton = () => {
         return (
             <button onClick={(e) => setSearchString('')} className="cta secondary">
@@ -1856,10 +1881,10 @@ const SearchEmpty = ({ searchString, setSearchString }) => {
             subTitle={
                 <>
                     We couldn’t find any result for
-                    <b>{searchString}</b>
+                    {<b>{searchString}</b>}
                 </>
             }
-            isButtonAvailable
+            isButtonAvailable={true}
             renderButton={handleSearchEmptyButton}
         />
     )
@@ -1873,9 +1898,9 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
                     (role) =>
                         role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
                 )
+            } else {
+                return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
             }
-            return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
-
         case EntityTypes.CLUSTER:
             return dataList.filter((role) => role.entity === EntityTypes.CLUSTER)
         case EntityTypes.CHART_GROUP:

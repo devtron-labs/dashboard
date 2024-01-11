@@ -1,13 +1,14 @@
-import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
+import React, { lazy, useState, useEffect, Suspense, useContext, createContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
-import { showError, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
-import arrowTriangle, { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { showError, Progressing, Toggle, ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
-import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
+import { getHostURLConfiguration } from '../../services/service'
+import { getAppCheckList } from '../../services/service'
 import './globalConfigurations.scss'
 import {
     ModuleNameMap,
@@ -19,9 +20,12 @@ import {
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
+import CodeEditor from '../CodeEditor/CodeEditor'
+import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -32,13 +36,12 @@ const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
-const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
-const CodeEditor = lazy(() => import('../CodeEditor/CodeEditor'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
+const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 
 export default function GlobalConfiguration(props) {
@@ -91,16 +94,16 @@ export default function GlobalConfiguration(props) {
     function fetchCheckList(): void {
         getAppCheckList()
             .then((response) => {
-                const appChecklist = response.result.appChecklist || {}
-                const chartChecklist = response.result.chartChecklist || {}
-                const appStageArray: number[] = Object.values(appChecklist)
-                const chartStageArray: number[] = Object.values(chartChecklist)
-                const appStageCompleted: number = appStageArray.reduce((item, sum) => {
-                    sum += item
+                let appChecklist = response.result.appChecklist || {}
+                let chartChecklist = response.result.chartChecklist || {}
+                let appStageArray: number[] = Object.values(appChecklist)
+                let chartStageArray: number[] = Object.values(chartChecklist)
+                let appStageCompleted: number = appStageArray.reduce((item, sum) => {
+                    sum = sum + item
                     return sum
                 }, 0)
-                const chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
-                    sum += item
+                let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+                    sum = sum + item
                     return sum
                 }, 0)
 
@@ -122,35 +125,39 @@ export default function GlobalConfiguration(props) {
         <main className="global-configuration">
             <PageHeader headerName="Global configurations" />
             <Router history={useHistory()}>
-                <section className="global-configuration__navigation">
-                    <NavItem serverMode={serverMode} />
-                </section>
-                <section className="global-configuration__component-wrapper">
-                    <Suspense fallback={<Progressing pageLoader />}>
-                        <ErrorBoundary>
-                            <Body
-                                isSuperAdmin={props.isSuperAdmin}
-                                getHostURLConfig={getHostURLConfig}
-                                checkList={checkList}
-                                serverMode={serverMode}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                            />
-                        </ErrorBoundary>
-                    </Suspense>
-                </section>
+                <GlobalConfigurationProvider>
+                    <section className="global-configuration__navigation">
+                        <NavItem serverMode={serverMode} />
+                    </section>
+                    <section className="global-configuration__component-wrapper">
+                        <Suspense fallback={<Progressing pageLoader />}>
+                            <ErrorBoundary>
+                                <Body
+                                    isSuperAdmin={props.isSuperAdmin}
+                                    getHostURLConfig={getHostURLConfig}
+                                    checkList={checkList}
+                                    serverMode={serverMode}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                />
+                            </ErrorBoundary>
+                        </Suspense>
+                    </section>
+                </GlobalConfigurationProvider>
             </Router>
         </main>
     )
 }
 
-const NavItem = ({ serverMode }) => {
+function NavItem({ serverMode }) {
     const location = useLocation()
     const { installedModuleMap } = useContext(mainContext)
     const [, setForceUpdateTime] = useState(Date.now())
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
-        Authorization: !location.pathname.startsWith('/global-config/auth'),
+        Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
     })
+    const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
+
     let moduleStatusTimer = null
     const ConfigRequired = [
         {
@@ -167,7 +174,7 @@ const NavItem = ({ serverMode }) => {
         },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
-            name: `Clusters${serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'}`,
+            name: 'Clusters' + (serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'),
             href: URLS.GLOBAL_CONFIG_CLUSTER,
             component: ClusterList,
             isAvailableInEA: true,
@@ -190,12 +197,17 @@ const NavItem = ({ serverMode }) => {
             component: CustomChartList,
             isAvailableInEA: false,
         },
-        { name: 'SSO Login Services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {
             name: 'Authorization',
             href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
             preventDefaultKey: URLS.GLOBAL_CONFIG_AUTH,
             group: [
+                {
+                    name: 'SSO Login Services',
+                    dataTestId: 'authorization-sso-login-link',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/login-service`,
+                    isAvailableInEA: true,
+                },
                 {
                     name: 'User Permissions',
                     dataTestId: 'authorization-user-permissions-link',
@@ -258,28 +270,57 @@ const NavItem = ({ serverMode }) => {
     }
 
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
+        const onTippyClose = () => {
+            // Resetting the tippy state
+            setTippyConfig({
+                showTippy: false
+            })
+        }
+
         return (
-            <NavLink
-                to={`${route.href}`}
-                key={route.href}
-                activeClassName="active-route"
-                data-testid={route.dataTestId}
-                className={`${
-                    route.name === 'API tokens' &&
-                    location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                        ? 'active-route'
-                        : ''
-                }`}
-                onClick={(e) => {
-                    if (!preventOnClickOp) {
-                        handleGroupCollapsedState(e, route)
-                    }
-                }}
+            // FIXME: Reuse the renderNavItem function for all nav item to extend the tippy support to all links
+            <ConditionalWrap
+                condition={tippyConfig.showTippy && tippyConfig.showOnRoute === route.href}
+                wrap={(children) => (
+                    <TippyCustomized
+                        theme={TippyTheme.black}
+                        className="w-300 ml-2"
+                        placement="right"
+                        showCloseButton
+                        trigger="manual"
+                        interactive
+                        showOnCreate
+                        arrow
+                        animation="shift-toward-subtle"
+                        onClose={onTippyClose}
+                        {...tippyConfig}
+                    >
+                        {children}
+                    </TippyCustomized>
+                )}
             >
-                <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
-                    <div>{route.name}</div>
-                </div>
-            </NavLink>
+                <NavLink
+                    to={`${route.href}`}
+                    key={`${route.name}-${route.href}`}
+                    activeClassName="active-route"
+                    data-testid={route.dataTestId}
+                    className={`${
+                        route.name === 'API tokens' &&
+                        location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
+                            ? 'active-route'
+                            : ''
+                    }`}
+                    onClick={(e) => {
+                        if (!preventOnClickOp) {
+                            handleGroupCollapsedState(e, route)
+                        }
+                    }}
+                >
+                    <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
+                        <div>{route.name}</div>
+                    </div>
+                </NavLink>
+            </ConditionalWrap>
         )
     }
 
@@ -389,17 +430,15 @@ const NavItem = ({ serverMode }) => {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {CatalogFramework && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                            key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Catalog Framework</div>
-                        </NavLink>
-                    )}
+                    {CatalogFramework && <NavLink
+                        to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                        key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                        activeClassName="active-route"
+                    >
+                        <div className="flexbox flex-justify">Catalog Framework</div>
+                    </NavLink>}
 
-                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES &&  (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -436,23 +475,32 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Filter condition</div>
                         </NavLink>
                     )}
+                    {LockConfiguration && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Lock Deployment config</div>
+                        </NavLink>
+                    )}
                 </>
             )}
         </div>
     )
 }
 
-const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
+function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) {
     const location = useLocation()
 
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
-        }
-        if (serverMode === SERVER_MODE.EA_ONLY) {
+        } else if (serverMode === SERVER_MODE.EA_ONLY) {
             return URLS.GLOBAL_CONFIG_PROJECT
+        } else {
+            return URLS.GLOBAL_CONFIG_HOST_URL
         }
-        return URLS.GLOBAL_CONFIG_HOST_URL
     }
 
     return (
@@ -530,13 +578,6 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CustomChartList />
                 </Route>,
                 <Route
-                    key={URLS.GLOBAL_CONFIG_LOGIN}
-                    path={URLS.GLOBAL_CONFIG_LOGIN}
-                    render={(props) => {
-                        return <SSOLogin {...props} />
-                    }}
-                />,
-                <Route
                     key={URLS.GLOBAL_CONFIG_AUTH}
                     path={URLS.GLOBAL_CONFIG_AUTH}
                     render={(props) => {
@@ -586,12 +627,20 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <FilterConditions isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
+            {LockConfiguration && (
+                <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
+                    <LockConfiguration
+                        isSuperAdmin={isSuperAdmin}
+                        CodeEditor={CodeEditor}
+                    />
+                </Route>
+            )}
             <Redirect to={defaultRoute()} />
         </Switch>
     )
 }
 
-const Logo = ({ src = '', style = {}, className = '', children = null }) => {
+function Logo({ src = '', style = {}, className = '', children = null }) {
     return (
         <>
             {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
@@ -600,7 +649,7 @@ const Logo = ({ src = '', style = {}, className = '', children = null }) => {
     )
 }
 
-const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) => {
+function Title({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) {
     return (
         <div className="flex column left">
             <div className={`list__title ${className}`} style={style}>
@@ -611,7 +660,7 @@ const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...props }) => {
+function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...props }) {
     const handleToggle = () => {
         if (!isButtonDisabled) {
             onSelect(!enabled)
@@ -628,10 +677,8 @@ const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...pr
     )
 }
 
-const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
-    if (React.isValidElement(src)) {
-        return src
-    }
+function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
+    if (React.isValidElement(src)) return src
     return (
         <img
             {...props}
@@ -644,7 +691,7 @@ const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...
     )
 }
 
-export const List = ({ dataTestId = '', children = null, className = '', ...props }) => {
+export function List({ dataTestId = '', children = null, className = '', ...props }) {
     return (
         <div className={`list ${className}`} {...props} data-testid={dataTestId}>
             {children}
@@ -664,21 +711,21 @@ function handleError(error: any): any[] {
     return error
 }
 
-export const ProtectedInput = ({
+export function ProtectedInput({
     name,
     value,
     error,
     onChange,
-    label = '',
+    label= '',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-    onBlur = (e) => {},
+    onBlur= (e) => {},
     isRequiredField = false,
-}: ProtectedInputType) => {
+}: ProtectedInputType) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -686,10 +733,7 @@ export const ProtectedInput = ({
 
     return (
         <div className="flex column left top ">
-            <label
-                htmlFor=""
-                className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}
-            >
+            <label htmlFor="" className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}>
                 {label}
             </label>
             <div className="dc__position-rel w-100">
@@ -725,13 +769,7 @@ export const ProtectedInput = ({
     )
 }
 
-export const ShowHide = ({
-    hidden = true,
-    className = '',
-    onClick = null,
-    defaultOnClick = null,
-    disabled = false,
-}) => {
+export function ShowHide({ hidden = true, className = '', onClick = null, defaultOnClick = null, disabled = false }) {
     return hidden ? (
         <svg
             xmlns="http://www.w3.org/2000/svg"

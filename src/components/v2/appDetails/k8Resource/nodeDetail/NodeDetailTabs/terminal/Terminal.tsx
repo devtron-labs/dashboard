@@ -10,6 +10,7 @@ import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterN
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
+import { restrictXtermAccessibilityWidth } from './terminal.utils'
 
 let clusterTimeOut
 
@@ -51,6 +52,7 @@ export default function TerminalView({
         }
         if (sessionId && terminalRef.current) {
             setIsReconnection(true)
+            restrictXtermAccessibilityWidth()
             postInitialize(sessionId)
         } else {
             setSocketConnection(SocketConnectionType.DISCONNECTED)

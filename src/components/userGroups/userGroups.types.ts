@@ -51,6 +51,9 @@ export interface CollapsedUserOrGroupProps {
     updateCallback: (index: number, payload: any) => void
     deleteCallback: (index: number) => void
     createCallback: (payload: any) => void
+    isAutoAssignFlowEnabled: boolean
+    collapsed: boolean
+    setCollapsed: (id?: string) => void
 }
 interface RoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
@@ -130,6 +133,10 @@ export interface CreateGroup {
     name: string
     description: string
     roleFilters: APIRoleFilter[]
+    /**
+     * If true, the user will be assigned super admin role
+     */
+    superAdmin: boolean
 }
 
 export interface K8sPermissionFilter {

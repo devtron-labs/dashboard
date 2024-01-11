@@ -27,12 +27,12 @@ import { generateEphemeralUrl } from './nodeDetail.api'
 import { DropdownIndicator, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
-import { SwitchItemValues } from '../../../../login/SSOLogin'
 import { Options } from '../../appDetails.type'
 import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import { selectStyles } from './nodeDetail.util'
+import { SwitchItemValues } from '../../../../login/constants'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,

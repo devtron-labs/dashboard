@@ -46,6 +46,8 @@ export const Routes = {
 
     DEPLOYMENT_TEMPLATE: 'app/template',
     DEPLOYMENT_TEMPLATE_UPDATE: 'app/template/update',
+    LOCKED_CONFIG_PROTECTED: 'draft/config/lock/validate',
+    LOCKED_CONFIG_NON_PROTECTED: 'app/template/validate',
 
     DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
     DEPLOYMENT_OPTIONS: 'app/template/list',

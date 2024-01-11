@@ -1,6 +1,6 @@
 import { get, post, put, trash, sortCallback, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { DELETE_ACTION, Routes } from '../../config'
-import { handleUTCTime } from '../common'
+import { getAPIOptionsWithTriggerTimeout, handleUTCTime } from '../common'
 import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
 
@@ -26,11 +26,13 @@ export function getInstalledAppDetail(installedAppId, envId) {
 }
 
 export function installChart(request) {
-    return post(`app-store/deployment/application/install`, request)
+    const options = getAPIOptionsWithTriggerTimeout()
+    return post(`app-store/deployment/application/install`, request, options)
 }
 
 export function updateChart(request) {
-    return put(Routes.UPDATE_APP_API, request)
+    const options = getAPIOptionsWithTriggerTimeout()
+    return put(Routes.UPDATE_APP_API, request, options)
 }
 
 export function deleteInstalledChart(
@@ -128,13 +130,15 @@ interface ChartValuesCreate {
 }
 
 export function createChartValues(request: ChartValuesCreate) {
+    const options = getAPIOptionsWithTriggerTimeout()
     const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES}`
-    return post(URL, request)
+    return post(URL, request, options)
 }
 
 export function updateChartValues(request) {
+    const options = getAPIOptionsWithTriggerTimeout()
     const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES}`
-    return put(URL, request)
+    return put(URL, request, options)
 }
 
 export function deleteChartValues(chartId: number): Promise<any> {
@@ -222,8 +226,9 @@ export interface DeployableCharts {
 }
 
 export function deployChartGroup(projectId: number, charts: DeployableCharts[], chartGroupId?: number) {
+    const options = getAPIOptionsWithTriggerTimeout()
     // chartGroupId empty when normal deployment
-    return post(`app-store/group/install`, { projectId, chartGroupId, charts })
+    return post(`app-store/group/install`, { projectId, chartGroupId, charts }, options)
 }
 
 interface appName {
