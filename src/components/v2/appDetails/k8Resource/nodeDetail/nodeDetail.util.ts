@@ -397,7 +397,7 @@ export const getTrimmedManifestData = (
     manifestData: ManifestData,
     returnAsString: boolean = false,
 ): ManifestData | string => {
-    if (manifestData[MANIFEST_KEY_FIELDS?.METADATA]) {
+    if (manifestData[MANIFEST_KEY_FIELDS.METADATA]) {
         const { [MANIFEST_KEY_FIELDS.MANAGED_FIELDS]: _, ...metadata } = manifestData[MANIFEST_KEY_FIELDS.METADATA]
         const trimmedManifestData = {...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata}
 
@@ -410,10 +410,9 @@ export const getTrimmedManifestData = (
 export const getDecodedEncodedSecretManifestData = (
     manifestData: ManifestData,
     returnAsString: boolean = false,
-    showDecodedData?: boolean,
     isEncoded?: boolean,
 ): ManifestData | string => {
-    if (manifestData && manifestData[MANIFEST_KEY_FIELDS.DATA]) {
+    if (manifestData && manifestData?.MANIFEST_KEY_FIELDS.DATA) {
         const encodedData = {
             ...manifestData,
             [MANIFEST_KEY_FIELDS.DATA]: decode(manifestData[MANIFEST_KEY_FIELDS.DATA], isEncoded),

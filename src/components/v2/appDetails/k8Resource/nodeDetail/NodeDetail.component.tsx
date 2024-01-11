@@ -118,9 +118,9 @@ function NodeDetailComponent({
             )
             const _resourceContainers = []
             if (result?.manifestResponse?.manifest?.spec) {
-                if (Array.isArray(result.manifest.spec.containers)) {
+                if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
                     _resourceContainers.push(
-                        ...result.manifest.spec.containers.map((_container) => ({
+                        ...result.manifestResponse.manifest.spec.containers.map((_container) => ({
                             name: _container.name,
                             isInitContainer: false,
                             isEphemeralContainer: false,
@@ -128,9 +128,9 @@ function NodeDetailComponent({
                     )
                 }
 
-                if (Array.isArray(result.manifest.spec.initContainers)) {
+                if (Array.isArray(result.manifestResponse.manifest.spec.initContainers)) {
                     _resourceContainers.push(
-                        ...result.manifest.spec.initContainers.map((_container) => ({
+                        ...result.manifestResponse.manifest.spec.initContainers.map((_container) => ({
                             name: _container.name,
                             isInitContainer: true,
                             isEphemeralContainer: false,

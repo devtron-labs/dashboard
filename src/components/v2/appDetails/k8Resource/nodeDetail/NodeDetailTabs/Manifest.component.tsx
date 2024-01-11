@@ -17,7 +17,7 @@ import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { Checkbox, DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -303,25 +303,25 @@ function ManifestComponent({
         updateEditor(_tab.name)
     }
 
-    const onChangeToggleShowDecodedValue = (codeEditorData) => {
+    const onChangeToggleShowDecodedValue = () => {
         setShowDecodedData(!showDecodedData)
-        const jsonManifestData = YAML.parse(codeEditorData) 
+        const jsonManifestData = YAML.parse(trimedManifestEditorData) 
         if(!showDecodedData){
             setTrimedManifestEditorData(getDecodedEncodedSecretManifestData(jsonManifestData, true , showDecodedData) as string)
         } else {
-            setTrimedManifestEditorData(getDecodedEncodedSecretManifestData(jsonManifestData, true, showDecodedData, true) as string)
+            setTrimedManifestEditorData(getDecodedEncodedSecretManifestData(jsonManifestData, true, true) as string)
         }
     }
 
-    const renderShowDecodedValueCheckbox = (codeEditorData) => {
+    const renderShowDecodedValueCheckbox = () => {
         return (
             <div className="flex left ml-8">
                 <Checkbox
                     rootClassName="mb-0-imp h-18"
                     id="showDecodedValue"
                     isChecked={showDecodedData}
-                    onChange={() => onChangeToggleShowDecodedValue(codeEditorData)}
-                    value="CHECKED"
+                    onChange={onChangeToggleShowDecodedValue}
+                    value={CHECKBOX_VALUE.CHECKED}
                 />
                 Show decoded Value
             </div>
@@ -446,7 +446,9 @@ function ManifestComponent({
                                         }
                                         className="flex left"
                                     >
-                                        {!isEditmode && secretViewAccess && renderShowDecodedValueCheckbox(trimedManifestEditorData)}
+                                        {/* {!isEditmode && secretViewAccess && renderShowDecodedValueCheckbox()} */}
+                                        { renderShowDecodedValueCheckbox()}
+
                                     </CodeEditor.Information>
                                 )}
                                 {activeTab === 'Compare' && (
