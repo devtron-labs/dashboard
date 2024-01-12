@@ -8,7 +8,7 @@ import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
 import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 
-const Title = () => {
+const Title: FunctionComponent = () => {
     return (
         <Tippy
             className="default-tt w-200"
