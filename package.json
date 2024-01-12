@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.51",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.53",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
         "@rjsf/validator-ajv8": "^5.13.3",
@@ -55,8 +55,9 @@
         "yamljs": "^0.3.0"
     },
     "scripts": {
-        "lint": "eslint src/**/*.tsx",
-        "lint-fix": "eslint --fix src/**/*.tsx",
+        "prepare": "husky install",
+        "lint": "tsc --noEmit && eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+        "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "react-app-rewired start",
         "build": "react-app-rewired build",
         "build-light": "GENERATE_SOURCEMAP=false react-app-rewired build",
@@ -66,10 +67,8 @@
         "test-coverage": "npm run test -- --coverage --watchAll=false",
         "test:ci": "./node_modules/.bin/react-app-rewired test --watchAll=false --ci --json --coverage --testLocationInResults --outputFile=report.json",
         "eject": "react-app-rewired eject",
-        "jest": "jest"
-    },
-    "eslintConfig": {
-        "extends": "react-app"
+        "jest": "jest",
+        "lint-staged": "lint-staged"
     },
     "browserslist": [
         ">0.2%",
@@ -91,15 +90,22 @@
         "@types/react-transition-group": "^4.4.4",
         "@types/recharts": "^1.8.23",
         "@types/recompose": "^0.30.10",
-        "@typescript-eslint/eslint-plugin": "^5.15.0",
-        "@typescript-eslint/parser": "^5.15.0",
+        "@typescript-eslint/eslint-plugin": "^4.33.0",
+        "@typescript-eslint/parser": "^4.33.0",
         "env-cmd": "10.1.0",
+        "eslint": "^6.1.0",
+        "eslint-config-airbnb": "^18.2.1",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-jsx-a11y": "^6.4.1",
+        "eslint-plugin-react": "^7.22.0",
+        "eslint-plugin-react-hooks": "^4.2.0",
         "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-prettier": "^3.4.1",
         "husky": "^7.0.4",
         "jest-extended": "^2.0.0",
         "jest-junit": "^13.0.0",
         "jsdom-worker": "^0.2.1",
+        "lint-staged": "12.5.0",
         "mock-socket": "^9.2.1",
         "prettier": "^2.6.0",
         "react-scripts": "3.2.0",
@@ -128,14 +134,9 @@
             "monaco-yaml": "<rootDir>/node_modules/react-monaco-editor"
         }
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "yarn eslint"
-        }
-    },
     "resolutions": {
-        "**/@typescript-eslint/eslint-plugin": "^5.15.0",
-        "**/@typescript-eslint/parser": "^5.15.0",
+        "**/@typescript-eslint/eslint-plugin": "^4.33.0",
+        "**/@typescript-eslint/parser": "^4.33.0",
         "react-error-overlay": "6.0.9"
     }
 }
