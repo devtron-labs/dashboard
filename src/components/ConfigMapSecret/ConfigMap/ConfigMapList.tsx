@@ -205,6 +205,7 @@ export default function ConfigMapList({
                     </div>
                 </div>
             </div>
+
             {DraftComments && showComments && selectedDraft && (
                 <DraftComments
                     draftId={selectedDraft.draftId}
@@ -212,9 +213,12 @@ export default function ConfigMapList({
                     toggleDraftComments={toggleDraftComments}
                 />
             )}
-            <div className="variables-widget-position-cmcs">
-                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
-            </div>
+
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <div className="variables-widget-position-cmcs">
+                    <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
+                </div>
+            )}
         </div>
     )
 }

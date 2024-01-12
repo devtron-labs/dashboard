@@ -880,9 +880,12 @@ export default function DeploymentConfig({
             }`}
             onSubmit={handleSaveChanges}
         >
-            <div className="variables-widget-position">
-                <FloatingVariablesSuggestions zIndex={100} appId={appId} />
-            </div>
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <div className="variables-widget-position">
+                    <FloatingVariablesSuggestions zIndex={100} appId={appId} />
+                </div>
+            )}
+
             <DeploymentTemplateOptionsTab
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
