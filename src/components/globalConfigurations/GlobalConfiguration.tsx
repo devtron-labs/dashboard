@@ -38,6 +38,8 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
+// NOTE: Might import from index itself
+const BuildInfra = lazy(() => import('../../GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
@@ -484,6 +486,16 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Lock Deployment config</div>
                         </NavLink>
                     )}
+                    {/* TODO: Ask for order in BuildInfra */}
+                    {BuildInfra && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Build Infra</div>
+                        </NavLink>
+                    )}
                 </>
             )}
         </div>
@@ -601,6 +613,13 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                     <ExternalLinks />
                 </Route>,
+                ...(serverMode !== SERVER_MODE.EA_ONLY && BuildInfra
+                    ? [
+                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                              <BuildInfra />
+                          </Route>,
+                      ]
+                    : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
@@ -629,10 +648,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {LockConfiguration && (
                 <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration
-                        isSuperAdmin={isSuperAdmin}
-                        CodeEditor={CodeEditor}
-                    />
+                    <LockConfiguration isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
