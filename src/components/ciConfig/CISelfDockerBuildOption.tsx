@@ -1,4 +1,6 @@
-import React from 'react'
+// Disabling due to react select issue
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import React, { FunctionComponent } from 'react'
 import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
@@ -6,7 +8,7 @@ import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuil
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CISelfDockerBuildOptionProps } from './types'
 
-export default function CISelfDockerBuildOption({
+const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> = ({
     readOnly,
     sourceMaterials,
     readonlyDockerfileRelativePath,
@@ -18,25 +20,23 @@ export default function CISelfDockerBuildOption({
     handleOnChangeConfig,
     handleFileLocationChange,
     dockerfileError,
-}: CISelfDockerBuildOptionProps) {
+}) => {
     if (readOnly) {
         return (
             <div className={`${configOverrideView ? 'mb-12' : ''}  form-row__docker`}>
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label className="form__label">Repository containing Dockerfile</label>
+                    <span className="form__label">Repository containing Dockerfile</span>
 
                     <div className="flex left">
                         {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
                         <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
                     </div>
 
-                    {repositoryError && <label className="form__error">{repositoryError}</label>}
+                    {repositoryError && <span className="form__error">{repositoryError}</span>}
                 </div>
 
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label htmlFor="" className="form__label dc__required-field">
-                        Dockerfile Path (Relative)
-                    </label>
+                    <span className="form__label dc__required-field">Dockerfile Path (Relative)</span>
 
                     <span className="fs-14 fw-4 lh-20 cn-9">{readonlyDockerfileRelativePath}</span>
                 </div>
@@ -52,7 +52,6 @@ export default function CISelfDockerBuildOption({
                 <ReactSelect
                     className="m-0"
                     classNamePrefix="build-config__select-repository-containing-dockerfile"
-                    tabIndex={3}
                     isMulti={false}
                     isClearable={false}
                     options={sourceMaterials}
@@ -96,7 +95,6 @@ export default function CISelfDockerBuildOption({
                     </Tippy>
 
                     <CustomInput
-                        tabIndex={4}
                         rootClassName="file-name"
                         data-testid="dockerfile-path-text-box"
                         placeholder="Dockerfile"
@@ -112,3 +110,5 @@ export default function CISelfDockerBuildOption({
         </div>
     )
 }
+
+export default CISelfDockerBuildOption
