@@ -74,7 +74,7 @@ export default defineConfig({
             proxy: {
                 '/orchestrator': {
                     // @TODO: Change target to a default value
-                    target: 'https://devtron-badal.devtron.info/',
+                    target: 'https://devtron-6.devtron.info/',
                     changeOrigin: true,
                 },
                 '/grafana': 'https://demo.devtron.info/',
