@@ -21,6 +21,7 @@ import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
 import { URLS } from '../../../config'
+import { OrderBy } from '../../app/list/types'
 
 export function K8SResourceList({
     selectedResource,
@@ -60,7 +61,9 @@ export function K8SResourceList({
     const [pageSize, setPageSize] = useState(100)
     const resourceListRef = useRef<HTMLDivElement>(null)
     const showPaginatedView = resourceList?.data?.length >= 100
-
+    const [sortColumn, setSortColumn] = useState<string>(resourceList?.headers.includes('name') ? 'name' : 'namespace');
+    const [sortOrder, setSortOrder] = useState<string>(OrderBy.DESC)
+    
     useEffect(() => {
         if (resourceList?.headers.length) {
             /**
@@ -256,36 +259,71 @@ export function K8SResourceList({
         }
     }
 
+    const renderSortDirection = (column: string): JSX.Element => {
+        if (sortColumn === column) {
+            return <span className={`sort-icon ${sortOrder === OrderBy.DESC ? 'desc' : ''} ml-4`}></span>
+        } else {
+            return <span className="sort-column dc__opacity-0_5 ml-4"></span>
+        }
+    }
+
     const changePageSize = (size: number) => {
         setPageSize(size)
         setResourceListOffset(0)
     }
 
     const renderResourceList = (): JSX.Element => {
+        const handleColumnSort = (column: string) => {
+            // Toggle the sorting order if clicking on the same column
+            if (sortColumn === column) {
+                setSortOrder(sortOrder === OrderBy.ASC ? OrderBy.DESC : OrderBy.ASC);
+            } else {
+                // Set the new sorting column and reset the sorting order
+                setSortColumn(column);
+                setSortOrder(OrderBy.ASC);
+            }
+            // Reset the paginator when changing the sorting column
+            resetPaginator();
+        };
+        const sortedResourceList = [...filteredResourceList].sort((a, b) => {
+            const aValue = a[sortColumn];
+            const bValue = b[sortColumn];
+    
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                return sortOrder === OrderBy.ASC ? aValue - bValue : bValue - aValue;
+            } else {
+                const compareResult = String(aValue).localeCompare(String(bValue));
+                return sortOrder === OrderBy.ASC ? compareResult : -compareResult;
+            }
+        });
         return (
             <div
                 ref={resourceListRef}
                 className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, syncError)}
             >
-                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div className="h-42 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
                             key={columnName}
-                            className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
+                            className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right cursor ${
                                 columnName === 'name'
                                     ? `${
                                           fixedNodeNameColumn
-                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
+                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom'
                                               : ''
                                       } w-350 pl-20`
                                     : 'w-150'
                             }`}
+                            onClick={() => handleColumnSort(columnName)}
                         >
-                            {columnName}
+                            <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
+                                <span className="dc__inline-block dc__ellipsis-right mw-85px ">{columnName}</span>
+                            </Tippy>
+                            {renderSortDirection(columnName)}
                         </div>
                     ))}
                 </div>
-                {filteredResourceList
+                {sortedResourceList
                     .slice(resourceListOffset, resourceListOffset + pageSize)
                     .map((clusterData, index) => renderResourceRow(clusterData, index))}
             </div>

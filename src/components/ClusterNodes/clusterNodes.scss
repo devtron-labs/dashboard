@@ -13,6 +13,28 @@
         }
     }
 }
+.scrollable-node-list {
+    overflow: auto;
+    width: calc(100vw - 277px);
+    height: calc(100vh - 144px);
+    &.paginated-list-view {
+        height: calc(100vh - 201px);
+    }
+
+    &.sync-error {
+        height: calc(100vh - 176px);
+    }
+
+    &.paginated-list-view-with-sync-error {
+        height: calc(100vh - 233px);
+    }
+    .list-header {
+        width: max-content;
+        min-width: calc(100vw - 277px);
+        top: 0;
+        z-index: 3;
+    }
+}
 
 .node-list {
     .list-min-height {
