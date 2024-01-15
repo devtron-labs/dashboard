@@ -1,11 +1,17 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { DockerArgsAction, DockerArgsItemProps, DockerArgsProps } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 
-function DockerArgsItem({ arg, index, handleDockerArgsUpdate, fromBuildPack, readOnly }: DockerArgsItemProps) {
+const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
+    arg,
+    index,
+    handleDockerArgsUpdate,
+    fromBuildPack,
+    readOnly,
+}) => {
     const handleDockerArgKeyUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
         const argData = {
             index,
@@ -62,6 +68,7 @@ function DockerArgsItem({ arg, index, handleDockerArgsUpdate, fromBuildPack, rea
                     className="dc__no-background flexbox dc__align-start dc__no-border dc__outline-none-imp"
                     onClick={handleRemoveDockerArg}
                     type="button"
+                    aria-label="remove-docker-args"
                 >
                     <Close className="icon-dim-24 mt-6 ml-6" />
                 </button>
@@ -70,7 +77,7 @@ function DockerArgsItem({ arg, index, handleDockerArgsUpdate, fromBuildPack, rea
     )
 }
 
-export default function DockerArgs({ args, handleDockerArgsUpdate, fromBuildPack, readOnly }: DockerArgsProps) {
+const DockerArgs: FunctionComponent<DockerArgsProps> = ({ args, handleDockerArgsUpdate, fromBuildPack, readOnly }) => {
     const handleAddDockerArgs = () => {
         handleDockerArgsUpdate({ action: DockerArgsAction.ADD })
     }
@@ -125,6 +132,7 @@ export default function DockerArgs({ args, handleDockerArgsUpdate, fromBuildPack
             {args.length > 0 &&
                 args.map((arg, index) => (
                     <DockerArgsItem
+                        // eslint-disable-next-line react/no-array-index-key
                         key={`build-${index}`}
                         index={index}
                         arg={arg}
@@ -136,3 +144,5 @@ export default function DockerArgs({ args, handleDockerArgsUpdate, fromBuildPack
         </div>
     )
 }
+
+export default DockerArgs

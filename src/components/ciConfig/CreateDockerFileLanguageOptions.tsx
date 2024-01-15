@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
@@ -8,7 +8,7 @@ import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
 import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 
-function Title() {
+const Title: FunctionComponent = () => {
     return (
         <Tippy
             className="default-tt w-200"
@@ -21,7 +21,7 @@ function Title() {
     )
 }
 
-function ResetEditorChanges({ resetChanges, editorData, editorValue }: ResetEditorChangesProps) {
+const ResetEditorChanges: FunctionComponent<ResetEditorChangesProps> = ({ resetChanges, editorData, editorValue }) => {
     const showReset = !editorData?.fetching && editorData?.data !== editorValue
     if (!showReset) {
         return null
@@ -44,7 +44,7 @@ function ResetEditorChanges({ resetChanges, editorData, editorValue }: ResetEdit
     )
 }
 
-export default function CreateDockerFileLanguageOptions({
+export const CreateDockerFileLanguageOptions: FunctionComponent<CreateDockerFileLanguageOptionsProps> = ({
     editorData,
     editorValue,
     handleGitRepoChange,
@@ -59,7 +59,7 @@ export default function CreateDockerFileLanguageOptions({
     handleLanguageSelection,
     handleFrameworkSelection,
     readOnly,
-}: CreateDockerFileLanguageOptionsProps) {
+}) => {
     const selectedLanguageFrameworks = languageFrameworks?.get(selectedLanguage?.value)
 
     if (readOnly) {
@@ -103,7 +103,6 @@ export default function CreateDockerFileLanguageOptions({
             <Title />
 
             <ReactSelect
-                tabIndex={3}
                 isSearchable={false}
                 options={materialOptions}
                 getOptionLabel={(option) => `${option.name}`}
@@ -124,7 +123,6 @@ export default function CreateDockerFileLanguageOptions({
 
             <ReactSelect
                 classNamePrefix="select-create-dockerfile-language-dropdown"
-                tabIndex={3}
                 options={languages}
                 value={selectedLanguage}
                 isSearchable={false}
@@ -144,7 +142,6 @@ export default function CreateDockerFileLanguageOptions({
                     <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Framework</span>
 
                     <ReactSelect
-                        tabIndex={3}
                         options={selectedLanguageFrameworks || []}
                         value={selectedFramework}
                         classNamePrefix="build-config__select-framework"
@@ -164,3 +161,5 @@ export default function CreateDockerFileLanguageOptions({
         </div>
     )
 }
+
+export default CreateDockerFileLanguageOptions

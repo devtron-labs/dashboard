@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+// Disabling for ReactSelect
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { CustomInput, OptionType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
@@ -9,7 +11,7 @@ import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { RootBuildContext } from './ciConfigConstant'
 
-function getBuildContextAdditionalContent() {
+const getBuildContextAdditionalContent = () => {
     return (
         <div className="p-12 fs-13">
             To build all files from the root, use (.) as the build context, or set build context by referring a
@@ -22,7 +24,7 @@ function getBuildContextAdditionalContent() {
     )
 }
 
-function InfoCard() {
+const InfoCard: FunctionComponent = () => {
     return (
         <div className="flex row ml-0">
             <TippyCustomized
@@ -46,7 +48,7 @@ function InfoCard() {
     )
 }
 
-export default function BuildContext({
+const BuildContext: FunctionComponent<BuildContextProps> = ({
     readOnly,
     isDefaultBuildContext,
     configOverrideView,
@@ -63,7 +65,7 @@ export default function BuildContext({
     setCurrentCIBuildConfig,
     currentBuildContextGitMaterial,
     readOnlyBuildContextPath,
-}: BuildContextProps) {
+}) => {
     const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext)
 
     const useRootBuildContextFlag = currentCIBuildConfig?.useRootBuildContext
@@ -75,14 +77,14 @@ export default function BuildContext({
     const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>(checkoutPathArray)
 
     useEffect(() => {
-        const checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
+        const _checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
         if (selectedBuildContextGitMaterial?.checkoutPath !== RootBuildContext) {
-            checkoutPathArray.push({
+            _checkoutPathArray.push({
                 label: selectedBuildContextGitMaterial?.checkoutPath,
                 value: selectedBuildContextGitMaterial?.checkoutPath,
             })
         }
-        setCheckoutPathOptions(checkoutPathArray)
+        setCheckoutPathOptions(_checkoutPathArray)
     }, [selectedBuildContextGitMaterial])
 
     const toggleCollapse = () => {
@@ -91,13 +93,14 @@ export default function BuildContext({
 
     const getSelectedBuildContextGitMaterial = () => selectedBuildContextGitMaterial ?? currentMaterial
 
-    const handleBuildContextPathChange = (selectedBuildContextGitMaterial): void => {
-        setSelectedBuildContextGitMaterial(selectedBuildContextGitMaterial)
+    const handleBuildContextPathChange = (_selectedBuildContextGitMaterial): void => {
+        setSelectedBuildContextGitMaterial(_selectedBuildContextGitMaterial)
         // Don't know how and why we are directly setting state.
-        formState.repository.value = selectedBuildContextGitMaterial.name
+        // eslint-disable-next-line no-param-reassign
+        formState.repository.value = _selectedBuildContextGitMaterial.name
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
-            buildContextGitMaterialId: selectedBuildContextGitMaterial.id,
+            buildContextGitMaterialId: _selectedBuildContextGitMaterial.id,
         })
     }
 
@@ -109,9 +112,9 @@ export default function BuildContext({
         })
     }
 
-    const getCheckoutPathValue = (useRootBuildContextFlag: boolean): OptionType => {
+    const getCheckoutPathValue = (_useRootBuildContextFlag: boolean): OptionType => {
         const path = getSelectedBuildContextGitMaterial()?.checkoutPath
-        const val = useRootBuildContextFlag ? RootBuildContext : path
+        const val = _useRootBuildContextFlag ? RootBuildContext : path
 
         return { label: val, value: val }
     }
@@ -125,7 +128,7 @@ export default function BuildContext({
         return (
             <div className="form-row__docker">
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label className="form__label">Repository containing build context</label>
+                    <span className="form__label">Repository containing build context</span>
 
                     <div className="flex left">
                         {currentBuildContextGitMaterial?.url && renderOptionIcon(currentBuildContextGitMaterial.url)}
@@ -134,13 +137,11 @@ export default function BuildContext({
                         </span>
                     </div>
 
-                    {repositoryError && <label className="form__error">{repositoryError}</label>}
+                    {repositoryError && <span className="form__error">{repositoryError}</span>}
                 </div>
 
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label htmlFor="" className="form__label">
-                        Build Context (Relative)
-                    </label>
+                    <span className="form__label">Build Context (Relative)</span>
 
                     <span className="fs-14 fw-4 lh-20 cn-9">{readOnlyBuildContextPath}</span>
                 </div>
@@ -159,7 +160,7 @@ export default function BuildContext({
                     <Dropdown
                         className="icon-dim-26 rotate"
                         data-testid="set-build-context-button"
-                        style={{ ['--rotateBy' as any]: isCollapsed ? '360deg' : '270deg' }}
+                        style={{ ['--rotateBy' as string]: isCollapsed ? '360deg' : '270deg' }}
                     />
                     Set Build context
                 </button>
@@ -175,7 +176,6 @@ export default function BuildContext({
                         <ReactSelect
                             className="m-0"
                             classNamePrefix="build-config__select-repository-containing-build-context"
-                            tabIndex={3}
                             isMulti={false}
                             isClearable={false}
                             options={sourceConfig.material}
@@ -210,7 +210,6 @@ export default function BuildContext({
                             <ReactSelect
                                 className="m-0 br-0"
                                 classNamePrefix="build-config__select-checkout-path-for-build-context"
-                                tabIndex={4}
                                 isMulti={false}
                                 isClearable={false}
                                 isSearchable={false}
@@ -227,7 +226,6 @@ export default function BuildContext({
                             />
 
                             <CustomInput
-                                tabIndex={4}
                                 type="text"
                                 rootClassName="file-name"
                                 data-testid="build-context-path-text-box"
@@ -244,3 +242,5 @@ export default function BuildContext({
         </>
     )
 }
+
+export default BuildContext
