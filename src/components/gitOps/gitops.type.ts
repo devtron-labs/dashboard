@@ -67,7 +67,7 @@ export interface GitOpsState {
     allowCustomGitRepo: boolean
 }
 
-export interface GitOpsProps extends RouteComponentProps<{}> { 
+export interface GitOpsProps extends RouteComponentProps<{}> {
     handleChecklistUpdate: (string) => void
 }
 
@@ -79,7 +79,7 @@ export interface UserGitRepoConfigurationProps {
 export interface UserGitRepoProps {
     setRepoURL: (string) => void
     setSelectedRepoType: (string) => void
-    repoURL: string
+    repoURL?: string
     selectedRepoType: string
     staleData?: boolean
 }

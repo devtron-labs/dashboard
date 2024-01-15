@@ -1,10 +1,10 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { NoGitOpsRepoConfiguredWarningType, ReloadNoGitOpsRepoConfiguredModalType } from './types'
-import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as RetryIcon } from '../../assets/icons/ic-arrow-clockwise.svg'
 
@@ -39,7 +39,7 @@ export default function NoGitOpsRepoConfiguredWarning({ closePopup, appId, text 
     )
 }
 
-export function ReloadNoGitOpsRepoConfiguredModal({ closePopup, reload } : ReloadNoGitOpsRepoConfiguredModalType) {
+export const ReloadNoGitOpsRepoConfiguredModal = ({ closePopup, reload }: ReloadNoGitOpsRepoConfiguredModalType) => {
     return (
         <VisibleModal2 className="confirmation-dialog">
             <div className="confirmation-dialog__body ">
@@ -52,7 +52,8 @@ export function ReloadNoGitOpsRepoConfiguredModal({ closePopup, reload } : Reloa
                         Some global configurations for Gitops has changed.
                     </h3>
                     <p className="fs-14 fw-4 cn-9">
-                        You're making changes based on old GitOps configurations. Please reload the page to continue.
+                        You&apos;re making changes based on old GitOps configurations. Please reload the page to
+                        continue.
                     </p>
                 </div>
                 <div className="flex right confirmation-dialog__button-group">

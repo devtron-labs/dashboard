@@ -3,11 +3,10 @@ import React from 'react'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { UserGitRepoProps } from './gitops.type';
+import { UserGitRepoProps } from './gitops.type'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
-function UserGitRepo({setRepoURL, staleData, repoURL, selectedRepoType, setSelectedRepoType}: UserGitRepoProps) {
-
+const UserGitRepo = ({ setRepoURL, staleData, repoURL, selectedRepoType, setSelectedRepoType }: UserGitRepoProps) => {
     const repoTypeChange = () => {
         const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
         setSelectedRepoType(newRepoType)
@@ -29,6 +28,7 @@ function UserGitRepo({setRepoURL, staleData, repoURL, selectedRepoType, setSelec
     }
 
     const InputUrlBox = () => {
+        const _repoUrl = repoURL
         return (
             <div className="ml-26 mt-8">
                 <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Git Repo URL</div>
@@ -36,13 +36,13 @@ function UserGitRepo({setRepoURL, staleData, repoURL, selectedRepoType, setSelec
                     type="text"
                     autoComplete="off"
                     name="name"
-                    value={repoURL.trim()}
+                    value={_repoUrl.trim()}
                     placeholder="Enter repository URL"
                     className="form__input"
                     onChange={onChange}
                     disabled={staleData}
                 />
-                {repoURL.length === 0 && renderValidationErrorLabel()}
+                {_repoUrl.length === 0 && renderValidationErrorLabel()}
             </div>
         )
     }

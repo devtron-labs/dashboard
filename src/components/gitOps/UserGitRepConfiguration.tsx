@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
 import { InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import UserGitRepo from './UserGitRepo'
-import { UserGitRepoConfigurationProps } from './gitops.type'
-import { repoType } from '../../config'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { URLS } from '../../config'
+import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
+import UserGitRepo from './UserGitRepo'
+import { UserGitRepoConfigurationProps } from './gitops.type'
+import { repoType, URLS } from '../../config'
+import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
 
-export default function UserGitRepConfiguration({respondOnSuccess, appId, navItems} : UserGitRepoConfigurationProps) {
+export default function UserGitRepConfiguration({ respondOnSuccess, appId, navItems }: UserGitRepoConfigurationProps) {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [isEditable, setIsEditable] = useState(false)
@@ -35,6 +34,17 @@ export default function UserGitRepConfiguration({respondOnSuccess, appId, navIte
                 setLoading(false)
             })
     }, [])
+
+    const renderInfoColorBar = () => {
+        return (
+            <InfoColourBar
+                message="GitOps repository for this application is immutable once saved."
+                classname="warn"
+                Icon={Warn}
+                iconClass="warning-icon"
+            />
+        )
+    }
 
     const renderSavedGitOpsRepoState = (repoURL) => (
         <>
@@ -67,17 +77,6 @@ export default function UserGitRepConfiguration({respondOnSuccess, appId, navIte
         </>
     )
 
-    const renderInfoColorBar = () => {
-        return (
-            <InfoColourBar
-                message="GitOps repository for this application is immutable once saved."
-                classname="warn"
-                Icon={Warn}
-                iconClass="warning-icon"
-            />
-        )
-    }
-
     const closePopup = () => {
         setShowReloadModal(false)
     }
@@ -89,12 +88,12 @@ export default function UserGitRepConfiguration({respondOnSuccess, appId, navIte
 
     function handleSaveButton() {
         const payload = {
-            appId: appId,
+            appId,
             gitRepoURL: selectedRepoType === repoType.DEFAULT ? 'Default' : gitOpsRepoURL,
         }
         setLoading(true)
         gitOpsConfigDevtron(payload)
-            .then((response) => {
+            .then(() => {
                 respondOnSuccess()
                 toast.success('Successfully saved.')
                 const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)
@@ -113,34 +112,34 @@ export default function UserGitRepConfiguration({respondOnSuccess, appId, navIte
     }
 
     return (
-            <div className="w-100 h-100 bcn-0 pt-16 flexbox-col">
-                <div className="w-960">
-                    <div className="fs-16 fcn-9 fw-6 ml-20 mb-8">GitOps Configuration</div>
-                    {isEditable ? (
-                        <UserGitRepo
-                            setSelectedRepoType={setSelectedRepoType}
-                            selectedRepoType={selectedRepoType}
-                            repoURL={gitOpsRepoURL}
-                            setRepoURL={setGitOpsRepoURL}
-                        />
-                    ) : (
-                        renderSavedGitOpsRepoState(gitOpsRepoURL)
-                    )}
-                </div>
-                {isEditable && (
-                    <div className="pl-16 w-960">
-                        <hr />
-                        <button
-                            data-testid="save_cluster_list_button_after_selection"
-                            className="cta h-36 lh-36 "
-                            type="button"
-                            onClick={handleSaveButton}
-                        >
-                            {loading ? <Progressing /> : 'Save'}
-                        </button>
-                    </div>
+        <div className="w-100 h-100 bcn-0 pt-16 flexbox-col">
+            <div className="w-960">
+                <div className="fs-16 fcn-9 fw-6 ml-20 mb-8">GitOps Configuration</div>
+                {isEditable ? (
+                    <UserGitRepo
+                        setSelectedRepoType={setSelectedRepoType}
+                        selectedRepoType={selectedRepoType}
+                        repoURL={gitOpsRepoURL}
+                        setRepoURL={setGitOpsRepoURL}
+                    />
+                ) : (
+                    renderSavedGitOpsRepoState(gitOpsRepoURL)
                 )}
-                {showReloadModal && <ReloadNoGitOpsRepoConfiguredModal closePopup={closePopup} reload={reload} />}
             </div>
+            {isEditable && (
+                <div className="pl-16 w-960">
+                    <hr />
+                    <button
+                        data-testid="save_cluster_list_button_after_selection"
+                        className="cta h-36 lh-36 "
+                        type="button"
+                        onClick={handleSaveButton}
+                    >
+                        {loading ? <Progressing /> : 'Save'}
+                    </button>
+                </div>
+            )}
+            {showReloadModal && <ReloadNoGitOpsRepoConfiguredModal closePopup={closePopup} reload={reload} />}
+        </div>
     )
 }
