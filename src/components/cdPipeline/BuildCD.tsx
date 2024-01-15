@@ -1,4 +1,5 @@
 import {
+    CustomInput,
     DeploymentAppTypes,
     InfoColourBar,
     Progressing,
@@ -170,23 +171,17 @@ export default function BuildCD({
     const renderPipelineNameInput = () => {
         return (
             <div className="form__row">
-                <label className="form__label dc__required-field">Pipeline Name</label>
-                <input
-                    className="form__input"
-                    autoComplete="off"
+                <CustomInput
+                    name="pipeline-name"
+                    label="Pipeline Name"
                     disabled={!!cdPipelineId}
                     data-testid="advance-pipeline-name-textbox"
                     placeholder="Pipeline name"
-                    type="text"
                     value={formData.name}
                     onChange={handlePipelineName}
+                    isRequiredField={true}
+                    error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
                 />
-                {formDataErrorObj.name && !formDataErrorObj.name.isValid && (
-                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                        <span>{formDataErrorObj.name.message}</span>
-                    </span>
-                )}
             </div>
         )
     }
@@ -334,9 +329,9 @@ export default function BuildCD({
             <>
                 <div className="form__row form__row--flex mt-12">
                     <div className="w-50 mr-8">
-                        <div className="form__label">Environment*</div>
+                        <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
-                            menuPortalTarget={isAdvanced ? null : document.getElementById('visible-modal')}
+                            menuPosition={isAdvanced ? null : "fixed"}
                             closeMenuOnScroll={true}
                             isDisabled={!!cdPipelineId}
                             classNamePrefix="cd-pipeline-environment-dropdown"
@@ -374,24 +369,20 @@ export default function BuildCD({
                         {renderVirtualEnvironmentInfo()}
                     </div>
                     <div className="flex-1 ml-8">
-                        <span className="form__label">Namespace</span>
-                        <input
-                            className="form__input"
-                            autoComplete="off"
+                        <CustomInput
+                            name="namespace"
+                            label="Namespace"
                             placeholder={getNamespaceplaceholder()}
                             data-testid="cd-pipeline-namespace-textbox"
-                            type="text"
                             disabled={!namespaceEditable}
                             value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
                             onChange={handleNamespaceChange}
+                            error={
+                                !formDataErrorObj.nameSpaceError.isValid &&
+                                !isVirtualEnvironment &&
+                                formDataErrorObj.nameSpaceError.message
+                            }
                         />
-
-                        {!formDataErrorObj.nameSpaceError.isValid && !isVirtualEnvironment ? (
-                            <span className="form__error">
-                                <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                {formDataErrorObj.nameSpaceError.message}
-                            </span>
-                        ) : null}
                     </div>
                 </div>
                 {renderNamespaceInfo(namespaceEditable)}
@@ -558,7 +549,7 @@ export default function BuildCD({
                 <p className="fs-14 fw-6 cn-9 mb-8 mt-16">Deployment Strategy</p>
                 <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                 <ReactSelect
-                    menuPortalTarget={document.getElementById('visible-modal')}
+                    menuPosition="fixed"
                     closeMenuOnScroll={true}
                     classNamePrefix="deployment-strategy-dropdown"
                     isSearchable={false}

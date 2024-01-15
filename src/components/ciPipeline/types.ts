@@ -13,7 +13,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
-import { CustomTagType, PipelineFormType } from '../workflowEditor/types'
+import { ChangeCIPayloadType, CustomTagType, PipelineFormType } from '../workflowEditor/types'
 
 export interface ExternalCIPipelineState {
     code: number
@@ -263,6 +263,7 @@ export interface CIPipelineType {
     deleteWorkflow: (appId?: string, workflowId?: number) => any
     isJobView?: boolean
     isJobCI?: boolean
+    changeCIPayload?: ChangeCIPayloadType
 }
 
 export interface CIPipelineDataType {
@@ -332,6 +333,7 @@ export interface CIPipelineProps
     getWorkflows: () => void
     close: () => void
     deleteWorkflow?: (appId?: string, workflowId?: number) => any
+    changeCIPayload?: ChangeCIPayloadType
 }
 
 export const PatchAction = {
@@ -386,7 +388,6 @@ export interface BuildType {
     ciPipeline: CIPipelineDataType
     pageState: string
     isSecurityModuleInstalled: boolean
-    setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
     getPluginData: (_formData?: PipelineFormType) => void
 }
@@ -402,4 +403,5 @@ export enum CIPipelineBuildType {
     CI_JOB = 'CI_JOB',
     CI_BUILD = 'CI_BUILD',
     CI_EXTERNAL = 'CI_EXTERNAL',
+    LINKED_CD = 'LINKED_CD',
 }

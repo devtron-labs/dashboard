@@ -31,7 +31,6 @@ import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
-import { SwitchItemValues } from '../../../../login/SSOLogin'
 import { Options } from '../../appDetails.type'
 import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as QuestionIcon } from '../../../../v2/assets/icons/ic-question.svg'
@@ -39,6 +38,7 @@ import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { selectStyles } from './nodeDetail.util'
+import { SwitchItemValues } from '../../../../login/constants'
 
 function EphemeralContainerDrawer({
     setShowEphemeralContainerDrawer,
@@ -255,7 +255,7 @@ function EphemeralContainerDrawer({
                     <div>
                         <input
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 h-36"
-                            data-testid="preBuild-task-name-textbox"
+                            data-testid="ephemeral-container-name"
                             type="text"
                             onChange={handleContainerChange}
                             value={ephemeralForm.basicData.containerName}

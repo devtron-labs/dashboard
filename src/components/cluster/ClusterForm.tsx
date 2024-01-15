@@ -12,13 +12,13 @@ import {
     GenericEmptyState,
     ResizableTextarea,
     useAsync,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
 import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -148,6 +148,7 @@ export default function ClusterForm({
         [clusterId],
         !window._env_.K8S_CLIENT,
     )
+
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -208,7 +209,7 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: (id && KubectlConnectionRadio) && isConnectedViaProxyTemp,
+                required: KubectlConnectionRadio && isConnectedViaProxyTemp,
                 validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             sshTunnelUser: {
@@ -427,10 +428,11 @@ export default function ClusterForm({
             },
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
-                userName: prometheusToggleEnabled ? state.userName.value : '',
-                password: prometheusToggleEnabled ? state.password.value : '',
+                userName: prometheusToggleEnabled && state.authType.value === AuthenticationType.BASIC ? state.userName.value : '',
+                password: prometheusToggleEnabled && state.authType.value === AuthenticationType.BASIC ? state.password.value : '',
                 tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
+                isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
             },
         }
     }
@@ -652,7 +654,6 @@ export default function ClusterForm({
                 <div className="form__row">
                     <CustomInput
                         labelClassName="dc__required-field"
-                        autoComplete="off"
                         name="cluster_name"
                         disabled={isDefaultCluster()}
                         value={state.cluster_name.value}
@@ -665,7 +666,6 @@ export default function ClusterForm({
                 </div>
                 <div className="form__row mb-8-imp">
                     <CustomInput
-                        autoComplete="off"
                         name="url"
                         value={state.url.value}
                         error={state.url.error}
@@ -687,8 +687,8 @@ export default function ClusterForm({
                                         ? id !== 1
                                             ? DEFAULT_SECRET_PLACEHOLDER
                                             : config?.bearer_token
-                                                ? config.bearer_token
-                                                : ''
+                                            ? config.bearer_token
+                                            : ''
                                         : state.token.value
                                 }
                                 onChange={handleOnChange}
@@ -710,7 +710,9 @@ export default function ClusterForm({
                     <>
                         <hr />
                         <div className="dc__position-rel dc__hover mb-20">
-                            <span className="form__input-header pb-20">How do you want Devtron to connect with this cluster?</span>
+                            <span className="form__input-header pb-20">
+                                How do you want Devtron to connect with this cluster?
+                            </span>
                             <span className="pb-20">
                                 <KubectlConnectionRadio
                                     toConnectViaProxy={isConnectedViaProxyTemp}
@@ -719,8 +721,18 @@ export default function ClusterForm({
                                     changeSSHAuthenticationType={changeSSHAuthenticationType}
                                     proxyUrl={state.proxyUrl}
                                     sshTunnelUser={state.sshTunnelUser}
-                                    sshTunnelPassword={(SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPassword : {value: '', error: ''}}
-                                    sshTunnelPrivateKey={(SSHConnectionType === SSHAuthenticationType.SSH_Private_Key || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPrivateKey : {value: '', error: ''}}
+                                    sshTunnelPassword={
+                                        SSHConnectionType === SSHAuthenticationType.Password ||
+                                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                                            ? state.sshTunnelPassword
+                                            : { value: '', error: '' }
+                                    }
+                                    sshTunnelPrivateKey={
+                                        SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
+                                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                                            ? state.sshTunnelPrivateKey
+                                            : { value: '', error: '' }
+                                    }
                                     sshTunnelUrl={state.sshTunnelUrl}
                                     handleOnChange={handleOnChange}
                                 />
@@ -852,7 +864,6 @@ export default function ClusterForm({
                         <div className="form__row">
                             <CustomInput
                                 labelClassName="dc__required-field"
-                                autoComplete="off"
                                 name="endpoint"
                                 value={state.endpoint.value}
                                 error={state.endpoint.error}
@@ -861,7 +872,7 @@ export default function ClusterForm({
                             />
                         </div>
                         <div className="form__row">
-                            <span className="form__label">Authentication Type*</span>
+                            <span className="form__label dc__required-field">Authentication Type</span>
                             <RadioGroup
                                 value={state.authType.value}
                                 name="authType"

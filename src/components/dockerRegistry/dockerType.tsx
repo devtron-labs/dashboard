@@ -39,3 +39,13 @@ export interface ManageRegistryType{
   setErrorValidation:  React.Dispatch<React.SetStateAction<boolean>>
   errorValidation: boolean
 }
+
+export const CustomStateKeys = {
+    ID : 'id',
+    AWS_ACCESS_KEY_ID : 'awsAccessKeyId',
+    AWS_SECRET_ACCESS_KEY : 'awsSecretAccessKey',
+    REGISTRY_URL : 'registryUrl',
+    USER_NAME : 'username',
+    PASSWORD : 'password',
+    REPOSITORY_LIST : 'repositoryList',
+}

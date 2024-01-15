@@ -2,7 +2,7 @@ import React from 'react';
 import ReactSelect from 'react-select';
 import { Option } from '../v2/common/ReactSelect.utils';
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
 export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, selectorCondition, onSelectorChange, onSelectorValueChange, deleteWebhookCondition, canEditSelectorCondition}) {
     return (
@@ -34,10 +34,9 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                 onChange={(selectedSelector) => onSelectorChange(conditionIndex, selectedSelector.value)}
                 isDisabled={!canEditSelectorCondition}
             />
-            <input
-                type="text"
+            <CustomInput
+                name="selector-value"
                 data-testid={`build-webhook-select-key-input-${conditionIndex}`}
-                className="form__input"
                 placeholder="Enter regex"
                 disabled={!canEditSelectorCondition}
                 onChange={(event) => {

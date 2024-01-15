@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { showError, Progressing, CIBuildType, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, CIBuildType, copyToClipboard, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     Option,
@@ -559,10 +559,10 @@ export default function CICreateDockerfileOption({
                                     onChange={handleBuildContextCheckoutPathChange}
                                     isDisabled={configOverrideView && !allowOverride}
                                 />
-                                <input
+                                <CustomInput
                                     tabIndex={4}
                                     type="text"
-                                    className="form__input file-name"
+                                    rootClassName="file-name"
                                     data-testid="build-context-path-text-box"
                                     placeholder="Enter Path"
                                     name="buildContext"

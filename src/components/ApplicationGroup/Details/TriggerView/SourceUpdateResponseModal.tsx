@@ -1,8 +1,9 @@
 import React from 'react'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerModalRow } from './TriggerModalTableRow'
+import { SourceUpdateResponseModalProps } from './types'
 
-export default function SourceUpdateResponseModal({ closePopup, responseList, isLoading }) {
+export default function SourceUpdateResponseModal({ closePopup, responseList, isLoading }: SourceUpdateResponseModalProps) {
     const renderResponseBodySection = (): JSX.Element => {
         if (isLoading) {
             return <Progressing pageLoader />
@@ -25,6 +26,7 @@ export default function SourceUpdateResponseModal({ closePopup, responseList, is
         )
     }
 
+    // ASK: Why there is no retry button for failed request?
     const renderFooterSection = (): JSX.Element => {
         return (
             <div

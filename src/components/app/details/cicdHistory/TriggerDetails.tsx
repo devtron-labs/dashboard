@@ -23,9 +23,10 @@ import {
     TriggerDetailsType,
     WorkerStatusType,
 } from '../cicdHistory/types'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
 import { DEFAULT_ENV } from '../triggerView/Constants'
+import { TIMEOUT_VALUE, WORKER_POD_BASE_URL } from './Constants'
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -61,6 +62,7 @@ export const TriggerDetails = React.memo(
         artifact,
         environmentName,
         isJobView,
+        workerPodName,
     }: TriggerDetailsType): JSX.Element => {
         return (
             <div className="trigger-details">
@@ -88,6 +90,7 @@ export const TriggerDetails = React.memo(
                         stage={stage}
                         type={type}
                         isJobView={isJobView}
+                        workerPodName={workerPodName}
                     />
                 </div>
             </div>
@@ -98,7 +101,10 @@ export const TriggerDetails = React.memo(
 const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedType): JSX.Element => {
     return (
         <div className="flex column left dc__min-width-fit-content">
-            <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`} data-testid="deployment-status-text">
+            <div
+                className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}
+                data-testid="deployment-status-text"
+            >
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
             </div>
             <div className="flex left">
@@ -121,41 +127,63 @@ const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedTyp
     )
 })
 
-const WorkerStatus = React.memo(({ message, podStatus, stage }: WorkerStatusType): JSX.Element | null => {
-    if (!message && !podStatus) return null
-    return (
-        <>
-            <span style={{ height: '80%', borderRight: '1px solid var(--N100)', margin: '0 16px' }} />
-            <div className="flex left column">
-                <div className="flex left fs-14">
-                    <div className="mr-10">{stage === 'DEPLOY' ? 'Message' : 'Worker'}</div>
-                    {podStatus && (
-                        <div className="fw-6" style={{ color: colorMap[podStatus.toLowerCase()] }}>
-                            {podStatus}
-                        </div>
+const WorkerStatus = React.memo(
+    ({ message, podStatus, stage, workerPodName, finishedOn }: WorkerStatusType): JSX.Element | null => {
+        if (!message && !podStatus) return null
+        // check if finishedOn time is timed out or not
+        const isTimedOut = moment(finishedOn).isBefore(moment().subtract(TIMEOUT_VALUE, 'hours'))
+        // finishedOn is 0001-01-01T00:00:00Z when the worker is still running
+        const showLink = workerPodName && (finishedOn === ZERO_TIME_STRING || !isTimedOut)
+
+        return (
+            <>
+                <span style={{ height: '80%', borderRight: '1px solid var(--N100)', margin: '0 16px' }} />
+                <div className="flex left column">
+                    <div className="flex left fs-14">
+                        {stage === 'DEPLOY' ? (
+                            <div className="mr-10">Message</div>
+                        ) : showLink ? (
+                            <NavLink to={`${WORKER_POD_BASE_URL}/${workerPodName}/logs`} target="_blank" className="anchor">
+                                <div className="mr-10">View worker pod</div>
+                            </NavLink>
+                        ) : (
+                            <div className="mr-10">Worker</div>
+                        )}
+                        {podStatus && (
+                            <div className="fw-6" style={{ color: colorMap[podStatus.toLowerCase()] }}>
+                                {podStatus}
+                            </div>
+                        )}
+                    </div>
+                    {message && (
+                        <Tippy
+                            theme={TippyTheme.black}
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom-start"
+                            animation="shift-toward-subtle"
+                            content={message}
+                        >
+                            <div className="fs-12 cn-7 dc__ellipsis-right__2nd-line">{message}</div>
+                        </Tippy>
                     )}
                 </div>
-                {message && (
-                    <Tippy
-                        theme={TippyTheme.black}
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom-start"
-                        animation="shift-toward-subtle"
-                        content={message}
-                    >
-                        <div className="fs-12 cn-7 dc__ellipsis-right__2nd-line">{message}</div>
-                    </Tippy>
-                )}
-            </div>
-        </>
-    )
-})
+            </>
+        )
+    },
+)
 
 const ProgressingStatus = React.memo(
-    ({ status, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
+    ({ status, message, podStatus, stage, type, finishedOn, workerPodName }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
-        const [abortConfirmation, setAbortConfiguration] = useState(false)
+        const [abortConfirmation, setAbortConfirmation] = useState(false)
+        const [abortError, setAbortError] = useState<{
+            status: boolean
+            message: string
+        }>({
+            status: false,
+            message: '',
+        })
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
             triggerId: string
@@ -163,33 +191,49 @@ const ProgressingStatus = React.memo(
         }>()
         let abort = null
         if (type === HistoryComponentType.CI) {
-            abort = () => cancelCiTrigger({ pipelineId, workflowId: buildId })
+            abort = (isForceAbort: boolean) => cancelCiTrigger({ pipelineId, workflowId: buildId }, isForceAbort)
         } else if (stage !== 'DEPLOY') {
             abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
         }
 
         async function abortRunning() {
             setAborting(true)
-            const [error] = await asyncWrap(abort())
-            setAborting(false)
-            if (error) {
-                showError(error)
-            } else {
+            try {
+                await abort(abortError.status)
                 toast.success('Build Aborted')
-                setAbortConfiguration(false)
+                setAbortConfirmation(false)
+                setAbortError({
+                    status: false,
+                    message: '',
+                })
+            } catch (error) {
+                setAborting(false)
+                setAbortConfirmation(false)
+                if (error['code'] === 400) {
+                    // code 400 is for aborting a running build
+                    const errors = error['errors']
+                    setAbortError({
+                        status: true,
+                        message: errors[0].userMessage,
+                    })
+                }
             }
         }
 
         const toggleAbortConfiguration = (): void => {
-            setAbortConfiguration(not)
+            setAbortConfirmation(not)
+        }
+        const closeForceAbortModal = (): void => {
+            setAbortError({
+                status: false,
+                message: '',
+            })
         }
         return (
             <>
                 <div className="flex left mb-24">
                     <div className="dc__min-width-fit-content">
-                        <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
-                            In progress
-                        </div>
+                        <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>In progress</div>
                     </div>
 
                     {abort && (
@@ -200,7 +244,13 @@ const ProgressingStatus = React.memo(
                             Abort
                         </button>
                     )}
-                    <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
+                    <WorkerStatus
+                        message={message}
+                        podStatus={podStatus}
+                        stage={stage}
+                        finishedOn={finishedOn}
+                        workerPodName={workerPodName}
+                    />
                 </div>
                 {abortConfirmation && (
                     <ConfirmationDialog>
@@ -227,22 +277,69 @@ const ProgressingStatus = React.memo(
                         </ConfirmationDialog.ButtonGroup>
                     </ConfirmationDialog>
                 )}
+                {abortError.status && (
+                    <ConfirmationDialog>
+                        <ConfirmationDialog.Icon src={warn} />
+                        <ConfirmationDialog.Body title="Could not abort build!" />
+                        <div className="w-100 bc-n50 h-36 flexbox dc__align-items-center">
+                            <span className="pl-12">Error: {abortError.message}</span>
+                        </div>
+                        <div className="fs-13 fw-6 pt-12 cn-7 lh-1-54">
+                            <span>Please try to force abort</span>
+                        </div>
+                        <div className="pt-4 fw-4 cn-7 lh-1-54">
+                            <span>Some resource might get orphaned which will be cleaned up with Job-lifecycle</span>
+                        </div>
+                        <ConfirmationDialog.ButtonGroup>
+                            <button type="button" className="cta cancel" onClick={closeForceAbortModal}>
+                                Cancel
+                            </button>
+                            <button type="button" className="cta delete" onClick={abortRunning}>
+                                {aborting ? <Progressing /> : 'Force Abort'}
+                            </button>
+                        </ConfirmationDialog.ButtonGroup>
+                    </ConfirmationDialog>
+                )}
             </>
         )
     },
 )
 
 const CurrentStatus = React.memo(
-    ({ status, finishedOn, artifact, message, podStatus, stage, type, isJobView }: CurrentStatusType): JSX.Element => {
+    ({
+        status,
+        finishedOn,
+        artifact,
+        message,
+        podStatus,
+        stage,
+        type,
+        isJobView,
+        workerPodName,
+    }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
-                <ProgressingStatus status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
+                <ProgressingStatus
+                    status={status}
+                    message={message}
+                    podStatus={podStatus}
+                    stage={stage}
+                    type={type}
+                    finishedOn={finishedOn}
+                    workerPodName={workerPodName}
+                />
             )
         } else {
             return (
-                <div className={`flex left ${ isJobView ? "mb-24" : ""}`}>
+                <div className={`flex left ${isJobView ? 'mb-24' : ''}`}>
                     <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
-                    <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
+                    <WorkerStatus
+                        message={message}
+                        podStatus={podStatus}
+                        stage={stage}
+                        finishedOn={finishedOn}
+                        workerPodName={workerPodName}
+                    />
                 </div>
             )
         }

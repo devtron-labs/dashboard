@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react'
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import {
     showError,
     Progressing,
     ConfirmationDialog,
-    Host,
     noop,
     stopPropagation,
     multiSelectStyles,
@@ -24,13 +23,7 @@ import {
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
-import {
-    NavigationArrow,
-    useAppContext,
-    useEventSource,
-    FragmentHOC,
-    ScanDetailsModal,
-} from '../../../common'
+import { NavigationArrow, useAppContext, FragmentHOC, ScanDetailsModal } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
@@ -59,11 +52,14 @@ import { SourceInfo } from './SourceInfo'
 import { AppStreamData, Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
 import {
     aggregateNodes,
-    SecurityVulnerabilitites,
     getSelectedNodeItems,
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
     ValueContainer,
+    NoParamsNoEnvContext,
+    NoParamsWithEnvContext,
+    ParamsNoEnvContext,
+    ParamsAndEnvContext,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -87,6 +83,7 @@ import {
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
     DetailsType,
+    ErrorItem,
     NodeSelectorsType,
 } from './appDetails.type'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
@@ -96,6 +93,7 @@ import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
+import IssuesListingModal from './IssuesListingModal'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
@@ -106,7 +104,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
 let deploymentStatusTimer = null
 let appDetailsIntervalID = null
 
-export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
+export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
@@ -117,41 +115,44 @@ export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
     const isVirtualEnvRef = useRef(false)
 
     const envList = useMemo(() => {
-      if (otherEnvsResult?.result?.length > 0) {
-          const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-          const _envList =
-              otherEnvsResult.result
-                  .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                  ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+        if (otherEnvsResult?.result?.length > 0) {
+            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+            const _envList =
+                otherEnvsResult.result
+                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
 
-          if (_envList.length > 0) {
-              let _envId
-              if (!params.envId && _envList.length === 1) {
-                  _envId = _envList[0].environmentId
-              } else if (
-                  !params.envId &&
-                  environmentId &&
-                  _envList.map((env) => env.environmentId).includes(environmentId)
-              ) {
-                  _envId = environmentId
-              } else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
-                  _envId = _envList[0].environmentId
-              }
-              if (_envId) {
-                  const newUrl = getAppDetailsURL(params.appId, _envId)
-                  push(newUrl)
-              } else{
+            if (_envList.length > 0) {
+                let selector
+                if (!params.envId && !environmentId) {
+                    selector = new NoParamsNoEnvContext()
+                } else if (!params.envId && environmentId) {
+                    selector = new NoParamsWithEnvContext()
+                } else if (params.envId && !environmentId) {
+                    selector = new ParamsNoEnvContext()
+                } else if (params.envId && environmentId) {
+                    selector = new ParamsAndEnvContext()
+                }
+
+                const selectedEnvId = selector.resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId)
+
+                // Set the URL and push to navigation stack
+                if (selectedEnvId) {
+                    if (String(selectedEnvId) !== String(params.envId)) {
+                        const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
+                        push(newUrl)
+                    }
+                } else {
+                    setEnvironmentId(null)
+                }
+            } else {
                 setEnvironmentId(null)
-              }
-          } else {
-              setEnvironmentId(null)
-          }
-          return _envList
-      } else {
-          setEnvironmentId(null)
-      }
-      return []
-  }, [filteredEnvIds, otherEnvsResult])
+            }
+            // Return the filtered and sorted environment list
+            return _envList
+        }
+        return []
+    }, [filteredEnvIds, otherEnvsResult])
 
     useEffect(() => {
         if (!params.envId) return
@@ -164,9 +165,7 @@ export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {(envList.length === 0) &&
-                        !isAppDeleted &&
-                        !isVirtualEnvRef.current && <AppNotConfigured />}
+                    {envList.length === 0 && !isAppDeleted && !isVirtualEnvRef.current && <AppNotConfigured />}
                     {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
                         <EnvironmentNotConfigured environments={envList} />
                     )}
@@ -226,14 +225,16 @@ export const Details: React.FC<DetailsType> = ({
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
-    const [streamData, setStreamData] = useState<AppStreamData>(null)
+    // fixme: the state is not being set anywhere and just being drilled down
+    const [streamData] = useState<AppStreamData>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
-    const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
+    const [showScanDetailsModal, toggleScanDetailsModal] = useState<boolean>(false)
+    const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
     const [lastExecutionDetail, setLastExecutionDetail] = useState({
         imageScanDeployInfoId: 0,
         severityCount: { critical: 0, moderate: 0, low: 0 },
@@ -247,12 +248,15 @@ export const Details: React.FC<DetailsType> = ({
     })
     const [loadingDetails, setLoadingDetails] = useState(true)
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
+    // State to track the loading state for the timeline data when the detailed status modal opens
+    const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
+    const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
-    const deploymentModalShownRef = useRef(false)
     const { envId } = useParams<{ appId: string; envId?: string }>()
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef(null)
+    const shouldFetchTimelineRef = useRef(false)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -267,71 +271,76 @@ export const Details: React.FC<DetailsType> = ({
     const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
     appDetailsRequestRef.current = appDetails?.deploymentAppDeleteRequest
 
-    const syncSSE = useEventSource(
-        `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
-        [params.appId, params.envId],
-        appDetails &&
-            !!appDetails.appName &&
-            !!appDetails.environmentName &&
-            appDetails.deploymentAppType !== DeploymentAppTypes.HELM,
-        (event) => setStreamData(JSON.parse(event.data)),
-    )
-
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || [])
     }, [appDetails])
 
     useEffect(() => {
-        if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
-            deploymentModalShownRef.current = true
-        } else {
-            deploymentModalShownRef.current = false
+        const isModalOpen = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
+        // Reset the loading state when the modal is closed
+        if (shouldFetchTimelineRef.current && !isModalOpen) {
+            setIsInitialTimelineDataLoading(true)
         }
+        // The timeline should be fetched by default if the modal is open
+        shouldFetchTimelineRef.current = isModalOpen
     }, [location.search])
 
-    const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
-        // Deployments status details for Devtron apps
-        getDeploymentStatusDetail(params.appId, params.envId, showTimeline ?? deploymentModalShownRef.current).then(
-            (deploymentStatusDetailRes) => {
-                processDeploymentStatusData(deploymentStatusDetailRes.result)
-            },
-        )
-    }
-
-    const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData =
-            isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
-                ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
-                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
-        clearDeploymentStatusTimer()
-        if (
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
-        ) {
-            deploymentModalShownRef.current = false
-        }
-        if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
-            deploymentStatusTimer = setTimeout(() => {
-                getDeploymentDetailStepsData()
-            }, 10000)
-        }
-        setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
-    }
-
-    const clearDeploymentStatusTimer = (): void => {
+    const clearDeploymentStatusTimer = useCallback((): void => {
         if (deploymentStatusTimer) {
             clearTimeout(deploymentStatusTimer)
         }
-    }
+    }, [deploymentStatusTimer])
 
-    useEffect(() => {
-        return () => {
+    const processDeploymentStatusData = useCallback(
+        (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
+            const processedDeploymentStatusDetailsData =
+                isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
+                    ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
+                    : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+
             clearDeploymentStatusTimer()
-            clearPollingInterval()
-        }
-    }, [])
+
+            if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
+                deploymentStatusTimer = setTimeout(() => {
+                    getDeploymentDetailStepsData()
+                }, 10000)
+            }
+
+            setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
+        },
+        [
+            isVirtualEnvRef,
+            processVirtualEnvironmentDeploymentData,
+            processDeploymentStatusDetailsData,
+            clearDeploymentStatusTimer,
+            DEPLOYMENT_STATUS,
+            setDeploymentStatusDetailsBreakdownData,
+        ],
+    )
+
+    const getDeploymentDetailStepsData = useCallback(
+        (showTimeline?: boolean): void => {
+            const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
+
+            // Deployments status details for Devtron apps
+            getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline).then(
+                (deploymentStatusDetailRes) => {
+                    processDeploymentStatusData(deploymentStatusDetailRes.result)
+                    // Update the loading status if the modal is open
+                    if (shouldFetchTimeline) {
+                        setIsInitialTimelineDataLoading(false)
+                    }
+                },
+            )
+        },
+        [
+            params.appId,
+            params.envId,
+            shouldFetchTimelineRef.current,
+            getDeploymentStatusDetail,
+            processDeploymentStatusData,
+        ],
+    )
 
     useEffect(() => {
         appDetailsAbortRef.current = new AbortController()
@@ -420,7 +429,9 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
-        getDeploymentStatusDetail(params.appId, params.envId, deploymentModalShownRef.current)
+        const shouldFetchTimeline = shouldFetchTimelineRef.current
+
+        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     if (deploymentAppType === DeploymentAppTypes.HELM) {
@@ -438,6 +449,9 @@ export const Details: React.FC<DetailsType> = ({
                         })
                     } else {
                         processDeploymentStatusData(deploymentStatusDetailRes.result)
+                    }
+                    if (shouldFetchTimeline) {
+                        setIsInitialTimelineDataLoading(false)
                     }
                 }
             })
@@ -506,11 +520,11 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetailsError])
 
     useEffect(() => {
-      clearPollingInterval()
-      if (isPollingRequired) {
-          appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
-          callAppDetailsAPI(true)
-      }
+        clearPollingInterval()
+        if (isPollingRequired) {
+            appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
+            callAppDetailsAPI(true)
+        }
     }, [isPollingRequired])
 
     async function handleHibernate(e) {
@@ -538,10 +552,18 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    if (!loadingResourceTree && (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) && !isVirtualEnvRef.current) {
+    const showVulnerabilitiesModal = useCallback(() => {
+        toggleScanDetailsModal(true)
+    }, [toggleScanDetailsModal])
+
+    if (
+        !loadingResourceTree &&
+        (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
+        !isVirtualEnvRef.current
+    ) {
         return (
             <>
-            {environments?.length > 0 && (
+                {environments?.length > 0 && (
                     <div className="flex left ml-20 mt-16">
                         <EnvSelector
                             environments={environments}
@@ -594,9 +616,10 @@ export const Details: React.FC<DetailsType> = ({
 
     return (
         <React.Fragment>
-            <div className="w-100 pt-16 pr-20 pb-16 pl-20">
+            <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg-gradient">
                 <SourceInfo
                     appDetails={appDetails}
+                    appStreamData={streamData}
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
                     environments={environments}
@@ -609,23 +632,16 @@ export const Details: React.FC<DetailsType> = ({
                     loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
+                    severityCount={lastExecutionDetail.severityCount}
+                    showVulnerabilitiesModal={showVulnerabilitiesModal}
+                    toggleIssuesModal={toggleIssuesModal}
+                    envId={appDetails?.environmentId}
+                    ciArtifactId={appDetails?.ciArtifactId}
+                    setErrorsList={setErrorsList}
                 />
             </div>
-            {!loadingResourceTree && (
-                <SyncErrorComponent
-                    showApplicationDetailedModal={showApplicationDetailedModal}
-                    appStreamData={streamData}
-                />
-            )}
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest ? (
                 <>
-                    <SecurityVulnerabilitites
-                        imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
-                        severityCount={lastExecutionDetail.severityCount}
-                        onClick={() => {
-                            toggleScanDetailsModal(true)
-                        }}
-                    />
                     {environment && !isVirtualEnvRef.current && (
                         <AppMetrics
                             appName={appDetails.appName}
@@ -668,6 +684,7 @@ export const Details: React.FC<DetailsType> = ({
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
+                    isLoading={isInitialTimelineDataLoading}
                 />
             )}
             {showScanDetailsModal && (
@@ -682,6 +699,9 @@ export const Details: React.FC<DetailsType> = ({
                         toggleScanDetailsModal(false)
                     }}
                 />
+            )}
+            {showIssuesModal && (
+                <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
             )}
             {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
             {commitInfo && (
@@ -1422,7 +1442,7 @@ export function TimeRangeSelector({
                 options={options.map((time) => ({ label: time, value: time }))}
                 value={{ label: selectedRange, value: selectedRange }}
                 onChange={(selected) => selectRange(selected.value)}
-                menuPortalTarget={document.body}
+                menuPosition="fixed"
                 components={{ IndicatorSeparator: null, ValueContainer, Option }}
                 styles={{
                     ...multiSelectStyles,

@@ -1,14 +1,12 @@
 import moment from 'moment'
 import { Nodes, NodeType, AggregationKeys, AggregatedNodes, PodMetadatum } from '../../types'
 import { getVersionArr, handleUTCTime, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common'
-import React, { Component } from 'react'
+import React from 'react'
 import { components } from 'react-select'
-import { ReactComponent as Bug } from '../../../../assets/icons/ic-bug.svg'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import {
     ChartTypes,
     AppMetricsTabType,
-    SecurityVulnerabilititesProps,
     StatusType,
     StatusTypes,
     DeploymentStatusDetailsBreakdownDataType,
@@ -129,29 +127,6 @@ export function aggregateNodes(nodes: any[], podMetadata: PodMetadatum[]): Aggre
         },
         { nodes: {}, aggregation: {}, statusCount: {}, nodeStatusCount: {}, aggregatorStatusCount: {} },
     )
-}
-
-export class SecurityVulnerabilitites extends Component<SecurityVulnerabilititesProps> {
-    render() {
-        const { critical = 0, moderate = 0, low = 0 } = this.props.severityCount
-        const total = critical + moderate + low
-        if (total !== 0) {
-            return (
-                <div className="security-vulnerabilities cursor" onClick={this.props.onClick}>
-                    <div>
-                        <Bug className="icon-dim-20 dc__vertical-align-middle mr-8 fcy-7" />
-                        {total} Security Vulnerabilities
-                        <span className="security-vulnerabilities__count">
-                            {critical ? `${critical} critical, ` : ``}
-                            {moderate ? `${moderate} moderate, ` : ``}
-                            {low ? `${low} low` : ``}
-                        </span>
-                    </div>
-                    <div className="cb-5">Details</div>
-                </div>
-            )
-        } else return <span></span>
-    }
 }
 
 export function DropdownIndicator(props) {
@@ -439,6 +414,7 @@ export function addQueryParamToGrafanaURL(
     return url
 }
 
+// NOTE: Need to improve logic since in some cases the unknown status would leak to previous entites, can do that by not setting deploymentStatus as Failed by ourselves and let backend be source of truth of that
 export const processDeploymentStatusDetailsData = (
     data?: DeploymentStatusDetailsType,
 ): DeploymentStatusDetailsBreakdownDataType => {
@@ -460,6 +436,14 @@ export const processDeploymentStatusDetailsData = (
             GIT_COMMIT: {
                 icon: '',
                 displayText: 'Push manifest to Git',
+                displaySubText: '',
+                timelineStatus: '',
+                time: '',
+                isCollapsed: true,
+            },
+            ARGOCD_SYNC: {
+                icon: '',
+                displayText: 'Synced with Argo CD',
                 displaySubText: '',
                 timelineStatus: '',
                 time: '',
@@ -495,6 +479,11 @@ export const processDeploymentStatusDetailsData = (
 
     // data when timelines is available
     if (data?.timelines?.length) {
+        // TO Support legacy data have to make sure that if ARGOCD_SYNC is not available then we fill it with dummy values
+        const isArgoCDAvailable = data.timelines.some((timeline) =>
+            timeline['status'].includes(TIMELINE_STATUS.ARGOCD_SYNC),
+        )
+
         for (let index = data.timelines.length - 1; index >= 0; index--) {
             const element = data.timelines[index]
             if (element['status'] === TIMELINE_STATUS.HEALTHY || element['status'] === TIMELINE_STATUS.DEGRADED) {
@@ -507,6 +496,7 @@ export const processDeploymentStatusDetailsData = (
                 deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
                 deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = true
                 deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = true
+                deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
                 deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
             } else if (element['status'] === TIMELINE_STATUS.DEPLOYMENT_FAILED) {
                 deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
@@ -529,11 +519,18 @@ export const processDeploymentStatusDetailsData = (
                 }
                 deploymentData.deploymentError = `Below resources did not become healthy within 10 mins. Resource status shown below was last fetched ${lastFetchedTime}. ${data.statusFetchCount} retries failed.`
             } else if (element['status'].includes(TIMELINE_STATUS.KUBECTL_APPLY)) {
+                if (!isArgoCDAvailable) {
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.time = element['statusTime']
+                }
+
                 if (element?.resourceDetails) {
                     deploymentPhases.forEach((phase) => {
                         for (let item of element.resourceDetails) {
                             if (phase === item.resourcePhase) {
                                 tableData.currentPhase = phase
+                                // Seems else block was forgotten to add here, TODO: Sync for this later
                                 if (item.resourceStatus === 'failed') {
                                 }
                                 tableData.currentTableData.push({
@@ -600,6 +597,7 @@ export const processDeploymentStatusDetailsData = (
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time = element['statusTime']
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
                     deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData
 
@@ -623,25 +621,36 @@ export const processDeploymentStatusDetailsData = (
                         deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = false
                     }
                 }
-            } else if (element['status'].includes(TIMELINE_STATUS.GIT_COMMIT)) {
-                deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time = element['statusTime']
-                if (element['status'] === TIMELINE_STATUS.GIT_COMMIT_FAILED) {
-                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = 'Failed'
-                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'failed'
+            } else if (element['status'].includes(TIMELINE_STATUS.ARGOCD_SYNC)) {
+                deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.time = element['statusTime']
+
+                if (element['status'] === TIMELINE_STATUS.ARGOCD_SYNC_FAILED) {
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = 'Failed'
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'failed'
+
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                     deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
+
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
                     deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
-                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.isCollapsed = false
+
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.isCollapsed = false
                     deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
                     deploymentData.deploymentStatusText = 'Failed'
-                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.timelineStatus = element['statusDetail']
-                } else {
-                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.timelineStatus = element['statusDetail']
+                }
+                else {
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
                     if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.FAILED) {
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
+
                         deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
-                        deploymentData.nonDeploymentError = TIMELINE_STATUS.KUBECTL_APPLY
+
+                        if (deploymentData.nonDeploymentError === '') {
+                            deploymentData.nonDeploymentError = TIMELINE_STATUS.KUBECTL_APPLY
+                        }
                     } else if (
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
                         deploymentData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
@@ -655,6 +664,57 @@ export const processDeploymentStatusDetailsData = (
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
                     }
                 }
+            } else if (element['status'].includes(TIMELINE_STATUS.GIT_COMMIT)) {
+                deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time = element['statusTime']
+                if (element['status'] === TIMELINE_STATUS.GIT_COMMIT_FAILED) {
+                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = 'Failed'
+                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'failed'
+
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'unreachable'
+
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
+
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
+                    deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+
+                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.isCollapsed = false
+                    deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
+                    deploymentData.deploymentStatusText = 'Failed'
+                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.timelineStatus = element['statusDetail']
+                } else {
+                    deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+                    if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.FAILED) {
+                        if (deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon === '') {
+                            deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
+                            deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'unreachable'
+                        }
+
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
+
+                        deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
+                        deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+
+                        if (deploymentData.nonDeploymentError === '') {
+                            deploymentData.nonDeploymentError = TIMELINE_STATUS.ARGOCD_SYNC
+                        }
+                    } else if (
+                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.time === '' &&
+                        deploymentData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
+                    ) {
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = ''
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'Waiting'
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = [
+                            { icon: '', message: 'Waiting to be started by Argo CD' },
+                            { icon: '', message: 'Create and update resources based on manifest' },
+                        ]
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
+                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'inprogress'
+                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = 'In progress'
+                    }
+                }
             } else if (element['status'] === TIMELINE_STATUS.DEPLOYMENT_INITIATED) {
                 deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['statusTime']
                 if (
@@ -662,23 +722,66 @@ export const processDeploymentStatusDetailsData = (
                     deploymentData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
                 ) {
                     deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'inprogress'
+
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = ''
+                    deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = 'Waiting'
+
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = ''
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'Waiting'
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = [
+                        { icon: '', message: 'Waiting to be started by Argo CD' },
+                        { icon: '', message: 'Create and update resources based on manifest' },
+                    ]
+                    deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = false
                 }
                 if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.FAILED) {
                     if (deploymentData.deploymentStatusBreakdown.GIT_COMMIT.time === '') {
                         deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'unreachable'
+    
+                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
+                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'unreachable'
+    
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
+
                         deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
                         deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+
                         deploymentData.nonDeploymentError = TIMELINE_STATUS.GIT_COMMIT
                     } else if (deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon !== 'failed') {
-                        if (deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '') {
+                        if (deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.time === '') {
+                            deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = 'Unknown'
+                            deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'unknown'
+
                             deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'Unknown'
                             deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+
                             deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
                             deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
                         }
+                        else if (deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon !== 'failed') {
+                            deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = 'Unknown'
+                            deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unknown'
+
+                            deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ': Unknown'
+                            deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unknown'
+                        }
+                    }
+                    else {
+                        deploymentData.deploymentStatusBreakdown.GIT_COMMIT.displaySubText = ''
+                        deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'unreachable'
+    
+                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.displaySubText = ''
+                        deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'unreachable'
+    
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.displaySubText = ''
+                        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'unreachable'
+
+                        deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
+                        deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
+
+                        deploymentData.nonDeploymentError = TIMELINE_STATUS.GIT_COMMIT
                     }
                 }
             }
@@ -692,6 +795,7 @@ export const processDeploymentStatusDetailsData = (
             deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
             deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = true
             deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = true
+            deploymentData.deploymentStatusBreakdown.ARGOCD_SYNC.icon = 'success'
             deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
         } else if (data?.wfrStatus === 'Failed' || data?.wfrStatus === 'Degraded') {
             deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
@@ -700,6 +804,9 @@ export const processDeploymentStatusDetailsData = (
         } else if (data?.wfrStatus === 'Progressing') {
             deploymentData.deploymentStatus = DEPLOYMENT_STATUS.INPROGRESS
             deploymentData.deploymentStatusText = 'In progress'
+        } else if (data?.wfrStatus === 'TimedOut') {
+            deploymentData.deploymentStatus = DEPLOYMENT_STATUS.TIMED_OUT
+            deploymentData.deploymentStatusText = 'Timed out'
         }
     }
     return deploymentData
@@ -735,4 +842,47 @@ export const ValueContainerImage = (props) => {
 export const validateMomentDate = (date: string, format: string): string => {
     if (!date || date === ZERO_TIME_STRING) return '--'
     return moment(date, format).fromNow()
+}
+
+class EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        throw new Error('This method should be overridden by concrete classes.')
+    }
+}
+
+export class NoParamsNoEnvContext extends EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        return _envList[0].environmentId
+    }
+}
+
+export class NoParamsWithEnvContext extends EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        if (environmentId && _envList.map((env) => env.environmentId).includes(environmentId)) {
+            return environmentId
+        }
+        return _envList[0].environmentId
+    }
+}
+
+export class ParamsNoEnvContext extends EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
+            return +params.envId
+        }
+        return _envList[0].environmentId
+    }
+}
+
+export class ParamsAndEnvContext extends EnvironmentSelection {
+    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
+        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
+            // If environmentId is present and different from params.envContext, set environmentId
+            if (environmentId && +environmentId !== +params.envId) {
+                setEnvironmentId(+params.envId)
+            }
+            return +params.envId
+        }
+        return _envList[0].environmentId
+    }
 }

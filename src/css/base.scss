@@ -266,6 +266,9 @@ a:focus {
 .dc__white-space-pre {
     white-space: pre;
 }
+.dc__white-space-pre-wrap {
+    white-space: pre-wrap;
+}
 
 .dc__hyphens-auto {
     -ms-hyphens: auto;
@@ -2119,10 +2122,22 @@ button.anchor {
 
 .dc__border-bottom-n1 {
     border-bottom: solid 1px var(--N100);
+
+    &--important {
+        border-bottom: solid 1px var(--N100) !important;
+    }
 }
 
 .dc__border-right-n1 {
     border-right: solid 1px var(--N100);
+}
+
+.dc__border-left-n1 {
+    border-left: solid 1px var(--N100);
+
+    &--important {
+        border-left: solid 1px var(--N100) !important;
+    }
 }
 
 .dc__border-bottom-y2 {
@@ -2204,8 +2219,16 @@ button.anchor {
     max-width: 500px;
 }
 
+.dc__mxw-600 {
+    max-width: 600px;
+}
+
 .dc__mxw-800 {
     max-width: 800px;
+}
+
+.dc__mxw-960 {
+    max-width: 960px;
 }
 
 .dc__mxw-1000 {
@@ -2540,6 +2563,12 @@ textarea,
     }
 }
 
+.info-icon-n5 {
+    circle {
+        fill: var(--N500);
+    }
+}
+
 .info-icon-n6 {
     circle {
         fill: var(--N600);
@@ -2749,6 +2778,10 @@ textarea,
     width: 80px !important;
 }
 
+.w-96 {
+    width: 96px;
+}
+
 .w-100px {
     width: 100px;
 }
@@ -2783,6 +2816,10 @@ textarea,
 
 .w-200 {
     width: 200px;
+}
+
+.w-200-imp {
+    width: 200px !important;
 }
 
 .w-204 {
@@ -2861,6 +2898,10 @@ textarea,
     width: 480px;
 }
 
+.w-500 {
+    width: 500px !important;
+}
+
 .w-505 {
     width: 510px !important;
 }
@@ -2910,7 +2951,7 @@ textarea,
     width: 90%;
 }
 
-.w-95 {
+.w-95-imp {
     width: 95% !important;
 }
 
@@ -2978,8 +3019,16 @@ textarea,
     height: 8px;
 }
 
+.h-10 {
+    height: 10px;
+}
+
 .h-12 {
     height: 12px;
+}
+
+.h-14 {
+    height: 14px;
 }
 
 .h-16 {
@@ -3020,6 +3069,10 @@ textarea,
 
 .h-36 {
     height: 36px !important;
+}
+
+.h-38 {
+    height: 38px;
 }
 
 .h-40 {
@@ -3118,6 +3171,10 @@ textarea,
     height: 380px !important;
 }
 
+.h-500 {
+    height: 500px !important;
+}
+
 // Minimum Height
 .mh-28 {
     min-height: 28px;
@@ -3180,6 +3237,10 @@ textarea,
 }
 
 .mxh-210 {
+    max-height: 210px;
+}
+
+.mxh-250 {
     max-height: 210px;
 }
 
@@ -3294,6 +3355,10 @@ textarea,
     padding-left: 28px !important;
 }
 
+.pt-5-imp{
+    padding-top: 5px !important;
+}
+
 .pt-40 {
     padding-top: 40px;
 }
@@ -3336,6 +3401,10 @@ textarea,
     padding-top: 4px !important;
 }
 
+.pb-5-imp{
+    padding-bottom: 5px !important;
+}
+
 .pb-6-imp {
     padding-bottom: 6px !important;
 }
@@ -3352,6 +3421,10 @@ textarea,
     padding: 6px 12px !important;
 }
 
+.p-0-8-imp {
+    padding: 0px 8px !important;
+}
+
 // Margin in pixels
 .dc__m-auto {
     margin: auto;
@@ -3363,6 +3436,10 @@ textarea,
 
 .m-0-imp {
     margin: 0 !important;
+}
+
+.m-8-imp {
+    margin: 8px !important;
 }
 
 .m-tb-20 {
@@ -3404,6 +3481,10 @@ textarea,
     margin-right: 0px !important;
 }
 
+.mr-6-imp {
+    margin-right: 6px !important;
+}
+
 .mr-8-imp {
     margin-right: 8px !important;
 }
@@ -3414,6 +3495,10 @@ textarea,
 
 .mt-120 {
     margin-top: 120px;
+}
+
+.ml-36-imp {
+    margin-left: 36px !important 
 }
 
 .ml-54 {
@@ -3528,8 +3613,12 @@ textarea,
     transform: rotate(180deg);
 }
 
+.dc__flip-45 {
+    transform: rotate(45deg);
+}
+
 .dc__flip-90 {
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
 }
 
 .dc__flip-270 {
@@ -3619,6 +3708,10 @@ textarea::placeholder {
 
 .dc__hover-r100:hover {
     background-color: var(--R100);
+}
+
+.dc__hover-r500:hover {
+    background-color: var(--R500);
 }
 
 .dc__hover-cn1:hover {
@@ -3935,6 +4028,10 @@ textarea::placeholder {
 .fetch-more-loading-button svg {
     width: 100% !important;
     height: 100% !important;
+}
+
+.fs-11-imp{
+    font-size: 11px !important;
 }
 
 // Start: accouncement banner

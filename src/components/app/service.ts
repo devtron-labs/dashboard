@@ -9,7 +9,7 @@ import {
     DeploymentNodeType,
     put,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
+import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest } from './types'
@@ -282,8 +282,8 @@ export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
 }
 
-export const cancelCiTrigger = (params) => {
-    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}`
+export const cancelCiTrigger = (params, isForceAbort) => {
+    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}?forceAbort=${isForceAbort}`
     return trash(URL)
 }
 
@@ -334,7 +334,9 @@ export const triggerCDNode = (
             request['wfrIdForDeploymentWithSpecificTrigger'] = wfrId
         }
     }
-    return post(Routes.CD_TRIGGER_POST, request)
+    const options = getAPIOptionsWithTriggerTimeout()
+
+    return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
 export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
@@ -356,13 +358,23 @@ export const getWorkflowStatus = (appId: string) => {
     return get(URL)
 }
 
-export const getCIPipelines = (appId, filteredEnvIds?: string) => {
-  let filteredEnvParams = ''
-  if (filteredEnvIds) {
-      filteredEnvParams = `?envIds=${filteredEnvIds}`
-  }
-  const URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}${filteredEnvParams}`
-  return get(URL)
+export const getCIPipelines = (appId, filteredEnvIds?: string, callback?: (...args) => void) => {
+    let filteredEnvParams = ''
+    if (filteredEnvIds) {
+        filteredEnvParams = `?envIds=${filteredEnvIds}`
+    }
+    const URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}${filteredEnvParams}`
+    return get(URL).catch((error) => {
+        if (callback) {
+            callback(error)
+        }
+
+        return {
+            code: error.code,
+            status: error.status,
+            result: [],
+        }
+    })
 }
 
 export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSignal) {

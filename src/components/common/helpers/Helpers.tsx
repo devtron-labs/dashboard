@@ -5,9 +5,10 @@ import {
     OptionType,
     DeploymentAppTypes,
     getLoginInfo,
+    APIOptions,
+    useWindowSize,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { useWindowSize } from './UseWindowSize'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
@@ -79,7 +80,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     )
 
     function validateField(name, value): string | string[] {
-        if (validationSchema[name].required) {
+        if (validationSchema[name]?.required) {
             if (!value) {
                 return 'This is a required field.'
             }
@@ -93,7 +94,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // single validator
-        let _validator = validationSchema[name].validator
+        let _validator = validationSchema[name]?.validator
         if (_validator && typeof _validator === 'object') {
             if (!_validateSingleValidator(_validator, value)) {
                 return _validator.error
@@ -101,7 +102,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // multiple validators
-        let _validators = validationSchema[name].validators
+        let _validators = validationSchema[name]?.validators
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
             let errors = []
             _validators.forEach((_validator) => {
@@ -953,6 +954,7 @@ export function createClusterEnvGroup<T>(
                       value: obj[optionValue ? optionValue : optionLabel],
                       description: obj['description'],
                       isVirtualEnvironment: obj['isVirtualEnvironment'],
+                      isClusterCdActive: obj['isClusterCdActive'],
                   }
                 : obj,
         )
@@ -1118,15 +1120,26 @@ export const getDeploymentAppType = (
 export const hasApproverAccess = (approverList: string[]): boolean => {
     const loginInfo = getLoginInfo()
     let hasAccess = false
+    if(approverList?.length > 0) {
     for (const approver of approverList) {
         if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
             hasAccess = true
             break
         }
     }
+}
     return hasAccess
 }
 
 export const getNonEditableChartRepoText = (name: string): string => {
     return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
+}
+
+export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOptions => {
+    const _options: APIOptions = options ? JSON.parse(JSON.stringify(options)) : {}
+    if (window._env_.TRIGGER_API_TIMEOUT) {
+        _options.timeout = window._env_.TRIGGER_API_TIMEOUT
+    }
+
+    return _options
 }

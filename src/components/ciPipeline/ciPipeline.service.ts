@@ -12,7 +12,7 @@ import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/servic
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
-import { PipelineBuildStageType } from '../workflowEditor/types'
+import { ChangeCIPayloadType, PipelineBuildStageType } from '../workflowEditor/types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -54,7 +54,7 @@ export function getInitData(
                     webhookEvents: pipelineMetaConfig.result.webhookEvents,
                     ciPipelineSourceTypeOptions: pipelineMetaConfig.result.ciPipelineSourceTypeOptions,
                     webhookConditionList: pipelineMetaConfig.result.webhookConditionList,
-                    triggerType: TriggerType.Auto,
+                    triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
                     beforeDockerBuildScripts: [],
                     afterDockerBuildScripts: [],
                     preBuildStage: emptyStepsData(),
@@ -167,12 +167,12 @@ export function getInitDataWithCIPipeline(
     })
 }
 
-export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; appId: number; workflowId: number }) {
+export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; appId: number; workflowId: number }, changeCIPayload?: ChangeCIPayloadType) {
     delete parentCIPipeline['beforeDockerBuildScripts']
     delete parentCIPipeline['afterDockerBuildScripts']
-    const request = {
-        appId: params.appId,
-        appWorkflowId: params.workflowId,
+    const request: any = {
+        appId: changeCIPayload?.appId ?? params.appId,
+        appWorkflowId: changeCIPayload?.appWorkflowId ?? params.workflowId,
         action: PatchAction.CREATE,
         ciPipeline: {
             ...parentCIPipeline,
@@ -182,6 +182,13 @@ export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; a
             parentCiPipeline: parentCIPipeline.id,
             id: null,
         },
+    }
+
+    if (changeCIPayload?.switchFromCiPipelineId) {
+        request.switchFromCiPipelineId = changeCIPayload.switchFromCiPipelineId
+    }
+    else if (changeCIPayload?.switchFromExternalCiPipelineId) {
+        request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
     return savePipeline(request).then((response) => {
@@ -206,14 +213,24 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
+    changeCIPayload?: ChangeCIPayloadType,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
-    const request = {
-        appId: appId,
-        appWorkflowId: workflowId,
+
+    const request: any = {
+        appId: changeCIPayload?.appId ?? appId,
+        appWorkflowId: changeCIPayload?.appWorkflowId ?? workflowId,
         action: ciPipeline.id ? PatchAction.UPDATE_SOURCE : PatchAction.CREATE,
         ciPipeline: ci,
     }
+
+    if (changeCIPayload?.switchFromCiPipelineId) {
+        request.switchFromCiPipelineId = changeCIPayload.switchFromCiPipelineId
+    }
+    else if (changeCIPayload?.switchFromExternalCiPipelineId) {
+        request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
+    }
+
     return savePipeline(request).then((response) => {
         const ciPipelineFromRes = response.result.ciPipelines[0]
         return parseCIResponse(

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, showError, sortCallback, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, sortCallback, useAsync, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
 import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
@@ -30,6 +30,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
+    // There seems to be typing issue since result gives CIPipeline here it is CiPipeline
     const [pipelineList, setPipelineList] = useState<CiPipeline[]>([])
     const [ciGroupLoading, setCiGroupLoading] = useState(false)
     const [securityModuleInstalled, setSecurityModuleInstalled] = useState(false)
@@ -47,11 +48,18 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     const _filteredPipelines = []
                     let selectedPipelineExist = false
                     result.pipelineList.forEach((pipeline) => {
+                        if (pipeline.pipelineType === PipelineType.LINKED_CD) {
+                            return
+                        }
+
                         _filteredPipelines.push(pipeline)
                         selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
                     })
                     _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
-                    if (!selectedPipelineExist) {
+                    if (!_filteredPipelines.length && pipelineId) {
+                        replace(generatePath(path, { envId }))
+                    }
+                    else if (!selectedPipelineExist && _filteredPipelines.length ) {
                         replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
                     }
                     setPipelineList(_filteredPipelines)

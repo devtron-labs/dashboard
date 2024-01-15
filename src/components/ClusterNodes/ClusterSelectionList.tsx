@@ -14,6 +14,7 @@ import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
+import { DEFAULT_CLUSTER_ID } from '../cluster/cluster.type'
 
 export default function ClusterSelectionList({
     clusterOptions,
@@ -21,7 +22,7 @@ export default function ClusterSelectionList({
     isSuperAdmin,
     clusterListLoader,
     refreshData,
-    initTabsBasedOnRole
+    initTabsBasedOnRole,
 }: ClusterSelectionType) {
     const location = useLocation()
     const history = useHistory()
@@ -35,11 +36,15 @@ export default function ClusterSelectionList({
     const [searchApplied, setSearchApplied] = useState(false)
 
     useEffect(() => {
+        let filteredClusterOptions = clusterOptions
+        if (window._env_.HIDE_DEFAULT_CLUSTER) {
+            filteredClusterOptions = clusterOptions.filter((item) => item.id !== DEFAULT_CLUSTER_ID)
+        }
         setClusterList([])
         setFilteredClusterList([])
         setLastDataSync(!lastDataSync)
-        setClusterList(clusterOptions)
-        setFilteredClusterList(clusterOptions)
+        setClusterList(filteredClusterOptions)
+        setFilteredClusterList(filteredClusterOptions)
         setMinLoader(false)
     }, [clusterOptions])
 

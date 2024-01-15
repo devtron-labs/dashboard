@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { getLoginInfo, showError, Progressing, Host, Reload, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { getLoginInfo, showError, Host, Reload, useAsync, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { ErrorBoundary, AppContext } from '../../common'
 import Navigation from './Navigation'
@@ -39,7 +39,6 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
@@ -297,14 +296,13 @@ export default function NavigationRoutes() {
     if (pageState === ViewType.LOADING || loginLoader) {
         return (
             <div className="full-height-width">
-                <Progressing pageLoader />
+                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
             </div>
         )
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {
         const _isOnboardingPage = isOnboardingPage()
-
         return (
             <mainContext.Provider
                 value={{
@@ -324,6 +322,7 @@ export default function NavigationRoutes() {
                     installedModuleMap,
                     currentServerInfo,
                     isAirgapped,
+                    isSuperAdmin
                 }}
             >
                 <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
@@ -345,7 +344,9 @@ export default function NavigationRoutes() {
                                 pageOverflowEnabled ? '' : 'main__overflow-disabled'
                             }`}
                         >
-                            <Suspense fallback={<Progressing pageLoader />}>
+                            <Suspense
+                                fallback={<DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />}
+                            >
                                 <ErrorBoundary>
                                     <Switch>
                                         <Route
@@ -372,7 +373,11 @@ export default function NavigationRoutes() {
                                             <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
                                                 <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                             </Route>,
-                                            <Route key={URLS.CHARTS} path={URLS.CHARTS} render={() => <Charts isSuperAdmin={isSuperAdmin} />} />,
+                                            <Route
+                                                key={URLS.CHARTS}
+                                                path={URLS.CHARTS}
+                                                render={() => <Charts isSuperAdmin={isSuperAdmin} />}
+                                            />,
                                             <Route
                                                 key={URLS.DEPLOYMENT_GROUPS}
                                                 path={URLS.DEPLOYMENT_GROUPS}
@@ -404,7 +409,7 @@ export default function NavigationRoutes() {
                                                 />
                                             </Route>,
                                         ]}
-                                        {isSuperAdmin && !window._env_.K8S_CLIENT && (
+                                        {!window._env_.K8S_CLIENT && (
                                             <Route path={URLS.JOB}>
                                                 <AppContext.Provider value={contextValue}>
                                                     <Jobs />
@@ -519,14 +524,14 @@ export function RedirectUserWithSentry({ isFirstLoginUser }) {
 }
 
 export function RedirectToAppList() {
-    const { push } = useHistory()
+    const { replace } = useHistory()
     const { serverMode } = useContext(mainContext)
     useEffect(() => {
         let baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
         if (serverMode == SERVER_MODE.FULL) {
-            push(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
+            replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
         } else {
-            push(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
+            replace(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
         }
     }, [])
     return null
