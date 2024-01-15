@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { FunctionComponent, useEffect, useState } from 'react'
 import { InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -10,7 +10,11 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
 
-export default function UserGitRepConfiguration({ respondOnSuccess, appId, navItems }: UserGitRepoConfigurationProps) {
+const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> = ({
+    respondOnSuccess,
+    appId,
+    navItems,
+}: UserGitRepoConfigurationProps) => {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [isEditable, setIsEditable] = useState(false)
@@ -143,3 +147,5 @@ export default function UserGitRepConfiguration({ respondOnSuccess, appId, navIt
         </div>
     )
 }
+
+export default UserGitRepConfiguration

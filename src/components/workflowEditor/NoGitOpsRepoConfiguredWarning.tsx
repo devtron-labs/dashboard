@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
@@ -8,7 +8,11 @@ import { NoGitOpsRepoConfiguredWarningType, ReloadNoGitOpsRepoConfiguredModalTyp
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as RetryIcon } from '../../assets/icons/ic-arrow-clockwise.svg'
 
-export default function NoGitOpsRepoConfiguredWarning({ closePopup, appId, text }: NoGitOpsRepoConfiguredWarningType) {
+const NoGitOpsRepoConfiguredWarning: FunctionComponent<NoGitOpsRepoConfiguredWarningType> = ({
+    closePopup,
+    appId,
+    text,
+}: NoGitOpsRepoConfiguredWarningType) => {
     return (
         <VisibleModal2 className="confirmation-dialog">
             <div className="confirmation-dialog__body ">
@@ -39,7 +43,10 @@ export default function NoGitOpsRepoConfiguredWarning({ closePopup, appId, text 
     )
 }
 
-export const ReloadNoGitOpsRepoConfiguredModal = ({ closePopup, reload }: ReloadNoGitOpsRepoConfiguredModalType) => {
+export const ReloadNoGitOpsRepoConfiguredModal: FunctionComponent<ReloadNoGitOpsRepoConfiguredModalType> = ({
+    closePopup,
+    reload,
+}: ReloadNoGitOpsRepoConfiguredModalType) => {
     return (
         <VisibleModal2 className="confirmation-dialog">
             <div className="confirmation-dialog__body ">
@@ -66,3 +73,5 @@ export const ReloadNoGitOpsRepoConfiguredModal = ({ closePopup, reload }: Reload
         </VisibleModal2>
     )
 }
+
+export default NoGitOpsRepoConfiguredWarning

@@ -59,7 +59,7 @@ export const LinkAndLabelSpec = {
 }
 export const gitOpsRepoNotConfiguredWithOptionsHidden =
     'Deployment via GitOps requires a repository to save deployment manifests. Please configure and try again.'
-export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env) =>
+export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env: string): string =>
     `Deployment to ‘${env}’ requires a GitOps repository. Please configure and try again.`
 export const gitOpsRepoNotConfigured =
     'GitOps repository is required to deploy using GitOps. You can deploy using helm or configure GitOps repository and try again.'
