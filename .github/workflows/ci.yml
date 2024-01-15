@@ -1,0 +1,35 @@
+name: Dashboard CI
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - edited
+      - reopened
+
+jobs:
+  ci:
+    permissions:
+      contents: read
+      packages: read
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+        registry-url: https://npm.pkg.github.com/
+
+    - name: Install dependencies
+      run: yarn install
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check linting issues
+      run: yarn lint
