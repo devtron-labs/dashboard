@@ -412,11 +412,9 @@ export const getDecodedEncodedSecretManifestData = (
     returnAsString: boolean = false,
     isEncoded?: boolean,
 ): ManifestData | string => {
-    if (manifestData && manifestData?.MANIFEST_KEY_FIELDS.DATA) {
-        const encodedData = {
-            ...manifestData,
-            [MANIFEST_KEY_FIELDS.DATA]: decode(manifestData[MANIFEST_KEY_FIELDS.DATA], isEncoded),
-        }
-        return returnAsString ? JSON.stringify(encodedData) : manifestData
+    const encodedData = {
+        ...manifestData,
+        [MANIFEST_KEY_FIELDS.DATA]: decode(manifestData[MANIFEST_KEY_FIELDS.DATA], isEncoded),
     }
+    return returnAsString ? JSON.stringify(encodedData) : manifestData
 }
