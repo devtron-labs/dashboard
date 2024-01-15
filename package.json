@@ -64,7 +64,7 @@
         "lint": "eslint src/**/*.tsx",
         "lint-fix": "eslint --fix src/**/*.tsx",
         "start": "vite",
-        "build": "tsc && vite build",
+        "build": "tsc && NODE_OPTIONS=--max_old_space_size=4096 vite build",
         "serve": "vite preview",
         "build-light": "GENERATE_SOURCEMAP=false react-app-rewired build",
         "build-k8s-app": "GENERATE_SOURCEMAP=false REACT_APP_K8S_CLIENT=true react-app-rewired build",
