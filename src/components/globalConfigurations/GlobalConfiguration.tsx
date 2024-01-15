@@ -39,7 +39,7 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
-const BuildInfra = lazy(() => import('../../GlobalConfigurations/BuildInfra/BuildInfra'))
+const BuildInfra = lazy(() => import('../../pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
