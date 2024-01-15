@@ -196,9 +196,12 @@ export default function SecretList({
                     toggleDraftComments={toggleDraftComments}
                 />
             )}
-            <div className="variables-widget-position-cmcs">
-                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
-            </div>
+
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <div className="variables-widget-position-cmcs">
+                    <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
+                </div>
+            )}
         </div>
     )
 }
