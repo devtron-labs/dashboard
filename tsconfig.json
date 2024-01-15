@@ -17,7 +17,10 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react"
+        "jsx": "react",
+        "paths": {
+            "react": ["./node_modules/react", "./node_modules/@types/react/index.d.ts",]
+        }
     },
     "include": ["src"],
     "exclude": ["node_modules", "**/*.test.tsx", "dist"]
