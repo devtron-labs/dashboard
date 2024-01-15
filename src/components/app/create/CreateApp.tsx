@@ -41,7 +41,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     constructor(props) {
         super(props)
         this.state = {
-            view: ViewType.FORM,
+            view: ViewType.LOADING,
             code: 0,
             projects: [],
             disableForm: false,
@@ -73,6 +73,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     async componentDidMount() {
+        this.setState({ view: ViewType.LOADING })
         try {
             const { result } = await getTeamListMin()
             sortObjectArrayAlphabetically(result, 'name')

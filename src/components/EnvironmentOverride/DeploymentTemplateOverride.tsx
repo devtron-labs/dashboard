@@ -38,7 +38,7 @@ export default function DeploymentTemplateOverride({
     isProtected,
     reloadEnvironments,
 }: DeploymentTemplateOverrideProps) {
-    const { currentServerInfo } = useContext(mainContext)
+    const { currentServerInfo, isSuperAdmin } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
@@ -501,6 +501,7 @@ export default function DeploymentTemplateOverride({
                         setManifestDataRHS={setManifestDataRHSOverride}
                         setManifestDataLHS={setManifestDataLHSOverride}
                         convertVariablesOverride={state.convertVariablesOverride}
+                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>
