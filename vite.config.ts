@@ -80,7 +80,8 @@ export default defineConfig({
                 '/grafana': 'https://demo.devtron.info/',
             },
         },
-        define: {
-            global: 'globalThis',
-        },
+        // Global override for node environment
+        // define: {
+        //     global: 'globalThis',
+        // },
 })
