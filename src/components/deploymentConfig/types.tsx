@@ -219,6 +219,9 @@ export interface DeploymentTemplateEditorViewProps {
     convertVariables?: boolean
     setConvertVariables?: (convertVariables: boolean) => void
     groupedData?: any
+    hideLockedKeys: boolean
+    lockedConfigKeysWithLockType: ConfigKeysWithLockType
+    hideLockKeysToggled: React.MutableRefObject<boolean>
 }
 
 export interface DeploymentConfigContextType {

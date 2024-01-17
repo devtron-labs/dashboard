@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
@@ -66,6 +66,9 @@ export default function DeploymentTemplateOverrideForm({
         allowed: false,
     })
     const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
+    const [hideLockedKeys, setHideLockedKeys] = useState(false)
+    const hideLockKeysToggled = useRef(false)
+
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -108,7 +111,7 @@ export default function DeploymentTemplateOverrideForm({
         if (state.showLockedTemplateDiff) {
             // if locked keys
             if (!lockedConfigKeysWithLockType.allowed) {
-                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
+                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config,true).newDocument
             } else {
                 // if allowed keys
                 valuesOverride = getLockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
@@ -606,6 +609,9 @@ export default function DeploymentTemplateOverrideForm({
                     convertVariables={convertVariablesOverride}
                     setConvertVariables={setConvertVariables}
                     groupedData={groupedData}
+                    hideLockedKeys={hideLockedKeys}
+                    lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+                    hideLockKeysToggled={hideLockKeysToggled}
                 />
             )
         }
@@ -700,6 +706,10 @@ export default function DeploymentTemplateOverrideForm({
                 componentType={3}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
+                setHideLockedKeys={setHideLockedKeys}
+                hideLockedKeys={hideLockedKeys}
+                hideLockKeysToggled={hideLockKeysToggled}
+                inValidYaml={state.unableToParseYaml}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}

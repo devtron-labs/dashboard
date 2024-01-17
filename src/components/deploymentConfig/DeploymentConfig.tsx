@@ -1,4 +1,4 @@
-import React, { Reducer, createContext, useContext, useEffect, useReducer, useState } from 'react'
+import React, { Reducer, createContext, useContext, useEffect, useReducer, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import {
@@ -87,6 +87,9 @@ export default function DeploymentConfig({
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+    const [hideLockedKeys, setHideLockedKeys] = useState(false)
+    const hideLockKeysToggled = useRef(false)
+
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
     const baseDeploymentAbortController = new AbortController()
 
@@ -762,8 +765,8 @@ export default function DeploymentConfig({
 
         if(state.showLockedTemplateDiff) {
             // if locked keys 
-            if(!lockedConfigKeysWithLockType.allowed) {
-                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
+            if (!lockedConfigKeysWithLockType.allowed) {
+                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config, true).newDocument
             } else {
                 // if allowed keys
                 valuesOverride = getLockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
@@ -868,6 +871,9 @@ export default function DeploymentConfig({
                 convertVariables={state.convertVariables}
                 setConvertVariables={setConvertVariables}
                 groupedData={state.groupedOptionsData}
+                hideLockedKeys={hideLockedKeys}
+                lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+                hideLockKeysToggled={hideLockKeysToggled}
             />
         )
     }
@@ -957,6 +963,11 @@ export default function DeploymentConfig({
                         setConvertVariables={setConvertVariables}
                         componentType={3}
                         setShowLockedDiffForApproval={setShowLockedDiffForApproval}
+                        setHideLockedKeys={setHideLockedKeys}
+                        hideLockedKeys={hideLockedKeys}
+                        setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
+                        hideLockKeysToggled={hideLockKeysToggled}
+                        inValidYaml={state.unableToParseYaml}
                     />
                     {renderValuesView()}
                     {state.showConfirmation && (
