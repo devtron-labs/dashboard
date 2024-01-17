@@ -87,6 +87,7 @@ import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import AnnouncementBanner from '../../../common/AnnouncementBanner'
+import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -312,7 +313,6 @@ export default function CDMaterial({
                 setTagsEditable(materialsResult.tagsEditable)
                 setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                 setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
-
                 setMaterial(materialsResult.materials)
                 const _isConsumedImageAvailable =
                     materialsResult.materials?.some((materialItem) => materialItem.deployed && materialItem.latest) ??
@@ -1252,6 +1252,16 @@ export default function CDMaterial({
         }
     }
 
+    const renderDuplicateImageDigest = (hasDuplicateImages: boolean) => {
+        if(!hasDuplicateImages) return null
+        return (
+            <div className="flexbox dc__duplicate-image-digest mb-8">
+                <Warning className="icon-dim-16 mr-4" />
+                More images exist with the same tag.
+            </div>
+        )
+    }
+
     // NOTE: Make it pure component by taking parentEnvironment as args
     const renderActiveCD = (mat: CDMaterialType) => (
         <>
@@ -1376,6 +1386,12 @@ export default function CDMaterial({
                     </span>
                 </Tippy>
             )
+        } else if (mat.isSuperseded) {
+            return (
+                <span className="cn-7 fw-6" data-testid={`cd-artifact-superseded`}>
+                    Superseded
+                </span>
+            )
         } else if (mat.isSelected) {
             return (
                 <Check
@@ -1442,7 +1458,7 @@ export default function CDMaterial({
                             )}
                         >
                             <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                            <div className={`dc__registry-icon ${mat.registryType} mr-8`}></div>
+                                <div className={`dc__registry-icon ${mat.registryType} mr-8`}></div>
                                 {mat.image}
                             </div>
                         </ConditionalWrap>
@@ -1565,6 +1581,7 @@ export default function CDMaterial({
                     <div className="p-12 bcn-0 br-4">
                         <div className="dc__content-space flexbox dc__align-start">
                             <div>
+                                {renderDuplicateImageDigest(mat.hasDuplicateImages)}
                                 {renderSequentialCDCardTitle(mat)}
                                 <div
                                     data-testid={`cd-material-history-image-${mat.index}`}
