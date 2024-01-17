@@ -16,7 +16,7 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
                 <div className="flex dc__content-space w-100 cursor flex top">
                     <div className="flex left">
                         <div className="pc-icon-container bcn-1 br-8 mr-16 flexbox">
-                            <DockerWithImage className="icon-dim-24" />
+                            <DockerWithImage />
                         </div>
                         <div>
                             <span className="fw-6">Pull container image with image digest</span>
