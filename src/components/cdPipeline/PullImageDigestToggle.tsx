@@ -26,7 +26,7 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
                             </div>
                         </div>
                     </div>
-                    <div style={{ width: '32px', height: '20px' }}>
+                    <div className="ic-toggle-dim">
                         <Toggle
                             selected={formData.isDigestEnforcedForPipeline}
                             onSelect={handleCustomTagToggle}
