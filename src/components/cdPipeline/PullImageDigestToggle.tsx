@@ -22,7 +22,6 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
                             <span className="fw-6">Pull container image with image digest</span>
                             <div className="cn-7 ">
                                 When enabled, image will be pulled with image digest to ensure uniqueness of image.
-                                Learn more
                             </div>
                         </div>
                     </div>
