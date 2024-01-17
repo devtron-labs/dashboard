@@ -3,7 +3,7 @@ import React from 'react'
 import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-with-image.svg'
 import { PullImageDigestToggleType } from './types'
 
-function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleType) {
+function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleType): JSX.Element {
     const handleCustomTagToggle = (): void => {
         const _formData = { ...formData }
         _formData.isDigestEnforcedForPipeline = !_formData.isDigestEnforcedForPipeline
