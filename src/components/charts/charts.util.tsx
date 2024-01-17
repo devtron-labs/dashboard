@@ -108,7 +108,6 @@ export const renderAdditionalErrorInfo = (handleNameChange, suggestedName, index
                 . Suggested Name:
                 <span className="anchor pointer" onClick={(e) => handleNameChange(index, suggestedName)}>
                     {suggestedName}
-                    {console.log(suggestedName)}
                 </span>
             </>
         )

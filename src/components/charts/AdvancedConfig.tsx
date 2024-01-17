@@ -152,7 +152,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                                 data-testid="advanced-option-app-name-box"
                                 isRequiredField={true}
                                 error={appName?.error}
-                                additionalErrorInfo={appName?.error && renderAdditionalErrorInfo(handleNameChange, appName.suggestedName, index)}
+                                additionalErrorInfo={renderAdditionalErrorInfo(handleNameChange, appName.suggestedName, index)}
                             />
                     </div>}
                     {handleEnvironmentChange && <div className="flex top mb-16">
