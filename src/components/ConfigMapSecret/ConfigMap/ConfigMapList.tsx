@@ -214,7 +214,7 @@ export default function ConfigMapList({
                 />
             )}
 
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
+            {window._env_.VITE_ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position-cmcs">
                     <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
                 </div>

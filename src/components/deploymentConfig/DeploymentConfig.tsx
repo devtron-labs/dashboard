@@ -461,7 +461,7 @@ export default function DeploymentConfig({
             //create flow
             save()
         } else if (isSuperAdmin) {
-            //is superadmin 
+            //is superadmin
             openConfirmationOrSaveChangesModal()
         } else checkForLockedChanges()
     }
@@ -741,7 +741,7 @@ export default function DeploymentConfig({
             payload: value,
         })
     }
-    
+
     const handleChangeCheckbox = () => {
         if (!saveEligibleChangesCb) {
             openConfirmationOrSaveChangesModal()
@@ -761,7 +761,7 @@ export default function DeploymentConfig({
         let valuesOverride = obj
 
         if(state.showLockedTemplateDiff) {
-            // if locked keys 
+            // if locked keys
             if(!lockedConfigKeysWithLockType.allowed) {
                 valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
             } else {
@@ -880,7 +880,7 @@ export default function DeploymentConfig({
             }`}
             onSubmit={handleSaveChanges}
         >
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
+            {window._env_.VITE_ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
                     <FloatingVariablesSuggestions zIndex={100} appId={appId} />
                 </div>
