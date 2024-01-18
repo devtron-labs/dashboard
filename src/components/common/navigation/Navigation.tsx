@@ -14,9 +14,8 @@ import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-sec
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
-import { ReactComponent as ChristmasLogo } from '../../../assets/icons/ic-sidebar-dt-with-hat.svg'
-// TODO: Remove after New Year
-// import NavSprite from '../../../assets/icons/navigation-sprite.svg'
+// Fallback Icon
+import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
@@ -336,15 +335,23 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                {/* TODO: Uncomment after New Year */}
-                                {/* <svg
-                                    className="devtron-logo"
-                                    data-testid="click-on-devtron-app-logo"
-                                    viewBox="0 0 40 40"
-                                >
-                                    <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
-                                </svg> */}
-                                <ChristmasLogo className="icon-dim-40" />
+                                {window._env_.SIDEBAR_DT_LOGO ? (
+                                    <img
+                                        src={window._env_.SIDEBAR_DT_LOGO}
+                                        alt="devtron"
+                                        className="icon-dim-40"
+                                        width={40}
+                                        height={40}
+                                    />
+                                ): (
+                                    <svg
+                                        className="devtron-logo"
+                                        data-testid="click-on-devtron-app-logo"
+                                        viewBox="0 0 40 40"
+                                    >
+                                        <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
+                                    </svg>
+                                )}
                                 <div className="pl-12">
                                     <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
                                 </div>
