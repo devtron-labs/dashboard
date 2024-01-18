@@ -30,5 +30,7 @@
 | DEFAULT_CI_TRIGGER_TYPE_MANUAL     | "false"    | Change default trigger behaviour of newly created ci-pipeline to manual |
 | GLOBAL_API_TIMEOUT    |  60000  | Default timeout for all API requests in DASHBOARD  |
 | TRIGGER_API_TIMEOUT   |  60000  | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD  |
+| LOGIN_DT_LOGO                      | ""         | Devtron logo for login page     |
+| SIDEBAR_DT_LOGO                    | ""         | Devtron logo for sidebar        |
 
 # DASHBOARD CONFIG SECRET
