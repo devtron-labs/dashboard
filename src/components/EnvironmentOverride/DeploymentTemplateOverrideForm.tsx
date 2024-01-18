@@ -623,9 +623,12 @@ export default function DeploymentTemplateOverrideForm({
             }`}
             onSubmit={handleSaveChanges}
         >
-            <div className="variables-widget-position">
-                <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
-            </div>
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <div className="variables-widget-position">
+                    <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
+                </div>
+            )}
+
             <DeploymentTemplateOptionsTab
                 isEnvOverride={true}
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
