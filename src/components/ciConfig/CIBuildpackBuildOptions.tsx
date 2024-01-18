@@ -15,7 +15,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { getAbsoluteProjectPath, _multiSelectStyles } from './CIConfig.utils'
+import { getAbsoluteProjectPath } from './CIConfig.utils'
 import { OptionType } from '../app/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import {
@@ -108,13 +108,69 @@ const menuListComponent = (props): JSX.Element => {
     )
 }
 
+function BuildContextLabel() {
+    return (
+        <label htmlFor="" className="form__label flexbox-imp flex-align-center">
+            {CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.label}
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300"
+                placement="top"
+                Icon={HelpIcon}
+                iconClass="fcv-5"
+                heading={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.heading}
+                infoText={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.infoText}
+                showCloseButton
+                trigger="click"
+                interactive
+            >
+                <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+            </TippyCustomized>
+        </label>
+    )
+}
+
+function additionalBuilderTippyContent() {
+    return (
+        <div className="p-12 fs-13 fw-4 lh-20">
+            <span>{CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.additionalContent.label}</span>
+            <ol className="dc__list-style-disc m-0 pl-20">
+                {CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.additionalContent.listItems.map((_item) => (
+                    <li key={_item}>{_item}</li>
+                ))}
+            </ol>
+        </div>
+    )
+}
+
+function BuilderTippy() {
+    return (
+        <TippyCustomized
+            theme={TippyTheme.white}
+            className="w-300"
+            placement="top"
+            Icon={HelpIcon}
+            iconClass="fcv-5"
+            heading={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.heading}
+            infoText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.infoText}
+            additionalContent={additionalBuilderTippyContent()}
+            documentationLinkText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.documentationLinkText}
+            documentationLink={DOCUMENTATION.APP_CI_CONFIG_BUILD_WITHOUT_DOCKER}
+            showCloseButton
+            trigger="click"
+            interactive
+        >
+            <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+        </TippyCustomized>
+    )
+}
+
 export default function CIBuildpackBuildOptions({
     ciBuildConfig,
     sourceConfig,
     buildersAndFrameworks,
     setBuildersAndFrameworks,
     configOverrideView,
-    allowOverride,
     currentMaterial,
     selectedMaterial,
     handleFileLocationChange,
@@ -125,6 +181,7 @@ export default function CIBuildpackBuildOptions({
     setCurrentCIBuildConfig,
     buildEnvArgs,
     setBuildEnvArgs,
+    readOnly,
 }: CIBuildpackBuildOptionsProps) {
     const [supportedLanguagesList, setSupportedLanguagesList] = useState<LanguageOptionType[]>([])
     const [builderLanguageSupportMap, setBuilderLanguageSupportMap] =
@@ -196,7 +253,8 @@ export default function CIBuildpackBuildOptions({
             _builder = buildersAndFrameworks.selectedBuilder
 
         // Update buildersAndFrameworks & buildPackConfig only on the first mount of the component
-        if (!_language || !_version || !_builder) {
+        // for !builderLanguageSupportMap, we will reset the values on init, but not proper solution
+        if (!_language || !_version || !_builder || !builderLanguageSupportMap) {
             if (ciBuildConfig?.buildPackConfig) {
                 _builder = {
                     label: ciBuildConfig.buildPackConfig.builderId,
@@ -370,7 +428,7 @@ export default function CIBuildpackBuildOptions({
          * - Else remove empty arg from buildEnvArgs array & proceed
          */
         if (_buildEnvArgs.length === 1 && !_buildEnvArgs[0].k && version !== AUTO_DETECT) {
-            if (isInitCall) {
+            if (isInitCall && builder.BuilderLangEnvParam) {
                 _buildEnvArgs[0].k = builder.BuilderLangEnvParam
                 _buildEnvArgs[0].v = version
                 setBuildEnvArgs(_buildEnvArgs)
@@ -454,116 +512,37 @@ export default function CIBuildpackBuildOptions({
         )
     }
 
-    const additionalBuilderTippyContent = () => {
-        return (
-            <div className="p-12 fs-13 fw-4 lh-20">
-                <span>{CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.additionalContent.label}</span>
-                <ol className="dc__list-style-disc m-0 pl-20">
-                    {CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.additionalContent.listItems.map((_item) => (
-                        <li key={_item}>{_item}</li>
-                    ))}
-                </ol>
-            </div>
-        )
-    }
-
     const formatCreateLabel = (inputValue: string) => `Use '${inputValue}'`
 
     const projectPathVal =
-        configOverrideView && !allowOverride ? ciBuildConfig.buildPackConfig?.projectPath : projectPath.value
+        readOnly ? ciBuildConfig.buildPackConfig?.projectPath : projectPath.value
 
-    return (
-        <div className="form-row__docker buildpack-option-wrapper mb-4">
-            <div className="flex top project-material-options">
-                <div className="form__field">
-                    <label className="form__label">{`${
-                        configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
-                    } containing code`}</label>
-                    {configOverrideView && !allowOverride ? (
+    if (readOnly) {
+        return (
+            <div className="form-row__docker buildpack-option-wrapper mb-4">
+                <div className="flex top project-material-options">
+                    <div className="form__field">
+                        <label className="form__label">Repository containing code</label>
+
                         <div className="flex left">
                             {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
                             <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
                         </div>
-                    ) : (
-                        <ReactSelect
-                            classNamePrefix="build-config__select-repository-containing-code"
-                            className="m-0"
-                            tabIndex={3}
-                            isSearchable={false}
-                            options={sourceConfig.material}
-                            getOptionLabel={(option) => `${option.name}`}
-                            getOptionValue={(option) => `${option.checkoutPath}`}
-                            value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
-                            styles={getCommonSelectStyle({
-                                control: (base, state) => ({
-                                    ...base,
-                                    minHeight: '36px',
-                                    boxShadow: 'none',
-                                    backgroundColor: 'var(--N50)',
-                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                    cursor: 'pointer',
-                                }),
-                                menu: (base) => ({
-                                    ...base,
-                                    marginTop: '0',
-                                    minWidth: '226px',
-                                }),
-                            })}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: repositoryOption,
-                                Control: repositoryControls,
-                            }}
-                            onChange={handleFileLocationChange}
-                            isDisabled={configOverrideView && !allowOverride}
-                        />
-                    )}
-                    {repository.error && <label className="form__error">{repository.error}</label>}
-                </div>
-                <div className="form__field">
-                    <label htmlFor="" className="form__label flexbox-imp flex-align-center">
-                        {CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.label}
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300"
-                            placement="top"
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
-                            heading={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.heading}
-                            infoText={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.infoText}
-                            showCloseButton={true}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </TippyCustomized>
-                    </label>
-                    {configOverrideView && !allowOverride ? (
+
+                        {repository.error && <label className="form__error">{repository.error}</label>}
+                    </div>
+
+                    <div className="form__field">
+                        <BuildContextLabel />
                         <span className="fs-14 fw-4 lh-20 cn-9">{getAbsoluteProjectPath(projectPathVal)}</span>
-                    ) : (
-                        <div className="project-path-container h-36">
-                            <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                                ./
-                            </span>
-                            <CustomInput
-                                data-testid="build-pack-project-path-textbox"
-                                tabIndex={4}
-                                rootClassName="file-name"
-                                placeholder="Project path"
-                                name="projectPath"
-                                value={projectPathVal === './' ? '' : projectPathVal}
-                                onChange={handleOnChangeConfig}
-                                disabled={configOverrideView && !allowOverride}
-                            />
-                        </div>
-                    )}
+                    </div>
                 </div>
-            </div>
-            <div className="flex top buildpack-options">
-                <div className="buildpack-language-options">
-                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Language}</label>
-                        {configOverrideView && !allowOverride ? (
+
+                <div className="flex top buildpack-options">
+                    <div className="buildpack-language-options">
+                        <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                            <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Language}</label>
+
                             <div className="flex left">
                                 {buildersAndFrameworks.selectedLanguage?.icon && (
                                     <img
@@ -576,105 +555,162 @@ export default function CIBuildpackBuildOptions({
                                     {buildersAndFrameworks.selectedLanguage?.label}
                                 </span>
                             </div>
-                        ) : (
-                            <ReactSelect
-                                classNamePrefix="build-pack-language-dropdown"
-                                className="m-0"
-                                tabIndex={3}
-                                options={supportedLanguagesList}
-                                value={buildersAndFrameworks.selectedLanguage}
-                                isSearchable={false}
-                                styles={getCommonSelectStyle(LANGUAGE_SELECT_STYLES)}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    Option: OptionWithIcon,
-                                    ValueContainer: ValueContainerWithIcon,
-                                }}
-                                onChange={handleLanguageSelection}
-                                isDisabled={configOverrideView && !allowOverride}
-                            />
-                        )}
-                    </div>
-                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Version}</label>
-                        {configOverrideView && !allowOverride ? (
+                        </div>
+
+                        <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                            <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Version}</label>
                             <span className="fs-14 fw-4 lh-20 cn-9">
                                 {buildersAndFrameworks.selectedVersion?.value}
                             </span>
-                        ) : (
-                            <ReactSelect
-                                classNamePrefix="build-pack-version-dropdown"
-                                className="m-0"
-                                tabIndex={3}
-                                isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
-                                options={
-                                    builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions
-                                }
-                                value={buildersAndFrameworks.selectedVersion}
-                                formatOptionLabel={formatOptionLabel}
-                                isSearchable={false}
-                                styles={getCommonSelectStyle(VERSION_SELECT_STYLES)}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    Option,
-                                }}
-                                onChange={handleVersionSelection}
-                                isDisabled={configOverrideView && !allowOverride}
-                            />
-                        )}
+                        </div>
+                    </div>
+
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                        <label className="form__label flexbox-imp flex-align-center">
+                            {CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.heading}
+
+                            <BuilderTippy />
+                        </label>
+
+                        <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedBuilder?.label}</span>
                     </div>
                 </div>
-                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label className="form__label flexbox-imp flex-align-center">
-                        {configOverrideView && !allowOverride
-                            ? CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.heading
-                            : CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300"
-                            placement="top"
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
-                            heading={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.heading}
-                            infoText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.infoText}
-                            additionalContent={additionalBuilderTippyContent()}
-                            documentationLinkText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.documentationLinkText}
-                            documentationLink={DOCUMENTATION.APP_CI_CONFIG_BUILD_WITHOUT_DOCKER}
-                            showCloseButton={true}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </TippyCustomized>
-                    </label>
-                    {configOverrideView && !allowOverride ? (
-                        <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedBuilder?.label}</span>
-                    ) : (
-                        <CreatableSelect
-                            classNamePrefix="build-pack-select-builder-dropdown"
-                            placeholder={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
+            </div>
+        )
+    }
+
+    return (
+        <div className="form-row__docker buildpack-option-wrapper mb-4">
+            <div className="flex top project-material-options">
+                <div className="form__field">
+                    <label className="form__label">Select repository containing code</label>
+
+                    <ReactSelect
+                        classNamePrefix="build-config__select-repository-containing-code"
+                        className="m-0"
+                        tabIndex={3}
+                        isSearchable={false}
+                        options={sourceConfig.material}
+                        getOptionLabel={(option) => `${option.name}`}
+                        getOptionValue={(option) => `${option.checkoutPath}`}
+                        value={selectedMaterial}
+                        styles={getCommonSelectStyle({
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: '36px',
+                                boxShadow: 'none',
+                                backgroundColor: 'var(--N50)',
+                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                cursor: 'pointer',
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                marginTop: '0',
+                                minWidth: '226px',
+                            }),
+                        })}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: repositoryOption,
+                            Control: repositoryControls,
+                        }}
+                        onChange={handleFileLocationChange}
+                    />
+
+                    {repository.error && <label className="form__error">{repository.error}</label>}
+                </div>
+                <div className="form__field">
+                    <BuildContextLabel />
+
+                    <div className="project-path-container h-36">
+                        <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                            ./
+                        </span>
+                        <CustomInput
+                            data-testid="build-pack-project-path-textbox"
+                            tabIndex={4}
+                            rootClassName="file-name"
+                            placeholder="Project path"
+                            name="projectPath"
+                            value={projectPathVal === './' ? '' : projectPathVal}
+                            onChange={handleOnChangeConfig}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex top buildpack-options">
+                <div className="buildpack-language-options">
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                        <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Language}</label>
+                        <ReactSelect
+                            classNamePrefix="build-pack-language-dropdown"
+                            className="m-0"
+                            tabIndex={3}
+                            options={supportedLanguagesList}
+                            value={buildersAndFrameworks.selectedLanguage}
+                            isSearchable={false}
+                            styles={getCommonSelectStyle(LANGUAGE_SELECT_STYLES)}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                                Option: OptionWithIcon,
+                                ValueContainer: ValueContainerWithIcon,
+                            }}
+                            onChange={handleLanguageSelection}
+                        />
+                    </div>
+
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                        <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Version}</label>
+                        <ReactSelect
+                            classNamePrefix="build-pack-version-dropdown"
                             className="m-0"
                             tabIndex={3}
                             isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
                             options={
-                                builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]
-                                    ?.BuilderLanguageMetadata
+                                builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]?.Versions
                             }
-                            value={buildersAndFrameworks.selectedBuilder}
-                            formatCreateLabel={formatCreateLabel}
-                            styles={getCommonSelectStyle(BUILDER_SELECT_STYLES)}
+                            value={buildersAndFrameworks.selectedVersion}
+                            formatOptionLabel={formatOptionLabel}
+                            isSearchable={false}
+                            styles={getCommonSelectStyle(VERSION_SELECT_STYLES)}
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
                                 Option,
-                                MenuList: menuListComponent,
                             }}
-                            onChange={handleBuilderSelection}
-                            isDisabled={configOverrideView && !allowOverride}
+                            onChange={handleVersionSelection}
                         />
-                    )}
+                    </div>
+                </div>
+                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                    <label className="form__label flexbox-imp flex-align-center">
+                        {CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
+                        <BuilderTippy />
+                    </label>
+
+                    <CreatableSelect
+                        classNamePrefix="build-pack-select-builder-dropdown"
+                        placeholder={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
+                        className="m-0"
+                        tabIndex={3}
+                        isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
+                        options={
+                            builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]
+                                ?.BuilderLanguageMetadata
+                        }
+                        value={buildersAndFrameworks.selectedBuilder}
+                        formatCreateLabel={formatCreateLabel}
+                        styles={getCommonSelectStyle(BUILDER_SELECT_STYLES)}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                            MenuList: menuListComponent,
+                        }}
+                        onChange={handleBuilderSelection}
+                    />
                 </div>
             </div>
         </div>
