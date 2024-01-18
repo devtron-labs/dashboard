@@ -138,17 +138,14 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
         return (
             <div className="login__control">
-                {window._env_.LOGIN_DT_LOGO ? (
-                    <img
-                        src={window._env_.LOGIN_DT_LOGO}
-                        alt="login-dt-logo"
-                        className="login__dt-logo"
-                        width="170px"
-                        height="120px"
-                    />
-                ) : (
-                    <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
-                )}
+                <img
+                    src={window._env_.LOGIN_DT_LOGO || dt}
+                    alt="login-dt-logo"
+                    className="login__dt-logo"
+                    width="170px"
+                    height="120px"
+                />
+
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {this.state.loginList
                     .filter((sso) => sso.active)
@@ -182,17 +179,13 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
         return (
             <div className="login__control">
-                {window._env_.LOGIN_DT_LOGO ? (
-                    <img
-                        src={window._env_.LOGIN_DT_LOGO}
-                        alt="login-dt-logo"
-                        className="login__dt-logo"
-                        width="170px"
-                        height="120px"
-                    />
-                ) : (
-                    <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
-                )}
+                <img
+                    src={window._env_.LOGIN_DT_LOGO || dt}
+                    alt="login-dt-logo"
+                    className="login__dt-logo"
+                    width="170px"
+                    height="120px"
+                />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {/* @ts-ignore */}
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
