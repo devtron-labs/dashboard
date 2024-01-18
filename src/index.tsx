@@ -30,6 +30,7 @@ interface customEnv {
     VITE_EA_APP_DETAILS_POLLING_INTERVAL?: number
     VITE_CENTRAL_API_ENDPOINT?: string
     VITE_HIDE_DEPLOYMENT_GROUPS?: boolean
+    VITE_HIDE_GITOPS_OR_HELM_OPTION?: boolean
     VITE_CONFIGURABLE_TIMEOUT?: string
     VITE_HIDE_APPLICATION_GROUPS?: boolean
     K8S_CLIENT?: boolean
@@ -143,6 +144,7 @@ if (!window || !window._env_) {
         VITE_EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         VITE_CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         VITE_HIDE_DEPLOYMENT_GROUPS: true,
+        VITE_HIDE_GITOPS_OR_HELM_OPTION: false,
         VITE_HIDE_APPLICATION_GROUPS: false,
         K8S_CLIENT: import.meta.env.VITE_REACT_APP_K8S_CLIENT === 'true',
         VITE_USE_V2: true,

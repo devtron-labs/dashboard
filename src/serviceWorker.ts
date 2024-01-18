@@ -25,8 +25,6 @@ type Config = {
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
 };
 
-console.log("This is env", import.meta.env)
-
 export function register(config?: Config) {
   if (import.meta.env.VITE_NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
