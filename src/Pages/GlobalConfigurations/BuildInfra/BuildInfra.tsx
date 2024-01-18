@@ -13,7 +13,7 @@ import {
 import { BuildInfraProps } from './types'
 import './styles.scss'
 
-export const BuildInfra: FunctionComponent<BuildInfraProps> = ({ isSuperAdmin }) => {
+const BuildInfra: FunctionComponent<BuildInfraProps> = ({ isSuperAdmin }) => {
     const { breadcrumbs } = useBreadcrumb(BUILD_INFRA_BREADCRUMB)
     // Sending isSuperAdmin since don't even want to send API Request for that case
     const {
