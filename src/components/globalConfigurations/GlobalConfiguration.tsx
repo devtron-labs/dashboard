@@ -39,7 +39,7 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
-const BuildInfra = lazy(() => import('../../pages/GlobalConfigurations/BuildInfra/BuildInfra'))
+const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
@@ -486,7 +486,6 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Lock Deployment config</div>
                         </NavLink>
                     )}
-                    {/* TODO: Ask for order in BuildInfra */}
                     {BuildInfra && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
@@ -616,7 +615,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 ...(serverMode !== SERVER_MODE.EA_ONLY && BuildInfra
                     ? [
                           <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
-                              <BuildInfra />
+                              <BuildInfra isSuperAdmin={isSuperAdmin} />
                           </Route>,
                       ]
                     : []),
