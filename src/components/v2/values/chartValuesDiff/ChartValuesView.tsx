@@ -1540,7 +1540,7 @@ function ChartValuesView({
                                 isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                        {!window._env_.VITE_HIDE_DEPLOYMENT_GROUPS &&
                             !isExternalApp &&
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&

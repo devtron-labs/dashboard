@@ -81,7 +81,7 @@ function RouterComponent({ envType }) {
         _getAndSetAppDetail(fetchExternalLinks)
         initTimer = setTimeout(() => {
             _init()
-        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
+        }, window._env_.VITE_HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
     const handleAppDetailsCallError = (e: any) => {

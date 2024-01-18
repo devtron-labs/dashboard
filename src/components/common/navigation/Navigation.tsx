@@ -57,7 +57,7 @@ const NavigationList = [
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
         markAsBeta: true,
-        forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
+        forceHideEnvKey: 'VITE_HIDE_APPLICATION_GROUPS',
     },
     {
         title: 'Deployment Groups',
@@ -67,7 +67,7 @@ const NavigationList = [
         icon: DeploymentGroupIcon,
         href: URLS.DEPLOYMENT_GROUPS,
         isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
+        forceHideEnvKey: 'VITE_HIDE_DEPLOYMENT_GROUPS',
     },
     {
         title: 'Resource Browser',

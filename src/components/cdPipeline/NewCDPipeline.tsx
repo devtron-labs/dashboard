@@ -97,7 +97,7 @@ export default function NewCDPipeline({
         environments: [],
         environmentName: '',
         namespace: '',
-        deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
+        deploymentAppType: window._env_.VITE_HIDE_DEPLOYMENT_GROUPS ? '' : DeploymentAppTypes.HELM,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
@@ -1092,7 +1092,7 @@ export default function NewCDPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
+        if (!window._env_.VITE_ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
 
         return (
             <div className="flexbox">

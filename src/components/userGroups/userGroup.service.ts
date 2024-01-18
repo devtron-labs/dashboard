@@ -63,9 +63,9 @@ export function getParsedData(teamList, appList, environmentList) {
 
 export function saveUser(request: CreateUser) {
     const options: APIOptions = {
-        timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
+        timeout: window._env_.VITE_CONFIGURABLE_TIMEOUT ? parseInt(window._env_.VITE_CONFIGURABLE_TIMEOUT, 10) : 30,
     }
-    if (window._env_.CONFIGURABLE_TIMEOUT) {
+    if (window._env_.VITE_CONFIGURABLE_TIMEOUT) {
         return request.id ? put('user', request, options) : post('user', request, options)
     } else {
         return request.id ? put('user', request) : post('user', request)
@@ -74,9 +74,9 @@ export function saveUser(request: CreateUser) {
 
 export function saveGroup(request: CreateGroup) {
     const options: APIOptions = {
-        timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
+        timeout: window._env_.VITE_CONFIGURABLE_TIMEOUT ? parseInt(window._env_.VITE_CONFIGURABLE_TIMEOUT, 10) : 30,
     }
-    if (window._env_.CONFIGURABLE_TIMEOUT) {
+    if (window._env_.VITE_CONFIGURABLE_TIMEOUT) {
         return request.id ? put(Routes.USER_ROLE_GROUP, request, options) : post('user/role/group', request, options)
     } else {
         return request.id ? put(Routes.USER_ROLE_GROUP, request) : post('user/role/group', request)

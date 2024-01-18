@@ -73,7 +73,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                         </p>
                     </div>
                 </div>
-                {window._env_.ENABLE_CI_JOB && (
+                {window._env_.VITE_ENABLE_CI_JOB && (
                     <>
                         <div className="dc__window-bg pt-4 pr-10 pb-4 pl-10 fs-12 fw-6 cn-9">Create job pipeline</div>
                         <div

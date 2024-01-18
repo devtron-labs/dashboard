@@ -149,7 +149,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 isClusterCdActive: false,
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
-                deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
+                deploymentAppType: window._env_.VITE_HIDE_DEPLOYMENT_GROUPS ? '' : DeploymentAppTypes.HELM,
                 deploymentAppCreated: false,
                 userApprovalConfig: null,
                 isVirtualEnvironment: false,
@@ -727,7 +727,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             errorForm.pipelineNameError.isValid &&
             (!!pipelineConfig.isVirtualEnvironment || !!pipelineConfig.namespace) &&
             !!pipelineConfig.triggerType &&
-            !!(pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
+            !!(pipelineConfig.deploymentAppType || window._env_.VITE_HIDE_DEPLOYMENT_GROUPS)
 
         if (!pipelineConfig.name || (!pipelineConfig.isVirtualEnvironment && !pipelineConfig.namespace)) {
             toast.error(MULTI_REQUIRED_FIELDS_MSG)
@@ -1667,7 +1667,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.state.showDeploymentStage && (
                     <div className="ml-60">
                         {this.renderEnvNamespaceAndTriggerType()}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                        {!window._env_.VITE_HIDE_DEPLOYMENT_GROUPS &&
                             !this.state.pipelineConfig.isVirtualEnvironment &&
                             this.state.allowedDeploymentTypes.length > 0 &&
                             this.renderDeploymentAppType()}
@@ -1752,7 +1752,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <>
                 <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {this.renderEnvNamespaceAndTriggerType()}
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                {!window._env_.VITE_HIDE_DEPLOYMENT_GROUPS &&
                     !this.state.pipelineConfig.isVirtualEnvironment &&
                     this.state.allowedDeploymentTypes.length > 0 &&
                     this.renderDeploymentAppType()}

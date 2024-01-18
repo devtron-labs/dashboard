@@ -43,7 +43,7 @@ export function getInitData(
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
     ]).then(([pipelineNameRes, pipelineMetaConfig]) => {
         const scanEnabled =
-            window._env_ && (window._env_.RECOMMEND_SECURITY_SCANNING || window._env_.FORCE_SECURITY_SCANNING)
+            window._env_ && (window._env_.VITE_RECOMMEND_SECURITY_SCANNING || window._env_.VITE_FORCE_SECURITY_SCANNING)
         return {
             result: {
                 form: {
@@ -54,7 +54,7 @@ export function getInitData(
                     webhookEvents: pipelineMetaConfig.result.webhookEvents,
                     ciPipelineSourceTypeOptions: pipelineMetaConfig.result.ciPipelineSourceTypeOptions,
                     webhookConditionList: pipelineMetaConfig.result.webhookConditionList,
-                    triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
+                    triggerType: window._env_.VITE_DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
                     beforeDockerBuildScripts: [],
                     afterDockerBuildScripts: [],
                     preBuildStage: emptyStepsData(),

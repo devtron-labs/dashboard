@@ -7,7 +7,7 @@ import { setActionWithExpiry } from './helpers/Helpers'
 
 export default function AnnouncementBanner({ parentClassName = '', isCDMaterial = false }) {
  
-    const message = window?._env_?.ANNOUNCEMENT_BANNER_MSG
+    const message = window?._env_?.VITE_ANNOUNCEMENT_BANNER_MSG
     const showAnnouncementBanner = (): boolean => {
         const expiryDateOfHidingAnnouncementBanner: string =   typeof Storage !== 'undefined' && localStorage.getItem(
             //it will store date and time of next day i.e, it will hide banner until this date

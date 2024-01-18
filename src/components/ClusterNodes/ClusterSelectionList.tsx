@@ -37,7 +37,7 @@ export default function ClusterSelectionList({
 
     useEffect(() => {
         let filteredClusterOptions = clusterOptions
-        if (window._env_.HIDE_DEFAULT_CLUSTER) {
+        if (window._env_.VITE_HIDE_DEFAULT_CLUSTER) {
             filteredClusterOptions = clusterOptions.filter((item) => item.id !== DEFAULT_CLUSTER_ID)
         }
         setClusterList([])

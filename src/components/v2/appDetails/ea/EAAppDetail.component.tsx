@@ -55,7 +55,7 @@ function ExternalAppDetail({ appId, appName, isExternalApp }) {
         }
         initTimer = setTimeout(() => {
             _init()
-        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+        }, window._env_.VITE_EA_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
     const _convertToGenericAppDetailModel = (

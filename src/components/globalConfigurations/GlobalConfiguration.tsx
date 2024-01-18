@@ -438,7 +438,7 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">Catalog Framework</div>
                     </NavLink>}
 
-                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES &&  (
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.VITE_ENABLE_SCOPED_VARIABLES &&  (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -602,7 +602,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
-            {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
+            {serverMode !== SERVER_MODE.EA_ONLY && window._env_.VITE_ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>

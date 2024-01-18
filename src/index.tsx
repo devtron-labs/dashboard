@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
@@ -6,51 +5,54 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
-const process= {env:{}}
+
 interface customEnv {
-    SENTRY_ENV?: string
-    SENTRY_ERROR_ENABLED?: boolean
-    SENTRY_PERFORMANCE_ENABLED?: boolean
-    SENTRY_DSN?: string
-    SENTRY_TRACES_SAMPLE_RATE?: number
-    HOTJAR_ENABLED?: boolean
+    VITE_SENTRY_ENV?: string
+    VITE_SENTRY_ERROR_ENABLED?: boolean
+    VITE_SENTRY_PERFORMANCE_ENABLED?: boolean
+    VITE_SENTRY_DSN?: string
+    VITE_SENTRY_TRACES_SAMPLE_RATE?: number
+    VITE_HOTJAR_ENABLED?: boolean
     CLUSTER_NAME?: boolean
-    APPLICATION_METRICS_ENABLED?: boolean
-    GA_ENABLED?: boolean
-    GA_TRACKING_ID?: string
-    GTM_ENABLED?: boolean
-    GTM_ID?: string
-    RECOMMEND_SECURITY_SCANNING?: boolean
-    FORCE_SECURITY_SCANNING?: boolean
-    ENABLE_CI_JOB?: boolean
-    HIDE_DISCORD?: boolean
-    POSTHOG_ENABLED?: boolean
-    POSTHOG_TOKEN?: string
-    DEVTRON_APP_DETAILS_POLLING_INTERVAL?: number
-    HELM_APP_DETAILS_POLLING_INTERVAL?: number
-    EA_APP_DETAILS_POLLING_INTERVAL?: number
-    CENTRAL_API_ENDPOINT?: string
-    HIDE_DEPLOYMENT_GROUPS?: boolean
-    HIDE_GITOPS_OR_HELM_OPTION?: boolean
-    CONFIGURABLE_TIMEOUT?: string
-    HIDE_APPLICATION_GROUPS?: boolean
+    VITE_APPLICATION_METRICS_ENABLED?: boolean
+    VITE_GA_ENABLED?: boolean
+    VITE_GA_TRACKING_ID?: string
+    VITE_GTM_ENABLED?: boolean
+    VITE_GTM_ID?: string
+    VITE_RECOMMEND_SECURITY_SCANNING?: boolean
+    VITE_FORCE_SECURITY_SCANNING?: boolean
+    VITE_ENABLE_CI_JOB?: boolean
+    VITE_HIDE_DISCORD?: boolean
+    VITE_POSTHOG_ENABLED?: boolean
+    VITE_POSTHOG_TOKEN?: string
+    VITE_DEVTRON_APP_DETAILS_POLLING_INTERVAL?: number
+    VITE_HELM_APP_DETAILS_POLLING_INTERVAL?: number
+    VITE_EA_APP_DETAILS_POLLING_INTERVAL?: number
+    VITE_CENTRAL_API_ENDPOINT?: string
+    VITE_HIDE_DEPLOYMENT_GROUPS?: boolean
+    VITE_HIDE_DEPLOYMENT_GROUPS?: boolean
+    VITE_CONFIGURABLE_TIMEOUT?: string
+    VITE_HIDE_APPLICATION_GROUPS?: boolean
     K8S_CLIENT?: boolean
-    USE_V2?: boolean
-    CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL?: number
-    CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT?: number
-    ENABLE_CHART_SEARCH_IN_HELM_DEPLOY?: boolean
-    HIDE_EXCLUDE_INCLUDE_GIT_COMMITS?: boolean
-    ENABLE_BUILD_CONTEXT?: boolean
-    CLAIR_TOOL_VERSION?: string
-    ENABLE_RESTART_WORKLOAD?: boolean
-    ENABLE_SCOPED_VARIABLES?: boolean
-    DEFAULT_CI_TRIGGER_TYPE_MANUAL: boolean
-    ANNOUNCEMENT_BANNER_MSG?: string
-    LOGIN_PAGE_IMAGE?: string
-    LOGIN_PAGE_IMAGE_BG?: string
-    HIDE_DEFAULT_CLUSTER?: boolean
-    GLOBAL_API_TIMEOUT?: number
-    TRIGGER_API_TIMEOUT?: number
+    VITE_USE_V2?: boolean
+    VITE_CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL?: number
+    VITE_CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT?: number
+    VITE_ENABLE_CHART_SEARCH_IN_HELM_DEPLOY?: boolean
+    VITE_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS?: boolean
+    VITE_ENABLE_BUILD_CONTEXT?: boolean
+    VITE_CLAIR_TOOL_VERSION?: string
+    VITE_ENABLE_RESTART_WORKLOAD?: boolean
+    VITE_ENABLE_SCOPED_VARIABLES?: boolean
+    VITE_DEFAULT_CI_TRIGGER_TYPE_MANUAL: boolean
+    VITE_ANNOUNCEMENT_BANNER_MSG?: string
+    VITE_LOGIN_PAGE_IMAGE?: string
+    VITE_LOGIN_PAGE_IMAGE_BG?: string
+    VITE_HIDE_DEFAULT_CLUSTER?: boolean
+    VITE_GLOBAL_API_TIMEOUT?: number
+    VITE_TRIGGER_API_TIMEOUT?: number
+    NODE_REACT_APP_GIT_SHA?: string
+    REACT_APP_GIT_SHA?: string
+    NODE_ENV?: string
 }
 declare global {
     interface Window {
@@ -65,13 +67,15 @@ const root = document.getElementById('root')
 if (
     import.meta.env.VITE_NODE_ENV === 'production' &&
     window._env_ &&
-    (window._env_.SENTRY_ERROR_ENABLED)
+    (window._env_.VITE_SENTRY_ERROR_ENABLED)
 ) {
+
     const integrationArr = []
     integrationArr.push(new CaptureConsole({ levels: ['error'] }))
-    if (window._env_.SENTRY_PERFORMANCE_ENABLED) {
+    if (window._env_.VITE_SENTRY_PERFORMANCE_ENABLED) {
         integrationArr.push(new BrowserTracing())
     }
+
     Sentry.init({
         beforeBreadcrumb(breadcrumb, hint) {
             if (breadcrumb.category === 'console') {
@@ -85,11 +89,11 @@ if (
             }
             return breadcrumb
         },
-        dsn: window._env_.SENTRY_DSN || '',
+        dsn: window._env_.VITE_SENTRY_DSN || '',
         integrations: integrationArr,
-        tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
-        ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
-        environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
+        tracesSampleRate: Number(window._env_.VITE_SENTRY_TRACES_SAMPLE_RATE) || 0.2,
+        ...(window._env_.NODE_REACT_APP_GIT_SHA ? { release: `dashboard@${window._env_.REACT_APP_GIT_SHA}` } : {}),
+        environment: window._env_ && window._env_.VITE_SENTRY_ENV ? window._env_.VITE_SENTRY_ENV : 'staging',
         beforeSend(event) {
             const errorList = event?.exception?.values || []
             for (let index = 0; index < errorList.length; index++) {
@@ -120,52 +124,52 @@ if (
 
 if (!window || !window._env_) {
     window._env_ = {
-        SENTRY_ENV: 'staging',
-        SENTRY_ERROR_ENABLED: false,
-        SENTRY_PERFORMANCE_ENABLED: false,
-        SENTRY_DSN: '',
-        SENTRY_TRACES_SAMPLE_RATE: 0.2,
-        HOTJAR_ENABLED: false,
-        GA_ENABLED: false,
-        GTM_ENABLED: false,
-        APPLICATION_METRICS_ENABLED: false,
-        POSTHOG_ENABLED: false,
-        POSTHOG_TOKEN: '',
-        RECOMMEND_SECURITY_SCANNING: false,
-        FORCE_SECURITY_SCANNING: false,
-        ENABLE_CI_JOB: false,
-        HIDE_DISCORD: true,
-        DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
-        HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
-        EA_APP_DETAILS_POLLING_INTERVAL: 30000,
-        CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
-        HIDE_DEPLOYMENT_GROUPS: true,
-        HIDE_GITOPS_OR_HELM_OPTION: false,
-        HIDE_APPLICATION_GROUPS: false,
-        K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true',
-        USE_V2: true,
-        CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
-        CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
-        ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
-        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
-        ENABLE_BUILD_CONTEXT: false,
-        CLAIR_TOOL_VERSION: 'V4',
-        ENABLE_RESTART_WORKLOAD: false,
-        ENABLE_SCOPED_VARIABLES: false,
-        DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
-        ANNOUNCEMENT_BANNER_MSG: '',
-        LOGIN_PAGE_IMAGE: '',
-        LOGIN_PAGE_IMAGE_BG: '',
-        HIDE_DEFAULT_CLUSTER: false,
-        GLOBAL_API_TIMEOUT: 60000,
-        TRIGGER_API_TIMEOUT: 60000,
+        VITE_SENTRY_ENV: 'staging',
+        VITE_SENTRY_ERROR_ENABLED: false,
+        VITE_SENTRY_PERFORMANCE_ENABLED: false,
+        VITE_SENTRY_DSN: '',
+        VITE_SENTRY_TRACES_SAMPLE_RATE: 0.2,
+        VITE_HOTJAR_ENABLED: false,
+        VITE_GA_ENABLED: false,
+        VITE_GTM_ENABLED: false,
+        VITE_APPLICATION_METRICS_ENABLED: false,
+        VITE_POSTHOG_ENABLED: false,
+        VITE_POSTHOG_TOKEN: '',
+        VITE_RECOMMEND_SECURITY_SCANNING: false,
+        VITE_FORCE_SECURITY_SCANNING: false,
+        VITE_ENABLE_CI_JOB: false,
+        VITE_HIDE_DISCORD: true,
+        VITE_DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
+        VITE_HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
+        VITE_EA_APP_DETAILS_POLLING_INTERVAL: 30000,
+        VITE_CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
+        VITE_HIDE_DEPLOYMENT_GROUPS: true,
+        VITE_HIDE_DEPLOYMENT_GROUPS: false,
+        VITE_HIDE_APPLICATION_GROUPS: false,
+        K8S_CLIENT: import.meta.env.VITE_REACT_APP_K8S_CLIENT === 'true',
+        VITE_USE_V2: true,
+        VITE_CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
+        VITE_CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
+        VITE_ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
+        VITE_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
+        VITE_ENABLE_BUILD_CONTEXT: false,
+        VITE_CLAIR_TOOL_VERSION: 'V4',
+        VITE_ENABLE_RESTART_WORKLOAD: false,
+        VITE_ENABLE_SCOPED_VARIABLES: false,
+        VITE_DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
+        VITE_ANNOUNCEMENT_BANNER_MSG: '',
+        VITE_LOGIN_PAGE_IMAGE: '',
+        VITE_LOGIN_PAGE_IMAGE_BG: '',
+        VITE_HIDE_DEFAULT_CLUSTER: false,
+        VITE_GLOBAL_API_TIMEOUT: 60000,
+        VITE_TRIGGER_API_TIMEOUT: 60000,
     }
 }
 
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={'dashboard/'}>
+            <BrowserRouter basename={`${import.meta.env.BASE_URL}`}>
                 <App />
             </BrowserRouter>
         ) : null}
@@ -173,6 +177,6 @@ ReactDOM.render(
     root,
 )
 
-// if (process.env.NODE_ENV === 'development') {
+// if (import.meta.env.VITE_NODE_ENV === 'development') {
 //     (module as any).hot.accept()
 // }

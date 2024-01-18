@@ -897,7 +897,7 @@ export default function DeploymentConfig({
                 showAppMetricsToggle={
                     state.charts &&
                     state.selectedChart &&
-                    window._env_?.APPLICATION_METRICS_ENABLED &&
+                    window._env_?.VITE_APPLICATION_METRICS_ENABLED &&
                     grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
                     state.yamlMode
                 }

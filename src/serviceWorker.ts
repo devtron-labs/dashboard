@@ -31,7 +31,7 @@ export function register(config?: Config) {
   if (import.meta.env.VITE_NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(
-      (process as { env: { [key: string]: string } }).env.VITE_PUBLIC_URL,
+      import.meta.env.VITE_PUBLIC_URL,
       window.location.href
     );
     if (publicUrl.origin !== window.location.origin) {

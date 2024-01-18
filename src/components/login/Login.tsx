@@ -52,7 +52,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         }
         if (!queryParam) queryParam = ''
         this.setState({
-            continueUrl: encodeURI(`${window.location.origin}/orchestrator/local${queryParam}`),//encodeURI(`${window.location.origin}/orchestrator${process.env.PUBLIC_URL}${queryParam}`),
+            continueUrl: encodeURI(`${window.location.origin}/orchestrator/${import.meta.env.BASE_URL}${queryParam}`),
         })
         getSSOConfigList().then((response) => {
             let list = response.result || []
@@ -83,7 +83,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     }
 
     autoFillLogin(): void {
-        this.setState({ form: { username: 'admin', password: process.env.REACT_APP_PASSWORD } })
+        this.setState({ form: { username: 'admin', password: import.meta.env.REACT_APP_PASSWORD } })
     }
 
     isFormNotValid(): boolean {
@@ -236,8 +236,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     render() {
         return (
             <div className="login">
-                <div className="login__bg" style={window?._env_?.LOGIN_PAGE_IMAGE_BG?{backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG}:{}}>
-                    <div className="login__image" style={window?._env_?.LOGIN_PAGE_IMAGE?{backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})`}:{}} />
+                <div className="login__bg" style={window?._env_?.VITE_LOGIN_PAGE_IMAGE_BG?{backgroundColor: window._env_.VITE_LOGIN_PAGE_IMAGE_BG}:{}}>
+                    <div className="login__image" style={window?._env_?.VITE_LOGIN_PAGE_IMAGE?{backgroundImage: `url(${window._env_.VITE_LOGIN_PAGE_IMAGE})`}:{}} />
                 </div>
                 <div className="login__section">
                     <Switch>

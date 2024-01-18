@@ -111,7 +111,7 @@ export default function TerminalView({
     }
 
     const generateSocketURL = () => {
-        let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
+        let socketURL = import.meta.env.VITE_REACT_APP_ORCHESTRATOR_ROOT
         socketURL += '/k8s/pod/exec/sockjs/ws/'
         return socketURL
     }

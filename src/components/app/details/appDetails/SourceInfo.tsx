@@ -174,7 +174,7 @@ export function SourceInfo({
                                         </button>
                                     </ConditionalWrap>
                                 )}
-                                {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
+                                {window._env_.VITE_ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
                                     <ConditionalWrap
                                         condition={appDetails?.userApprovalConfig?.length > 0}
                                         wrap={conditionalScalePodsButton}

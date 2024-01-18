@@ -93,7 +93,7 @@ export const handleEnableAction = async (
 ) => {
     try {
         const toolVersion =
-            moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : (window._env_.CLAIR_TOOL_VERSION|| CLAIR_TOOL_VERSION_V4)
+            moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : (window._env_.VITE_CLAIR_TOOL_VERSION|| CLAIR_TOOL_VERSION_V4)
         const { result } = await executeModuleEnableAction(moduleName, toolVersion)
         if (result?.success) {
             setSuccessState(true)

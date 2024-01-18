@@ -207,7 +207,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
     initialize(sessionId): void {
         this.createNewTerminal();
 
-        let socketURL = `${process.env.REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
+        let socketURL = `${import.meta.env.VITE_REACT_APP_ORCHESTRATOR_ROOT}/api/vi/pod/exec/ws/`;
 
         this._socket?.close();
         this.setState({ firstMessageReceived: false });

@@ -106,7 +106,7 @@ export default function CIDockerFileConfig({
         },
     ]
     const isDefaultBuildContext = (): boolean => {
-        if (window._env_.ENABLE_BUILD_CONTEXT) {
+        if (window._env_.VITE_ENABLE_BUILD_CONTEXT) {
             let currentOverriddenGitMaterialId = 0,
                 currentOverriddenBuildContextGitMaterialId = 0
             let currentOverriddenBuildContext =
@@ -222,7 +222,7 @@ export default function CIDockerFileConfig({
 
     const handleFileLocationChange = (selectedMaterial): void => {
         let buildContextGitMaterialId = 0
-        if (window._env_.ENABLE_BUILD_CONTEXT) {
+        if (window._env_.VITE_ENABLE_BUILD_CONTEXT) {
             buildContextGitMaterialId = currentCIBuildConfig.buildContextGitMaterialId
 
             if (isDefaultBuildContext()) {
@@ -235,7 +235,7 @@ export default function CIDockerFileConfig({
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             gitMaterialId: selectedMaterial.id,
-            buildContextGitMaterialId: window._env_.ENABLE_BUILD_CONTEXT
+            buildContextGitMaterialId: window._env_.VITE_ENABLE_BUILD_CONTEXT
                 ? buildContextGitMaterialId
                 : selectedMaterial.id,
         })
@@ -503,7 +503,7 @@ export default function CIDockerFileConfig({
                     </div>
                 </div>
 
-                {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride) && (
+                {window._env_.VITE_ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride) && (
                     <div className="flex left row ml-0 build-context-label fs-13 mb-6">
                         <span className="flex pointer" onClick={toggleCollapse}>
                             <Dropdown
@@ -519,7 +519,7 @@ export default function CIDockerFileConfig({
                     </div>
                 )}
 
-                {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride ? isCollapsed : true) && (
+                {window._env_.VITE_ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride ? isCollapsed : true) && (
                     <div className={`form-row__docker ${!configOverrideView || allowOverride ? 'ml-24' : ''}`}>
                         <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                             <label className="form__label">{`${

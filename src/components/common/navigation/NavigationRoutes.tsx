@@ -146,15 +146,15 @@ export default function NavigationRoutes() {
         if (!loginInfo) return
 
         if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
-            if (window._env_.SENTRY_ERROR_ENABLED) {
+            if (window._env_.VITE_SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
                     scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] })
                 })
             }
-            if (window._env_.GA_ENABLED) {
+            if (window._env_.VITE_GA_ENABLED) {
                 let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
                 let path = location.pathname
-                ReactGA.initialize(window._env_.GA_TRACKING_ID, {
+                ReactGA.initialize(window._env_.VITE_GA_TRACKING_ID, {
                     gaOptions: {
                         userId: `${email}`,
                     },
@@ -176,9 +176,9 @@ export default function NavigationRoutes() {
                 })
             }
 
-            if (window._env_.GTM_ENABLED) {
+            if (window._env_.VITE_GTM_ENABLED) {
                 const tagManagerArgs = {
-                    gtmId: window._env_.GTM_ID,
+                    gtmId: window._env_.VITE_GTM_ID,
                 }
                 TagManager.initialize(tagManagerArgs)
             }

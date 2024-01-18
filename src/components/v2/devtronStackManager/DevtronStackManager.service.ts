@@ -151,13 +151,13 @@ export const executeServerAction = (serverActionRequest: ModuleActionRequest): P
 }
 
 export const getAllModules = (): Promise<AllModuleInfoResponse> => {
-    return fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then((res) =>
+    return fetch(`${window._env_.VITE_CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then((res) =>
         res.json(),
     )
 }
 
 export const getReleasesNotes = (): Promise<ReleaseNotesResponse> => {
-    return fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`).then((res) => res.json())
+    return fetch(`${window._env_.VITE_CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`).then((res) => res.json())
 }
 
 export const getLogPodName = (): Promise<LogPodNameResponse> => {

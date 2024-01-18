@@ -36,7 +36,9 @@ function reactVirtualized(): PluginOption {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+    process.env = {...process.env, ...loadEnv(mode, process.cwd(), '')}
+    const baseConfig = {
         base: '/dashboard/',
         preview: {
             port: 3000,
@@ -80,8 +82,14 @@ export default defineConfig({
                 '/grafana': 'https://demo.devtron.info/',
             },
         },
+    }
+    if (mode === 'development') {
+        console.log(mode)
         // Global override for node environment
-        // define: {
-        //     global: 'globalThis',
-        // },
+        baseConfig['define'] = {
+            global: 'globalThis',
+        }
+    }
+
+    return baseConfig
 })

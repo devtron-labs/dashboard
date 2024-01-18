@@ -544,7 +544,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         iconClass="icon-dim-20"
                     />
                 )}
-                {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
+                {!window._env_.VITE_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
                     <>
                         <div className="flex left">
                             <Checkbox

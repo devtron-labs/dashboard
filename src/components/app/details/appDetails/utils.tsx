@@ -382,7 +382,7 @@ export function addQueryParamToGrafanaURL(
 ): string {
     let startTime: string = calendarInputs.startDate
     let endTime: string = calendarInputs.endDate
-    url += `?orgId=${process.env.REACT_APP_GRAFANA_ORG_ID}`
+    url += `?orgId=${import.meta.env.VITE_REACT_APP_GRAFANA_ORG_ID}`
     url += `&refresh=10s`
     url += `&var-app=${appId}`
     url += `&var-env=${envId}`
