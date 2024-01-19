@@ -25,10 +25,9 @@ import { useParams } from 'react-router-dom'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 import { toast } from 'react-toastify'
-import * as jsonpatch from 'fast-json-patch'
 const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTemplate', null, 'function')
 
-export default function DeploymentTemplateEditorView({
+ const DeploymentTemplateEditorView=({
     isEnvOverride,
     globalChartRefId,
     readOnly,
@@ -43,8 +42,11 @@ export default function DeploymentTemplateEditorView({
     groupedData,
     hideLockedKeys,
     lockedConfigKeysWithLockType,
-    hideLockKeysToggled
-}: DeploymentTemplateEditorViewProps) {
+    hideLockKeysToggled,
+    removedPatches,
+    selectedTabIndex
+}: DeploymentTemplateEditorViewProps) =>{
+  
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
@@ -52,7 +54,6 @@ export default function DeploymentTemplateEditorView({
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
-    const removedPatches = useRef<Array<jsonpatch.Operation>>([])
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
     const baseDeploymentAbortController = useRef(null)
     const [showDraftData, setShowDraftData] = useState(false)
@@ -277,6 +278,10 @@ export default function DeploymentTemplateEditorView({
     }
 
     useEffect(() => {
+        editorOnChange(rhs)
+    },[selectedTabIndex])
+
+    useEffect(() => {
         if (!convertVariables) return
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
@@ -315,16 +320,17 @@ export default function DeploymentTemplateEditorView({
 
     // final value for RHS
     let rhs = convertVariables ? resolvedValuesRHS : valueRHS
-    if (getLockFilteredTemplate) {
-        const { updatedLHS, updatedRHS } = getLockFilteredTemplate(
+    if (getLockFilteredTemplate && isValues) {
+        const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
             hideLockedKeys,
             lhs,
             rhs,
             lockedConfigKeysWithLockType,
             removedPatches,
             hideLockKeysToggled,
-            state.unableToParseYaml,
-        )
+            unableToParseYaml: state.unableToParseYaml,
+            readOnly,
+        })
         lhs = updatedLHS
         rhs = updatedRHS
     }
@@ -494,3 +500,5 @@ export default function DeploymentTemplateEditorView({
         <DeploymentTemplateGUIView fetchingValues={fetchingValues} value={value} readOnly={readOnly} />
     )
 }
+
+export default React.memo(DeploymentTemplateEditorView)

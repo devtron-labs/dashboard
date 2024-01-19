@@ -27,11 +27,14 @@ import {
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
 import CodeEditor from '../CodeEditor/CodeEditor'
+import * as jsonpatch from 'fast-json-patch'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
+const applyPatches=importComponentFromFELibrary('applyPatches', null, 'function')
+
 export default function DeploymentTemplateOverrideForm({
     state,
     isConfigProtectionEnabled,
@@ -68,7 +71,7 @@ export default function DeploymentTemplateOverrideForm({
     const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
     const [hideLockedKeys, setHideLockedKeys] = useState(false)
     const hideLockKeysToggled = useRef(false)
-
+    const removedPatches = useRef<Array<jsonpatch.Operation>>([])
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -108,10 +111,15 @@ export default function DeploymentTemplateOverrideForm({
 
     const prepareDataToSave = (envOverrideValuesWithBasic, includeInDraft?: boolean) => {
         let valuesOverride = envOverrideValuesWithBasic || obj || state.duplicate
+
+        if (applyPatches && hideLockedKeys) {
+            valuesOverride = applyPatches(valuesOverride, removedPatches.current)
+        }
+
         if (state.showLockedTemplateDiff) {
             // if locked keys
             if (!lockedConfigKeysWithLockType.allowed) {
-                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config,true).newDocument
+                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config, true).newDocument
             } else {
                 // if allowed keys
                 valuesOverride = getLockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
@@ -219,9 +227,10 @@ export default function DeploymentTemplateOverrideForm({
                 //loading state for checking locked changes
                 dispatch({ type: DeploymentConfigStateActionTypes.lockChangesLoading, payload: true })
             }
+            const payload = prepareDataToSave(envOverrideValuesWithBasic, false)
             const deploymentTemplateResp = isConfigProtectionEnabled
                 ? await checkForProtectedLockedChanges()
-                : await api(+appId, +envId, prepareDataToSave(envOverrideValuesWithBasic, false))
+                : await api(+appId, +envId, payload)
             if (deploymentTemplateResp.result.isLockConfigError && !saveEligibleChanges) {
                 //checking if any locked changes and opening drawer to show eligible and locked ones
                 setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
@@ -235,6 +244,11 @@ export default function DeploymentTemplateOverrideForm({
 
             if (envOverrideValuesWithBasic) {
                 editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
+            } else {
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.tempFormData,
+                    payload: YAML.stringify(deploymentTemplateResp.result.envOverrideValues),
+                })
             }
             toast.success(
                 <div className="toast">
@@ -368,6 +382,9 @@ export default function DeploymentTemplateOverrideForm({
 
     const handleTabSelection = (index: number) => {
         if (state.unableToParseYaml) return
+
+        //setting true to update codeditor values with current locked keys checkbox value
+        hideLockKeysToggled.current = true
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
@@ -574,6 +591,9 @@ export default function DeploymentTemplateOverrideForm({
                 <DeploymentTemplateReadOnlyEditorView
                     value={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
                     isEnvOverride={true}
+                    lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+                    hideLockedKeys={hideLockedKeys}
+                    removedPatches={removedPatches}
                 />
             )
         } else if (state.loadingManifestOverride) {
@@ -584,7 +604,7 @@ export default function DeploymentTemplateOverrideForm({
             )
         } else {
             return (
-                <DeploymentTemplateEditorView
+                < DeploymentTemplateEditorView
                     isEnvOverride={true}
                     value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
                     defaultValue={
@@ -612,6 +632,8 @@ export default function DeploymentTemplateOverrideForm({
                     hideLockedKeys={hideLockedKeys}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockKeysToggled={hideLockKeysToggled}
+                    removedPatches={removedPatches}
+                    selectedTabIndex={state.selectedTabIndex}
                 />
             )
         }
@@ -706,6 +728,7 @@ export default function DeploymentTemplateOverrideForm({
                 componentType={3}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
+                lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                 setHideLockedKeys={setHideLockedKeys}
                 hideLockedKeys={hideLockedKeys}
                 hideLockKeysToggled={hideLockKeysToggled}
