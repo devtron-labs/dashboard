@@ -152,7 +152,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setPageViewType(ViewType.LOADING)
             setSelectedAppList([])
             getWorkflowsData()
-                getConfigs()
+            getConfigs()
         }
         return () => {
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
