@@ -152,6 +152,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setPageViewType(ViewType.LOADING)
             setSelectedAppList([])
             getWorkflowsData()
+                getConfigs()
         }
         return () => {
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
@@ -165,20 +166,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             // URL Encoding for Bulk is not planned as of now
             setShowBulkCDModal(false)
             if (location.search.includes('approval-node')) {
-                getConfigs()
                 const searchParams = new URLSearchParams(location.search)
                 const nodeId = Number(searchParams.get('approval-node'))
                 if (!isNaN(nodeId)) {
                     onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-                }
-                else {
+                } else {
                     toast.error('Invalid node id')
                     history.push({
                         search: '',
                     })
                 }
-            }
-            else if (location.search.includes('rollback-node')) {
+            }  
+             else if (location.search.includes('rollback-node')) {
                 const searchParams = new URLSearchParams(location.search)
                 const nodeId = Number(searchParams.get('rollback-node'))
                 if (!isNaN(nodeId)) {
