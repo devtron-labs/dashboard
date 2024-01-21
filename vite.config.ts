@@ -9,6 +9,7 @@ import url from 'node:url'
 import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
+import { VitePWA } from 'vite-plugin-pwa'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 
@@ -37,7 +38,7 @@ function reactVirtualized(): PluginOption {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-    process.env = {...process.env, ...loadEnv(mode, process.cwd(), '')}
+    process.env = { ...process.env, ...loadEnv(mode, process.cwd(), '') }
     const baseConfig = {
         base: '/dashboard/',
         preview: {
@@ -57,6 +58,9 @@ export default defineConfig(({ mode }) => {
             requireTransform(),
             NodeGlobalsPolyfillPlugin({
                 process: true,
+            }),
+            VitePWA({
+                injectRegister: false,
             }),
         ],
         // test: {
@@ -80,6 +84,25 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true,
                 },
                 '/grafana': 'https://demo.devtron.info/',
+            },
+        },
+        build: {
+            rollupOptions: {
+                input: {
+                    // the default entry point
+                    app: './index.html',
+
+                    // 1️⃣
+                    'service-worker': './src/serviceWorker.ts',
+                },
+                output: {
+                    // 2️⃣
+                    entryFileNames: (assetInfo) => {
+                        return assetInfo.name === 'serviceWorker'
+                            ? '[name].js' // put service worker in root
+                            : 'assets/js/[name]-[hash].js' // others in `assets/js/`
+                    },
+                },
             },
         },
     }
