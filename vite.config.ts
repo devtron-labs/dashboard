@@ -10,6 +10,7 @@ import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
+import replace from '@rollup/plugin-replace'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 
@@ -44,6 +45,9 @@ export default defineConfig(({ mode }) => {
         preview: {
             port: 3000,
         },
+        build: {
+          sourcemap: true,
+        },
         plugins: [
             // @TODO: Check if we can remove the config object inside the react plugin
             react({
@@ -60,8 +64,11 @@ export default defineConfig(({ mode }) => {
                 process: true,
             }),
             VitePWA({
-                injectRegister: false,
+              srcDir: 'src',
+              filename: 'prompt-sw.ts',
+              strategies : 'injectManifest',
             }),
+            replace({ __DATE__: new Date().toISOString() , __RELOAD_SW__ : 'true'}),
         ],
         // test: {
         //     globals: true,
@@ -84,25 +91,6 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true,
                 },
                 '/grafana': 'https://demo.devtron.info/',
-            },
-        },
-        build: {
-            rollupOptions: {
-                input: {
-                    // the default entry point
-                    app: './index.html',
-
-                    // 1️⃣
-                    'service-worker': './src/serviceWorker.ts',
-                },
-                output: {
-                    // 2️⃣
-                    entryFileNames: (assetInfo) => {
-                        return assetInfo.name === 'serviceWorker'
-                            ? '[name].js' // put service worker in root
-                            : 'assets/js/[name]-[hash].js' // others in `assets/js/`
-                    },
-                },
             },
         },
     }

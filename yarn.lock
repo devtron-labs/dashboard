@@ -988,15 +988,15 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.55-beta-1":
-  version "0.0.55-beta-1"
-  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.55-beta-1/7de3b2fe4d8ec51fa13e99e5a8a6ffc390e42dfb#7de3b2fe4d8ec51fa13e99e5a8a6ffc390e42dfb"
-  integrity sha512-WjUQXao9m03mcGrQ+r5lsfG50TgOzGvHRoeXmbNceAfGe8ZmZbOJITggcA3DM6M+H/KxwO32tqltLcsOT/zfaQ==
+"@devtron-labs/devtron-fe-common-lib@0.0.55-beta-3":
+  version "0.0.55-beta-3"
+  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.55-beta-3/7aea765eb3f1ba9f618f581c93d08d1e63dd3ff4#7aea765eb3f1ba9f618f581c93d08d1e63dd3ff4"
+  integrity sha512-VWK6dmFWWYt944bdaGZIXj3FrTRwEl4hJ6K1lAzedLo9D+vhdhLsv/vlaaPSAhr786REeF0P098AzZILNH/Teg==
   dependencies:
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
     react-monaco-editor "^0.54.0"
-    sass "^1.56.2"
+    sass "^1.69.7"
     tslib "^2.4.1"
 
 "@emotion/babel-plugin@^11.11.0":
@@ -1399,6 +1399,14 @@
     is-module "^1.0.0"
     resolve "^1.19.0"
 
+"@rollup/plugin-replace@5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-replace/-/plugin-replace-5.0.5.tgz#33d5653dce6d03cb24ef98bef7f6d25b57faefdf"
+  integrity sha512-rYO4fOi8lMaTg/z5Jb+hKnrHHVn8j2lwkqwyS4kTRhKyWOLf2wST2sWXr4WzWiTcoHTp2sTjqUbqIj2E39slKQ==
+  dependencies:
+    "@rollup/pluginutils" "^5.0.1"
+    magic-string "^0.30.3"
+
 "@rollup/plugin-replace@^2.4.1":
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-replace/-/plugin-replace-2.4.2.tgz#a2d539314fbc77c244858faa523012825068510a"
@@ -1416,7 +1424,7 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
-"@rollup/pluginutils@^5.0.2":
+"@rollup/pluginutils@^5.0.1", "@rollup/pluginutils@^5.0.2":
   version "5.1.0"
   resolved "https://registry.npmjs.org/@rollup/pluginutils/-/pluginutils-5.1.0.tgz"
   integrity sha512-XTIWOPPcpvyKI6L1NHo0lFlCyznUEyPmPY1mc3KpPVDYulHSTvyeLNVW00QTLIAFNhR3kYnJTQHeGqU4M3n09g==
@@ -4876,7 +4884,7 @@ magic-string@^0.25.0, magic-string@^0.25.3, magic-string@^0.25.7:
   dependencies:
     sourcemap-codec "^1.4.8"
 
-magic-string@^0.30.1:
+magic-string@^0.30.1, magic-string@^0.30.3:
   version "0.30.5"
   resolved "https://registry.npmjs.org/magic-string/-/magic-string-0.30.5.tgz"
   integrity sha512-7xlpfBaQaP/T6Vh8MO/EqXSW5En6INHEvEXQiuff7Gku0PWjU3uf6w/j9o7O+SpB5fOAkrI5HeoNgwjEO0pFsA==
@@ -5990,7 +5998,7 @@ safe-regex-test@^1.0.0:
   resolved "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@^1.56.2, sass@^1.69.7:
+sass@^1.69.7:
   version "1.70.0"
   resolved "https://registry.yarnpkg.com/sass/-/sass-1.70.0.tgz#761197419d97b5358cb25f9dd38c176a8a270a75"
   integrity sha512-uUxNQ3zAHeAx5nRFskBnrWzDUJrrvpCPD5FNAoRvTi0WwremlheES3tg+56PaVtCs5QDRX5CBLxxKMDJMEa1WQ==

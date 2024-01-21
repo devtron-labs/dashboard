@@ -123,7 +123,12 @@
         "typescript": "^4.6.2",
         "vitest": "^0.33.0",
         "vite-plugin-pwa": "0.17.4",
-        "worker-loader": "3.0.8"
+        "worker-loader": "3.0.8",
+        "workbox-window": "7.0.0",
+        "@rollup/plugin-replace": "5.0.5",
+        "workbox-core": "^7.0.0",
+        "workbox-precaching": "^7.0.0",
+        "workbox-routing": "^7.0.0"
     },
     "jest": {
         "collectCoverageFrom": [

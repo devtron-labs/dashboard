@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "target": "ES2020",
-        "lib": ["dom", "dom.iterable", "esnext"],
-        "types": ["vite/client", "vite-plugin-svgr/client", "node"],
+        "lib": ["dom", "dom.iterable", "esnext", "WebWorker"],
+        "types": ["vite/client", "vite-plugin-svgr/client", "node", "vite-plugin-pwa/react", "vite-plugin-pwa/info"],
         "typeRoots": ["./types", "./node_modules/@types"],
         "allowJs": true,
         "skipLibCheck": true,

@@ -9,14 +9,9 @@ import './css/base.scss'
 import './css/formulae.scss'
 import './css/forms.scss'
 import 'tippy.js/dist/tippy.css'
-import {
-    useOnline,
-    ToastBody,
-    ToastBody3 as UpdateToast,
-    ErrorBoundary,
-} from './components/common'
+import { useOnline, ToastBody, ToastBody3 as UpdateToast, ErrorBoundary } from './components/common'
 import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
-import * as serviceWorker from './serviceWorker'
+import { useRegisterSW } from 'virtual:pwa-register/react'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
 
@@ -39,13 +34,12 @@ export default function App() {
     const updateToastRef = useRef(null)
     const [errorPage, setErrorPage] = useState<Boolean>(false)
     const isOnline = useOnline()
-    const refreshing = useRef(false)
-    const [bgUpdated, setBGUpdated] = useState(false)
     const [validating, setValidating] = useState(true)
-    const [forceUpdateOnLocationChange, setForceUpdateOnLocationChange] = useState(false)
     const location = useLocation()
     const { push } = useHistory()
     const didMountRef = useRef(false)
+    // replaced dynamically
+    const buildDate = '__DATE__'
 
     function onlineToast(toastBody: JSX.Element, options) {
         if (onlineToastRef.current && toast.isActive(onlineToastRef.current)) {
@@ -111,100 +105,63 @@ export default function App() {
         }
     }, [])
 
-    async function update() {
-        if (!navigator.serviceWorker) return
-        try {
-            const reg = await navigator.serviceWorker.getRegistration()
-            if (reg.waiting) {
-                reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+    const {
+        needRefresh: [needRefresh],
+        updateServiceWorker,
+    } = useRegisterSW({
+        onRegisteredSW(swUrl, r) {
+            console.log(`Service Worker at: ${swUrl}`)
+            if (r) {
+              r.update()
             }
-        } catch (err) {}
-    }
+        },
+        onRegisterError(error) {
+            console.log('SW registration error', error)
+        },
+    })
 
-    function handleControllerChange() {
-        if (refreshing.current) {
-            return
-        }
-        if (document.visibilityState === 'visible') {
-            window.location.reload()
-            refreshing.current = true
-        } else {
-            setBGUpdated(true)
-        }
+    function update() {
+        updateServiceWorker(true)
     }
 
     useEffect(() => {
-        if (!forceUpdateOnLocationChange) return
+      // check for sw updates on page change
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((regs) => regs.forEach((reg) => reg.update()))
+        if (!needRefresh) return
         update()
     }, [location])
 
-    useEffect(() => {
-        if (!navigator.serviceWorker) return
-        function onUpdate(reg) {
-            const updateToastBody = (
-                <UpdateToast
-                    onClick={update}
-                    text="You are viewing an outdated version of Devtron UI."
-                    buttonText="Reload"
-                />
-            )
-            if (toast.isActive(updateToastRef.current)) {
-                toast.update(updateToastRef.current, { render: updateToastBody })
-            } else {
-                updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
-            }
-            setForceUpdateOnLocationChange(true)
-            if (typeof Storage !== 'undefined') {
-                localStorage.removeItem('serverInfo')
-            }
-        }
-        function onSuccess(reg) {
-            console.log('successfully installed')
-        }
-        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
-        serviceWorker.register({ onUpdate, onSuccess })
-        navigator.serviceWorker.getRegistration().then((reg) => {
-            if (!reg) return
-            setInterval(
-                (reg) => {
-                    try {
-                        reg.update()
-                    } catch (err) {}
-                },
-                1000 * 60,
-                reg,
-            )
-            if (reg.waiting) {
-                onUpdate(reg)
-            } else {
-                try {
-                    reg.update()
-                } catch (err) {}
-            }
-        })
-    }, [])
-
-    useEffect(() => {
-        if (!bgUpdated) return
-        const bgUpdatedToastBody = (
+    function onUpdate() {
+        const updateToastBody = (
             <UpdateToast
-                onClick={(e) => window.location.reload()}
-                text="This page has been updated. Please save any unsaved changes and refresh."
+                onClick={update}
+                text="You are viewing an outdated version of Devtron UI."
                 buttonText="Reload"
             />
         )
         if (toast.isActive(updateToastRef.current)) {
-            toast.update(updateToastRef.current, { render: bgUpdatedToastBody })
+            toast.update(updateToastRef.current, { render: updateToastBody })
         } else {
-            updateToastRef.current = toast.info(bgUpdatedToastBody, { autoClose: false, closeButton: false })
+            updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
         }
-    }, [bgUpdated])
+        if (typeof Storage !== 'undefined') {
+            localStorage.removeItem('serverInfo')
+        }
+    }
+
+    useEffect(() => {
+        if (needRefresh) {
+            onUpdate()
+        }
+    }, [needRefresh])
 
     return (
         <Suspense fallback={null}>
             {validating ? (
                 <div className="full-height-width">
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
+                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
             ) : (
                 <>
