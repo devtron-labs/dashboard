@@ -140,19 +140,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const handledLocation = useRef(false)
     const abortControllerRef = useRef(new AbortController())
 
-    useEffect(
-        () => () => {
+    useEffect(() => {
+        getConfigs()
+        return () => {
             handledLocation.current = false
-        },
-        [],
-    )
+        }
+    }, [])
 
     useEffect(() => {
         if (envId) {
             setPageViewType(ViewType.LOADING)
             setSelectedAppList([])
             getWorkflowsData()
-            getConfigs()
         }
         return () => {
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
