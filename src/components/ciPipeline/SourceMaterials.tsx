@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { SourceTypeMap, URLS } from '../../config'
 import ReactSelect, { components } from 'react-select'
 import { Link, useLocation } from 'react-router-dom'
-import error from '../../assets/icons/misc/errorInfo.svg'
 import git from '../../assets/icons/git/git.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator } from '../charts/charts.util'
@@ -93,9 +92,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         )
     }
 
-    function onBlur(e) {
+    async function onBlur() {
         if (props.handleOnBlur) {
-            props.handleOnBlur(e)
+            await props.handleOnBlur()
         }
     }
 

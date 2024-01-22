@@ -5,7 +5,6 @@ import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { Progressing, Toggle, CiPipelineSourceTypeOption, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildType, WebhookCIProps } from '../ciPipeline/types'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -50,8 +49,8 @@ export function Build({
         setFormData(_formData)
     }
 
-    const handleOnBlur = (event): void => {
-      getPluginData()
+    const handleOnBlur = async (): Promise<void> => {
+      await getPluginData()
     }
 
 
