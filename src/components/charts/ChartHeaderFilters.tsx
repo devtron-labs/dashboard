@@ -1,6 +1,6 @@
 import React from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
-import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
@@ -180,7 +180,7 @@ function ChartHeaderFilter({
                 <Checkbox
                     rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 pl-8 ml-8"
                     isChecked={includeDeprecated === 1}
-                    value={'CHECKED'}
+                    value={CHECKBOX_VALUE.CHECKED}
                     onChange={toggleDeprecated}
                     dataTestId="chart-store-filter-checkbox"
                 >

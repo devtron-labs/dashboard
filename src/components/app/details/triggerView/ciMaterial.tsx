@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ServerErrors, Checkbox, noop, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
@@ -106,7 +106,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     isChecked={this.context.invalidateCache}
                     onClick={this.onClickStopPropagation}
                     rootClassName="form__checkbox-label--ignore-cache mb-0"
-                    value={'CHECKED'}
+                    value={CHECKBOX_VALUE.CHECKED}
                     onChange={this.context.toggleInvalidateCache}
                     data-testid="set-clone-directory"
                 >

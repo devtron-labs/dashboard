@@ -2,7 +2,7 @@ import React from 'react'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import ReactSelect, { components } from 'react-select';
-import { Checkbox, multiSelectStyles, Option } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, multiSelectStyles, Option } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
 export default function DeployedChartFilters({ handleFilterQueryChanges, appStoreName, searchApplied, handleCloseFilter, handleAppStoreName, selectedChartRepo, onlyDeprecated, chartRepos, environment, handleSelectedFilters, selectedEnvironment }) {
@@ -79,7 +79,7 @@ export default function DeployedChartFilters({ handleFilterQueryChanges, appStor
                             styles={{ ...multiSelectStyles }} />
                         <Checkbox rootClassName="ml-16 mb-0 fs-13 cursor bcn-0 pt-8 pb-8 pr-12 date-align-left--deprecate"
                             isChecked={onlyDeprecated == true}
-                            value={"CHECKED"}
+                            value={CHECKBOX_VALUE.CHECKED}
                             onChange={(e) => {
                                 let value =  !onlyDeprecated;
                                 handleFilterQueryChanges(value, "deprecated") }} >

@@ -737,7 +737,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     <div className="pt-16 ">
                         <Checkbox
                             isChecked={this.props.material.fetchSubmodules}
-                            value={'CHECKED'}
+                            value={CHECKBOX_VALUE.CHECKED}
                             tabIndex={5}
                             onChange={this.props.handleSubmoduleCheckbox}
                             rootClassName="fs-14 cn-9 flex top"

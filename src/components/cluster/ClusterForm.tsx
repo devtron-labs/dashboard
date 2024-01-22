@@ -747,7 +747,7 @@ export default function ClusterForm({
                             <Checkbox
                                 isChecked={isTlsConnection}
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
-                                value={'CHECKED'}
+                                value={CHECKBOX_VALUE.CHECKED}
                                 onChange={toggleCheckTlsConnection}
                             >
                                 <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center">
