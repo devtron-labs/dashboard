@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-// TODO: Enable after New Year
-// import dt from '../../assets/icons/logo/logo-dt.svg'
+import dt from '../../assets/icons/logo/logo-dt.svg'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -9,8 +8,6 @@ import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
-// TODO: remove after New Year
-import { ReactComponent as ChristmasLogo } from '../../assets/icons/ic-login-dt-with-hat.svg'
 import './login.scss'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
@@ -141,10 +138,14 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
         return (
             <div className="login__control">
-                {/* <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" /> */}
-                <div className="flex">
-                    <ChristmasLogo width={170} height={120} className="login__dt-logo"/>
-                </div>
+                <img
+                    src={window._env_.LOGIN_DT_LOGO || dt}
+                    alt="login-dt-logo"
+                    className="login__dt-logo"
+                    width="170px"
+                    height="120px"
+                />
+
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {this.state.loginList
                     .filter((sso) => sso.active)
@@ -178,11 +179,13 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
         return (
             <div className="login__control">
-                {/* TODO: Uncomment after New year */}
-                {/* <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" /> */}
-                <div className="flex">
-                    <ChristmasLogo width={170} height={120} className="login__dt-logo"/>
-                </div>
+                <img
+                    src={window._env_.LOGIN_DT_LOGO || dt}
+                    alt="login-dt-logo"
+                    className="login__dt-logo"
+                    width="170px"
+                    height="120px"
+                />
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {/* @ts-ignore */}
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
