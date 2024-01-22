@@ -141,7 +141,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const abortControllerRef = useRef(new AbortController())
 
     useEffect(() => {
-         if (ApprovalMaterialModal && showApprovalModal) {
+         if (ApprovalMaterialModal) {
              getConfigs()
          }
          return () => {
