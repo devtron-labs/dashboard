@@ -321,18 +321,22 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     // final value for RHS
     let rhs = convertVariables ? resolvedValuesRHS : valueRHS
     if (getLockFilteredTemplate && isValues) {
-        const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
-            hideLockedKeys,
-            lhs,
-            rhs,
-            lockedConfigKeysWithLockType,
-            removedPatches,
-            hideLockKeysToggled,
-            unableToParseYaml: state.unableToParseYaml,
-            readOnly,
-        })
-        lhs = updatedLHS
-        rhs = updatedRHS
+        try {
+            const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
+                hideLockedKeys,
+                lhs,
+                rhs,
+                lockedConfigKeysWithLockType,
+                removedPatches,
+                hideLockKeysToggled,
+                unableToParseYaml: state.unableToParseYaml,
+                readOnly,
+            })
+            lhs = updatedLHS
+            rhs = updatedRHS
+        } catch (err) {
+            showError(err)
+        }
     }
     
     const renderCodeEditorHeading = () => (

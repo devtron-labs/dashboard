@@ -660,6 +660,7 @@ export default function DeploymentConfig({
                 openComparison: state.showReadme && state.selectedTabIndex === 2,
             },
         })
+        hideLockKeysToggled.current = true
     }
 
     const handleComparisonClick = () => {
@@ -862,7 +863,11 @@ export default function DeploymentConfig({
         if (isCompareAndApprovalState) {
             result = await fetchManifestData(state.draftValues)
         } else {
-            result = await fetchManifestData(state.tempFormData)
+            if (applyPatches && hideLockedKeys) {
+                result = fetchManifestData(
+                    YAML.stringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
+                )
+            } else result = await fetchManifestData(state.tempFormData)
         }
         return result
     }

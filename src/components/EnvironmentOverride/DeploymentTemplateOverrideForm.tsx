@@ -371,6 +371,7 @@ export default function DeploymentTemplateOverrideForm({
                 openComparison: state.showReadme && state.selectedTabIndex === 2,
             },
         })
+        hideLockKeysToggled.current = true
     }
 
     const handleComparisonClick = () => {
@@ -528,6 +529,9 @@ export default function DeploymentTemplateOverrideForm({
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
+            if (applyPatches && hideLockedKeys) {
+                codeEditorValue = YAML.stringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current))
+            }
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
