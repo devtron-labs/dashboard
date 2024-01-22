@@ -6,9 +6,9 @@ import {
     DeploymentAppTypes,
     getLoginInfo,
     APIOptions,
+    useWindowSize,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { useWindowSize } from './UseWindowSize'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'

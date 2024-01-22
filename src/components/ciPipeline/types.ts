@@ -368,7 +368,7 @@ export interface SourceMaterialsProps {
     webhookData?: WebhookCIProps
     isBranchRegex?: (material) => boolean
     isAdvanced?: boolean
-    handleOnBlur?: (event) => void
+    handleOnBlur?: () => Promise<void>
 }
 
 export interface WebhookCIProps {
@@ -389,7 +389,7 @@ export interface BuildType {
     pageState: string
     isSecurityModuleInstalled: boolean
     isJobView?: boolean
-    getPluginData: (_formData?: PipelineFormType) => void
+    getPluginData: (_formData?: PipelineFormType) => Promise<void>
 }
 
 export interface PreBuildType {
