@@ -141,10 +141,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const abortControllerRef = useRef(new AbortController())
 
     useEffect(() => {
-        getConfigs()
-        return () => {
-            handledLocation.current = false
-        }
+         if (ApprovalMaterialModal && showApprovalModal) {
+             getConfigs()
+         }
+         return () => {
+             handledLocation.current = false
+         }
     }, [])
 
     useEffect(() => {
