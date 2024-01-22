@@ -2058,6 +2058,10 @@ button.anchor {
 
 .dc__border-dashed {
     border: 1px dashed var(--N200);
+
+    &--n3 {
+        border: 1px dashed var(--N300);
+    }
 }
 
 .dc__border-n1 {
@@ -2102,6 +2106,10 @@ button.anchor {
 
 .dc__border-bottom-2 {
     border-bottom: 2px solid var(--N200);
+}
+
+.dc__border-bottom-b5-2 {
+    border-bottom: 2px solid var(--B500) !important;
 }
 
 .dc__border-left {
@@ -2205,6 +2213,10 @@ button.anchor {
 
 .dc__mxw-200-imp {
     max-width: 200px !important;
+}
+
+.dc__mxw-250 {
+    max-width: 250px;
 }
 
 .dc__mxw-300 {
@@ -2931,6 +2943,10 @@ textarea,
 }
 
 // Width in percentage
+.mw-100p {
+    min-width: 100%;
+}
+
 .w-25 {
     width: 25%;
 }
@@ -2995,6 +3011,10 @@ textarea,
 //min width
 .min-w-200 {
     min-width: 200px;
+}
+
+.min-w-140 {
+    min-width: 140px;
 }
 
 .dc__mnw-100 {
@@ -3446,6 +3466,10 @@ textarea,
     margin-bottom: -1px;
 }
 
+.mb-neg-2{
+    margin-bottom: -2px;
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
@@ -3553,6 +3577,14 @@ textarea,
 
 .dc__overflow-scroll {
     overflow: scroll !important;
+}
+
+.dc__hide-hscroll {
+    overflow-x: hidden;
+}
+
+.dc__hscroll {
+    overflow-x: scroll;
 }
 
 .dc__no-svg-fill {
@@ -4083,3 +4115,10 @@ textarea::placeholder {
 }
 
 // End: accouncement banner
+
+.bulk-selection-widget {
+    border: 1px solid var(--B500);
+    background: rgba(240, 247, 255, 0.80);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(5px);
+}
