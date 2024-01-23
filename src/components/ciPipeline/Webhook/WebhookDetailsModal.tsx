@@ -370,7 +370,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     onChange={handleTokenChange}
                     value={tryoutAPIToken}
                     error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
-                    inputWrapperClassName="w-100"
+                    inputWrapClassName="w-100"
                 />
             </div>
         )

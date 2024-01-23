@@ -101,7 +101,11 @@ export const PaginationParams = {
     pageSize: 20
 }
 
-export const renderAdditionalErrorInfo = (handleNameChange, suggestedName, index) => {
+export const renderAdditionalErrorInfo = (
+    handleNameChange: (index: number, suggestedName: string) => void,
+    suggestedName: string,
+    index: number,
+): JSX.Element => {
     return (
         suggestedName && (
             <>
