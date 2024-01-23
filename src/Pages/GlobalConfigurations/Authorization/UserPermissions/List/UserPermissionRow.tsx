@@ -4,7 +4,6 @@ import {
     getRandomColor,
     showError,
     DeleteDialog,
-    noop,
     ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
@@ -23,7 +22,7 @@ import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
 
-const StatusCell = importComponentFromFELibrary('StatusCell', noop, 'function')
+const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
 
 const UserPermissionRow = ({
     id,

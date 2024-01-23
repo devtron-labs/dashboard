@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react'
 import {
     ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
-    noop,
     Pagination,
     Reload,
     TOAST_ACCESS_DENIED,
@@ -20,7 +19,7 @@ import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEm
 import NoUsers from './NoUsers'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 
-const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', noop, 'function')
+const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const showStatus = !!StatusHeaderCell
 
