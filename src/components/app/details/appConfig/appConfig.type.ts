@@ -9,11 +9,22 @@ export enum STAGE_NAME {
     CI_CONFIG = 'TEMPLATE',
     CI_PIPELINE = 'CI_PIPELINE',
     DEPLOYMENT_TEMPLATE = 'CHART',
+    GITOPS_CONFIG = 'GITOPS_CONFIG',
     CD_PIPELINE = 'CD_PIPELINE',
     CHART_ENV_CONFIG = 'CHART_ENV_CONFIG',
 }
 
 export type StageNames = keyof typeof STAGE_NAME | 'WORKFLOW' | 'CONFIGMAP' | 'SECRETS' | 'ENV_OVERRIDE'
+
+export enum DEVTRON_APPS_STEPS {
+    GITOPS_CONFIG = 5,
+    NO_GITOS_CONFIG = 4,
+}
+
+export enum DEFAULT_LANDING_STAGE {
+    JOB_VIEW = 2,
+    DEVTRON_APPS = 5,
+}
 
 export interface AppConfigProps {
     appName: string
@@ -46,6 +57,7 @@ export interface AppStageUnlockedType {
     configmap: boolean
     secret: boolean
     envOverride: boolean
+    gitOpsConfig: boolean
 }
 
 export interface CustomNavItemsType {
@@ -56,6 +68,7 @@ export interface CustomNavItemsType {
     supportDocumentURL: string
     flowCompletionPercent: number
     currentStep: number
+    required?: boolean
     isProtectionAllowed?: boolean
 }
 
@@ -93,9 +106,10 @@ export interface AppComposeRouterProps {
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
     isBaseConfigProtected?: boolean
-    reloadEnvironments:()=> void
+    reloadEnvironments: () => void
     configProtectionData: any[]
     filteredEnvIds?: string
+    isGitOpsConfigurationRequired?: boolean
 }
 
 export interface EnvironmentOverridesProps {

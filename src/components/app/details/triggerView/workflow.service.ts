@@ -31,8 +31,13 @@ export const getTriggerWorkflows = (
 export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
-    filteredEnvIds?: string
-): Promise<{ appName: string; workflows: WorkflowType[], filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI }> => {
+    filteredEnvIds?: string,
+): Promise<{
+    isGitOpsRepoNotConfigured: boolean
+    appName: string
+    workflows: WorkflowType[]
+    filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI
+}> => {
     return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
@@ -43,7 +48,7 @@ const getInitialWorkflows = (
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
     filteredEnvIds?: string
-): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI }> => {
+): Promise<{ isGitOpsRepoNotConfigured: boolean,appName: string; workflows: WorkflowType[]; filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI }> => {
     if (useAppWfViewAPI) {
         return getWorkflowViewList(id, filteredEnvIds).then((response) => {
             const workflows = {
@@ -138,7 +143,7 @@ export function processWorkflow(
     workflowOffset: Offset,
     filter?: (workflows: WorkflowType[]) => WorkflowType[],
     useParentRefFromWorkflow?: boolean,
-): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI } {
+): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines; isGitOpsRepoNotConfigured: boolean, cachedCDConfigResponse: CdPipelineResult, blackListedCI: BlackListedCI } {
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions, cdResponse)
     const filteredCIPipelines =
         ciResponse?.ciPipelines?.filter((pipeline) => pipeline.active && !pipeline.deleted) ?? []
@@ -230,7 +235,7 @@ export function processWorkflow(
             return acc
         }, {})
 
-    return { appName, workflows, filteredCIPipelines, cachedCDConfigResponse: cdResponse, blackListedCI }
+    return { appName, isGitOpsRepoNotConfigured: workflow.isGitOpsRepoNotConfigured, workflows, filteredCIPipelines, cachedCDConfigResponse: cdResponse, blackListedCI }
 }
 
 function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimensions: WorkflowDimensions) {
@@ -574,6 +579,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             y: 0,
             isRoot: false,
             helmPackageName: cdPipeline?.helmPackageName || '',
+            isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
         } as NodeAttr
         stageIndex++
     }
@@ -619,7 +625,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
         isLast: isLast,
-        deploymentAppCreated: cdPipeline?.deploymentAppCreated,
+        isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
     } as NodeAttr
     stageIndex++
 
@@ -655,6 +661,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             y: 0,
             isRoot: false,
             helmPackageName: cdPipeline?.helmPackageName || '',
+            isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
         } as NodeAttr
     }
     if (dimensions.type === WorkflowDimensionType.TRIGGER) {

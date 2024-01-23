@@ -149,6 +149,7 @@ function ChartValuesView({
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
     const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
+    const [allowedCustomBool, setAllowedCustomBool] = useState<boolean>()
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -164,12 +165,13 @@ function ChartValuesView({
             installedConfigFromParent,
             chartVersionsDataFromParent,
         ),
-    )
+    )   
 
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
+
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
@@ -179,6 +181,7 @@ function ChartValuesView({
                     payload: true,
                 })
             }
+            setAllowedCustomBool(result.allowCustomRepository===true)
         } catch (error) {}
     }
 
@@ -502,8 +505,8 @@ function ChartValuesView({
                 chartName: _installedAppInfo.appStoreChartName,
                 version: _releaseInfo.deployedAppDetail.chartVersion,
                 deprecated: result?.deprecated,
+                gitRepoURL: result.gitRepoURL,
             }
-
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
             getAndUpdateSchemaValue(
@@ -605,7 +608,7 @@ function ChartValuesView({
                 // ends
 
                 // helm app OR external helm app delete initiated
-                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedAppInfo)) {
+                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedApInfo)) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                     init && init()
                     history.push( `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
@@ -882,7 +885,8 @@ function ChartValuesView({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
                     deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
-                }
+                    gitRepoURL: commonState.gitRepoURL.gitRepoURL
+                }             
                 res = await installChart(payload)
             } else if (isCreateValueView) {
                 const payload = {
@@ -1545,16 +1549,21 @@ function ChartValuesView({
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
                             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig?.isOCICompliantChart &&(
+                            !appDetails?.isVirtualEnvironment &&
+                            !commonState.installedConfig?.isOCICompliantChart && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}
                                     handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
                                     isDeployChartView={isDeployChartView}
                                     allowedDeploymentTypes={allowedDeploymentTypes}
+                                    allowedCustomBool={allowedCustomBool}
+                                    envId={commonState.selectedEnvironment ? commonState.selectedEnvironment.value : 0}
+                                    teamId={1}
+                                    gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                                    dispatch={dispatch}
                                 />
                             )}
-                        <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {/**
                          * ChartRepoSelector will be displayed only when,
                          * - It's not a deploy chart view
