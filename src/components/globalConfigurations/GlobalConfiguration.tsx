@@ -123,7 +123,7 @@ export default function GlobalConfiguration(props) {
 
     return (
         <main className="global-configuration">
-            <PageHeader headerName="Global configurations" />
+            <PageHeader headerName="Global Configurations" />
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
                     <section className="global-configuration__navigation">
@@ -472,7 +472,7 @@ function NavItem({ serverMode }) {
                             key={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
                             activeClassName="active-route"
                         >
-                            <div className="flexbox flex-justify">Filter condition</div>
+                            <div className="flexbox flex-justify">Filter Condition</div>
                         </NavLink>
                     )}
                     {LockConfiguration && (
@@ -481,7 +481,7 @@ function NavItem({ serverMode }) {
                             key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
                             activeClassName="active-route"
                         >
-                            <div className="flexbox flex-justify">Lock Deployment config</div>
+                            <div className="flexbox flex-justify">Lock Deployment Config</div>
                         </NavLink>
                     )}
                 </>

@@ -7,6 +7,7 @@ import ExportToCsv from '../../../../../components/common/ExportToCsv/ExportToCs
 import { FILE_NAMES, USER_EXPORT_HEADER_ROW } from '../../../../../components/common/ExportToCsv/constants'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { getRoleFiltersToExport } from '../../utils'
+import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
 
 const ExportUserPermissionsToCsv = ({
     disabled,
@@ -35,9 +36,10 @@ const ExportUserPermissionsToCsv = ({
                 emailId: _user.emailId,
                 userId: _user.id,
                 // TODO (v1): Add support for status column
-                lastLoginTime: _user.lastLoginTime
-                    ? `${moment.utc(_user.lastLoginTime).format(Moment12HourExportFormat)} (UTC)`
-                    : 'Never',
+                lastLoginTime:
+                    _user.lastLoginTime === LAST_LOGIN_TIME_NULL_STATE
+                        ? _user.lastLoginTime
+                        : `${moment.utc(_user.lastLoginTime).format(Moment12HourExportFormat)} (UTC)`,
                 superAdmin: _user.superAdmin,
                 groups: '-',
                 project: '-',

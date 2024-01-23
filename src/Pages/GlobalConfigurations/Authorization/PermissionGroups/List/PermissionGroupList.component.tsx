@@ -97,62 +97,64 @@ const PermissionGroupList = () => {
                 initialSearchText={searchKey}
                 getDataToExport={getPermissionGroupDataForExport}
             />
-            {isAutoAssignFlowEnabled && <PermissionGroupInfoBar />}
-            <div className="flexbox-col flex-grow-1">
-                <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom">
-                    <span />
-                    <SortableTableHeaderCell
-                        title="Name"
-                        sortOrder={sortOrder}
-                        isSorted={sortBy === SortableKeys.name}
-                        triggerSorting={sortByName}
-                        disabled={isLoading}
-                    />
-                    <span>Description</span>
-                    <span />
+            {isAutoAssignFlowEnabled && (
+                <div className="pl-20 pr-20">
+                    <PermissionGroupInfoBar />
                 </div>
-                {isLoading || (result.totalCount && result.permissionGroups.length) ? (
-                    <>
-                        {isLoading ? (
-                            permissionGroupLoading.map((permissionGroup) => (
-                                <div
-                                    className="user-permission__row pl-20 pr-20 show-shimmer-loading"
-                                    key={`permission-group-list-${permissionGroup.id}`}
-                                >
-                                    <span className="child child-shimmer-loading" />
-                                    <span className="child child-shimmer-loading" />
-                                    <span className="child child-shimmer-loading" />
-                                </div>
-                            ))
-                        ) : (
-                            <>
-                                <div className="fs-13 fw-4 lh-20 cn-9 flex-grow-1">
-                                    {result.permissionGroups.map((permissionGroup, index) => (
-                                        <PermissionGroupRow
-                                            {...permissionGroup}
-                                            index={index}
-                                            key={`permission-group-${permissionGroup.id}`}
-                                            refetchPermissionGroupList={reload}
-                                        />
-                                    ))}
-                                </div>
-                                {result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
-                                    <Pagination
-                                        rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
-                                        size={result.totalCount}
-                                        offset={offset}
-                                        pageSize={pageSize}
-                                        changePage={changePage}
-                                        changePageSize={changePageSize}
+            )}
+            {isLoading || (result.totalCount && result.permissionGroups.length) ? (
+                <div className="flexbox-col flex-grow-1">
+                    <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom">
+                        <span />
+                        <SortableTableHeaderCell
+                            title="Name"
+                            sortOrder={sortOrder}
+                            isSorted={sortBy === SortableKeys.name}
+                            triggerSorting={sortByName}
+                            disabled={isLoading}
+                        />
+                        <span>Description</span>
+                        <span />
+                    </div>
+                    {isLoading ? (
+                        permissionGroupLoading.map((permissionGroup) => (
+                            <div
+                                className="user-permission__row pl-20 pr-20 show-shimmer-loading"
+                                key={`permission-group-list-${permissionGroup.id}`}
+                            >
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                            </div>
+                        ))
+                    ) : (
+                        <>
+                            <div className="fs-13 fw-4 lh-20 cn-9 flex-grow-1">
+                                {result.permissionGroups.map((permissionGroup, index) => (
+                                    <PermissionGroupRow
+                                        {...permissionGroup}
+                                        index={index}
+                                        key={`permission-group-${permissionGroup.id}`}
+                                        refetchPermissionGroupList={reload}
                                     />
-                                )}
-                            </>
-                        )}
-                    </>
-                ) : (
-                    <FiltersEmptyState clearFilters={handleClearFilters} />
-                )}
-            </div>
+                                ))}
+                            </div>
+                            {result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
+                                <Pagination
+                                    rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
+                                    size={result.totalCount}
+                                    offset={offset}
+                                    pageSize={pageSize}
+                                    changePage={changePage}
+                                    changePageSize={changePageSize}
+                                />
+                            )}
+                        </>
+                    )}
+                </div>
+            ) : (
+                <FiltersEmptyState clearFilters={handleClearFilters} />
+            )}
         </div>
     )
 }

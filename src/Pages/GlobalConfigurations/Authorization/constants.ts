@@ -1,7 +1,6 @@
 export enum UserStatus {
     active = 'active',
     inactive = 'inactive',
-    timeToLive = 'timeToLive',
 }
 
 export enum PermissionType {

@@ -13,7 +13,7 @@ import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
 
 const UserPermissionListHeader = ({
     disabled,
-    showStatus,
+    // showStatus,
     handleSearch,
     initialSearchText,
     getDataToExport,
@@ -64,7 +64,8 @@ const UserPermissionListHeader = ({
                     debounceTimeout={3000}
                     initialSearchText={initialSearchText}
                 />
-                {showStatus && <div>Status</div>}
+                {/* TODO (v3): Add the multi-select filtering */}
+                {/* {showStatus && <div>Status</div>} */}
                 <div className="dc__divider h-20" />
                 <Link to={`${path}/add`} type="button" className="cta anchor flex dc__gap-6 h-32">
                     <PlusIcon className="icon-dim-14 mw-14" />

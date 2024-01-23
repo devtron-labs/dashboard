@@ -1,8 +1,16 @@
 import React, { useState } from 'react'
-import { handleUTCTime, getRandomColor, showError, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    handleUTCTime,
+    getRandomColor,
+    showError,
+    DeleteDialog,
+    noop,
+    ConditionalWrap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
+import moment from 'moment'
 import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Lock } from '../../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
@@ -11,12 +19,18 @@ import { UserPermissionRowProps } from './types'
 import { DEFAULT_USER_TOOLTIP_CONTENT } from './constants'
 import { getIsAdminOrSystemUser } from '../utils'
 import { deleteUser } from '../../authorization.service'
+import { importComponentFromFELibrary } from '../../../../../components/common'
+import { Moment12HourFormat } from '../../../../../config'
+import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
+
+const StatusCell = importComponentFromFELibrary('StatusCell', noop, 'function')
 
 const UserPermissionRow = ({
     id,
     emailId,
     lastLoginTime,
     userStatus,
+    timeToLive,
     index,
     showStatus,
     refetchUserPermissionList,
@@ -46,8 +60,12 @@ const UserPermissionRow = ({
 
     return (
         <>
-            <div className="user-permission__row dc__visible-hover dc__visible-hover--parent pl-20 pr-20 dc__hover-n50">
-                {/* Note: no checkbox for admin/system */}
+            <div
+                className={`user-permission__row ${
+                    showStatus ? 'user-permission__row--with-status' : ''
+                } dc__visible-hover dc__visible-hover--parent pl-20 pr-20 dc__hover-n50`}
+            >
+                {/* Note (v2): no checkbox for admin/system */}
                 <span
                     className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
                     style={{
@@ -77,11 +95,27 @@ const UserPermissionRow = ({
                         </Link>
                     </span>
                 )}
-                <span className="dc__ellipsis-right">
-                    {lastLoginTime ? handleUTCTime(lastLoginTime, true) : 'Never'}
-                </span>
+                <ConditionalWrap
+                    condition={lastLoginTime !== LAST_LOGIN_TIME_NULL_STATE}
+                    wrap={(child) => (
+                        <Tippy
+                            content={moment(lastLoginTime).format(Moment12HourFormat)}
+                            className="default-tt"
+                            placement="auto"
+                            arrow={false}
+                        >
+                            {child}
+                        </Tippy>
+                    )}
+                >
+                    <span className="dc__ellipsis-right">
+                        {lastLoginTime === LAST_LOGIN_TIME_NULL_STATE
+                            ? lastLoginTime
+                            : handleUTCTime(lastLoginTime, true)}
+                    </span>
+                </ConditionalWrap>
                 {/* TODO (v1): Status should not be editable for admin/system */}
-                {showStatus && <span className="dc__ellipsis-right">{userStatus}</span>}
+                {showStatus && <StatusCell status={userStatus} timeToLive={timeToLive} />}
                 {isAdminOrSystemUser ? (
                     <span />
                 ) : (

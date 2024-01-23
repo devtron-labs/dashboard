@@ -1682,8 +1682,15 @@ button.anchor {
     }
 
     &.dc__visible-hover--parent:hover {
-        .dc__visible-hover--child {
-            display: inherit;
+        .dc__visible-hover {
+            &--child {
+                display: inherit;
+            }
+
+            // For hiding a child on hover on parent
+            &--hide-child {
+                display: none;
+            }
         }
     }
 }
@@ -2720,6 +2727,10 @@ textarea,
 
 .w-auto-imp {
     width: auto !important;
+}
+
+.w-8 {
+    width: 8px;
 }
 
 .w-32 {

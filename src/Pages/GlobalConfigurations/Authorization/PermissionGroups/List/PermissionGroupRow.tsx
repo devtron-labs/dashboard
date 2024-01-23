@@ -21,7 +21,7 @@ const PermissionGroupRow = ({ id, name, description, index, refetchPermissionGro
         setIsModalLoading(true)
         try {
             await deletePermissionGroup(id)
-            toast.success('User deleted')
+            toast.success('Group deleted')
             refetchPermissionGroupList()
             setIsDeleteModalOpen(false)
         } catch (err) {
