@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, VisibleModal, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, VisibleModal, useAsync, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getEnvironmentListMin } from '../../services/service'
@@ -11,6 +11,7 @@ import { ReactComponent as LockIcon } from '../../assets/icons/ic-locked.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg';
 import { useHistory } from 'react-router'
 import { getSavedValuesListURL } from './charts.helper'
+import { renderAdditionalErrorInfo } from './charts.util'
 
 interface AdvancedConfig extends AdvancedConfigHelpers {
     chart: ChartGroupEntry;
@@ -141,14 +142,18 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
             <div className="advanced-config flex">
                 <form action="" className="advanced-config__form">
                     <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">{chartName}</h1>
-                    {handleNameChange && <div className="flex column left top mb-16">
-                        <label htmlFor="" className="form__label" data-testid="advanced-option-app-name">App name*</label>
-                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} data-testid="advanced-option-app-name-box"/>
-                        {appName?.error &&
-                            <span className="form__error flex left">
-                                <WarningIcon className="mr-5 icon-dim-16" />{appName?.error || ""}
-                                {appName.suggestedName && <span>. Suggested name: <span className="anchor pointer" onClick={e => handleNameChange(index, appName.suggestedName)}>{appName.suggestedName}</span></span>}
-                            </span>}
+                    {handleNameChange && <div className="mb-16">
+                          <CustomInput
+                                name="appName"
+                                label="App name"
+                                rootClassName={`${appName?.error ? 'form__input--error' : ''}`}
+                                value={appName.value}
+                                onChange={(e) => handleNameChange(index, e.target.value)}
+                                data-testid="advanced-option-app-name-box"
+                                isRequiredField={true}
+                                error={appName?.error}
+                                additionalErrorInfo={renderAdditionalErrorInfo(handleNameChange, appName.suggestedName, index)}
+                            />
                     </div>}
                     {handleEnvironmentChange && <div className="flex top mb-16">
                         <div className="flex column half left top">

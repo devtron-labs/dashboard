@@ -3,7 +3,7 @@ import dt from '../../assets/icons/logo/logo-dt.svg'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { getCookie, ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getCookie, ServerErrors, Host, Progressing, showError, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
@@ -189,19 +189,18 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 <p className="login__text">Your tool for Rapid, Reliable & Repeatable deployments</p>
                 {/* @ts-ignore */}
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
-                    <input
-                        type="text"
+                    <CustomInput
                         data-testid="username-textbox"
-                        className="form__input fs-14 mb-24"
+                        rootClassName="fs-14 mb-24"
                         placeholder="Username"
                         value={this.state.form.username}
                         name="username"
                         onChange={this.handleChange}
                     />
-                    <input
+                    <CustomInput
                         type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'}
                         data-testid="password-textbox"
-                        className="form__input fs-14"
+                        rootClassName="fs-14"
                         placeholder="Password"
                         value={this.state.form.password}
                         name="password"
