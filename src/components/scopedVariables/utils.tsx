@@ -22,7 +22,7 @@ export const validator: ValidatorType = ({ data, type }) => {
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: yaml.safeDump(parsedData),
+                            data: yaml.stringify(parsedData, { simpleKeys: true }),
                             description: 'File uploaded successfully',
                         },
                     }
@@ -36,12 +36,12 @@ export const validator: ValidatorType = ({ data, type }) => {
         case 'text/yaml':
         case 'text/x-yaml':
             try {
-                const parsedData = yaml.safeLoad(data)
+                const parsedData = yaml.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: yaml.safeDump(parsedData),
+                            data: yaml.stringify(parsedData, { simpleKeys: true }),
                             description: 'File uploaded successfully',
                         },
                     }
@@ -65,9 +65,9 @@ export const downloadData = (data: string, filename: string, type: string) => {
     window.URL.revokeObjectURL(url)
 }
 
-export const parseIntoYAMLString = (data: any) => yaml.safeDump(data)
+export const parseIntoYAMLString = (data: any) => yaml.stringify(data, { simpleKeys: true })
 
-export const parseYAMLStringToObj = (data: string) => yaml.safeLoad(data)
+export const parseYAMLStringToObj = (data: string) => yaml.parse(data)
 
 export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVariablesDataType => {
     /*

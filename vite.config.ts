@@ -68,7 +68,6 @@ export default defineConfig(({ mode }) => {
               filename: 'prompt-sw.ts',
               strategies : 'injectManifest',
             }),
-            replace({ __DATE__: new Date().toISOString() , __RELOAD_SW__ : 'true'}),
         ],
         // test: {
         //     globals: true,

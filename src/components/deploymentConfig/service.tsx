@@ -1,7 +1,7 @@
 import { Routes } from '../../config'
 import { get, put, post } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigMapRequest } from './types'
-import yamlJsParser from 'yamljs'
+import yaml from 'yaml'
 
 export function getDeploymentTemplate(
     id: number,
@@ -119,8 +119,8 @@ function configMapModal(configMap, appId: number) {
             secretsValuesOverride: configMap.secret_data,
             configMapJsonStr: JSON.stringify(configMap.config_map_data || {}, undefined, 2),
             secretsJsonStr: JSON.stringify(configMap.secret_data || {}, undefined, 2),
-            configMapYaml: yamlJsParser.stringify(configMap.config_map_data),
-            secretsYaml: yamlJsParser.stringify(configMap.secret_data),
+            configMapYaml: yaml.stringify(configMap.config_map_data),
+            secretsYaml: yaml.stringify(configMap.secret_data),
         }
     } else {
         return null

@@ -38,8 +38,6 @@ export default function App() {
     const location = useLocation()
     const { push } = useHistory()
     const didMountRef = useRef(false)
-    // replaced dynamically
-    const buildDate = '__DATE__'
 
     function onlineToast(toastBody: JSX.Element, options) {
         if (onlineToastRef.current && toast.isActive(onlineToastRef.current)) {
