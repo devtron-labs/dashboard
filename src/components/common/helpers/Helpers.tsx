@@ -11,7 +11,7 @@ import {
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { getDateInMilliseconds } from '../../../GlobalConfigurations/Authorization/APITokens/authorization.utils'
+import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/authorization.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'

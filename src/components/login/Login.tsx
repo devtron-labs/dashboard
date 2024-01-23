@@ -9,7 +9,7 @@ import { LoginProps, LoginFormState } from './login.types'
 import { loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
 import './login.scss'
-import { getSSOConfigList } from '../../GlobalConfigurations/Authorization/SSOLoginServices/service'
+import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { OptionType } from '../../GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
+import { OptionType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 
 export interface CustomCredential{
   server: string

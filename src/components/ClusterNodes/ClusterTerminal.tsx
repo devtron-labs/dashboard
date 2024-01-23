@@ -29,7 +29,7 @@ import {
     SELECT_TITLE,
     SocketConnectionType,
 } from './constants'
-import { OptionType } from '../../GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
+import { OptionType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { useHistory, useLocation } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'

@@ -1,0 +1,124 @@
+import React, { useState } from 'react'
+import { handleUTCTime, getRandomColor, showError, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { Link, useRouteMatch } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
+import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Lock } from '../../../../../assets/icons/ic-locked.svg'
+import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
+
+import { UserPermissionRowProps } from './types'
+import { DEFAULT_USER_TOOLTIP_CONTENT } from './constants'
+import { getIsAdminOrSystemUser } from '../utils'
+import { deleteUser } from '../../authorization.service'
+
+const UserPermissionRow = ({
+    id,
+    emailId,
+    lastLoginTime,
+    userStatus,
+    index,
+    showStatus,
+    refetchUserPermissionList,
+}: UserPermissionRowProps) => {
+    const { path } = useRouteMatch()
+    const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [isModalLoading, setIsModalLoading] = useState(false)
+
+    const toggleDeleteModal = () => {
+        setIsDeleteModalOpen(!isDeleteModalOpen)
+    }
+
+    const handleDelete = async () => {
+        setIsModalLoading(true)
+        try {
+            await deleteUser(id)
+            toast.success('User deleted')
+            refetchUserPermissionList()
+            setIsDeleteModalOpen(false)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setIsModalLoading(false)
+        }
+    }
+
+    return (
+        <>
+            <div className="user-permission__row dc__visible-hover dc__visible-hover--parent pl-20 pr-20 dc__hover-n50">
+                {/* Note: no checkbox for admin/system */}
+                <span
+                    className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
+                    style={{
+                        backgroundColor: getRandomColor(emailId),
+                    }}
+                >
+                    {emailId[0]}
+                </span>
+                {isAdminOrSystemUser ? (
+                    <span className="flexbox">
+                        <Tippy
+                            content={DEFAULT_USER_TOOLTIP_CONTENT[emailId]}
+                            className="default-tt w-200"
+                            placement="auto"
+                            arrow={false}
+                        >
+                            <span className="dc__ellipsis-right flex dc__content-start dc__gap-4 cn-9">
+                                {emailId}
+                                <Lock className="icon-dim-14 fcn-6" />
+                            </span>
+                        </Tippy>
+                    </span>
+                ) : (
+                    <span className="dc__ellipsis-right">
+                        <Link className="anchor dc__ellipsis-right" to={`${path}/${id}`}>
+                            {emailId}
+                        </Link>
+                    </span>
+                )}
+                <span className="dc__ellipsis-right">
+                    {lastLoginTime ? handleUTCTime(lastLoginTime, true) : 'Never'}
+                </span>
+                {/* TODO (v1): Status should not be editable for admin/system */}
+                {showStatus && <span className="dc__ellipsis-right">{userStatus}</span>}
+                {isAdminOrSystemUser ? (
+                    <span />
+                ) : (
+                    <div className="flex dc__gap-12">
+                        <Link
+                            type="button"
+                            className="dc__visible-hover--child dc__transparent"
+                            data-testid={`user-permission__edit-button-${index}`}
+                            aria-label="Edit user"
+                            to={`${path}/${id}`}
+                        >
+                            <Edit className="scn-6 icon-dim-16 mw-16" />
+                        </Link>
+                        <button
+                            type="button"
+                            className="dc__visible-hover--child dc__transparent"
+                            data-testid={`user-permission__delete-button-${index}`}
+                            onClick={toggleDeleteModal}
+                            aria-label="Delete user"
+                        >
+                            <Trash className="scn-6 icon-dim-16 mw-16 icon-delete" />
+                        </button>
+                    </div>
+                )}
+            </div>
+            {isDeleteModalOpen && (
+                <DeleteDialog
+                    dataTestId="user-form-delete-dialog"
+                    title={`Delete user '${emailId || ''}'?`}
+                    description="Deleting this user will remove the user and revoke all their permissions."
+                    delete={handleDelete}
+                    closeDelete={toggleDeleteModal}
+                    apiCallInProgress={isModalLoading}
+                />
+            )}
+        </>
+    )
+}
+
+export default UserPermissionRow

@@ -12,11 +12,11 @@ import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
 import ReactSelect, { components } from 'react-select'
 import { Option } from '../../v2/common/ReactSelect.utils'
-import { getUserRole, createOrUpdateUser } from '../../../GlobalConfigurations/Authorization/authorization.service'
+import { getUserRole, createOrUpdateUser } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { useParams } from 'react-router-dom'
-import { createGeneratedAPIToken } from '../../../GlobalConfigurations/Authorization/APITokens/service'
-import { ActionTypes, EntityTypes } from '../../../GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
+import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
+import { ActionTypes, EntityTypes } from '../../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import {
     CURL_PREFIX,
     PLAYGROUND_TAB_LIST,
@@ -31,7 +31,7 @@ import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
-import { UserCreateOrUpdatePayload } from '../../../GlobalConfigurations/Authorization/types'
+import { UserCreateOrUpdatePayload } from '../../../Pages/GlobalConfigurations/Authorization/types'
 
 export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{

@@ -25,7 +25,7 @@ import {
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
-import { getUserRole } from '../../../GlobalConfigurations/Authorization/authorization.service'
+import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { AppListResponse } from '../../app/list-new/AppListService'
 import { MainContext } from './types'
