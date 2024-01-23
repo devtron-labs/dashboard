@@ -121,7 +121,7 @@ const ApiTokens = () => {
                             className="flex search__clear-button"
                             type="button"
                             onClick={clearSearch}
-                            aria-label="Clear search"
+                            aria-label="Clear Search"
                         >
                             <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                         </button>
@@ -139,7 +139,7 @@ const ApiTokens = () => {
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
             <>
-                <div data-testid="api-token-page" className="api-token-container bcn-0">
+                <div data-testid="api-token-page" className="api-token-container flexbox-col flex-grow-1">
                     <Switch>
                         <Route path={`${path}/list`}>
                             <APITokenList
@@ -200,6 +200,7 @@ const ApiTokens = () => {
                 subTitle={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.SUBTITLE}
                 isButtonAvailable
                 renderButton={renderGenerateButton}
+                classname="flex-grow-1"
             />
         )
     }
