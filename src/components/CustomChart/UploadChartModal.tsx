@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { ButtonWithLoader } from '../common'
-import { showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, noop, showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import { uploadChart, validateChart } from './customChart.service'
 import errorImage from '../../assets/img/ic_upload_chart_error.png'
@@ -121,14 +121,14 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
                 <div>
                     <div>
-                        <span className="fs-13 fw-4 cn-7 dc__required-field">
-                            Chart Name
-                        </span>
-                        <input
-                            type="text"
-                            className="w-100 br-4 en-2 bw-1 mt-6 form__input"
+                        <CustomInput
+                            label="Chart Name"
+                            name="chartName"
+                            onChange={noop}
+                            rootClassName="w-100 br-4 en-2 bw-1 mt-6 form__input"
                             disabled
                             value={chartDetail.chartName}
+                            isRequiredField={true}
                         />
                     </div>
                     <div className="mt-16">
