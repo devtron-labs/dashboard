@@ -3,7 +3,7 @@ import { SortingOrder } from '../../../config'
 import { ReactComponent as SortIcon } from '../../../assets/icons/ic-arrow-up-down.svg'
 import { ReactComponent as SortArrowDown } from '../../../assets/icons/ic-sort-arrow-down.svg'
 
-// TODO: move this to common library
+// TODO (v1): move this to common library
 const SortableTableHeaderCell = ({
     isSorted,
     triggerSorting,
