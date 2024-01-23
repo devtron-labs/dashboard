@@ -15,7 +15,7 @@ import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-rig
 import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
 import Tippy from '@tippyjs/react'
 import ContentCard from '../../common/ContentCard/ContentCard'
-import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
+import { AppListConstants, DEFAULT_BASE_PAGE_SIZE, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
@@ -257,7 +257,7 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     renderPagination() {
-        if (this.props.size > 20) {
+        if (this.props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={this.props.size}

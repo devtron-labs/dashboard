@@ -29,7 +29,6 @@ import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-righ
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
     AuthenticationType,
-    DEFAULT_SECRET_PLACEHOLDER,
     DataListType,
     UserDetails,
     SaveClusterPayloadType,
@@ -38,7 +37,7 @@ import {
 } from './cluster.type'
 import { toast } from 'react-toastify'
 
-import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
+import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CLUSTER_CONFIRMATION_MESSAGE, DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'

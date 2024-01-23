@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ReactComponent as MegaphoneIcon } from '../../assets/icons/ic-megaphone.svg'
 import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { getDateInMilliseconds } from '../apiTokens/authorization.utils'
+import { getDateInMilliseconds } from '../../GlobalConfigurations/Authorization/APITokens/authorization.utils'
 import { setActionWithExpiry } from './helpers/Helpers'
 
 export default function AnnouncementBanner({ parentClassName = '', isCDMaterial = false }) {

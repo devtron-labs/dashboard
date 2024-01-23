@@ -6,9 +6,10 @@ import { toast } from 'react-toastify'
 import { getCookie, ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
 import { LoginProps, LoginFormState } from './login.types'
-import { getSSOConfigList, loginAsAdmin } from './login.service'
+import { loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
 import './login.scss'
+import { getSSOConfigList } from '../../GlobalConfigurations/Authorization/SSOLoginServices/service'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {

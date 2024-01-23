@@ -11,14 +11,14 @@ import {
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
+import { getDateInMilliseconds } from '../../../GlobalConfigurations/Authorization/APITokens/authorization.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
-import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 

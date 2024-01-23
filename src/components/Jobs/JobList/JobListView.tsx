@@ -10,7 +10,7 @@ import { Job, JobListViewProps } from '../Types'
 import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
 import JobsEmptyState from '../JobsEmptyState'
-import { URLS } from '../../../config'
+import { DEFAULT_BASE_PAGE_SIZE, URLS } from '../../../config'
 import { environmentName } from '../Utils'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 
@@ -167,7 +167,7 @@ export default function JobListView(props: JobListViewProps) {
     }
 
     const renderPagination = () => {
-        if (props.size > 20) {
+        if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={props.size}

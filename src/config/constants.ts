@@ -111,13 +111,11 @@ export const Routes = {
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
+    USER_PERMISSIONS: 'users',
+    PERMISSION_GROUPS: 'groups',
+    SSO_LOGIN_SERVICES: 'login-service',
     API_TOKEN: 'api-token',
     API_TOKEN_WEBHOOK: 'api-token/webhook',
-    USER_CREATE: 'user/create',
-    USER_UPDATE: 'user/update',
-    USER_LIST: 'user/all',
-    ALL_USERS_LIST: 'user/detail/get',
-    ALL_GROUPS_LIST: 'user/role/group/detailed/get',
 
     DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_CONFIG_MAP_GET: 'configmap/applevel/get',
@@ -807,7 +805,25 @@ export const SERVER_ERROR_CODES = {
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
-export const CVE_ID_NOT_FOUND = "CVE ID not found"
-export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"
-export const NO_HOST_URL = "Please enter host url"
-export const WEBHOOK_NO_API_TOKEN_ERROR = "API Token is required to execute webhook"
+export const CVE_ID_NOT_FOUND = 'CVE ID not found'
+export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
+export const NO_HOST_URL = 'Please enter host url'
+export const WEBHOOK_NO_API_TOKEN_ERROR = 'API Token is required to execute webhook'
+
+export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
+
+export const API_STATUS_CODES = {
+    UNAUTHORIZED: 401,
+    PERMISSION_DENIED: 403,
+    NOT_FOUND: 404,
+    EXPECTATION_FAILED: 417
+}
+
+export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3
+
+export const DEFAULT_BASE_PAGE_SIZE = 20
+
+export enum SortingOrder {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}

@@ -10,6 +10,7 @@ export interface ExportToCsvProps {
     fileName: FILE_NAMES
     className?: string
     disabled?: boolean
+    showOnlyIcon?: boolean
 }
 
 export const APPLIST_EXPORT_HEADERS = [
@@ -30,6 +31,7 @@ export const APPLIST_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADERS = [
     { label: 'Email address', key: 'emailId' },
     { label: 'User ID', key: 'userId' },
+    { label: 'Last login time', key: 'lastLoginTime' },
     { label: 'Superadmin', key: 'superAdmin' },
     { label: 'Group permissions', key: 'groups' },
     { label: 'Project', key: 'project' },
@@ -41,6 +43,7 @@ export const USER_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADER_ROW = {
     emailId: 'Email address',
     userId: 'User ID',
+    lastLoginTime: 'Last login time',
     superAdmin: 'Superadmin',
     groups: 'Group permissions',
     project: 'Project',
@@ -53,6 +56,7 @@ export const GROUP_EXPORT_HEADERS = [
     { label: 'Group Name', key: 'groupName' },
     { label: 'Group ID', key: 'groupId' },
     { label: 'Description', key: 'description' },
+    { label: 'Superadmin', key: 'superAdmin' },
     { label: 'Project', key: 'project' },
     { label: 'Environment', key: 'environment' },
     { label: 'Application', key: 'application' },
@@ -63,6 +67,7 @@ export const GROUP_EXPORT_HEADER_ROW = {
     groupName: 'Group Name',
     groupId: 'Group ID',
     description: 'Description',
+    superAdmin: 'Superadmin',
     project: 'Project',
     environment: 'Environment',
     application: 'Application',

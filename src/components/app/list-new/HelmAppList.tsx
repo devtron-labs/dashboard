@@ -12,7 +12,7 @@ import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService'
 import { Pagination, LazyImage, handleUTCTime } from '../../common'
-import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap, DEFAULT_BASE_PAGE_SIZE } from '../../../config'
 import { AppListViewType } from '../config'
 import { Link } from 'react-router-dom'
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
@@ -681,7 +681,7 @@ export default function HelmAppList({
 
     function renderPagination(): JSX.Element {
         return (
-            filteredHelmAppsList.length > 20 &&
+            filteredHelmAppsList.length > DEFAULT_BASE_PAGE_SIZE &&
             !fetchingExternalApps && (
                 <Pagination
                     size={filteredHelmAppsList.length}

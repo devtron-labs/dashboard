@@ -1,5 +1,5 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { TokenListType } from '../../apiTokens/authorization.type'
+import { TokenListType } from '../../../GlobalConfigurations/Authorization/APITokens/authorization.type'
 
 export interface WebhookDetailType {
     close: () => void
