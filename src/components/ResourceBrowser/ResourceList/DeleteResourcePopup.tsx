@@ -29,6 +29,7 @@ export default function DeleteResourcePopup({
                         namespace: resourceData.namespace,
                         name: resourceData.name,
                     },
+                    forceDelete: forceDelete
                 },
             }
 
