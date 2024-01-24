@@ -43,6 +43,7 @@ const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
+const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -430,15 +431,17 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {CatalogFramework && <NavLink
-                        to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                        key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                        activeClassName="active-route"
-                    >
-                        <div className="flexbox flex-justify">Catalog Framework</div>
-                    </NavLink>}
+                    {CatalogFramework && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Catalog Framework</div>
+                        </NavLink>
+                    )}
 
-                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES &&  (
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -457,6 +460,17 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Plugins</div>
                         </NavLink>
                     )}
+
+                    {PullImageDigest && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
+                            key={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Pull Image Digest</div>
+                        </NavLink>
+                    )}
+
                     {TagListContainer && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_TAGS}
@@ -615,6 +629,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
+                </Route>
+            )}
+            {PullImageDigest && (
+                <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
+                    <PullImageDigest />
                 </Route>
             )}
             {TagListContainer && (
