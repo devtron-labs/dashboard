@@ -19,6 +19,7 @@ import {
     RadioGroupItem,
     ConditionalWrap,
     DeploymentAppTypes,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -448,19 +449,20 @@ export const ValueNameInput = ({
 }: ValueNameInputType) => {
     return (
         <label className="form__row form__row--w-100">
-            <span className="form__label required-field">Name</span>
-            <input
-                autoComplete="off"
+            <CustomInput
+                name="value-name"
+                label="Name"
                 tabIndex={1}
                 placeholder="Eg. value-template"
-                className="form__input"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
-                onBlur={() => handleValueNameOnBlur()}
+                handleOnBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
-            />
-            {invalidValueName && renderValidationErrorLabel(invalidValueNameMessage)}
+                isRequiredField={true}
+                error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
+            /> 
+            
         </label>
     )
 }
@@ -474,18 +476,18 @@ export const AppNameInput = ({
 }: AppNameInputType) => {
     return (
         <label className="form__row form__row--w-100">
-            <span className="form__label required-field" data-testid="app-name-heading">App Name</span>
-            <input
-                autoComplete="off"
+            <CustomInput
+                name="app-name"
                 tabIndex={1}
+                label="App Name"
                 placeholder="Eg. app-name"
-                className="form__input"
                 value={appName}
                 onChange={(e) => handleAppNameChange(e.target.value)}
-                onBlur={() => handleAppNameOnBlur()}
+                handleOnBlur={handleAppNameOnBlur}
                 data-testid="app-name-input"
+                isRequiredField={true}
+                error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
             />
-            {invalidAppName && renderValidationErrorLabel(invalidAppNameMessage)}
         </label>
     )
 }

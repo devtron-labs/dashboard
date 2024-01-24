@@ -5,7 +5,7 @@ import {
     DropdownIcon,
     useJsonYaml,
 } from '../../common'
-import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin, ResponseType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin, ResponseType, DeploymentAppTypes, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
@@ -522,12 +522,11 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     <div className="overflown" ref={deployChartForm}>
                         <div className="hide-scroll">
                             <label className="form__row form__row--w-100">
-                                <span className="form__label">App Name</span>
-                                <input
-                                    autoComplete="off"
+                                <CustomInput
+                                    name="appName"
+                                    label="App Name"
                                     tabIndex={1}
                                     placeholder="App name"
-                                    className="form__input"
                                     value={appName}
                                     autoFocus
                                     disabled={!!isUpdate}

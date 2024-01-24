@@ -100,3 +100,20 @@ export const PaginationParams = {
     pageOffset: 0,
     pageSize: 20
 }
+
+export const renderAdditionalErrorInfo = (
+    handleNameChange: (index: number, suggestedName: string) => void,
+    suggestedName: string,
+    index: number,
+): JSX.Element => {
+    return (
+        suggestedName && (
+            <>
+                . Suggested Name:
+                <span className="anchor pointer" onClick={(e) => handleNameChange(index, suggestedName)}>
+                    {suggestedName}
+                </span>
+            </>
+        )
+    )
+}
