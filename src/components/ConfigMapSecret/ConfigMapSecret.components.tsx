@@ -740,6 +740,7 @@ export const convertToValidValue = (k: any): string => {
         const replacePattern = /\s/g
         return k.toString().replace(replacePattern, '')
     }
+    return k.toString()
 }
 
 export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
