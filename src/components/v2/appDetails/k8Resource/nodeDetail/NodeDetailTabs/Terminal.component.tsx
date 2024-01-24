@@ -212,7 +212,7 @@ function TerminalComponent({
         } else if (selectedContainerName) {
             setSocketConnection(SocketConnectionType.CONNECTING)
         }
-    }, [selectedTerminalType, selectedContainerName])
+    }, [selectedTerminalType, selectedContainerName, params.podName, params.node, params.namespace])
 
     useEffect(() => {
         if (socketConnection === SocketConnectionType.CONNECTING) {
