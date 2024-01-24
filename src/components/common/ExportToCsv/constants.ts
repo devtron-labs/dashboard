@@ -1,3 +1,7 @@
+import { importComponentFromFELibrary } from "../helpers/Helpers"
+
+const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
+
 export enum FILE_NAMES {
     Apps = 'Devtron Apps',
     Users = 'Devtron Apps Users Data',
@@ -31,6 +35,7 @@ export const APPLIST_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADERS = [
     { label: 'Email address', key: 'emailId' },
     { label: 'User ID', key: 'userId' },
+    ...(showStatus ? [{ label: 'User status', key: 'status' }] : []),
     { label: 'Last login time', key: 'lastLoginTime' },
     { label: 'Super admin', key: 'superAdmin' },
     { label: 'Group permissions', key: 'groups' },
@@ -43,6 +48,9 @@ export const USER_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADER_ROW = {
     emailId: 'Email address',
     userId: 'User ID',
+    ...(showStatus ? {
+        status: 'User status'
+    } : {}),
     lastLoginTime: 'Last login time',
     superAdmin: 'Super admin',
     groups: 'Group permissions',

@@ -47,7 +47,8 @@ export const createOrUpdateUser = (data: UserCreateOrUpdatePayload) => {
 export const deleteUser = (userId: User['id']) => trash(`user/${userId}`)
 
 export const getUserList = async (
-    queryParams?: BaseFilterQueryParams<UserListSortableKeys>,
+    queryParams: BaseFilterQueryParams<UserListSortableKeys>,
+    signal?: AbortSignal,
 ): Promise<{
     users: User[]
     totalCount: number
@@ -55,7 +56,7 @@ export const getUserList = async (
     try {
         const {
             result: { users, totalCount },
-        } = (await get(getUrlWithSearchParams('user', queryParams ?? {}))) as ResponseType<{
+        } = (await get(getUrlWithSearchParams('user', queryParams ?? {}), { signal })) as ResponseType<{
             users: UserDto[]
             totalCount: number
         }>
@@ -65,7 +66,9 @@ export const getUserList = async (
             totalCount,
         }
     } catch (error) {
-        showError(error)
+        if (!signal?.aborted) {
+            showError(error)
+        }
         throw error
     }
 }
@@ -92,26 +95,32 @@ export const createOrUpdatePermissionGroup = (payload: PermissionGroupCreateOrUp
 
 export const getPermissionGroupList = async (
     queryParams?: BaseFilterQueryParams<PermissionGroupListSortableKeys>,
+    signal?: AbortSignal,
 ): Promise<{
     permissionGroups: PermissionGroup[]
     totalCount: number
 }> => {
-    const {
-        result: { roleGroups: permissionGroups, totalCount },
-    } = (await get(getUrlWithSearchParams('user/role/group', queryParams ?? {}))) as ResponseType<{
-        roleGroups: PermissionGroupDto[]
-        totalCount: number
-    }>
+    try {
+        const {
+            result: { roleGroups: permissionGroups, totalCount },
+        } = (await get(getUrlWithSearchParams('user/role/group', queryParams ?? {}), { signal })) as ResponseType<{
+            roleGroups: PermissionGroupDto[]
+            totalCount: number
+        }>
 
-    return {
-        permissionGroups,
-        totalCount,
+        return {
+            permissionGroups,
+            totalCount,
+        }
+    } catch (error) {
+        if (!signal?.aborted) {
+            showError(error)
+        }
+        throw error
     }
 }
 
-export const deletePermissionGroup = (id: PermissionGroup['id']) => {
-    return trash(`user/role/group/${id}`)
-}
+export const deletePermissionGroup = (id: PermissionGroup['id']) => trash(`user/role/group/${id}`)
 
 // Others
 export const getCustomRoles = async (): Promise<ResponseType<CustomRoles[]>> => {

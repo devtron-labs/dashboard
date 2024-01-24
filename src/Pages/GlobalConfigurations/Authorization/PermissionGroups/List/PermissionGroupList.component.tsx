@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import {
     ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
@@ -20,6 +20,7 @@ import useUrlFilters from '../../shared/hooks/useUrlFilters'
 import SortableTableHeaderCell from '../../../../../components/common/SortableTableHeaderCell'
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
 import NoPermissionGroups from './NoPermissionGroups'
+import { abortPreviousRequests, getIsRequestAborted } from '../../utils'
 
 const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
 
@@ -46,8 +47,18 @@ const PermissionGroupList = () => {
         }),
         [pageSize, offset, searchKey, sortBy, sortOrder],
     )
-    const [isLoading, result, error, reload] = useAsync(() => getPermissionGroupList(filterConfig), [filterConfig])
+    const abortControllerRef = useRef(new AbortController())
+    const [isLoading, result, error, reload] = useAsync(
+        () =>
+            abortPreviousRequests(
+                () => getPermissionGroupList(filterConfig, abortControllerRef.current.signal),
+                abortControllerRef,
+            ),
+        [filterConfig],
+    )
     const { isAutoAssignFlowEnabled } = useAuthorizationContext()
+
+    const showLoadingState = isLoading || getIsRequestAborted(error)
 
     const getPermissionGroupDataForExport = useCallback(
         () =>
@@ -62,7 +73,7 @@ const PermissionGroupList = () => {
         [filterConfig],
     )
 
-    if (!isLoading) {
+    if (!showLoadingState) {
         if (error) {
             if ([API_STATUS_CODES.PERMISSION_DENIED, API_STATUS_CODES.UNAUTHORIZED].includes(error.code)) {
                 return (
@@ -72,7 +83,7 @@ const PermissionGroupList = () => {
                     />
                 )
             }
-            return <Reload reload={reload} />
+            return <Reload reload={reload} className="flex-grow-1" />
         }
 
         // The null state is shown only when filters are not applied
@@ -81,18 +92,17 @@ const PermissionGroupList = () => {
         }
     }
 
+    // Disable the filter actions
+    const isActionsDisabled = showLoadingState || !(result.totalCount && result.permissionGroups.length)
+
     const sortByName = () => {
         handleSorting(SortableKeys.name)
-    }
-
-    const handleClearFilters = () => {
-        clearFilters()
     }
 
     return (
         <div className="flexbox-col dc__gap-8 flex-grow-1">
             <PermissionGroupListHeader
-                disabled={isLoading || !(result.totalCount && result.permissionGroups.length)}
+                disabled={isActionsDisabled}
                 handleSearch={handleSearch}
                 initialSearchText={searchKey}
                 getDataToExport={getPermissionGroupDataForExport}
@@ -111,12 +121,12 @@ const PermissionGroupList = () => {
                             sortOrder={sortOrder}
                             isSorted={sortBy === SortableKeys.name}
                             triggerSorting={sortByName}
-                            disabled={isLoading}
+                            disabled={isActionsDisabled}
                         />
                         <span>Description</span>
                         <span />
                     </div>
-                    {isLoading ? (
+                    {showLoadingState ? (
                         permissionGroupLoading.map((permissionGroup) => (
                             <div
                                 className="user-permission__row pl-20 pr-20 show-shimmer-loading"
@@ -153,7 +163,7 @@ const PermissionGroupList = () => {
                     )}
                 </div>
             ) : (
-                <FiltersEmptyState clearFilters={handleClearFilters} />
+                <FiltersEmptyState clearFilters={clearFilters} />
             )}
         </div>
     )

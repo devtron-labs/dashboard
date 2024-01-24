@@ -216,7 +216,7 @@ const UserAndGroupPermissions = () => {
     const [userGroups, projects, environments, chartGroups, envClustersList, customRolesList] = data
 
     return (
-        <div className="flexbox-col flex-grow-1 h-100 w-100">
+        <div className="flexbox-col flex-grow-1 h-100 w-100 dc__content-center">
             <AuthorizationProvider
                 // TODO (v3): Simplify and move these to API service instead
                 value={{

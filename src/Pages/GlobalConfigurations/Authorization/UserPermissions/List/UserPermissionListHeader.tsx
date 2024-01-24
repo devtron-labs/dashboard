@@ -57,7 +57,6 @@ const UserPermissionListHeader = ({
                 <SearchBar
                     inputProps={{
                         placeholder: 'Search User',
-                        disabled,
                     }}
                     handleEnter={handleSearch}
                     shouldDebounce

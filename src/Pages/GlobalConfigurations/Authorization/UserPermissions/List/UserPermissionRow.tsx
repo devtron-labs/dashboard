@@ -113,8 +113,17 @@ const UserPermissionRow = ({
                             : handleUTCTime(lastLoginTime, true)}
                     </span>
                 </ConditionalWrap>
-                {/* TODO (v1): Status should not be editable for admin/system */}
-                {showStatus && <StatusCell status={userStatus} timeToLive={timeToLive} />}
+                {showStatus && (
+                    <StatusCell
+                        status={userStatus}
+                        timeToLive={timeToLive}
+                        userEmail={emailId}
+                        userId={id}
+                        refetchUserPermissionList={refetchUserPermissionList}
+                        // Status is readonly for admin/system user
+                        isReadOnly={isAdminOrSystemUser}
+                    />
+                )}
                 {isAdminOrSystemUser ? (
                     <span />
                 ) : (

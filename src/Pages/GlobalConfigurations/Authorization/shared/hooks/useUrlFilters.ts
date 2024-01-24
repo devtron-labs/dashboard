@@ -15,6 +15,7 @@ const URL_KEYS = {
 
 const { PAGE_SIZE, PAGE_NUMBER, SEARCH_KEY, SORT_BY, SORT_ORDER } = URL_KEYS
 
+// TODO (v1): Move to common lib
 /**
  * Generic hook for implementing URL based filters.
  * eg: pagination, search, sort.

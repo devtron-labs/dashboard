@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import {
     ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
@@ -18,6 +18,7 @@ import SortableTableHeaderCell from '../../../../../components/common/SortableTa
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
 import NoUsers from './NoUsers'
 import { importComponentFromFELibrary } from '../../../../../components/common'
+import { abortPreviousRequests, getIsRequestAborted } from '../../utils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
@@ -47,8 +48,17 @@ const UserPermissionList = () => {
         [pageSize, offset, searchKey, sortBy, sortOrder],
     )
 
-    // TODO (v1): Add abort controller
-    const [isLoading, result, error, reload] = useAsync(() => getUserList(filterConfig), [filterConfig])
+    const abortControllerRef = useRef(new AbortController())
+    const [isLoading, result, error, reload] = useAsync(
+        () =>
+            abortPreviousRequests(
+                () => getUserList(filterConfig, abortControllerRef.current.signal),
+                abortControllerRef,
+            ),
+        [filterConfig],
+    )
+
+    const showLoadingState = isLoading || getIsRequestAborted(error)
 
     const getUserDataForExport = useCallback(
         () =>
@@ -63,7 +73,7 @@ const UserPermissionList = () => {
         [filterConfig],
     )
 
-    if (!isLoading) {
+    if (!showLoadingState) {
         if (error) {
             if ([API_STATUS_CODES.PERMISSION_DENIED, API_STATUS_CODES.UNAUTHORIZED].includes(error.code)) {
                 return (
@@ -73,7 +83,7 @@ const UserPermissionList = () => {
                     />
                 )
             }
-            return <Reload reload={reload} />
+            return <Reload reload={reload} className="flex-grow-1" />
         }
 
         // The null state is shown only when filters are not applied
@@ -81,6 +91,9 @@ const UserPermissionList = () => {
             return <NoUsers />
         }
     }
+
+    // Disable the filter actions
+    const isActionsDisabled = showLoadingState || !(result.totalCount && result.users.length)
 
     const sortByEmail = () => {
         handleSorting(SortableKeys.email)
@@ -90,20 +103,16 @@ const UserPermissionList = () => {
         handleSorting(SortableKeys.lastLogin)
     }
 
-    const handleClearFilters = () => {
-        clearFilters()
-    }
-
     return (
         <div className="flexbox-col dc__gap-8 flex-grow-1">
             <UserPermissionListHeader
-                disabled={isLoading || !(result.totalCount && result.users.length)}
+                disabled={isActionsDisabled}
                 showStatus={showStatus}
                 handleSearch={handleSearch}
                 initialSearchText={searchKey}
                 getDataToExport={getUserDataForExport}
             />
-            {isLoading || (result.totalCount && result.users.length) ? (
+            {showLoadingState || (result.totalCount && result.users.length) ? (
                 <div className="flexbox-col flex-grow-1">
                     <div
                         className={`user-permission__header ${
@@ -116,22 +125,24 @@ const UserPermissionList = () => {
                             triggerSorting={sortByEmail}
                             isSorted={sortBy === SortableKeys.email}
                             sortOrder={sortOrder}
-                            disabled={isLoading}
+                            disabled={isActionsDisabled}
                         />
                         <SortableTableHeaderCell
                             title="Last Login"
                             triggerSorting={sortByLastLogin}
                             isSorted={sortBy === SortableKeys.lastLogin}
                             sortOrder={sortOrder}
-                            disabled={isLoading}
+                            disabled={isActionsDisabled}
                         />
                         {showStatus && <StatusHeaderCell />}
                         <span />
                     </div>
-                    {isLoading ? (
+                    {showLoadingState ? (
                         userListLoading.map((user) => (
                             <div
-                                className="user-permission__row pl-20 pr-20 show-shimmer-loading"
+                                className={`user-permission__row ${
+                                    showStatus ? 'user-permission__row--with-status' : ''
+                                } pl-20 pr-20 show-shimmer-loading`}
                                 key={`user-list-${user.id}`}
                             >
                                 <span className="child child-shimmer-loading" />
@@ -167,7 +178,7 @@ const UserPermissionList = () => {
                     )}
                 </div>
             ) : (
-                <FiltersEmptyState clearFilters={handleClearFilters} />
+                <FiltersEmptyState clearFilters={clearFilters} />
             )}
         </div>
     )

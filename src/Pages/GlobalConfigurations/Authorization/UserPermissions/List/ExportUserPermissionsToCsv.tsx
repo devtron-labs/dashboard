@@ -8,6 +8,10 @@ import { FILE_NAMES, USER_EXPORT_HEADER_ROW } from '../../../../../components/co
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { getRoleFiltersToExport } from '../../utils'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
+import { importComponentFromFELibrary } from '../../../../../components/common'
+
+const getStatusExportText = importComponentFromFELibrary('getStatusExportText', null, 'function')
+const showStatus = !!getStatusExportText
 
 const ExportUserPermissionsToCsv = ({
     disabled,
@@ -35,7 +39,11 @@ const ExportUserPermissionsToCsv = ({
             const _userData = {
                 emailId: _user.emailId,
                 userId: _user.id,
-                // TODO (v1): Add support for status column
+                ...(showStatus
+                    ? {
+                          status: getStatusExportText(_user.userStatus, _user.timeToLive),
+                      }
+                    : {}),
                 lastLoginTime:
                     _user.lastLoginTime === LAST_LOGIN_TIME_NULL_STATE
                         ? _user.lastLoginTime

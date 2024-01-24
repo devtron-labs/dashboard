@@ -23,7 +23,7 @@ const SSONotConfiguredState = () => (
                     linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
                     redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
                     internalLink
-                    Icon={ErrorIcon}
+                    Icon={() => <ErrorIcon className="h-20" />}
                 />
             </>
         }
