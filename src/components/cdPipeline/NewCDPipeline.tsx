@@ -447,7 +447,7 @@ export default function NewCDPipeline({
         form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
         form.customTagStage = pipelineConfigFromRes.customTagStage
         form.isDigestEnforcedForEnv = pipelineConfigFromRes.isDigestEnforcedForEnv
-        form.isDigestEnforcedForPipeline = pipelineConfigFromRes.isDigestEnforcedForPipeline
+        form.isDigestEnforcedForPipeline = pipelineConfigFromRes.isDigestEnforcedForEnv? pipelineConfigFromRes.isDigestEnforcedForEnv : pipelineConfigFromRes.isDigestEnforcedForPipeline
 
         if (pipelineConfigFromRes?.preDeployStage) {
             if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
