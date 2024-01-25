@@ -28,7 +28,10 @@ const ProfileForm: FunctionComponent = () => {
     // Would use this to disable the save button, if all keys in profileInputErrors are null or undefined, then there are no errors
     // Empty string means isRequired but no need to show error below input field
     const formErrorCount = useMemo(
-        () => Object.keys(profileInputErrors).filter((item) => !profileInputErrors[item]).length,
+        () =>
+            Object.keys(profileInputErrors).filter(
+                (item) => profileInputErrors[item] !== null && profileInputErrors[item] !== undefined,
+            ).length,
         [profileInputErrors],
     )
 
