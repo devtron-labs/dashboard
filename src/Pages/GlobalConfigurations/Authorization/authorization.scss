@@ -75,6 +75,10 @@
         grid-template-columns: 20px minmax(150px, 300px) minmax(150px, auto) 52px;
         column-gap: 16px;
         align-items: center;
+
+        &--with-status {
+            grid-template-columns: 20px minmax(150px, 300px) 150px minmax(200px, auto) 52px;
+        }
     }
 
     &__header {

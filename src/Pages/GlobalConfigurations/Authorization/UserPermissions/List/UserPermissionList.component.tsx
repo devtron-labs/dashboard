@@ -1,26 +1,30 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import {
+    SortingOrder,
+    SortableTableHeaderCell,
     ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
     Pagination,
     Reload,
     TOAST_ACCESS_DENIED,
     useAsync,
+    DEFAULT_BASE_PAGE_SIZE,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { API_STATUS_CODES, DEFAULT_BASE_PAGE_SIZE, SortingOrder } from '../../../../../config'
-import { ReactComponent as HelpOutlineIcon } from '../../../../../assets/icons/ic-help-outline.svg'
+import { API_STATUS_CODES } from '../../../../../config'
 
 import { getUserList } from '../../authorization.service'
 import { SortableKeys, userListLoading } from './constants'
 import UserPermissionListHeader from './UserPermissionListHeader'
 import UserPermissionRow from './UserPermissionRow'
-import useUrlFilters from '../../shared/hooks/useUrlFilters'
-import SortableTableHeaderCell from '../../../../../components/common/SortableTableHeaderCell'
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
 import NoUsers from './NoUsers'
+import { importComponentFromFELibrary } from '../../../../../components/common'
+import { abortPreviousRequests, getIsRequestAborted } from '../../utils'
 
-// TODO (v1): Replace with enterprise check
-const showStatus = false
+const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
+
+const showStatus = !!StatusHeaderCell
 
 const UserPermissionList = () => {
     const {
@@ -46,8 +50,17 @@ const UserPermissionList = () => {
         [pageSize, offset, searchKey, sortBy, sortOrder],
     )
 
-    // TODO (v1): Add abort controller
-    const [isLoading, result, error, reload] = useAsync(() => getUserList(filterConfig), [filterConfig])
+    const abortControllerRef = useRef(new AbortController())
+    const [isLoading, result, error, reload] = useAsync(
+        () =>
+            abortPreviousRequests(
+                () => getUserList(filterConfig, abortControllerRef.current.signal),
+                abortControllerRef,
+            ),
+        [filterConfig],
+    )
+
+    const showLoadingState = isLoading || getIsRequestAborted(error)
 
     const getUserDataForExport = useCallback(
         () =>
@@ -62,7 +75,7 @@ const UserPermissionList = () => {
         [filterConfig],
     )
 
-    if (!isLoading) {
+    if (!showLoadingState) {
         if (error) {
             if ([API_STATUS_CODES.PERMISSION_DENIED, API_STATUS_CODES.UNAUTHORIZED].includes(error.code)) {
                 return (
@@ -72,7 +85,7 @@ const UserPermissionList = () => {
                     />
                 )
             }
-            return <Reload reload={reload} />
+            return <Reload reload={reload} className="flex-grow-1" />
         }
 
         // The null state is shown only when filters are not applied
@@ -80,6 +93,9 @@ const UserPermissionList = () => {
             return <NoUsers />
         }
     }
+
+    // Disable the filter actions
+    const isActionsDisabled = showLoadingState || !(result.totalCount && result.users.length)
 
     const sortByEmail = () => {
         handleSorting(SortableKeys.email)
@@ -89,88 +105,83 @@ const UserPermissionList = () => {
         handleSorting(SortableKeys.lastLogin)
     }
 
-    const handleClearFilters = () => {
-        clearFilters()
-    }
-
     return (
         <div className="flexbox-col dc__gap-8 flex-grow-1">
             <UserPermissionListHeader
-                disabled={isLoading || !(result.totalCount && result.users.length)}
+                disabled={isActionsDisabled}
                 showStatus={showStatus}
                 handleSearch={handleSearch}
                 initialSearchText={searchKey}
                 getDataToExport={getUserDataForExport}
             />
-            <div className="flexbox-col flex-grow-1">
-                <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom">
-                    <span />
-                    <SortableTableHeaderCell
-                        title="Email"
-                        triggerSorting={sortByEmail}
-                        isSorted={sortBy === SortableKeys.email}
-                        sortOrder={sortOrder}
-                        disabled={isLoading}
-                    />
-                    <SortableTableHeaderCell
-                        title="Last Login"
-                        triggerSorting={sortByLastLogin}
-                        isSorted={sortBy === SortableKeys.lastLogin}
-                        sortOrder={sortOrder}
-                        disabled={isLoading}
-                    />
-                    {showStatus && (
-                        <span className="flex dc__gap-4">
-                            Status
-                            <HelpOutlineIcon className="mw-16 icon-dim-16 fcn-6" />
-                        </span>
-                    )}
-                    <span />
-                </div>
-                {isLoading || (result.totalCount && result.users.length) ? (
-                    <>
-                        {isLoading ? (
-                            userListLoading.map((user) => (
-                                <div
-                                    className="user-permission__row pl-20 pr-20 show-shimmer-loading"
-                                    key={`user-list-${user.id}`}
-                                >
-                                    <span className="child child-shimmer-loading" />
-                                    <span className="child child-shimmer-loading" />
-                                    <span className="child child-shimmer-loading" />
-                                    {showStatus && <span className="child child-shimmer-loading" />}
-                                </div>
-                            ))
-                        ) : (
-                            <>
-                                <div className="fs-13 fw-4 lh-20 cn-9 flex-grow-1">
-                                    {result.users.map((user, index) => (
-                                        <UserPermissionRow
-                                            {...user}
-                                            index={index}
-                                            key={`user-${user.id}`}
-                                            showStatus={showStatus}
-                                            refetchUserPermissionList={reload}
-                                        />
-                                    ))}
-                                </div>
-                                {result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
-                                    <Pagination
-                                        rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
-                                        size={result.totalCount}
-                                        offset={offset}
-                                        pageSize={pageSize}
-                                        changePage={changePage}
-                                        changePageSize={changePageSize}
+            {showLoadingState || (result.totalCount && result.users.length) ? (
+                <div className="flexbox-col flex-grow-1">
+                    <div
+                        className={`user-permission__header ${
+                            showStatus ? 'user-permission__header--with-status' : ''
+                        } cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom`}
+                    >
+                        <span />
+                        <SortableTableHeaderCell
+                            title="Email"
+                            triggerSorting={sortByEmail}
+                            isSorted={sortBy === SortableKeys.email}
+                            sortOrder={sortOrder}
+                            disabled={isActionsDisabled}
+                        />
+                        <SortableTableHeaderCell
+                            title="Last Login"
+                            triggerSorting={sortByLastLogin}
+                            isSorted={sortBy === SortableKeys.lastLogin}
+                            sortOrder={sortOrder}
+                            disabled={isActionsDisabled}
+                        />
+                        {showStatus && <StatusHeaderCell />}
+                        <span />
+                    </div>
+                    {showLoadingState ? (
+                        userListLoading.map((user) => (
+                            <div
+                                className={`user-permission__row ${
+                                    showStatus ? 'user-permission__row--with-status' : ''
+                                } pl-20 pr-20 show-shimmer-loading`}
+                                key={`user-list-${user.id}`}
+                            >
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                                {showStatus && <span className="child child-shimmer-loading" />}
+                            </div>
+                        ))
+                    ) : (
+                        <>
+                            <div className="fs-13 fw-4 lh-20 cn-9 flex-grow-1" id="user-permissions-list">
+                                {result.users.map((user, index) => (
+                                    <UserPermissionRow
+                                        {...user}
+                                        index={index}
+                                        key={`user-${user.id}`}
+                                        showStatus={showStatus}
+                                        refetchUserPermissionList={reload}
                                     />
-                                )}
-                            </>
-                        )}
-                    </>
-                ) : (
-                    <FiltersEmptyState clearFilters={handleClearFilters} />
-                )}
-            </div>
+                                ))}
+                            </div>
+                            {result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
+                                <Pagination
+                                    rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
+                                    size={result.totalCount}
+                                    offset={offset}
+                                    pageSize={pageSize}
+                                    changePage={changePage}
+                                    changePageSize={changePageSize}
+                                />
+                            )}
+                        </>
+                    )}
+                </div>
+            ) : (
+                <FiltersEmptyState clearFilters={clearFilters} />
+            )}
         </div>
     )
 }

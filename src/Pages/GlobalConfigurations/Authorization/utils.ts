@@ -1,14 +1,19 @@
+import moment from 'moment'
 import { CustomRoleAndMeta, CustomRoles, EntityTypes } from './shared/components/userGroups/userGroups.types'
-import { ACCESS_TYPE_MAP, ZERO_TIME_STRING } from '../../../config'
+import { ACCESS_TYPE_MAP, Moment12HourFormat, ZERO_TIME_STRING } from '../../../config'
 import { PermissionGroup, User, UserDto } from './types'
+import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 
 export const transformUserResponse = (_user: UserDto): User => {
     const { lastLoginTime, timeToLive, ...user } = _user
 
     return {
         ...user,
-        lastLoginTime: lastLoginTime === ZERO_TIME_STRING ? '' : lastLoginTime,
-        timeToLive: timeToLive === ZERO_TIME_STRING ? '' : timeToLive,
+        lastLoginTime:
+            lastLoginTime === ZERO_TIME_STRING
+                ? LAST_LOGIN_TIME_NULL_STATE
+                : moment(lastLoginTime).format(Moment12HourFormat),
+        timeToLive: timeToLive === ZERO_TIME_STRING ? '' : moment(timeToLive).format(Moment12HourFormat),
     }
 }
 
@@ -35,7 +40,6 @@ export const getRoleFiltersToExport = (
     roleFilters: User['roleFilters'] | PermissionGroup['roleFilters'],
     customRoles: CustomRoleAndMeta,
 ) =>
-    // TODO (v1): Confirm with Utkarsh regarding the Devtron apps filtering rules
     roleFilters
         .filter((roleFilter) => roleFilter.team && roleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
         .map((roleFilter) => ({
@@ -44,3 +48,16 @@ export const getRoleFiltersToExport = (
             application: roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications',
             role: customRoles.possibleRolesMeta[roleFilter.action]?.value || '-',
         }))
+
+export const abortPreviousRequests = <T>(
+    callback: () => Promise<T>,
+    abortControllerRef: React.MutableRefObject<AbortController>,
+): Promise<T> => {
+    abortControllerRef.current.abort()
+    // eslint-disable-next-line no-param-reassign
+    abortControllerRef.current = new AbortController()
+    return callback()
+}
+
+export const getIsRequestAborted = (error) =>
+    error && error.code === 0 && error.message === 'The user aborted a request.'

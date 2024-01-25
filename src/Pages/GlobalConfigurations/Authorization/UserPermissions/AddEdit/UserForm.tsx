@@ -11,6 +11,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     ServerErrors,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Creatable from 'react-select/creatable'
 import Select from 'react-select'
@@ -21,7 +22,6 @@ import {
     ChartGroupPermissionsFilter,
     EntityTypes,
     ActionTypes,
-    OptionType,
     ViewChartGroupPermission,
 } from '../../shared/components/userGroups/userGroups.types'
 import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
@@ -62,9 +62,6 @@ const CreatableChipStyle = {
         height: '38px',
     }),
 }
-
-// TODO (v1): Replace with enterprise check
-const showStatus = false
 
 const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData: User }) => {
     const { serverMode } = useMainContext()
@@ -390,9 +387,8 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                     <span className="cn-5">/</span>
                     <span className="cn-9 fw-6 dc__ellipsis-right">{isAddMode ? 'Add User' : userData.emailId}</span>
                 </div>
-                {(showStatus || !isAddMode) && (
+                {!isAddMode && (
                     <div className="flex dc__content-start dc__gap-12">
-                        {showStatus && <div>status</div>}
                         {!isAddMode && (
                             <button
                                 disabled={submitting}

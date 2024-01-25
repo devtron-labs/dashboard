@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
+import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
 import { UserStatus } from './constants'
-import { SortingOrder } from '../../../config'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode

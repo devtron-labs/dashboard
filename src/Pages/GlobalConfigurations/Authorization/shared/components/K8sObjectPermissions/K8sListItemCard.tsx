@@ -7,6 +7,7 @@ import {
     Option,
     MultiValueRemove,
     MultiValueChipContainer,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
@@ -33,7 +34,6 @@ import {
     ALL_NAMESPACE,
     K8sListItemCardType,
     K8S_PERMISSION_INFO_MESSAGE,
-    OptionType,
     EntityTypes,
 } from '../userGroups/userGroups.types'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'

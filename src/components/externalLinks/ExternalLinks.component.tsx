@@ -91,7 +91,7 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
             classname={`info_bar fs-12 pl-12 pr-12 ${listingView ? 'mt-12 mb-12' : 'dc__mxw-300 m-20'}`}
             Icon={InfoIcon}
             iconClass="h-20"
-            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
+            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global Configurations' : 'Global Configurations.'}
             internalLink={true}
             redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
         />

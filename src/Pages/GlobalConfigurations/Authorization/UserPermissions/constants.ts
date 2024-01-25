@@ -1,5 +1,6 @@
-// eslint-disable-next-line import/prefer-default-export
 export enum DefaultUserKey {
     system = 'system',
     admin = 'admin',
 }
+
+export const LAST_LOGIN_TIME_NULL_STATE = 'Never'

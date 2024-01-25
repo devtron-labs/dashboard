@@ -820,10 +820,3 @@ export const API_STATUS_CODES = {
 }
 
 export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3
-
-export const DEFAULT_BASE_PAGE_SIZE = 20
-
-export enum SortingOrder {
-    ASC = 'ASC',
-    DESC = 'DESC',
-}

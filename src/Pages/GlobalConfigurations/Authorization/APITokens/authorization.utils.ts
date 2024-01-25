@@ -1,10 +1,10 @@
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../../config'
 import {
     ActionTypes,
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
     EntityTypes,
-    OptionType,
     ViewChartGroupPermission,
 } from '../shared/components/userGroups/userGroups.types'
 import { UserCreateOrUpdatePayload } from '../types'

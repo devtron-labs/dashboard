@@ -10,6 +10,7 @@ import {
     copyToClipboard,
     CustomInput,
     noop,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
@@ -31,7 +32,6 @@ import {
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
     EntityTypes,
-    OptionType,
 } from '../shared/components/userGroups/userGroups.types'
 import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'

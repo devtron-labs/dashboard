@@ -1682,8 +1682,15 @@ button.anchor {
     }
 
     &.dc__visible-hover--parent:hover {
-        .dc__visible-hover--child {
-            display: inherit;
+        .dc__visible-hover {
+            &--child {
+                display: inherit;
+            }
+
+            // For hiding a child on hover on parent
+            &--hide-child {
+                display: none;
+            }
         }
     }
 }
@@ -2722,6 +2729,10 @@ textarea,
     width: auto !important;
 }
 
+.w-8 {
+    width: 8px;
+}
+
 .w-32 {
     width: 32px !important;
 }
@@ -3234,6 +3245,10 @@ textarea,
 
 .mh-600 {
     min-height: 600px;
+}
+
+.mxh-20 {
+    max-height: 20px;
 }
 
 .mxh-64 {

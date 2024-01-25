@@ -1,10 +1,11 @@
-// TODO (v1): Remove this file
+// TODO (v3): Remove this file
 
 import React from 'react'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { PermissionGroup, User } from '../../../types'
 import { Nodes } from '../../../../../../components/app/types'
 import { ChartGroup } from '../../../../../../components/charts/charts.types'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
@@ -111,19 +112,6 @@ export interface APIRoleFilter {
     resource?: any
     workflow?: string
 }
-
-// TODO (v1): Check if required
-export interface OptionType {
-    label: string
-    value: string
-}
-
-// export interface UserConfig {
-//     id: number
-//     email_id: string
-//     groups: string[]
-//     roleFilters: RoleFilter[]
-// }
 
 export interface K8sPermissionFilter {
     entity: EntityTypes
