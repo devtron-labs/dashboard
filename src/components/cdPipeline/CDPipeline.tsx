@@ -271,6 +271,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     description: env.description,
                     isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
                     allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                    isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
                 }
             })
             environments = environments.sort((a, b) => {
@@ -709,6 +710,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     savePipeline() {
+        console.log(this.state.environments)
         const { pipelineConfig, errorForm } = { ...this.state }
         errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
         if (!this.state.pipelineConfig.isVirtualEnvironment) {
@@ -777,6 +779,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         pipeline.preStage.config = pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
         pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
+        pipeline.isDigestEnforcedForEnv = this.state.environments.find((env) => env.id === pipelineConfig.environmentId).isDigestEnforcedForEnv
 
         if (this.state.pipelineConfig.isVirtualEnvironment) {
             pipeline.deploymentAppType =

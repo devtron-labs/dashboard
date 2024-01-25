@@ -263,6 +263,7 @@ export default function NewCDPipeline({
                         description: env.description,
                         isVirtualEnvironment: env.isVirtualEnvironment,
                         allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                        isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
                     }
                 })
                 sortObjectArrayAlphabetically(list, 'name')
@@ -569,7 +570,6 @@ export default function NewCDPipeline({
             },
             enableCustomTag: formData.enableCustomTag,
             customTagStage: formData?.customTagStage ? formData.customTagStage : StageTypeEnums.PRE_CD,
-            isDigestEnforcedForPipeline: formData.isDigestEnforcedForPipeline,
             isDigestEnforcedForEnv: formData.isDigestEnforcedForEnv,
         }
 
