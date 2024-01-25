@@ -1,20 +1,22 @@
 import React, { useCallback, useMemo, useRef } from 'react'
 import {
+    SortingOrder,
+    SortableTableHeaderCell,
     ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
     Pagination,
     Reload,
     TOAST_ACCESS_DENIED,
     useAsync,
+    DEFAULT_BASE_PAGE_SIZE,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { API_STATUS_CODES, DEFAULT_BASE_PAGE_SIZE, SortingOrder } from '../../../../../config'
+import { API_STATUS_CODES } from '../../../../../config'
 
 import { getUserList } from '../../authorization.service'
 import { SortableKeys, userListLoading } from './constants'
 import UserPermissionListHeader from './UserPermissionListHeader'
 import UserPermissionRow from './UserPermissionRow'
-import useUrlFilters from '../../shared/hooks/useUrlFilters'
-import SortableTableHeaderCell from '../../../../../components/common/SortableTableHeaderCell'
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
 import NoUsers from './NoUsers'
 import { importComponentFromFELibrary } from '../../../../../components/common'

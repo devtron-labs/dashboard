@@ -11,6 +11,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     ServerErrors,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Creatable from 'react-select/creatable'
 import Select from 'react-select'
@@ -21,7 +22,6 @@ import {
     ChartGroupPermissionsFilter,
     EntityTypes,
     ActionTypes,
-    OptionType,
     ViewChartGroupPermission,
 } from '../../shared/components/userGroups/userGroups.types'
 import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'

@@ -5,6 +5,7 @@ import {
     MultiValueContainer,
     MultiValueRemove,
     multiSelectStyles,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import {
@@ -17,7 +18,6 @@ import {
     DirectPermissionsRoleFilter,
     ChartGroupPermissionsFilter,
     ActionTypes,
-    OptionType,
     EntityTypes,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'

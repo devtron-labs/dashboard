@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { ReactComponent as Sort } from '../../../../assets/icons/ic-sort.svg'
 import { ReactComponent as SortUp } from '../../../../assets/icons/ic-sort-up.svg'
@@ -8,7 +8,7 @@ import { ReactComponent as Success } from '../../../../assets/icons/appstatus/he
 import { ReactComponent as Help } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { Pagination } from '../../../common'
-import { DEFAULT_BASE_PAGE_SIZE, ViewType } from '../../../../config'
+import { ViewType } from '../../../../config'
 
 export interface DeploymentTableCellType {
     value: number;

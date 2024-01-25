@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo, useRef } from 'react'
 import {
+    SortingOrder,
+    SortableTableHeaderCell,
     ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
     noop,
@@ -7,8 +9,10 @@ import {
     Reload,
     TOAST_ACCESS_DENIED,
     useAsync,
+    DEFAULT_BASE_PAGE_SIZE,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { API_STATUS_CODES, DEFAULT_BASE_PAGE_SIZE, SortingOrder } from '../../../../../config'
+import { API_STATUS_CODES } from '../../../../../config'
 
 import { getPermissionGroupList } from '../../authorization.service'
 import { permissionGroupLoading, SortableKeys } from './constants'
@@ -16,8 +20,6 @@ import PermissionGroupListHeader from './PermissionGroupListHeader'
 import PermissionGroupRow from './PermissionGroupRow'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { importComponentFromFELibrary } from '../../../../../components/common'
-import useUrlFilters from '../../shared/hooks/useUrlFilters'
-import SortableTableHeaderCell from '../../../../../components/common/SortableTableHeaderCell'
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
 import NoPermissionGroups from './NoPermissionGroups'
 import { abortPreviousRequests, getIsRequestAborted } from '../../utils'

@@ -13,6 +13,7 @@ import {
     TippyCustomized,
     TippyTheme,
     CustomInput,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
@@ -28,7 +29,6 @@ import {
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
     EntityTypes,
-    OptionType,
 } from '../shared/components/userGroups/userGroups.types'
 import GroupPermission from './GroupPermission'
 import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'

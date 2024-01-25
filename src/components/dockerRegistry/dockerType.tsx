@@ -1,5 +1,5 @@
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import { OptionType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 
 export interface CustomCredential{
   server: string
