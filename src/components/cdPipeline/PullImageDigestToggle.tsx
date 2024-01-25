@@ -8,21 +8,31 @@ import { DIGEST_DISABLE_TOGGLE_MESSAGE } from '../../config'
 function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleType): JSX.Element {
     const handleImageDigestToggle = (): void => {
         const _formData = { ...formData }
-        _formData.isDigestEnforcedForEnv = !_formData.isDigestEnforcedForEnv
+        _formData.isDigestEnforcedForPipeline = !_formData.isDigestEnforcedForPipeline
         setFormData(_formData)
+    }
+
+    const getContentText = () => {
+        let text = ''
+        if (formData.isDigestEnforcedForEnv) {
+            text = DIGEST_DISABLE_TOGGLE_MESSAGE
+        } else if (formData.isDigestEnforcedForPipeline) {
+            text = 'Image digest is enforced for this environment' // Later will be change
+        }
+        return text
     }
 
     const renderDogestToggle = () => {
         return (
             <ConditionalWrap
-                condition={formData.isDigestEnforcedForPipeline}
+                condition={formData.isDigestEnforcedForEnv}
                 wrap={(children) => (
-                    <Tippy className="default-tt w-200" content={DIGEST_DISABLE_TOGGLE_MESSAGE}>
+                    <Tippy className="default-tt w-200" content={getContentText()}>
                         <div>{children}</div>
                     </Tippy>
                 )}
             >
-                <div className={`w-32 h-20 ${formData.isDigestEnforcedForPipeline ? 'dc__opacity-0_4' : ''}`}>
+                <div className={`w-32 h-20 ${formData.isDigestEnforcedForEnv ? 'dc__opacity-0_4' : ''}`}>
                     <Toggle
                         selected={formData.isDigestEnforcedForEnv}
                         onSelect={handleImageDigestToggle}

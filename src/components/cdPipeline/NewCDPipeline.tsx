@@ -448,7 +448,7 @@ export default function NewCDPipeline({
         form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
         form.customTagStage = pipelineConfigFromRes.customTagStage
         form.isDigestEnforcedForEnv = pipelineConfigFromRes.isDigestEnforcedForEnv
-        form.isDigestEnforcedForPipeline = pipelineConfigFromRes.isDigestEnforcedForEnv || pipelineConfigFromRes.isDigestEnforcedForPipeline
+        form.isDigestEnforcedForPipeline = pipelineConfigFromRes.isDigestEnforcedForPipeline
 
         if (pipelineConfigFromRes?.preDeployStage) {
             if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
@@ -571,6 +571,7 @@ export default function NewCDPipeline({
             enableCustomTag: formData.enableCustomTag,
             customTagStage: formData?.customTagStage ? formData.customTagStage : StageTypeEnums.PRE_CD,
             isDigestEnforcedForEnv: formData.isDigestEnforcedForEnv,
+            isDigestEnforcedForPipeline: formData.isDigestEnforcedForPipeline,
         }
 
         if (isVirtualEnvironment) {
