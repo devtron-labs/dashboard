@@ -13,8 +13,9 @@ const PermissionGroups = () => {
             <Route
                 path={`${path}/:groupId`}
                 render={({ match }) => (
-                    <section className="flexbox-col flex-grow-1 h-100" key={match.params.groupId}>
-                        <PermissionGroupAddEdit />
+                    <section className="flexbox-col flex-grow-1 h-100">
+                        {/* Passing the groupId as key to re-mount the component on its change */}
+                        <PermissionGroupAddEdit key={match.params.groupId} />
                     </section>
                 )}
             />

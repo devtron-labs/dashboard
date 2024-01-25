@@ -6,7 +6,6 @@ export function getSSOConfigList(): Promise<any> {
     return get(Routes.SSO_LIST)
 }
 
-// Use the common function for search params
 export function getSSOConfig(name: string): Promise<any> {
     return get(getUrlWithSearchParams(Routes.SSO, { name }))
 }

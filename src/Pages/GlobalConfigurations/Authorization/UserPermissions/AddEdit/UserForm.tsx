@@ -389,17 +389,15 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                 </div>
                 {!isAddMode && (
                     <div className="flex dc__content-start dc__gap-12">
-                        {!isAddMode && (
-                            <button
-                                disabled={submitting}
-                                type="button"
-                                className="cta delete override-button flex dc__gap-6 h-32"
-                                onClick={toggleDeleteConfirmationModal}
-                            >
-                                <PlusIcon className="icon-dim-14 mw-14" />
-                                Delete
-                            </button>
-                        )}
+                        <button
+                            disabled={submitting}
+                            type="button"
+                            className="cta delete override-button flex dc__gap-6 h-32"
+                            onClick={toggleDeleteConfirmationModal}
+                        >
+                            <PlusIcon className="icon-dim-14 mw-14" />
+                            Delete
+                        </button>
                     </div>
                 )}
             </div>

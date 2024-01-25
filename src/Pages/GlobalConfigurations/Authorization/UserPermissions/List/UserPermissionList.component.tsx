@@ -10,6 +10,8 @@ import {
     useAsync,
     DEFAULT_BASE_PAGE_SIZE,
     useUrlFilters,
+    abortPreviousRequests,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { API_STATUS_CODES } from '../../../../../config'
 
@@ -20,7 +22,6 @@ import UserPermissionRow from './UserPermissionRow'
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
 import NoUsers from './NoUsers'
 import { importComponentFromFELibrary } from '../../../../../components/common'
-import { abortPreviousRequests, getIsRequestAborted } from '../../utils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 

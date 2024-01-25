@@ -37,6 +37,7 @@ const UserPermissions = () => {
 
     const isSSOConfigured = ssoConfig?.result?.some((sso) => sso.active) || false
 
+    // The users can only be configured if SSO is configured
     if (!isSSOConfigured) {
         return <SSONotConfiguredState />
     }
@@ -48,6 +49,7 @@ const UserPermissions = () => {
                 path={`${path}/:userId`}
                 render={({ match }) => (
                     <section className="flexbox-col flex-grow-1 h-100 dc__content-center">
+                        {/* Passing the userId as key to re-mount the component on its change */}
                         <UserPermissionAddEdit key={match.params.userId} />
                     </section>
                 )}

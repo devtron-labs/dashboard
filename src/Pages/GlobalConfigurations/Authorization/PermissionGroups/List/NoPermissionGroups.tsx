@@ -6,29 +6,27 @@ import { ReactComponent as AddIcon } from '../../../../../assets/icons/ic-add.sv
 import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 import { URLS } from '../../../../../config'
 
-const NoPermissionGroups = () => {
-    const renderAddGroupButton = () => (
-        <Link
-            type="button"
-            to={`${URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS}/add`}
-            role="button"
-            className="cta dc__gap-4 flex h-32 anchor"
-        >
-            <AddIcon />
-            Add group
-        </Link>
-    )
+const renderAddGroupButton = () => (
+    <Link
+        type="button"
+        to={`${URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS}/add`}
+        role="button"
+        className="cta dc__gap-4 flex h-32 anchor"
+    >
+        <AddIcon />
+        Add group
+    </Link>
+)
 
-    return (
-        <GenericEmptyState
-            image={nullStateImage}
-            title={EMPTY_STATE_STATUS.NO_GROUPS.TITLE}
-            subTitle={EMPTY_STATE_STATUS.NO_GROUPS.SUBTITLE}
-            isButtonAvailable
-            renderButton={renderAddGroupButton}
-            classname="flex-grow-1"
-        />
-    )
-}
+const NoPermissionGroups = () => (
+    <GenericEmptyState
+        image={nullStateImage}
+        title={EMPTY_STATE_STATUS.NO_GROUPS.TITLE}
+        subTitle={EMPTY_STATE_STATUS.NO_GROUPS.SUBTITLE}
+        isButtonAvailable
+        renderButton={renderAddGroupButton}
+        classname="flex-grow-1"
+    />
+)
 
 export default NoPermissionGroups

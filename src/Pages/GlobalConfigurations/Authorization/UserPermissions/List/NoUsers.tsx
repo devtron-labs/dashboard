@@ -6,29 +6,27 @@ import { ReactComponent as AddIcon } from '../../../../../assets/icons/ic-add.sv
 import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 import { URLS } from '../../../../../config'
 
-const NoUsers = () => {
-    const renderAddUserButton = () => (
-        <Link
-            type="button"
-            to={`${URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION}/add`}
-            role="button"
-            className="cta dc__gap-4 flex h-32 anchor"
-        >
-            <AddIcon />
-            Add user
-        </Link>
-    )
+const renderAddUserButton = () => (
+    <Link
+        type="button"
+        to={`${URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION}/add`}
+        role="button"
+        className="cta dc__gap-4 flex h-32 anchor"
+    >
+        <AddIcon />
+        Add user
+    </Link>
+)
 
-    return (
-        <GenericEmptyState
-            image={nullStateImage}
-            title={EMPTY_STATE_STATUS.NO_USER.TITLE}
-            subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
-            isButtonAvailable
-            renderButton={renderAddUserButton}
-            classname="flex-grow-1"
-        />
-    )
-}
+const NoUsers = () => (
+    <GenericEmptyState
+        image={nullStateImage}
+        title={EMPTY_STATE_STATUS.NO_USER.TITLE}
+        subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
+        isButtonAvailable
+        renderButton={renderAddUserButton}
+        classname="flex-grow-1"
+    />
+)
 
 export default NoUsers

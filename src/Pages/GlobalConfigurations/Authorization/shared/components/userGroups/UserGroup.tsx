@@ -1,3 +1,5 @@
+// TODO (v3): Remove this file
+
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
@@ -14,12 +16,7 @@ import {
     createClusterEnvGroup,
 } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
-import {
-    DirectPermissionsRoleFilter,
-    ChartGroupPermissionsFilter,
-    ActionTypes,
-    EntityTypes,
-} from './userGroups.types'
+import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, EntityTypes } from './userGroups.types'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
 import { ReactComponent as CloseIcon } from '../../../../../../assets/icons/ic-close.svg'
 import {

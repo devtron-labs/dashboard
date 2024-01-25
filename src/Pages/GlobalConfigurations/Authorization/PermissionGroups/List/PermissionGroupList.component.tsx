@@ -11,6 +11,8 @@ import {
     useAsync,
     DEFAULT_BASE_PAGE_SIZE,
     useUrlFilters,
+    abortPreviousRequests,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { API_STATUS_CODES } from '../../../../../config'
 
@@ -22,7 +24,6 @@ import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
 import NoPermissionGroups from './NoPermissionGroups'
-import { abortPreviousRequests, getIsRequestAborted } from '../../utils'
 
 const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
 

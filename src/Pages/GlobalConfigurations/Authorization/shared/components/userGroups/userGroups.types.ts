@@ -29,37 +29,12 @@ export enum ActionTypes {
 
 export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN
 
-// export enum DefaultUserKey {
-//     SYSTEM = 'system',
-//     ADMIN = 'admin',
-// }
-
-// Can be deleted once the UserGroup is removed
-export const DefaultUserValue = {
-    system: 'System',
-    admin: 'Admin',
-}
-
 export const ACTION_LABEL = {
     [ActionTypes.ADMIN]: 'Admin',
     [ActionTypes.VIEW]: 'View',
     [ActionTypes.MANAGER]: 'Manager',
 }
 
-// export interface CollapsedUserOrGroupProps {
-//     index: number
-//     email_id?: string
-//     id?: number
-//     name?: string
-//     description?: string
-//     type: 'user' | 'group'
-//     updateCallback: (index: number, payload: any) => void
-//     deleteCallback: (index: number) => void
-//     createCallback: (payload: any) => void
-//     isAutoAssignFlowEnabled: boolean
-//     collapsed: boolean
-//     setCollapsed: (id?: string) => void
-// }
 interface RoleFilter {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
     team?: OptionType
@@ -162,8 +137,6 @@ export interface UserGroup {
     projectsList: any[]
     chartGroupsList: ChartGroup[]
     fetchAppList: (projectId: number[]) => void
-    // superAdmin: boolean
-    // roles: string[]
     envClustersList: any[]
     fetchAppListHelmApps: (projectId: number[]) => void
     fetchJobsList: (projectId: number[]) => void
