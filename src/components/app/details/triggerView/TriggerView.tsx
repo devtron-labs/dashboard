@@ -206,7 +206,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
                             }
                         }
-                        
+
                         if (this.props.location.search.includes('rollback-node')) {
                             const searchParams = new URLSearchParams(this.props.location.search)
                             const nodeId = Number(searchParams.get('rollback-node'))
@@ -730,7 +730,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
 
         this.setState({ showCDModal: true })
-        
+
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (node.type === 'CD' && +node.id == cdNodeId) {
@@ -1129,7 +1129,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 selectedEnv={this.state.selectedEnv}
                                 setSelectedEnv={this.setSelectedEnv}
                                 environmentLists={this.state.environmentLists}
-                                isJobCI={!!nd.isJobCI}
+                                isJobCI={!!nd?.isJobCI}
                             />
                         )}
                     </div>
@@ -1147,7 +1147,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 node = _workflow.nodes.find((el) => {
                     return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
                 })
-                
+
                 if (node) {
                     break
                 }
