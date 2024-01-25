@@ -570,8 +570,8 @@ export default function NewCDPipeline({
             },
             enableCustomTag: formData.enableCustomTag,
             customTagStage: formData?.customTagStage ? formData.customTagStage : StageTypeEnums.PRE_CD,
-            isDigestEnforcedForEnv: formData.isDigestEnforcedForEnv,
             isDigestEnforcedForPipeline: formData.isDigestEnforcedForPipeline,
+            isDigestEnforcedForEnv: formData.isDigestEnforcedForEnv,
         }
 
         if (isVirtualEnvironment) {

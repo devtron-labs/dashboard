@@ -710,7 +710,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     savePipeline() {
-        console.log(this.state.environments)
         const { pipelineConfig, errorForm } = { ...this.state }
         errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
         if (!this.state.pipelineConfig.isVirtualEnvironment) {
