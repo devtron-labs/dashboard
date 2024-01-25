@@ -34,7 +34,7 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
             >
                 <div className={`w-32 h-20 ${formData.isDigestEnforcedForEnv ? 'dc__opacity-0_4' : ''}`}>
                     <Toggle
-                        selected={formData.isDigestEnforcedForPipeline}
+                        selected={formData.isDigestEnforcedForPipeline || formData.isDigestEnforcedForEnv}
                         onSelect={handleImageDigestToggle}
                         dataTestId="create-build-pipeline-image-pull-digest-toggle"
                         disabled={formData.isDigestEnforcedForEnv}
