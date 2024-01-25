@@ -18,7 +18,7 @@ import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
 import { toast } from 'react-toastify'
 import Select from 'react-select'
-import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
+import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
@@ -37,9 +37,9 @@ import {
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
 import ReactGA from 'react-ga4'
-import CustomLogsDropdown from './CustomLogsDropdown/CustomLogsDropdown'
-import 'react-datepicker/dist/react-datepicker.css'
 import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
+import { SelectedCustomLogFilterType } from './node.type'
+import CustomLogsModal from './CustomLogsModal/CustomLogsModal'
 
 
 const subject: Subject<string> = new Subject()
@@ -57,7 +57,7 @@ function LogsComponent({
         prev: getPodLogsOptions()[0],
         current: getPodLogsOptions()[4],
     })
-    const [customLogsOption, setCustomLogsOption] = useState({
+    const [selectedCustomLogFilter, setSelectedCustomLogFilter] = useState<SelectedCustomLogFilterType>({
         option: 'duration',
         value: '',
         unit: 'minutes',
@@ -89,7 +89,7 @@ function LogsComponent({
     const [prevContainer, setPrevContainer] = useState(false)
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
     const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
-    const [showCustomOptions, setShowCustomOptions] = useState(false)
+    const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
 
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
@@ -246,7 +246,7 @@ function LogsComponent({
                             _co.name,
                             prevContainer,
                             logsShownOption.current,
-                            customLogsOption,
+                            selectedCustomLogFilter,
                             isResourceBrowserView,
                             selectedResource.clusterId,
                             selectedResource.namespace,
@@ -268,7 +268,14 @@ function LogsComponent({
 
             for (const _pwc of podsWithContainers) {
                 try {
-                    downloadLogs(appDetails, _pwc[0], _pwc[1], prevContainer, logsShownOption.current, customLogsOption)
+                    downloadLogs(
+                        appDetails,
+                        _pwc[0],
+                        _pwc[1],
+                        prevContainer,
+                        logsShownOption.current,
+                        selectedCustomLogFilter,
+                    )
                 } catch (err) {
                     showError(err)
                 }
@@ -300,7 +307,7 @@ function LogsComponent({
                             _co.name,
                             prevContainer,
                             logsShownOption.current,
-                            customLogsOption,
+                            selectedCustomLogFilter,
                             isResourceBrowserView,
                             selectedResource.clusterId,
                             selectedResource.namespace,
@@ -320,8 +327,17 @@ function LogsComponent({
 
             for (const _pwc of podsWithContainers) {
                 pods.push(_pwc[0])
-                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1], prevContainer,logsShownOption.current,
-                    customLogsOption))
+                urls.push(
+                    getLogsURL(
+                        appDetails,
+                        _pwc[0],
+                        Host,
+                        _pwc[1],
+                        prevContainer,
+                        logsShownOption.current,
+                        selectedCustomLogFilter,
+                    ),
+                )
             }
 
             if (urls.length == 0) {
@@ -663,34 +679,13 @@ function LogsComponent({
                                     onLogsCleared()
                                     setNewFilteredLogs(true)
                                 } else {
-                                    setShowCustomOptions(true)
+                                    setShowCustomOptionsMoadal(true)
                                 }
                             }}
                             value={logsShownOption.current}
                             styles={{
                                 ...multiSelectStyles,
-                                menu: (base) => ({
-                                    ...base,
-                                    zIndex: 9999,
-                                    width: '120px',
-                                }),
-                                control: (base, state) => ({
-                                    ...base,
-                                    border: 'none',
-                                    boxShadow: 'none',
-                                    minHeight: '24px !important',
-                                    cursor: 'pointer',
-                                }),
-                                singleValue: (base, state) => ({
-                                    ...base,
-                                    fontWeight: 600,
-                                    color: '#000A14',
-                                    marginLeft: '2px',
-                                }),
-                                dropdownIndicator: (base, state) => ({
-                                    ...base,
-                                    padding: '0',
-                                }),
+                                ...podsDropdownStyles,
                             }}
                             components={{
                                 IndicatorSeparator: null,
@@ -698,7 +693,14 @@ function LogsComponent({
                             }}
                         />
                         <div className="h-16 dc__border-right ml-8 mr-8"></div>
-                        <Download className="icon-dim-16 mr-8 cursor" onClick={handleDownloadLogs} />
+                        <Download
+                            className={`icon-dim-16 mr-8 cursor ${
+                                (podContainerOptions?.containerOptions ?? []).length > 0
+                                    ? ''
+                                    : 'dc__disable-click dc__opacity-0_5'
+                            }`}
+                            onClick={handleDownloadLogs}
+                        />
                     </div>
                     <div className="dc__border-right "></div>
                     <form
@@ -844,17 +846,13 @@ function LogsComponent({
                 </div>
             )}
 
-            {showCustomOptions && (
-                <CustomLogsDropdown
-                    setCustomLogsOption={
-                        setCustomLogsOption as React.Dispatch<
-                            React.SetStateAction<{ option: string; value: string; unit?: string }>
-                        >
-                    }
-                    customLogsOption={customLogsOption}
+            {showCustomOptionsModal && (
+                <CustomLogsModal
+                    setSelectedCustomLogFilter={setSelectedCustomLogFilter}
+                    selectedCustomLogFilter={selectedCustomLogFilter}
                     setLogsShownOption={setLogsShownOption}
                     setNewFilteredLogs={setNewFilteredLogs}
-                    setShowCustomOptions={setShowCustomOptions}
+                    setShowCustomOptionsMoadal={setShowCustomOptionsMoadal}
                     onLogsCleared={onLogsCleared}
                 />
             )}

@@ -12,7 +12,7 @@ import IndexStore from '../../index.store'
 import { ManifestData, NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
-import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { decode } from '../../../../../util/Util'
 import { Moment } from 'moment'
 
@@ -345,13 +345,21 @@ export const excludeFutureTimingsOptions = (allOptions, index) => {
     return newOptions
 }
 
-export const getDurationUnits = () => {
-    const options = [
-        { label: 'Minutes', value: 'minutes' },
-        { label: 'Hours', value: 'hours' },
-    ]
-    return options
+export const getTimeFromTimestamp = (timestamp) => {
+const date = new Date(+timestamp * 1000); 
+const hours = date.getHours();
+const minutes = date.getMinutes();
+const seconds = date.getSeconds();
+const value= `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+return ALLOW_UNTIL_TIME_OPTIONS.filter((option) => {
+    return option.value == value
+})
 }
+
+export const getDurationUnits = () => [
+    { label: 'Minutes', value: 'minutes' },
+    { label: 'Hours', value: 'hours' },
+]
 
 export const getGroupedContainerOptions = (containers: Options[], isTerminal?: boolean) => {
     const containerOptions = [],

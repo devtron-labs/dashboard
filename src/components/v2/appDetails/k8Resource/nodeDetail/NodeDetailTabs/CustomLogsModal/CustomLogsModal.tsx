@@ -10,20 +10,26 @@ import Select, { components } from 'react-select'
 import { SingleDatePicker } from 'react-dates'
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
-import moment, { Moment } from 'moment'
-import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCalendarDay.js'
+import moment from 'moment'
+import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCalendarDay'
 import { Option } from '../../../../../common/ReactSelect.utils'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Warn } from '../../../../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as CalendarIcon } from '../../../../../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as ClockIcon } from '../../../../../../../assets/icons/ic-clock.svg'
 import { ReactComponent as Info } from '../../../../../../../assets/icons/ic-info-outline-grey.svg'
-import './customLogsDropdown.scss'
-import { CustomLogsDropdownProps, InputSelectionProps } from '../../nodeDetail.type'
-import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_OPTIONS } from '../../../../../../../config'
-import { excludeFutureTimingsOptions, getDurationUnits, getTimeStamp } from '../../nodeDetail.util'
+import './customLogsModal.scss'
+import { CustomLogsModalProps, InputSelectionProps } from '../../nodeDetail.type'
+import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, CUSTOM_LOGS_OPTIONS } from '../../../../../../../config'
+import {
+    excludeFutureTimingsOptions,
+    getDurationUnits,
+    getTimeFromTimestamp,
+    getTimeStamp,
+} from '../../nodeDetail.util'
 import { multiSelectStyles } from '../../../../../common/ReactSelectCustomization'
 import { customDayStyles } from '../../../../../../common'
+import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from '../node.type'
 
 const DropdownIndicator = (props) => {
     return (
@@ -32,104 +38,128 @@ const DropdownIndicator = (props) => {
         </components.DropdownIndicator>
     )
 }
-export const InputForSelectedOption = ({ customLogsOption, setCustomLogsOption }: InputSelectionProps) => {
-    const [durationUnits, setDurationUnits] = useState(getDurationUnits()[0])
-    const [date, setDate] = useState<Moment>(moment())
-    const [input, setInput] = useState(customLogsOption.value)
-    const [inputError, setInputError] = useState('')
-    const [showUntilTime, setUnitlTime] = useState<{ label: string; value: string; isdisabled?: boolean }>(
-        ALLOW_UNTIL_TIME_OPTIONS[0],
-    )
+
+const getNearestTimeOptionBeforeNow = () => {
+    let nearestTimeOption
+    ALLOW_UNTIL_TIME_OPTIONS.forEach((option) => {
+        const today = moment().format('YYYY-MM-DD')
+        const dateTimeToCompare = moment(`${today}T${option.value}`)
+        if (dateTimeToCompare.isBefore(moment())) {
+            nearestTimeOption = option
+        }
+    })
+    return nearestTimeOption
+}
+export const InputForSelectedOption = ({
+    customLogFilterOptions,
+    setCustomLogFilterOptions,
+    filterTypeRadio,
+}: InputSelectionProps): JSX.Element => {
     const [untilTimeOptions, setUntilTimeOptions] =
         useState<{ label: string; value: string; isdisabled?: boolean }[]>(ALLOW_UNTIL_TIME_OPTIONS)
     const [focused, setFocused] = useState(false)
+    const handleFocusChange = ({ focused: isFocused }) => {
+        setFocused(isFocused)
+    }
 
-    const getNearestTimeOptionBeforeNow = () => {
-        let nearestTimeOption
-        ALLOW_UNTIL_TIME_OPTIONS.forEach((option) => {
-            const today = moment().format('YYYY-MM-DD')
-            const dateTimeToCompare = moment(`${today}T${option.value}`)
-            if (dateTimeToCompare.isBefore(moment())) {
-                nearestTimeOption = option
-            }
-        })
-        setUnitlTime(nearestTimeOption)
-        return nearestTimeOption
-    }
-    const handleFocusChange = ({ focused }) => {
-        setFocused(focused)
-    }
-    useEffect(() => {
-        setInputError('')
-    }, [customLogsOption])
-    useEffect(() => {
+    const setUntilTimeOptionsWithExcluded = () => {
         const nearestOption = getNearestTimeOptionBeforeNow()
         const index = ALLOW_UNTIL_TIME_OPTIONS.findIndex((option) => option === nearestOption)
         const newOptions = excludeFutureTimingsOptions(ALLOW_UNTIL_TIME_OPTIONS, index)
         setUntilTimeOptions(newOptions)
+    }
+
+    useEffect(() => {
+        if (customLogFilterOptions[CUSTOM_LOGS_FILTER.SINCE].date.isSame(moment(), 'day')) {
+            setUntilTimeOptionsWithExcluded()
+        }
     }, [])
 
     const handleDatesChange = (selected) => {
-        setDate(selected)
-        setCustomLogsOption({ ...customLogsOption, value: getTimeStamp(selected, showUntilTime.value).toString() })
+        setCustomLogFilterOptions({
+            ...customLogFilterOptions,
+            [filterTypeRadio]: {
+                ...customLogFilterOptions[filterTypeRadio],
+                date: selected,
+                value: getTimeStamp(selected, customLogFilterOptions[filterTypeRadio].time.value).toString(),
+            },
+        })
         if (selected.isSame(moment(), 'day')) {
-            const nearestOption = getNearestTimeOptionBeforeNow()
-            const index = ALLOW_UNTIL_TIME_OPTIONS.findIndex((option) => option === nearestOption)
-            const newOptions = excludeFutureTimingsOptions(ALLOW_UNTIL_TIME_OPTIONS, index)
-            setUntilTimeOptions(newOptions)
+            setUntilTimeOptionsWithExcluded()
         } else {
             setUntilTimeOptions(ALLOW_UNTIL_TIME_OPTIONS)
         }
     }
     const handleTimeUntilChange = (selected) => {
-        setUnitlTime(selected)
-        setCustomLogsOption({ ...customLogsOption, value: getTimeStamp(date, selected.value).toString() })
+        setCustomLogFilterOptions({
+            ...customLogFilterOptions,
+            [filterTypeRadio]: {
+                ...customLogFilterOptions[filterTypeRadio],
+                time: selected,
+                value: getTimeStamp(customLogFilterOptions[filterTypeRadio].date, selected.value).toString(),
+            },
+        })
     }
 
-    const checkRequiredError = (e) => {
+    const checkInputError = (e) => {
+        let errorString
         if (e.target.value === '') {
-            setInputError('This field is required')
-        } else if (inputError) {
-            setInputError('')
+            errorString = 'This field is required'
+        } else if (Number.isNaN(Number(e.target.value))) {
+            errorString = 'Please enter a valid number'
+        } else if (customLogFilterOptions[filterTypeRadio].error) {
+            errorString = ''
         }
+        setCustomLogFilterOptions({
+            ...customLogFilterOptions,
+            [filterTypeRadio]: { ...customLogFilterOptions[filterTypeRadio], error: errorString },
+        })
+    }
+
+    const handleInputChange = (e) => {
+        checkInputError(e)
+        setCustomLogFilterOptions({
+            ...customLogFilterOptions,
+            [filterTypeRadio]: { ...customLogFilterOptions[filterTypeRadio], value: e.target.value },
+        })
+    }
+    const changeTimeUnits = (selected) => {
+        setCustomLogFilterOptions({
+            ...customLogFilterOptions,
+            [filterTypeRadio]: { ...customLogFilterOptions[filterTypeRadio], unit: selected.value },
+        })
     }
 
     const offset = moment(new Date()).format('Z')
     const timeZone = `${Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone ?? ''} (GMT ${offset})`
 
-    switch (customLogsOption.option) {
-        case 'duration':
-        case 'lines':
+    switch (filterTypeRadio) {
+        case CUSTOM_LOGS_FILTER.DURATION:
+        case CUSTOM_LOGS_FILTER.LINES:
             return (
                 <div className="flexbox-col">
                     <div className="dc__required-field mb-6 fs-13 fcn-7">
-                        {customLogsOption.option === 'duration' ? 'View logs for last' : 'Set number of lines'}
+                        {filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? 'View logs for last' : 'Set number of lines'}
                     </div>
                     <div className="flex dc__align-start">
                         <div className="w-180">
                             <CustomInput
-                                error={inputError}
+                                error={customLogFilterOptions[filterTypeRadio].error}
                                 name="duration-lines"
-                                disabled={!!inputError}
-                                handleOnBlur={checkRequiredError}
-                                value={input}
+                                handleOnBlur={checkInputError}
+                                value={customLogFilterOptions[filterTypeRadio].value}
                                 rootClassName="input-focus-none"
-                                onChange={(e) => {
-                                    checkRequiredError(e)
-                                    setInput(e.target.value)
-                                    setCustomLogsOption({ ...customLogsOption, value: e.target.value })
-                                }}
+                                onChange={handleInputChange}
                             />
                         </div>
                         <div className="flex-grow-1">
-                            {customLogsOption.option === 'duration' ? (
+                            {filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? (
                                 <Select
                                     options={getDurationUnits()}
-                                    onChange={(selected) => {
-                                        setDurationUnits(selected)
-                                        setCustomLogsOption({ ...customLogsOption, unit: selected.value })
-                                    }}
-                                    value={durationUnits}
+                                    onChange={changeTimeUnits}
+                                    value={getDurationUnits().find(
+                                        (option) => option.value === customLogFilterOptions[filterTypeRadio].unit,
+                                    )}
                                     styles={{
                                         ...multiSelectStyles,
                                         control: (base) => ({
@@ -176,7 +206,7 @@ export const InputForSelectedOption = ({ customLogsOption, setCustomLogsOption }
                                 placeholder="Select date"
                                 focused={focused}
                                 onFocusChange={handleFocusChange}
-                                date={date}
+                                date={customLogFilterOptions[filterTypeRadio].date}
                                 onDateChange={handleDatesChange}
                                 numberOfMonths={1}
                                 openDirection="down"
@@ -193,7 +223,7 @@ export const InputForSelectedOption = ({ customLogsOption, setCustomLogsOption }
                                 <Select
                                     placeholder="Select time"
                                     options={untilTimeOptions}
-                                    value={showUntilTime}
+                                    value={customLogFilterOptions[filterTypeRadio].time}
                                     onChange={handleTimeUntilChange}
                                     menuPlacement="bottom"
                                     isSearchable={false}
@@ -226,22 +256,68 @@ export const InputForSelectedOption = ({ customLogsOption, setCustomLogsOption }
             return null
     }
 }
-const CustomLogsDropdown = ({
-    setCustomLogsOption,
-    customLogsOption,
+
+const intialiseState = (selectedCustomLogFilter: SelectedCustomLogFilterType) => {
+    const selectedOption = selectedCustomLogFilter.option
+    const initialState = {
+        [CUSTOM_LOGS_FILTER.DURATION]: {
+            value: selectedOption === CUSTOM_LOGS_FILTER.DURATION ? selectedCustomLogFilter.value : '',
+            unit: selectedOption === CUSTOM_LOGS_FILTER.DURATION ? selectedCustomLogFilter.unit : 'minutes',
+            error: '',
+        },
+        [CUSTOM_LOGS_FILTER.LINES]: {
+            value: selectedOption === CUSTOM_LOGS_FILTER.LINES ? selectedCustomLogFilter.value : '',
+            error: '',
+        },
+        [CUSTOM_LOGS_FILTER.SINCE]: {
+            value:
+                selectedOption === CUSTOM_LOGS_FILTER.SINCE
+                    ? selectedCustomLogFilter.value
+                    : getTimeStamp(moment(), getNearestTimeOptionBeforeNow().value).toString(),
+            date: selectedOption === CUSTOM_LOGS_FILTER.SINCE ? moment.unix(+selectedCustomLogFilter.value) : moment(),
+            time:
+                selectedOption === CUSTOM_LOGS_FILTER.SINCE
+                    ? getTimeFromTimestamp(selectedCustomLogFilter.value)
+                    : getNearestTimeOptionBeforeNow(),
+        },
+        [CUSTOM_LOGS_FILTER.ALL]: {
+            value: selectedOption === CUSTOM_LOGS_FILTER.ALL ? selectedCustomLogFilter.value : 'all',
+        },
+    }
+    return initialState
+}
+
+const CustomLogsModal = ({
+    selectedCustomLogFilter,
+    setSelectedCustomLogFilter,
     setLogsShownOption,
     setNewFilteredLogs,
-    setShowCustomOptions,
     onLogsCleared,
-}: CustomLogsDropdownProps) => {
+    setShowCustomOptionsMoadal,
+}: CustomLogsModalProps): JSX.Element => {
+    const [customLogFilterOptions, setCustomLogFilterOptions] = useState<CustomLogFilterOptionsType>(
+        intialiseState(selectedCustomLogFilter),
+    )
+    const [filterTypeRadio, setFilterTypeRadio] = useState(selectedCustomLogFilter.option)
+
     const handleClose = () => {
         setLogsShownOption((prevValue) => ({ prev: prevValue.prev, current: prevValue.prev }))
-        setShowCustomOptions(false)
+        setShowCustomOptionsMoadal(false)
     }
-    const handleSelectedFilter = () => {
-        setShowCustomOptions(false)
+
+    const handleSubmitSelectedFilter = () => {
+        setShowCustomOptionsMoadal(false)
         onLogsCleared()
         setNewFilteredLogs(true)
+        setSelectedCustomLogFilter({
+            option: filterTypeRadio,
+            value: customLogFilterOptions[filterTypeRadio].value,
+            ...(customLogFilterOptions[filterTypeRadio].unit && { unit: customLogFilterOptions[filterTypeRadio].unit }),
+        })
+    }
+
+    const handleSelectedRadio = (event) => {
+        setFilterTypeRadio(event.target.value)
     }
 
     return (
@@ -253,11 +329,9 @@ const CustomLogsDropdown = ({
                 </div>
                 <div className="flex dc__border-bottom-n1">
                     <RadioGroup
-                        value={customLogsOption.option}
+                        value={filterTypeRadio}
                         name="custom-logs"
-                        onChange={(event) => {
-                            setCustomLogsOption({ option: event.target.value, value: '' })
-                        }}
+                        onChange={handleSelectedRadio}
                         className="custom-logs-radio-group dc__no-shrink"
                     >
                         {CUSTOM_LOGS_OPTIONS.map(({ label, value }) => (
@@ -268,8 +342,9 @@ const CustomLogsDropdown = ({
                     </RadioGroup>
                     <div className="option-input-container flex-grow-1">
                         <InputForSelectedOption
-                            customLogsOption={customLogsOption}
-                            setCustomLogsOption={setCustomLogsOption}
+                            customLogFilterOptions={customLogFilterOptions}
+                            setCustomLogFilterOptions={setCustomLogFilterOptions}
+                            filterTypeRadio={filterTypeRadio}
                         />
                     </div>
                 </div>
@@ -277,7 +352,15 @@ const CustomLogsDropdown = ({
                     <button type="button" className="cta cancel h-36 flex mr-16" onClick={handleClose}>
                         Cancel
                     </button>
-                    <button type="button" className="cta h-36 flex" onClick={handleSelectedFilter}>
+                    <button
+                        type="button"
+                        className="cta h-36 flex"
+                        onClick={handleSubmitSelectedFilter}
+                        disabled={
+                            customLogFilterOptions[filterTypeRadio].error ||
+                            !customLogFilterOptions[filterTypeRadio].value
+                        }
+                    >
                         Done
                     </button>
                 </div>
@@ -285,4 +368,4 @@ const CustomLogsDropdown = ({
         </VisibleModal>
     )
 }
-export default CustomLogsDropdown
+export default CustomLogsModal

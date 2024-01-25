@@ -823,19 +823,19 @@ export enum CUSTOM_LOGS_FILTER {
 export const CUSTOM_LOGS_OPTIONS = [
     {
         label: 'Set duration',
-        value: 'duration',
+        value: CUSTOM_LOGS_FILTER.DURATION,
     },
     {
         label: 'Set lines',
-        value: 'lines',
+        value: CUSTOM_LOGS_FILTER.LINES,
     },
     {
         label: 'Since date & time',
-        value: 'since',
+        value: CUSTOM_LOGS_FILTER.SINCE,
     },
     {
         label: 'All available',
-        value: 'all',
+        value: CUSTOM_LOGS_FILTER.ALL,
     },
 ]
 

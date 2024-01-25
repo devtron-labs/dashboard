@@ -114,6 +114,31 @@ export const multiSelectStyles = {
     }),
 }
 
+export const podsDropdownStyles = {
+    menu: (base) => ({
+        ...base,
+        zIndex: 9999,
+        width: '120px',
+    }),
+    control: (base, state) => ({
+        ...base,
+        border: 'none',
+        boxShadow: 'none',
+        minHeight: '24px !important',
+        cursor: 'pointer',
+    }),
+    singleValue: (base, state) => ({
+        ...base,
+        fontWeight: 600,
+        color: '#000A14',
+        marginLeft: '2px',
+    }),
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        padding: '0',
+    }),
+}
+
 interface CustomSelect {
     sortSelected?: boolean;
 
