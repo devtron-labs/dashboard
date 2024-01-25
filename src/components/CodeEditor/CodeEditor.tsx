@@ -11,31 +11,10 @@ import './codeEditor.scss';
 import ReactGA from 'react-ga4';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import 'monaco-editor';
-// @ts-ignore
-//import 'monaco-yaml/lib/esm/monaco.contribution';
-// @ts-ignore
-// eslint-disable-next-line import/no-webpack-loader-syntax
-//import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker';
-// @ts-ignore
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
-import { MODES } from '../../../src/config/constants';
 import { cleanKubeManifest } from '../../../src/util/Util';
 
 // @ts-ignore
-window.MonacoEnvironment = {
-    // @ts-ignore
-    // getWorker(workerId, label: string) {
-    //     if (label === MODES.YAML) {
-    //         return new YamlWorker()
-    //     }
-    //     return new EditorWorker()
-    // },
-}
-
-// @ts-ignore
 const { yaml } = monaco.languages || {};
-
 
 interface InformationBarProps { text: string; className?: string; children?: React.ReactNode }
 
@@ -66,7 +45,7 @@ interface CodeEditorInterface {
     validatorSchema?: any;
     isKubernetes?: boolean;
     cleanData?: boolean;
-    chartVersion?: any; 
+    chartVersion?: any;
 }
 
 interface CodeEditorHeaderInterface {
