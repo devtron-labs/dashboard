@@ -2108,10 +2108,6 @@ button.anchor {
     border-bottom: 2px solid var(--N200);
 }
 
-.dc__border-bottom-b5-2 {
-    border-bottom: 2px solid var(--B500) !important;
-}
-
 .dc__border-left {
     border-left: solid 1px var(--N200);
 }
@@ -4126,7 +4122,7 @@ textarea::placeholder {
 
 .bulk-selection-widget {
     border: 1px solid var(--B500);
-    background: var(--light-blue);
+    background: var(--B50);
     box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(5px);
 }
@@ -4135,9 +4131,9 @@ textarea::placeholder {
 // Tab behaviors
 .dc__tab-focus {
     outline: none;
-}
 
-.dc__tab-focus:focus-visible {
-    outline: 5px auto -webkit-focus-ring-color;
-    outline-offset: -2px;
+    &:focus-visible {
+        outline: 5px auto -webkit-focus-ring-color;
+        outline-offset: -2px;
+    }
 }

@@ -14,7 +14,6 @@ import './styles.scss'
 
 const ProfileForm: FunctionComponent = () => {
     const { breadcrumbs } = useBreadcrumb(BUILD_INFRA_BREADCRUMB)
-    // Sending isSuperAdmin since don't even want to send API Request for that case
     const {
         isLoading,
         profileResponse,
@@ -26,13 +25,10 @@ const ProfileForm: FunctionComponent = () => {
         loadingActionRequest,
         handleSubmit,
     } = useBuildInfraForm({ name: DEFAULT_PROFILE_NAME, editProfile: true })
-    // Would use this to disable the save button, if all keys in profileInputErrors are null, then there are no errors
-    // Might enhance this check later for other operations
+    // Would use this to disable the save button, if all keys in profileInputErrors are null or undefined, then there are no errors
+    // Empty string means isRequired but no need to show error below input field
     const formErrorCount = useMemo(
-        () =>
-            Object.keys(profileInputErrors).filter(
-                (item) => profileInputErrors[item] !== null && profileInputErrors[item] !== undefined,
-            ).length,
+        () => Object.keys(profileInputErrors).filter((item) => !profileInputErrors[item]).length,
         [profileInputErrors],
     )
 

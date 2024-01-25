@@ -486,15 +486,13 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Lock Deployment config</div>
                         </NavLink>
                     )}
-                    {BuildInfra && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
-                            key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Build Infra</div>
-                        </NavLink>
-                    )}
+                    <NavLink
+                        to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                        key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                        activeClassName="active-route"
+                    >
+                        <div className="flexbox flex-justify">Build Infra</div>
+                    </NavLink>
                 </>
             )}
         </div>
@@ -612,7 +610,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                     <ExternalLinks />
                 </Route>,
-                ...(serverMode !== SERVER_MODE.EA_ONLY && BuildInfra
+                ...(serverMode !== SERVER_MODE.EA_ONLY
                     ? [
                           <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
                               <BuildInfra isSuperAdmin={isSuperAdmin} />
