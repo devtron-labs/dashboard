@@ -4,13 +4,15 @@ import { ReactComponent as PlayButton } from '../../../../../../assets/icons/ic-
 import { ReactComponent as StopButton } from '../../../../../../assets/icons/ic-stop-filled.svg'
 import { ReactComponent as Search } from '../../../../../../assets/icons/ic-search.svg'
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
+import { ReactComponent as LinesIcon } from '../../../../../../assets/icons/ic-lines.svg'
+import { ReactComponent as Download } from '../../../../../../assets/icons/ic-arrow-line-down.svg'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { NodeDetailTab } from '../nodeDetail.type'
-import { getLogsURL } from '../nodeDetail.api'
+import { downloadLogs, getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Checkbox, CHECKBOX_VALUE, Host } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, Host, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -30,10 +32,15 @@ import {
     getGroupedContainerOptions,
     getInitialPodContainerSelection,
     getPodContainerOptions,
+    getPodLogsOptions,
     getSelectedPodList,
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
 import ReactGA from 'react-ga4'
+import CustomLogsDropdown from './CustomLogsDropdown/CustomLogsDropdown'
+import 'react-datepicker/dist/react-datepicker.css'
+import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
+
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -46,6 +53,15 @@ function LogsComponent({
     isResourceBrowserView,
     selectedResource,
 }: LogsComponentProps) {
+    const [logsShownOption, setLogsShownOption] = useState({
+        prev: getPodLogsOptions()[0],
+        current: getPodLogsOptions()[4],
+    })
+    const [customLogsOption, setCustomLogsOption] = useState({
+        option: 'duration',
+        value: '',
+        unit: 'minutes',
+    })
     const location = useLocation()
     const { url } = useRouteMatch()
     const params = useParams<{
@@ -72,6 +88,8 @@ function LogsComponent({
     )
     const [prevContainer, setPrevContainer] = useState(false)
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
+    const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
+    const [showCustomOptions, setShowCustomOptions] = useState(false)
 
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
@@ -107,6 +125,19 @@ function LogsComponent({
         })
         setPrevContainer(false)
     }
+
+    const handleLogsShown = (option) => {
+        setLogsShownOption({
+            prev: logsShownOption.current,
+            current: option,
+        })
+    }
+
+    useEffect(() => {
+        if (newFilteredLogs) {
+            fetchLogs()
+        }
+    }, [newFilteredLogs])
 
     const handleSearchTextChange = (searchText: string) => {
         if (!searchText) {
@@ -203,6 +234,48 @@ function LogsComponent({
         setTimeout(() => setLogsCleared(false), 100)
     }
 
+    const handleDownloadLogs = () => {
+        const nodeName = podContainerOptions.podOptions[0].name
+        if (isResourceBrowserView) {
+            for (const _co of podContainerOptions.containerOptions) {
+                if (_co.selected) {
+                    try {
+                        downloadLogs(
+                            appDetails,
+                            nodeName,
+                            _co.name,
+                            prevContainer,
+                            logsShownOption.current,
+                            customLogsOption,
+                            isResourceBrowserView,
+                            selectedResource.clusterId,
+                            selectedResource.namespace,
+                        )
+                    } catch (err) {
+                        showError(err)
+                    }
+                }
+            }
+        } else {
+            const selectedPods = podContainerOptions.podOptions
+                .filter((_pod) => _pod.selected)
+                .flatMap((_pod) => getSelectedPodList(_pod.name))
+
+            const containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name)
+            const podsWithContainers = selectedPods
+                .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
+                .filter((_pwc) => containers.includes(_pwc[1]))
+
+            for (const _pwc of podsWithContainers) {
+                try {
+                    downloadLogs(appDetails, _pwc[0], _pwc[1], prevContainer, logsShownOption.current, customLogsOption)
+                } catch (err) {
+                    showError(err)
+                }
+            }
+        }
+    }
+
     const fetchLogs = () => {
         if (podContainerOptions.podOptions.length == 0 || podContainerOptions.containerOptions.length == 0) {
             return
@@ -226,6 +299,8 @@ function LogsComponent({
                             Host,
                             _co.name,
                             prevContainer,
+                            logsShownOption.current,
+                            customLogsOption,
                             isResourceBrowserView,
                             selectedResource.clusterId,
                             selectedResource.namespace,
@@ -245,14 +320,14 @@ function LogsComponent({
 
             for (const _pwc of podsWithContainers) {
                 pods.push(_pwc[0])
-                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1], prevContainer))
+                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1], prevContainer,logsShownOption.current,
+                    customLogsOption))
             }
 
             if (urls.length == 0) {
                 return
             }
         }
-
         workerRef.current['postMessage' as any]({
             type: 'start',
             payload: {
@@ -262,6 +337,7 @@ function LogsComponent({
                 pods: pods,
             },
         })
+        setNewFilteredLogs(false)
     }
 
     const handleCurrentSearchTerm = (searchTerm: string): void => {
@@ -577,6 +653,52 @@ function LogsComponent({
                         >
                             <span className="fs-12 ">Prev. container</span>
                         </Checkbox>
+                        <div className="h-16 dc__border-right ml-8 mr-8"></div>
+                        <LinesIcon className="icon-dim-16 mr-8" />
+                        <Select
+                            options={getPodLogsOptions()}
+                            onChange={(selected) => {
+                                handleLogsShown(selected)
+                                if (selected.value !== CUSTOM_LOGS_FILTER.CUSTOM) {
+                                    onLogsCleared()
+                                    setNewFilteredLogs(true)
+                                } else {
+                                    setShowCustomOptions(true)
+                                }
+                            }}
+                            value={logsShownOption.current}
+                            styles={{
+                                ...multiSelectStyles,
+                                menu: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                    width: '120px',
+                                }),
+                                control: (base, state) => ({
+                                    ...base,
+                                    border: 'none',
+                                    boxShadow: 'none',
+                                    minHeight: '24px !important',
+                                    cursor: 'pointer',
+                                }),
+                                singleValue: (base, state) => ({
+                                    ...base,
+                                    fontWeight: 600,
+                                    color: '#000A14',
+                                    marginLeft: '2px',
+                                }),
+                                dropdownIndicator: (base, state) => ({
+                                    ...base,
+                                    padding: '0',
+                                }),
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option: (props) => <Option {...props} />,
+                            }}
+                        />
+                        <div className="h-16 dc__border-right ml-8 mr-8"></div>
+                        <Download className="icon-dim-16 mr-8 cursor" onClick={handleDownloadLogs} />
                     </div>
                     <div className="dc__border-right "></div>
                     <form
@@ -720,6 +842,21 @@ function LogsComponent({
                         size={32}
                     />
                 </div>
+            )}
+
+            {showCustomOptions && (
+                <CustomLogsDropdown
+                    setCustomLogsOption={
+                        setCustomLogsOption as React.Dispatch<
+                            React.SetStateAction<{ option: string; value: string; unit?: string }>
+                        >
+                    }
+                    customLogsOption={customLogsOption}
+                    setLogsShownOption={setLogsShownOption}
+                    setNewFilteredLogs={setNewFilteredLogs}
+                    setShowCustomOptions={setShowCustomOptions}
+                    onLogsCleared={onLogsCleared}
+                />
             )}
         </React.Fragment>
     )

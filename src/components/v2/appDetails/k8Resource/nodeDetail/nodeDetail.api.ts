@@ -1,5 +1,5 @@
-import { Routes } from '../../../../../config';
-import { DeploymentAppTypes, post, put, trash } from '@devtron-labs/devtron-fe-common-lib';
+import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config';
+import { DeploymentAppTypes, post, put, trash, Host } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
 import { ParamsType } from './nodeDetail.type';
 
@@ -133,16 +133,83 @@ function getEventHelmApps(
     return post(Routes.EVENTS, requestData)
 }
 
+const getFilterWithValue = (type: string, value: string,unit?:string) => {
+    switch (type) {
+        case CUSTOM_LOGS_FILTER.DURATION:
+            return `sinceSeconds=${Number(value) * (unit === 'hours' ? 3600 : 60)}`
+        case CUSTOM_LOGS_FILTER.LINES:
+            return `tailLines=${value}`
+        case CUSTOM_LOGS_FILTER.SINCE:
+            return `sinceTime=${value}`
+        case CUSTOM_LOGS_FILTER.ALL:
+            return `sinceTime=0`
+    }
+}
+
+export const downloadLogs = (
+    ad: AppDetails,
+    nodeName: string,
+    container: string,
+    prevContainerLogs: boolean,
+    logsOption?: { label: string; value: string; type: CUSTOM_LOGS_FILTER },
+    customOption?: { option: string; value: string; unit?: string },
+    isResourceBrowserView?: boolean,
+    clusterId?: number,
+    namespace?: string,
+) => {
+    let filter = ''
+    if (logsOption.value === CUSTOM_LOGS_FILTER.CUSTOM) {
+        filter = getFilterWithValue(customOption.option, customOption.value, customOption.unit)
+    } else {
+        filter = getFilterWithValue(logsOption.type, logsOption.value)
+    }
+    let logsURL = `${Host}/${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
+    const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
+    const appId =
+        ad.appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
+            : getAppId(ad.clusterId, ad.namespace, applicationObject)
+    if (isResourceBrowserView) {
+        logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
+    } else {
+        const appType =
+            ad.appType == AppType.DEVTRON_APP
+                ? K8sResourcePayloadAppType.DEVTRON_APP
+                : K8sResourcePayloadAppType.HELM_APP
+        const deploymentType =
+            ad.deploymentAppType == DeploymentAppTypes.HELM
+                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
+                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        if (appType === 0) {
+            logsURL += `&namespace=${ad.namespace}`
+        }
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
+    }
+    logsURL += `&${filter}`
+    const a = document.createElement('a')
+    a.href = logsURL
+    a.download = 'logs.txt'
+    a.click()
+}
+
 export const getLogsURL = (
     ad: AppDetails,
     nodeName: string,
     Host: string,
     container: string,
     prevContainerLogs: boolean,
+    logsOption?: { label: string; value: string; type: CUSTOM_LOGS_FILTER },
+    customOption?: { option: string; value: string; unit?: string },
     isResourceBrowserView?: boolean,
     clusterId?: number,
     namespace?: string,
 ) => {
+    let filter = ''
+    if (logsOption.value === CUSTOM_LOGS_FILTER.CUSTOM) {
+        filter = getFilterWithValue(customOption.option, customOption.value, customOption.unit)
+    } else {
+        filter = getFilterWithValue(logsOption.type, logsOption.value)
+    }
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const appId =
         ad.appType == AppType.DEVTRON_APP
@@ -154,14 +221,20 @@ export const getLogsURL = (
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {
-        const appType = ad.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
-        const deploymentType = ad.deploymentAppType == DeploymentAppTypes.HELM ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
-        if (appType  === 0){
+        const appType =
+            ad.appType == AppType.DEVTRON_APP
+                ? K8sResourcePayloadAppType.DEVTRON_APP
+                : K8sResourcePayloadAppType.HELM_APP
+        const deploymentType =
+            ad.deploymentAppType == DeploymentAppTypes.HELM
+                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
+                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        if (appType === 0) {
             logsURL += `&namespace=${ad.namespace}`
         }
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
-    return `${logsURL}&follow=true&tailLines=500`
+    return `${logsURL}&follow=true&${filter}`
 }
 
 export const createResource = (

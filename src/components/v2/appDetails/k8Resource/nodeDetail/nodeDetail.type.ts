@@ -1,7 +1,7 @@
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import {Options, OptionsBase } from '../../appDetails.type'
-import { MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { Options, OptionsBase } from '../../appDetails.type'
+import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 
 export enum NodeDetailTab {
     EVENTS = 'EVENTS',
@@ -83,4 +83,18 @@ interface ManifestMetadata {
 export interface ManifestData {
     [MANIFEST_KEY_FIELDS.METADATA]?: ManifestMetadata
     [key: string]: any
+}
+
+export interface CustomLogsDropdownProps {
+    setCustomLogsOption: React.Dispatch<React.SetStateAction<{option:string,value:string,unit?:string}>>
+    customLogsOption: {option:string,value:string,unit?:string}
+    setNewFilteredLogs: React.Dispatch<React.SetStateAction<boolean>>
+    setShowCustomOptions: React.Dispatch<React.SetStateAction<boolean>>
+    setLogsShownOption: React.Dispatch<React.SetStateAction<{prev:{label:string,value:string,type:CUSTOM_LOGS_FILTER},current:{label:string,value:string,type:CUSTOM_LOGS_FILTER}}>>
+    onLogsCleared:()=>void
+}
+
+export interface InputSelectionProps{
+    customLogsOption: {option:string,value:string,unit?:string}
+    setCustomLogsOption: React.Dispatch<React.SetStateAction<{option:string,value:string,unit?:string}>>
 }

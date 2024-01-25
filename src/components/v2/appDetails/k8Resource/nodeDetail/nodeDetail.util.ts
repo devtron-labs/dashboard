@@ -12,8 +12,9 @@ import IndexStore from '../../index.store'
 import { ManifestData, NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
-import { MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { decode } from '../../../../../util/Util'
+import { Moment } from 'moment'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -319,6 +320,37 @@ export const getShellSelectStyles = () => {
 
 export const getContainerOptions = (containers: string[]) => {
     return Array.isArray(containers) ? containers.map((container) => ({ label: container, value: container })) : []
+}
+
+export const getTimeStamp = (date: Moment, time: string) => {
+    return Date.parse(`${date.format('YYYY-MM-DD')} ${time}`) / 1000
+}
+
+export const getPodLogsOptions = () => {
+    const options = [
+        { label: 'Custom...', value: 'custom', type: CUSTOM_LOGS_FILTER.CUSTOM },
+        { label: 'Last 30 minutes', value: '30', type: CUSTOM_LOGS_FILTER.DURATION },
+        { label: 'Last 1 hour', value: '60', type: CUSTOM_LOGS_FILTER.DURATION },
+        { label: 'Last 2 hours', value: '120', type: CUSTOM_LOGS_FILTER.DURATION },
+        { label: '500 lines', value: '500', type: CUSTOM_LOGS_FILTER.LINES },
+    ]
+    return options
+}
+
+export const excludeFutureTimingsOptions = (allOptions, index) => {
+    const newOptions = [...allOptions]
+    for (let i = index + 1; i < allOptions.length; i++) {
+        newOptions[i] = { ...newOptions[i], isdisabled: true }
+    }
+    return newOptions
+}
+
+export const getDurationUnits = () => {
+    const options = [
+        { label: 'Minutes', value: 'minutes' },
+        { label: 'Hours', value: 'hours' },
+    ]
+    return options
 }
 
 export const getGroupedContainerOptions = (containers: Options[], isTerminal?: boolean) => {
