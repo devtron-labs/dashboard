@@ -6,7 +6,7 @@ import {
     CustomInput,
     InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select, { components } from 'react-select'
+import Select from 'react-select'
 import { SingleDatePicker } from 'react-dates'
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
@@ -31,12 +31,8 @@ import { multiSelectStyles } from '../../../../../common/ReactSelectCustomizatio
 import { customDayStyles } from '../../../../../../common'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from '../node.type'
 
-const DropdownIndicator = (props) => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ClockIcon className="icon-dim-16" />
-        </components.DropdownIndicator>
-    )
+const DropdownIndicator = () => {
+    return <ClockIcon className="icon-dim-16 ml-8" />
 }
 
 const getNearestTimeOptionBeforeNow = () => {
@@ -235,10 +231,17 @@ export const InputForSelectedOption = ({
                                     styles={{
                                         control: (base) => ({
                                             ...base,
+                                            display: 'flex',
+                                            flexDirection: 'row-reverse',
                                             border: '1px solid var(--N200)',
                                             borderRadius: '4px',
                                             boxShadow: 'none',
                                             cursor: 'pointer',
+                                            backgroundColor: 'var(--N50)',
+                                        }),
+                                        valueContainer: (base) => ({
+                                            ...base,
+                                            padding: '0px 4px',
                                         }),
                                     }}
                                     isOptionDisabled={(option) => option.isdisabled}
