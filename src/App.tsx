@@ -9,14 +9,15 @@ import './css/base.scss'
 import './css/formulae.scss'
 import './css/forms.scss'
 import 'tippy.js/dist/tippy.css'
-import { useOnline, ToastBody, ToastBody3 as UpdateToast, ErrorBoundary } from './components/common'
-import { showError, BreadcrumbStore, Reload, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useOnline, ToastBody, ToastBody3 as UpdateToast, ErrorBoundary, importComponentFromFELibrary } from './components/common'
+import { showError, BreadcrumbStore, Reload, DevtronProgressing, APPROVAL_MODAL_TYPE } from '@devtron-labs/devtron-fe-common-lib'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
+const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
 toast.configure({
     autoClose: 3000,
@@ -35,9 +36,12 @@ export default function App() {
     const [errorPage, setErrorPage] = useState<Boolean>(false)
     const isOnline = useOnline()
     const [validating, setValidating] = useState(true)
+    const [approvalToken, setApprovalToken] = useState<string>('')
+    const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
     const location = useLocation()
     const { push } = useHistory()
     const didMountRef = useRef(false)
+    const isDirectApprovalNotification = location.pathname && location.pathname.includes('approve') && location.search && location.search.includes(`?token=${approvalToken}`)
 
     function onlineToast(toastBody: JSX.Element, options) {
         if (onlineToastRef.current && toast.isActive(onlineToastRef.current)) {
@@ -73,30 +77,52 @@ export default function App() {
         }
     }
 
-    useEffect(() => {
-        async function validation() {
-            try {
-                await validateToken()
-                defaultRedirection()
-            } catch (err: any) {
-                // push to login without breaking search
-                if (err?.code === 401) {
-                    const loginPath = URLS.LOGIN_SSO
-                    const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
-                        ? location.search
-                        : `?continue=${location.pathname}`
-                    push(`${loginPath}${newSearch}`)
-                } else {
-                    setErrorPage(true)
-                    showError(err)
-                }
-            } finally {
-                setValidating(false)
-            }
+    const redirectToDirectApprovalNotification = (): void => {
+        setValidating(false)
+        if (location.pathname && location.pathname.includes('deployment')) {
+            setApprovalType(APPROVAL_MODAL_TYPE.DEPLOYMENT)
+        } else {
+            setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
         }
+
+        let queryString = new URLSearchParams(location.search)
+        let token = queryString.get('token')
+        if (token) {
+            setApprovalToken(token)
+        }
+    }
+
+    async function validation() {
+        try {
+            await validateToken()
+            defaultRedirection()
+        } catch (err: any) {
+            // push to login without breaking search
+            if (err?.code === 401) {
+                const loginPath = URLS.LOGIN_SSO
+                const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
+                    ? location.search
+                    : `?continue=${location.pathname}`
+                push(`${loginPath}${newSearch}`)
+            } else {
+                setErrorPage(true)
+                showError(err)
+            }
+        } finally {
+            setValidating(false)
+        }
+    }
+
+
+    useEffect(() => {
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         if (!window._env_.K8S_CLIENT) {
+            // By Passing validations for direct email approval notifications
+            if (isDirectApprovalNotification) {
+                redirectToDirectApprovalNotification()
+            } else {
             validation()
+            }
         } else {
             setValidating(false)
             defaultRedirection()
@@ -170,13 +196,21 @@ export default function App() {
                     ) : (
                         <ErrorBoundary>
                             <BreadcrumbStore>
-                                <Switch>
-                                    {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
-                                    <Route path="/" render={() => <NavigationRoutes />} />
-                                    <Redirect
-                                        to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
-                                    />
-                                </Switch>
+                                    <Switch>
+                                             {isDirectApprovalNotification && GenericDirectApprovalModal && (
+                                                <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
+                                                    <GenericDirectApprovalModal
+                                                        approvalType={approvalType}
+                                                        approvalToken={approvalToken}
+                                                    />
+                                                </Route>
+                                            )}
+                                        {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
+                                        <Route path="/" render={() => <NavigationRoutes />} />
+                                        <Redirect
+                                            to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
+                                        />
+                                    </Switch>
                                 <div id="full-screen-modal"></div>
                                 <div id="visible-modal"></div>
                                 <div id="visible-modal-2"></div>

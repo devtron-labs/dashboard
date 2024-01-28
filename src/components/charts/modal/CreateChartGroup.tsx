@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { ChartGroup, CreateChartGroupProps } from '../charts.types'
-import { showError, Progressing, DialogForm } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, DialogForm, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service'
 import { getChartGroupEditURL } from '../charts.helper'
 import { toast } from 'react-toastify'
@@ -163,29 +163,18 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 onSave={this.saveChartGroup}
             >
                 <label className="form__row">
-                    <span className="form__label dc__required-field" data-testid="create-group-name-heading">Name</span>
-                    <input
-                        className="form__input"
-                        autoComplete="off"
-                        type="text"
+                    <CustomInput
                         name="name"
+                        label="Name"
                         value={this.state.name.value}
                         data-testid="create-group-name-value"
                         placeholder="e.g. elastic-stack"
                         autoFocus={true}
                         tabIndex={1}
                         onChange={this.handleNameChange}
-                        required
+                        isRequiredField={true}
+                        error={this.state.name.error}
                     />
-                    <span className="form__error">
-                        {this.state.name.error.map((err) => {
-                            return (
-                                <div data-testid="chart-group-min-5-char">
-                                    <Error className="form__icon form__icon--error" /> {err}
-                                </div>
-                            )
-                        })}
-                    </span>
                 </label>
 
                 <label className="form__row">

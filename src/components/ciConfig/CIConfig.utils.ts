@@ -95,6 +95,26 @@ export const tempMultiSelectStyles = {
     }),
 }
 
+export const getBuildContextCheckoutSelectStyles = (checkoutPathOptions) => ({
+    ..._multiSelectStyles,
+    menu: (base) => ({
+        ...base,
+        marginTop: '0',
+        paddingBottom: '4px',
+        width: checkoutPathOptions?.length === 2 && checkoutPathOptions[1].value.length > 3 ? '120px' : '100%',
+    }),
+    control: (base) => ({
+        ...base,
+        borderTopRightRadius: '0px',
+        borderBottomRightRadius: '0px',
+        borderRight: '0px',
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        paddingLeft: '0px',
+    }),
+})
+
 export const TARGET_PLATFORM_LIST: OptionType[] = [
     { label: 'linux/arm64', value: 'linux/arm64' },
     { label: 'linux/amd64', value: 'linux/amd64' },
@@ -552,6 +572,7 @@ export const getCIConfigDiffValues = (
     }
     return ciConfigDiffValues
 }
+
 const getTargetPlatformChangeBGColor = (
     globalCIConfig: DockerConfigOverrideType,
     ciConfigOverride: DockerConfigOverrideType,

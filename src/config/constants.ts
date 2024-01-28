@@ -766,6 +766,7 @@ export const NO_COMMIT_SELECTED = 'No commit is selected'
 export enum MANIFEST_KEY_FIELDS {
     METADATA = 'metadata',
     MANAGED_FIELDS = 'managedFields',
+    DATA = 'data',
 }
 
 export enum KEY_VALUE {

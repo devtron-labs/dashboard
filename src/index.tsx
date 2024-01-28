@@ -53,6 +53,8 @@ interface customEnv {
     NODE_REACT_APP_GIT_SHA?: string
     REACT_APP_GIT_SHA?: string
     NODE_ENV?: string
+    VITE_LOGIN_DT_LOGO?: string
+    VITE_SIDEBAR_DT_LOGO?: string
 }
 declare global {
     interface Window {
@@ -163,6 +165,8 @@ if (!window || !window._env_) {
         VITE_HIDE_DEFAULT_CLUSTER: false,
         VITE_GLOBAL_API_TIMEOUT: 60000,
         VITE_TRIGGER_API_TIMEOUT: 60000,
+        VITE_LOGIN_DT_LOGO: '',
+        VITE_SIDEBAR_DT_LOGO: '',
     }
 }
 
