@@ -895,3 +895,4 @@ export const ALLOW_UNTIL_TIME_OPTIONS: any[] = Object.entries(ALLOW_UNTIL_TIME).
     value: value,
 }))
 
+export const DIGEST_DISABLE_TOGGLE_MESSAGE= "Pull image digest policy is enforced in Global Configurations. Go to Global Configurations to change."
