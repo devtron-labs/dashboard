@@ -234,6 +234,8 @@ export function SourceInfo({
                             toggleIssuesModal={toggleIssuesModal}
                             setErrorsList={setErrorsList}
                             setDetailed={setDetailed}
+                            releaseStatus={appDetails.resourceTree?.releaseStatus}
+                            conditions={appDetails.resourceTree?.conditions}
                         />
                     )}
                     <DeploymentStatusCard

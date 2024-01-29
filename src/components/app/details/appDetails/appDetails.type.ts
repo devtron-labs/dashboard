@@ -1,5 +1,5 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
+import { AggregatedNodes, AppStreamData, OptionType, ReleaseStatusType } from '../../types'
 import { SyncErrorType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetails } from '../../../v2/appDetails/appDetails.type'
 
@@ -213,12 +213,20 @@ export interface DeploymentStatusCardType {
     refetchDeploymentStatus: (showTimeline?: boolean) => void
 }
 
+export interface ConditionType{
+    lastTransitionTime: string
+    message: string
+    type: string
+}
+
 export interface IssuesCardType {
     appStreamData?: AppStreamData
     cardLoading?: boolean
     setErrorsList: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+    releaseStatus?: ReleaseStatusType
+    conditions?: ConditionType[]
 }
 
 export interface SecurityVulnerabilityCardType {

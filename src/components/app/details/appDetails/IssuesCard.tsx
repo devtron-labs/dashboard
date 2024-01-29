@@ -23,7 +23,7 @@ import IndexStore from '../../../v2/appDetails/index.store'
 import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 import LoadingCard from './LoadingCard'
 
-const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {
+const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed, releaseStatus, conditions }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState(false)
@@ -31,10 +31,9 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
     const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState('')
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
+    const [errorCounter, setErrorCounter] = useState(0)
 
-    const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData])
     const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
-
     const showIssuesListingModal = () => {
         toggleIssuesModal(true)
     }
@@ -116,8 +115,6 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         await nonCascadeDeleteArgoCDApp(false)
     }
 
-    const errorCounter = conditions?.length + (isImagePullBackOff ? 1 : 0) + (clusterConnectionError ? 1 : 0)
-
     const handleForceDelete = () => {
         nonCascadeDeleteArgoCDApp(true)
     }
@@ -128,8 +125,10 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
 
     const getErrorsList = (): ErrorItem[] => {
         const errorsList = []
+        let errorCounter = 0
 
         if (clusterConnectionError) {
+            errorCounter += clusterConnectionError ? 1 : 0
             errorsList.push({
                 error: 'Cluster is not reachable',
                 message: `The underlying resources cannot be deleted as the cluster${
@@ -138,20 +137,31 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
             })
         }
 
-        conditions?.forEach((condition) => {
+        if (releaseStatus) {
+            errorCounter += releaseStatus ? 1 : 0
             errorsList.push({
-                error: condition.type,
-                message: condition.message,
+                error: releaseStatus.status,
+                message: releaseStatus.description,
             })
-        })
+        }
+
+        conditions?.length &&
+            conditions.forEach((condition) => {
+                errorCounter += conditions?.length ? conditions.length : 0
+                errorsList.push({
+                    error: condition.type,
+                    message: condition.message,
+                })
+            })
 
         if (isImagePullBackOff && !appDetails.externalCi) {
+            errorCounter += isImagePullBackOff && !appDetails.externalCi ? 1 : 0
             errorsList.push({
                 error: 'ImagePullBackOff',
                 message: renderErrorHeaderMessage(appDetails, 'sync-error', showApplicationDetailedModal),
             })
         }
-
+        setErrorCounter(errorCounter)
         return errorsList
     }
 
@@ -169,9 +179,9 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         appDetails.clusterName,
     ])
 
-    const getErrorCountText = () => {
-        return errorCounter > 1 ? `${errorCounter} Errors` : `${errorCounter} Error`
-    }
+    // const getErrorCountText = () => {
+    //     return errorsList.length > 1 ? `${errorCounter} Errors` : `${errorCounter} Error`
+    // }
 
     if (!appDetails || (conditions?.length === 0 && !isImagePullBackOff && !clusterConnectionError)) {
         return null
@@ -199,7 +209,9 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">
-                        <div className="fs-13 fw-6  lh-20 f-degraded">{getErrorCountText()}</div>
+                        <div className="fs-13 fw-6  lh-20 f-degraded">
+                            {errorCounter} {errorCounter > 1 ? 'Errors' : 'Error'}
+                        </div>
                     </div>
                 </div>
                 <ErrorIcon className="form__icon--error icon-dim-24" />

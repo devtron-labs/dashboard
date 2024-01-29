@@ -57,6 +57,11 @@ export interface AddNewAppState {
     createAppLoader: boolean
 }
 
+export interface ReleaseStatusType {
+    description: string
+    message: string
+    status: string
+}
 export interface AppDetails {
     appId: number
     appName: string
@@ -137,6 +142,7 @@ interface ResourceTree {
     status: string
     podMetadata: PodMetadatum[]
     conditions?: any
+    releaseStatus?: ReleaseStatusType
 }
 
 export interface PodMetadatum {
