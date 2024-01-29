@@ -117,7 +117,7 @@ const PermissionGroupList = () => {
             )}
             {isLoading || (result.totalCount && result.permissionGroups.length) ? (
                 <div className="flexbox-col flex-grow-1">
-                    <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom dc__position-sticky dc__top-0 bcn-0">
+                    <div className="user-permission__header cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom dc__position-sticky dc__top-0 bcn-0 dc__zi-1">
                         <span />
                         <SortableTableHeaderCell
                             title="Name"

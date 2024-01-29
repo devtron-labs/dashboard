@@ -439,7 +439,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                                     </span>
                                 )}
                             </div>
-                            <div className="dc__border-top-n1" />
+                            {!isAutoAssignFlowEnabled && <div className="dc__border-top-n1" />}
                         </>
                     )}
                     {!isAddMode && isAutoAssignFlowEnabled && (
