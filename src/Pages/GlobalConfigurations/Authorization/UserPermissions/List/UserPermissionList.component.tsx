@@ -120,7 +120,7 @@ const UserPermissionList = () => {
                     <div
                         className={`user-permission__header ${
                             showStatus ? 'user-permission__header--with-status' : ''
-                        } cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom`}
+                        } cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom dc__position-sticky dc__top-0 bcn-0`}
                     >
                         <span />
                         <SortableTableHeaderCell

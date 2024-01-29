@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
-import { SortingParams } from '@devtron-labs/devtron-fe-common-lib'
+import { SortingParams, UserStatusDto } from '@devtron-labs/devtron-fe-common-lib'
 import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
-import { UserStatus } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -57,7 +56,7 @@ export interface UserDto {
      *
      * @default 'active'
      */
-    userStatus?: UserStatus
+    userStatus?: UserStatusDto
     /**
      * Last login time of the user
      *

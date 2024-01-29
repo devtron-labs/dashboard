@@ -16,7 +16,7 @@ import {
     createClusterEnvGroup,
 } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
-import { DirectPermissionsRoleFilter, ChartGroupPermissionsFilter, ActionTypes, EntityTypes } from './userGroups.types'
+import { ChartGroupPermissionsFilter, ActionTypes, EntityTypes, DirectPermissionRow, ChartPermissionRow } from './userGroups.types'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
 import { ReactComponent as CloseIcon } from '../../../../../../assets/icons/ic-close.svg'
 import {
@@ -58,13 +58,6 @@ const allEnvironmentsOption = {
 
 export const APPROVER_ACTION = { label: 'approver', value: 'approver' }
 export const CONFIG_APPROVER_ACTION = { label: 'configApprover', value: 'configApprover' }
-
-interface DirectPermissionRow {
-    permission: DirectPermissionsRoleFilter
-    handleDirectPermissionChange: (...rest) => void
-    index: number
-    removeRow: (index: number) => void
-}
 
 export const DirectPermission: React.FC<DirectPermissionRow> = ({
     permission,
@@ -722,11 +715,7 @@ const AppOption = ({ props, permission }) => {
     )
 }
 
-interface ChartPermissionRow {
-    chartPermission: ChartGroupPermissionsFilter
-    setChartPermission: any
-    hideInfoLegend?: boolean
-}
+
 
 export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
     ({ chartPermission, setChartPermission, hideInfoLegend }) => {

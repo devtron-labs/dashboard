@@ -1,8 +1,6 @@
-export enum UserStatus {
-    active = 'active',
-    inactive = 'inactive',
-}
-
+/**
+ * Permission types for users and permission groups
+ */
 export enum PermissionType {
     SUPER_ADMIN = 'SUPER_ADMIN',
     SPECIFIC = 'SPECIFIC',

@@ -211,3 +211,16 @@ export const ViewChartGroupPermission:APIRoleFilter = {
     entity: EntityTypes.CHART_GROUP,
     action: ActionTypes.VIEW,
 }
+
+export interface DirectPermissionRow {
+    permission: DirectPermissionsRoleFilter
+    handleDirectPermissionChange: (...rest) => void
+    index: number
+    removeRow: (index: number) => void
+}
+
+export interface ChartPermissionRow {
+    chartPermission: ChartGroupPermissionsFilter
+    setChartPermission: any
+    hideInfoLegend?: boolean
+}
