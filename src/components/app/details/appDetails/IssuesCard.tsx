@@ -145,14 +145,15 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
             })
         }
 
-        conditions?.length &&
+        if (conditions?.length) {
+            errorCounter += conditions?.length ? conditions.length : 0
             conditions.forEach((condition) => {
-                errorCounter += conditions?.length ? conditions.length : 0
                 errorsList.push({
                     error: condition.type,
                     message: condition.message,
                 })
             })
+        }
 
         if (isImagePullBackOff && !appDetails.externalCi) {
             errorCounter += isImagePullBackOff && !appDetails.externalCi ? 1 : 0
