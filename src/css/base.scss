@@ -2106,6 +2106,10 @@ button.anchor {
 
 .dc__border-bottom-2 {
     border-bottom: 2px solid var(--N200);
+
+    &--b5 {
+        border-bottom: 2px solid var(--B500) !important;
+    }
 }
 
 .dc__border-left {
@@ -2201,6 +2205,10 @@ button.anchor {
 
 .dc__mxw-120 {
     max-width: 120px;
+}
+
+.dc__mxw-160 {
+    max-width: 160px;
 }
 
 .dc__mxw-200 {
@@ -2993,6 +3001,10 @@ textarea,
 
 .w-auto {
     width: auto;
+}
+
+.dc__width-min-content {
+    width: min-content;
 }
 
 .dc_width-max-content {
@@ -4133,7 +4145,7 @@ textarea::placeholder {
     outline: none;
 
     &:focus-visible {
-        outline: 5px auto -webkit-focus-ring-color;
-        outline-offset: -2px;
+        outline: 5px auto -webkit-focus-ring-color !important;
+        outline-offset: 1px;
     }
 }

@@ -3,7 +3,14 @@ import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
-import { showError, Progressing, Toggle, ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Toggle,
+    ConditionalWrap,
+    TippyCustomized,
+    TippyTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
@@ -275,7 +282,7 @@ function NavItem({ serverMode }) {
         const onTippyClose = () => {
             // Resetting the tippy state
             setTippyConfig({
-                showTippy: false
+                showTippy: false,
             })
         }
 
@@ -432,15 +439,17 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {CatalogFramework && <NavLink
-                        to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                        key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                        activeClassName="active-route"
-                    >
-                        <div className="flexbox flex-justify">Catalog Framework</div>
-                    </NavLink>}
+                    {CatalogFramework && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Catalog Framework</div>
+                        </NavLink>
+                    )}
 
-                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES &&  (
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -486,13 +495,16 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Lock Deployment config</div>
                         </NavLink>
                     )}
-                    <NavLink
-                        to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
-                        key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
-                        activeClassName="active-route"
-                    >
-                        <div className="flexbox flex-justify">Build Infra</div>
-                    </NavLink>
+
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Build Infra</div>
+                        </NavLink>
+                    )}
                 </>
             )}
         </div>
@@ -729,14 +741,14 @@ export function ProtectedInput({
     value,
     error,
     onChange,
-    label= '',
+    label = '',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-    onBlur= (e) => {},
+    onBlur = (e) => {},
     isRequiredField = false,
 }: ProtectedInputType) {
     const [shown, toggleShown] = useState(false)
@@ -746,7 +758,10 @@ export function ProtectedInput({
 
     return (
         <div className="flex column left top ">
-            <label htmlFor="" className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}>
+            <label
+                htmlFor=""
+                className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}
+            >
                 {label}
             </label>
             <div className="dc__position-rel w-100">
