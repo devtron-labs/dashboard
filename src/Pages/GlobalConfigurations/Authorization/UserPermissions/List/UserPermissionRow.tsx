@@ -100,7 +100,7 @@ const UserPermissionRow = ({
                         <Tippy
                             content={moment(lastLoginTime).format(Moment12HourFormat)}
                             className="default-tt"
-                            placement="auto"
+                            placement="left"
                             arrow={false}
                         >
                             {child}
