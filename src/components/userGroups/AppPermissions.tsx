@@ -468,7 +468,7 @@ export default function AppPermissions({
                                 }),
                         ]
                     } else {
-                        tempPermissions[index][name] = [{ label: 'Select all', value: '*' }]
+                        tempPermissions[index]['entityName'] = [{ label: 'Select all', value: '*' }]
                     }
                     tempPermissions[index]['entityNameError'] = null
                 } else {
