@@ -245,6 +245,7 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
+    USER: 'user'
 }
 
 export const ViewType = {

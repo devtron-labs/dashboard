@@ -27,7 +27,7 @@ import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGro
 // User Permissions
 export const getUserById = async (userId: User['id']): Promise<User> => {
     try {
-        const { result } = (await get(`user/${userId}`)) as ResponseType<UserDto>
+        const { result } = (await get(`${Routes.USER}/${userId}`)) as ResponseType<UserDto>
 
         return transformUserResponse(result)
     } catch (error) {
@@ -41,10 +41,10 @@ export const createOrUpdateUser = (data: UserCreateOrUpdatePayload) => {
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
-    return isUpdate ? put('user', data, options) : post('user', data, options)
+    return isUpdate ? put(Routes.USER, data, options) : post(Routes.USER, data, options)
 }
 
-export const deleteUser = (userId: User['id']) => trash(`user/${userId}`)
+export const deleteUser = (userId: User['id']) => trash(`${Routes.USER}/${userId}`)
 
 export const getUserList = async (
     queryParams: BaseFilterQueryParams<UserListSortableKeys>,
@@ -56,7 +56,7 @@ export const getUserList = async (
     try {
         const {
             result: { users, totalCount },
-        } = (await get(getUrlWithSearchParams('user', queryParams ?? {}), { signal })) as ResponseType<{
+        } = (await get(getUrlWithSearchParams(Routes.USER, queryParams ?? {}), { signal })) as ResponseType<{
             users: UserDto[]
             totalCount: number
         }>
@@ -76,7 +76,7 @@ export const getUserList = async (
 // Permission Groups
 export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Promise<PermissionGroup> => {
     try {
-        const { result } = (await get(`user/role/group/${groupId}`)) as ResponseType<PermissionGroupDto>
+        const { result } = (await get(`${Routes.USER_ROLE_GROUP}/${groupId}`)) as ResponseType<PermissionGroupDto>
         return result
     } catch (error) {
         showError(error)
@@ -90,7 +90,7 @@ export const createOrUpdatePermissionGroup = (payload: PermissionGroupCreateOrUp
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
 
-    return isUpdate ? put(Routes.USER_ROLE_GROUP, payload, options) : post('user/role/group', payload, options)
+    return isUpdate ? put(Routes.USER_ROLE_GROUP, payload, options) : post(Routes.USER_ROLE_GROUP, payload, options)
 }
 
 export const getPermissionGroupList = async (
@@ -103,7 +103,7 @@ export const getPermissionGroupList = async (
     try {
         const {
             result: { roleGroups: permissionGroups, totalCount },
-        } = (await get(getUrlWithSearchParams('user/role/group', queryParams ?? {}), { signal })) as ResponseType<{
+        } = (await get(getUrlWithSearchParams(Routes.USER_ROLE_GROUP, queryParams ?? {}), { signal })) as ResponseType<{
             roleGroups: PermissionGroupDto[]
             totalCount: number
         }>
@@ -120,7 +120,7 @@ export const getPermissionGroupList = async (
     }
 }
 
-export const deletePermissionGroup = (id: PermissionGroup['id']) => trash(`user/role/group/${id}`)
+export const deletePermissionGroup = (id: PermissionGroup['id']) => trash(`${Routes.USER_ROLE_GROUP}/${id}`)
 
 // Others
 export const getCustomRoles = async (): Promise<ResponseType<CustomRoles[]>> => {
