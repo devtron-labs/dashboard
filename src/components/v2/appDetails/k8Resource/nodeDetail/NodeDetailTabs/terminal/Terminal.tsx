@@ -92,13 +92,19 @@ export default function TerminalView({
         })
         handleSelectionChange(terminalRef.current, setPopupText)
         fitAddon.current = new FitAddon()
-        const webFontAddon = new XtermWebfont()
+        /**
+             * Adding default check due to vite build changing the export
+             * for production the value will be `webFontAddon.current = new XtermWebfont.default()`
+             * for local the value will be `webFontAddon.current = new XtermWebfont()`
+             */
+        const webFontAddon = XtermWebfont.default ? new XtermWebfont.default() : new XtermWebfont()
         terminalRef.current.loadAddon(fitAddon.current)
         terminalRef.current.loadAddon(webFontAddon)
         if (typeof registerLinkMatcher === 'function') {
             registerLinkMatcher(terminalRef.current)
         }
         terminalRef.current.loadWebfontAndOpen(document.getElementById('terminal-id'))
+        //terminalRef.current.open(document.getElementById('terminal-id'))
         fitAddon.current?.fit()
         terminalRef.current.reset()
         terminalRef.current.attachCustomKeyEventHandler((event) => {

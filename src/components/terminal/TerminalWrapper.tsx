@@ -183,8 +183,13 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
                 }
             });
 
-            this._fitAddon = new FitAddon();
-            let webFontAddon = new XtermWebfont()
+            this._fitAddon = new FitAddon()
+            /**
+             * Adding default check due to vite build changing the export
+             * for production the value will be `webFontAddon.current = new XtermWebfont.default()`
+             * for local the value will be `webFontAddon.current = new XtermWebfont()`
+             */
+            const webFontAddon = XtermWebfont.default ? new XtermWebfont.default() : new XtermWebfont()
             handleSelectionChange(this._terminal, this.handleName);
             this._terminal.loadAddon(this._fitAddon);
             this._terminal.loadAddon(webFontAddon);

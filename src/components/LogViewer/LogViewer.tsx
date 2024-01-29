@@ -83,7 +83,12 @@ const LogViewer: React.FunctionComponent<logViewerInterface> = ({ subject, rootC
         terminal.current.attachCustomKeyEventHandler(handleKeyPress)
         handleSelectionChange(terminal.current,setPopupText)
         fitAddon.current = new FitAddon();
-        webFontAddon.current = new XtermWebfont()
+        /**
+         * Adding default check due to vite build changing the export
+         * for production the value will be `webFontAddon.current = new XtermWebfont.default()`
+         * for local the value will be `webFontAddon.current = new XtermWebfont()`
+         */
+        webFontAddon.current = XtermWebfont.default ? new XtermWebfont.default() : new XtermWebfont()
 
         terminal.current.loadAddon(fitAddon.current);
         terminal.current.loadAddon(webFontAddon.current);
