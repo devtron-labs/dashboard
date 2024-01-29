@@ -1,4 +1,4 @@
-import { ChangeCIPayloadType } from '../workflowEditor/types'
+import { ChangeCIPayloadType, PipelineFormType } from '../workflowEditor/types'
 
 // Have added any type for most of these since they were legacy do not know the implications of changing them
 export interface NewCDPipelineProps {
@@ -35,4 +35,9 @@ export interface DeleteCDNodeProps {
     deleteTitleName: string
     isLoading?: boolean
     showConfirmationBar?: boolean
+}
+
+export interface PullImageDigestToggleType{
+    formData: PipelineFormType
+    setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
 }

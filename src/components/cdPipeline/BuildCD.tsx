@@ -37,6 +37,7 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
+import PullImageDigestToggle from './PullImageDigestToggle'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -50,7 +51,7 @@ export default function BuildCD({
     parentPipelineId,
     isWebhookCD,
     dockerRegistries,
-    envIds
+    envIds,
 }) {
     const {
         formData,
@@ -66,7 +67,7 @@ export default function BuildCD({
         setIsEnvUsedState,
         savedCustomTagPattern,
         selectedCDStageTypeValue,
-        setSelectedCDStageTypeValue
+        setSelectedCDStageTypeValue,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     let { cdPipelineId } = useParams<{
@@ -243,8 +244,8 @@ export default function BuildCD({
     }
 
     const setRepositoryName = (event): void => {
-        const form = {...formData}
-        const formDataError = {...formDataErrorObj}
+        const form = { ...formData }
+        const formDataError = { ...formDataErrorObj }
         formDataError.repositoryError = validationRules.repository(event.target.value)
         form.repoName = event.target.value
         setFormData(form)
@@ -252,18 +253,19 @@ export default function BuildCD({
     }
 
     const handleRegistryChange = (selectedRegistry): void => {
-        const form = {...formData}
-        const formDataError = {...formDataErrorObj}
-        formDataError.containerRegistryError = validationRules.containerRegistry(selectedRegistry.id || formData.containerRegistryName)
+        const form = { ...formData }
+        const formDataError = { ...formDataErrorObj }
+        formDataError.containerRegistryError = validationRules.containerRegistry(
+            selectedRegistry.id || formData.containerRegistryName,
+        )
         form.selectedRegistry = selectedRegistry
         form.containerRegistryName = selectedRegistry.id
         setFormData(form)
         setFormDataErrorObj(formDataError)
-
     }
 
-    const  onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
-        const form = {...formData}
+    const onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
+        const form = { ...formData }
         form.generatedHelmPushAction = selectedGeneratedHelmValue
         setFormData(form)
     }
@@ -331,7 +333,7 @@ export default function BuildCD({
                     <div className="w-50 mr-8">
                         <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
-                            menuPosition={isAdvanced ? null : "fixed"}
+                            menuPosition={isAdvanced ? null : 'fixed'}
                             closeMenuOnScroll={true}
                             isDisabled={!!cdPipelineId}
                             classNamePrefix="cd-pipeline-environment-dropdown"
@@ -691,16 +693,19 @@ export default function BuildCD({
                     </>
                 )}
                 {isAdvanced && (
-                    <CustomImageTags
-                        formData={formData}
-                        setFormData={setFormData}
-                        formDataErrorObj={formDataErrorObj}
-                        setFormDataErrorObj={setFormDataErrorObj}
-                        isCDBuild={true}
-                        savedTagPattern={savedCustomTagPattern}
-                        selectedCDStageTypeValue={selectedCDStageTypeValue}
-                        setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
-                    />
+                    <>
+                        <CustomImageTags
+                            formData={formData}
+                            setFormData={setFormData}
+                            formDataErrorObj={formDataErrorObj}
+                            setFormDataErrorObj={setFormDataErrorObj}
+                            isCDBuild={true}
+                            savedTagPattern={savedCustomTagPattern}
+                            selectedCDStageTypeValue={selectedCDStageTypeValue}
+                            setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
+                        />
+                        <PullImageDigestToggle formData={formData} setFormData={setFormData} />
+                    </>
                 )}
             </>
         )
