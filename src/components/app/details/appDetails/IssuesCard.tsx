@@ -179,9 +179,6 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
         appDetails.clusterName,
     ])
 
-    // const getErrorCountText = () => {
-    //     return errorsList.length > 1 ? `${errorCounter} Errors` : `${errorCounter} Error`
-    // }
 
     if (!appDetails || (conditions?.length === 0 && !isImagePullBackOff && !clusterConnectionError)) {
         return null
