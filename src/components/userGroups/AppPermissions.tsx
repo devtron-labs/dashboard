@@ -605,16 +605,18 @@ export default function AppPermissions({
                         Helm Apps
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        to={_getNavLinkUrl('jobs')}
-                        data-testid="jobs-permission-tab"
-                        className="tab-list__tab-link"
-                        activeClassName="active"
-                    >
-                        Jobs
-                    </NavLink>
-                </li>
+                {serverMode !== SERVER_MODE.EA_ONLY && (
+                    <li className="tab-list__tab">
+                        <NavLink
+                            to={_getNavLinkUrl('jobs')}
+                            data-testid="jobs-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
+                            Jobs
+                        </NavLink>
+                    </li>
+                )}
                 {superAdmin && (
                     <li className="tab-list__tab">
                         <NavLink
