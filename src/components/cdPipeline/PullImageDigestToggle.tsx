@@ -3,7 +3,7 @@ import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-with-image.svg'
 import { PullImageDigestToggleType } from './types'
-import { DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE, DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL } from '../../config'
+import { DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE, DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY } from '../../config'
 
 function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleType): JSX.Element {
     const handleImageDigestToggle = (): void => {
@@ -14,10 +14,10 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
 
     const getContentText = () => {
         let text = ''
-        if (formData.isDigestEnforcedForEnv) {
-            text = DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL
-        } else if (formData.isDigestEnforcedForPipeline) {
+        if (formData.isDigestEnforcedForPipeline && formData.isDigestEnforcedForEnv) {
             text = DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE
+        } else if (formData.isDigestEnforcedForEnv) {
+            text = DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY
         }
         return text
     }
