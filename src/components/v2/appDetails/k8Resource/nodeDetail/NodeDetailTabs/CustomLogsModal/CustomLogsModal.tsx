@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-    RadioGroupItem,
-    VisibleModal,
-    RadioGroup,
-    CustomInput,
-    InfoColourBar,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { RadioGroupItem, VisibleModal, RadioGroup, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import { SingleDatePicker } from 'react-dates'
 import 'react-dates/initialize'
@@ -52,11 +46,12 @@ export const InputForSelectedOption = ({
     filterTypeRadio,
 }: InputSelectionProps): JSX.Element => {
     const [untilTimeOptions, setUntilTimeOptions] =
-        useState<{ label: string; value: string; isdisabled?: boolean }[]>(ALLOW_UNTIL_TIME_OPTIONS)
+        useState<{ label: string; value: string; isDisabled?: boolean }[]>(ALLOW_UNTIL_TIME_OPTIONS)
     const [focused, setFocused] = useState(false)
     const handleFocusChange = ({ focused: isFocused }) => {
         setFocused(isFocused)
     }
+    const minValue = filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? 0 : -1
 
     const setUntilTimeOptionsWithExcluded = () => {
         const nearestOption = getNearestTimeOptionBeforeNow()
@@ -101,8 +96,8 @@ export const InputForSelectedOption = ({
         let errorString
         if (e.target.value === '') {
             errorString = 'This field is required'
-        } else if (Number.isNaN(Number(e.target.value))) {
-            errorString = 'Please enter a valid number'
+        } else if (e.target.value === '0') {
+            errorString = 'Value cannot be 0'
         } else if (customLogFilterOptions[filterTypeRadio].error) {
             errorString = ''
         }
@@ -114,11 +109,13 @@ export const InputForSelectedOption = ({
 
     const handleInputChange = (e) => {
         checkInputError(e)
-        setCustomLogFilterOptions({
-            ...customLogFilterOptions,
-            [filterTypeRadio]: { ...customLogFilterOptions[filterTypeRadio], value: e.target.value },
-        })
+        const val = Number(e.target.value) < minValue ? minValue.toString() : e.target.value
+        setCustomLogFilterOptions((prevState) => ({
+            ...prevState,
+            [filterTypeRadio]: { ...prevState[filterTypeRadio], value: val },
+        }))
     }
+
     const changeTimeUnits = (selected) => {
         setCustomLogFilterOptions({
             ...customLogFilterOptions,
@@ -128,25 +125,31 @@ export const InputForSelectedOption = ({
 
     const offset = moment(new Date()).format('Z')
     const timeZone = `${Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone ?? ''} (GMT ${offset})`
-
     switch (filterTypeRadio) {
         case CUSTOM_LOGS_FILTER.DURATION:
         case CUSTOM_LOGS_FILTER.LINES:
             return (
-                <div className="flexbox-col">
-                    <div className="dc__required-field mb-6 fs-13 fcn-7">
+                <div className="flexbox-col cn-7">
+                    <div className="dc__required-field mb-6 fs-13">
                         {filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? 'View logs for last' : 'Set number of lines'}
                     </div>
                     <div className="flex dc__align-start">
-                        <div className="w-180">
-                            <CustomInput
-                                error={customLogFilterOptions[filterTypeRadio].error}
-                                name="duration-lines"
-                                handleOnBlur={checkInputError}
+                        <div className="flexbox-col dc__gap-8">
+                            <input
+                                type="number"
+                                autoComplete="off"
+                                min={minValue}
+                                className="input-focus-none"
                                 value={customLogFilterOptions[filterTypeRadio].value}
-                                rootClassName="input-focus-none"
                                 onChange={handleInputChange}
+                                onBlur={checkInputError}
                             />
+                            {customLogFilterOptions[filterTypeRadio].error && (
+                                <div className="fs-11 cr-5 flex flex-justify-start">
+                                    <Warn className="form__icon form__icon--error mr-4" />
+                                    {customLogFilterOptions[filterTypeRadio].error}
+                                </div>
+                            )}
                         </div>
                         <div className="flex-grow-1">
                             {filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? (
@@ -168,11 +171,11 @@ export const InputForSelectedOption = ({
                                     }}
                                     components={{
                                         IndicatorSeparator: null,
-                                        Option: (props) => <Option {...props} showTippy style={{ direction: 'rtl' }} />,
+                                        Option: (props) => <Option {...props} style={{ direction: 'rtl' }} />,
                                     }}
                                 />
                             ) : (
-                                <div className="dc__border h-38 dc__right-radius-4 flex fs-13 flex-justify-start pl-8">
+                                <div className="dc__border h-38 dc__right-radius-4 flex fs-13 flex-justify-start pl-8 cn-9">
                                     Lines
                                 </div>
                             )}
@@ -183,7 +186,7 @@ export const InputForSelectedOption = ({
         case 'all':
             return (
                 <div className="flexbox-col">
-                    <div className="fs-13 fw-4 fcn-9 mb-16">All available logs will be shown.</div>
+                    <div className="fs-13 fw-4 cn-9 mb-16">All available logs will be shown.</div>
                     <InfoColourBar
                         classname="warn"
                         Icon={Warn}
@@ -194,8 +197,8 @@ export const InputForSelectedOption = ({
             )
         case 'since':
             return (
-                <div className="flexbox-col">
-                    <div className="dc__required-field mb-6 fs-13 fcn-7">View logs since</div>
+                <div className="flexbox-col cn-7">
+                    <div className="dc__required-field mb-6 fs-13">View logs since</div>
                     <div className="flexbox-col">
                         <div className="flex">
                             <SingleDatePicker
@@ -212,7 +215,7 @@ export const InputForSelectedOption = ({
                                 hideKeyboardShortcutsPanel
                                 withFullScreenPortal={false}
                                 orientation="horizontal"
-                                customInputIcon={<CalendarIcon className="icon-dim-20" />}
+                                customInputIcon={<CalendarIcon className="icon-dim-16" />}
                                 isOutsideRange={(day) => moment().startOf('day').isBefore(day, 'day')}
                             />
                             <div className="flex-grow-1">
@@ -227,30 +230,32 @@ export const InputForSelectedOption = ({
                                         IndicatorSeparator: null,
                                         ClearIndicator: null,
                                         DropdownIndicator,
+                                        Option: (props) => <Option {...props} />,
                                     }}
                                     styles={{
+                                        ...multiSelectStyles,
                                         control: (base) => ({
                                             ...base,
+                                            border: '1px solid var(--N200)',
+                                            backgroundColor: 'var(--N50)',
+                                            borderRadius: '4px',
                                             display: 'flex',
                                             flexDirection: 'row-reverse',
-                                            border: '1px solid var(--N200)',
-                                            borderRadius: '4px',
                                             boxShadow: 'none',
                                             cursor: 'pointer',
-                                            backgroundColor: 'var(--N50)',
                                         }),
                                         valueContainer: (base) => ({
                                             ...base,
                                             padding: '0px 4px',
                                         }),
                                     }}
-                                    isOptionDisabled={(option) => option.isdisabled}
+                                    isOptionDisabled={(option) => option.isDisabled}
                                 />
                             </div>
                         </div>
                         <div className="flex mt-4 flex-justify-start">
                             <Info className="icon-dim-16" />
-                            <div className="ml-4 fs-11 fw-4 fcn-7">Browser time zone: {timeZone} </div>
+                            <div className="ml-4 fs-11 fw-4 cn-7">Browser time zone: {timeZone} </div>
                         </div>
                     </div>
                 </div>
@@ -295,7 +300,6 @@ const CustomLogsModal = ({
     setSelectedCustomLogFilter,
     setLogsShownOption,
     setNewFilteredLogs,
-    onLogsCleared,
     setShowCustomOptionsMoadal,
 }: CustomLogsModalProps): JSX.Element => {
     const [customLogFilterOptions, setCustomLogFilterOptions] = useState<CustomLogFilterOptionsType>(
@@ -310,7 +314,6 @@ const CustomLogsModal = ({
 
     const handleSubmitSelectedFilter = () => {
         setShowCustomOptionsMoadal(false)
-        onLogsCleared()
         setNewFilteredLogs(true)
         setSelectedCustomLogFilter({
             option: filterTypeRadio,
@@ -326,11 +329,11 @@ const CustomLogsModal = ({
     return (
         <VisibleModal className="">
             <div className="custom-logs-modal w-500 br-4">
-                <div className="flex dc__border-bottom-n1 pt-12 pb-12 pl-20 pr-20">
+                <div className="flex pt-12 pb-12 pl-20 pr-20">
                     <div className="fs-16 fw-6">View Logs</div>
                     <Close className="icon-dim-24 ml-auto cursor" onClick={handleClose} />
                 </div>
-                <div className="flex dc__border-bottom-n1">
+                <div className="flex h-200 dc__align-start dc__border-bottom-n1 dc__border-top-n1 h-200">
                     <RadioGroup
                         value={filterTypeRadio}
                         name="custom-logs"
@@ -339,7 +342,7 @@ const CustomLogsModal = ({
                     >
                         {CUSTOM_LOGS_OPTIONS.map(({ label, value }) => (
                             <RadioGroupItem value={value}>
-                                <span>{label}</span>
+                                <span className="custom-selection-radio">{label}</span>
                             </RadioGroupItem>
                         ))}
                     </RadioGroup>
@@ -352,7 +355,7 @@ const CustomLogsModal = ({
                     </div>
                 </div>
                 <div className="flex flex-justify-end pt-16 pb-16 pl-20 pr-20">
-                    <button type="button" className="cta cancel h-36 flex mr-16" onClick={handleClose}>
+                    <button type="button" className="cta cancel h-36 flex mr-12" onClick={handleClose}>
                         Cancel
                     </button>
                     <button

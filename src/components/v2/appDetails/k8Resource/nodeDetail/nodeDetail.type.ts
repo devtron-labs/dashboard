@@ -98,7 +98,6 @@ export interface CustomLogsModalProps {
             current: { label: string; value: string; type: CUSTOM_LOGS_FILTER }
         }>
     >
-    onLogsCleared: () => void
     setShowCustomOptionsMoadal: React.Dispatch<React.SetStateAction<boolean>>
 }
 

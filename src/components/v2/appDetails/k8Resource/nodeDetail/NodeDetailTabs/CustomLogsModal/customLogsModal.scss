@@ -2,22 +2,36 @@
     margin: auto;
     display: flex;
     flex-direction: column;
-    margin-top: 84px;
+    margin-top: 40px;
     background-color: white;
-
 }
 
 .custom-logs-radio-group {
     display: flex;
     flex-direction: column;
+    align-self: stretch;
     border: none;
     border-radius: 0;
-    border-right: 1px solid var(--N100);
     width: 180px;
-    padding: 16px 0;
+    padding: 16px 12px;
+    border-right: 1px solid var(--N100);
 
     .form__radio-item {
         border: none;
+        flex-grow: 0;
+    }
+
+    .form__radio-item-content {
+        display: flex;
+        align-items: center;
+        padding: 6px 8px;
+        .radio__title{
+            line-height: 20px;
+        }
+    }
+
+    .form__radio-item-content:hover {
+        background-color: var(--N50);
     }
 }
 
@@ -28,15 +42,19 @@
 }
 
 .input-focus-none {
+    width: 175px;
+    padding: 8px;
     border-radius: 4px 0 0 4px;
     border-width: 1px 0 1px 1px;
     border-style: solid;
     border-color: var(--N200);
+    color: var(--N900);
+    font-size: 13px;
+    line-height: 20px;
 
     &:focus,
     &:hover {
-        border-width: 1px 0 1px 1px !important;
-        border-color: var(--N200) !important;
+        outline: none;
     }
 }
 
@@ -76,7 +94,8 @@
 }
 
 .DateInput_input {
-    font-size: 14px;
+    font-size: 13px;
+    color: var(--N900);
     padding: 0px;
     background: var(--N50);
 

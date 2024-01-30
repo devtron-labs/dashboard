@@ -2,7 +2,7 @@ import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config';
 import { DeploymentAppTypes, post, put, trash, Host } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
 import { ParamsType } from './nodeDetail.type';
-
+import { toast } from 'react-toastify';
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
 }
@@ -136,17 +136,18 @@ function getEventHelmApps(
 const getFilterWithValue = (type: string, value: string,unit?:string) => {
     switch (type) {
         case CUSTOM_LOGS_FILTER.DURATION:
-            return `sinceSeconds=${Number(value) * (unit === 'hours' ? 3600 : 60)}`
+            return `&sinceSeconds=${Number(value) * (unit === 'hours' ? 3600 : 60)}`
         case CUSTOM_LOGS_FILTER.LINES:
-            return `tailLines=${value}`
+            return `&tailLines=${value}`
         case CUSTOM_LOGS_FILTER.SINCE:
-            return `sinceTime=${value}`
+            return `&sinceTime=${value}`
         case CUSTOM_LOGS_FILTER.ALL:
-            return `sinceTime=0`
+            return ''
     }
 }
 
-export const downloadLogs = (
+export const downloadLogs = async (
+    setDownloadInProgress: (downloadInProgress: boolean) => void,
     ad: AppDetails,
     nodeName: string,
     container: string,
@@ -185,11 +186,35 @@ export const downloadLogs = (
         }
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
-    logsURL += `&${filter}`
-    const a = document.createElement('a')
-    a.href = logsURL
-    a.download = 'logs.txt'
-    a.click()
+    logsURL += `${filter}`
+    setDownloadInProgress(true)
+    const response = await fetch(logsURL)
+    try {
+        const data = await (response as any).blob()
+
+        // Create a new URL object
+        const blobUrl = URL.createObjectURL(data)
+
+        // Create a link element
+        const a = document.createElement('a')
+        a.href = logsURL
+        a.download = `podlogs-${nodeName}-${new Date().getTime()}.log`
+
+        // Append the link element to the DOM
+        document.body.appendChild(a)
+
+        // Programmatically click the link to start the download
+        a.click()
+
+        setTimeout(() => {
+            URL.revokeObjectURL(blobUrl)
+            document.body.removeChild(a)
+        }, 0)
+    } catch (e) {
+        toast.error(e)
+    } finally {
+        setDownloadInProgress(false)
+    }
 }
 
 export const getLogsURL = (
@@ -234,7 +259,7 @@ export const getLogsURL = (
         }
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
-    return `${logsURL}&follow=true&${filter}`
+    return `${logsURL}&follow=true${filter}`
 }
 
 export const createResource = (

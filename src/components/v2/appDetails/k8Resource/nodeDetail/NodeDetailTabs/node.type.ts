@@ -56,7 +56,7 @@ export interface CustomLogFilterOptionsType {
     [CUSTOM_LOGS_FILTER.SINCE]: {
         value: string
         date: Moment
-        time: { label: string; value: string; isdisabled?: boolean }
+        time: { label: string; value: string; isDisabled?: boolean }
     }
     [CUSTOM_LOGS_FILTER.ALL]: { value: string }
 }

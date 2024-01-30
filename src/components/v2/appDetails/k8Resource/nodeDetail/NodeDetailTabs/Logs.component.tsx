@@ -12,7 +12,7 @@ import { downloadLogs, getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Checkbox, CHECKBOX_VALUE, Host, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, Host, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -54,8 +54,8 @@ function LogsComponent({
     selectedResource,
 }: LogsComponentProps) {
     const [logsShownOption, setLogsShownOption] = useState({
-        prev: getPodLogsOptions()[0],
-        current: getPodLogsOptions()[4],
+        prev: getPodLogsOptions()[5],
+        current: getPodLogsOptions()[5],
     })
     const [selectedCustomLogFilter, setSelectedCustomLogFilter] = useState<SelectedCustomLogFilterType>({
         option: 'duration',
@@ -90,6 +90,7 @@ function LogsComponent({
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
     const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
     const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
+    const [downloadInProgress, setDownloadInProgress] = useState(false)
 
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
@@ -132,12 +133,6 @@ function LogsComponent({
             current: option,
         })
     }
-
-    useEffect(() => {
-        if (newFilteredLogs) {
-            fetchLogs()
-        }
-    }, [newFilteredLogs])
 
     const handleSearchTextChange = (searchText: string) => {
         if (!searchText) {
@@ -239,21 +234,18 @@ function LogsComponent({
         if (isResourceBrowserView) {
             for (const _co of podContainerOptions.containerOptions) {
                 if (_co.selected) {
-                    try {
-                        downloadLogs(
-                            appDetails,
-                            nodeName,
-                            _co.name,
-                            prevContainer,
-                            logsShownOption.current,
-                            selectedCustomLogFilter,
-                            isResourceBrowserView,
-                            selectedResource.clusterId,
-                            selectedResource.namespace,
-                        )
-                    } catch (err) {
-                        showError(err)
-                    }
+                    downloadLogs(
+                        setDownloadInProgress,
+                        appDetails,
+                        nodeName,
+                        _co.name,
+                        prevContainer,
+                        logsShownOption.current,
+                        selectedCustomLogFilter,
+                        isResourceBrowserView,
+                        selectedResource.clusterId,
+                        selectedResource.namespace,
+                    )
                 }
             }
         } else {
@@ -267,18 +259,15 @@ function LogsComponent({
                 .filter((_pwc) => containers.includes(_pwc[1]))
 
             for (const _pwc of podsWithContainers) {
-                try {
-                    downloadLogs(
-                        appDetails,
-                        _pwc[0],
-                        _pwc[1],
-                        prevContainer,
-                        logsShownOption.current,
-                        selectedCustomLogFilter,
-                    )
-                } catch (err) {
-                    showError(err)
-                }
+                downloadLogs(
+                    setDownloadInProgress,
+                    appDetails,
+                    _pwc[0],
+                    _pwc[1],
+                    prevContainer,
+                    logsShownOption.current,
+                    selectedCustomLogFilter,
+                )
             }
         }
     }
@@ -425,7 +414,7 @@ function LogsComponent({
         fetchLogs()
 
         return () => stopWorker()
-    }, [logState, prevContainer])
+    }, [logState, prevContainer, newFilteredLogs])
 
     const podContainerOptions = getPodContainerOptions(
         isLogAnalyzer,
@@ -676,7 +665,6 @@ function LogsComponent({
                             onChange={(selected) => {
                                 handleLogsShown(selected)
                                 if (selected.value !== CUSTOM_LOGS_FILTER.CUSTOM) {
-                                    onLogsCleared()
                                     setNewFilteredLogs(true)
                                 } else {
                                     setShowCustomOptionsMoadal(true)
@@ -693,14 +681,23 @@ function LogsComponent({
                             }}
                         />
                         <div className="h-16 dc__border-right ml-8 mr-8"></div>
-                        <Download
-                            className={`icon-dim-16 mr-8 cursor ${
-                                (podContainerOptions?.containerOptions ?? []).length > 0
-                                    ? ''
-                                    : 'dc__disable-click dc__opacity-0_5'
-                            }`}
-                            onClick={handleDownloadLogs}
-                        />
+                        {downloadInProgress ? (
+                            <Progressing
+                                size={16}
+                                styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
+                            />
+                        ) : (
+                            <Tippy className="default-tt" arrow={false} placement="top" content={'Download logs'}>
+                                <Download
+                                    className={`icon-dim-16 mr-8 cursor ${
+                                        (podContainerOptions?.containerOptions ?? []).length > 0
+                                            ? ''
+                                            : 'cursor-not-allowed dc__opacity-0_5'
+                                    }`}
+                                    onClick={handleDownloadLogs}
+                                />
+                            </Tippy>
+                        )}
                     </div>
                     <div className="dc__border-right "></div>
                     <form
@@ -853,7 +850,6 @@ function LogsComponent({
                     setLogsShownOption={setLogsShownOption}
                     setNewFilteredLogs={setNewFilteredLogs}
                     setShowCustomOptionsMoadal={setShowCustomOptionsMoadal}
-                    onLogsCleared={onLogsCleared}
                 />
             )}
         </React.Fragment>

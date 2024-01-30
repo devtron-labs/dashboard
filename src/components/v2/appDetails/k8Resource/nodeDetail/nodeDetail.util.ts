@@ -329,10 +329,14 @@ export const getTimeStamp = (date: Moment, time: string) => {
 export const getPodLogsOptions = () => {
     const options = [
         { label: 'Custom...', value: 'custom', type: CUSTOM_LOGS_FILTER.CUSTOM },
+        { label: 'Last 15 minutes', value: '15', type: CUSTOM_LOGS_FILTER.DURATION },
         { label: 'Last 30 minutes', value: '30', type: CUSTOM_LOGS_FILTER.DURATION },
         { label: 'Last 1 hour', value: '60', type: CUSTOM_LOGS_FILTER.DURATION },
         { label: 'Last 2 hours', value: '120', type: CUSTOM_LOGS_FILTER.DURATION },
         { label: '500 lines', value: '500', type: CUSTOM_LOGS_FILTER.LINES },
+        { label: '1,000 lines', value: '1000', type: CUSTOM_LOGS_FILTER.LINES },
+        { label: '5,000 lines', value: '5000', type: CUSTOM_LOGS_FILTER.LINES },
+        { label: '10,000 lines', value: '10000', type: CUSTOM_LOGS_FILTER.LINES },
     ]
     return options
 }
@@ -340,7 +344,7 @@ export const getPodLogsOptions = () => {
 export const excludeFutureTimingsOptions = (allOptions, index) => {
     const newOptions = [...allOptions]
     for (let i = index + 1; i < allOptions.length; i++) {
-        newOptions[i] = { ...newOptions[i], isdisabled: true }
+        newOptions[i] = { ...newOptions[i], isDisabled: true }
     }
     return newOptions
 }

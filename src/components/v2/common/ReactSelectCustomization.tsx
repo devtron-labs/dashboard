@@ -74,15 +74,15 @@ export const MultiValueChipContainer = ({ validator, ...props }) => {
     const { label, value } = data
     const isValidEmail = validator ? validator(value) : true
     return (
-        <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
+        <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
             <div className={`flex fs-12`}>
                 {!isValidEmail && <RedWarning className="mr-4 icon-dim-16" />}
                 <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
             </div>
             {children[1]}
         </components.MultiValueContainer>
-    );
-};
+    )
+}
 
 export const multiSelectStyles = {
     control: (base, state) => ({
@@ -90,27 +90,32 @@ export const multiSelectStyles = {
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
         border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
         boxShadow: 'none',
-        minheight: '24px !important'
+        minheight: '24px !important',
     }),
     menu: (base, state) => ({
         ...base,
         top: `40px`,
     }),
     option: (base, state) => {
-        return ({
+        return {
             ...base,
             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
             color: 'var(--N900)',
             padding: '8px 12px',
-        })
+        }
     },
     container: (base, state) => ({
         ...base,
-        cursor: state.isDisabled ? 'not-allowed' : 'normal'
+        cursor: state.isDisabled ? 'not-allowed' : 'normal',
     }),
     valueContainer: (base, state) => ({
         ...base,
         color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
+    }),
+    singleValue: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        fontSize: '13px',
     }),
 }
 
@@ -119,23 +124,38 @@ export const podsDropdownStyles = {
         ...base,
         zIndex: 9999,
         width: '120px',
+        borderRadius: '4px',
     }),
-    control: (base, state) => ({
+    control: (base) => ({
         ...base,
-        border: 'none',
-        boxShadow: 'none',
+        borderColor: 'transparent',
+        backgroundColor: 'transparent',
         minHeight: '24px !important',
         cursor: 'pointer',
     }),
-    singleValue: (base, state) => ({
+    input: (base) => ({
+        ...base,
+        margin: '0',
+        paddingTop: '0',
+    }),
+    singleValue: (base) => ({
         ...base,
         fontWeight: 600,
         color: '#000A14',
         marginLeft: '2px',
     }),
-    dropdownIndicator: (base, state) => ({
+    dropdownIndicator: (base) => ({
         ...base,
         padding: '0',
+    }),
+    valueContainer: (base) => ({
+        ...base,
+        padding: '0 8px',
+    }),
+    menuList: (base) => ({
+        ...base,
+        maxHeight: '200px',
+        borderRadius: '4px',
     }),
 }
 
