@@ -49,7 +49,10 @@ const UserAndGroupPermissions = () => {
     const { path } = useRouteMatch()
     const [isDataLoading, data, error, reload] = useAsync(() =>
         Promise.all([
-            getPermissionGroupList(),
+            // TODO (v3): Remove this from here and use type ahead search instead
+            getPermissionGroupList({
+                showAll: true,
+            }),
             getProjectList(),
             getEnvironmentListMin(),
             serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),

@@ -98,11 +98,11 @@ export type BaseFilterQueryParams<T> = {
     /**
      * Offset for the list result
      */
-    offset: number
+    offset?: number
     /**
      * Number of items required in the list
      */
-    size: number
+    size?: number
     /**
      * Search string (if any)
      */
