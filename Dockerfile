@@ -1,4 +1,4 @@
-FROM node:20 AS builder
+FROM node:18 AS builder
 
 WORKDIR /app
 COPY package.json .
@@ -12,9 +12,8 @@ COPY tsconfig.json .
 COPY vite.config.ts .
 COPY . .
 RUN echo REACT_APP_GIT_SHA=`git rev-parse --short HEAD` >> .env.production
-RUN echo `git rev-parse --short HEAD` > health.html
-# TODO: Can we use yarn and add linting steps as well?
-RUN npm run build
+#RUN echo `git rev-parse --short HEAD` > health.html
+RUN yarn build
 #RUN apt update -y && apt install jq -y
 #RUN python linter.py | jq -C --tab .
 
