@@ -404,7 +404,7 @@ function NavItem({ serverMode }) {
                                     >
                                         {route.name}
                                         <Dropdown
-                                            className="icon-dim-24 rotate"
+                                            className="icon-dim-20 rotate fcn-6"
                                             style={{
                                                 ['--rotateBy' as any]: !collapsedState[route.name] ? '180deg' : '0deg',
                                             }}
