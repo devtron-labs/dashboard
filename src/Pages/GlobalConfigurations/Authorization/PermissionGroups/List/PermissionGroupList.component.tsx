@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react'
+import React, { useMemo, useRef } from 'react'
 import {
     SortingOrder,
     SortableTableHeaderCell,
@@ -63,22 +63,19 @@ const PermissionGroupList = () => {
 
     const showLoadingState = isLoading || getIsRequestAborted(error)
 
-    const getPermissionGroupDataForExport = useCallback(
-        () =>
-            getPermissionGroupList({
-                ...filterConfig,
-                showAll: true,
-                offset: null,
-                size: null,
-                sortBy: SortableKeys.name,
-                sortOrder: SortingOrder.ASC,
-            }),
-        [filterConfig],
-    )
+    const getPermissionGroupDataForExport = () =>
+        getPermissionGroupList({
+            ...filterConfig,
+            showAll: true,
+            offset: null,
+            size: null,
+            sortBy: SortableKeys.name,
+            sortOrder: SortingOrder.ASC,
+        })
 
     if (!showLoadingState) {
         if (error) {
-            if ([API_STATUS_CODES.PERMISSION_DENIED, API_STATUS_CODES.UNAUTHORIZED].includes(error.code)) {
+            if (error.code === API_STATUS_CODES.PERMISSION_DENIED) {
                 return (
                     <ErrorScreenNotAuthorized
                         subtitle={ERROR_EMPTY_SCREEN.REQUIRED_MANAGER_ACCESS}

@@ -41,7 +41,7 @@ const UserPermissionAddEdit = () => {
         )
     }
     if (error) {
-        if ([API_STATUS_CODES.PERMISSION_DENIED, API_STATUS_CODES.UNAUTHORIZED].includes(error.code)) {
+        if (error.code === API_STATUS_CODES.PERMISSION_DENIED) {
             return (
                 <ErrorScreenNotAuthorized
                     subtitle={ERROR_EMPTY_SCREEN.REQUIRED_MANAGER_ACCESS}

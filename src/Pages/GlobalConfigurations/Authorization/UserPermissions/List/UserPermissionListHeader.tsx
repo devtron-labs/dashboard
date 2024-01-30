@@ -59,8 +59,6 @@ const UserPermissionListHeader = ({
                         placeholder: 'Search User',
                     }}
                     handleEnter={handleSearch}
-                    shouldDebounce
-                    debounceTimeout={3000}
                     initialSearchText={initialSearchText}
                 />
                 {/* TODO (v3): Add the multi-select filtering */}
