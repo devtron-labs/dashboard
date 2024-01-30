@@ -1,14 +1,14 @@
 export interface OptionType {
-    label: string;
-    value: string;
+    label: string
+    value: string
 }
 
 export interface LabelTags {
-    tags: OptionType[];
-    inputTagValue: string;
-    tagError: string;
+    tags: OptionType[]
+    inputTagValue: string
+    tagError: string
 }
 
-export interface ChartHeaderComponentType{
-  errorResponseCode?: number
+export interface ChartHeaderComponentType {
+    errorResponseCode?: number
 }

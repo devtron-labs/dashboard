@@ -1,16 +1,16 @@
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useParams } from 'react-router'
+import Tippy from '@tippyjs/react'
+import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
-import { useParams } from 'react-router'
 import { Nodes, SourceInfoType } from '../../types'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
@@ -23,7 +23,7 @@ import { getLastExecutionByArtifactId } from '../../../../services/service'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
-export function SourceInfo({
+export const SourceInfo = ({
     appDetails,
     appStreamData,
     setDetailed = null,
@@ -44,7 +44,7 @@ export function SourceInfo({
     envId,
     ciArtifactId,
     setErrorsList,
-}: SourceInfoType) {
+}: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -52,7 +52,7 @@ export function SourceInfo({
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
-    let Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
+    const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -165,7 +165,7 @@ export function SourceInfo({
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
                                             <ScaleDown
-                                                className={`icon-dim-16 mr-6 rotate`}
+                                                className="icon-dim-16 mr-6 rotate"
                                                 style={{
                                                     ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
                                                 }}
@@ -174,22 +174,24 @@ export function SourceInfo({
                                         </button>
                                     </ConditionalWrap>
                                 )}
-                                {window._env_.VITE_ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
-                                    <ConditionalWrap
-                                        condition={appDetails?.userApprovalConfig?.length > 0}
-                                        wrap={conditionalScalePodsButton}
-                                    >
-                                        <button
-                                            data-testid="app-details-rotate-pods-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6 ml-6"
-                                            onClick={setRotateModal}
-                                            disabled={appDetails?.userApprovalConfig?.length > 0}
+                                {window._env_.VITE_ENABLE_RESTART_WORKLOAD &&
+                                    !isVirtualEnvironment &&
+                                    setRotateModal && (
+                                        <ConditionalWrap
+                                            condition={appDetails?.userApprovalConfig?.length > 0}
+                                            wrap={conditionalScalePodsButton}
                                         >
-                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
-                                            Restart workloads
-                                        </button>
-                                    </ConditionalWrap>
-                                )}
+                                            <button
+                                                data-testid="app-details-rotate-pods-modal-button"
+                                                className="cta cta-with-img small cancel fs-12 fw-6 ml-6"
+                                                onClick={setRotateModal}
+                                                disabled={appDetails?.userApprovalConfig?.length > 0}
+                                            >
+                                                <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
+                                                Restart workloads
+                                            </button>
+                                        </ConditionalWrap>
+                                    )}
                             </div>
                         )}
                     </>

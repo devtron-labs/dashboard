@@ -35,25 +35,24 @@ export const getDateInMilliseconds = (days) => {
 export const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
         return getSelectedPermissionValues(permission.environment)
-    } else {
-        let allFutureCluster = {}
-        let envList = ''
-        permission.environment.forEach((element) => {
-            if (element.clusterName === '' && element.value.startsWith('#')) {
-                const clusterName = element.value.substring(1)
-                allFutureCluster[clusterName] = true
-                envList += (envList !== '' ? ',' : '') + clusterName + '__*'
-            } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                envList += (envList !== '' ? ',' : '') + element.value
-            }
-        })
-        return envList
     }
+    const allFutureCluster = {}
+    let envList = ''
+    permission.environment.forEach((element) => {
+        if (element.clusterName === '' && element.value.startsWith('#')) {
+            const clusterName = element.value.substring(1)
+            allFutureCluster[clusterName] = true
+            envList += `${(envList !== '' ? ',' : '') + clusterName}__*`
+        } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+            envList += (envList !== '' ? ',' : '') + element.value
+        }
+    })
+    return envList
 }
 
 const getSelectedPermissionValues = (permissionLabel: OptionType[]) => {
     let entityName = ''
-    for (let _entityName of permissionLabel) {
+    for (const _entityName of permissionLabel) {
         if (_entityName.value === '*') {
             break
         } else {

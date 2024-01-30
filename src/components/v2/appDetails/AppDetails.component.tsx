@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
+import { DeploymentAppTypes, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { AppStreamData, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
@@ -10,7 +11,6 @@ import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.compone
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { getSaveTelemetry } from './appDetails.api'
-import { DeploymentAppTypes, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
 import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
@@ -183,7 +183,7 @@ const AppDetailsComponent = ({
                         loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
-                        isHelmApp={true}
+                        isHelmApp
                         refetchDeploymentStatus={getDeploymentDetailStepsData}
                     />
                 )}

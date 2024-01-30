@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
-import { versionComparator } from '../../common'
 import { ConfirmationDialog, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { versionComparator } from '../../common'
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
-import {ReactComponent as InfoIcon} from '../../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-filled.svg'
 import warningIcon from '../../../assets/img/warning-medium.svg'
 import {
     ChartTypeVersionOptionsProps,
@@ -28,7 +29,6 @@ import {
 import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 import { getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
@@ -157,7 +157,9 @@ export const CompareWithDropdown = ({
     }
 
     useEffect(() => {
-        if (isEnvOverride && groupedData.length === 0) return
+        if (isEnvOverride && groupedData.length === 0) {
+            return
+        }
         _initOptions()
     }, [environments, charts, isValues, groupedData])
 
@@ -174,12 +176,18 @@ export const CompareWithDropdown = ({
 
         // place all options under corresponding groups
         groupedData.forEach((group) => {
-            if (!isValues && group[0].type === 1) return
-            if (isValues && group[0].type === 4) return
-            if (!envId && group[0].type === 3) return
+            if (!isValues && group[0].type === 1) {
+                return
+            }
+            if (isValues && group[0].type === 4) {
+                return
+            }
+            if (!envId && group[0].type === 3) {
+                return
+            }
             _groupOptions[getPosition(isValues, isEnvOverride, group[0].type)] = {
                 label: labelName[group[0].type],
-                //filter out item where item.chartType !== 'deployment
+                // filter out item where item.chartType !== 'deployment
                 options: group
                     .filter((item) => (item.type === 1 ? item?.chartType === 'Deployment' : true))
                     .map((item) => ({
@@ -241,11 +249,11 @@ export const getCodeEditorHeight = (
 ) => {
     if (openComparison || showReadme) {
         return 'calc(100vh - 220px)'
-    } else if (isEnvOverride) {
-        return 'calc(100vh - 272px)'
-    } else {
-        return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 240px)'
     }
+    if (isEnvOverride) {
+        return 'calc(100vh - 272px)'
+    }
+    return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 240px)'
 }
 
 export const renderEditorHeading = (
@@ -451,11 +459,11 @@ export const SaveConfirmationDialog = ({
     const getButtonState = () => {
         if (state.loading) {
             return <Progressing />
-        } else if (state.chartConfig.id) {
-            return 'Update'
-        } else {
-            return 'Save'
         }
+        if (state.chartConfig.id) {
+            return 'Update'
+        }
+        return 'Save'
     }
 
     return (
@@ -526,7 +534,7 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
     )
 }
 
-export function DropdownItem({ label, onClick, index, isValues }: DropdownItemProps) {
+export const DropdownItem = ({ label, onClick, index, isValues }: DropdownItemProps) => {
     const isSelected = (index === 1 && isValues) || (index === 2 && !isValues)
     return (
         <div

@@ -1,4 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import YAML from 'yaml'
+import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import {
     DeploymentChartOptionType,
     DeploymentConfigContextType,
@@ -10,8 +14,6 @@ import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprov
 import { versionComparator } from '../../common'
 import { SortingOrder } from '../../app/types'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
-import YAML from 'yaml'
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
 import {
@@ -21,10 +23,8 @@ import {
     renderEditorHeading,
 } from './DeploymentTemplateView.component'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
-import { useParams } from 'react-router-dom'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
-import { toast } from 'react-toastify'
 
 export default function DeploymentTemplateEditorView({
     isEnvOverride,
@@ -86,7 +86,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     useEffect(() => {
-        if (!showDraftData || isValues) return // hit api only when manifest is selected, for values use local states.
+        if (!showDraftData || isValues) {
+            return
+        } // hit api only when manifest is selected, for values use local states.
         setDraftLoading(true)
         getLocalDaftManifest()
             .then((data) => {
@@ -235,7 +237,8 @@ export default function DeploymentTemplateEditorView({
     const processFetchedValues = (result, isChartVersionOption, _isEnvOption) => {
         if (isChartVersionOption) {
             return result.defaultAppOverride
-        } else if (_isEnvOption) {
+        }
+        if (_isEnvOption) {
             setOptionOveriddeStatus((prevStatus) => ({
                 ...prevStatus,
                 [state.selectedCompareOption.id]: result.IsOverride,
@@ -245,7 +248,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
-        if (!isValues) return
+        if (!isValues) {
+            return
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValues,
             payload: fetchedValues,
@@ -253,7 +258,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     const setFetchedValuesManifest = (fetchedValuesManifest: Record<number | string, string>) => {
-        if (isValues) return
+        if (isValues) {
+            return
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
             payload: fetchedValuesManifest,
@@ -266,13 +273,14 @@ export default function DeploymentTemplateEditorView({
                 return 'bcy-1'
             }
             return 'bcb-1'
-        } else {
-            return ''
         }
+        return ''
     }
 
     useEffect(() => {
-        if (!convertVariables) return
+        if (!convertVariables) {
+            return
+        }
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {
@@ -314,7 +322,7 @@ export default function DeploymentTemplateEditorView({
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header
             className={`code-editor__header flex left p-0-imp ${getOverrideClass()}`}
-            hideDefaultSplitHeader={true}
+            hideDefaultSplitHeader
         >
             <div className="flex fs-12 fw-6 cn-9 pl-12 pr-12 w-100">
                 {renderEditorHeading(
@@ -334,7 +342,7 @@ export default function DeploymentTemplateEditorView({
     )
 
     const renderCodeEditorCompareMode = () => (
-        <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader={true}>
+        <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader>
             <div className="flex column">
                 <div className="code-editor__header flex left w-100 p-0-imp">
                     <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">

@@ -39,6 +39,7 @@ module.exports = {
         // Since we are using typescript, we can disable the no-unused-vars rule for enum,etc
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': 'error',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
         'react/jsx-filename-extension': [
             'error',
             {

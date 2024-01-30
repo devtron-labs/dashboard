@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
-import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../common'
+import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react'
 import {
     showError,
     Progressing,
@@ -12,9 +11,9 @@ import {
     RadioGroup,
     RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { saveUser, deleteUser } from './userGroup.service';
-import Creatable from 'react-select/creatable';
-import Select from 'react-select';
+import Creatable from 'react-select/creatable'
+import Select from 'react-select'
+import { toast } from 'react-toastify'
 import {
     DirectPermissionsRoleFilter,
     ChartGroupPermissionsFilter,
@@ -23,16 +22,17 @@ import {
     CreateUser,
     OptionType,
     ViewChartGroupPermission,
-} from './userGroups.types';
-import { toast } from 'react-toastify';
-import { useUserGroupContext } from './UserGroup';
-import './UserGroup.scss';
-import AppPermissions from './AppPermissions';
-import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
-import { mainContext } from '../common/navigation/NavigationRoutes';
+} from './userGroups.types'
+import { saveUser, deleteUser } from './userGroup.service'
+import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../common'
+import { useUserGroupContext } from './UserGroup'
+import './UserGroup.scss'
+import AppPermissions from './AppPermissions'
+import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { PermissionType } from '../apiTokens/authorization.utils';
-import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
+import { PermissionType } from '../apiTokens/authorization.utils'
+import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -48,7 +48,7 @@ const CreatableChipStyle = {
             margin: '8px 8px 4px 0px',
             paddingLeft: '4px',
             fontSize: '12px',
-        };
+        }
     },
     control: (base, state) => ({
         ...base,
@@ -58,7 +58,7 @@ const CreatableChipStyle = {
     indicatorsContainer: () => ({
         height: '38px',
     }),
-};
+}
 
 export default function UserForm({
     id = null,
@@ -67,43 +67,43 @@ export default function UserForm({
     deleteCallback,
     createCallback,
     cancelCallback,
-    isAutoAssignFlowEnabled
+    isAutoAssignFlowEnabled,
 }) {
     // id null is for create
-    const { serverMode } = useContext(mainContext);
-    const { userGroupsList, superAdmin } = useUserGroupContext();
-    const userGroupsMap = mapByKey(userGroupsList, 'name');
-    const [localSuperAdmin, setSuperAdmin] = useState<string>("SPECIFIC");
+    const { serverMode } = useContext(mainContext)
+    const { userGroupsList, superAdmin } = useUserGroupContext()
+    const userGroupsMap = mapByKey(userGroupsList, 'name')
+    const [localSuperAdmin, setSuperAdmin] = useState<string>('SPECIFIC')
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
-    );
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([]);
+    )
+    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
     const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
         entity: EntityTypes.CHART_GROUP,
         action: ActionTypes.VIEW,
         entityName: [],
-    });
-    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
-    const [userGroups, setUserGroups] = useState<OptionType[]>([]);
-    const [submitting, setSubmitting] = useState(false);
-    const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
-    const creatableRef = useRef(null);
-    const groupPermissionsRef = useRef(null);
+    })
+    const [k8sPermission, setK8sPermission] = useState<any[]>([])
+    const [userGroups, setUserGroups] = useState<OptionType[]>([])
+    const [submitting, setSubmitting] = useState(false)
+    const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
+    const creatableRef = useRef(null)
+    const groupPermissionsRef = useRef(null)
     const currentK8sPermissionRef = useRef<any[]>([])
 
     useEffect(() => {
         if (creatableRef.current) {
-            creatableRef.current.focus();
+            creatableRef.current.focus()
         } else if (groupPermissionsRef.current) {
-            groupPermissionsRef.current.focus();
+            groupPermissionsRef.current.focus()
         }
-    }, []);
+    }, [])
 
     function validateForm(): boolean {
         if (emailState.emails.length === 0) {
-            setEmailState((emailState) => ({ ...emailState, emailError: 'Emails are mandatory.' }));
+            setEmailState((emailState) => ({ ...emailState, emailError: 'Emails are mandatory.' }))
             toast.error('Some required fields are missing')
-            return false;
+            return false
         }
 
         if (
@@ -113,10 +113,10 @@ export default function UserForm({
             setEmailState((emailState) => ({
                 ...emailState,
                 emailError: 'One or more emails could not be verified to be correct.',
-            }));
-            return false;
+            }))
+            return false
         }
-        return true;
+        return true
     }
 
     function isFormComplete(): boolean {
@@ -150,31 +150,30 @@ export default function UserForm({
             return permission.environment.find((env) => env.value === '*')
                 ? ''
                 : permission.environment.map((env) => env.value).join(',')
-        } else {
-            let allFutureCluster = {}
-            let envList = ''
-            permission.environment.forEach((element) => {
-                if (element.clusterName === '' && element.value.startsWith('#')) {
-                    const clusterName = element.value.substring(1)
-                    allFutureCluster[clusterName] = true
-                    envList += (envList !== '' ? ',' : '') + clusterName + '__*'
-                } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                    envList += (envList !== '' ? ',' : '') + element.value
-                }
-            })
-            return envList
         }
+        const allFutureCluster = {}
+        let envList = ''
+        permission.environment.forEach((element) => {
+            if (element.clusterName === '' && element.value.startsWith('#')) {
+                const clusterName = element.value.substring(1)
+                allFutureCluster[clusterName] = true
+                envList += `${(envList !== '' ? ',' : '') + clusterName}__*`
+            } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+                envList += (envList !== '' ? ',' : '') + element.value
+            }
+        })
+        return envList
     }
 
     async function handleSubmit(e) {
-        const validForm = validateForm();
+        const validForm = validateForm()
         if (!validForm) {
-            return;
+            return
         }
         if (!isFormComplete()) {
-            return;
+            return
         }
-        setSubmitting(true);
+        setSubmitting(true)
         const payload: CreateUser = {
             id: id || 0,
             email_id: emailState.emails.map((email) => email.value).join(','),
@@ -237,100 +236,97 @@ export default function UserForm({
             }
         }
         try {
-            const { result } = await saveUser(payload);
+            const { result } = await saveUser(payload)
             if (id) {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                updateCallback(id, result);
-                toast.success('User updated');
+                updateCallback(id, result)
+                toast.success('User updated')
             } else {
-                createCallback(result);
-                toast.success('User created');
+                createCallback(result)
+                toast.success('User created')
             }
         } catch (err) {
+            const code = err['code']
+            const message = err['errors'][0].userMessage
 
-            const code = err["code"]
-            const message = err["errors"][0].userMessage
-
-            if (code === 400 ){
+            if (code === 400) {
                 toast.error(message)
-            }
-            else if (code === 417){
+            } else if (code === 417) {
                 toast.warn(message)
-            }
-            else{
-                showError(err);
+            } else {
+                showError(err)
             }
         } finally {
-            setSubmitting(false);
+            setSubmitting(false)
         }
     }
 
     useEffect(() => {
-        userData && populateDataFromAPI(userData);
-    }, [userData]);
+        userData && populateDataFromAPI(userData)
+    }, [userData])
 
     async function populateDataFromAPI(data: CreateUser) {
-        const { email_id, groups = [], superAdmin } = data;
-        setUserGroups(groups?.map((group) => ({ label: group, value: group })) || []);
-        setEmailState({ emails: [{ label: email_id, value: email_id }], inputEmailValue: '', emailError: '' });
+        const { email_id, groups = [], superAdmin } = data
+        setUserGroups(groups?.map((group) => ({ label: group, value: group })) || [])
+        setEmailState({ emails: [{ label: email_id, value: email_id }], inputEmailValue: '', emailError: '' })
         if (superAdmin) {
-            setSuperAdmin(superAdmin ? 'SUPERADMIN' : 'SPECIFIC');
+            setSuperAdmin(superAdmin ? 'SUPERADMIN' : 'SPECIFIC')
         }
     }
 
     function handleInputChange(inputEmailValue) {
-        setEmailState((emailState) => ({ ...emailState, inputEmailValue, emailError: '' }));
+        setEmailState((emailState) => ({ ...emailState, inputEmailValue, emailError: '' }))
     }
 
     function handleEmailChange(newValue: any, actionMeta: any) {
-        setEmailState((emailState) => ({ ...emailState, emails: newValue || [], emailError: '' }));
+        setEmailState((emailState) => ({ ...emailState, emails: newValue || [], emailError: '' }))
     }
 
     const createOption = (label: string) => ({
         label,
         value: label,
-    });
+    })
 
     const handleKeyDown = useCallback(
         (event) => {
-            let { emails, inputEmailValue } = emailState;
-            inputEmailValue = inputEmailValue.trim();
+            let { emails, inputEmailValue } = emailState
+            inputEmailValue = inputEmailValue.trim()
             switch (event.key) {
                 case 'Enter':
                 case 'Tab':
                 case ',':
                 case ' ': // space
                     if (inputEmailValue) {
-                        let newEmails = inputEmailValue.split(',').map((e) => {
-                            e = e.trim();
-                            return createOption(e);
-                        });
+                        const newEmails = inputEmailValue.split(',').map((e) => {
+                            e = e.trim()
+                            return createOption(e)
+                        })
                         setEmailState({
                             inputEmailValue: '',
                             emails: [...emails, ...newEmails],
                             emailError: '',
-                        });
+                        })
                     }
                     if (event.key !== 'Tab') {
-                        event.preventDefault();
+                        event.preventDefault()
                     }
-                    break;
+                    break
             }
         },
         [emailState],
-    );
+    )
 
     async function handleDelete() {
-        setSubmitting(true);
+        setSubmitting(true)
         try {
-            await deleteUser(id);
-            deleteCallback(id);
-            toast.success('User deleted');
+            await deleteUser(id)
+            deleteCallback(id)
+            toast.success('User deleted')
             setDeleteConfirmationModal(false)
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setSubmitting(false);
+            setSubmitting(false)
         }
     }
 
@@ -340,18 +336,20 @@ export default function UserForm({
                 <span>{label}</span>
                 <small>{userGroupsMap.has(value) ? userGroupsMap.get(value).description : ''}</small>
             </div>
-        );
+        )
     }
 
     function handleCreatableBlur(e) {
-        let { emails, inputEmailValue } = emailState;
-        inputEmailValue = inputEmailValue.trim();
-        if (!inputEmailValue) return;
+        let { emails, inputEmailValue } = emailState
+        inputEmailValue = inputEmailValue.trim()
+        if (!inputEmailValue) {
+            return
+        }
         setEmailState({
             inputEmailValue: '',
             emails: [...emails, createOption(e.target.value)],
             emailError: '',
-        });
+        })
     }
 
     const CreatableComponents = useMemo(
@@ -364,15 +362,15 @@ export default function UserForm({
             Menu: () => null,
         }),
         [],
-    );
+    )
 
     const handlePermissionType = (e) => {
         setSuperAdmin(e.target.value)
     }
 
-    const creatableOptions = useMemo(() => [], []);
+    const creatableOptions = useMemo(() => [], [])
 
-    const availableGroups = userGroupsList?.map((group) => ({ value: group.name, label: group.name }));
+    const availableGroups = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
 
     return (
         <div className="user-form">
@@ -509,35 +507,34 @@ export default function UserForm({
                         Unsaved changes
                     </span>
                 )}
-                {
-                    !(isAutoAssignFlowEnabled && id) &&
-                        <>
-                            <button
-                                data-testid="user-form-cancel-button"
-                                disabled={submitting}
-                                onClick={cancelCallback}
-                                type="button"
-                                className="cta cancel mr-16"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                disabled={submitting}
-                                data-testid="user-form-save-button"
-                                type="button"
-                                className="cta"
-                                onClick={handleSubmit}
-                            >
-                                {submitting ? <Progressing /> : 'Save'}
-                            </button>
-                        </>
-                }
+                {!(isAutoAssignFlowEnabled && id) && (
+                    <>
+                        <button
+                            data-testid="user-form-cancel-button"
+                            disabled={submitting}
+                            onClick={cancelCallback}
+                            type="button"
+                            className="cta cancel mr-16"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            disabled={submitting}
+                            data-testid="user-form-save-button"
+                            type="button"
+                            className="cta"
+                            onClick={handleSubmit}
+                        >
+                            {submitting ? <Progressing /> : 'Save'}
+                        </button>
+                    </>
+                )}
             </div>
             {deleteConfirmationModal && (
                 <DeleteDialog
                     dataTestId="user-form-delete-dialog"
                     title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
-                    description={'Deleting this user will remove the user and revoke all their permissions.'}
+                    description="Deleting this user will remove the user and revoke all their permissions."
                     delete={handleDelete}
                     closeDelete={() => setDeleteConfirmationModal(false)}
                     apiCallInProgress={submitting}

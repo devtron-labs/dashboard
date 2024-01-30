@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
-import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
@@ -22,7 +22,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                     validatorSchema={state.schema}
                     loading={state.chartConfigLoading || value === undefined || value === null}
                     height={isEnvOverride ? 'calc(100vh - 251px)' : 'calc(100vh - 218px)'}
-                    readOnly={true}
+                    readOnly
                 />
             </div>
         )
@@ -44,6 +44,6 @@ export default function DeploymentTemplateReadOnlyEditorView({
             {renderCodeEditor()}
         </>
     ) : (
-        <DeploymentTemplateGUIView value={value} readOnly={true} />
+        <DeploymentTemplateGUIView value={value} readOnly />
     )
 }

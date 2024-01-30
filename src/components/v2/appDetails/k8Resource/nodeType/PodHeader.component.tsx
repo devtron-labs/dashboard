@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import IndexStore from '../../index.store';
-import { getNodeStatus } from './nodeType.util';
-import './nodeType.scss';
-import { iNode } from '../../appDetails.type';
-import PodTabSection from './PodTabSection';
-import { useSharedState } from '../../../utils/useSharedState';
+import React, { useEffect, useState } from 'react'
+import IndexStore from '../../index.store'
+import { getNodeStatus } from './nodeType.util'
+import './nodeType.scss'
+import { iNode } from '../../appDetails.type'
+import PodTabSection from './PodTabSection'
+import { useSharedState } from '../../../utils/useSharedState'
 
-function PodHeaderComponent({ callBack }) {
-    const [podTab, selectPodTab] = useState<'old' | 'new'>('new');
+const PodHeaderComponent = ({ callBack }) => {
+    const [podTab, selectPodTab] = useState<'old' | 'new'>('new')
     const podMetaData = IndexStore.getPodMetaData()
     const pods: Array<iNode> = IndexStore.getiNodesByKind('pod')
-    const [newPods, setNewPods] = useState({ running: 0, all: 0})
-    const [oldPods, setOldPods] = useState({ running: 0, all: 0})
+    const [newPods, setNewPods] = useState({ running: 0, all: 0 })
+    const [oldPods, setOldPods] = useState({ running: 0, all: 0 })
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
-    );
+    )
 
     useEffect(() => {
         callBack(podTab === 'new')
@@ -40,14 +40,14 @@ function PodHeaderComponent({ callBack }) {
         // update new pods and old pods state
         setNewPods({ ...newPodStats })
         setOldPods({ ...oldPodStats })
-    }, [filteredNodes, podTab]);
+    }, [filteredNodes, podTab])
 
     return (
         <div className="pod-node-tab__wrapper flex left">
-            <PodTabSection podTab={podTab} selectPodTab={selectPodTab} podStatus={newPods} isNew={true} />
+            <PodTabSection podTab={podTab} selectPodTab={selectPodTab} podStatus={newPods} isNew />
             <PodTabSection podTab={podTab} selectPodTab={selectPodTab} podStatus={oldPods} isNew={false} />
         </div>
     )
 }
 
-export default PodHeaderComponent;
+export default PodHeaderComponent

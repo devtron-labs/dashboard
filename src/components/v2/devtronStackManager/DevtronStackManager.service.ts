@@ -1,5 +1,6 @@
-import { ModuleNameMap, Routes } from '../../../config'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { ModuleNameMap, Routes } from '../../../config'
 import {
     AllModuleInfoResponse,
     LogPodNameResponse,
@@ -12,11 +13,10 @@ import {
     ServerInfoResponse,
 } from './DevtronStackManager.type'
 import { reloadToastBody } from '../../common'
-import { toast } from 'react-toastify'
 
-let moduleStatusMap: Record<string, ModuleInfo> = {},
-    serverInfo: ServerInfoResponse,
-    isReloadToastShown = false
+let moduleStatusMap: Record<string, ModuleInfo> = {}
+let serverInfo: ServerInfoResponse
+let isReloadToastShown = false
 
 const getSavedModuleStatus = (): Record<string, ModuleInfo> => {
     let _moduleStatusMaps = moduleStatusMap
@@ -43,8 +43,6 @@ export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> =
     return Promise.resolve(moduleStatusMap)
 }
 
-
-
 export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInfoResponse> => {
     // getting Security Module Installation status
     const res: ModuleInfo = {
@@ -52,7 +50,7 @@ export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInf
         name: null,
         status: null,
     }
-    let installedResponseFlag=false
+    let installedResponseFlag = false
     try {
         const { result: trivyResponse } = await get(`${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_TRIVY}`)
         const isTrivyInstalled = trivyResponse && trivyResponse.status === ModuleStatus.INSTALLED
@@ -66,7 +64,6 @@ export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInf
         } else {
             installedResponseFlag = true
         }
-
     } catch {
         installedResponseFlag = false
     } finally {
@@ -98,7 +95,7 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
         }
         moduleStatusMap = _savedModuleStatusMap
     }
-    return Promise.resolve({ status: '', code: 200, result: result })
+    return Promise.resolve({ status: '', code: 200, result })
 }
 
 export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> => {
@@ -112,11 +109,7 @@ export const executeModuleAction = (
 }
 
 const isValidServerInfo = (_serverInfo: ServerInfoResponse): boolean => {
-    return !!(
-        _serverInfo?.result &&
-        _serverInfo.result.releaseName &&
-        _serverInfo.result.installationType
-    )
+    return !!(_serverInfo?.result && _serverInfo.result.releaseName && _serverInfo.result.installationType)
 }
 
 const getSavedServerInfo = (): ServerInfoResponse => {
@@ -151,8 +144,8 @@ export const executeServerAction = (serverActionRequest: ModuleActionRequest): P
 }
 
 export const getAllModules = (): Promise<AllModuleInfoResponse> => {
-    return fetch(`${window._env_.VITE_CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then((res) =>
-        res.json(),
+    return fetch(`${window._env_.VITE_CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then(
+        (res) => res.json(),
     )
 }
 

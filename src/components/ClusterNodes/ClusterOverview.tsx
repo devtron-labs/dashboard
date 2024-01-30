@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
-import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import GenericDescription from '../common/Description/GenericDescription'
-import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import moment from 'moment'
-import { Moment12HourFormat, URLS } from '../../config'
 import {
     ErrorScreenManager,
     TippyCustomized,
@@ -18,6 +10,14 @@ import {
     ClipboardButton,
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
+import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
+import GenericDescription from '../common/Description/GenericDescription'
+import { defaultClusterNote, defaultClusterShortDescription } from './constants'
+import { Moment12HourFormat, URLS } from '../../config'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
@@ -82,7 +82,7 @@ function ClusterOverview({
     const handleUpdateClusterDescription = async (description: string): Promise<void> => {
         const requestPayload = {
             id: Number(clusterId),
-            description: description,
+            description,
         }
         try {
             const response = await updateClusterShortDescription(requestPayload)
@@ -132,24 +132,24 @@ function ClusterOverview({
                     : _clusterNote.updatedOn
             }
             setDescriptionData(data)
+        } else if (clusterNoteResponse.reason['code'] === 403) {
+            setErrorCode(clusterNoteResponse.reason['code'])
         } else {
-            if (clusterNoteResponse.reason['code'] === 403) {
-                setErrorCode(clusterNoteResponse.reason['code'])
-            } else showError(clusterNoteResponse.reason)
+            showError(clusterNoteResponse.reason)
         }
     }
 
     const setClusterCapacityDetails = (clusterCapacityResponse) => {
         if (clusterCapacityResponse.status === 'fulfilled') {
             setClusterCapacityData(clusterCapacityResponse.value.result)
-            let _errorTitle = '',
-                _errorList = [],
-                _nodeErrors = Object.keys(clusterCapacityResponse.value.result.nodeErrors || {})
+            let _errorTitle = ''
+            const _errorList = []
+            const _nodeErrors = Object.keys(clusterCapacityResponse.value.result.nodeErrors || {})
             const _nodeK8sVersions = clusterCapacityResponse.value.result.nodeK8sVersions || []
             if (_nodeK8sVersions.length > 1) {
-                let diffType = '',
-                    majorVersion,
-                    minorVersion
+                let diffType = ''
+                let majorVersion
+                let minorVersion
                 for (const _nodeK8sVersion of _nodeK8sVersions) {
                     const elementArr = _nodeK8sVersion.split('.')
                     if (!majorVersion) {
@@ -190,17 +190,15 @@ function ClusterOverview({
                     setClusterErrorList(_errorList)
                 }
             }
+        } else if (clusterCapacityResponse.reason['code'] === 403) {
+            setErrorCode(clusterCapacityResponse.reason['code'])
         } else {
-            if (clusterCapacityResponse.reason['code'] === 403) {
-                setErrorCode(clusterCapacityResponse.reason['code'])
-            } else {
-                const error = clusterCapacityResponse.reason
-                setErrorMsg(
-                    (error instanceof ServerErrors && Array.isArray(error.errors)
-                        ? error.errors[0]?.userMessage
-                        : error['message']) ?? SOME_ERROR_MSG,
-                )
-            }
+            const error = clusterCapacityResponse.reason
+            setErrorMsg(
+                (error instanceof ServerErrors && Array.isArray(error.errors)
+                    ? error.errors[0]?.userMessage
+                    : error['message']) ?? SOME_ERROR_MSG,
+            )
         }
     }
     const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
@@ -227,7 +225,9 @@ function ClusterOverview({
     }
 
     useEffect(() => {
-        if (errorStatusCode > 0) return
+        if (errorStatusCode > 0) {
+            return
+        }
         setErrorStatusCode(0)
         getClusterNoteAndCapacity(clusterId)
     }, [selectedCluster])
@@ -235,14 +235,12 @@ function ClusterOverview({
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
         const newUrl =
-            generatePath(path, {
+            `${generatePath(path, {
                 clusterId,
                 namespace,
                 nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
                 group: K8S_EMPTY_GROUP,
-            }) +
-            '?' +
-            `${queryParam}=${encodeURIComponent(filterText)}`
+            })}?` + `${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)
 
         setSelectedResource({
@@ -252,13 +250,15 @@ function ClusterOverview({
     }
 
     const renderClusterError = (): JSX.Element => {
-        if (clusterErrorList.length === 0) return
+        if (clusterErrorList.length === 0) {
+            return
+        }
         return (
             <div className="mb-16 dc__border br-4 pt-12">
                 <div className="flexbox pointer mb-12 pl-16 pr-16">
                     <Error className="mt-2 mb-2 mr-8 icon-dim-20" />
                     <span className="fw-6 fs-13 cn-9 mr-16">
-                        {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors in cluster'}
+                        {clusterErrorList.length === 1 ? '1 Error' : `${clusterErrorList.length} Errors in cluster`}
                     </span>
                 </div>
                 <div className="fw-6 pt-6 pb-6 pl-16 pr-16 flex left dc__border-bottom cn-7">
@@ -314,10 +314,10 @@ function ClusterOverview({
                     placement="bottom"
                     Icon={QuestionFilled}
                     heading="Metrics API is not available"
-                    showCloseButton={true}
+                    showCloseButton
                     trigger="click"
                     additionalContent={metricsApiTippyContent()}
-                    interactive={true}
+                    interactive
                     documentationLinkText="View metrics-server helm chart"
                     documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
                 >
@@ -420,7 +420,7 @@ function ClusterOverview({
     const renderCardDetails = () => {
         return (
             <>
-                {/* Commented to be used in future*/}
+                {/* Commented to be used in future */}
                 {/* {cardDetailsInBar()} */}
                 <div className="flexbox dc__content-space pb-16">
                     <div className="flexbox dc__content-space mr-12 w-50 bcn-0 br-4 en-2 bw-1 pt-16 pl-16 pb-16">
@@ -552,7 +552,8 @@ function ClusterOverview({
                     subtitle={unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase())}
                 />
             )
-        } else if (isLoading || errorMsg) {
+        }
+        if (isLoading || errorMsg) {
             return (
                 <div className="flex flex-grow-1">
                     <ConnectingToClusterState
@@ -566,31 +567,30 @@ function ClusterOverview({
                     />
                 </div>
             )
-        } else {
-            return (
-                <div
-                    className="pl-20 pt-20 pr-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
-                    style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%, var(--N0)50.58%)' }}
-                >
-                    {renderSideInfoData()}
-                    <div className="dc__mxw-1068 flex-grow-1 mw-none">
-                        {renderCardDetails()}
-                        {renderClusterError()}
-                        {Catalog && <Catalog resourceId={clusterId} resourceType="cluster" />}
-                        <GenericDescription
-                            isClusterTerminal={true}
-                            clusterId={clusterId}
-                            isSuperAdmin={isSuperAdmin}
-                            descriptionId={descriptionData.descriptionId}
-                            initialDescriptionText={descriptionData.descriptionText}
-                            initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}
-                            initialDescriptionUpdatedOn={descriptionData.descriptionUpdatedOn}
-                            initialEditDescriptionView={true}
-                        />
-                    </div>
-                </div>
-            )
         }
+        return (
+            <div
+                className="pl-20 pt-20 pr-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
+                style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%, var(--N0)50.58%)' }}
+            >
+                {renderSideInfoData()}
+                <div className="dc__mxw-1068 flex-grow-1 mw-none">
+                    {renderCardDetails()}
+                    {renderClusterError()}
+                    {Catalog && <Catalog resourceId={clusterId} resourceType="cluster" />}
+                    <GenericDescription
+                        isClusterTerminal
+                        clusterId={clusterId}
+                        isSuperAdmin={isSuperAdmin}
+                        descriptionId={descriptionData.descriptionId}
+                        initialDescriptionText={descriptionData.descriptionText}
+                        initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}
+                        initialDescriptionUpdatedOn={descriptionData.descriptionUpdatedOn}
+                        initialEditDescriptionView
+                    />
+                </div>
+            </div>
+        )
     }
 
     const renderClusterSummary = (): JSX.Element => {

@@ -1,15 +1,5 @@
 import React, { Component } from 'react'
-import { DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import {
-    Select,
-    ButtonWithLoader,
-    isEmpty,
-    DevtronSwitch as Switch,
-    DevtronSwitchItem as SwitchItem,
-    sortObjectArrayAlphabetically,
-} from '../common'
 import { toast } from 'react-toastify'
-import { Info } from '../common/icons/Icons'
 import {
     ErrorScreenManager,
     Progressing,
@@ -31,6 +21,19 @@ import {
     PipelineType,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
+import yamlJsParser from 'yaml'
+import ReactSelect from 'react-select'
+import Tippy from '@tippyjs/react'
+import { DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import {
+    Select,
+    ButtonWithLoader,
+    isEmpty,
+    DevtronSwitch as Switch,
+    DevtronSwitchItem as SwitchItem,
+    sortObjectArrayAlphabetically,
+} from '../common'
+import { Info } from '../common/icons/Icons'
 import {
     getDeploymentStrategyList,
     saveCDPipeline,
@@ -50,19 +53,26 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PrePostCD } from '../../assets/icons/ic-cd-stage.svg'
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import yamlJsParser from 'yaml'
 import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
-import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
-import { EnvFormatOptions, formatHighlightedTextDescription, GroupHeading, groupStyle } from '../v2/common/ReactSelect.utils'
+import {
+    EnvFormatOptions,
+    formatHighlightedTextDescription,
+    GroupHeading,
+    groupStyle,
+} from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionalWrap, createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
-import Tippy from '@tippyjs/react'
+import {
+    ConditionalWrap,
+    createClusterEnvGroup,
+    getDeploymentAppType,
+    importComponentFromFELibrary,
+} from '../common/helpers/Helpers'
 import {
     DEPLOY_IMAGE_EXTERNALSOURCE,
     EDIT_DEPLOYMENT_PIPELINE,
@@ -88,12 +98,19 @@ export const SwitchItemValues = {
 
 export default class CDPipeline extends Component<CDPipelineProps, CDPipelineState> {
     allStrategies: { [key: string]: any } = {}
+
     isWebhookCD = window.location.href.includes('webhook')
+
     validationRules
+
     preStage
+
     postStage
+
     configMapAndSecrets = []
+
     noStrategyAvailable = false
+
     constructor(props) {
         super(props)
         const urlParams = new URLSearchParams(this.props.location.search)
@@ -101,8 +118,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         const parentPipelineType = parentPipelineTypeFromURL
             ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
             : this.isWebhookCD
-            ? SourceTypeMap.WEBHOOK
-            : ''
+              ? SourceTypeMap.WEBHOOK
+              : ''
         const parentPipelineId = urlParams.get('parentPipelineId')
         this.state = {
             view: ViewType.LOADING,
@@ -148,7 +165,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 runPostStageInEnv: false,
                 isClusterCdActive: false,
                 parentPipelineId: +parentPipelineId,
-                parentPipelineType: parentPipelineType,
+                parentPipelineType,
                 deploymentAppType: window._env_.VITE_HIDE_DEPLOYMENT_GROUPS ? '' : DeploymentAppTypes.HELM,
                 deploymentAppCreated: false,
                 userApprovalConfig: null,
@@ -202,9 +219,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleRegistryChange = (selectedRegistry): void => {
-        this.state.errorForm.containerRegistryError = this.validationRules.containerRegistry(selectedRegistry.id) || this.state.pipelineConfig.containerRegistryName
+        this.state.errorForm.containerRegistryError =
+            this.validationRules.containerRegistry(selectedRegistry.id) ||
+            this.state.pipelineConfig.containerRegistryName
         this.setState({
-            selectedRegistry: selectedRegistry,
+            selectedRegistry,
             pipelineConfig: {
                 ...this.state.pipelineConfig,
                 containerRegistryName: selectedRegistry.id,
@@ -213,7 +232,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     setRepositoryName = (event): void => {
-      this.state.errorForm.repositoryError = this.validationRules.repository(event.target.value)
+        this.state.errorForm.repositoryError = this.validationRules.repository(event.target.value)
         this.setState({
             pipelineConfig: {
                 ...this.state.pipelineConfig,
@@ -225,9 +244,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     getDockerRegistry = () => {
         getDockerRegistryMinAuth(this.props.match.params.appId, true)
             .then((response) => {
-                let dockerRegistries = response.result || []
+                const dockerRegistries = response.result || []
                 this.setState({
-                    dockerRegistries: dockerRegistries,
+                    dockerRegistries,
                 })
             })
             .catch((error) => {
@@ -241,13 +260,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             getEnvironmentListMinPublic(true),
             getDockerRegistryMinAuth(this.props.match.params.appId, true),
         ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
-            let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
+            const strategies = pipelineStrategyResponse.result.pipelineStrategy || []
             let defaultStrategy
             for (let i = 0; i < strategies.length; i++) {
-                if (!this.allStrategies[strategies[i].deploymentTemplate])
+                if (!this.allStrategies[strategies[i].deploymentTemplate]) {
                     this.allStrategies[strategies[i].deploymentTemplate] = {}
+                }
                 this.allStrategies[strategies[i].deploymentTemplate] = strategies[i].config
-                if (strategies[i].default) defaultStrategy = strategies[i]
+                if (strategies[i].default) {
+                    defaultStrategy = strategies[i]
+                }
             }
             if (defaultStrategy) {
                 this.handleStrategy(defaultStrategy.deploymentTemplate)
@@ -255,7 +277,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.noStrategyAvailable = strategies.length === 0
             this.setState({
                 strategies,
-                isAdvanced: this.props.match.params.cdPipelineId ? true : false,
+                isAdvanced: !!this.props.match.params.cdPipelineId,
                 view: this.props.match.params.cdPipelineId ? ViewType.LOADING : ViewType.FORM,
             })
 
@@ -269,7 +291,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     active: false,
                     isClusterCdActive: env.isClusterCdActive,
                     description: env.description,
-                    isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
+                    isVirtualEnvironment: env.isVirtualEnvironment, // Virtual environment is valid for virtual cluster on selection of environment
                     allowedDeploymentTypes: env.allowedDeploymentTypes || [],
                 }
             })
@@ -282,8 +304,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 return sortCallback('id', a, b)
             })
             this.setState({
-                environments: environments,
-                dockerRegistries: dockerRegistries,
+                environments,
+                dockerRegistries,
             })
 
             if (this.props.match.params.cdPipelineId) {
@@ -309,7 +331,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         })
         getCDPipelineConfig(this.props.match.params.appId, this.props.match.params.cdPipelineId)
             .then((data) => {
-                let pipelineConfigFromRes = data.pipelineConfig
+                const pipelineConfigFromRes = data.pipelineConfig
                 this.updateStateFromResponse(pipelineConfigFromRes, data.environments)
             })
             .then(() => {
@@ -337,9 +359,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     getPrePostStageInEnv = (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean): boolean => {
         if (isVirtualEnvironment) {
             return true
-        } else {
-            return isRunPrePostStageInEnv ?? false
         }
+        return isRunPrePostStageInEnv ?? false
     }
 
     updateStateFromResponse(pipelineConfigFromRes, environments): void {
@@ -351,14 +372,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 active: env.id === pipelineConfigFromRes.environmentId,
             }
         })
-        let savedStrategies = []
+        const savedStrategies = []
         if (pipelineConfigFromRes.strategies) {
             for (let i = 0; i < pipelineConfigFromRes.strategies.length; i++) {
                 savedStrategies.push({
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: this.allStrategies[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
-                    yamlStr: yamlJsParser.stringify(pipelineConfigFromRes.strategies[i].config, {indent:2}),
+                    yamlStr: yamlJsParser.stringify(pipelineConfigFromRes.strategies[i].config, { indent: 2 }),
                     selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], {
                         indent: 2,
                     }),
@@ -370,7 +391,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 )
             }
         }
-        let env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
+        const env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
         pipelineConfig = {
             ...pipelineConfigFromRes,
             ...(pipelineConfigFromRes.environmentId && env ? { namespace: env.namespace } : {}),
@@ -424,11 +445,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         this.preStage = pipelineConfigFromRes.preStage.config || ''
         this.postStage = pipelineConfigFromRes.postStage.config || ''
-        let showPreStage =
+        const showPreStage =
             !isEmpty(pipelineConfigFromRes.preStage.config) ||
             !!pipelineConfig.preStageConfigMapSecretNames.configMaps.length ||
             !!pipelineConfig.preStageConfigMapSecretNames.secrets.length
-        let showPostStage =
+        const showPostStage =
             !isEmpty(pipelineConfigFromRes.postStage.config) ||
             !!pipelineConfig.postStageConfigMapSecretNames.configMaps.length ||
             !!pipelineConfig.postStageConfigMapSecretNames.secrets.length
@@ -437,7 +458,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             view: ViewType.FORM,
             loadingData: false,
             strategies,
-            pipelineConfig: pipelineConfig,
+            pipelineConfig,
             environments,
             showPreStage,
             showPostStage,
@@ -455,8 +476,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     toggleStrategy(selection: string): void {
-        let { pipelineConfig } = { ...this.state }
-        let savedStrategies = this.state.pipelineConfig.strategies.map((strategy) => {
+        const { pipelineConfig } = { ...this.state }
+        const savedStrategies = this.state.pipelineConfig.strategies.map((strategy) => {
             return {
                 ...strategy,
                 isCollapsed: strategy.deploymentTemplate === selection ? !strategy.isCollapsed : strategy.isCollapsed,
@@ -467,31 +488,34 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     setDefaultStrategy(selection: string): void {
-        //only one strategy can be default in [...savedStrategies, ...strategies]
-        let strategies = this.state.strategies.map((strategy) => {
+        // only one strategy can be default in [...savedStrategies, ...strategies]
+        const strategies = this.state.strategies.map((strategy) => {
             return {
                 ...strategy,
                 default: strategy.deploymentTemplate == selection,
             }
         })
-        let savedStrategies = this.state.pipelineConfig.strategies.map((strategy) => {
+        const savedStrategies = this.state.pipelineConfig.strategies.map((strategy) => {
             return {
                 ...strategy,
                 default: strategy.deploymentTemplate == selection,
             }
         })
-        let { pipelineConfig } = { ...this.state }
+        const { pipelineConfig } = { ...this.state }
         pipelineConfig.strategies = savedStrategies
         this.setState({ pipelineConfig, strategies })
     }
 
     selectStrategy(value: string): void {
-        let selection = this.state.strategies.find((strategy) => strategy.deploymentTemplate == value)
-        let strategies = this.state.strategies.filter((strategy) => strategy.deploymentTemplate != value)
+        const selection = this.state.strategies.find((strategy) => strategy.deploymentTemplate == value)
+        const strategies = this.state.strategies.filter((strategy) => strategy.deploymentTemplate != value)
 
-        let state = { ...this.state }
-        if (this.state.pipelineConfig.strategies.length == 0) selection.default = true
-        else selection.default = false
+        const state = { ...this.state }
+        if (this.state.pipelineConfig.strategies.length == 0) {
+            selection.default = true
+        } else {
+            selection.default = false
+        }
 
         selection['defaultConfig'] = this.allStrategies[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(this.allStrategies[selection.deploymentTemplate], null, 4)
@@ -504,17 +528,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     deleteStrategy(selection: string): void {
-        let removedStrategy = this.state.pipelineConfig.strategies.find(
+        const removedStrategy = this.state.pipelineConfig.strategies.find(
             (savedStrategy) => selection === savedStrategy.deploymentTemplate,
         )
         if (removedStrategy.default) {
             toast.error('Cannot remove default strategy')
             return
         }
-        let savedStrategies = this.state.pipelineConfig.strategies.filter(
+        const savedStrategies = this.state.pipelineConfig.strategies.filter(
             (savedStrategy) => selection !== savedStrategy.deploymentTemplate,
         )
-        let { pipelineConfig, strategies } = { ...this.state }
+        const { pipelineConfig, strategies } = { ...this.state }
         strategies.push(removedStrategy)
         pipelineConfig.strategies = savedStrategies
         this.setState({ strategies, pipelineConfig })
@@ -541,7 +565,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         const { pipelineConfig, errorForm } = { ...this.state }
 
         if (selection) {
-            let list = this.state.environments.map((item) => {
+            const list = this.state.environments.map((item) => {
                 return {
                     ...item,
                     active: item.id == selection.id,
@@ -574,7 +598,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.deploymentAppType = getDeploymentAppType(
                 selection.allowedDeploymentTypes,
                 this.state.pipelineConfig.deploymentAppType,
-                selection.isVirtualEnvironment
+                selection.isVirtualEnvironment,
             )
             this.setState(
                 {
@@ -587,7 +611,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                         .then((response) => {
                             this.configMapAndSecrets = response.result
-                            this.setState({ view: ViewType.FORM, errorForm: errorForm })
+                            this.setState({ view: ViewType.FORM, errorForm })
                         })
                         .catch((error: ServerErrors) => {
                             showError(error)
@@ -596,7 +620,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 },
             )
         } else {
-            let list = this.state.environments.map((item) => {
+            const list = this.state.environments.map((item) => {
                 return {
                     ...item,
                     active: false,
@@ -606,17 +630,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.namespace = ''
             pipelineConfig.isVirtualEnvironment = false
             errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
-            this.setState({ environments: list, pipelineConfig, errorForm: errorForm })
+            this.setState({ environments: list, pipelineConfig, errorForm })
         }
     }
 
     // @stage: 'preStageConfigMapSecretNames' | 'postStageConfigMapSecretNames'
     handleConfigmapAndSecretsChange = (selection, stage) => {
         selection = selection || []
-        let state = { ...this.state }
+        const state = { ...this.state }
         if (selection.length) {
-            let configmaps = selection.filter((e) => e.type === 'configmaps').map((e) => e.name)
-            let secrets = selection.filter((e) => e.type === 'secrets').map((e) => e.name)
+            const configmaps = selection.filter((e) => e.type === 'configmaps').map((e) => e.name)
+            const secrets = selection.filter((e) => e.type === 'secrets').map((e) => e.name)
             state.pipelineConfig[stage]['configMaps'] = configmaps
             state.pipelineConfig[stage]['secrets'] = secrets
         } else {
@@ -627,22 +651,24 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleRunInEnvCheckbox(event, stageType: 'preStage' | 'postStage') {
-        let { pipelineConfig } = { ...this.state }
-        if (stageType === 'preStage')
+        const { pipelineConfig } = { ...this.state }
+        if (stageType === 'preStage') {
             pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(
                 this.state.pipelineConfig.isVirtualEnvironment,
                 !pipelineConfig.runPreStageInEnv,
             )
-        if (stageType === 'postStage')
+        }
+        if (stageType === 'postStage') {
             pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(
                 this.state.pipelineConfig.isVirtualEnvironment,
                 !pipelineConfig.runPostStageInEnv,
             )
+        }
         this.setState({ pipelineConfig })
     }
 
     handleTriggerTypeChange = (event) => {
-        let { pipelineConfig } = { ...this.state }
+        const { pipelineConfig } = { ...this.state }
         pipelineConfig.triggerType = event.target.value
         this.setState({ pipelineConfig })
     }
@@ -667,7 +693,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleStrategyChange(value, selection: string, key: 'json' | 'yaml'): void {
-        let json, jsonStr, yamlStr
+        let json
+        let jsonStr
+        let yamlStr
         if (key === 'json') {
             jsonStr = value
             try {
@@ -681,12 +709,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 jsonStr = JSON.stringify(json, undefined, 2)
             } catch (error) {}
         }
-        let state = { ...this.state }
-        let strategies = this.state.pipelineConfig.strategies.map((strategy) => {
+        const state = { ...this.state }
+        const strategies = this.state.pipelineConfig.strategies.map((strategy) => {
             if (strategy.deploymentTemplate === selection) {
-                if (json) strategy['config'] = json
-                if (jsonStr) strategy['jsonStr'] = jsonStr
-                if (yamlStr) strategy['yamlStr'] = yamlStr
+                if (json) {
+                    strategy['config'] = json
+                }
+                if (jsonStr) {
+                    strategy['jsonStr'] = jsonStr
+                }
+                if (yamlStr) {
+                    strategy['yamlStr'] = yamlStr
+                }
             }
             return strategy
         })
@@ -694,16 +728,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState(state)
     }
 
-    //@value: MANUAL | AUTOMATIC | yaml string
+    // @value: MANUAL | AUTOMATIC | yaml string
     handleStageConfigChange = (
         value: string,
         stageType: 'preStage' | 'postStage',
         key: 'triggerType' | 'config' | 'switch',
     ) => {
-        let { pipelineConfig } = { ...this.state }
-        if (key !== 'config') pipelineConfig[stageType][key] = value
-        else {
-            if (pipelineConfig[stageType].switch === SwitchItemValues.Config) pipelineConfig[stageType][key] = value
+        const { pipelineConfig } = { ...this.state }
+        if (key !== 'config') {
+            pipelineConfig[stageType][key] = value
+        } else if (pipelineConfig[stageType].switch === SwitchItemValues.Config) {
+            pipelineConfig[stageType][key] = value
         }
         this.setState({ pipelineConfig })
     }
@@ -714,11 +749,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         if (!this.state.pipelineConfig.isVirtualEnvironment) {
             errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
         }
-        if(this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH){
-          errorForm.containerRegistryError = this.validationRules.containerRegistry(
-              pipelineConfig.containerRegistryName || '',
-          )
-          errorForm.repositoryError = this.validationRules.repository(pipelineConfig.repoName)
+        if (this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
+            errorForm.containerRegistryError = this.validationRules.containerRegistry(
+                pipelineConfig.containerRegistryName || '',
+            )
+            errorForm.repositoryError = this.validationRules.repository(pipelineConfig.repoName)
         }
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
         this.setState({ errorForm })
@@ -772,7 +807,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
             manifestStorageType: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? 'helm_repo' : '',
         }
-        let request = {
+        const request = {
             appId: parseInt(this.props.match.params.appId),
         }
         pipeline.preStage.config = pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
@@ -807,15 +842,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             request['action'] = CD_PATCH_ACTION.UPDATE
             msg = 'Pipeline Updated Successfully'
         }
-        let promise = this.props.match.params.cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
+        const promise = this.props.match.params.cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
         promise
             .then((response) => {
                 if (response.result) {
-                    let pipelineConfigFromRes = response.result.pipelines[0]
+                    const pipelineConfigFromRes = response.result.pipelines[0]
                     this.updateStateFromResponse(pipelineConfigFromRes, this.state.environments)
                     let envName = this.state.pipelineConfig.environmentName
                     if (!envName) {
-                        let selectedEnv: Environment = this.state.environments.find(
+                        const selectedEnv: Environment = this.state.environments.find(
                             (env) => env.id == this.state.pipelineConfig.environmentId,
                         )
                         envName = selectedEnv.name
@@ -839,19 +874,19 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     getSelectedConfigMapAndSecrets(stage) {
-        let configMaps = this.state.pipelineConfig[stage].configMaps.map((item) => {
+        const configMaps = this.state.pipelineConfig[stage].configMaps.map((item) => {
             return {
                 type: 'configmaps',
                 name: item,
             }
         })
-        let secrets = this.state.pipelineConfig[stage].secrets.map((item) => {
+        const secrets = this.state.pipelineConfig[stage].secrets.map((item) => {
             return {
                 type: 'secrets',
                 name: item,
             }
         })
-        let selections = configMaps.concat(secrets)
+        const selections = configMaps.concat(secrets)
         return selections
     }
 
@@ -949,7 +984,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     deleteStage(key: 'preStage' | 'postStage') {
-        let { pipelineConfig } = { ...this.state }
+        const { pipelineConfig } = { ...this.state }
         pipelineConfig[key].config = ''
 
         if (key === 'preStage') {
@@ -970,10 +1005,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleAdvanceClick = () => {
-        let strategies = this.state.strategies.filter(
+        const strategies = this.state.strategies.filter(
             (strategy) => strategy.deploymentTemplate != this.state.pipelineConfig.strategies[0].deploymentTemplate,
         )
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.strategies = strategies
         state.isAdvanced = true
         this.setState(state)
@@ -988,8 +1023,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.isWebhookCD && this.props.match.params.workflowId === '0'
                 ? DEPLOY_IMAGE_EXTERNALSOURCE
                 : this.props.match.params.cdPipelineId
-                ? EDIT_DEPLOYMENT_PIPELINE
-                : CREATE_DEPLOYMENT_PIPELINE
+                  ? EDIT_DEPLOYMENT_PIPELINE
+                  : CREATE_DEPLOYMENT_PIPELINE
         return (
             <>
                 <div className="p-20 flex flex-align-center flex-justify">
@@ -1004,7 +1039,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div className="divider m-0"></div>
+                <div className="divider m-0" />
             </>
         )
     }
@@ -1015,7 +1050,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150"
                 onChange={(e) => this.selectStrategy(e.target.value)}
             >
-                <Select.Button rootClassName="right" hideArrow={true}>
+                <Select.Button rootClassName="right" hideArrow>
                     <span className="flex cb-5 fw-6">
                         <Add className="icon-dim-20 mr-8 fcb-5 dc__vertical-align-middle" />
                         Add Strategy
@@ -1050,9 +1085,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     Icon={Help}
                     heading="Deployment strategy"
                     infoText="Add one or more deployment strategies. You can choose from selected strategy while deploying manually to this environment."
-                    showCloseButton={true}
+                    showCloseButton
                     trigger="click"
-                    interactive={true}
+                    interactive
                     documentationLinkText="View Documentation"
                 >
                     <div className="icon-dim-16 fcn-9 ml-8 cursor">
@@ -1132,37 +1167,42 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderPrePostStageType = (key) => {
-      return    <>
-      <label className="form__label form__label--sentence dc__bold">
-          When do you want this stage to trigger?
-      </label>
-      <RadioGroup
-          value={this.state.pipelineConfig[key].triggerType}
-          name={`${key}-trigger-type`}
-          onChange={(event) => {
-              this.handleStageConfigChange(event.target.value, key, 'triggerType')
-          }}
-      >
-          <RadioGroupItem dataTestId="cd-auto-mode-button" value={TriggerType.Auto}>
-              Automatic
-          </RadioGroupItem>
-          <RadioGroupItem dataTestId="cd-manual-mode-button" value={TriggerType.Manual}>
-              Manual
-          </RadioGroupItem>
-      </RadioGroup>
-  </>
+        return (
+            <>
+                <label className="form__label form__label--sentence dc__bold">
+                    When do you want this stage to trigger?
+                </label>
+                <RadioGroup
+                    value={this.state.pipelineConfig[key].triggerType}
+                    name={`${key}-trigger-type`}
+                    onChange={(event) => {
+                        this.handleStageConfigChange(event.target.value, key, 'triggerType')
+                    }}
+                >
+                    <RadioGroupItem dataTestId="cd-auto-mode-button" value={TriggerType.Auto}>
+                        Automatic
+                    </RadioGroupItem>
+                    <RadioGroupItem dataTestId="cd-manual-mode-button" value={TriggerType.Manual}>
+                        Manual
+                    </RadioGroupItem>
+                </RadioGroup>
+            </>
+        )
     }
 
     renderDeploymentStageDetails(key: 'preStage' | 'postStage') {
         let configmapKey
-        if (key == 'preStage') configmapKey = 'preStageConfigMapSecretNames'
-        else configmapKey = 'postStageConfigMapSecretNames'
-        let selections = this.getSelectedConfigMapAndSecrets(configmapKey)
-        let codeEditorBody =
+        if (key == 'preStage') {
+            configmapKey = 'preStageConfigMapSecretNames'
+        } else {
+            configmapKey = 'postStageConfigMapSecretNames'
+        }
+        const selections = this.getSelectedConfigMapAndSecrets(configmapKey)
+        const codeEditorBody =
             this.state.pipelineConfig[key].switch === SwitchItemValues.Config
                 ? this.state.pipelineConfig[key].config
                 : yamlJsParser.stringify(config[key], { indent: 2 })
-        let runInEnv =
+        const runInEnv =
             key === 'preStage'
                 ? this.state.pipelineConfig.runPreStageInEnv
                 : this.state.pipelineConfig.runPostStageInEnv
@@ -1174,14 +1214,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <span className="ml-8 fs-12 dc__align-center">{option.name}</span>
                     </div>
                 )
-            } else {
-                return (
-                    <div className="dropdown__option">
-                        <Key className="icon-dim-16" />
-                        <span className="ml-8 fs-12 dc__align-center">{option.name}</span>
-                    </div>
-                )
             }
+            return (
+                <div className="dropdown__option">
+                    <Key className="icon-dim-16" />
+                    <span className="ml-8 fs-12 dc__align-center">{option.name}</span>
+                </div>
+            )
         }
 
         function getOptionValue(option) {
@@ -1208,12 +1247,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="form__row">
                     <label className="form__label form__label--sentence dc__bold">Select Configmap and Secrets</label>
                     <ReactSelect
-                        menuPosition={this.state.isAdvanced ? null : "fixed"}
-                        closeMenuOnScroll={true}
+                        menuPosition={this.state.isAdvanced ? null : 'fixed'}
+                        closeMenuOnScroll
                         classNamePrefix="select-config-secret-dropdown"
-                        isMulti={true}
+                        isMulti
                         placeholder="Select Configmap and Secrets"
-                        isClearable={true}
+                        isClearable
                         value={selections}
                         options={this.configMapAndSecrets}
                         formatOptionLabel={getOptionLabel}
@@ -1299,7 +1338,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
                 </div>
             )
-        } else return null
+        }
+        return null
     }
 
     renderTriggerType() {
@@ -1339,7 +1379,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     rootClassName={`chartrepo-type__radio-group ${
                         !this.props.match.params.cdPipelineId ? 'bcb-5' : ''
                     }`}
-                    isFromCDPipeline={true}
+                    isFromCDPipeline
                 />
             </div>
         )
@@ -1382,8 +1422,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderSecondaryButton() {
         if (this.props.match.params.cdPipelineId) {
-            let canDeletePipeline = this.props.downstreamNodeSize === 0
-            let message =
+            const canDeletePipeline = this.props.downstreamNodeSize === 0
+            const message =
                 this.props.downstreamNodeSize > 0
                     ? 'This Pipeline cannot be deleted as it has connected CD pipeline'
                     : ''
@@ -1399,7 +1439,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <button
                         data-testid="cd-delete-pipeline-button"
                         type="button"
-                        className={`cta cta--workflow delete mr-16`}
+                        className="cta cta--workflow delete mr-16"
                         disabled={!canDeletePipeline}
                         onClick={() => {
                             this.setState({ showDeleteModal: true })
@@ -1409,36 +1449,34 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </button>
                 </ConditionalWrap>
             )
-        } else {
-            if (this.state.isAdvanced) {
-                return (
-                    <button
-                        type="button"
-                        className="cta cta--workflow cancel mr-16"
-                        onClick={() => {
-                            this.props.close()
-                        }}
-                    >
-                        Cancel
-                    </button>
-                )
-            } else {
-                return (
-                    !this.isWebhookCD && (
-                        <button
-                            type="button"
-                            data-testid="cd-build-pipeline-advanced-options-button"
-                            className="cta cta--workflow cancel mr-16"
-                            onClick={() => {
-                                this.handleAdvanceClick()
-                            }}
-                        >
-                            Advanced Options
-                        </button>
-                    )
-                )
-            }
         }
+        if (this.state.isAdvanced) {
+            return (
+                <button
+                    type="button"
+                    className="cta cta--workflow cancel mr-16"
+                    onClick={() => {
+                        this.props.close()
+                    }}
+                >
+                    Cancel
+                </button>
+            )
+        }
+        return (
+            !this.isWebhookCD && (
+                <button
+                    type="button"
+                    data-testid="cd-build-pipeline-advanced-options-button"
+                    className="cta cta--workflow cancel mr-16"
+                    onClick={() => {
+                        this.handleAdvanceClick()
+                    }}
+                >
+                    Advanced Options
+                </button>
+            )
+        )
     }
 
     singleOption = (props) => {
@@ -1450,9 +1488,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderEnvNamespaceAndTriggerType() {
-        let envId = this.state.pipelineConfig.environmentId
-        let selectedEnv: Environment = this.state.environments.find((env) => env.id == envId)
-        let namespaceEditable = false
+        const envId = this.state.pipelineConfig.environmentId
+        const selectedEnv: Environment = this.state.environments.find((env) => env.id == envId)
+        const namespaceEditable = false
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
 
         const groupHeading = (props) => {
@@ -1463,12 +1501,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             if (this.state.pipelineConfig.isVirtualEnvironment) {
                 if (this.state.pipelineConfig.namespace) {
                     return 'Will be auto-populated based on environment'
-                } else {
-                    return 'Not available'
                 }
-            } else {
-                return 'Will be auto-populated based on environment'
+                return 'Not available'
             }
+            return 'Will be auto-populated based on environment'
         }
 
         const renderVirtualEnvironmentInfo = () => {
@@ -1483,8 +1519,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className="w-50 mr-8">
                         <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
-                            menuPosition={this.state.isAdvanced ? null : "fixed"}
-                            closeMenuOnScroll={true}
+                            menuPosition={this.state.isAdvanced ? null : 'fixed'}
+                            closeMenuOnScroll
                             isDisabled={!!this.props.match.params.cdPipelineId}
                             classNamePrefix="cd-pipeline-environment-dropdown"
                             placeholder="Select Environment"
@@ -1587,7 +1623,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     disabled={!!this.state.pipelineConfig.id}
                     data-testid="advance-pipeline-name-textbox"
                     placeholder="Pipeline name"
-                    isRequiredField={true}
+                    isRequiredField
                     value={this.state.pipelineConfig.name}
                     onChange={this.handlePipelineName}
                     error={
@@ -1739,10 +1775,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderBasicCD() {
-        let strategyMenu = Object.keys(this.allStrategies).map((option) => {
+        const strategyMenu = Object.keys(this.allStrategies).map((option) => {
             return { label: option, value: option }
         })
-        let strategy = this.state.pipelineConfig.strategies[0]
+        const strategy = this.state.pipelineConfig.strategies[0]
             ? {
                   label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
                   value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
@@ -1762,7 +1798,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                         <ReactSelect
                             menuPosition="fixed"
-                            closeMenuOnScroll={true}
+                            closeMenuOnScroll
                             classNamePrefix="deployment-strategy-dropdown"
                             isSearchable={false}
                             isClearable={false}
@@ -1790,13 +1826,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderCDPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view == ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.code} />
-        } else if (this.state.isAdvanced) {
-            return this.renderAdvancedCD()
-        } else {
-            return this.renderBasicCD()
         }
+        if (this.state.view == ViewType.ERROR) {
+            return <ErrorScreenManager code={this.state.code} />
+        }
+        if (this.state.isAdvanced) {
+            return this.renderAdvancedCD()
+        }
+        return this.renderBasicCD()
     }
 
     renderCDPipelineModal() {

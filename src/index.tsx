@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+import App from './App'
 
 interface customEnv {
     VITE_SENTRY_ENV?: string
@@ -66,12 +66,7 @@ declare global {
 }
 
 const root = document.getElementById('root')
-if (
-    import.meta.env.VITE_NODE_ENV === 'production' &&
-    window._env_ &&
-    (window._env_.VITE_SENTRY_ERROR_ENABLED)
-) {
-
+if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._env_.VITE_SENTRY_ERROR_ENABLED) {
     const integrationArr = []
     integrationArr.push(new CaptureConsole({ levels: ['error'] }))
     if (window._env_.VITE_SENTRY_PERFORMANCE_ENABLED) {

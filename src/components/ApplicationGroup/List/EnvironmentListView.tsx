@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Progressing, toastAccessDenied, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
-import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { Pagination } from '../../common'
-import { toast } from 'react-toastify'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { getEnvAppList } from '../AppGroup.service'
 import { EnvironmentsListViewType, EnvAppList } from '../AppGroup.types'
@@ -114,7 +114,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
         <>
             <div className="dc__overflow-scroll" data-testid="app-group-container">
                 <div className="env-list-row fw-6 cn-7 fs-12 pt-8 pb-8 pr-20 pl-20 dc__uppercase bc-n50">
-                    <div></div>
+                    <div />
                     <div>{GROUP_LIST_HEADER.ENVIRONMENT}</div>
                     <div>{GROUP_LIST_HEADER.NAMESPACE}</div>
                     <div>{GROUP_LIST_HEADER.CLUSTER}</div>

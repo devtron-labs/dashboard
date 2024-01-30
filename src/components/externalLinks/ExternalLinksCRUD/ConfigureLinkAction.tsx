@@ -237,9 +237,9 @@ export default function ConfigureLinkAction({
                             iconClass="fcv-5"
                             heading="Who can edit this link?"
                             infoText="If allowed, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
-                            showCloseButton={true}
+                            showCloseButton
                             trigger="click"
-                            interactive={true}
+                            interactive
                         >
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
                         </TippyCustomized>

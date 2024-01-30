@@ -1,15 +1,17 @@
 import React from 'react'
-import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
-import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
+import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import { ReactComponent as DefaultChart } from '../../../../../assets/icons/ic-default-chart.svg'
 import { URLS } from '../../../../../config'
 import { ChartUsedCardType } from '../environment.type'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 
 const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: ChartUsedCardType) => {
-    if (cardLoading) return <LoadingCard />
+    if (cardLoading) {
+        return <LoadingCard />
+    }
 
     return (
         <div

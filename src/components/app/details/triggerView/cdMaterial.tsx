@@ -3,34 +3,6 @@ import ReactSelect, { components } from 'react-select'
 import ReactGA from 'react-ga4'
 import { toast } from 'react-toastify'
 import {
-    CDMaterialProps,
-    CDMaterialState,
-    DeploymentWithConfigType,
-    FilterConditionViews,
-    MATERIAL_TYPE,
-    STAGE_TYPE,
-    TriggerViewContextType,
-    BulkSelectionEvents,
-} from './types'
-import { GitTriggers } from '../cicdHistory/types'
-import close from '../../../../assets/icons/ic-close.svg'
-import arrow from '../../../../assets/icons/misc/arrow-chevron-down-black.svg'
-import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
-import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
-import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
-import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
-import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
-import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
-import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
-import {
     CDMaterialType,
     showError,
     Progressing,
@@ -60,6 +32,35 @@ import {
     FilterConditionsListType,
     useSuperAdmin,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import {
+    CDMaterialProps,
+    CDMaterialState,
+    DeploymentWithConfigType,
+    FilterConditionViews,
+    MATERIAL_TYPE,
+    STAGE_TYPE,
+    TriggerViewContextType,
+    BulkSelectionEvents,
+} from './types'
+import { GitTriggers } from '../cicdHistory/types'
+import close from '../../../../assets/icons/ic-close.svg'
+import arrow from '../../../../assets/icons/misc/arrow-chevron-down-black.svg'
+import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
+import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
+import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
+import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
+import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
+import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
+import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
+import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
+import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
+import noartifact from '../../../../assets/img/no-artifact@2x.png'
+import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
@@ -79,7 +80,6 @@ import {
     processResolvedPromise,
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
-import Tippy from '@tippyjs/react'
 import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT, EXCLUDED_IMAGE_TOOLTIP, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
@@ -233,9 +233,9 @@ export default function CDMaterial({
                     : checkForDiff(_recentDeploymentConfig, _latestDeploymentConfig)
                 setState((prevState) => ({
                     ...prevState,
-                    recentDeploymentConfig: _recentDeploymentConfig, //last deployed config
-                    latestDeploymentConfig: _latestDeploymentConfig, //last saved config
-                    specificDeploymentConfig: _specificDeploymentConfig, //config of one particular wfrId
+                    recentDeploymentConfig: _recentDeploymentConfig, // last deployed config
+                    latestDeploymentConfig: _latestDeploymentConfig, // last saved config
+                    specificDeploymentConfig: _specificDeploymentConfig, // config of one particular wfrId
                     diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
                     diffOptions: _diffOptions,
                     checkingDiff: false,
@@ -761,8 +761,8 @@ export default function CDMaterial({
         return selectedConfig === DeploymentWithConfigType.LAST_SAVED_CONFIG
             ? state.latestDeploymentConfig
             : selectedConfig === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
-            ? state.recentDeploymentConfig
-            : state.specificDeploymentConfig
+              ? state.recentDeploymentConfig
+              : state.specificDeploymentConfig
     }
 
     const handleConfigSelection = (selected) => {
@@ -814,19 +814,19 @@ export default function CDMaterial({
         // Not using WorkflowType enum since sending DeploymentNodeType
         if (cdWorkflowType === DeploymentNodeType.PRECD) {
             return `${helmPackageName} (Pre)`
-        } else if (cdWorkflowType === DeploymentNodeType.POSTCD) {
-            return `${helmPackageName} (Post)`
-        } else {
-            return helmPackageName
         }
+        if (cdWorkflowType === DeploymentNodeType.POSTCD) {
+            return `${helmPackageName} (Post)`
+        }
+        return helmPackageName
     }
 
     const onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
         const downloadManifestDownload = {
-            appId: appId,
-            envId: envId,
+            appId,
+            envId,
             appName: getHelmPackageName(helmPackageName, cdWorkflowType),
-            cdWorkflowType: cdWorkflowType,
+            cdWorkflowType,
         }
         if (getDeployManifestDownload) {
             getDeployManifestDownload(downloadManifestDownload)
@@ -1009,14 +1009,14 @@ export default function CDMaterial({
 
         if (state.showConfigDiffView) {
             return `calc(100vh - 141px - ${subHeight}px)`
-        } else if (
+        }
+        if (
             isApprovalConfigured &&
             (state.isRollbackTrigger || material.length - Number(isConsumedImageAvailable) > 0)
         ) {
             return `calc(100vh - 156px - ${subHeight}px)`
-        } else {
-            return `calc(100vh - 116px - ${subHeight}px)`
         }
+        return `calc(100vh - 116px - ${subHeight}px)`
     }
 
     /* ------------ Render Utilities  ------------*/
@@ -1173,7 +1173,7 @@ export default function CDMaterial({
                                     showMaterialInfoHeader
                                     commitInfo={_gitCommit}
                                     materialSourceType={mat.type}
-                                    selectedCommitInfo={''}
+                                    selectedCommitInfo=""
                                     materialSourceValue={mat.branch}
                                 />
                             )}
@@ -1196,7 +1196,7 @@ export default function CDMaterial({
                                 showMaterialInfoHeader
                                 commitInfo={_gitCommit}
                                 materialSourceType={mat.type}
-                                selectedCommitInfo={''}
+                                selectedCommitInfo=""
                                 materialSourceValue={mat.branch}
                             />
                         </div>
@@ -1214,19 +1214,22 @@ export default function CDMaterial({
                     <p className="security-tab-empty__title">Image was not scanned</p>
                 </div>
             )
-        } else if (!mat.scanEnabled) {
+        }
+        if (!mat.scanEnabled) {
             return (
                 <div className="security-tab-empty">
                     <p className="security-tab-empty__title">Scan is Disabled</p>
                 </div>
             )
-        } else if (mat.vulnerabilitiesLoading) {
+        }
+        if (mat.vulnerabilitiesLoading) {
             return (
                 <div className="security-tab-empty">
                     <Progressing />
                 </div>
             )
-        } else if (!mat.vulnerabilitiesLoading && mat.vulnerabilities.length === 0) {
+        }
+        if (!mat.vulnerabilitiesLoading && mat.vulnerabilities.length === 0) {
             return (
                 <div className="security-tab-empty">
                     <p className="security-tab-empty__title">{NO_VULNERABILITY_TEXT.Secured}</p>
@@ -1237,19 +1240,18 @@ export default function CDMaterial({
                     </p>
                 </div>
             )
-        } else {
-            return (
-                <div className="security-tab">
-                    <div className="flexbox dc__content-space">
-                        <span className="flex left security-tab__last-scanned ">Scanned on {mat.lastExecution} </span>
-                        <span className="flex right">
-                            <ScannedByToolModal scanToolId={mat.scanToolId} />
-                        </span>
-                    </div>
-                    <ScanVulnerabilitiesTable vulnerabilities={mat.vulnerabilities} />
-                </div>
-            )
         }
+        return (
+            <div className="security-tab">
+                <div className="flexbox dc__content-space">
+                    <span className="flex left security-tab__last-scanned ">Scanned on {mat.lastExecution} </span>
+                    <span className="flex right">
+                        <ScannedByToolModal scanToolId={mat.scanToolId} />
+                    </span>
+                </div>
+                <ScanVulnerabilitiesTable vulnerabilities={mat.vulnerabilities} />
+            </div>
+        )
     }
 
     // NOTE: Make it pure component by taking parentEnvironment as args
@@ -1281,7 +1283,7 @@ export default function CDMaterial({
     const renderProgressingCD = () => (
         <span className="bcy-1 br-4 ey-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
             <div className="fw-4 fs-11 lh-16 flex">
-                <div className={`dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node`} />
+                <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node" />
                 Deploying on <span className="fw-6 ml-4">{envName} </span>
             </div>
         </span>
@@ -1359,7 +1361,8 @@ export default function CDMaterial({
                     Security Issues Found
                 </span>
             )
-        } else if (disableSelection || (!canApproverDeploy && isImageApprover)) {
+        }
+        if (disableSelection || (!canApproverDeploy && isImageApprover)) {
             return (
                 <Tippy
                     className="default-tt w-200"
@@ -1376,7 +1379,8 @@ export default function CDMaterial({
                     </span>
                 </Tippy>
             )
-        } else if (mat.isSelected) {
+        }
+        if (mat.isSelected) {
             return (
                 <Check
                     className={`${
@@ -1387,23 +1391,22 @@ export default function CDMaterial({
                     data-testid={`cd-artifact-selected-check-${mat.index}`}
                 />
             )
-        } else {
-            const cursorClass = mat.isSelected ? 'cursor-default' : 'cursor'
-            const selectClassName = mat.vulnerable ? 'cursor-not-allowed' : cursorClass
-
-            return (
-                <span
-                    className={selectClassName}
-                    onClick={(event) => {
-                        event.stopPropagation()
-                        handleImageSelection(mat.index, mat)
-                    }}
-                    data-testid={`cd-artifact-select-${mat.index}`}
-                >
-                    SELECT
-                </span>
-            )
         }
+        const cursorClass = mat.isSelected ? 'cursor-default' : 'cursor'
+        const selectClassName = mat.vulnerable ? 'cursor-not-allowed' : cursorClass
+
+        return (
+            <span
+                className={selectClassName}
+                onClick={(event) => {
+                    event.stopPropagation()
+                    handleImageSelection(mat.index, mat)
+                }}
+                data-testid={`cd-artifact-select-${mat.index}`}
+            >
+                SELECT
+            </span>
+        )
     }
 
     const renderMaterialInfo = (
@@ -1442,7 +1445,7 @@ export default function CDMaterial({
                             )}
                         >
                             <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                            <div className={`dc__registry-icon ${mat.registryType} mr-8`}></div>
+                                <div className={`dc__registry-icon ${mat.registryType} mr-8`} />
                                 {mat.image}
                             </div>
                         </ConditionalWrap>
@@ -1844,11 +1847,14 @@ export default function CDMaterial({
         const statusColorClasses = state.checkingDiff
             ? 'cn-0 bcb-5'
             : !_canReviewConfig
-            ? 'cn-9 bcn-1 cursor-not-allowed'
-            : state.diffFound
-            ? 'cn-0 bcr-5'
-            : 'cn-0 bcg-5'
-        let checkingdiff: JSX.Element, configNotAvailable: JSX.Element, noDiff: JSX.Element, diffFound: JSX.Element
+              ? 'cn-9 bcn-1 cursor-not-allowed'
+              : state.diffFound
+                ? 'cn-0 bcr-5'
+                : 'cn-0 bcg-5'
+        let checkingdiff: JSX.Element
+        let configNotAvailable: JSX.Element
+        let noDiff: JSX.Element
+        let diffFound: JSX.Element
         if (state.checkingDiff) {
             checkingdiff = (
                 <>
@@ -1861,30 +1867,28 @@ export default function CDMaterial({
                     />
                 </>
             )
+        } else if (!_canReviewConfig) {
+            configNotAvailable = state.recentDeploymentConfig && (
+                <>
+                    <WarningIcon className="no-config-found-icon icon-dim-16" />
+                    &nbsp; Config Not Available
+                </>
+            )
+        } else if (state.diffFound) {
+            diffFound = (
+                <>
+                    <WarningIcon className="config-diff-found-icon icon-dim-16" />
+                    &nbsp; <span className="config-diff-status">Config Diff</span>
+                </>
+            )
         } else {
-            if (!_canReviewConfig) {
-                configNotAvailable = state.recentDeploymentConfig && (
-                    <>
-                        <WarningIcon className="no-config-found-icon icon-dim-16" />
-                        &nbsp; Config Not Available
-                    </>
-                )
-            } else if (state.diffFound) {
-                diffFound = (
-                    <>
-                        <WarningIcon className="config-diff-found-icon icon-dim-16" />
-                        &nbsp; <span className="config-diff-status">Config Diff</span>
-                    </>
-                )
-            } else {
-                noDiff = <span className="config-diff-status">No Config Diff</span>
-            }
+            noDiff = <span className="config-diff-status">No Config Diff</span>
         }
         return (
             <Tippy
                 className="default-tt cursor"
                 arrow={false}
-                content={(diffFound ? 'Config' : 'No config') + ' diff from last deployed'}
+                content={`${diffFound ? 'Config' : 'No config'} diff from last deployed`}
             >
                 <button
                     className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 dc__no-background  dc__outline-none-imp dc__no-border ${

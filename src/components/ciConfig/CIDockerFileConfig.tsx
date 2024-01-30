@@ -1,11 +1,6 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import {
-    CIBuildType,
-    ConditionalWrap,
-    showError,
-    Progressing,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildType, ConditionalWrap, showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import BuildContext from './BuildContext'
 import CISelfDockerBuildOption from './CISelfDockerBuildOption'
@@ -81,9 +76,7 @@ export default function CIDockerFileConfig({
                 currentMaterial?.id === currentBuildContextGitMaterial?.id &&
                 !ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
 
-            return configOverrideView && allowOverride
-                ? isSameCurrentBuildContext
-                : isSameGlobalBuildContext
+            return configOverrideView && allowOverride ? isSameCurrentBuildContext : isSameGlobalBuildContext
         }
         return false
     }
@@ -111,7 +104,9 @@ export default function CIDockerFileConfig({
                 buildPackConfig: {
                     ...currentCIBuildConfig.buildPackConfig,
                     args: buildEnvArgs.reduce((agg, { k, v }) => {
-                        if (k && v) agg[k] = v
+                        if (k && v) {
+                            agg[k] = v
+                        }
                         return agg
                     }, {}),
                 },
@@ -182,7 +177,7 @@ export default function CIDockerFileConfig({
         })
     }
 
-    const handleCIBuildTypeOptionSelection = (id: CIBuildType, isDisabled:boolean) => {
+    const handleCIBuildTypeOptionSelection = (id: CIBuildType, isDisabled: boolean) => {
         if (!isDisabled) {
             setCIBuildTypeOption(id)
             setCurrentCIBuildConfig({
@@ -372,13 +367,15 @@ export default function CIDockerFileConfig({
     const renderOptionBasedOnBuildType = () => {
         if (ciBuildTypeOption === CIBuildType.SELF_DOCKERFILE_BUILD_TYPE) {
             return renderSelfDockerfileBuildOption()
-        } else if (loadingTemplateData.loading) {
+        }
+        if (loadingTemplateData.loading) {
             return (
                 <div className="h-250">
                     <Progressing size={24} fillColor="var(--N500)" />
                 </div>
             )
-        } else if (loadingTemplateData.failed) {
+        }
+        if (loadingTemplateData.failed) {
             return (
                 <div className="flex column h-250 dc__gap-12">
                     <ErrorIcon className="icon-dim-20" />
@@ -388,13 +385,14 @@ export default function CIDockerFileConfig({
                     </span>
                 </div>
             )
-        } else if (ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE) {
-            return renderManagedDockerfile()
-        } else if (ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE) {
-            return renderBuildpackBuildOptions()
-        } else {
-            return null
         }
+        if (ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE) {
+            return renderManagedDockerfile()
+        }
+        if (ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE) {
+            return renderBuildpackBuildOptions()
+        }
+        return null
     }
 
     return (

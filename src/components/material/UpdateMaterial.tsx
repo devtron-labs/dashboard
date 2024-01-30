@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { updateMaterial } from './material.service'
-import { GitMaterialType, UpdateMaterialState } from './material.types'
 import { toast } from 'react-toastify'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { updateMaterial } from './material.service'
+import { GitMaterialType, UpdateMaterialState } from './material.types'
 import { MaterialView } from './MaterialView'
 
 interface UpdateMaterialProps {
@@ -34,7 +34,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 active: this.props.material.active,
                 fetchSubmodules: this.props.material.fetchSubmodules,
                 isUsedInCiConfig: this.props.material.isUsedInCiConfig,
-                isExcludeRepoChecked: this.props.material.isExcludeRepoChecked
+                isExcludeRepoChecked: this.props.material.isExcludeRepoChecked,
             },
             isCollapsed: true,
             isChecked: true,
@@ -82,17 +82,22 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
     }
 
     isGitUrlValid(url: string, selectedId): string | undefined {
-        if (!url.length) return 'This is a required field'
-        else {
-            const res = this.props.providers?.filter((provider) => provider?.id === selectedId)
-            if (res[0]?.authMode != 'SSH') {
-                if (!url.startsWith('https')) return "Git Repo URL must start with 'https:'"
-            }
-            if (res[0]?.authMode === 'SSH') {
-                if (!url.startsWith('git@')) return "Git Repo URL must start with 'git@'"
-            }
-            return undefined
+        if (!url.length) {
+            return 'This is a required field'
         }
+
+        const res = this.props.providers?.filter((provider) => provider?.id === selectedId)
+        if (res[0]?.authMode != 'SSH') {
+            if (!url.startsWith('https')) {
+                return "Git Repo URL must start with 'https:'"
+            }
+        }
+        if (res[0]?.authMode === 'SSH') {
+            if (!url.startsWith('git@')) {
+                return "Git Repo URL must start with 'git@'"
+            }
+        }
+        return undefined
     }
 
     handleCheckoutPathCheckbox(event): void {
@@ -190,21 +195,27 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 },
             },
             () => {
-                if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return
-                
+                if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) {
+                    return
+                }
+
                 this.setState({ isLoading: true, isChecked: true })
-                let payload = {
+                const payload = {
                     appId: this.props.appId,
                     material: {
                         id: this.state.material.id,
                         url: this.state.material.url,
                         checkoutPath: this.state.material.checkoutPath,
-                        filterPattern: (!window._env_.VITE_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && this.state.material.isExcludeRepoChecked) ? this.state.material.includeExcludeFilePath 
-                            .trim()
-                            .split(/\r?\n/)
-                            .filter((path) => path.trim()) : [],
+                        filterPattern:
+                            !window._env_.VITE_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS &&
+                            this.state.material.isExcludeRepoChecked
+                                ? this.state.material.includeExcludeFilePath
+                                      .trim()
+                                      .split(/\r?\n/)
+                                      .filter((path) => path.trim())
+                                : [],
                         gitProviderId: this.state.material.gitProvider.id,
-                        fetchSubmodules: this.state.material.fetchSubmodules ? true : false,
+                        fetchSubmodules: !!this.state.material.fetchSubmodules,
                     },
                 }
                 updateMaterial(payload)

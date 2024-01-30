@@ -1,6 +1,6 @@
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import {Options, OptionsBase } from '../../appDetails.type'
+import { Options, OptionsBase } from '../../appDetails.type'
 import { MANIFEST_KEY_FIELDS } from '../../../../../config'
 
 export enum NodeDetailTab {
@@ -69,7 +69,6 @@ export interface ResponsePayload {
         manifest: string
     }
 }
-
 
 interface ManagedFields {
     [key: string]: any

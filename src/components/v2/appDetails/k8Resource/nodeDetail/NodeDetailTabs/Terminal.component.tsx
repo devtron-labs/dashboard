@@ -1,32 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router'
+import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
 import { getCustomOptionSelectionStyle } from '../../../../common/ReactSelect.utils'
-import {
-    getContainerSelectStyles,
-    getGroupedContainerOptions,
-    getShellSelectStyles,
-} from '../nodeDetail.util'
+import { getContainerSelectStyles, getGroupedContainerOptions, getShellSelectStyles } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import {AppType, TerminalComponentProps, Options} from '../../../appDetails.type'
+import { AppType, TerminalComponentProps, Options } from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
-import {get, showError, stopPropagation} from '@devtron-labs/devtron-fe-common-lib'
-import {SocketConnectionType} from '../../../../../ClusterNodes/constants'
-import {TerminalWrapperType} from './terminal/constants'
-import {getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl} from '../nodeDetail.api'
-import {toast} from 'react-toastify'
-import {components} from 'react-select'
-import {ReactComponent as Cross} from '../../../../../../assets/icons/ic-cross.svg'
-import Tippy from '@tippyjs/react'
+import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
+import { TerminalWrapperType } from './terminal/constants'
+import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
+import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
 
 let clusterTimeOut
 
-function TerminalComponent({
+const TerminalComponent = ({
     selectedTab,
     isDeleted,
     isResourceBrowserView,
@@ -38,9 +34,16 @@ function TerminalComponent({
     setSelectedContainerName,
     switchSelectedContainer,
     setContainers,
-    showTerminal
-}: TerminalComponentProps) {
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string, clusterId?: string; namespace: string }>()
+    showTerminal,
+}: TerminalComponentProps) => {
+    const params = useParams<{
+        actionName: string
+        podName: string
+        nodeType: string
+        node: string
+        clusterId?: string
+        namespace: string
+    }>()
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
@@ -57,94 +60,91 @@ function TerminalComponent({
     const nodeName = isResourceBrowserView ? params.node : params.podName
 
     function Option(props) {
-      const { selectProps, data, style } = props
-      const getPayload = (containerName: string) => {
-        let payload: ResponsePayload = {
-          namespace: isResourceBrowserView
-          ? selectedResource.namespace
-          : appDetails.namespace,
-      clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-      podName: isResourceBrowserView ? params.node : params.podName,
-            basicData: {
-                containerName: containerName,
-            },
+        const { selectProps, data, style } = props
+        const getPayload = (containerName: string) => {
+            const payload: ResponsePayload = {
+                namespace: isResourceBrowserView ? selectedResource.namespace : appDetails.namespace,
+                clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
+                podName: isResourceBrowserView ? params.node : params.podName,
+                basicData: {
+                    containerName,
+                },
+            }
+            return payload
         }
-        return payload
-    }
 
-      const deleteEphemeralContainer = (containerName: string) => {
-          deleteEphemeralUrl(
-              getPayload(containerName),
-              appDetails.clusterId,
-              appDetails.environmentId,
-              appDetails.namespace,
-              appDetails.appName,
-              appDetails.appId,
-              appDetails.appType,
-              isResourceBrowserView,
-              params
-          )
-              .then((response: any) => {
-                  const _containers : Options[] = []
-                  let containerName = response.result
+        const deleteEphemeralContainer = (containerName: string) => {
+            deleteEphemeralUrl(
+                getPayload(containerName),
+                appDetails.clusterId,
+                appDetails.environmentId,
+                appDetails.namespace,
+                appDetails.appName,
+                appDetails.appId,
+                appDetails.appType,
+                isResourceBrowserView,
+                params,
+            )
+                .then((response: any) => {
+                    const _containers: Options[] = []
+                    const containerName = response.result
                     containers?.forEach((con) => {
-                      if (containerName !== con.name) {
-                          _containers.push(con)
-                      }
-                  })
-                  switchSelectedContainer(containers?.[0]?.name || '')
-                  setContainers(_containers)
-                  toast.success('Deleted successfully')
-              })
-              .catch((error) => {
-                  showError(error)
-              })
+                        if (containerName !== con.name) {
+                            _containers.push(con)
+                        }
+                    })
+                    switchSelectedContainer(containers?.[0]?.name || '')
+                    setContainers(_containers)
+                    toast.success('Deleted successfully')
+                })
+                .catch((error) => {
+                    showError(error)
+                })
+        }
 
-      }
+        selectProps.styles.option = getCustomOptionSelectionStyle(style)
+        const getOption = () => {
+            return (
+                <div onClick={stopPropagation}>
+                    <components.Option {...props}>
+                        <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
+                            {data.isEphemeralContainer && (
+                                <Tippy
+                                    className="default-white"
+                                    arrow={false}
+                                    placement="bottom"
+                                    content={`${data.isExternal ? 'Externally created ephemeral containers cannot be removed' : 'Remove container'}`}
+                                >
+                                    <Cross
+                                        className={`icon-dim-16 ${data.isExternal ? 'cursor-not-allowed dc__opacity-0_5' : 'cursor'} ${props.isFocused && !data.isExternal ? 'scr-5' : ''}`}
+                                        onClick={(selected) => {
+                                            stopPropagation(selected)
+                                            if (!data.isExternal) {
+                                                deleteEphemeralContainer(props.label)
+                                            }
+                                        }}
+                                    />
+                                </Tippy>
+                            )}
+                            {props.label}
+                        </div>
+                    </components.Option>
+                </div>
+            )
+        }
 
-      selectProps.styles.option = getCustomOptionSelectionStyle(style)
-      const getOption = () => {
-          return (
-              <div onClick={stopPropagation}>
-                  <components.Option {...props}>
-                      <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
-                          {data.isEphemeralContainer && (
-                              <Tippy
-                                  className="default-white"
-                                  arrow={false}
-                                  placement="bottom"
-                                  content= {`${data.isExternal ? "Externally created ephemeral containers cannot be removed" : "Remove container"}`}
-                              >
-                                  <Cross
-                                      className={`icon-dim-16 ${data.isExternal ? 'cursor-not-allowed dc__opacity-0_5' : 'cursor'} ${props.isFocused && !data.isExternal ? 'scr-5' : ''}`}
-                                      onClick={(selected) => {
-                                          stopPropagation(selected)
-                                          if(!data.isExternal) {
-                                              deleteEphemeralContainer(props.label)
-                                          }
-                                      }}
-                                  />
-                              </Tippy>
-                          )}
-                          {props.label}
-                      </div>
-                  </components.Option>
-              </div>
-          )
-      }
-
-      return getOption()
-  }
+        return getOption()
+    }
 
     const generateSessionURL = () => {
         const appId =
             appDetails.appType == AppType.DEVTRON_APP
-                ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-                : getAppId(
+                ? generateDevtronAppIdentiferForK8sRequest(
                       appDetails.clusterId,
-                      appDetails.namespace,
-                      appDetails.appName,
+                      appDetails.appId,
+                      appDetails.environmentId,
                   )
+                : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
 
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
@@ -156,7 +156,7 @@ function TerminalComponent({
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
+            return `${url}?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
         }
         return url
     }
@@ -239,13 +239,15 @@ function TerminalComponent({
 
     if (isDeleted || !selectedContainerName.length) {
         return (
-            showTerminal &&  <div>
-                <MessageUI
-                    msg="This resource no longer exists"
-                    size={32}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
-                />
-            </div>
+            showTerminal && (
+                <div>
+                    <MessageUI
+                        msg="This resource no longer exists"
+                        size={32}
+                        minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+                    />
+                </div>
+            )
         )
     }
 
@@ -253,7 +255,7 @@ function TerminalComponent({
         firstRow: [
             {
                 type: TerminalWrapperType.CONNECTION_BUTTON,
-                connectTerminal: connectTerminal,
+                connectTerminal,
                 closeTerminalModal: handleDisconnect,
                 reconnectTerminal: handleConnect,
             },
@@ -294,12 +296,12 @@ function TerminalComponent({
         ],
         tabSwitcher: {
             terminalData: {
-                terminalRef: terminalRef,
+                terminalRef,
                 dataTestId: 'app-terminal-container',
                 clearTerminal: terminalCleared,
-                setSocketConnection: setSocketConnection,
-                socketConnection: socketConnection,
-                sessionId: sessionId,
+                setSocketConnection,
+                socketConnection,
+                sessionId,
             },
         },
     }

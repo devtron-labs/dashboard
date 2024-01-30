@@ -5,9 +5,11 @@ import { ActionTypes, ACTION_LABEL, EntityTypes, K8sPermissionFilter } from '../
 export const apiGroupAll = (permission, isLabel = false) => {
     if (permission === '') {
         return isLabel ? 'All API groups' : '*'
-    } else if (permission === 'k8sempty') {
+    }
+    if (permission === 'k8sempty') {
         return isLabel ? 'K8s core groups (eg. service, pod, etc.)' : 'k8sempty'
-    } else return permission
+    }
+    return permission
 }
 // Commented this for reference :- This will be enabled in v1 commenting out for v0 (Cluster ADMIN)
 // export const k8sPermissionRoles = [

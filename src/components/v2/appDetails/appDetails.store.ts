@@ -1,23 +1,23 @@
-import { BehaviorSubject } from 'rxjs';
-import { ApplicationObject, iNode } from './appDetails.type';
-import { URLS } from '../../../config';
+import { BehaviorSubject } from 'rxjs'
+import { ApplicationObject, iNode } from './appDetails.type'
+import { URLS } from '../../../config'
 
-let applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(
+const applicationObjectTabsSubject: BehaviorSubject<Array<ApplicationObject>> = new BehaviorSubject(
     [] as Array<ApplicationObject>,
-);
-let _nodeTreeActiveParentNode: iNode;
-let _nodeTreeActiveNode: iNode;
-let _maxTabAllowd = 6;
+)
+let _nodeTreeActiveParentNode: iNode
+let _nodeTreeActiveNode: iNode
+let _maxTabAllowd = 6
 
 const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: string) => {
-    let tab = {} as ApplicationObject;
-    tab.name = tabName;
-    tab.url = tabUrl;
-    tab.isSelected = isSelected;
-    tab.title = title || tabName;
-    tab.isDeleted = false;
-    return tab;
-};
+    const tab = {} as ApplicationObject
+    tab.name = tabName
+    tab.url = tabUrl
+    tab.isSelected = isSelected
+    tab.title = title || tabName
+    tab.isDeleted = false
+    return tab
+}
 
 export const AppDetailsTabs = {
     k8s_Resources: 'K8s Resources',
@@ -35,10 +35,10 @@ export const AppDetailsTabsIdPrefix = {
 
 const AppDetailsStore = {
     getAppDetailsTabs: () => {
-        return applicationObjectTabsSubject.getValue();
+        return applicationObjectTabsSubject.getValue()
     },
     getAppDetailsTabsObservable: () => {
-        return applicationObjectTabsSubject.asObservable();
+        return applicationObjectTabsSubject.asObservable()
     },
     initAppDetailsTabs: (
         _url: string,
@@ -63,7 +63,7 @@ const AppDetailsStore = {
             aots.push(
                 addAOT(
                     AppDetailsTabs.log_analyzer,
-                    _url + '/' + URLS.APP_DETAILS_LOG,
+                    `${_url}/${URLS.APP_DETAILS_LOG}`,
                     isLogAnalyserURL,
                     AppDetailsTabs.log_analyzer,
                 ),
@@ -77,122 +77,126 @@ const AppDetailsStore = {
         _nodeTreeActiveNode = undefined
     },
     addAppDetailsTab: (objectKind: string, objectName: string, tabURL: string) => {
-        if (!objectName || !tabURL || !objectKind) return;
+        if (!objectName || !tabURL || !objectKind) {
+            return
+        }
 
-        let applicationObjectTabs = applicationObjectTabsSubject.getValue();
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
 
-        let alreadyAdded = false;
-        let title = objectKind + '/' + objectName;
+        let alreadyAdded = false
+        const title = `${objectKind}/${objectName}`
         objectName = `${objectKind.length <= 7 ? objectKind : `${objectKind.slice(0, 7)}...`}/...${objectName.slice(-6)}`
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
-            const tab = applicationObjectTabs[index];
-            tab.isSelected = false;
+            const tab = applicationObjectTabs[index]
+            tab.isSelected = false
             if (tab.title.toLowerCase() === title.toLowerCase()) {
-                tab.isSelected = true;
-                tab.url = tabURL;
-                alreadyAdded = true;
+                tab.isSelected = true
+                tab.url = tabURL
+                alreadyAdded = true
             }
         }
 
         if (!alreadyAdded) {
             if (applicationObjectTabs.length === _maxTabAllowd) {
-                return false;
+                return false
             }
-            applicationObjectTabs.push(addAOT(objectName, tabURL, true, title));
+            applicationObjectTabs.push(addAOT(objectName, tabURL, true, title))
         }
 
-        applicationObjectTabsSubject.next([...applicationObjectTabs]);
+        applicationObjectTabsSubject.next([...applicationObjectTabs])
 
-        return true;
+        return true
     },
     removeAppDetailsTabByIdentifier: (title: string): string => {
-        const applicationObjectTabs = applicationObjectTabsSubject.getValue();
-        let pushURL = '';
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
+        let pushURL = ''
 
-        var selectedRemoved = false;
+        let selectedRemoved = false
 
-        var remainingTabs = [] as Array<ApplicationObject>;
+        const remainingTabs = [] as Array<ApplicationObject>
         for (let index = 0; index < applicationObjectTabs.length; index++) {
-            const tab = applicationObjectTabs[index];
+            const tab = applicationObjectTabs[index]
             if (tab.title.toLowerCase() == title.toLowerCase()) {
-                selectedRemoved = tab.isSelected;
-                continue;
+                selectedRemoved = tab.isSelected
+                continue
             }
-            remainingTabs.push(tab);
+            remainingTabs.push(tab)
         }
 
         if (selectedRemoved) {
-            applicationObjectTabs[0].isSelected = true;
-            pushURL = applicationObjectTabs[0].url;
+            applicationObjectTabs[0].isSelected = true
+            pushURL = applicationObjectTabs[0].url
         }
 
-        applicationObjectTabsSubject.next([...remainingTabs]);
-        return pushURL;
+        applicationObjectTabsSubject.next([...remainingTabs])
+        return pushURL
     },
     markAppDetailsTabActiveByIdentifier: (objectName: string, objectKind?: string, tabUrl?: string) => {
-        if (!objectName) return;
-        let isTabFound = false;
+        if (!objectName) {
+            return
+        }
+        let isTabFound = false
 
-        let applicationObjectTabs = applicationObjectTabsSubject.getValue();
-        let title = objectName;
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
+        let title = objectName
         if (objectKind) {
-            title = objectKind + '/' + objectName;
+            title = `${objectKind}/${objectName}`
         }
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
-            const tab = applicationObjectTabs[index];
-            tab.isSelected = false;
+            const tab = applicationObjectTabs[index]
+            tab.isSelected = false
             if (tab.title.toLowerCase() === title.toLowerCase()) {
-                tab.isSelected = true;
-                tab.url = tabUrl || tab.url;
-                isTabFound = true;
+                tab.isSelected = true
+                tab.url = tabUrl || tab.url
+                isTabFound = true
             }
         }
 
-        applicationObjectTabsSubject.next([...applicationObjectTabs]);
+        applicationObjectTabsSubject.next([...applicationObjectTabs])
 
-        return isTabFound;
+        return isTabFound
     },
     markResourceDeletedByIdentifier: (objectName: string, objectKind?: string) => {
-        const applicationObjectTabs = applicationObjectTabsSubject.getValue();
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
 
         let title = objectName
         if (objectKind) {
-            title = objectKind + '/' + objectName;
+            title = `${objectKind}/${objectName}`
         }
 
         for (let index = 0; index < applicationObjectTabs.length; index++) {
-            const tab = applicationObjectTabs[index];
+            const tab = applicationObjectTabs[index]
             if (tab.title.toLowerCase() === title.toLowerCase()) {
-                tab.isDeleted = true;
+                tab.isDeleted = true
             }
         }
-        applicationObjectTabsSubject.next([...applicationObjectTabs]);
+        applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
     updateK8sResourcesTabUrl: (url: string) => {
-        const applicationObjectTabs = applicationObjectTabsSubject.getValue();
+        const applicationObjectTabs = applicationObjectTabsSubject.getValue()
         for (const tab of applicationObjectTabs) {
             if (tab.name === AppDetailsTabs.k8s_Resources) {
                 tab.url = url
             }
         }
-        applicationObjectTabsSubject.next([...applicationObjectTabs]);
+        applicationObjectTabsSubject.next([...applicationObjectTabs])
     },
     setNodeTreeActiveParentNode: (_n: iNode) => {
-        _nodeTreeActiveParentNode = _n;
+        _nodeTreeActiveParentNode = _n
     },
     getNodeTreeActiveParentNode: () => {
-        return _nodeTreeActiveParentNode;
+        return _nodeTreeActiveParentNode
     },
 
     setNodeTreeActiveNode: (_n: iNode) => {
-        _nodeTreeActiveNode = _n;
+        _nodeTreeActiveNode = _n
     },
 
     getNodeTreeActiveNode: () => {
-        return _nodeTreeActiveNode;
+        return _nodeTreeActiveNode
     },
-};
+}
 
-export default AppDetailsStore;
+export default AppDetailsStore

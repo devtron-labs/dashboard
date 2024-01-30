@@ -1,5 +1,5 @@
-import { Routes } from '../../../../../config'
 import { post } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../../../../config'
 import { HibernateRequest, HibernateResponse } from './scaleWorkloadsModal.type'
 
 export function hibernateApp(request: HibernateRequest): Promise<HibernateResponse> {

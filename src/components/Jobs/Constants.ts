@@ -39,7 +39,7 @@ export const JOB_LIST_HEADERS = {
     LastRunAt: 'LAST RUN AT',
     LastSuccessAt: 'LAST SUCCESS AT',
     Description: 'Description',
-    RUN_IN_ENVIRONMENT: 'RUN IN ENVIRONMENT'
+    RUN_IN_ENVIRONMENT: 'RUN IN ENVIRONMENT',
 }
 
 export const JOBLIST_EMPTY_STATE_MESSAGING = {

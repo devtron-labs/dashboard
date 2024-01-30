@@ -1,5 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { showError, Progressing, InfoColourBar, RadioGroup, RadioGroupItem, copyToClipboard, CustomInput, noop } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    InfoColourBar,
+    RadioGroup,
+    RadioGroupItem,
+    copyToClipboard,
+    CustomInput,
+    noop,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory, useRouteMatch } from 'react-router-dom'
+import { useParams } from 'react-router'
+import moment from 'moment'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
@@ -7,14 +21,9 @@ import { createUserPermissionPayload, isFormComplete, isTokenExpired, Permission
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
-import { useHistory, useRouteMatch } from 'react-router-dom'
-import { useParams } from 'react-router'
-import moment from 'moment'
-import {  MomentDateFormat } from '../../config'
+import { MomentDateFormat } from '../../config'
 import { ButtonWithLoader } from '../common'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
-import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react'
 import GroupPermission from './GroupPermission'
 import {
     ActionTypes,
@@ -31,7 +40,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { API_COMPONENTS } from '../../config/constantMessaging'
 import { renderQuestionwithTippy } from './CreateAPIToken'
 
-function EditAPIToken({
+const EditAPIToken = ({
     setShowRegeneratedModal,
     showRegeneratedModal,
     handleRegenerateActionButton,
@@ -39,7 +48,7 @@ function EditAPIToken({
     copied,
     setCopied,
     reload,
-}: EditTokenType) {
+}: EditTokenType) => {
     const history = useHistory()
     const match = useRouteMatch()
     const params = useParams<{ id: string }>()
@@ -56,7 +65,7 @@ function EditAPIToken({
         action: ActionTypes.VIEW,
         entityName: [],
     })
-    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
+    const [k8sPermission, setK8sPermission] = useState<any[]>([])
     const [customDate, setCustomDate] = useState<number>(undefined)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
@@ -84,10 +93,7 @@ function EditAPIToken({
 
     const renderActionButton = () => {
         return (
-            <span
-                className="cr-5 cursor flexbox top fw-6"
-                onClick={() => setShowRegeneratedModal(true)}
-            >
+            <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
                 Regenerate token
             </span>
         )
@@ -199,7 +205,8 @@ function EditAPIToken({
                     {moment(editData.expireAtInMs).format(MomentDateFormat)}.
                 </span>
             )
-        } else if (editData.expireAtInMs === 0) {
+        }
+        if (editData.expireAtInMs === 0) {
             return <span>This token has no expiration date.</span>
         }
 
@@ -263,7 +270,7 @@ function EditAPIToken({
                                 label="Name"
                                 data-testid="api-token-name-textbox"
                                 value={editData.name}
-                                disabled={true}
+                                disabled
                                 name="name"
                                 onChange={noop}
                             />
@@ -304,7 +311,7 @@ function EditAPIToken({
                                             setCopied(false)
                                         }, 5000)
                                     }}
-                                    interactive={true}
+                                    interactive
                                 >
                                     <div className="icon-dim-16 ml-8">
                                         <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
@@ -369,12 +376,12 @@ function EditAPIToken({
                     loader={loader}
                     onCancel={redirectToTokenList}
                     onSave={() => handleUpdatedToken(editData.id)}
-                    buttonText={'Update token'}
+                    buttonText="Update token"
                 />
             </div>
             {deleteConfirmation && (
                 <DeleteAPITokenModal
-                    isEditView={true}
+                    isEditView
                     tokenData={editData}
                     reload={reload}
                     setDeleteConfirmation={setDeleteConfirmation}

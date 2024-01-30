@@ -1,5 +1,6 @@
 import React, { useContext, useRef } from 'react'
 import { CustomInput, InfoColourBar, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { BASIC_FIELDS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { validateBasicView } from '../DeploymentConfig.utils'
 import { BasicFieldErrorObj, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
@@ -9,7 +10,6 @@ import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import Tippy from '@tippyjs/react'
 
 interface DeploymentTemplateGUIViewProps {
     fetchingValues?: boolean
@@ -54,7 +54,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                     className="default-tt"
                     arrow={false}
                     content={<span className="dc__mxw-200 dc__block fw-4">{description}</span>}
-                    interactive={true}
+                    interactive
                 >
                     <span className="text-underline-dashed">
                         {title}
@@ -81,7 +81,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
             ] = e.target.value
             resource[BASIC_FIELDS.REQUESTS] = { ...resource[BASIC_FIELDS.LIMITS] }
             _basicFieldValues[BASIC_FIELDS.RESOURCES] = resource
-        } else if (e.target.name.indexOf(BASIC_FIELDS.ENV_VARIABLES + '_') >= 0) {
+        } else if (e.target.name.indexOf(`${BASIC_FIELDS.ENV_VARIABLES}_`) >= 0) {
             const envVariable = _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES][e.target.dataset.index]
             envVariable[e.target.name.indexOf(BASIC_FIELDS.NAME) >= 0 ? BASIC_FIELDS.NAME : BASIC_FIELDS.VALUE] =
                 e.target.value
@@ -92,7 +92,9 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
     }
 
     const addRow = (e): void => {
-        if (readOnly) return
+        if (readOnly) {
+            return
+        }
         const _basicFieldValues = { ...currentBasicFieldValues }
         if (e.currentTarget.dataset.name === BASIC_FIELDS.PATH) {
             _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS].unshift('')
@@ -113,7 +115,9 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
     }
 
     const removeRow = (name: string, index: number): void => {
-        if (readOnly) return
+        if (readOnly) {
+            return
+        }
         const _basicFieldValues = { ...currentBasicFieldValues }
         const _currentValue =
             name === BASIC_FIELDS.ENV_VARIABLES
@@ -341,7 +345,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                             rows={2}
                                             placeholder={BASIC_FIELDS.VALUE}
                                             readOnly={readOnly}
-                                        ></textarea>
+                                        />
 
                                         {currentBasicFieldValuesErrorObj?.envVariables[index] &&
                                             !currentBasicFieldValuesErrorObj.envVariables[index].isValid && (
@@ -362,7 +366,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                         )}
                     </div>
                 )}
-                <div ref={envVariableSectionRef}></div>
+                <div ref={envVariableSectionRef} />
             </div>
             <InfoColourBar
                 message="To modify additional configurations"

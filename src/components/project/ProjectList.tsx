@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DOCUMENTATION, ViewType } from '../../config';
-import { createProject, getProjectList } from './service';
-import { toast } from 'react-toastify';
-import { Project } from './Project';
-import { ProjectListState, ProjectType, ProjectListProps } from './types';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import './project.scss';
-import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
+import { toast } from 'react-toastify'
+import { DOCUMENTATION, ViewType } from '../../config'
+import { createProject, getProjectList } from './service'
+import { Project } from './Project'
+import { ProjectListState, ProjectType, ProjectListProps } from './types'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import './project.scss'
+import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState> {
     constructor(props) {
@@ -60,11 +60,10 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     handleChange(event, index: number, key: 'name'): void {
         const { projects, isValid, errorMessage } = { ...this.state }
-        if(event.target.value.includes(' ')){
+        if (event.target.value.includes(' ')) {
             isValid[key] = false
             errorMessage[key] = `Do not use 'spaces' in name`
-
-        }else if (event.target.value && event.target.value.length > 2) {
+        } else if (event.target.value && event.target.value.length > 2) {
             isValid[key] = true
             errorMessage[key] = ''
         } else {
@@ -76,14 +75,14 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     }
 
     discard(index: number): void {
-        let { projects } = { ...this.state }
+        const { projects } = { ...this.state }
         projects.splice(index, 1)
         this.setState({ projects })
     }
 
     addProject(e): void {
-        let { projects } = { ...this.state }
-        let emptyProject = {
+        const { projects } = { ...this.state }
+        const emptyProject = {
             id: 0,
             name: '',
             active: true,
@@ -93,40 +92,43 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.setState({ projects })
     }
 
-    isProjectNameExists(index : number, projectName: string): boolean {
+    isProjectNameExists(index: number, projectName: string): boolean {
         return this.state.projects.some(({ name }, i) => name === projectName && i !== index)
     }
 
     saveProject(index: number, key: 'name'): void {
-        let { projects, isValid, errorMessage } = { ...this.state };
-        let project = this.state.projects[index];
+        const { projects, isValid, errorMessage } = { ...this.state }
+        const project = this.state.projects[index]
         if (!isValid?.[key]) {
             return
-        } else {
-            if (!project.name) {
-                isValid[key] = false
-                errorMessage[key] = REQUIRED_FIELD_MSG
-                this.setState({ isValid })
-                return
-            } else if (this.isProjectNameExists(index, project.name)) {
-                isValid[key] = false
-                errorMessage[key] = PROJECT_EXIST_MSG
-                this.setState({ isValid })
-                return
-            }
         }
-        this.setState({ loadingData: true, isValid });
-        createProject(project).then((response) => {
-            toast.success("Project Created Successfully");
-            projects[index] = {
-                ...response.result,
-                isCollapsed: true
-            }
-            this.setState({ code: response.code, projects, loadingData: false });
-        }).catch((errors) => {
-            showError(errors);
-            this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
-        })
+        if (!project.name) {
+            isValid[key] = false
+            errorMessage[key] = REQUIRED_FIELD_MSG
+            this.setState({ isValid })
+            return
+        }
+        if (this.isProjectNameExists(index, project.name)) {
+            isValid[key] = false
+            errorMessage[key] = PROJECT_EXIST_MSG
+            this.setState({ isValid })
+            return
+        }
+
+        this.setState({ loadingData: true, isValid })
+        createProject(project)
+            .then((response) => {
+                toast.success('Project Created Successfully')
+                projects[index] = {
+                    ...response.result,
+                    isCollapsed: true,
+                }
+                this.setState({ code: response.code, projects, loadingData: false })
+            })
+            .catch((errors) => {
+                showError(errors)
+                this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
+            })
     }
 
     renderProjects(project: ProjectType & { isCollapsed: boolean }, index: number) {
@@ -159,7 +161,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                     <a
                         className="dc__link"
                         href={DOCUMENTATION.GLOBAL_CONFIG_PROJECT}
-                        rel="noopener noreferer"
+                        rel="noopener noreferer noreferrer"
                         target="_blank"
                     >
                         Learn more about projects.
@@ -170,10 +172,14 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     }
 
     renderAddProject() {
-        let unSavedItem = this.state.projects.find((item) => !item.id)
+        const unSavedItem = this.state.projects.find((item) => !item.id)
         if (!unSavedItem) {
             return (
-                <div data-testid="project-add-project-button" className="white-card white-card--add-new-item mb-16 dashed" onClick={this.addProject}>
+                <div
+                    data-testid="project-add-project-button"
+                    className="white-card white-card--add-new-item mb-16 dashed"
+                    onClick={this.addProject}
+                >
                     <Add className="icon-dim-24 fcb-5 mr-16" />
                     <span className="list__add-item">Add Project</span>
                 </div>
@@ -189,27 +195,28 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                 </div>
             )
         }
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) {
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__align-reload-center">
                     <ErrorScreenManager code={this.state.code} />
                 </div>
             )
-        } else {
-            return (
-                <section className="global-configuration__component flex-1">
-                    {this.renderPageHeader()}
-                    {this.renderAddProject()}
-                    {this.state.projects.map((project, index) => {
-                        return (
-                            <React.Fragment key={`${project.name}-${index}`}>
-                                {this.renderProjects(project, index)}
-                            </React.Fragment>
-                        )
-                    })}
-                </section>
-            )
         }
+        return (
+            <section className="global-configuration__component flex-1">
+                {this.renderPageHeader()}
+                {this.renderAddProject()}
+                {this.state.projects.map((project, index) => {
+                    return (
+                        <React.Fragment key={`${project.name}-${index}`}>
+                            {this.renderProjects(project, index)}
+                        </React.Fragment>
+                    )
+                })}
+            </section>
+        )
     }
 }

@@ -1,8 +1,7 @@
-import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { get, post, put, trash, ResponseType, getTeamListMin, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { CreateGroup, CreateUser, Custom_Roles } from './userGroups.types'
-import { Routes} from '../../config'
-
+import { Routes } from '../../config'
 
 export function getData() {
     return Promise.all([getTeamListMin(), getAppListMin(), getEnvironmentListMin()]).then(
@@ -36,7 +35,7 @@ export function getActionList() {
 }
 
 export function getParsedData(teamList, appList, environmentList) {
-    let lists = {
+    const lists = {
         team: teamList.result
             ? teamList.result.map((team) => {
                   return { value: team.name, name: team.name }
@@ -54,8 +53,8 @@ export function getParsedData(teamList, appList, environmentList) {
             : [],
         action: getActionList().result,
     }
-    let response = {
-        lists: lists,
+    const response = {
+        lists,
         code: teamList.code || appList.code || environmentList.code,
     }
     return response
@@ -67,9 +66,8 @@ export function saveUser(request: CreateUser) {
     }
     if (window._env_.VITE_CONFIGURABLE_TIMEOUT) {
         return request.id ? put('user', request, options) : post('user', request, options)
-    } else {
-        return request.id ? put('user', request) : post('user', request)
     }
+    return request.id ? put('user', request) : post('user', request)
 }
 
 export function saveGroup(request: CreateGroup) {
@@ -78,9 +76,8 @@ export function saveGroup(request: CreateGroup) {
     }
     if (window._env_.VITE_CONFIGURABLE_TIMEOUT) {
         return request.id ? put(Routes.USER_ROLE_GROUP, request, options) : post('user/role/group', request, options)
-    } else {
-        return request.id ? put(Routes.USER_ROLE_GROUP, request) : post('user/role/group', request)
     }
+    return request.id ? put(Routes.USER_ROLE_GROUP, request) : post('user/role/group', request)
 }
 
 export function userModal(user) {
@@ -170,9 +167,9 @@ export function getUsersDataToExport(): Promise<UsersDataToExportResponse> {
 export function getGroupsDataToExport(): Promise<GroupsDataToExportResponse> {
     return get(Routes.ALL_GROUPS_LIST)
 }
- export interface customRoles extends ResponseType {
-     result?: Custom_Roles[]
- }
- export function getCustomRoles(): Promise<customRoles> {
-     return get(Routes.CUSTOM_ROLES)
- }
+export interface customRoles extends ResponseType {
+    result?: Custom_Roles[]
+}
+export function getCustomRoles(): Promise<customRoles> {
+    return get(Routes.CUSTOM_ROLES)
+}

@@ -31,7 +31,10 @@ export default function K8ResourceComponent({
             </div>
             {nodes.length > 0 ? (
                 <div className="resource-node-wrapper flexbox" data-testid="resource-node-wrapper">
-                    <div className="k8-resources-node-tree pt-8 pl-16 dc__border-right" data-testid="k8-resources-node-tree">
+                    <div
+                        className="k8-resources-node-tree pt-8 pl-16 dc__border-right"
+                        data-testid="k8-resources-node-tree"
+                    >
                         <NodeTreeComponent
                             clickedNodes={clickedNodes}
                             registerNodeClick={registerNodeClick}
@@ -54,7 +57,7 @@ export default function K8ResourceComponent({
     )
 }
 
-export function EmptyK8sResourceComponent({ emptyStateMessage }: { emptyStateMessage: string }) {
+export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMessage: string }) => {
     return (
         <>
             <div

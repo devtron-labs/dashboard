@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
-import { URLS } from './config'
 import { toast } from 'react-toastify'
 // @TODO: Patternfly styles files need to be removed in future
 import './css/patternfly.scss'
@@ -9,9 +8,22 @@ import './css/base.scss'
 import './css/formulae.scss'
 import './css/forms.scss'
 import 'tippy.js/dist/tippy.css'
-import { useOnline, ToastBody, ToastBody3 as UpdateToast, ErrorBoundary, importComponentFromFELibrary } from './components/common'
-import { showError, BreadcrumbStore, Reload, DevtronProgressing, APPROVAL_MODAL_TYPE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    BreadcrumbStore,
+    Reload,
+    DevtronProgressing,
+    APPROVAL_MODAL_TYPE,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useRegisterSW } from 'virtual:pwa-register/react'
+import {
+    useOnline,
+    ToastBody,
+    ToastBody3 as UpdateToast,
+    ErrorBoundary,
+    importComponentFromFELibrary,
+} from './components/common'
+import { URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
 
@@ -33,7 +45,7 @@ toast.configure({
 export default function App() {
     const onlineToastRef = useRef(null)
     const updateToastRef = useRef(null)
-    const [errorPage, setErrorPage] = useState<Boolean>(false)
+    const [errorPage, setErrorPage] = useState<boolean>(false)
     const isOnline = useOnline()
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
@@ -41,7 +53,11 @@ export default function App() {
     const location = useLocation()
     const { push } = useHistory()
     const didMountRef = useRef(false)
-    const isDirectApprovalNotification = location.pathname && location.pathname.includes('approve') && location.search && location.search.includes(`?token=${approvalToken}`)
+    const isDirectApprovalNotification =
+        location.pathname &&
+        location.pathname.includes('approve') &&
+        location.search &&
+        location.search.includes(`?token=${approvalToken}`)
 
     function onlineToast(toastBody: JSX.Element, options) {
         if (onlineToastRef.current && toast.isActive(onlineToastRef.current)) {
@@ -85,8 +101,8 @@ export default function App() {
             setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
         }
 
-        let queryString = new URLSearchParams(location.search)
-        let token = queryString.get('token')
+        const queryString = new URLSearchParams(location.search)
+        const token = queryString.get('token')
         if (token) {
             setApprovalToken(token)
         }
@@ -113,7 +129,6 @@ export default function App() {
         }
     }
 
-
     useEffect(() => {
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         if (!window._env_.K8S_CLIENT) {
@@ -121,7 +136,7 @@ export default function App() {
             if (isDirectApprovalNotification) {
                 redirectToDirectApprovalNotification()
             } else {
-            validation()
+                validation()
             }
         } else {
             setValidating(false)
@@ -136,7 +151,7 @@ export default function App() {
         onRegisteredSW(swUrl, r) {
             console.log(`Service Worker at: ${swUrl}`)
             if (r) {
-              r.update()
+                r.update()
             }
         },
         onRegisterError(error) {
@@ -149,11 +164,11 @@ export default function App() {
     }
 
     useEffect(() => {
-      // check for sw updates on page change
-      navigator.serviceWorker
-        .getRegistrations()
-        .then((regs) => regs.forEach((reg) => reg.update()))
-        if (!needRefresh) return
+        // check for sw updates on page change
+        navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
+        if (!needRefresh) {
+            return
+        }
         update()
     }, [location])
 
@@ -196,24 +211,24 @@ export default function App() {
                     ) : (
                         <ErrorBoundary>
                             <BreadcrumbStore>
-                                    <Switch>
-                                             {isDirectApprovalNotification && GenericDirectApprovalModal && (
-                                                <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
-                                                    <GenericDirectApprovalModal
-                                                        approvalType={approvalType}
-                                                        approvalToken={approvalToken}
-                                                    />
-                                                </Route>
-                                            )}
-                                        {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
-                                        <Route path="/" render={() => <NavigationRoutes />} />
-                                        <Redirect
-                                            to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
-                                        />
-                                    </Switch>
-                                <div id="full-screen-modal"></div>
-                                <div id="visible-modal"></div>
-                                <div id="visible-modal-2"></div>
+                                <Switch>
+                                    {isDirectApprovalNotification && GenericDirectApprovalModal && (
+                                        <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
+                                            <GenericDirectApprovalModal
+                                                approvalType={approvalType}
+                                                approvalToken={approvalToken}
+                                            />
+                                        </Route>
+                                    )}
+                                    {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
+                                    <Route path="/" render={() => <NavigationRoutes />} />
+                                    <Redirect
+                                        to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
+                                    />
+                                </Switch>
+                                <div id="full-screen-modal" />
+                                <div id="visible-modal" />
+                                <div id="visible-modal-2" />
                                 {import.meta.env.VITE_NODE_ENV === 'production' &&
                                     window._env_ &&
                                     window._env_.VITE_HOTJAR_ENABLED && <Hotjar />}

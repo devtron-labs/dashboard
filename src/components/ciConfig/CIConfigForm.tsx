@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import { DOCUMENTATION } from '../../config'
 import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { useForm } from '../common'
-import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { saveCIConfig, updateCIConfig } from './service'
 import { CIBuildArgType, CIConfigFormProps, LoadingState } from './types'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
@@ -20,7 +21,6 @@ import {
     initCurrentCIBuildConfig,
     processBuildArgs,
 } from './CIConfig.utils'
-import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 
 export default function CIConfigForm({
@@ -49,8 +49,8 @@ export default function CIConfigForm({
                   (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.gitMaterialId,
               )
             : ciConfig?.ciBuildConfig?.gitMaterialId
-            ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
-            : sourceConfig.material[0]
+              ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
+              : sourceConfig.material[0]
     const buildCtxGitMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
@@ -58,11 +58,11 @@ export default function CIConfigForm({
                       material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
               )
             : ciConfig?.ciBuildConfig?.buildContextGitMaterialId
-            ? sourceConfig.material.find(
-                  (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
-              )
-            : sourceConfig.material[0]
-    const currentBuildContextGitMaterial = buildCtxGitMaterial ? buildCtxGitMaterial : currentMaterial
+              ? sourceConfig.material.find(
+                    (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
+                )
+              : sourceConfig.material[0]
+    const currentBuildContextGitMaterial = buildCtxGitMaterial || currentMaterial
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
     const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
         useState(currentBuildContextGitMaterial)
@@ -70,8 +70,8 @@ export default function CIConfigForm({
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
             : ciConfig && ciConfig.dockerRegistry
-            ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
-            : dockerRegistries.find((reg) => reg.isDefault)
+              ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
+              : dockerRegistries.find((reg) => reg.isDefault)
     const { state, handleOnChange, handleOnSubmit } = useForm(
         getCIConfigFormState(ciConfig, selectedCIPipeline, currentMaterial, currentRegistry),
         CI_CONFIG_FORM_VALIDATION,
@@ -139,13 +139,13 @@ export default function CIConfigForm({
     }
 
     async function onValidation(state) {
-        let args2 = args.map(({ k, v, keyError, valueError }, idx) => {
+        const args2 = args.map(({ k, v, keyError, valueError }, idx) => {
             if (v && !k) {
                 keyError = 'This field is required'
             } else if (k && !v) {
                 valueError = 'This field is required'
             }
-            let arg = { k, v, keyError, valueError }
+            const arg = { k, v, keyError, valueError }
             return arg
         })
         const areArgsWrong = args2.some((arg) => arg.keyError || arg.valueError)
@@ -177,7 +177,9 @@ export default function CIConfigForm({
                 languageVersion: _ciBuildConfig.buildPackConfig.languageVersion,
                 projectPath: projectPath.value || './',
                 args: buildEnvArgs.reduce((agg, { k, v }) => {
-                    if (k && v) agg[k] = v
+                    if (k && v) {
+                        agg[k] = v
+                    }
                     return agg
                 }, {}),
             }
@@ -187,7 +189,9 @@ export default function CIConfigForm({
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
                 dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                 args: args.reduce((agg, { k, v }) => {
-                    if (k && v) agg[k] = v
+                    if (k && v) {
+                        agg[k] = v
+                    }
                     return agg
                 }, {}),
                 dockerfileRepository: repository.value,

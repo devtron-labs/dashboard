@@ -1,4 +1,5 @@
-import {DOCUMENTATION_HOME_PAGE} from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
+
 export const DEFAULT_STATUS = 'Checking Status...'
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
@@ -86,7 +87,7 @@ export const Routes = {
     PROJECT: 'team',
     PROJECT_LIST: 'team',
     PROJECT_LIST_MIN: 'team/autocomplete',
-    TEAM_USER: 'team/app/user', //TODO: PROJECT_USER
+    TEAM_USER: 'team/app/user', // TODO: PROJECT_USER
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
@@ -289,9 +290,8 @@ export const PATTERNS = {
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
-    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, //Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
+    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
     ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
-
 }
 
 export const TriggerType = {
@@ -362,7 +362,7 @@ export const DOCUMENTATION = {
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
     JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
-    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`
+    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -414,8 +414,8 @@ export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = 'devtron-app', // devtron app work flow
-    HELM_APPS = 'helm-app', //helm app work flow
-    JOBS = '', //Empty string is intentional since there is no bifurcation in jobs as of now
+    HELM_APPS = 'helm-app', // helm app work flow
+    JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
 }
 
 export enum MODES {
@@ -439,7 +439,7 @@ export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageAction
 
 export const RegistryStorageType = {
     OCI_PRIVATE: 'OCI_PRIVATE',
-    OCI_PUBLIC: 'OCI_PUBLIC'
+    OCI_PUBLIC: 'OCI_PUBLIC',
 }
 
 export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
@@ -492,18 +492,18 @@ export interface RegistryPayloadType {
 }
 
 export const RegistryType = {
-   DOCKER_HUB: 'docker-hub',
-   ACR: 'acr',
-   QUAY: 'quay',
-   OTHER: 'other',
-   ECR: 'ecr',
-   ARTIFACT_REGISTRY: 'artifact-registry',
-   GCR: 'gcr'
+    DOCKER_HUB: 'docker-hub',
+    ACR: 'acr',
+    QUAY: 'quay',
+    OTHER: 'other',
+    ECR: 'ecr',
+    ARTIFACT_REGISTRY: 'artifact-registry',
+    GCR: 'gcr',
 }
 
 export const RegistryTypeName = {
-    'OCI_PRIVATE': 'Private Registry',
-    'OCI_PUBLIC': 'Public Registry'
+    OCI_PRIVATE: 'Private Registry',
+    OCI_PUBLIC: 'Public Registry',
 }
 
 export const AppCreationType = {
@@ -574,7 +574,7 @@ export const EXTERNAL_TYPES = {
         ESO_HashiCorpVault: 'Hashi Corp Vault',
         ESO_AWSSecretsManager: 'AWS Secrets Manager',
         ESO_GoogleSecretsManager: 'Google Secrets Manager',
-        ESO_AzureSecretsManager: 'Azure Secrets Manager'
+        ESO_AzureSecretsManager: 'Azure Secrets Manager',
     },
     [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
         '': 'Kubernetes ConfigMap',
@@ -802,14 +802,15 @@ export const ManifestMessaging = {
 }
 
 export const SERVER_ERROR_CODES = {
-    RELEASE_NOT_FOUND: "7001",
+    RELEASE_NOT_FOUND: '7001',
     CHART_ALREADY_EXISTS: '5001',
     CHART_NAME_RESERVED: '5002',
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
-export const CVE_ID_NOT_FOUND = "CVE ID not found"
-export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"
-export const NO_HOST_URL = "Please enter host url"
-export const WEBHOOK_NO_API_TOKEN_ERROR = "API Token is required to execute webhook"
-export const DIGEST_DISABLE_TOGGLE_MESSAGE= "Pull image digest policy is enforced in Global Configurations. Go to Global Configurations to change."
+export const CVE_ID_NOT_FOUND = 'CVE ID not found'
+export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
+export const NO_HOST_URL = 'Please enter host url'
+export const WEBHOOK_NO_API_TOKEN_ERROR = 'API Token is required to execute webhook'
+export const DIGEST_DISABLE_TOGGLE_MESSAGE =
+    'Pull image digest policy is enforced in Global Configurations. Go to Global Configurations to change.'

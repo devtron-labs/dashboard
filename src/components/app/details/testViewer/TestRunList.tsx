@@ -1,36 +1,37 @@
-import React, {useState, useMemo} from 'react'
-import {useParams, useRouteMatch, generatePath, useHistory, Route, Switch} from 'react-router'
+import React, { useState, useMemo } from 'react'
+import { useParams, useRouteMatch, generatePath, useHistory, Route, Switch } from 'react-router'
 import { Progressing, multiSelectStyles, Option, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import Select, {components} from 'react-select';
 import { mapByKey, Td, DropdownIcon, DatePicker } from '../../../common'
 import {getCIPipelines } from '../../service'
-import Select, {components} from 'react-select';
-import {getTriggerList, getFilters} from './service'
-import { BarChart, Bar, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import {ReactComponent as EmptyTests} from '../../../../assets/img/ic-empty-tests.svg';
-import {SelectedNames} from './Test.types'
+import { getTriggerList, getFilters } from './service'
+import { BarChart, Bar, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { ReactComponent as EmptyTests } from '../../../../assets/img/ic-empty-tests.svg'
+import { SelectedNames } from './Test.types'
 import './TestRunDetails.scss'
 import { TestRunDetails } from './TestRunDetails'
 import moment from 'moment'
 
-export default function TestRunList(){
-    const params=useParams<{appId: string, pipelineId?: string}>()
-    const {url, path} = useRouteMatch()
-    const [ciPipelinesLoading, ciPipelinesResult, error, reload] = useAsync(()=>getCIPipelines(params.appId), [params.appId])
+export default function TestRunList() {
+    const params = useParams<{ appId: string; pipelineId?: string }>()
+    const { url, path } = useRouteMatch()
+    const [ciPipelinesLoading, ciPipelinesResult, error, reload] = useAsync(
+        () => getCIPipelines(params.appId),
+        [params.appId],
+    )
     const [dates, setDates] = useState({
         startDate: moment().set({ hour: 0, minute: 0, seconds: 0 }).subtract(1, 'months'),
         endDate: moment().add(1, 'days'),
-    });
+    })
     const [focusedDate, setFocusedDate] = useState(null)
 
-    if(ciPipelinesLoading) return <div className="w-100" style={{height:'100%'}}><Progressing pageLoader/></div>
-    if(!ciPipelinesLoading && (!ciPipelinesResult?.result || ciPipelinesResult?.result?.length === 0)){
-        return (
-            <TestsPlaceholder subtitle="Reports for executed test cases will be available here"/>
-        );
+    if (ciPipelinesLoading) {return <div className="w-100" style={{height:'100%'}}><Progressing pageLoader/></div>}
+    if (!ciPipelinesLoading && (!ciPipelinesResult?.result || ciPipelinesResult?.result?.length === 0)) {
+        return <TestsPlaceholder subtitle="Reports for executed test cases will be available here" />
     }
 
-    function handleDatesChange({startDate, endDate}){
-        setDates({startDate, endDate})
+    function handleDatesChange({ startDate, endDate }) {
+        setDates({ startDate, endDate })
     }
     return (
         <div style={{ padding: '16px 24px', overflowY: 'auto' }}>
@@ -50,11 +51,15 @@ export default function TestRunList(){
                             endDate={dates.endDate}
                             focusedInput={focusedDate}
                             handleDatesChange={handleDatesChange}
-                            handleFocusChange={(focused)=>setFocusedDate(focused)}
+                            handleFocusChange={(focused) => setFocusedDate(focused)}
                         />
                     </div>
 
-                    <TestsFilter component={(props)=><TriggerList {...props} startDate={dates.startDate} endDate={dates.endDate}/>} />
+                    <TestsFilter
+                        component={(props) => (
+                            <TriggerList {...props} startDate={dates.startDate} endDate={dates.endDate} />
+                        )}
+                    />
                 </Route>
                 <Route>
                     <>
@@ -67,15 +72,15 @@ export default function TestRunList(){
                 </Route>
             </Switch>
         </div>
-    );
+    )
 }
 
-const CISelector:React.FC<{pipelines: any[]}>=({pipelines})=>{
-    const params = useParams<{pipelineId: string}>()
+const CISelector: React.FC<{ pipelines: any[] }> = ({ pipelines }) => {
+    const params = useParams<{ pipelineId: string }>()
     const history = useHistory()
-    const ciPipelinesMap = mapByKey(pipelines, 'id');
-    const ciPipelineName = ciPipelinesMap.has(+params.pipelineId) ? ciPipelinesMap.get(+params.pipelineId)?.name : null;
-    const {url, path} = useRouteMatch()
+    const ciPipelinesMap = mapByKey(pipelines, 'id')
+    const ciPipelineName = ciPipelinesMap.has(+params.pipelineId) ? ciPipelinesMap.get(+params.pipelineId)?.name : null
+    const { url, path } = useRouteMatch()
 
     return (
         <div style={{ width: '250px' }} className="mb-16">
@@ -88,14 +93,14 @@ const CISelector:React.FC<{pipelines: any[]}>=({pipelines})=>{
                     label: pipeline.name,
                 }))}
                 onChange={(selected) => {
-                    history.push(generatePath(path, { ...params, pipelineId: (selected as any).value }));
+                    history.push(generatePath(path, { ...params, pipelineId: (selected as any).value }))
                 }}
             />
         </div>
-    );
+    )
 }
 
-function TestsPlaceholder({title="Test Reports", subtitle=""}){
+const TestsPlaceholder = ({title="Test Reports", subtitle=""}) => {
     return(
         <div className="w-100 flex column" style={{ height: '100%' }}>
             <EmptyTests />
@@ -105,9 +110,13 @@ function TestsPlaceholder({title="Test Reports", subtitle=""}){
     )
 }
 
-const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }> = ({ selectedNames, startDate, endDate }) => {
-    const params = useParams<{ appId: string; pipelineId: string }>();
-    const { url, path } = useRouteMatch();
+const TriggerList: React.FC<{ selectedNames: SelectedNames; startDate; endDate }> = ({
+    selectedNames,
+    startDate,
+    endDate,
+}) => {
+    const params = useParams<{ appId: string; pipelineId: string }>()
+    const { url, path } = useRouteMatch()
     const [triggerListLoading, triggerList, error, reload] = useAsync(
         () =>
             getTriggerList(
@@ -117,17 +126,10 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
                 endDate.format('YYYY-MM-DD'),
             ),
         [params.pipelineId, selectedNames, startDate, endDate],
-    );
+    )
     const data = (triggerList?.result?.result || []).slice(0, 30).map((triggerDetail) => {
-        const {
-            skippedCount,
-            errorCount,
-            failureCount,
-            disabledCount,
-            unknownCount,
-            testCount,
-            createdOn,
-        } = triggerDetail;
+        const { skippedCount, errorCount, failureCount, disabledCount, unknownCount, testCount, createdOn } =
+            triggerDetail
         return {
             skippedCount,
             errorCount,
@@ -136,8 +138,8 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
             unknownCount,
             date: createdOn,
             successCount: testCount - (skippedCount + errorCount + failureCount + disabledCount + unknownCount),
-        };
-    });
+        }
+    })
 
     const colorMap = {
         skippedCount: '#d0d4d9',
@@ -146,13 +148,13 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
         disabledCount: '#58508d',
         unknownCount: '#ff9800',
         successCount: '#00be61',
-    };
+    }
     if (triggerListLoading) {
         return (
             <div className="w-100 flex" style={{ height: '100%' }}>
                 <Progressing pageLoader />
             </div>
-        );
+        )
     }
 
     if (!triggerList?.result || triggerList?.result?.result?.length === 0) {
@@ -163,7 +165,7 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
                     subtitle="No tests have been executed for this pipeline."
                 />
             </div>
-        );
+        )
     }
     return (
         <>
@@ -235,104 +237,111 @@ const TriggerList: React.FC<{ selectedNames: SelectedNames, startDate, endDate }
                 </table>
             </div>
         </>
-    );
-};
-
-interface TestsFilterOptions{
-    testsuite: {id: number, name: string}[],
-    package: {id: number, name: string}[],
-    classname: {id: number, name: string}[],
-    method: {id: number, name: string}[]
+    )
 }
 
-const TestsFilter:React.FC<{component}>=({component:Component})=>{
+interface TestsFilterOptions {
+    testsuite: { id: number; name: string }[]
+    package: { id: number; name: string }[]
+    classname: { id: number; name: string }[]
+    method: { id: number; name: string }[]
+}
+
+const TestsFilter: React.FC<{ component }> = ({ component: Component }) => {
     const [selectionState, setSelectionState] = useState<'type' | 'name'>('type')
     const [selectedType, setSelectedType] = useState<'testsuite' | 'package' | 'classname' | 'method'>(null)
-    const [selectedNames, setSelectedNames] = useState<SelectedNames>(
-        {
-            testsuite: [],
-            package: [],
-            classname: [],
-            method: []
-        }
+    const [selectedNames, setSelectedNames] = useState<SelectedNames>({
+        testsuite: [],
+        package: [],
+        classname: [],
+        method: [],
+    })
+    const params = useParams<{ appId: string; pipelineId?: string }>()
+    const [loading, result, error, reload] = useAsync(
+        () => getFilters(params.pipelineId),
+        [params.appId, params.pipelineId],
+        !!params.pipelineId,
     )
-    const params = useParams<{appId: string, pipelineId?: string}>()
-    const [loading, result, error, reload] = useAsync(()=>getFilters(params.pipelineId), [params.appId, params.pipelineId], !!params.pipelineId)
     const typeOptions = [
-        { label: 'Test Suite:', value: 'testsuite'},
-        { label: 'Package:', value: 'package'},
-        { label: 'Classname:', value: 'classname'},
-        { label: 'Method:', value: 'method'},
-    ];
+        { label: 'Test Suite:', value: 'testsuite' },
+        { label: 'Package:', value: 'package' },
+        { label: 'Classname:', value: 'classname' },
+        { label: 'Method:', value: 'method' },
+    ]
 
-    const availableOptions: TestsFilterOptions = useMemo(()=>{
+    const availableOptions: TestsFilterOptions = useMemo(() => {
         const { testsuite, packageName } = (result?.result?.testsuite || []).reduce(
             (agg, curr, idx) => {
-                if (curr.name) agg.testsuite.push(curr.name);
-                if (curr.package) agg.packageName.push(curr.package);
-                return agg;
+                if (curr.name) {agg.testsuite.push(curr.name);}
+                if (curr.package) {agg.packageName.push(curr.package);}
+                return agg
             },
             { testsuite: [], packageName: [] },
-        );
+        )
 
         const { classname, method } = (result?.result?.testcases || [])
             .filter((testcase) => !!testcase.name || !!testcase.classname)
             .reduce(
                 (agg, curr) => {
                     if (curr.classname) {
-                        agg.classname.push(curr.classname);
+                        agg.classname.push(curr.classname)
                     }
                     if (curr.name) {
-                        agg.method.push(curr.name);
+                        agg.method.push(curr.name)
                     }
-                    return agg;
+                    return agg
                 },
                 { classname: [], method: [] },
-            );
-        return {testsuite, package: packageName, classname, method}
-
+            )
+        return { testsuite, package: packageName, classname, method }
     }, [result])
 
-
-    function handleChange(selected, change){
-        const {action, name, option} = change
-        if(action === "select-option" && name === "type"){
+    function handleChange(selected, change) {
+        const { action, name, option } = change
+        if (action === "select-option" && name === "type"){
             setSelectedType(option?.value)
             setSelectionState('name')
-        }
-        else if(action === 'remove-value'){
-            const {removedValue: {label, value, type}} = change
-            setSelectedNames(selectedNames=>({...selectedNames, [type]:selectedNames[type].filter(name=>name!==value)}))
-        }
-        else{
-            setSelectedNames(selectedNames=>{
-                return {...selectedNames, [selectedType]: (selected || []).filter(s=>s.type === selectedType).map(s=>s.value)}
+        } else if (action === 'remove-value') {
+            const {
+                removedValue: { label, value, type },
+            } = change
+            setSelectedNames((selectedNames) => ({
+                ...selectedNames,
+                [type]: selectedNames[type].filter((name) => name !== value),
+            }))
+        } else {
+            setSelectedNames((selectedNames) => {
+                return {
+                    ...selectedNames,
+                    [selectedType]: (selected || []).filter((s) => s.type === selectedType).map((s) => s.value),
+                }
             })
         }
     }
 
-    function handleClose(){
+    function handleClose() {
         setSelectedType(null)
         setSelectionState('type')
     }
 
-
-
-    const {options, value }  = useMemo(()=>{
+    const { options, value } = useMemo(() => {
         const availableOptionsSelect = selectedType
             ? Array.from(new Set(availableOptions[selectedType] || [])).map((t) => ({
                   value: t,
                   label: `${selectedType}: ${t}`,
                   type: selectedType,
               }))
-            : [];
+            : []
 
         const namesValue: any[] = Object.entries(selectedNames).reduce((agg, curr) => {
-            const [category, names] = curr;
-            return [...agg, ...names.map((name) => ({ label: `${category}: ${name}`, value: name, type: category }))];
-        }, []);
-        return {options: selectionState === 'type' ? [...typeOptions, ...namesValue] : availableOptionsSelect, value: namesValue}
-    },[selectionState, selectedType, availableOptions, selectedNames])
+            const [category, names] = curr
+            return [...agg, ...names.map((name) => ({ label: `${category}: ${name}`, value: name, type: category }))]
+        }, [])
+        return {
+            options: selectionState === 'type' ? [...typeOptions, ...namesValue] : availableOptionsSelect,
+            value: namesValue,
+        }
+    }, [selectionState, selectedType, availableOptions, selectedNames])
 
     return (
         <>
@@ -342,7 +351,7 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
                     Menu: (props) => (
                         <CustomFilterMenu props={props} title={selectionState === 'type' ? 'FILTER BY' : 'VALUES'} />
                     ),
-                    Option
+                    Option,
                 }}
                 onChange={handleChange}
                 closeMenuOnSelect={false}
@@ -365,13 +374,12 @@ const TestsFilter:React.FC<{component}>=({component:Component})=>{
             />
             <Component selectedNames={selectedNames} />
         </>
-    );
+    )
 }
 
-const CustomFilterMenu = ({title, props})=>{
+const CustomFilterMenu = ({ title, props }) => {
     return (
-        <>
-            <components.Menu {...props}>
+        <components.Menu {...props}>
                 <>
                 <span style={{ height: '32px' }} className="fs-12 fw-6 cn-4 flex left w-100 ml-12">
                     {title}
@@ -379,6 +387,5 @@ const CustomFilterMenu = ({title, props})=>{
                 {props.children}
                 </>
             </components.Menu>
-        </>
-    );
+    )
 }

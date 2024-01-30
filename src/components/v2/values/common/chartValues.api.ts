@@ -1,4 +1,5 @@
 import React from 'react'
+import { showError, Teams, sortCallback, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../config'
 import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../../services/service'
 import { EnvironmentListHelmResult } from '../../../../services/service.types'
@@ -8,7 +9,6 @@ import {
     getChartVersionsMin,
     getReadme,
 } from '../../../charts/charts.service'
-import { showError, Teams, sortCallback, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
@@ -162,19 +162,21 @@ export async function fetchProjectsAndEnvironments(
         let envList = []
 
         if (serverMode === SERVER_MODE.FULL) {
-            envList = createClusterEnvGroup(environmentListRes.map((env) =>
-            {
-                return {
-                    value: env.id,
-                    label: env.environment_name,
-                    active: env.active,
-                    namespace: env.namespace,
-                    clusterName: env.cluster_name,
-                    description: env.description,
-                    isVirtualEnvironment: env.isVirtualEnvironment,
-                    allowedDeploymentTypes: env.allowedDeploymentTypes ?? []
-                }
-            }), 'clusterName')
+            envList = createClusterEnvGroup(
+                environmentListRes.map((env) => {
+                    return {
+                        value: env.id,
+                        label: env.environment_name,
+                        active: env.active,
+                        namespace: env.namespace,
+                        clusterName: env.cluster_name,
+                        description: env.description,
+                        isVirtualEnvironment: env.isVirtualEnvironment,
+                        allowedDeploymentTypes: env.allowedDeploymentTypes ?? [],
+                    }
+                }),
+                'clusterName',
+            )
         } else {
             const _sortedResult = (
                 environmentListRes ? sortObjectArrayAlphabetically(environmentListRes, 'clusterName') : []
@@ -189,7 +191,7 @@ export async function fetchProjectsAndEnvironments(
                         clusterName: cluster.clusterName,
                         clusterId: cluster.clusterId,
                         isVirtualEnvironment: env?.isVirtualEnvironment,
-                        allowedDeploymentTypes: env.allowedDeploymentTypes ?? []
+                        allowedDeploymentTypes: env.allowedDeploymentTypes ?? [],
                     })),
                 ],
             }))

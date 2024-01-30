@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { validateEmail } from '../common'
 import { showError, Progressing, Checkbox, Drawer, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { validateEmail } from '../common'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { toast } from 'react-toastify'
 import { ViewType } from '../../config/constants'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { SMTPConfigModalProps, SMTPConfigModalState } from './types'
@@ -12,6 +12,7 @@ import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigModalState> {
     _configName
+
     constructor(props) {
         super(props)
         this.state = {
@@ -73,7 +74,9 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 view: ViewType.FORM,
             }))
             setTimeout(() => {
-                if (this._configName) this._configName.focus()
+                if (this._configName) {
+                    this._configName.focus()
+                }
             }, 100)
         }
     }
@@ -102,7 +105,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
     }
 
     saveSMTPConfig(): void {
-        let keys = Object.keys(this.state.isValid)
+        const keys = Object.keys(this.state.isValid)
         let isFormValid = keys.reduce((isFormValid, key) => {
             isFormValid = isFormValid && this.state.isValid[key]
             return isFormValid
@@ -115,12 +118,12 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
             }))
             toast.error('Some required fields are missing or Invalid')
             return
-        } else {
-            this.setState((prevState) => ({
-                ...prevState,
-                form: { ...prevState.form, isLoading: true, isError: false },
-            }))
         }
+        this.setState((prevState) => ({
+            ...prevState,
+            form: { ...prevState.form, isLoading: true, isError: false },
+        }))
+
         saveEmailConfiguration(this.state.form, 'smtp')
             .then((response) => {
                 this.setState((prevState) => ({
@@ -171,10 +174,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     <Progressing pageLoader />
                 </div>
             )
-        } else
+        } else {
             body = (
                 <>
-                    <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
+                    <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
                         <label className="form__row">
                             <CustomInput
                                 name="configName"
@@ -185,9 +188,9 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 onChange={this.handleInputChange}
                                 handleOnBlur={this.handleBlur}
                                 placeholder="Configuration name"
-                                autoFocus={true}
+                                autoFocus
                                 tabIndex={1}
-                                isRequiredField={true}
+                                isRequiredField
                                 error={!this.state.isValid.configName && REQUIRED_FIELD_MSG}
                             />
                         </label>
@@ -201,7 +204,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 handleOnBlur={this.handleBlur}
                                 placeholder="Eg. smtp.gmail.com"
                                 tabIndex={2}
-                                isRequiredField={true}
+                                isRequiredField
                                 error={!this.state.isValid.host && REQUIRED_FIELD_MSG}
                             />
                         </label>
@@ -215,7 +218,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 handleOnBlur={this.handleBlur}
                                 placeholder="Enter SMTP port"
                                 tabIndex={3}
-                                isRequiredField={true}
+                                isRequiredField
                                 error={!this.state.isValid.port && REQUIRED_FIELD_MSG}
                             />
                         </label>
@@ -229,7 +232,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 handleOnBlur={this.handleBlur}
                                 placeholder="Enter SMTP username"
                                 tabIndex={3}
-                                isRequiredField={true}
+                                isRequiredField
                                 error={!this.state.isValid.authUser && REQUIRED_FIELD_MSG}
                             />
                         </div>
@@ -256,7 +259,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 handleOnBlur={this.handleBlur}
                                 placeholder="Email"
                                 tabIndex={5}
-                                isRequiredField={true}
+                                isRequiredField
                                 error={!this.state.isValid.fromEmail && REQUIRED_FIELD_MSG}
                             />
                         </label>
@@ -264,7 +267,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     <div className="form__button-group-bottom flexbox flex-justify">
                         <Checkbox
                             isChecked={this.state.form.default}
-                            value={'CHECKED'}
+                            value="CHECKED"
                             tabIndex={6}
                             disabled={this.props.shouldBeDefault}
                             onChange={this.handleCheckbox}
@@ -280,14 +283,21 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             >
                                 Cancel
                             </button>
-                            <button onClick={this.onSaveClickHandler}
-                            data-testid="add-smtp-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button
+                                onClick={this.onSaveClickHandler}
+                                data-testid="add-smtp-save-button"
+                                type="submit"
+                                className="cta"
+                                tabIndex={7}
+                                disabled={this.state.form.isLoading}
+                            >
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>
                     </div>
                 </>
             )
+        }
         return this.renderWithBackdrop(body)
     }
 }

@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import './pageHeader.css'
+import ReactGA from 'react-ga4'
+import { getLoginInfo, getRandomColor, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import LogoutCard from '../LogoutCard'
 import { setActionWithExpiry } from '../helpers/Helpers'
 import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
-import ReactGA from 'react-ga4'
 import {
     handlePostHogEventUpdate,
     MAX_LOGIN_COUNT,
@@ -19,11 +20,10 @@ import { ReactComponent as QuestionFilled } from '../../../assets/icons/ic-help.
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
-import { getLoginInfo, getRandomColor, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { BULK_EDIT_HEADER } from './constants'
 import AnnouncementBanner from '../AnnouncementBanner'
 
-function PageHeader({
+const PageHeader = ({
     headerName,
     additionalHeaderInfo,
     isTippyShown = false,
@@ -40,7 +40,7 @@ function PageHeader({
     onClose,
     markAsBeta,
     showAnnouncementHeader,
-}: PageHeaderType) {
+}: PageHeaderType) => {
     const { loginCount, setLoginCount, showGettingStartedCard, setShowGettingStartedCard, setGettingStartedClicked } =
         useContext(mainContext)
     const [showHelpCard, setShowHelpCard] = useState(false)
@@ -85,30 +85,35 @@ function PageHeader({
     }
 
     const onClickHelp = (e) => {
-      if (!window._env_.K8S_CLIENT && currentServerInfo.serverInfo?.installationType !== InstallationType.ENTERPRISE) {
-          getCurrentServerInfo()
-      }
-      setShowHelpCard(!showHelpCard)
-      if (showLogOutCard) {
-          setShowLogOutCard(false)
-      }
-      setActionWithExpiry('clickedOkay', 1)
-      hideGettingStartedCard()
-      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
-      ReactGA.event({
-          category: 'Main Navigation',
-          action: `Help Clicked`,
-      })
+        if (
+            !window._env_.K8S_CLIENT &&
+            currentServerInfo.serverInfo?.installationType !== InstallationType.ENTERPRISE
+        ) {
+            getCurrentServerInfo()
+        }
+        setShowHelpCard(!showHelpCard)
+        if (showLogOutCard) {
+            setShowLogOutCard(false)
+        }
+        setActionWithExpiry('clickedOkay', 1)
+        hideGettingStartedCard()
+        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
+        ReactGA.event({
+            category: 'Main Navigation',
+            action: `Help Clicked`,
+        })
     }
 
     const renderLogoutHelpSection = () => {
         return (
             <>
                 <div className="flex left cursor mr-16" onClick={onClickHelp}>
-                    <span className="icon-dim-24 fcn-9 mr-4 ml-16" >
+                    <span className="icon-dim-24 fcn-9 mr-4 ml-16">
                         <Question />
                     </span>
-                    <span className="fs-13 cn-9" data-testid="go-to-get-started">Help</span>
+                    <span className="fs-13 cn-9" data-testid="go-to-get-started">
+                        Help
+                    </span>
                     <DropDownIcon
                         style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
                         className="fcn-9 icon-dim-20 rotate pointer"
@@ -151,7 +156,7 @@ function PageHeader({
                 showTabs ? 'dc__page-header-tabs__height' : 'dc__page-header__height flex'
             }`}
         >
-            <h1 className={`dc__page-header__title dc__content-space  flex fs-16 fw-6 lh-20`}>
+            <h1 className="dc__page-header__title dc__content-space  flex fs-16 fw-6 lh-20">
                 <div className="flex left">
                     {showCloseButton && (
                         <button className="dc__transparent flex mr-8" onClick={onClose}>
@@ -170,6 +175,7 @@ function PageHeader({
                             target="_blank"
                             href={tippyRedirectLink}
                             onClick={onClickTippybutton}
+                            rel="noreferrer"
                         >
                             <Tippy
                                 className="default-tt "
@@ -189,9 +195,9 @@ function PageHeader({
                             Icon={QuestionFilled}
                             heading={headerName}
                             infoText={tippyMessage}
-                            showCloseButton={true}
+                            showCloseButton
                             trigger="click"
-                            interactive={true}
+                            interactive
                             documentationLink={tippyRedirectLink}
                             documentationLinkText="Learn More"
                         >
@@ -232,7 +238,7 @@ function PageHeader({
                 )}
             {showLogOutCard && (
                 <LogoutCard
-                    className={'logout-card__more-option'}
+                    className="logout-card__more-option"
                     userFirstLetter={email}
                     setShowLogOutCard={setShowLogOutCard}
                     showLogOutCard={showLogOutCard}
@@ -244,7 +250,7 @@ function PageHeader({
                     {renderLogoutHelpSection()}
                 </div>
             )}
-              {showAnnouncementHeader && <AnnouncementBanner parentClassName="page-header-banner" />}
+            {showAnnouncementHeader && <AnnouncementBanner parentClassName="page-header-banner" />}
         </div>
     )
 }

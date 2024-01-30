@@ -7,7 +7,7 @@ import { excludeVariables } from './Constants'
 import { InputPluginSelection } from './InputPluginSelect'
 import { SuggestedTagOptionType } from '../ConfigMapSecret/Types'
 
-function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
+const CustomInputVariableSelect = ({ selectedVariableIndex }: { selectedVariableIndex: number }) => {
     const refVar = useRef(null)
     const {
         formData,

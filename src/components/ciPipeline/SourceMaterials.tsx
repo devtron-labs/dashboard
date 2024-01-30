@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
-import { SourceTypeMap, URLS } from '../../config'
 import ReactSelect, { components } from 'react-select'
 import { Link, useLocation } from 'react-router-dom'
+import { CustomInput, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { SourceTypeMap, URLS } from '../../config'
 import git from '../../assets/icons/git/git.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator } from '../charts/charts.util'
@@ -10,24 +12,22 @@ import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { CustomInput, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
-import Tippy from '@tippyjs/react'
 
-export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
+export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
     const [isProviderChanged, setProviderChanged] = useState(false)
     const isMultiGit = props.materials.length > 1
     const location = useLocation()
     const islinkedCI = location.pathname.includes('linked-ci')
     let _materials = props.materials
-    let _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
+    const _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
 
     if (isMultiGit && _webhookTypeMaterial) {
         _materials = []
         _materials.push(_webhookTypeMaterial)
     }
 
-    function MenuList(_props) {
+    const MenuList = (_props) => {
         return (
             <components.MenuList {..._props}>
                 {_props.children}
@@ -78,7 +78,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         )
     }
 
-    function Option(_props) {
+    const Option = (_props) => {
         const { selectProps, selectOption, data } = _props
         selectProps.styles.option = getCustomOptionSelectionStyle({
             backgroundColor: data.isSelected ? 'var(--B100)' : _props.isFocused ? 'var(--N100)' : 'white',
@@ -123,11 +123,11 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             i.value === SourceTypeMap.WEBHOOK
                                 ? i.isSelected
                                 : isBranchRegex
-                                ? i.value === SourceTypeMap.BranchRegex
-                                : i.value === mat.type,
+                                  ? i.value === SourceTypeMap.BranchRegex
+                                  : i.value === mat.type,
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
-                let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
+                const errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
                 const isMultiGitAndWebhook = isMultiGit && _selectedWebhookEvent
                 return (
                     <div key={`source-material-${index}`}>
@@ -147,13 +147,13 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             arrow={false}
                                             placement="top"
                                             content={`Cannot change source type ${_selectedWebhookEvent.name} for multi-git applications`}
-                                            interactive={true}
+                                            interactive
                                         >
                                             {children}
                                         </Tippy>
                                     )}
                                 >
-                                    <div className={'w-50 mr-8 '}>
+                                    <div className="w-50 mr-8 ">
                                         <label className="form__label mb-6 dc__required-field">Source Type</label>
                                         <ReactSelect
                                             className="workflow-ci__source"
@@ -168,7 +168,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }
                                             isDisabled={islinkedCI || (isMultiGit && _selectedWebhookEvent)}
                                             value={selectedMaterial}
-                                            closeMenuOnSelect={true}
+                                            closeMenuOnSelect
                                             onChange={(selected) =>
                                                 props?.selectSourceType(selected, mat.gitMaterialId)
                                             }
@@ -194,7 +194,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }}
                                         />
 
-                                        <div className="h-24"></div>
+                                        <div className="h-24" />
                                     </div>
                                 </ConditionalWrap>
 
@@ -217,15 +217,15 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 )
                                             }}
                                             handleOnBlur={onBlur}
-                                            isRequiredField={true}
+                                            isRequiredField
                                             error={
                                                 errorObj &&
                                                 !errorObj.isValid &&
                                                 props.validationRules?.sourceValue(_materials[index].value).message
                                             }
                                         />
-                                        {/* Note: In case Error is not shown added height*/}
-                                         {errorObj?.isValid && <div className="h-24"></div>} 
+                                        {/* Note: In case Error is not shown added height */}
+                                        {errorObj?.isValid && <div className="h-24" />}
                                     </div>
                                 )}
 
@@ -247,12 +247,13 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 )
                                             }}
                                             error={
-                                                errorObj && !errorObj.isValid
-                                                    && props.validationRules?.sourceValue(_materials[index].regex).message
+                                                errorObj &&
+                                                !errorObj.isValid &&
+                                                props.validationRules?.sourceValue(_materials[index].regex).message
                                             }
                                         />
-                                          {/* Note: In case Error is not shown */}
-                                        {errorObj?.isValid && <div className="h-24"></div>}
+                                        {/* Note: In case Error is not shown */}
+                                        {errorObj?.isValid && <div className="h-24" />}
                                     </div>
                                 )}
                             </div>
@@ -261,7 +262,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             <div className={`${errorObj && !errorObj.isValid ? 'mt-16' : ''}`}>
                                 <InfoColourBar
                                     message="Branch Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline."
-                                    classname={'info_bar'}
+                                    classname="info_bar"
                                     Icon={InfoIcon}
                                 />
                             </div>

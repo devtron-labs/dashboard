@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
-import { showError, PopupMenu, multiSelectStyles, ForceDeleteDialog, ServerErrors, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    PopupMenu,
+    multiSelectStyles,
+    ForceDeleteDialog,
+    ServerErrors,
+    DeploymentAppTypes,
+} from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
+import { useParams, useHistory, useRouteMatch } from 'react-router'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 import IndexStore from '../index.store'
 import { AppEnvironment } from './environment.type'
-import { useParams, useHistory, useRouteMatch } from 'react-router'
 import { useSharedState } from '../../utils/useSharedState'
 import { AppType } from '../appDetails.type'
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
-import Tippy from '@tippyjs/react'
 import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { deleteInstalledChart } from '../../../charts/charts.service'
-import { toast } from 'react-toastify'
 import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component'
 import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
@@ -25,7 +32,7 @@ import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
-function EnvironmentSelectorComponent({
+const EnvironmentSelectorComponent = ({
     isExternalApp,
     _init,
     loadingResourceTree,
@@ -35,7 +42,7 @@ function EnvironmentSelectorComponent({
     _init?: () => void
     loadingResourceTree: boolean
     isVirtualEnvironment?: boolean
-}) {
+}) => {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -103,7 +110,7 @@ function EnvironmentSelectorComponent({
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteDialogTitle(userMessage)
-                setForceDeleteDialogMessage( internalMessage)
+                setForceDeleteDialogMessage(internalMessage)
             })
         }
     }
@@ -111,16 +118,15 @@ function EnvironmentSelectorComponent({
     const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
-        } else {
-            return deleteInstalledChart(params.appId, isGitops, deleteAction)
         }
+        return deleteInstalledChart(params.appId, isGitops, deleteAction)
     }
 
     const onClickHideNonCascadeDeletePopup = () => {
         showNonCascadeDeleteDialog(false)
     }
-    
-    const onClickNonCascadeDelete = async() => {
+
+    const onClickNonCascadeDelete = async () => {
         await deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
@@ -144,7 +150,7 @@ function EnvironmentSelectorComponent({
                 showNonCascadeDeleteDialog(true)
             }
         } catch (error: any) {
-            if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && error.code !== 403) { 
+            if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && error.code !== 403) {
                 setShowDeleteConfirmation(false)
                 showNonCascadeDeleteDialog(false)
                 setForceDeleteDialogData(error)
@@ -261,7 +267,9 @@ function EnvironmentSelectorComponent({
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
                             <BinWithDots className="icon-dim-16 mr-8 ml-12" />
-                            <span className="cr-5 fw-6" data-testid = "delete-progress">{DELETE_DEPLOYMENT_PIPELINE}</span>
+                            <span className="cr-5 fw-6" data-testid="delete-progress">
+                                {DELETE_DEPLOYMENT_PIPELINE}
+                            </span>
                             <span className="dc__loading-dots cr-5" />
                         </>
                     )}
@@ -298,13 +306,19 @@ function EnvironmentSelectorComponent({
                             deployedAppDetail[0],
                         )
                     ) && (
-                        <div data-testid="dot-button-app-details" className="helm-delete-wrapper flex ml-8 mw-none cta cancel small">
+                        <div
+                            data-testid="dot-button-app-details"
+                            className="helm-delete-wrapper flex ml-8 mw-none cta cancel small"
+                        >
                             <PopupMenu autoClose>
-                                <PopupMenu.Button rootClassName="flex" isKebab={true}>
+                                <PopupMenu.Button rootClassName="flex" isKebab>
                                     <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                   <div className="helm-delete-pop-up bcn-0 br-4"> <Popup /></div>
+                                    <div className="helm-delete-pop-up bcn-0 br-4">
+                                        {' '}
+                                        <Popup />
+                                    </div>
                                 </PopupMenu.Body>
                             </PopupMenu>
                             {showDeleteConfirmation && (

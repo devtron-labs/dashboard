@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useHistory } from 'react-router'
-import { sortOptionsByValue } from '../../../common'
 import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
+import { sortOptionsByValue } from '../../../common'
 import {
     getAppDetail,
     HelmAppDetailResponse,
@@ -10,13 +11,12 @@ import {
 import IndexStore from '../index.store'
 import { AppDetails, AppType } from '../appDetails.type'
 import AppDetailsComponent from '../AppDetails.component'
-import moment from 'moment'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil'
 import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 
-function ExternalAppDetail({ appId, appName, isExternalApp }) {
+const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const location = useLocation()
     const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
@@ -61,14 +61,13 @@ function ExternalAppDetail({ appId, appName, isExternalApp }) {
     const _convertToGenericAppDetailModel = (
         helmAppDetailAndInstalledAppInfo: HelmAppDetailAndInstalledAppInfo,
     ): AppDetails => {
-        let helmAppDetail = helmAppDetailAndInstalledAppInfo.appDetail
-        let installedAppInfo = helmAppDetailAndInstalledAppInfo.installedAppInfo
-        let genericAppDetail: AppDetails = {
+        const helmAppDetail = helmAppDetailAndInstalledAppInfo.appDetail
+        const { installedAppInfo } = helmAppDetailAndInstalledAppInfo
+        const genericAppDetail: AppDetails = {
             appType: AppType.EXTERNAL_HELM_CHART,
-            appId: appId,
-            appName: appName,
-            environmentName:
-                helmAppDetail.environmentDetails.clusterName + '__' + helmAppDetail.environmentDetails.namespace,
+            appId,
+            appName,
+            environmentName: `${helmAppDetail.environmentDetails.clusterName}__${helmAppDetail.environmentDetails.namespace}`,
             namespace: helmAppDetail.environmentDetails.namespace,
             lastDeployedTime: moment(
                 new Date(helmAppDetail.lastDeployed.seconds * 1000),

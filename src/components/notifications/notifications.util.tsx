@@ -1,13 +1,13 @@
-import React from 'react';
-import { components } from 'react-select';
-import { validateEmail } from '../common';
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
-import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
-import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg';
-import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
-import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
-import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
+import React from 'react'
+import { components } from 'react-select'
+import { validateEmail } from '../common'
+import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
+import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'
+import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg'
+import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg'
+import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
 import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
 
 export const multiSelectStyles = {
@@ -22,21 +22,31 @@ export const multiSelectStyles = {
         top: `38px`,
     }),
     option: (base, state) => {
-        return ({
+        return {
             ...base,
             color: 'var(--N900)',
             display: `flex`,
             alignItems: `center`,
             fontSize: '12px',
             padding: '8px 24px',
-        })
+        }
     },
     multiValue: (base, state) => {
-        return ({
+        return {
             ...base,
-            border: (state.data.data.dest !== "slack") && (state.data.data.dest !== "webhook") && !validateEmail(state.data.label) ? `1px solid var(--R500)` : `1px solid var(--N200)`,
+            border:
+                state.data.data.dest !== 'slack' &&
+                state.data.data.dest !== 'webhook' &&
+                !validateEmail(state.data.label)
+                    ? `1px solid var(--R500)`
+                    : `1px solid var(--N200)`,
             borderRadius: `4px`,
-            background: (state.data.data.dest !== "slack") && (state.data.data.dest !== "webhook") && !validateEmail(state.data.label) ? 'var(--R100)' : 'var(--N000)',
+            background:
+                state.data.data.dest !== 'slack' &&
+                state.data.data.dest !== 'webhook' &&
+                !validateEmail(state.data.label)
+                    ? 'var(--R100)'
+                    : 'var(--N000)',
             padding: `2px`,
             textTransform: `lowercase`,
             fontSize: `12px`,
@@ -45,26 +55,26 @@ export const multiSelectStyles = {
             color: `var(--N900)`,
             userSelect: `none`,
             display: `inline-flex`,
-        })
+        }
     },
     multiValueLabel: (base, state) => {
-        return ({
+        return {
             ...base,
             display: `flex`,
             alignItems: `center`,
             fontSize: '12px',
-            padding: '0px'
-        })
-    }
+            padding: '0px',
+        }
+    },
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return <components.DropdownIndicator {...props}>
         <ArrowDown className="icon-dim-20 icon-n5" />
     </components.DropdownIndicator>
 }
 
-export function MultiValueLabel(props) {
+export const MultiValueLabel = (props) => {
     let item = props.data;
     return <components.MultiValueLabel {...props} validator={validateEmail} >
         {item.data.dest === "" && !validateEmail(props.children) ? <RedWarning className="icon-dim-20 mr-5 scr-5" /> : null}
@@ -75,7 +85,6 @@ export function MultiValueLabel(props) {
         {props.children}
     </components.MultiValueLabel>
 }
-
 
 export const MultiValueContainer = ({ validator, ...props }) => {
     const { children, data, innerProps, selectProps } = props
@@ -91,7 +100,7 @@ export const MultiValueContainer = ({ validator, ...props }) => {
             {children[1]}
         </components.MultiValueContainer>
     }
-    else {
+    
         return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
             <div className="flex fs-12 ml-4">
                 {data.data.dest === "slack" && <Slack className="icon-dim-20 mr-5" /> }
@@ -100,10 +109,10 @@ export const MultiValueContainer = ({ validator, ...props }) => {
             </div>
             {children[1]}
         </components.MultiValueContainer>
-    }
+    
 }
 
-export function Option(props) {
+export const Option = (props) => {
     let item = props.data;
     if (item && item?.__isNew__) {
         return <components.Option {...props} >
@@ -118,10 +127,10 @@ export function Option(props) {
     </components.Option>
 }
 
-  export const renderPipelineTypeIcon = (row) => {
+export const renderPipelineTypeIcon = (row) => {
       if (row.isVirtualEnvironment) {
           return <Rocket className="icon-dim-24" />
-      } else if (row.pipelineType === 'CI' || row.type === 'CI') {
+      } if (row.pipelineType === 'CI' || row.type === 'CI') {
           return <CI className="icon-dim-20 dc__flip" />
       } else {
           return <CD className="icon-dim-20 dc__flip" />

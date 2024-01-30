@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
+import Tippy from '@tippyjs/react'
+import { OptionType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
 import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
-import Tippy from '@tippyjs/react'
-import { OptionType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
 import { Option, DropdownIndicator, getCommonSelectStyle } from '../v2/common/ReactSelect.utils'
 import { getCDStageTypeSelectorValue, customTagStageTypeOptions } from './ciPipeline.utils'
-import ReactSelect from 'react-select'
 import '../ciPipeline/ciPipeline.scss'
 
 function CustomImageTags({
@@ -104,7 +104,8 @@ function CustomImageTags({
             <Tippy
                 content={
                     <div className="fs-12">
-                        {`{x}`} is an auto increasing number. It will increase by one on each {isCDBuild ? getCDStageTypeSelectorValue(formData.customTagStage).label : " build "} trigger.
+                        {`{x}`} is an auto increasing number. It will increase by one on each{' '}
+                        {isCDBuild ? getCDStageTypeSelectorValue(formData.customTagStage).label : ' build '} trigger.
                     </div>
                 }
                 placement="top"
@@ -137,7 +138,7 @@ function CustomImageTags({
                     placeholder="Example: v1.2.{x}"
                     name="image_tag"
                     autoComplete="off"
-                    autoFocus={true}
+                    autoFocus
                     data-testid="custom-image-tag-textarea"
                     value={formData.customTag?.tagPattern}
                     onChange={onChangeCustomInput}
@@ -153,7 +154,7 @@ function CustomImageTags({
                         <div className="flexbox">
                             Tag Preview:
                             <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
-                                <div className="dc__registry-icon docker mr-5"></div>
+                                <div className="dc__registry-icon docker mr-5" />
                                 {formData.customTag?.tagPattern?.replace(
                                     '{x}',
                                     formData.customTag?.counterX?.toString() ?? '0',
@@ -181,7 +182,7 @@ function CustomImageTags({
                         value={formData.customTag?.counterX}
                         onChange={onChangeCustomImageCounter}
                         onKeyPress={handleCounterKeyPress}
-                        defaultValue={'0'}
+                        defaultValue="0"
                     />
                     in the next {isCDBuild ? ' trigger of ' : ' build trigger '}
                     {isCDBuild ? renderCustomTagStageOnCD() : null}
@@ -211,7 +212,7 @@ function CustomImageTags({
                     <Edit className="icon-dim-20" onClick={toggleEditToShowCreateImageView} />
                 </div>
                 <div className="dc__italic-font-style cn-7">
-                    {`{X}`} = {formData.customTag.counterX} in the next {!isCDBuild ? " build " : "" }  trigger
+                    {`{X}`} = {formData.customTag.counterX} in the next {!isCDBuild ? ' build ' : ''} trigger
                     {isCDBuild && formData.customTagStage
                         ? ` of ${getCDStageTypeSelectorValue(formData.customTagStage).label}`
                         : ''}

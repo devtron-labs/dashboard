@@ -8,6 +8,9 @@ import {
     stopPropagation,
     InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
+import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
@@ -15,15 +18,12 @@ import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { updateTaints } from '../clusterNodes.service'
-import ReactSelect from 'react-select'
 import { OptionType } from '../../app/types'
 import { Option, DropdownIndicator } from '../../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../../CIPipelineN/ciPipeline.utils'
 import { EditTaintsModalType, EditTaintsRequest, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
 import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
-import { toast } from 'react-toastify'
-import { useParams } from 'react-router-dom'
 
 export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
     const { clusterId } = useParams<{ clusterId: string }>()
@@ -39,7 +39,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
     }
 
     const deleteTaint = (e): void => {
-        const index = e.currentTarget.dataset.index
+        const { index } = e.currentTarget.dataset
         const _taintList = [...taintList]
         _taintList.splice(index, 1)
         setTaintList(_taintList)
@@ -54,7 +54,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
 
     const handleInputChange = (e): void => {
         const _taintList = [...taintList]
-        const index = e.currentTarget.dataset.index
+        const { index } = e.currentTarget.dataset
         _taintList[index][e.target.name] = e.target.value
         setTaintList(_taintList)
         validateTaintList(_taintList)
@@ -106,9 +106,9 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
             setAPICallInProgress(true)
             const payload: EditTaintsRequest = {
                 clusterId: Number(clusterId),
-                name: name,
-                version: version,
-                kind: kind,
+                name,
+                version,
+                kind,
                 taints: taintList,
             }
             await updateTaints(payload)
@@ -146,9 +146,9 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                     iconClass="fcv-5"
                     heading={EDIT_TAINTS_MODAL_MESSAGING.tippyTitle}
                     infoText=""
-                    showCloseButton={true}
+                    showCloseButton
                     trigger="click"
-                    interactive={true}
+                    interactive
                     additionalContent={tippyContent()}
                 >
                     <span className="cb-5 cursor" onClick={stopPropagation}>
@@ -163,9 +163,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="bcn-0 h-100">
                 <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0">
-                        {`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}
-                    </h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">{`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                         <Close className="icon-dim-24" />
                     </button>
@@ -177,10 +175,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                         Icon={InfoIcon}
                         iconClass="icon-dim-20"
                     />
-                    <div
-                        className="cursor cb-5 fw-6 fs-13 flexbox mr-20 mb-12"
-                        onClick={addNewTaint}
-                    >
+                    <div className="cursor cb-5 fw-6 fs-13 flexbox mr-20 mb-12" onClick={addNewTaint}>
                         <Add className="icon-dim-20 fcb-5" /> {EDIT_TAINTS_MODAL_MESSAGING.addTaint}
                     </div>
                     {taintList?.map((taintDetails, index) => {
@@ -236,7 +231,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                                 <Option
                                                     {...props}
                                                     tippyClass="default-tt w-200"
-                                                    showTippy={true}
+                                                    showTippy
                                                     placement="left"
                                                     tippyContent={props.data['description']}
                                                 />

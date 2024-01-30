@@ -125,7 +125,7 @@ export const selectVariableStyle = {
         display: 'flex',
         height: '32px',
         lineHeight: '26px',
-        flexWrap: 'no-wrap'
+        flexWrap: 'no-wrap',
     }),
     indicatorsContainer: (base, state) => ({
         ...base,
@@ -265,15 +265,14 @@ export const reactSelectStyles = {
 }
 
 export enum StageTypeEnums {
-    PRE_CD='PRE_CD',
-    POST_CD= 'POST_CD',
+    PRE_CD = 'PRE_CD',
+    POST_CD = 'POST_CD',
 }
 
 export const StageTypeMap = {
     PRE_CD: 'Pre-deployment stage',
     POST_CD: 'Post-deployment stage',
 }
-
 
 export const customTagStageTypeOptions = [
     {

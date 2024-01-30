@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
 import {
+    stopPropagation,
+    CIBuildType,
+    TippyCustomized,
+    TippyTheme,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
     DropdownIndicator,
     getCommonSelectStyle,
     getCustomOptionSelectionStyle,
@@ -26,7 +33,6 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { stopPropagation, CIBuildType, TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
@@ -39,7 +45,9 @@ import {
 } from './ciConfigConstant'
 
 export const renderOptionIcon = (option: string) => {
-    if (!option) return null
+    if (!option) {
+        return null
+    }
 
     const isGitLab = option.includes('gitlab')
     const isGitHub = option.includes('github')
@@ -65,7 +73,7 @@ export const repositoryOption = (props): JSX.Element => {
     )
 }
 
-export const releaseTagOption = (props) : JSX.Element => {
+export const releaseTagOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (
         <components.Option {...props} onClick={stopPropagation}>
@@ -74,20 +82,16 @@ export const releaseTagOption = (props) : JSX.Element => {
     )
 }
 
-export const checkoutPathOption = (props) : JSX.Element => {
+export const checkoutPathOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
-    return (
-        <components.Option {...props}>
-            {props.value}
-        </components.Option>
-    )
+    return <components.Option {...props}>{props.value}</components.Option>
 }
 export const repositoryControls = (props): JSX.Element => {
     let value = ''
     if (props.hasValue) {
         value = props.getValue()[0].url
     }
-    let showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
+    const showGit = value && !value.includes('github') && !value.includes('gitlab') && !value.includes('bitbucket')
     return (
         <components.Control {...props}>
             {value.includes('github') && <GitHub className="icon-dim-20 ml-10" />}
@@ -108,7 +112,7 @@ const menuListComponent = (props): JSX.Element => {
     )
 }
 
-function BuildContextLabel() {
+const BuildContextLabel = () => {
     return (
         <label htmlFor="" className="form__label flexbox-imp flex-align-center">
             {CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.label}
@@ -143,7 +147,7 @@ function additionalBuilderTippyContent() {
     )
 }
 
-function BuilderTippy() {
+const BuilderTippy = () => {
     return (
         <TippyCustomized
             theme={TippyTheme.white}
@@ -248,9 +252,9 @@ export default function CIBuildpackBuildOptions({
             ciBuildType: CIBuildType.BUILDPACK_BUILD_TYPE,
         }
 
-        let _language = buildersAndFrameworks.selectedLanguage,
-            _version = buildersAndFrameworks.selectedVersion,
-            _builder = buildersAndFrameworks.selectedBuilder
+        let _language = buildersAndFrameworks.selectedLanguage
+        let _version = buildersAndFrameworks.selectedVersion
+        let _builder = buildersAndFrameworks.selectedBuilder
 
         // Update buildersAndFrameworks & buildPackConfig only on the first mount of the component
         // for !builderLanguageSupportMap, we will reset the values on init, but not proper solution
@@ -273,7 +277,7 @@ export default function CIBuildpackBuildOptions({
                 _currentCIBuildConfig[DockerConfigOverrideKeys.buildPackConfig] = {
                     ...ciBuildConfig.buildPackConfig,
                     builderLangEnvParam: currentBuilderLangEnvParam,
-                    currentBuilderLangEnvParam: currentBuilderLangEnvParam,
+                    currentBuilderLangEnvParam,
                 }
 
                 // Update BuilderLanguageMetadata with previously saved custom option
@@ -316,7 +320,7 @@ export default function CIBuildpackBuildOptions({
                     language: initOption.language,
                     languageVersion: initOption.version,
                     builderLangEnvParam: initOption.BuilderLangEnvParam,
-                    currentBuilderLangEnvParam: currentBuilderLangEnvParam,
+                    currentBuilderLangEnvParam,
                 }
             }
 
@@ -420,7 +424,7 @@ export default function CIBuildpackBuildOptions({
     }
 
     const updateBuildEnvArgs = (version: string, builder: BuilderIdOptionType, isInitCall?: boolean) => {
-        let _buildEnvArgs = [...buildEnvArgs]
+        const _buildEnvArgs = [...buildEnvArgs]
 
         /**
          * If _buildEnvArgs contains only one empty arg
@@ -433,9 +437,8 @@ export default function CIBuildpackBuildOptions({
                 _buildEnvArgs[0].v = version
                 setBuildEnvArgs(_buildEnvArgs)
                 return
-            } else {
-                _buildEnvArgs.splice(0, 1)
             }
+            _buildEnvArgs.splice(0, 1)
         }
 
         /**
@@ -463,8 +466,8 @@ export default function CIBuildpackBuildOptions({
             (currentCIBuildConfig.buildPackConfig.builderId !== builder.value ||
                 currentCIBuildConfig.buildPackConfig.languageVersion !== version)
         ) {
-            let isArgPresent = false,
-                argIdx
+            let isArgPresent = false
+            let argIdx
             _buildEnvArgs.forEach((_arg, idx) => {
                 if (
                     !isArgPresent &&
@@ -514,8 +517,7 @@ export default function CIBuildpackBuildOptions({
 
     const formatCreateLabel = (inputValue: string) => `Use '${inputValue}'`
 
-    const projectPathVal =
-        readOnly ? ciBuildConfig.buildPackConfig?.projectPath : projectPath.value
+    const projectPathVal = readOnly ? ciBuildConfig.buildPackConfig?.projectPath : projectPath.value
 
     if (readOnly) {
         return (

@@ -84,7 +84,8 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     }
 
     renderStages(key: 'beforeDockerBuildScripts' | 'afterDockerBuildScripts') {
-        let description, title
+        let description
+        let title
         if (key == 'beforeDockerBuildScripts') {
             title = 'Pre-build Stages'
             description = ' These stages are run in sequence before the container image is built'
@@ -92,15 +93,18 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
             title = 'Post-build Stages'
             description = ' These stages are run in sequence after the container image is built'
         }
-        let showBuild = key === 'beforeDockerBuildScripts' ? this.props.showPreBuild : this.props.showPostBuild
+        const showBuild = key === 'beforeDockerBuildScripts' ? this.props.showPreBuild : this.props.showPostBuild
 
         return (
             <>
                 <div
                     className="flex left cursor"
                     onClick={(event) => {
-                        if (key === 'beforeDockerBuildScripts') this.props.handlePreBuild()
-                        else this.props.handlePostBuild()
+                        if (key === 'beforeDockerBuildScripts') {
+                            this.props.handlePreBuild()
+                        } else {
+                            this.props.handlePostBuild()
+                        }
                     }}
                 >
                     <div className="sqr-44">
@@ -142,158 +146,158 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                 <img src={dropdown} className="collapsed__icon" alt="collapsed" />
                             </div>
                         )
-                    } else {
-                        if (key === 'beforeDockerBuildScripts' && this.props.showPreBuild) {
-                            return (
-                                <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
-                                    <div className="white-card__header  flex flex-justify">
-                                        {stage.id ? 'Edit Stage' : 'Add Stage'}
-                                        {stage.id > 0 && (
-                                            <Trash
-                                                className="pointer"
-                                                onClick={(e) => this.props.deleteStage(stage.id, key, index)}
-                                            />
-                                        )}
-                                    </div>
-                                    <label className="form__row">
-                                        <CustomInput
-                                            name="stage-name"
-                                            label="Stage Name"
-                                            placeholder="Enter stage name"
-                                            value={stage.name}
-                                            onChange={(event) =>
-                                                this.props.handleChange(event, stage.id, key, index, 'name')
-                                            }
-                                            isRequiredField={true}
+                    }
+                    if (key === 'beforeDockerBuildScripts' && this.props.showPreBuild) {
+                        return (
+                            <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
+                                <div className="white-card__header  flex flex-justify">
+                                    {stage.id ? 'Edit Stage' : 'Add Stage'}
+                                    {stage.id > 0 && (
+                                        <Trash
+                                            className="pointer"
+                                            onClick={(e) => this.props.deleteStage(stage.id, key, index)}
                                         />
-                                    </label>
-                                    <label className="form__row">
-                                        <span className="form__label dc__required-field">Script to execute</span>
-                                        <div className="script-container">
-                                            <CodeEditor
-                                                value={stage.script}
-                                                mode="shell"
-                                                onChange={(value) =>
-                                                    this.props.handleChange(
-                                                        { target: { value } },
-                                                        stage.id,
-                                                        key,
-                                                        index,
-                                                        'script',
-                                                    )
-                                                }
-                                                shebang="#!/bin/sh"
-                                                inline
-                                                height={300}
-                                            ></CodeEditor>
-                                        </div>
-                                    </label>
-                                    <label className="form__row">
-                                        <CustomInput
-                                            name="report-path"
-                                            label="Report directory path"
-                                            placeholder="Enter report directory path"
-                                            value={stage.outputLocation}
-                                            onChange={(event) =>
-                                                this.props.handleChange(event, stage.id, key, index, 'outputLocation')
-                                            }
-                                        />
-                                        {this.renderBuildReportInfo()}
-                                    </label>
-                                    <div className="form__buttons">
-                                        <button
-                                            type="button"
-                                            className="cta tertiary mr-16"
-                                            onClick={(event) => this.props.discardChanges(stage.id, key, index)}
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="cta ghosted"
-                                            onClick={(event) => this.props.toggleCollapse(stage.id, index, key)}
-                                        >
-                                            Done
-                                        </button>
-                                    </div>
+                                    )}
                                 </div>
-                            )
-                        } else if (key === 'afterDockerBuildScripts' && this.props.showPostBuild) {
-                            return (
-                                <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
-                                    <div className="white-card__header flex flex-justify">
-                                        {stage.id ? 'Edit Stage' : 'Add Stage'}
-                                        {stage.id > 0 && (
-                                            <Trash
-                                                className="pointer"
-                                                onClick={(e) => this.props.deleteStage(stage.id, key, index)}
-                                            />
-                                        )}
-                                    </div>
-                                    <label className="form__row">
-                                        <CustomInput
-                                            name="stage-name"
-                                            label="Stage Name"
-                                            placeholder="Enter stage name"
-                                            value={stage.name}
-                                            onChange={(event) =>
-                                                this.props.handleChange(event, stage.id, key, index, 'name')
+                                <label className="form__row">
+                                    <CustomInput
+                                        name="stage-name"
+                                        label="Stage Name"
+                                        placeholder="Enter stage name"
+                                        value={stage.name}
+                                        onChange={(event) =>
+                                            this.props.handleChange(event, stage.id, key, index, 'name')
+                                        }
+                                        isRequiredField
+                                    />
+                                </label>
+                                <label className="form__row">
+                                    <span className="form__label dc__required-field">Script to execute</span>
+                                    <div className="script-container">
+                                        <CodeEditor
+                                            value={stage.script}
+                                            mode="shell"
+                                            onChange={(value) =>
+                                                this.props.handleChange(
+                                                    { target: { value } },
+                                                    stage.id,
+                                                    key,
+                                                    index,
+                                                    'script',
+                                                )
                                             }
-                                            isRequiredField={true}
+                                            shebang="#!/bin/sh"
+                                            inline
+                                            height={300}
                                         />
-                                    </label>
-                                    <label className="form__row">
-                                        <span className="form__label dc__required-field">Script to execute</span>
-                                        <div className="script-container">
-                                            <CodeEditor
-                                                value={stage.script}
-                                                mode="shell"
-                                                onChange={(value) =>
-                                                    this.props.handleChange(
-                                                        { target: { value } },
-                                                        stage.id,
-                                                        key,
-                                                        index,
-                                                        'script',
-                                                    )
-                                                }
-                                                shebang="#!/bin/sh"
-                                                inline
-                                                height={300}
-                                            ></CodeEditor>
-                                        </div>
-                                    </label>
-                                    <label className="form__row">
-                                        <CustomInput
-                                            name="report-path"
-                                            label="Report directory path"
-                                            placeholder="Enter directory path"
-                                            value={stage.outputLocation}
-                                            onChange={(event) =>
-                                                this.props.handleChange(event, stage.id, key, index, 'outputLocation')
-                                            }
-                                        />
-                                        {this.renderBuildReportInfo()}
-                                    </label>
-                                    <div className="form__buttons">
-                                        <button
-                                            type="button"
-                                            className="cta tertiary mr-16"
-                                            onClick={(event) => this.props.discardChanges(stage.id, key, index)}
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="cta ghosted"
-                                            onClick={(event) => this.props.toggleCollapse(stage.id, index, key)}
-                                        >
-                                            Done
-                                        </button>
                                     </div>
+                                </label>
+                                <label className="form__row">
+                                    <CustomInput
+                                        name="report-path"
+                                        label="Report directory path"
+                                        placeholder="Enter report directory path"
+                                        value={stage.outputLocation}
+                                        onChange={(event) =>
+                                            this.props.handleChange(event, stage.id, key, index, 'outputLocation')
+                                        }
+                                    />
+                                    {this.renderBuildReportInfo()}
+                                </label>
+                                <div className="form__buttons">
+                                    <button
+                                        type="button"
+                                        className="cta tertiary mr-16"
+                                        onClick={(event) => this.props.discardChanges(stage.id, key, index)}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="cta ghosted"
+                                        onClick={(event) => this.props.toggleCollapse(stage.id, index, key)}
+                                    >
+                                        Done
+                                    </button>
                                 </div>
-                            )
-                        }
+                            </div>
+                        )
+                    }
+                    if (key === 'afterDockerBuildScripts' && this.props.showPostBuild) {
+                        return (
+                            <div key={`${key}-${index}`} className="white-card mt-20 mb-16">
+                                <div className="white-card__header flex flex-justify">
+                                    {stage.id ? 'Edit Stage' : 'Add Stage'}
+                                    {stage.id > 0 && (
+                                        <Trash
+                                            className="pointer"
+                                            onClick={(e) => this.props.deleteStage(stage.id, key, index)}
+                                        />
+                                    )}
+                                </div>
+                                <label className="form__row">
+                                    <CustomInput
+                                        name="stage-name"
+                                        label="Stage Name"
+                                        placeholder="Enter stage name"
+                                        value={stage.name}
+                                        onChange={(event) =>
+                                            this.props.handleChange(event, stage.id, key, index, 'name')
+                                        }
+                                        isRequiredField
+                                    />
+                                </label>
+                                <label className="form__row">
+                                    <span className="form__label dc__required-field">Script to execute</span>
+                                    <div className="script-container">
+                                        <CodeEditor
+                                            value={stage.script}
+                                            mode="shell"
+                                            onChange={(value) =>
+                                                this.props.handleChange(
+                                                    { target: { value } },
+                                                    stage.id,
+                                                    key,
+                                                    index,
+                                                    'script',
+                                                )
+                                            }
+                                            shebang="#!/bin/sh"
+                                            inline
+                                            height={300}
+                                        />
+                                    </div>
+                                </label>
+                                <label className="form__row">
+                                    <CustomInput
+                                        name="report-path"
+                                        label="Report directory path"
+                                        placeholder="Enter directory path"
+                                        value={stage.outputLocation}
+                                        onChange={(event) =>
+                                            this.props.handleChange(event, stage.id, key, index, 'outputLocation')
+                                        }
+                                    />
+                                    {this.renderBuildReportInfo()}
+                                </label>
+                                <div className="form__buttons">
+                                    <button
+                                        type="button"
+                                        className="cta tertiary mr-16"
+                                        onClick={(event) => this.props.discardChanges(stage.id, key, index)}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="cta ghosted"
+                                        onClick={(event) => this.props.toggleCollapse(stage.id, index, key)}
+                                    >
+                                        Done
+                                    </button>
+                                </div>
+                            </div>
+                        )
                     }
                 })}
                 {key === 'beforeDockerBuildScripts' && this.props.showPreBuild ? this.renderAddStage(key) : ''}
@@ -305,7 +309,9 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     renderTriggerType() {
         return (
             <div className="form__row">
-                <label className="form__label form__label--sentence dc__required-field">When do you want the pipeline to execute?</label>
+                <label className="form__label form__label--sentence dc__required-field">
+                    When do you want the pipeline to execute?
+                </label>
                 <RadioGroup
                     value={this.props.form.triggerType}
                     name="trigger-type"
@@ -398,7 +404,8 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                     }}
                                     className="form__add-parameter form__add-parameter--docker-build"
                                 >
-                                    <span className="fa fa-plus mr-5"></span>Add parameter
+                                    <span className="fa fa-plus mr-5" />
+                                    Add parameter
                                 </button>
                             </div>
                         ) : null}
@@ -409,7 +416,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     }
 
     renderMaterials() {
-        let _webhookData: WebhookCIProps = {
+        const _webhookData: WebhookCIProps = {
             webhookConditionList: this.props.form.webhookConditionList,
             gitHost: this.props.form.gitHost,
             getSelectedWebhookEvent: this.props.getSelectedWebhookEvent,
@@ -427,7 +434,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                 materials={this.props.form.materials}
                 selectSourceType={this.props.selectSourceType}
                 handleSourceChange={this.props.handleSourceChange}
-                includeWebhookEvents={true}
+                includeWebhookEvents
                 ciPipelineSourceTypeOptions={this.props.form.ciPipelineSourceTypeOptions}
                 webhookData={_webhookData}
                 canEditPipeline={this.props.form.ciPipelineEditable}
@@ -464,7 +471,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     }
 
     render() {
-        let errorObj = this.props.validationRules.name(this.props.form.name)
+        const errorObj = this.props.validationRules.name(this.props.form.name)
 
         return (
             <>
@@ -487,8 +494,12 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                             placeholder="e.g. my-first-pipeline"
                             value={this.props.form.name}
                             onChange={this.props.handlePipelineName}
-                            isRequiredField={true}
-                            error={this.props.showError && !errorObj.isValid  && this.props.validationRules.name(this.props.form.name).message}
+                            isRequiredField
+                            error={
+                                this.props.showError &&
+                                !errorObj.isValid &&
+                                this.props.validationRules.name(this.props.form.name).message
+                            }
                         />
                     </label>
                     {this.renderTriggerType()}

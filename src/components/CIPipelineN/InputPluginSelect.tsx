@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Var } from '../../assets/icons/ic-var-initial.svg'
-import Tippy from '@tippyjs/react'
 import { TIPPY_VAR_MSG } from './Constants'
 
 export const InputPluginSelection = ({
@@ -49,9 +49,8 @@ export const InputPluginSelection = ({
                                 return _option
                             }),
                         }
-                    } else {
-                        return null
                     }
+                    return null
                 })
                 .filter((val) => val !== null) // remove empty categories
             totalLength.current = _uniqueIdx // set total length of list
@@ -92,7 +91,7 @@ export const InputPluginSelection = ({
     }
 
     const onSelectValue = (e, tag): void => {
-        let _tagData = variableData
+        const _tagData = variableData
         const updatedTagData = {
             ...tag,
             label: e.currentTarget.dataset.key,
@@ -104,8 +103,8 @@ export const InputPluginSelection = ({
     }
 
     const trimLines = (value: string) => {
-        let trimmedLines = value.split('\n')
-        let nonEmptyLines = trimmedLines.filter((line) => {
+        const trimmedLines = value.split('\n')
+        const nonEmptyLines = trimmedLines.filter((line) => {
             return line.trim() !== ''
         })
         return nonEmptyLines.join('\n')
@@ -119,8 +118,8 @@ export const InputPluginSelection = ({
         ) {
             setHighlightedIndex(-1)
             setActiveElement('')
-            let _tagData = { ...variableData }
-            let trimmedValue = trimLines(selectedValue)
+            const _tagData = { ...variableData }
+            const trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
 
             setVariableData(_tagData)
@@ -243,8 +242,8 @@ export const InputPluginSelection = ({
             {popupMenuBody && (
                 <PopupMenu.Body
                     rootClassName={`mxh-210 dc__overflow-auto tag-${selectedVariableIndex}-class`}
-                    autoWidth={true}
-                    preventWheelDisable={true}
+                    autoWidth
+                    preventWheelDisable
                     noBackDrop={noBackDrop}
                 >
                     {popupMenuBody}

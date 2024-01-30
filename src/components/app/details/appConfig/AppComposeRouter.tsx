@@ -1,9 +1,9 @@
 import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch } from 'react-router-dom'
 
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../../../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { AppComposeRouterProps, NextButtonProps, STAGE_NAME } from './appConfig.type'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
@@ -20,8 +20,8 @@ const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView'
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
-    let index = navItems.findIndex((item) => item.stage === currentStageName)
-    let nextUrl = navItems[index + 1].href
+    const index = navItems.findIndex((item) => item.stage === currentStageName)
+    const nextUrl = navItems[index + 1].href
     if (!isCiPipeline) {
         return (
             <div className="app-compose__next-section">
@@ -168,7 +168,7 @@ export default function AppComposeRouter({
                 )}
                 {canShowExternalLinks && (
                     <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
-                        <ExternalLinks isAppConfigView={true} userRole={userRole} />
+                        <ExternalLinks isAppConfigView userRole={userRole} />
                     </Route>
                 )}
                 {isUnlocked.workflowEditor && ConfigProtectionView && (

@@ -1,10 +1,10 @@
-import React from 'react';
-import { AppListConstants } from '../../config';
-import Sample from '../../assets/img/ic-checklist-sample-app@2x.png';
+import React from 'react'
+import { AppListConstants } from '../../config'
+import Sample from '../../assets/img/ic-checklist-sample-app@2x.png'
 
 interface SampleAppDeployType {
-    parentClassName?: string;
-    imageClassName?: string;
+    parentClassName?: string
+    imageClassName?: string
 }
 
 export default function SampleAppDeploy({ parentClassName, imageClassName }: SampleAppDeployType) {
@@ -16,12 +16,12 @@ export default function SampleAppDeploy({ parentClassName, imageClassName }: Sam
                 <a
                     href={AppListConstants.SAMPLE_NODE_REPO_URL}
                     target="_blank"
-                    rel="noopener noreferer"
+                    rel="noopener noreferer noreferrer"
                     className="dc__no-decor cb-5 fw-6"
                 >
                     Visit git repo
                 </a>
             </div>
         </div>
-    );
+    )
 }

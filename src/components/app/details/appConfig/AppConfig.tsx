@@ -2,15 +2,6 @@ import React, { useState, useEffect, lazy } from 'react'
 import { useParams, useLocation, useRouteMatch, useHistory, NavLink, Link } from 'react-router-dom'
 
 import {
-    URLS,
-    getAppComposeURL,
-    APP_COMPOSE_STAGE,
-    isCIPipelineCreated,
-    ViewType,
-    isCDPipelineCreated,
-} from '../../../../config'
-import { ConditionalWrap, importComponentFromFELibrary } from '../../../common'
-import {
     showError,
     Progressing,
     ErrorScreenManager,
@@ -19,13 +10,22 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import {
+    URLS,
+    getAppComposeURL,
+    APP_COMPOSE_STAGE,
+    isCIPipelineCreated,
+    ViewType,
+    isCDPipelineCreated,
+} from '../../../../config'
+import { ConditionalWrap, importComponentFromFELibrary } from '../../../common'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ProtectedIcon } from '../../../../assets/icons/ic-shield-protect-fill.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import DockerFileInUse from '../../../../assets/img/ic-dockerfile-in-use.png'
-import { toast } from 'react-toastify'
 import './appConfig.scss'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
 import {
@@ -97,14 +97,14 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
         ])
             .then(([configStatusRes, workflowRes, envResult, configProtectionsResp]) => {
                 const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
-                let { navItems } = getNavItems(configs, appId, isJobView)
+                const { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
                     index = isJobView ? 2 : 4
                 }
-                let redirectUrl = navItems[index - 1].href
-                let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
-                let isCDPipeline = isCDPipelineCreated(configStatusRes.result)
+                const redirectUrl = navItems[index - 1].href
+                const isCiPipeline = isCIPipelineCreated(configStatusRes.result)
+                const isCDPipeline = isCDPipelineCreated(configStatusRes.result)
                 const envProtectMap: Record<number, boolean> = {}
                 if (configProtectionsResp.result) {
                     for (const config of configProtectionsResp.result) {
@@ -116,7 +116,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                     envResult.result
                         ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
                         .map((env) => {
-                            let envData = { ...env, isProtected: false }
+                            const envData = { ...env, isProtected: false }
                             if (envProtectMap[env.environmentId]) {
                                 envData.isProtected = true
                             }
@@ -191,7 +191,8 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
         configs: AppStageUnlockedType
         lastConfiguredStage: StageNames
     } => {
-        let _configs, _lastConfiguredStage
+        let _configs
+        let _lastConfiguredStage
         if (!configStatus) {
             _configs = {} as AppStageUnlockedType
             _lastConfiguredStage = ''
@@ -229,14 +230,14 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
         getAppConfigStatus(+appId, isJobView)
             .then((configStatusRes) => {
                 const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
-                let { navItems } = getNavItems(configs, appId, isJobView)
+                const { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
                     index = isJobView ? 2 : 4
                 }
-                let redirectUrl = navItems[index - 1].href
-                let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
-                let isCDPipeline = isCDPipelineCreated(configStatusRes.result)
+                const redirectUrl = navItems[index - 1].href
+                const isCiPipeline = isCIPipelineCreated(configStatusRes.result)
+                const isCDPipeline = isCDPipelineCreated(configStatusRes.result)
 
                 setState((state) => ({
                     ...state,
@@ -276,7 +277,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                     envResult.result
                         ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
                         .map((env) => {
-                            let envData = { ...env, isProtected: false }
+                            const envData = { ...env, isProtected: false }
                             if (envProtectMap[env.environmentId]) {
                                 envData.isProtected = true
                             }
@@ -301,7 +302,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
 
     function renderDeleteDialog() {
         if (state.showDeleteConfirm) {
-            if (state.canDeleteApp)
+            if (state.canDeleteApp) {
                 return (
                     <DeleteDialog
                         title={`Delete '${state.appName}'?`}
@@ -318,35 +319,35 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                         </DeleteDialog.Description>
                     </DeleteDialog>
                 )
-            else {
-                return (
-                    <ConfirmationDialog>
-                        <ConfirmationDialog.Icon src={warn} />
-                        <ConfirmationDialog.Body title={`Cannot Delete ${isJobView ? 'job' : 'application'}`} />
-                        <p className="fs-13 cn-7 lh-1-54">
-                            Delete all pipelines and workflows before deleting this {isJobView ? 'job' : 'application'}.
-                        </p>
-                        <ConfirmationDialog.ButtonGroup>
-                            <button
-                                type="button"
-                                className="cta cancel"
-                                onClick={(e) => {
-                                    setState((state) => ({ ...state, showDeleteConfirm: false }))
-                                }}
-                            >
-                                Cancel
-                            </button>
-                            <Link
-                                onClick={(e) => setState((state) => ({ ...state, showDeleteConfirm: false }))}
-                                to={redirectToWorkflowEditor()}
-                                className="cta ml-12 dc__no-decor"
-                            >
-                                View Workflows
-                            </Link>
-                        </ConfirmationDialog.ButtonGroup>
-                    </ConfirmationDialog>
-                )
             }
+
+            return (
+                <ConfirmationDialog>
+                    <ConfirmationDialog.Icon src={warn} />
+                    <ConfirmationDialog.Body title={`Cannot Delete ${isJobView ? 'job' : 'application'}`} />
+                    <p className="fs-13 cn-7 lh-1-54">
+                        Delete all pipelines and workflows before deleting this {isJobView ? 'job' : 'application'}.
+                    </p>
+                    <ConfirmationDialog.ButtonGroup>
+                        <button
+                            type="button"
+                            className="cta cancel"
+                            onClick={(e) => {
+                                setState((state) => ({ ...state, showDeleteConfirm: false }))
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <Link
+                            onClick={(e) => setState((state) => ({ ...state, showDeleteConfirm: false }))}
+                            to={redirectToWorkflowEditor()}
+                            className="cta ml-12 dc__no-decor"
+                        >
+                            View Workflows
+                        </Link>
+                    </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog>
+            )
         }
         return null
     }
@@ -364,71 +365,71 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
 
     if (state.view === ViewType.LOADING) {
         return <Progressing pageLoader />
-    } else if (state.view === ViewType.ERROR) {
-        return <ErrorScreenManager code={state.statusCode} />
-    } else {
-        const _canShowExternalLinks =
-            userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
-        const hideConfigHelp = isJobView ? state.isCiPipeline : state.isCDPipeline
-        return (
-            <>
-                <div className={`app-compose ${getAdditionalParentClass()}`}>
-                    <div
-                        className={`app-compose__nav ${isJobView ? 'job-compose__side-nav' : ''} flex column left top ${
-                            showCannotDeleteTooltip ? '' : 'dc__position-rel'
-                        } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
-                            _canShowExternalLinks ? '' : 'hide-external-links'
-                        } ${
-                            state.isUnlocked.workflowEditor && ConfigProtectionView && !isJobView
-                                ? 'config-protection__side-nav'
-                                : ''
-                        }`}
-                    >
-                        <Navigation
-                            deleteApp={showDeleteConfirmation}
-                            navItems={state.navItems}
-                            canShowExternalLinks={_canShowExternalLinks}
-                            showCannotDeleteTooltip={showCannotDeleteTooltip}
-                            isWorkflowEditorUnlocked={state.isUnlocked.workflowEditor}
-                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                            getRepo={showRepoOnDelete}
-                            isJobView={isJobView}
-                            hideConfigHelp={hideConfigHelp}
-                            workflowsRes={state.workflowsRes}
-                            getWorkflows={reloadWorkflows}
-                            environmentList={state.environmentList}
-                            isBaseConfigProtected={state.isBaseConfigProtected}
-                            reloadEnvironments={reloadEnvironments}
-                        />
-                    </div>
-                    <div className="app-compose__main">
-                        <AppComposeRouter
-                            appId={appId}
-                            navItems={state.navItems}
-                            isUnlocked={state.isUnlocked}
-                            isCiPipeline={state.isCiPipeline}
-                            isCDPipeline={state.isCDPipeline}
-                            maxAllowedUrl={state.maximumAllowedUrl}
-                            respondOnSuccess={respondOnSuccess}
-                            getWorkflows={reloadWorkflows}
-                            environments={state.environmentList}
-                            workflowsRes={state.workflowsRes}
-                            userRole={userRole}
-                            canShowExternalLinks={_canShowExternalLinks}
-                            toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                            setRepoState={setShowRepoOnDelete}
-                            isJobView={isJobView}
-                            isBaseConfigProtected={state.isBaseConfigProtected}
-                            reloadEnvironments={reloadEnvironments}
-                            configProtectionData={state.configProtectionData}
-                            filteredEnvIds={filteredEnvIds}
-                        />
-                    </div>
-                </div>
-                {renderDeleteDialog()}
-            </>
-        )
     }
+    if (state.view === ViewType.ERROR) {
+        return <ErrorScreenManager code={state.statusCode} />
+    }
+    const _canShowExternalLinks =
+        userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
+    const hideConfigHelp = isJobView ? state.isCiPipeline : state.isCDPipeline
+    return (
+        <>
+            <div className={`app-compose ${getAdditionalParentClass()}`}>
+                <div
+                    className={`app-compose__nav ${isJobView ? 'job-compose__side-nav' : ''} flex column left top ${
+                        showCannotDeleteTooltip ? '' : 'dc__position-rel'
+                    } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
+                        _canShowExternalLinks ? '' : 'hide-external-links'
+                    } ${
+                        state.isUnlocked.workflowEditor && ConfigProtectionView && !isJobView
+                            ? 'config-protection__side-nav'
+                            : ''
+                    }`}
+                >
+                    <Navigation
+                        deleteApp={showDeleteConfirmation}
+                        navItems={state.navItems}
+                        canShowExternalLinks={_canShowExternalLinks}
+                        showCannotDeleteTooltip={showCannotDeleteTooltip}
+                        isWorkflowEditorUnlocked={state.isUnlocked.workflowEditor}
+                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                        getRepo={showRepoOnDelete}
+                        isJobView={isJobView}
+                        hideConfigHelp={hideConfigHelp}
+                        workflowsRes={state.workflowsRes}
+                        getWorkflows={reloadWorkflows}
+                        environmentList={state.environmentList}
+                        isBaseConfigProtected={state.isBaseConfigProtected}
+                        reloadEnvironments={reloadEnvironments}
+                    />
+                </div>
+                <div className="app-compose__main">
+                    <AppComposeRouter
+                        appId={appId}
+                        navItems={state.navItems}
+                        isUnlocked={state.isUnlocked}
+                        isCiPipeline={state.isCiPipeline}
+                        isCDPipeline={state.isCDPipeline}
+                        maxAllowedUrl={state.maximumAllowedUrl}
+                        respondOnSuccess={respondOnSuccess}
+                        getWorkflows={reloadWorkflows}
+                        environments={state.environmentList}
+                        workflowsRes={state.workflowsRes}
+                        userRole={userRole}
+                        canShowExternalLinks={_canShowExternalLinks}
+                        toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                        setRepoState={setShowRepoOnDelete}
+                        isJobView={isJobView}
+                        isBaseConfigProtected={state.isBaseConfigProtected}
+                        reloadEnvironments={reloadEnvironments}
+                        configProtectionData={state.configProtectionData}
+                        filteredEnvIds={filteredEnvIds}
+                    />
+                </div>
+            </div>
+            {renderDeleteDialog()}
+        </>
+    )
 }
 
 function renderNavItem(item: CustomNavItemsType, isBaseConfigProtected?: boolean) {
@@ -438,7 +439,9 @@ function renderNavItem(item: CustomNavItemsType, isBaseConfigProtected?: boolean
             data-testid={`${linkDataTestName}-link`}
             key={item.title}
             onClick={(event) => {
-                if (item.isLocked) event.preventDefault()
+                if (item.isLocked) {
+                    event.preventDefault()
+                }
             }}
             className="app-compose__nav-item cursor"
             to={item.href}
@@ -454,7 +457,7 @@ function renderNavItem(item: CustomNavItemsType, isBaseConfigProtected?: boolean
     )
 }
 
-function Navigation({
+const Navigation = ({
     navItems,
     deleteApp,
     canShowExternalLinks,
@@ -469,7 +472,7 @@ function Navigation({
     environmentList,
     isBaseConfigProtected,
     reloadEnvironments,
-}: AppConfigNavigationProps) {
+}: AppConfigNavigationProps) => {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
     return (
@@ -485,7 +488,8 @@ function Navigation({
                             </div>
                         )
                     )
-                } else if (item.stage === 'PROTECT_CONFIGURATION') {
+                }
+                if (item.stage === 'PROTECT_CONFIGURATION') {
                     return (
                         isWorkflowEditorUnlocked &&
                         ConfigProtectionView && (
@@ -495,7 +499,8 @@ function Navigation({
                             </div>
                         )
                     )
-                } else if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
+                }
+                if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
                     return (
                         <ConditionalWrap
                             condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
@@ -510,11 +515,11 @@ function Navigation({
                                     iconSize={32}
                                     infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is in use`}
                                     infoText={GIT_MATERIAL_IN_USE_MESSAGE}
-                                    showCloseButton={true}
+                                    showCloseButton
                                     trigger="manual"
-                                    interactive={true}
-                                    showOnCreate={true}
-                                    arrow={true}
+                                    interactive
+                                    showOnCreate
+                                    arrow
                                     animation="shift-toward-subtle"
                                     onClose={toggleRepoSelectionTippy}
                                 >
@@ -525,17 +530,16 @@ function Navigation({
                             {renderNavItem(item, isBaseConfigProtected)}
                         </ConditionalWrap>
                     )
-                } else {
-                    return (
-                        <EnvironmentOverrideRouter
-                            isJobView={isJobView}
-                            workflowsRes={workflowsRes}
-                            getWorkflows={getWorkflows}
-                            allEnvs={environmentList}
-                            reloadEnvironments={reloadEnvironments}
-                        />
-                    )
                 }
+                return (
+                    <EnvironmentOverrideRouter
+                        isJobView={isJobView}
+                        workflowsRes={workflowsRes}
+                        getWorkflows={getWorkflows}
+                        allEnvs={environmentList}
+                        reloadEnvironments={reloadEnvironments}
+                    />
+                )
             })}
 
             {isJobView && <div className="h-100" />}

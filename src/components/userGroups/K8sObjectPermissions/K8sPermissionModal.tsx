@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
+import { toast } from 'react-toastify'
+import { Drawer, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { K8sPermissionModalType, OptionType } from '../userGroups.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
 import { getPermissionObject } from './K8sPermissions.utils'
-import { toast } from 'react-toastify'
-import { Drawer, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { useUserGroupContext } from '../UserGroup'
 
 export default function K8sPermissionModal({
@@ -85,7 +85,7 @@ export default function K8sPermissionModal({
     }
 
     const savePermission = () => {
-        let isPermissionValid = k8PermissionList.reduce((valid, permission) => {
+        const isPermissionValid = k8PermissionList.reduce((valid, permission) => {
             valid = valid && !!permission.resource?.length
             return valid
         }, true)
@@ -96,12 +96,12 @@ export default function K8sPermissionModal({
                     if (k8PermissionList?.length) {
                         prev[selectedPermissionAction.index] = k8PermissionList[k8PermissionList.length - 1]
                         return [...prev]
-                    } else {
-                        const list = [...prev]
-                        list.splice(selectedPermissionAction.index, 1)
-                        return list
                     }
-                } else if (selectedPermissionAction?.action === 'clone' && !k8PermissionList?.length) {
+                    const list = [...prev]
+                    list.splice(selectedPermissionAction.index, 1)
+                    return list
+                }
+                if (selectedPermissionAction?.action === 'clone' && !k8PermissionList?.length) {
                     return [...prev]
                 }
                 return [...prev, ...k8PermissionList]
@@ -145,7 +145,7 @@ export default function K8sPermissionModal({
                                 objectMapping={objectMapping}
                                 setObjectMapping={setObjectMapping}
                                 selectedPermissionAction={selectedPermissionAction}
-                                customRoles={customRoles}                              
+                                customRoles={customRoles}
                             />
                         )
                     })}

@@ -35,8 +35,12 @@ export function updateChart(request) {
     return put(Routes.UPDATE_APP_API, request, options)
 }
 
-export function deleteInstalledChart(installedAppId: string | number, isGitops?: boolean, deleteAction?: DELETE_ACTION) {
-    let URL:string = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
+export function deleteInstalledChart(
+    installedAppId: string | number,
+    isGitops?: boolean,
+    deleteAction?: DELETE_ACTION,
+) {
+    let URL: string = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
     if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
         URL += `&force=true`
     } else if (deleteAction === DELETE_ACTION.NONCASCADE_DELETE) {
@@ -65,11 +69,11 @@ export function getChartValuesCategorizedListParsed(
     installedAppVersionId = null,
 ): Promise<{ code: number; result: ChartValuesType[] }> {
     return getChartValuesCategorizedList(chartId, installedAppVersionId).then((response) => {
-        let list = response.result.values || []
-        let savedCharts = list.find((chartList) => chartList.kind === 'TEMPLATE')
-        let deployedCharts = list.find((chartList) => chartList.kind === 'DEPLOYED')
-        let defaultCharts = list.find((chartList) => chartList.kind === 'DEFAULT')
-        let existingCharts = list.find((chartList) => chartList.kind === 'EXISTING')
+        const list = response.result.values || []
+        const savedCharts = list.find((chartList) => chartList.kind === 'TEMPLATE')
+        const deployedCharts = list.find((chartList) => chartList.kind === 'DEPLOYED')
+        const defaultCharts = list.find((chartList) => chartList.kind === 'DEFAULT')
+        const existingCharts = list.find((chartList) => chartList.kind === 'EXISTING')
         let savedChartValues = savedCharts && savedCharts.values ? savedCharts.values : []
         let deployedChartValues = deployedCharts && deployedCharts.values ? deployedCharts.values : []
         let defaultChartValues = defaultCharts && defaultCharts.values ? defaultCharts.values : []
@@ -103,7 +107,7 @@ export function getChartValuesCategorizedListParsed(
             return -1 * sortCallback('chartVersion', a, b)
         })
 
-        let chartValuesList = defaultChartValues.concat(deployedChartValues, savedChartValues, existingChartValues)
+        const chartValuesList = defaultChartValues.concat(deployedChartValues, savedChartValues, existingChartValues)
         return {
             ...response,
             result: chartValuesList,
@@ -175,7 +179,7 @@ export function updateChartGroup(requestBody: ChartGroup) {
 export function getChartGroups(): Promise<{ code: number; result: { groups: ChartGroup[] } }> {
     const URL = `${Routes.CHART_GROUP_LIST}`
     return get(URL).then((response) => {
-        let groups = response?.result?.groups || []
+        const groups = response?.result?.groups || []
         groups.sort((a, b) => sortCallback('name', a, b))
         return {
             ...response,
@@ -233,7 +237,6 @@ interface appName {
     suggestedName?: string
 }
 
-
 interface AppNameValidated extends RootObject {
     result?: appName[]
 }
@@ -254,14 +257,14 @@ export function updateHelmAppProject(payload: HelmProjectUpdatePayload): Promise
     return put(Routes.UPDATE_HELM_APP_META_INFO, payload)
 }
 
-export function getChartProviderList(): Promise<ResponseType>{
+export function getChartProviderList(): Promise<ResponseType> {
     return get('app-store/chart-provider/list')
 }
 
-export function updateChartProviderList(payload){
+export function updateChartProviderList(payload) {
     return post('app-store/chart-provider/update', payload)
 }
 
-export function updateSyncSpecificChart(payload){
+export function updateSyncSpecificChart(payload) {
     return post('app-store/chart-provider/sync-chart ', payload)
 }

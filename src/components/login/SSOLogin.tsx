@@ -1,11 +1,5 @@
 import React, { Component, createRef } from 'react'
 import {
-    ButtonWithLoader,
-    DevtronSwitch as Switch,
-    DevtronSwitchItem as SwitchItem,
-    importComponentFromFELibrary,
-} from '../common'
-import {
     showError,
     Progressing,
     ErrorScreenManager,
@@ -13,12 +7,18 @@ import {
     CustomInput,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import yamlJsParser from 'yaml'
+import {
+    ButtonWithLoader,
+    DevtronSwitch as Switch,
+    DevtronSwitchItem as SwitchItem,
+    importComponentFromFELibrary,
+} from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import { ViewType, DOCUMENTATION, URLS } from '../../config'
-import { toast } from 'react-toastify'
-import yamlJsParser from 'yaml'
 import sample from './sampleConfig.json'
 import { ReactComponent as Google } from '../../assets/icons/ic-google.svg'
 import Check from '../../assets/icons/ic-selected-corner.png'
@@ -96,6 +96,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
      * Ref to store the value from the API, used for showing the modal
      */
     savedShouldAutoAssignPermissionRef: React.MutableRefObject<SSOLoginState['showAutoAssignConfirmationModal']>
+
     /**
      * Whether the auto-assign flow should be active or not
      */
@@ -171,7 +172,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleSSOClick(event): void {
-        let newsso = event.target.value
+        const newsso = event.target.value
         getSSOConfig(newsso)
             .then((response) => {
                 this.setConfig(response, newsso)
@@ -251,7 +252,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     // The global auth config type needs to be updated irrespective of the SSO name check
     _getGlobalAuthConfigType = () =>
-        !!AutoAssignToggleTile
+        AutoAssignToggleTile
             ? {
                   globalAuthConfigType:
                       this.isAutoAssignPermissionFlowActive && this.state.shouldAutoAssignPermissions
@@ -466,13 +467,15 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleConfigChange(value: string): void {
-        if (this.state.configMap !== SwitchItemValues.Configuration) return
+        if (this.state.configMap !== SwitchItemValues.Configuration) {
+            return
+        }
         if (this.state.sso === OIDCType) {
             let config: any
             try {
                 config = yamlJsParser.parse(value)
             } catch (error) {
-                //Invalid YAML, couldn't be parsed to JSON. Show error toast
+                // Invalid YAML, couldn't be parsed to JSON. Show error toast
                 this.setState({
                     invalidYaml: true,
                 })
@@ -523,12 +526,14 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     handleOnBlur(): void {
-        if (this.state.configMap !== SwitchItemValues.Configuration) return
+        if (this.state.configMap !== SwitchItemValues.Configuration) {
+            return
+        }
         let newConfig: any
         try {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
         } catch (error) {
-            //Invalid YAML, couldn't be parsed to JSON. Show error toast
+            // Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error('Invalid Yaml')
             return
         }
@@ -540,7 +545,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
             }
         }
-        let value = yamlJsParser.stringify(newConfig)
+        const value = yamlJsParser.stringify(newConfig)
 
         this.setState({
             ssoConfig: {
@@ -566,7 +571,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             ssoConfig = stringifyConfig.replaceAll('null', '')
         }
 
-        let codeEditorBody =
+        const codeEditorBody =
             this.state.configMap === SwitchItemValues.Configuration
                 ? ssoConfig
                 : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 })
@@ -614,7 +619,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             )
         }
 
-        let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
+        const shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
 
         const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
@@ -636,7 +641,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <CodeEditor.Header>
                             <Switch
                                 value={this.state.configMap}
-                                name={'tab'}
+                                name="tab"
                                 onChange={(event) => {
                                     this.handleCodeEditorTab(event.target.value)
                                 }}
@@ -668,7 +673,8 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__align-reload-center">
                     <ErrorScreenManager code={this.state.statusCode} />
@@ -774,8 +780,8 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             tabIndex={5}
                             type="submit"
                             disabled={this.state.saveLoading}
-                            className={`cta`}
-                            data-testid={`sso-save-button`}
+                            className="cta"
+                            data-testid="sso-save-button"
                         >
                             {this.state.saveLoading ? <Progressing /> : this.renderButtonText()}
                         </button>

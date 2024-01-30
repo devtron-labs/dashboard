@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import {
-    processK8SObjects,
-    convertToOptionsList,
-    sortObjectArrayAlphabetically,
-    sortOptionsByLabel,
-} from '../../common'
-import {
     showError,
     InfoColourBar,
     ClearIndicator,
@@ -14,6 +8,14 @@ import {
     MultiValueRemove,
     MultiValueChipContainer,
 } from '@devtron-labs/devtron-fe-common-lib'
+import CreatableSelect from 'react-select/creatable'
+import Tippy from '@tippyjs/react'
+import {
+    processK8SObjects,
+    convertToOptionsList,
+    sortObjectArrayAlphabetically,
+    sortOptionsByLabel,
+} from '../../common'
 import {
     getClusterList,
     getResourceGroupList,
@@ -27,18 +29,22 @@ import {
     menuComponent,
     Option as SingleSelectOption,
 } from '../../v2/common/ReactSelect.utils'
-import { ALL_NAMESPACE, K8sListItemCardType, K8S_PERMISSION_INFO_MESSAGE, OptionType, EntityTypes } from '../userGroups.types'
+import {
+    ALL_NAMESPACE,
+    K8sListItemCardType,
+    K8S_PERMISSION_INFO_MESSAGE,
+    OptionType,
+    EntityTypes,
+} from '../userGroups.types'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
-import CreatableSelect from 'react-select/creatable'
 import {
     k8sPermissionStyle,
     k8sRoleSelectionStyle,
     multiSelectAllState,
     resourceMultiSelectstyles,
 } from './K8sPermissions.utils'
-import Tippy from '@tippyjs/react'
 import { resourceKindOptionLabel } from './K8sPermission.component'
 import { ParseData } from '../UserGroup'
 
@@ -75,7 +81,7 @@ export default function K8sListItemCard({
         try {
             const { result } = await getClusterList()
             if (result) {
-              const filteredClusterList = result.filter((item) => !item?.isVirtualCluster)
+                const filteredClusterList = result.filter((item) => !item?.isVirtualCluster)
                 const _clusterOptions = convertToOptionsList(
                     sortObjectArrayAlphabetically(filteredClusterList, 'cluster_name'),
                     'cluster_name',
@@ -126,8 +132,8 @@ export default function K8sListItemCard({
                 const namespacedGvkList = resourceGroupList.apiResources.filter((item) => item.namespaced)
                 const _processedNamespacedGvk = processK8SObjects(namespacedGvkList, '', true)
                 setProcessedGvkData(_processedNamespacedGvk.k8SObjectMap)
-                const _allApiGroupMapping = [],
-                    _allKindMapping = []
+                const _allApiGroupMapping = []
+                const _allKindMapping = []
                 if (resourceGroupList.allowedAll) {
                     _allApiGroupMapping.push(
                         { label: 'All API groups', value: '*' },

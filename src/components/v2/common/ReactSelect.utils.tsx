@@ -1,8 +1,8 @@
 import React from 'react'
-import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { multiSelectStyles, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
@@ -95,7 +95,7 @@ export const styles = {
     },
 }
 
-export function Option(props) {
+export const Option = (props) => {
     const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
@@ -120,7 +120,7 @@ export function Option(props) {
     )
 }
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-20 icon-n5" data-testid="overview-project-edit-dropdown" />
@@ -137,13 +137,13 @@ export function customOption(label: string, icon: string, className = '', onImag
     )
 }
 
-export function OptionWithIcon(props) {
+export const OptionWithIcon = (props) => {
     const { selectProps, data, style } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     return <components.Option {...props}>{customOption(data.label, data.icon)}</components.Option>
 }
 
-export function ValueContainerWithIcon(props) {
+export const ValueContainerWithIcon = (props) => {
     const { selectProps } = props
     return (
         <components.ValueContainer {...props}>
@@ -177,7 +177,9 @@ export const CustomValueContainer = (props): JSX.Element => {
         <components.ValueContainer {...props}>
             {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
                 (props.selectProps.value?.label ? (
-                    <span className={`dc__position-abs cn-9 ml-4 ${props.valClassName ?? ''}`}>{props.selectProps.value.label}</span>
+                    <span className={`dc__position-abs cn-9 ml-4 ${props.valClassName ?? ''}`}>
+                        {props.selectProps.value.label}
+                    </span>
                 ) : (
                     <span className="dc__position-abs cn-5 ml-8">{props.selectProps.placeholder}</span>
                 ))}
@@ -212,9 +214,11 @@ export const noMatchingPlatformOptions = (): string => {
     return 'No matching options'
 }
 
-export function GroupHeading(props) {
-    const {data, hideClusterName} = props
-    if (!data.label) return null
+export const GroupHeading = (props) => {
+    const { data, hideClusterName } = props
+    if (!data.label) {
+        return null
+    }
     return (
         <components.GroupHeading {...props}>
             <div className="flex dc__no-text-transform flex-justify dc__truncate-text h-100">
@@ -227,7 +231,7 @@ export function GroupHeading(props) {
     )
 }
 
-export function EnvFormatOptions(props) {
+export const EnvFormatOptions = (props) => {
     const { data, environmentfieldName } = props
     return <components.SingleValue {...props}>{data[environmentfieldName]}</components.SingleValue>
 }
@@ -248,7 +252,11 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
     )
 }
 
-export function formatHighlightedTextDescription(option: Environment, inputValue: string, environmentfieldName: string) {
+export function formatHighlightedTextDescription(
+    option: Environment,
+    inputValue: string,
+    environmentfieldName: string,
+) {
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
     const regex = new RegExp(inputValue, 'gi')
     return (
@@ -263,9 +271,9 @@ export function formatHighlightedTextDescription(option: Environment, inputValue
                 <small
                     className="cn-6"
                     dangerouslySetInnerHTML={{
-                        __html: (option.description + '').replace(regex, highLightText),
+                        __html: `${option.description}`.replace(regex, highLightText),
                     }}
-                ></small>
+                />
             )}
         </div>
     )
@@ -290,27 +298,27 @@ export const groupHeaderStyle = {
 }
 
 export const groupStyle = () => {
-  return {
-      ...multiSelectStyles,
-      menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-      control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
-      group: (base) => ({
-          ...base,
-          paddingTop: 0,
-          paddingBottom: 0,
-      }),
-      groupHeading: (base) => ({
-          ...base,
-          fontWeight: 600,
-          fontSize: '12px',
-          height: '28px',
-          color: 'var(--N900)',
-          backgroundColor: 'var(--N100)',
-          marginBottom: 0,
-      }),
-      indicatorsContainer: (provided, state) => ({
-          ...provided,
-      }),
-      option: getCustomOptionSelectionStyle(),
-  }
+    return {
+        ...multiSelectStyles,
+        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+        control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
+        group: (base) => ({
+            ...base,
+            paddingTop: 0,
+            paddingBottom: 0,
+        }),
+        groupHeading: (base) => ({
+            ...base,
+            fontWeight: 600,
+            fontSize: '12px',
+            height: '28px',
+            color: 'var(--N900)',
+            backgroundColor: 'var(--N100)',
+            marginBottom: 0,
+        }),
+        indicatorsContainer: (provided, state) => ({
+            ...provided,
+        }),
+        option: getCustomOptionSelectionStyle(),
+    }
 }

@@ -2,13 +2,7 @@ import React from 'react'
 import { ButtonWithLoader } from '../common'
 import { GenerateActionButtonType } from './authorization.type'
 
-function GenerateActionButton({
-    loader,
-    onCancel,
-    onSave,
-    buttonText,
-    regenerateButton
-}: GenerateActionButtonType) {
+const GenerateActionButton = ({ loader, onCancel, onSave, buttonText, regenerateButton }: GenerateActionButtonType) => {
     return (
         <div
             className={`modal__buttons w-100 pl-0 pt-16 pb-16 pr-16 flex ${

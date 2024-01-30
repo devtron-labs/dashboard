@@ -2,7 +2,7 @@ export const EA_MANIFEST_SECRET_INFO_TEXT = 'The values for all keys in the data
 export const EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT =
     'The values for all keys in the data field have to be base64-encoded strings.'
 
-//DELETE COMPONENET STARTS
+// DELETE COMPONENET STARTS
 export const DC_MATERIAL_VIEW_CONFIRMATION_MESSAGE =
     'Checkout path for this repository is being used in docker build config. Please change checkout path in use and try again.'
 export const DC_CHART_REPO_CONFIRMATION_MESSAGE = 'Some deployed helm apps are using this repository.'
@@ -44,7 +44,7 @@ export const enum DeleteComponentsName {
     GitRepo = 'Repo',
 }
 
-//DELETE COMPONENT ENDS
+// DELETE COMPONENT ENDS
 
 export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
@@ -66,7 +66,8 @@ export const COPIED_MESSAGE = 'Copied!'
 export const PROJECT_EXIST_MSG = 'This Project already exists.'
 
 export const CustomErrorMessage = {
-    CUSTOM_TAG_ERROR_MSG: 'Allowed: Alphanumeric characters, including (_) (.) (-) but cannot begin or end with (.) or (-).',
+    CUSTOM_TAG_ERROR_MSG:
+        'Allowed: Alphanumeric characters, including (_) (.) (-) but cannot begin or end with (.) or (-).',
     CUSTOM_TAG_MANDATORY_X: 'Using variable {x} is mandatory',
     CUSTOM_TAG_LIMIT: 'Max 128 characters.',
     INVALID_IMAGE_PATTERN: 'Invalid image tag pattern',
@@ -114,7 +115,7 @@ export const ERROR_EMPTY_SCREEN = {
     FORBIDDEN: 'forbidden',
 }
 
-//Confirmation Dialog messgaes
+// Confirmation Dialog messgaes
 export const CONFIRMATION_DIALOG_MESSAGING = {
     DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
 }
@@ -152,7 +153,7 @@ export const BUTTON_TEXT = {
     CANCEL: 'Cancel',
 }
 
-//Deployment App Types
+// Deployment App Types
 export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',
@@ -251,9 +252,9 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'No deployments',
         SUBTITLE: 'No deployment history available for the',
     },
-    CHART:{
+    CHART: {
         NO_SOURCE_TITLE: 'No chart source configured',
-        NO_CHART_FOUND: 'Could not find any matching chart source'
+        NO_CHART_FOUND: 'Could not find any matching chart source',
     },
     CHART_DEPLOYMENT_HISTORY: {
         SUBTITLE:
@@ -401,11 +402,12 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'The trigger you are looking for does not exist',
     },
     OVERVIEW: {
-        DEPLOYMENT_TITLE: 'Explore your application\'s deployment landscape',
-        DEPLOYMENT_SUB_TITLE: 'Although there are no deployments to display just yet, it\'s the perfect time to start configuring and deploying your app to various environments. Let\'s go!',
+        DEPLOYMENT_TITLE: "Explore your application's deployment landscape",
+        DEPLOYMENT_SUB_TITLE:
+            "Although there are no deployments to display just yet, it's the perfect time to start configuring and deploying your app to various environments. Let's go!",
         APP_DESCRIPTION: 'Write a short description for this application',
-        JOB_DESCRIPTION: 'Write a short description for this job'
-    }
+        JOB_DESCRIPTION: 'Write a short description for this job',
+    },
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'
@@ -423,5 +425,5 @@ export const NO_TASKS_CONFIGURED_ERROR = 'No tasks are configured in this job pi
 
 export const FEATURE_DISABLED = 'This feature is disabled'
 
-export const DUPLICATE_PIPELINE_NAME_VALIDATION = "You cannot use same name for pipeline within an app."
-export const GENERATE_TOKEN_NAME_VALIDATION = "Token name is required to generate token"
+export const DUPLICATE_PIPELINE_NAME_VALIDATION = 'You cannot use same name for pipeline within an app.'
+export const GENERATE_TOKEN_NAME_VALIDATION = 'Token name is required to generate token'

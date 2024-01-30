@@ -1,4 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { useHistory, useRouteMatch } from 'react-router-dom'
+import { Moment } from 'moment'
+import { toast } from 'react-toastify'
+import {
+    ServerErrors,
+    showError,
+    RadioGroup,
+    RadioGroupItem,
+    TippyCustomized,
+    TippyTheme,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
@@ -21,13 +33,9 @@ import {
     EntityTypes,
     OptionType,
 } from '../userGroups/userGroups.types'
-import { useHistory, useRouteMatch } from 'react-router-dom'
 import GroupPermission from './GroupPermission'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
-import { Moment } from 'moment'
-import { toast } from 'react-toastify'
-import { ServerErrors, showError, RadioGroup, RadioGroupItem, TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { API_COMPONENTS } from '../../config/constantMessaging'
 
@@ -40,21 +48,20 @@ export const renderQuestionwithTippy = () => {
             Icon={QuestionFilled}
             heading={API_COMPONENTS.TITLE}
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
-            showCloseButton={true}
+            showCloseButton
             trigger="click"
-            interactive = {true}
+            interactive
             documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
             documentationLinkText="View Documentation"
         >
             <div className="icon-dim-20 fcn-9 ml-8 cursor">
                 <Question />
             </div>
-
         </TippyCustomized>
     )
 }
 
-function CreateAPIToken({
+const CreateAPIToken = ({
     setShowGenerateModal,
     showGenerateModal,
     handleGenerateTokenActionButton,
@@ -63,7 +70,7 @@ function CreateAPIToken({
     tokenResponse,
     setTokenResponse,
     reload,
-}: GenerateTokenType) {
+}: GenerateTokenType) => {
     const history = useHistory()
     const match = useRouteMatch()
     const { serverMode } = useContext(mainContext)
@@ -259,7 +266,7 @@ function CreateAPIToken({
                             error={formDataErrorObj.invalidName && formDataErrorObj.invalidaNameMessage}
                             label="Name"
                             labelClassName="mt-12"
-                            isRequiredField={true}
+                            isRequiredField
                         />
                         <label className="form__row mt-12">
                             <span className="form__label">Description</span>

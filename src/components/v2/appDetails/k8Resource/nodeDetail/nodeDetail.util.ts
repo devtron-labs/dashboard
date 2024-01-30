@@ -19,16 +19,23 @@ export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boo
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
         if (isResourceBrowserTab) {
             return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS, NodeDetailTab.LOGS, NodeDetailTab.TERMINAL]
-        } else return [NodeDetailTab.LOGS, NodeDetailTab.TERMINAL, NodeDetailTab.EVENTS, NodeDetailTab.MANIFEST]
-    } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
-        return [NodeDetailTab.LOGS]
-    } else {
-        return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS]
+        }
+        return [NodeDetailTab.LOGS, NodeDetailTab.TERMINAL, NodeDetailTab.EVENTS, NodeDetailTab.MANIFEST]
     }
+    if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
+        return [NodeDetailTab.LOGS]
+    }
+    return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS]
 }
 
 export const flatContainers = (pod: PodMetaData): string[] => {
-    return [...(pod?.containers || []), ...(pod?.initContainers || []), ...(pod?.ephemeralContainers?.map((_con) => { return _con.name }) || [])]
+    return [
+        ...(pod?.containers || []),
+        ...(pod?.initContainers || []),
+        ...(pod?.ephemeralContainers?.map((_con) => {
+            return _con.name
+        }) || []),
+    ]
 }
 
 export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
@@ -47,7 +54,7 @@ export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
             name: _container.name,
             isInitContainer: false,
             isEphemeralContainer: true,
-            isExternal: _container.isExternal
+            isExternal: _container.isExternal,
         })) || []),
     ]
 }
@@ -55,7 +62,7 @@ export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
 export function getSelectedPodList(selectedOption: string): PodMetaData[] {
     let pods: PodMetaData[]
     const handleDefaultForSelectedOption = (name: string): void => {
-        let podNames = new Set(IndexStore.getPodsForRootNode(name).map((_po) => _po.name))
+        const podNames = new Set(IndexStore.getPodsForRootNode(name).map((_po) => _po.name))
         pods = IndexStore.getAllPods().filter((_po) => podNames.has(_po.name))
     }
 
@@ -111,61 +118,63 @@ export function getPodContainerOptions(
             logState.selectedContainerOption ?? _selectedContainerName ?? (containers[0].name as string)
 
         const containerOptions = containers.map((_container) => {
-            return { ..._container, selected: _container.name === _selectedContainerName, isEphemeralContainer: _container.isEphemeralContainer, isInitContainer:  _container.isInitContainer}
+            return {
+                ..._container,
+                selected: _container.name === _selectedContainerName,
+                isEphemeralContainer: _container.isEphemeralContainer,
+                isInitContainer: _container.isInitContainer,
+            }
         })
 
         return {
-            containerOptions: containerOptions,
+            containerOptions,
             podOptions: [{ name: isResourceBrowserView ? params.node : params.podName, selected: true }],
         }
-    } else {
-        //build pod options
-        const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus().flatMap((_ps) =>
-            _ps[0].split('/').splice(-1),
-        )
-        const additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All ' + rn, selected: index === 0 }))
+    }
+    // build pod options
+    const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus().flatMap((_ps) => _ps[0].split('/').splice(-1))
+    const additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: `All ${rn}`, selected: index === 0 }))
 
-        if (IndexStore.getEnvDetails().envType === EnvType.APPLICATION) {
-            additionalPodOptions.concat(
-                rootNamesOfPods.flatMap((rn) => [
-                    { name: 'All new ' + rn, selected: false },
-                    { name: 'All old ' + rn, selected: false },
-                ]),
-            )
-        }
-        const _allPods = IndexStore.getAllPods().sort()
-        if (_allPods.length == 0) {
-            return {
-                containerOptions: [],
-                podOptions: [],
-            }
-        }
-        const podOptions = additionalPodOptions.concat(
-            _allPods.map((_pod) => {
-                return { name: _pod.name, selected: false }
-            }),
+    if (IndexStore.getEnvDetails().envType === EnvType.APPLICATION) {
+        additionalPodOptions.concat(
+            rootNamesOfPods.flatMap((rn) => [
+                { name: `All new ${rn}`, selected: false },
+                { name: `All old ${rn}`, selected: false },
+            ]),
         )
-        if (logState.selectedPodOption) {
-            podOptions.forEach(
-                (_po) => (_po.selected = _po.name.toLowerCase() === logState.selectedPodOption.toLowerCase()),
-            )
-        }
-
-        //build container Options
-        const _allSelectedPods = getSelectedPodList(logState.selectedPodOption)
-        const containers = (getContainersData(_allSelectedPods[0]) ?? []).sort()
-        const containerOptions = containers.map((_container, index) => {
-            return { ..._container, selected: index === 0 }
-        })
-        if (logState.selectedContainerOption) {
-            containerOptions.forEach(
-                (_co) => (_co.selected = _co.name.toLowerCase() === logState.selectedContainerOption.toLowerCase()),
-            )
-        }
+    }
+    const _allPods = IndexStore.getAllPods().sort()
+    if (_allPods.length == 0) {
         return {
-            containerOptions: containerOptions,
-            podOptions: podOptions,
+            containerOptions: [],
+            podOptions: [],
         }
+    }
+    const podOptions = additionalPodOptions.concat(
+        _allPods.map((_pod) => {
+            return { name: _pod.name, selected: false }
+        }),
+    )
+    if (logState.selectedPodOption) {
+        podOptions.forEach(
+            (_po) => (_po.selected = _po.name.toLowerCase() === logState.selectedPodOption.toLowerCase()),
+        )
+    }
+
+    // build container Options
+    const _allSelectedPods = getSelectedPodList(logState.selectedPodOption)
+    const containers = (getContainersData(_allSelectedPods[0]) ?? []).sort()
+    const containerOptions = containers.map((_container, index) => {
+        return { ..._container, selected: index === 0 }
+    })
+    if (logState.selectedContainerOption) {
+        containerOptions.forEach(
+            (_co) => (_co.selected = _co.name.toLowerCase() === logState.selectedContainerOption.toLowerCase()),
+        )
+    }
+    return {
+        containerOptions,
+        podOptions,
     }
 }
 
@@ -198,34 +207,32 @@ export function getInitialPodContainerSelection(
             selectedContainerOption: _selectedContainerName,
             selectedPodOption: isResourceBrowserView ? params.node : params.podName,
         }
-    } else {
-        const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
-            .flatMap((_ps) => _ps[0].split('/').splice(-1))
-            .sort()
-        const additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All ' + rn, selected: index == 0 }))
+    }
+    const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
+        .flatMap((_ps) => _ps[0].split('/').splice(-1))
+        .sort()
+    const additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: `All ${rn}`, selected: index == 0 }))
 
-        const _selectedPodOption = additionalPodOptions.find((_po) => _po.selected)?.name ?? ''
+    const _selectedPodOption = additionalPodOptions.find((_po) => _po.selected)?.name ?? ''
 
-        const _allSelectedPods = getSelectedPodList(_selectedPodOption)
-        if (_allSelectedPods.length === 0) {
-            return {
-                selectedContainerOption: '',
-                selectedPodOption: '',
-            }
-        }
-
-        const containers = new Set(_allSelectedPods.flatMap((_pod) => flatContainers(_pod) ?? []))
-        const _selectedContainerOption = [...containers].sort().find((_container, index) => index == 0) ?? ''
+    const _allSelectedPods = getSelectedPodList(_selectedPodOption)
+    if (_allSelectedPods.length === 0) {
         return {
-            selectedContainerOption: _selectedContainerOption,
-            selectedPodOption: _selectedPodOption,
+            selectedContainerOption: '',
+            selectedPodOption: '',
         }
+    }
+
+    const containers = new Set(_allSelectedPods.flatMap((_pod) => flatContainers(_pod) ?? []))
+    const _selectedContainerOption = [...containers].sort().find((_container, index) => index == 0) ?? ''
+    return {
+        selectedContainerOption: _selectedContainerOption,
+        selectedPodOption: _selectedPodOption,
     }
 }
 
-export function getFirstOrNull<T extends {label:string}>(arr: T[]): T | null {
-
-    if(arr.length === 0){
+export function getFirstOrNull<T extends { label: string }>(arr: T[]): T | null {
+    if (arr.length === 0) {
         return null
     }
     // remove all pods in 'ALL PODS FOR' category, to get only 'INDIVIDUAL PODS' list
@@ -283,7 +290,7 @@ export const getContainerSelectStyles = () => {
             backgroundColor: 'var(--N100)',
             marginBottom: 0,
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
         }),
     }
 }
@@ -313,7 +320,7 @@ export const getShellSelectStyles = () => {
         indicatorsContainer: (provided) => ({
             ...provided,
             height: '28px',
-        })
+        }),
     }
 }
 
@@ -322,9 +329,9 @@ export const getContainerOptions = (containers: string[]) => {
 }
 
 export const getGroupedContainerOptions = (containers: Options[], isTerminal?: boolean) => {
-    const containerOptions = [],
-        initContainerOptions = [],
-        ephemralContainerOptions = []
+    const containerOptions = []
+    const initContainerOptions = []
+    const ephemralContainerOptions = []
 
     if (Array.isArray(containers) && containers.length > 0) {
         for (const _container of containers) {
@@ -338,7 +345,7 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
                     label: _container.name,
                     value: _container.name,
                     isEphemeralContainer: _container.isEphemeralContainer,
-                    isExternal:           _container.isExternal
+                    isExternal: _container.isExternal,
                 })
             } else {
                 containerOptions.push({
@@ -362,7 +369,7 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
             })
         }
 
-        if (ephemralContainerOptions.length > 0){
+        if (ephemralContainerOptions.length > 0) {
             groupedOptions.push({
                 label: 'Ephemeral containers',
                 options: ephemralContainerOptions.sort(sortOptionsByLabel),
@@ -399,7 +406,7 @@ export const getTrimmedManifestData = (
 ): ManifestData | string => {
     if (manifestData[MANIFEST_KEY_FIELDS.METADATA]) {
         const { [MANIFEST_KEY_FIELDS.MANAGED_FIELDS]: _, ...metadata } = manifestData[MANIFEST_KEY_FIELDS.METADATA]
-        const trimmedManifestData = {...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata}
+        const trimmedManifestData = { ...manifestData, [MANIFEST_KEY_FIELDS.METADATA]: metadata }
 
         return returnAsString ? JSON.stringify(trimmedManifestData) : trimmedManifestData
     }

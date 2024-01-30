@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useHistory, RouteComponentProps } from 'react-router'
-import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
-import emptyCustomChart from '../../../assets/img/app-not-configured.png'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Launch } from '../../../assets/icons/ic-nav-rocket.svg'
 import {
     showError,
     Progressing,
@@ -19,6 +10,18 @@ import {
     EmptyState,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import moment from 'moment'
+import Tippy from '@tippyjs/react'
+import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
+import emptyCustomChart from '../../../assets/img/app-not-configured.png'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
+import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
+import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Launch } from '../../../assets/icons/ic-nav-rocket.svg'
 import { SavedValueType } from './types'
 import {
     deleteChartValues,
@@ -28,9 +31,6 @@ import {
 } from '../charts.service'
 import './savedValues.scss'
 import PageHeader from '../../common/header/PageHeader'
-import { toast } from 'react-toastify'
-import moment from 'moment'
-import Tippy from '@tippyjs/react'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
 export default function SavedValuesList() {
@@ -141,10 +141,15 @@ export default function SavedValuesList() {
                         setSearchText(event.target.value)
                     }}
                     onKeyDown={handleFilterKeyPress}
-                    data-testid = "preset-value-search-box"
+                    data-testid="preset-value-search-box"
                 />
                 {searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={clearSearch} data-testid = "preset-values-search-close-button">
+                    <button
+                        className="search__clear-button"
+                        type="button"
+                        onClick={clearSearch}
+                        data-testid="preset-values-search-close-button"
+                    >
                         <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                     </button>
                 )}
@@ -173,7 +178,11 @@ export default function SavedValuesList() {
 
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex h-32" data-testid="add-preset-values-button">
+            <button
+                onClick={() => redirectToChartValuePage(0)}
+                className="add-link cta flex h-32"
+                data-testid="add-preset-values-button"
+            >
                 <Add className="icon-dim-16 mr-5" />
                 New
             </button>
@@ -182,7 +191,13 @@ export default function SavedValuesList() {
 
     const renderLearnMoreLink = (): JSX.Element => {
         return (
-            <a className="dc__no-decor" href={DOCUMENTATION.CUSTOM_VALUES} target="_blank" rel="noreferrer noopener" data-testid="preset-values-learn-more-link">
+            <a
+                className="dc__no-decor"
+                href={DOCUMENTATION.CUSTOM_VALUES}
+                target="_blank"
+                rel="noreferrer noopener"
+                data-testid="preset-values-learn-more-link"
+            >
                 Learn more
             </a>
         )
@@ -205,7 +220,7 @@ export default function SavedValuesList() {
 
     const renderClearSearchButton = () => {
         return (
-             <button onClick={clearSearch} className="add-link cta flex">
+            <button onClick={clearSearch} className="add-link cta flex">
                 Clear search
             </button>
         )
@@ -213,7 +228,7 @@ export default function SavedValuesList() {
 
     const renderEmptyState = (title?: string, subTitle?: string, showClearButton?: boolean): JSX.Element => {
         return (
-            <div className='dc__position-rel' style={{ height: 'calc(100vh - 235px)' }}>
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 235px)' }}>
                 <GenericEmptyState
                     image={emptyCustomChart}
                     heightToDeduct={235}
@@ -242,7 +257,9 @@ export default function SavedValuesList() {
     const renderSavedValuesList = (): JSX.Element => {
         return (
             <div className="preset-values-container">
-                <div className="cn-9 fw-6 fs-16" data-testid="preset-page-heading">Preset values</div>
+                <div className="cn-9 fw-6 fs-16" data-testid="preset-page-heading">
+                    Preset values
+                </div>
                 {renderSubtitleAndNewButton('Customize, Dry Run and Save values so they’re ready to be used later.')}
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     {savedValueList.length === 0 ? (
@@ -251,7 +268,10 @@ export default function SavedValuesList() {
                         renderEmptyState('No matching preset values', 'We couldn’t find any matching results', true)
                     ) : (
                         <>
-                            <div className="preset-values-row fw-6 cn-7 fs-12 dc__border-bottom dc__uppercase pt-8 pr-20 pb-8 pl-20" data-testid="preset-values-list-heading">
+                            <div
+                                className="preset-values-row fw-6 cn-7 fs-12 dc__border-bottom dc__uppercase pt-8 pr-20 pb-8 pl-20"
+                                data-testid="preset-values-list-heading"
+                            >
                                 <div />
                                 <div>Name</div>
                                 <div>Version</div>
@@ -263,7 +283,7 @@ export default function SavedValuesList() {
                                     <div
                                         key={`saved-value-${index}`}
                                         className="preset-values-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pr-20 pb-12 pl-20"
-                                        data-testid = "preset-values-list-element"
+                                        data-testid="preset-values-list-element"
                                     >
                                         <div className="icon-dim-18">
                                             <File className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
@@ -277,41 +297,41 @@ export default function SavedValuesList() {
                                         <div>{chartData.chartVersion}</div>
                                         <div>{chartData.updatedBy || '-'}</div>
                                         <div>{getUpdatedOnDateTime(chartData.updatedOn)}</div>
-                                        <div className="flex right" data-testid = "preset-element-options">
+                                        <div className="flex right" data-testid="preset-element-options">
                                             <Tippy
                                                 className="default-tt"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content={'Use value to deploy'}
+                                                content="Use value to deploy"
                                             >
                                                 <Launch
                                                     className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon scn-6"
                                                     onClick={() => redirectToChartValuePage(chartData.id, true)}
-                                                    data-testid = "preset-element-options-0"
+                                                    data-testid="preset-element-options-0"
                                                 />
                                             </Tippy>
                                             <Tippy
                                                 className="default-tt"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content={'Edit value'}
+                                                content="Edit value"
                                             >
                                                 <Edit
                                                     className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon"
                                                     onClick={() => redirectToChartValuePage(chartData.id)}
-                                                    data-testid = "preset-element-options-1"
+                                                    data-testid="preset-element-options-1"
                                                 />
                                             </Tippy>
                                             <Tippy
                                                 className="default-tt"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content={'Delete value'}
+                                                content="Delete value"
                                             >
                                                 <Delete
                                                     className="icon-dim-18 dc__vertical-align-middle pointer action-icon"
                                                     onClick={() => onDeleteButtonClick(chartData)}
-                                                    data-testid = "preset-element-options-2"
+                                                    data-testid="preset-element-options-2"
                                                 />
                                             </Tippy>
                                         </div>
@@ -359,7 +379,7 @@ export default function SavedValuesList() {
     }
     return (
         <>
-            <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
             {renderSavedValuesList()}
             {showDeleteDialog && renderDeleteDialog()}
         </>

@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import ReactSelect from 'react-select'
+import { ScriptType } from '@devtron-labs/devtron-fe-common-lib'
+import CodeEditor from '../CodeEditor/CodeEditor'
 import { yamlEditorSelectStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
-import { ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 
-export function YAMLScriptComponent({
+export const YAMLScriptComponent = ({
     editorValue,
     handleEditorValueChange,
     showSample,
@@ -15,7 +15,7 @@ export function YAMLScriptComponent({
     handleEditorValueChange: (string) => void
     showSample?: boolean
     height?: string
-}) {
+}) => {
     const scriptTypeOptions: OptionType[] = [ScriptType.SHELL, ScriptType.CONTAINERIMAGE].map((scriptType) => ({
         label: scriptType,
         value: scriptType,
@@ -62,10 +62,10 @@ export function YAMLScriptComponent({
             </div>
             <CodeEditor
                 value={editorValue}
-                height={height ? height : 'calc(100vh - 200px)'}
+                height={height || 'calc(100vh - 200px)'}
                 mode="yaml"
                 onChange={handleEditorValueChange}
-            ></CodeEditor>
+            />
         </div>
     )
 }

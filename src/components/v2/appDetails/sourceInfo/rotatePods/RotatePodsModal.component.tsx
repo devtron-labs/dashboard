@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, Checkbox, Drawer, InfoColourBar, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Checkbox,
+    Drawer,
+    InfoColourBar,
+    CHECKBOX_VALUE,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_clockwise.svg'
 import {
@@ -15,7 +23,6 @@ import IndexStore from '../../index.store'
 import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
 import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
-import { toast } from 'react-toastify'
 import RotateResponseModal from './RotateResponseModal'
 import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
 
@@ -32,7 +39,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
     const [rotatingInProgress, setRotatingInProgress] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showHelp, setShowHelp] = useState(false)
-    const [strategy,setStrategy] = useState('')
+    const [strategy, setStrategy] = useState('')
 
     useEffect(() => {
         getStrategy()
@@ -57,7 +64,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
             appDetails.resourceTree.nodes.forEach((node) => {
                 if (RequiredKinds.includes(node.kind)) {
                     const workloadKey = `${node.kind}/${node.name}`
-                    let _workloadTarget: RotatePodsType = {
+                    const _workloadTarget: RotatePodsType = {
                         kind: node.kind,
                         name: node.name,
                         group: node.group,
@@ -92,23 +99,21 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
 
     const renderRestartModalHeader = (): JSX.Element => {
         return (
-            <>
-                <div className="bcn-0">
-                    <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
-                        <div className="lh-1-43 ml-20 flex left">
-                            <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="restart-workload-heading-onclick">
-                                Restart workloads
-                            </h1>
-                            <span className="icon-dim-24 fcn-6 mr-4 ml-10 fs-10">
-                                <Question onClick={() => setShowHelp(!showHelp)} />
-                            </span>
-                        </div>
-                        <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
-                            <Close className="icon-dim-24 dc__align-right cursor" />
-                        </button>
+            <div className="bcn-0">
+                <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
+                    <div className="lh-1-43 ml-20 flex left">
+                        <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="restart-workload-heading-onclick">
+                            Restart workloads
+                        </h1>
+                        <span className="icon-dim-24 fcn-6 mr-4 ml-10 fs-10">
+                            <Question onClick={() => setShowHelp(!showHelp)} />
+                        </span>
                     </div>
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
+                        <Close className="icon-dim-24 dc__align-right cursor" />
+                    </button>
                 </div>
-            </>
+            </div>
         )
     }
 
@@ -117,9 +122,9 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
         const _nameSelection = nameSelection[_nameSelectionKey]
         const _workloadsList = podsToRotate
 
-        for (let [key, value] of _workloadsList) {
+        for (const [key, value] of _workloadsList) {
             value.value = !_nameSelection.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE
-            value.isChecked = !_nameSelection.isChecked ? true : false
+            value.isChecked = !_nameSelection.isChecked
             _workloadsList.set(key, value)
         }
 
@@ -135,7 +140,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
 
     const handleWorkloadSelection = (workloadKey: string): void => {
         const _workloadsList = podsToRotate
-        
+
         const selectedWorkload = _workloadsList.get(workloadKey)
         selectedWorkload.value = !selectedWorkload.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE
         selectedWorkload.isChecked = !selectedWorkload.isChecked
@@ -150,7 +155,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
         setNameSelection({
             ...nameSelection,
             [_nameSelectionKey]: {
-                isChecked: areAllSelected || isAnySelected ? true : false,
+                isChecked: !!(areAllSelected || isAnySelected),
                 value: !areAllSelected && isAnySelected ? CHECKBOX_VALUE.INTERMEDIATE : CHECKBOX_VALUE.CHECKED,
             },
         })
@@ -189,7 +194,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
             setRotatingInProgress(false)
             setNameSelection({
                 ...nameSelection,
-                ['rotate']: {
+                rotate: {
                     isChecked: false,
                     value: CHECKBOX_VALUE.CHECKED,
                 },
@@ -197,12 +202,12 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
         }
     }
 
-    const handleSelectAll = (e:any) => {
+    const handleSelectAll = (e: any) => {
         e.stopPropagation()
         handleAllScaleObjectsName()
     }
 
-    const handleRestartWorkloads = (e:any) => {
+    const handleRestartWorkloads = (e: any) => {
         e.preventDefault()
         const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
         const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
@@ -232,31 +237,29 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
                             </Checkbox>
                         </div>
                         <div style={{ height: '192px', overflow: 'scroll' }}>
-                            <>
-                                {Array.from(podsToRotate.values()).map((item) => (
-                                    <div key={`${item.kind}/${item.name}`} className="check-single-workload mt-16">
-                                        <Checkbox
-                                            rootClassName={`mb-0 fs-13 cursor bcn-0 p${
-                                                item.errorMessage ? ' dc__align-baseline' : ''
-                                            }`}
-                                            isChecked={item.isChecked}
-                                            value={item.value}
-                                            onChange={(e) => {
-                                                e.stopPropagation()
-                                                handleWorkloadSelection(`${item.kind}/${item.name}`)
-                                            }}
-                                        >
-                                            <div className="pl-8">
-                                                <span className="cn-9 fw-6">{item.kind} / </span>
-                                                <span>{item.name}</span>
-                                            </div>
-                                            {item.errorMessage && (
-                                                <div className="cr-5 fs-11 fw-4 pl-16 mt-4">{item.errorMessage}</div>
-                                            )}
-                                        </Checkbox>
-                                    </div>
-                                ))}
-                            </>
+                            {Array.from(podsToRotate.values()).map((item) => (
+                                <div key={`${item.kind}/${item.name}`} className="check-single-workload mt-16">
+                                    <Checkbox
+                                        rootClassName={`mb-0 fs-13 cursor bcn-0 p${
+                                            item.errorMessage ? ' dc__align-baseline' : ''
+                                        }`}
+                                        isChecked={item.isChecked}
+                                        value={item.value}
+                                        onChange={(e) => {
+                                            e.stopPropagation()
+                                            handleWorkloadSelection(`${item.kind}/${item.name}`)
+                                        }}
+                                    >
+                                        <div className="pl-8">
+                                            <span className="cn-9 fw-6">{item.kind} / </span>
+                                            <span>{item.name}</span>
+                                        </div>
+                                        {item.errorMessage && (
+                                            <div className="cr-5 fs-11 fw-4 pl-16 mt-4">{item.errorMessage}</div>
+                                        )}
+                                    </Checkbox>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
@@ -283,24 +286,30 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
 
     const renderRotateModal = (): JSX.Element => {
         if (result) {
-            return <RotateResponseModal onClose={onClose} response={result.responses} setResult={setResult} callAppDetailsAPI={callAppDetailsAPI} />
-        } else {
             return (
-                <>
-                    {renderRestartModalHeader()}
-                    {showHelp && (
-                        <InfoColourBar
-                            message={`Pods for selected workloads will be restarted. Configured deployment strategy "${strategy}" will be used
-                to restart selected workloads.`}
-                            classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
-                            Icon={Help}
-                            iconClass="icon-dim-16 mr-12 fcv-5"
-                        />
-                    )}
-                    {renderRestartWorkloadsList()}
-                </>
+                <RotateResponseModal
+                    onClose={onClose}
+                    response={result.responses}
+                    setResult={setResult}
+                    callAppDetailsAPI={callAppDetailsAPI}
+                />
             )
         }
+        return (
+            <>
+                {renderRestartModalHeader()}
+                {showHelp && (
+                    <InfoColourBar
+                        message={`Pods for selected workloads will be restarted. Configured deployment strategy "${strategy}" will be used
+                to restart selected workloads.`}
+                        classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
+                        Icon={Help}
+                        iconClass="icon-dim-16 mr-12 fcv-5"
+                    />
+                )}
+                {renderRestartWorkloadsList()}
+            </>
+        )
     }
 
     return (

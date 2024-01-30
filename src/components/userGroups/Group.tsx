@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useContext, useRef, ChangeEvent } from 'react'
+import {
+    showError,
+    Progressing,
+    DeleteDialog,
+    ResizableTextarea,
+    CustomInput,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { deepEqual } from '../common'
-import { showError, Progressing, DeleteDialog, ResizableTextarea, CustomInput, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { saveGroup, deleteGroup } from './userGroup.service'
 
 import {
@@ -21,7 +29,7 @@ import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions
 
 enum PermissionTypeEnum {
     SUPER_ADMIN = 'SUPERADMIN',
-    SPECIFIC = 'SPECIFIC'
+    SPECIFIC = 'SPECIFIC',
 }
 
 export default function GroupForm({
@@ -88,20 +96,19 @@ export default function GroupForm({
             return permission.environment.find((env) => env.value === '*')
                 ? ''
                 : permission.environment.map((env) => env.value).join(',')
-        } else {
-            let allFutureCluster = {}
-            let envList = ''
-            permission.environment.forEach((element) => {
-                if (element.clusterName === '' && element.value.startsWith('#')) {
-                    const clusterName = element.value.substring(1)
-                    allFutureCluster[clusterName] = true
-                    envList += (envList !== '' ? ',' : '') + clusterName + '__*'
-                } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                    envList += (envList !== '' ? ',' : '') + element.value
-                }
-            })
-            return envList
         }
+        const allFutureCluster = {}
+        let envList = ''
+        permission.environment.forEach((element) => {
+            if (element.clusterName === '' && element.value.startsWith('#')) {
+                const clusterName = element.value.substring(1)
+                allFutureCluster[clusterName] = true
+                envList += `${(envList !== '' ? ',' : '') + clusterName}__*`
+            } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+                envList += (envList !== '' ? ',' : '') + element.value
+            }
+        })
+        return envList
     }
 
     async function handleSubmit(e) {
@@ -158,7 +165,7 @@ export default function GroupForm({
                         : permission.resource.map((entity) => entity.value).join(','),
                 })),
             ],
-            superAdmin: isSuperAdminPermission
+            superAdmin: isSuperAdminPermission,
         }
         if (serverMode !== SERVER_MODE.EA_ONLY) {
             payload.roleFilters.push({
@@ -218,7 +225,7 @@ export default function GroupForm({
                 value={name.value}
                 data-testid="permission-group-name-textbox"
                 onChange={(e) => setName({ value: e.target.value, error: '' })}
-                isRequiredField={true}
+                isRequiredField
                 error={name.error}
             />
             <label htmlFor="" className="form__label mt-16">
@@ -303,7 +310,7 @@ export default function GroupForm({
             {deleteConfirmationModal && (
                 <DeleteDialog
                     title={`Delete group '${name.value}'?`}
-                    description={'Deleting this group will revoke permissions from users added to this group.'}
+                    description="Deleting this group will revoke permissions from users added to this group."
                     closeDelete={() => setDeleteConfirmationModal(false)}
                     delete={handleDelete}
                     apiCallInProgress={submitting}

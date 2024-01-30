@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
+import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import GenerateActionButton from './GenerateActionButton'
 import { getDateInMilliseconds } from './authorization.utils'
 import { RegenerateModalType, TokenResponseType } from './authorization.type'
@@ -9,7 +9,7 @@ import { updateGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
 import ExpirationDate from './ExpirationDate'
 
-function RegeneratedModal({
+const RegeneratedModal = ({
     close,
     setShowRegeneratedModal,
     editData,
@@ -17,7 +17,7 @@ function RegeneratedModal({
     setCustomDate,
     reload,
     redirectToTokenList,
-}: RegenerateModalType) {
+}: RegenerateModalType) => {
     const [loader, setLoader] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: any }>({
@@ -99,7 +99,7 @@ function RegeneratedModal({
             token={tokenResponse.token}
             reload={reload}
             redirectToTokenList={redirectToTokenList}
-            isRegenerationModal={true}
+            isRegenerationModal
         />
     ) : (
         <VisibleModal className="regenerate-token-modal">
@@ -132,7 +132,7 @@ function RegeneratedModal({
                     onCancel={() => setShowRegeneratedModal(false)}
                     onSave={handleRegenrateToken}
                     buttonText="Regenerate Token"
-                    regenerateButton={true}
+                    regenerateButton
                 />
             </div>
         </VisibleModal>

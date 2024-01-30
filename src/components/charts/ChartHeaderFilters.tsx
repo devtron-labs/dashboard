@@ -1,15 +1,15 @@
 import React from 'react'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { useRouteMatch, useHistory, useLocation } from 'react-router'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import { QueryParams } from './charts.util'
 import { Accordian } from '../common/Accordian/Accordian'
 import { URLS } from '../../config'
 
-function ChartHeaderFilter({
+const ChartHeaderFilter = ({
     selectedChartRepo,
     includeDeprecated,
     chartRepoList,
@@ -19,12 +19,12 @@ function ChartHeaderFilter({
     searchApplied,
     isGrid,
     setIsGrid,
-}) {
+}) => {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
     const { url } = match
-  
+
     const handleSelection = (event): void => {
         const chartRepoList = selectedChartRepo.filter((e) => e.value != event.value)
         setSelectedChartRepo(chartRepoList)
@@ -32,7 +32,7 @@ function ChartHeaderFilter({
             handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
         } else {
             handleFilterChanges(chartRepoList, 'chart-repo')
-        } 
+        }
     }
 
     const handleViewAllCharts = (): void => {
@@ -47,14 +47,14 @@ function ChartHeaderFilter({
         const registryId = searchParams.get(QueryParams.RegistryId)
         let isOCIRegistry
         if (key == 'chart-repo') {
-            let paramsChartRepoIds = selected
+            const paramsChartRepoIds = selected
                 .filter((selectedRepo) => !selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     return selectedRepo.value
                 })
                 .join(',')
 
-            let paramsRegistryIds = selected
+            const paramsRegistryIds = selected
                 .filter((selectedRepo) => selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     isOCIRegistry = true
@@ -63,42 +63,71 @@ function ChartHeaderFilter({
                 .join(',')
             if (isOCIRegistry) {
                 let qsr = `${QueryParams.RegistryId}=${paramsRegistryIds}`
-                if (paramsChartRepoIds) qsr = `${qsr}&${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
-                if (app) qsr = `${qsr}&${QueryParams.AppStoreName}=${app}`
-                if (deprecate) qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                if (paramsChartRepoIds) {
+                    qsr = `${qsr}&${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
+                }
+                if (app) {
+                    qsr = `${qsr}&${QueryParams.AppStoreName}=${app}`
+                }
+                if (deprecate) {
+                    qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                }
                 history.push(`${url}?${qsr}`)
             } else {
                 let qs = `${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
-                if (paramsRegistryIds) qs = `${qs}&${QueryParams.RegistryId}=${paramsRegistryIds}`
-                if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
-                if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                if (paramsRegistryIds) {
+                    qs = `${qs}&${QueryParams.RegistryId}=${paramsRegistryIds}`
+                }
+                if (app) {
+                    qs = `${qs}&${QueryParams.AppStoreName}=${app}`
+                }
+                if (deprecate) {
+                    qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                }
                 history.push(`${url}?${qs}`)
             }
         }
 
-
         if (key == 'deprecated') {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
-            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
-            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            if (app) {
+                qs = `${qs}&${QueryParams.AppStoreName}=${app}`
+            }
+            if (chartRepoId) {
+                qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            }
+            if (registryId) {
+                qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            }
             history.push(`${url}?${qs}`)
         }
 
         if (key == 'search') {
             selected.preventDefault()
             let qs = `${QueryParams.AppStoreName}=${appStoreName}`
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
-            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            if (deprecate) {
+                qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+            }
+            if (chartRepoId) {
+                qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            }
+            if (registryId) {
+                qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            }
             history.push(`${url}?${qs}`)
         }
 
         if (key == 'clear') {
             let qs: string = ''
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
-            if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            if (deprecate) {
+                qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+            }
+            if (chartRepoId) {
+                qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            }
+            if (registryId) {
+                qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            }
             history.push(`${url}?${qs}`)
         }
     }
@@ -120,7 +149,7 @@ function ChartHeaderFilter({
     }
 
     const toggleDeprecated = (): void => {
-        let value = (includeDeprecated + 1) % 2
+        const value = (includeDeprecated + 1) % 2
         handleFilterChanges(value, 'deprecated')
     }
 
@@ -180,7 +209,7 @@ function ChartHeaderFilter({
                 <Checkbox
                     rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 pl-8 ml-8"
                     isChecked={includeDeprecated === 1}
-                    value={'CHECKED'}
+                    value="CHECKED"
                     onChange={toggleDeprecated}
                     dataTestId="chart-store-filter-checkbox"
                 >

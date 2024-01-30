@@ -9,14 +9,14 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import DrainIcon from '../../../assets/icons/ic-clean-brush-medium.svg'
 import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as TimerIcon } from '../../../assets/icons/ic-timer.svg'
 import { DRAIN_NODE_MODAL_MESSAGING } from '../constants'
 import { NodeActionModalPropType } from '../types'
-import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { drainNodeCapacity } from '../clusterNodes.service'
 
 export default function DrainNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {
@@ -90,13 +90,13 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
             setAPICallInProgress(true)
             const payload = {
                 clusterId: Number(clusterId),
-                name: name,
-                version: version,
-                kind: kind,
+                name,
+                version,
+                kind,
                 nodeDrainOptions: {
                     gracePeriodSeconds: Number(gracePeriod),
-                    deleteEmptyDirData: deleteEmptyDirData,
-                    disableEviction: disableEviction,
+                    deleteEmptyDirData,
+                    disableEviction,
                     force: forceDrain,
                     ignoreAllDaemonSets: ignoreDaemonSets,
                 },
@@ -145,9 +145,9 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                         iconClass="fcv-5"
                         heading={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.heading}
                         infoText={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.infoText}
-                        showCloseButton={true}
+                        showCloseButton
                         trigger="click"
-                        interactive={true}
+                        interactive
                     >
                         <QuestionIcon className="icon-dim-16 fcn-6 ml-8 cursor" onClick={stopPropagation} />
                     </TippyCustomized>
@@ -172,9 +172,9 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                                 iconClass="fcv-5"
                                 heading={option.heading}
                                 infoText={option.infoText}
-                                showCloseButton={true}
+                                showCloseButton
                                 trigger="click"
-                                interactive={true}
+                                interactive
                             >
                                 <QuestionIcon
                                     className="drain-option-help-icon icon-dim-16 fcn-6 ml-8 cursor"
@@ -186,12 +186,7 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                 })}
             </div>
             <ConfirmationDialog.ButtonGroup>
-                <button
-                    type="button"
-                    className="flex cta cancel h-36"
-                    disabled={apiCallInProgress}
-                    onClick={onClose}
-                >
+                <button type="button" className="flex cta cancel h-36" disabled={apiCallInProgress} onClick={onClose}>
                     {DRAIN_NODE_MODAL_MESSAGING.Actions.cancel}
                 </button>
                 <button type="button" className="flex cta delete h-36" disabled={apiCallInProgress} onClick={drainAPI}>

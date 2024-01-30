@@ -9,4 +9,3 @@ export const resourceKindOptionLabel = (option): JSX.Element => {
         </div>
     )
 }
-

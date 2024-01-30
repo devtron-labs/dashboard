@@ -6,7 +6,7 @@ import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.sv
 import { ConditionalWrap } from '../../common'
 import { WebhookNodeProps } from '../types'
 
-export function WebhookNode({
+export const WebhookNode = ({
     x,
     y,
     width,
@@ -19,7 +19,7 @@ export function WebhookNode({
     handleSelectedNodeChange,
     selectedNode,
     isLastNode,
-}: WebhookNodeProps) {
+}: WebhookNodeProps) => {
     const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
     const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
 
@@ -40,7 +40,6 @@ export function WebhookNode({
             })
         }
     }
-    
 
     const renderWebhookCard = (): JSX.Element => {
         return (
