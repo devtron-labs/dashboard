@@ -666,16 +666,18 @@ export default function AppPermissions({
                             hideInfoLegend={hideInfoLegend}
                         />
                     </Route>
-                    <Route path={`${path}/jobs`}>
-                        <AppPermissionDetail
-                            accessType={ACCESS_TYPE_MAP.JOBS}
-                            removeDirectPermissionRow={removeDirectPermissionRow}
-                            handleDirectPermissionChange={handleDirectPermissionChange}
-                            AddNewPermissionRow={AddNewPermissionRowLocal}
-                            directPermission={directPermission}
-                            hideInfoLegend={hideInfoLegend}
-                        />
-                    </Route>
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route path={`${path}/jobs`}>
+                            <AppPermissionDetail
+                                accessType={ACCESS_TYPE_MAP.JOBS}
+                                removeDirectPermissionRow={removeDirectPermissionRow}
+                                handleDirectPermissionChange={handleDirectPermissionChange}
+                                AddNewPermissionRow={AddNewPermissionRowLocal}
+                                directPermission={directPermission}
+                                hideInfoLegend={hideInfoLegend}
+                            />
+                        </Route>
+                    )}
                     {superAdmin && (
                         <Route path={`${path}/kubernetes-objects`}>
                             <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
