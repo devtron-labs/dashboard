@@ -60,7 +60,7 @@
     },
     "scripts": {
         "prepare": "husky install",
-        "lint": "NODE_OPTIONS=--max_old_space_size=8192 eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+        "lint": "tsc --noEmit && NODE_OPTIONS=--max_old_space_size=8192 eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "vite",
         "build": "NODE_OPTIONS=--max_old_space_size=4096 vite build",
