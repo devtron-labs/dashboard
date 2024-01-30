@@ -93,8 +93,8 @@ export default function AppPermissions({
                     (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                         ? appsList
                         : isJobs
-                        ? jobsList
-                        : appsListHelmApps
+                          ? jobsList
+                          : appsListHelmApps
                     ).get(projectId)?.result || []
                 ).map((app) => {
                     return {
@@ -449,8 +449,8 @@ export default function AppPermissions({
                             ...(tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                                 ? appsList
                                 : tempPermissions[index].accessType === ACCESS_TYPE_MAP.JOBS
-                                ? jobsList
-                                : appsListHelmApps
+                                  ? jobsList
+                                  : appsListHelmApps
                             )
                                 .get(projectId)
                                 .result.map((app) => {
@@ -462,7 +462,7 @@ export default function AppPermissions({
                                 }),
                         ]
                     } else {
-                        tempPermissions[index][name] = [{ label: 'Select all', value: '*' }]
+                        tempPermissions[index]['entityName'] = [{ label: 'Select all', value: '*' }]
                     }
                     tempPermissions[index]['entityNameError'] = null
                 } else {
@@ -512,8 +512,8 @@ export default function AppPermissions({
                 tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                     ? fetchAppList([projectId])
                     : tempPermissions[index].accessType === ACCESS_TYPE_MAP.JOBS
-                    ? fetchJobsList([projectId])
-                    : fetchAppListHelmApps([projectId])
+                      ? fetchJobsList([projectId])
+                      : fetchAppListHelmApps([projectId])
             }
         } else if (name === APPROVER_ACTION.label) {
             tempPermissions[index][name] = !tempPermissions[index][name]
@@ -601,16 +601,19 @@ export default function AppPermissions({
                         Helm Apps
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        to={_getNavLinkUrl('jobs')}
-                        data-testid="jobs-permission-tab"
-                        className={NAV_LINK_CLASS}
-                        activeClassName="active"
-                    >
-                        Jobs
-                    </NavLink>
-                </li>
+                {serverMode !== SERVER_MODE.EA_ONLY && (
+                    <li className="tab-list__tab">
+                        <NavLink
+                            to={_getNavLinkUrl('jobs')}
+                            data-testid="jobs-permission-tab"
+                            className={NAV_LINK_CLASS}
+                            activeClassName="active"
+                        >
+                            Jobs
+                        </NavLink>
+                    </li>
+                )}
+
                 {superAdmin && (
                     <li className="tab-list__tab">
                         <NavLink
@@ -658,15 +661,17 @@ export default function AppPermissions({
                             directPermission={directPermission}
                         />
                     </Route>
-                    <Route path={`${path}/jobs`}>
-                        <AppPermissionDetail
-                            accessType={ACCESS_TYPE_MAP.JOBS}
-                            removeDirectPermissionRow={removeDirectPermissionRow}
-                            handleDirectPermissionChange={handleDirectPermissionChange}
-                            AddNewPermissionRow={AddNewPermissionRowLocal}
-                            directPermission={directPermission}
-                        />
-                    </Route>
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route path={`${path}/jobs`}>
+                            <AppPermissionDetail
+                                accessType={ACCESS_TYPE_MAP.JOBS}
+                                removeDirectPermissionRow={removeDirectPermissionRow}
+                                handleDirectPermissionChange={handleDirectPermissionChange}
+                                AddNewPermissionRow={AddNewPermissionRowLocal}
+                                directPermission={directPermission}
+                            />
+                        </Route>
+                    )}
                     {superAdmin && (
                         <Route path={`${path}/kubernetes-objects`}>
                             <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
@@ -709,8 +714,8 @@ const AppPermissionDetail = ({
                         accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                             ? '1fr 1fr 1fr 1fr 24px'
                             : accessType === ACCESS_TYPE_MAP.HELM_APPS
-                            ? '1fr 2fr 1fr 1fr 24px'
-                            : '1fr 1fr 1fr 1fr 1fr 24px',
+                              ? '1fr 2fr 1fr 1fr 24px'
+                              : '1fr 1fr 1fr 1fr 1fr 24px',
                 }}
             >
                 <label className={PERMISSION_LABEL_CLASS}>Project</label>
@@ -755,8 +760,8 @@ const AppPermissionDetail = ({
                                         accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                                             ? '1fr 1fr 1fr 1fr 24px'
                                             : accessType === ACCESS_TYPE_MAP.HELM_APPS
-                                            ? '1fr 2fr 1fr 1fr 24px'
-                                            : '1fr 1fr 1fr 1fr 1fr 24px',
+                                              ? '1fr 2fr 1fr 1fr 24px'
+                                              : '1fr 1fr 1fr 1fr 1fr 24px',
                                 }}
                             >
                                 <DirectPermission
