@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.58-beta-13",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.58-beta-14",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -51,7 +51,6 @@
         "vite": "^4.5.0",
         "vite-plugin-require-transform": "1.0.21",
         "vite-plugin-svgr": "^2.4.0",
-        "vite-tsconfig-paths": "^4.2.0",
         "xterm": "^4.19.0",
         "xterm-addon-fit": "^0.5.0",
         "xterm-addon-search": "^0.9.0",

@@ -1,8 +1,6 @@
 import { defineConfig, PluginOption, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
 import svgr from 'vite-plugin-svgr'
-
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import url from 'node:url'
@@ -54,7 +52,6 @@ export default defineConfig(({ mode }) => {
                 // Use React plugin in all *.jsx and *.tsx files
                 include: '**/*.{jsx,tsx}',
             }),
-            viteTsconfigPaths(),
             svgr({
                 svgrOptions: {},
             }),
@@ -86,7 +83,7 @@ export default defineConfig(({ mode }) => {
             proxy: {
                 '/orchestrator': {
                     // @TODO: Change target to a default value
-                    target: 'https://devtron-6.devtron.info/',
+                    target: 'https://devtron-4.devtron.info/',
                     changeOrigin: true,
                 },
                 '/grafana': 'https://demo.devtron.info/',
