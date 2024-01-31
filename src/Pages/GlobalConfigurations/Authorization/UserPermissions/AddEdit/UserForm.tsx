@@ -251,7 +251,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
         try {
             await createOrUpdateUser(payload)
             if (isAddMode) {
-                toast.success('User(s) created')
+                toast.success('User(s) added')
             } else {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 toast.success('User updated')
