@@ -1682,8 +1682,16 @@ button.anchor {
     }
 
     &.dc__visible-hover--parent:hover {
-        .dc__visible-hover--child {
-            display: inherit;
+        .dc__visible-hover {
+            // If we give this class then the element will be visible on hover
+            &--child {
+                display: inherit;
+            }
+
+            // For hiding a child on hover on parent
+            &--hide-child {
+                display: none;
+            }
         }
     }
 }
@@ -2475,6 +2483,10 @@ textarea,
 
 .bc-b50 {
     background-color: var(--B50);
+
+    &--imp {
+        background-color: var(--B50) !important;
+    }
 }
 
 .c-n50 {
@@ -2740,6 +2752,10 @@ textarea,
 
 .mw-116 {
     min-width: 116px;
+}
+
+.mw-140 {
+    min-width: 140px;
 }
 
 .mw-232 {
@@ -3898,6 +3914,10 @@ textarea::placeholder {
 
 .dc__zi-4 {
     z-index: 4;
+}
+
+.dc__zi-5 {
+    z-index: 5;
 }
 
 .dc__zi-20 {
