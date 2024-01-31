@@ -111,6 +111,5 @@ module.exports = {
                 extensions: ['.js', '.jsx', '.ts', '.tsx'],
             },
         },
-    },
-    ignorePatterns: [".eslintrc.cjs", "vite.config.ts"],
+    }
 }

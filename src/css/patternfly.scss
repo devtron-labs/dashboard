@@ -23,43 +23,43 @@
     font-family: 'Open Sans';
     font-style: italic;
     font-weight: 400;
-    src: local('Open Sans'), url('../fonts/OpenSans-Italic-webfont.eot');
+    src: local('Open Sans'), url('../assets/fonts/OpenSans-Italic-webfont.eot');
 }
 @font-face {
     font-family: 'Open Sans';
     font-style: normal;
     font-weight: 600;
-    src: local('Open Sans'), url('../fonts/OpenSans-Semibold-webfont.eot');
+    src: local('Open Sans'), url('../assets/fonts/OpenSans-Semibold-webfont.eot');
 }
 @font-face {
     font-family: 'Open Sans';
     font-style: italic;
     font-weight: 600;
-    src: local('Open Sans'), url('../fonts/OpenSans-SemiboldItalic-webfont.eot');
+    src: local('Open Sans'), url('../assets/fonts/OpenSans-SemiboldItalic-webfont.eot');
 }
 @font-face {
     font-family: 'Open Sans';
     font-style: normal;
     font-weight: 700;
-    src: local('Open Sans'), url('../fonts/OpenSans-Bold-webfont.eot');
+    src: local('Open Sans'), url('../assets/fonts/OpenSans-Bold-webfont.eot');
 }
 @font-face {
     font-family: 'Open Sans';
     font-style: italic;
     font-weight: 700;
-    src: local('Open Sans'), url('../fonts/OpenSans-BoldItalic-webfont.eot');
+    src: local('Open Sans'), url('../assets/fonts/OpenSans-BoldItalic-webfont.eot');
 }
 @font-face {
     font-family: 'Open Sans';
     font-style: italic;
     font-weight: 800;
-    src: local('Open Sans'), url('../fonts/OpenSans-ExtraBoldItalic-webfont.eot');
+    src: local('Open Sans'), url('../assets/fonts/OpenSans-ExtraBoldItalic-webfont.eot');
 }
 @font-face {
     font-family: 'Open Sans';
     font-style: normal;
     font-weight: 800;
-    src: local('Open Sans'), url('../fonts/OpenSans-ExtraBold-webfont.eot');
+    src: local('Open Sans'), url('../assets/fonts/OpenSans-ExtraBold-webfont.eot');
 }
 @font-face {
     font-family: 'PatternFlyIcons-webfont';
@@ -73,12 +73,12 @@
 }
 @font-face {
     font-family: 'Glyphicons Halflings';
-    src: url('../fonts/glyphicons-halflings-regular.eot');
-    src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/glyphicons-halflings-regular.woff2') format('woff2'),
-        url('../fonts/glyphicons-halflings-regular.woff') format('woff'),
-        url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'),
-        url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+    src: url('../assets/fonts/glyphicons-halflings-regular.eot');
+    src: url('../assets/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+        url('../assets/fonts/glyphicons-halflings-regular.woff2') format('woff2'),
+        url('../assets/fonts/glyphicons-halflings-regular.woff') format('woff'),
+        url('../assets/fonts/glyphicons-halflings-regular.ttf') format('truetype'),
+        url('../assets/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 @font-face {
     font-family: 'FontAwesome';
@@ -12982,7 +12982,7 @@ select.selectpicker {
 }
 .about-modal-pf {
     background-color: #292e34;
-    background-image: url('../img/bg-modal-about-pf.png');
+    background-image: url('../assets/img/bg-modal-about-pf.png');
     background-position: right bottom;
     background-repeat: no-repeat;
     background-size: 216px auto;
@@ -16565,7 +16565,7 @@ a.disabled {
 }
 .login-pf {
     height: 100%;
-    background: #030303 url('../img/bg-login.jpg') repeat-x 50% 0;
+    background: #030303 url('../assets/img/bg-login.jpg') repeat-x 50% 0;
     background-size: auto;
 }
 @media (min-width: 768px) {
@@ -16603,7 +16603,7 @@ a.disabled {
     }
 }
 .login-pf body {
-    background: #030303 url('../img/bg-login.jpg') repeat-x 50% 0;
+    background: #030303 url('../assets/img/bg-login.jpg') repeat-x 50% 0;
     background-size: auto;
 }
 @media (min-width: 768px) {
@@ -18545,29 +18545,29 @@ a.disabled {
     border-top-color: rgba(255, 255, 255, 0.75);
 }
 .ie9 .spinner {
-    background: url('../img/spinner.gif') no-repeat;
+    background: url('../assets/img/spinner.gif') no-repeat;
     border: 0;
 }
 .ie9 .spinner.spinner-inverse {
-    background-image: url('../img/spinner-inverse.gif');
+    background-image: url('../assets/img/spinner-inverse.gif');
 }
 .ie9 .spinner.spinner-inverse-lg {
-    background-image: url('../img/spinner-inverse-lg.gif');
+    background-image: url('../assets/img/spinner-inverse-lg.gif');
 }
 .ie9 .spinner.spinner-inverse-sm {
-    background-image: url('../img/spinner-inverse-sm.gif');
+    background-image: url('../assets/img/spinner-inverse-sm.gif');
 }
 .ie9 .spinner.spinner-inverse-xs {
-    background-image: url('../img/spinner-inverse-xs.gif');
+    background-image: url('../assets/img/spinner-inverse-xs.gif');
 }
 .ie9 .spinner.spinner-lg {
-    background-image: url('../img/spinner-lg.gif');
+    background-image: url('../assets/img/spinner-lg.gif');
 }
 .ie9 .spinner.spinner-sm {
-    background-image: url('../img/spinner-sm.gif');
+    background-image: url('../assets/img/spinner-sm.gif');
 }
 .ie9 .spinner.spinner-xs {
-    background-image: url('../img/spinner-xs.gif');
+    background-image: url('../assets/img/spinner-xs.gif');
 }
 .prettyprint .atn,
 .prettyprint .com,
@@ -33533,7 +33533,7 @@ select.selectpicker {
 }
 .about-modal-pf {
     background-color: #292e34;
-    background-image: url('../img/bg-login-2.png');
+    background-image: url('../assets/img/bg-login-2.png');
     background-position: right bottom;
     background-repeat: no-repeat;
     background-size: 216px auto;
@@ -37116,7 +37116,7 @@ a.disabled {
 }
 .login-pf {
     height: 100%;
-    background: #1a1a1a url('../img/bg-login.png') repeat-x 50% 0;
+    background: #1a1a1a url('../assets/img/bg-login.png') repeat-x 50% 0;
     background-size: auto;
 }
 @media (min-width: 768px) {
@@ -37154,7 +37154,7 @@ a.disabled {
     }
 }
 .login-pf body {
-    background: #1a1a1a url('../img/bg-login.png') repeat-x 50% 0;
+    background: #1a1a1a url('../assets/img/bg-login.png') repeat-x 50% 0;
     background-size: auto;
 }
 @media (min-width: 768px) {
@@ -39096,29 +39096,29 @@ a.disabled {
     border-top-color: rgba(255, 255, 255, 0.75);
 }
 .ie9 .spinner {
-    background: url('../img/spinner.gif') no-repeat;
+    background: url('../assets/img/spinner.gif') no-repeat;
     border: 0;
 }
 .ie9 .spinner.spinner-inverse {
-    background-image: url('../img/spinner-inverse.gif');
+    background-image: url('../assets/img/spinner-inverse.gif');
 }
 .ie9 .spinner.spinner-inverse-lg {
-    background-image: url('../img/spinner-inverse-lg.gif');
+    background-image: url('../assets/img/spinner-inverse-lg.gif');
 }
 .ie9 .spinner.spinner-inverse-sm {
-    background-image: url('../img/spinner-inverse-sm.gif');
+    background-image: url('../assets/img/spinner-inverse-sm.gif');
 }
 .ie9 .spinner.spinner-inverse-xs {
-    background-image: url('../img/spinner-inverse-xs.gif');
+    background-image: url('../assets/img/spinner-inverse-xs.gif');
 }
 .ie9 .spinner.spinner-lg {
-    background-image: url('../img/spinner-lg.gif');
+    background-image: url('../assets/img/spinner-lg.gif');
 }
 .ie9 .spinner.spinner-sm {
-    background-image: url('../img/spinner-sm.gif');
+    background-image: url('../assets/img/spinner-sm.gif');
 }
 .ie9 .spinner.spinner-xs {
-    background-image: url('../img/spinner-xs.gif');
+    background-image: url('../assets/img/spinner-xs.gif');
 }
 .prettyprint .atn,
 .prettyprint .com,
@@ -41195,7 +41195,7 @@ table.dataTable th:active {
 /* RCUE-specific */
 .about-modal-pf {
     background-color: #292e34;
-    background-image: url('../img/bg-login-2.png');
+    background-image: url('../assets/img/bg-login-2.png');
     background-position: right bottom;
     background-repeat: no-repeat;
     background-size: 216px auto;
@@ -41241,7 +41241,7 @@ table.dataTable th:active {
 }
 @media (min-width: 768px) {
     .login-pf {
-        background-image: url('../img/bg-login-2.png');
+        background-image: url('../assets/img/bg-login-2.png');
         background-position: 100% 100%;
         background-repeat: no-repeat;
         background-size: 30%;
@@ -41265,7 +41265,7 @@ table.dataTable th:active {
 }
 @media (min-width: 768px) {
     .login-pf body {
-        background-image: url('../img/bg-login.png');
+        background-image: url('../assets/img/bg-login.png');
         background-repeat: no-repeat;
         background-size: 30%;
         height: 100%;

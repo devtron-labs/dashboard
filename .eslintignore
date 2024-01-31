@@ -2,6 +2,7 @@
 *.test.ts
 *.test.tsx
 .eslintrc.js
+vite.config.ts
 
 # The following files have eslint errors/warnings
 src/App.tsx

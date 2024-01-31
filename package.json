@@ -73,9 +73,6 @@
         "jest": "jest",
         "lint-staged": "lint-staged"
     },
-    "eslintConfig": {
-        "extends": "react-app"
-    },
     "browserslist": [
         ">0.2%",
         "not dead",
