@@ -44,6 +44,7 @@ export function SourceInfo({
     envId,
     ciArtifactId,
     setErrorsList,
+    errorList,
 }: SourceInfoType) {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -235,7 +236,7 @@ export function SourceInfo({
                             setErrorsList={setErrorsList}
                             setDetailed={setDetailed}
                             releaseStatus={appDetails.resourceTree?.releaseStatus}
-                            conditions={appDetails.resourceTree?.conditions}
+                            errorList={errorList}
                         />
                     )}
                     <DeploymentStatusCard

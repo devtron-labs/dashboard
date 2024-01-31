@@ -554,6 +554,7 @@ export interface SourceInfoType {
   envId?: number | string
   ciArtifactId?: number 
   setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
+  errorList?: ErrorItem[]
 }
 
 export interface EnvironmentListMinType {

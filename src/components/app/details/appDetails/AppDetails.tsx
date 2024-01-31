@@ -10,6 +10,7 @@ import {
     DeploymentAppTypes,
     useSearchString,
     useAsync,
+    Host,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -68,6 +69,7 @@ import {
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
     sortOptionsByValue,
+    useEventSource,
 } from '../../../common/helpers/Helpers'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
@@ -225,8 +227,7 @@ export const Details: React.FC<DetailsType> = ({
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
-    // fixme: the state is not being set anywhere and just being drilled down
-    const [streamData] = useState<AppStreamData>(null)
+    const [streamData, setStreamData] = useState<AppStreamData>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
@@ -270,6 +271,17 @@ export const Details: React.FC<DetailsType> = ({
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
     appDetailsRequestRef.current = appDetails?.deploymentAppDeleteRequest
+
+
+    const syncSSE = useEventSource(
+        `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
+        [params.appId, params.envId],
+        appDetails &&
+            !!appDetails.appName &&
+            !!appDetails.environmentName &&
+            appDetails.deploymentAppType !== DeploymentAppTypes.HELM,
+        (event) => setStreamData(JSON.parse(event.data)),
+    )
 
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || [])
@@ -638,6 +650,7 @@ export const Details: React.FC<DetailsType> = ({
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
+                    errorList={errorsList}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest ? (

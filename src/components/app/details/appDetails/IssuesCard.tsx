@@ -23,7 +23,7 @@ import IndexStore from '../../../v2/appDetails/index.store'
 import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 import LoadingCard from './LoadingCard'
 
-const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed, releaseStatus, conditions }: IssuesCardType) => {
+const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesModal, setDetailed, releaseStatus, errorList }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState(false)
@@ -31,7 +31,8 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
     const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState('')
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
-    const [errorCounter, setErrorCounter] = useState(0)
+
+    const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData])
 
     const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
     const showIssuesListingModal = () => {
@@ -137,6 +138,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
             })
         }
 
+        // Error message For helm apps only
         if (releaseStatus) {
             errorCounter += releaseStatus ? 1 : 0
             errorsList.push({
@@ -145,6 +147,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
             })
         }
 
+        // Error message For Argo apps only
         if (conditions?.length) {
             errorCounter += conditions?.length ? conditions.length : 0
             conditions.forEach((condition) => {
@@ -162,7 +165,6 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                 message: renderErrorHeaderMessage(appDetails, 'sync-error', showApplicationDetailedModal),
             })
         }
-        setErrorCounter(errorCounter)
         return errorsList
     }
 
@@ -208,7 +210,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                     </div>
                     <div className="flex fs-12 fw-4">
                         <div className="fs-13 fw-6  lh-20 f-degraded">
-                            {errorCounter} {errorCounter > 1 ? 'Errors' : 'Error'}
+                            {errorList.length} {errorList.length > 1 ? 'Errors' : 'Error'}
                         </div>
                     </div>
                 </div>

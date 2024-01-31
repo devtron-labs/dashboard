@@ -227,6 +227,7 @@ export interface IssuesCardType {
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     releaseStatus?: ReleaseStatusType
     conditions?: ConditionType[]
+    errorList?: ErrorItem[]
 }
 
 export interface SecurityVulnerabilityCardType {
