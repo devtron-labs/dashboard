@@ -217,6 +217,7 @@ export const InputForSelectedOption = ({
                                 orientation="horizontal"
                                 customInputIcon={<CalendarIcon className="icon-dim-16" />}
                                 isOutsideRange={(day) => moment().startOf('day').isBefore(day, 'day')}
+                                displayFormat="DD MMM YYYY"
                             />
                             <div className="flex-grow-1">
                                 <Select
