@@ -226,7 +226,6 @@ export interface IssuesCardType {
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     releaseStatus?: ReleaseStatusType
-    conditions?: ConditionType[]
     errorList?: ErrorItem[]
 }
 
