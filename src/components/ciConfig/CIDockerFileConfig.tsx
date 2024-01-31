@@ -61,7 +61,7 @@ export default function CIDockerFileConfig({
 
     const isBuildpackType = ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE
     const isDefaultBuildContext = (): boolean => {
-        if (window._env_.VITE_ENABLE_BUILD_CONTEXT) {
+        if (window._env_.ENABLE_BUILD_CONTEXT) {
             // TODO: Re-assess with product
             const selectedCIBuildContext = selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig
             const currentOverriddenBuildContext = selectedCIBuildContext?.dockerBuildConfig?.buildContext
@@ -158,7 +158,7 @@ export default function CIDockerFileConfig({
 
     const handleFileLocationChange = (selectedMaterial): void => {
         let buildContextGitMaterialId = 0
-        if (window._env_.VITE_ENABLE_BUILD_CONTEXT) {
+        if (window._env_.ENABLE_BUILD_CONTEXT) {
             buildContextGitMaterialId = currentCIBuildConfig.buildContextGitMaterialId
 
             if (isDefaultBuildContext()) {
@@ -171,7 +171,7 @@ export default function CIDockerFileConfig({
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             gitMaterialId: selectedMaterial.id,
-            buildContextGitMaterialId: window._env_.VITE_ENABLE_BUILD_CONTEXT
+            buildContextGitMaterialId: window._env_.ENABLE_BUILD_CONTEXT
                 ? buildContextGitMaterialId
                 : selectedMaterial.id,
         })
@@ -285,7 +285,7 @@ export default function CIDockerFileConfig({
                     dockerfileError={formState.dockerfile.error}
                 />
 
-                {window._env_.VITE_ENABLE_BUILD_CONTEXT && (
+                {window._env_.ENABLE_BUILD_CONTEXT && (
                     <BuildContext
                         readOnly={configOverrideView && !allowOverride}
                         isDefaultBuildContext={isDefaultBuildContext()}

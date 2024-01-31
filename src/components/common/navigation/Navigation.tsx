@@ -56,7 +56,7 @@ const NavigationList = [
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
         markAsBeta: true,
-        forceHideEnvKey: 'VITE_HIDE_APPLICATION_GROUPS',
+        forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
         title: 'Deployment Groups',
@@ -66,7 +66,7 @@ const NavigationList = [
         icon: DeploymentGroupIcon,
         href: URLS.DEPLOYMENT_GROUPS,
         isAvailableInEA: false,
-        forceHideEnvKey: 'VITE_HIDE_DEPLOYMENT_GROUPS',
+        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
         title: 'Resource Browser',
@@ -333,9 +333,9 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                {window._env_.VITE_SIDEBAR_DT_LOGO ? (
+                                {window._env_.SIDEBAR_DT_LOGO ? (
                                     <img
-                                        src={window._env_.VITE_SIDEBAR_DT_LOGO}
+                                        src={window._env_.SIDEBAR_DT_LOGO}
                                         alt="devtron"
                                         className="icon-dim-40"
                                         width={40}

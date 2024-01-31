@@ -496,7 +496,7 @@ export const getCIConfigDiffValues = (
             }
         }
 
-        if (window._env_.VITE_ENABLE_BUILD_CONTEXT && gitMaterials) {
+        if (window._env_.ENABLE_BUILD_CONTEXT && gitMaterials) {
             for (const gitMaterial of gitMaterials) {
                 if (gitMaterial.id === globalCIConfig.ciBuildConfig?.buildContextGitMaterialId) {
                     globalBuildContextGitMaterialItem = gitMaterial
@@ -556,7 +556,7 @@ export const getCIConfigDiffValues = (
         overridenValue: ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
     })
     if (
-        window._env_.VITE_ENABLE_BUILD_CONTEXT &&
+        window._env_.ENABLE_BUILD_CONTEXT &&
         globalCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
         ciBuildTypeOverride !== CIBuildType.BUILDPACK_BUILD_TYPE
     ) {

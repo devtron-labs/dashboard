@@ -174,7 +174,7 @@ export const SourceInfo = ({
                                         </button>
                                     </ConditionalWrap>
                                 )}
-                                {window._env_.VITE_ENABLE_RESTART_WORKLOAD &&
+                                {window._env_.ENABLE_RESTART_WORKLOAD &&
                                     !isVirtualEnvironment &&
                                     setRotateModal && (
                                         <ConditionalWrap

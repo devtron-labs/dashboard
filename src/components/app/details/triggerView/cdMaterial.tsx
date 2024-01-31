@@ -1005,7 +1005,7 @@ export default function CDMaterial({
     }
 
     const getTriggerBodyHeight = (isApprovalConfigured: boolean) => {
-        const subHeight = window?._env_?.VITE_ANNOUNCEMENT_BANNER_MSG ? 37 : 0
+        const subHeight = window?._env_?.ANNOUNCEMENT_BANNER_MSG ? 37 : 0
 
         if (state.showConfigDiffView) {
             return `calc(100vh - 141px - ${subHeight}px)`
@@ -2107,7 +2107,7 @@ export default function CDMaterial({
                 </button>
             </div>
 
-            {!state.showConfigDiffView && window?._env_?.VITE_ANNOUNCEMENT_BANNER_MSG && (
+            {!state.showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
                 <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
             )}
 
@@ -2202,7 +2202,7 @@ export default function CDMaterial({
     if (material.length > 0) {
         return isFromBulkCD ? (
             <>
-                {!state.showConfigDiffView && window?._env_?.VITE_ANNOUNCEMENT_BANNER_MSG && (
+                {!state.showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
                     <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
                 )}
                 {renderTriggerBody(isApprovalConfigured)}

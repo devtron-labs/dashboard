@@ -894,7 +894,7 @@ export default function DeploymentConfig({
             }`}
             onSubmit={handleSaveChanges}
         >
-            {window._env_.VITE_ENABLE_SCOPED_VARIABLES && (
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
                     <FloatingVariablesSuggestions zIndex={100} appId={appId} />
                 </div>
@@ -911,7 +911,7 @@ export default function DeploymentConfig({
                 showAppMetricsToggle={
                     state.charts &&
                     state.selectedChart &&
-                    window._env_?.VITE_APPLICATION_METRICS_ENABLED &&
+                    window._env_?.APPLICATION_METRICS_ENABLED &&
                     grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
                     state.yamlMode
                 }

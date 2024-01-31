@@ -146,7 +146,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         return (
             <div className="login__control">
                 <img
-                    src={window._env_.VITE_LOGIN_DT_LOGO || dt}
+                    src={window._env_.LOGIN_DT_LOGO || dt}
                     alt="login-dt-logo"
                     className="login__dt-logo"
                     width="170px"
@@ -187,7 +187,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         return (
             <div className="login__control">
                 <img
-                    src={window._env_.VITE_LOGIN_DT_LOGO || dt}
+                    src={window._env_.LOGIN_DT_LOGO || dt}
                     alt="login-dt-logo"
                     className="login__dt-logo"
                     width="170px"
@@ -248,16 +248,16 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 <div
                     className="login__bg"
                     style={
-                        window?._env_?.VITE_LOGIN_PAGE_IMAGE_BG
-                            ? { backgroundColor: window._env_.VITE_LOGIN_PAGE_IMAGE_BG }
+                        window?._env_?.LOGIN_PAGE_IMAGE_BG
+                            ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG }
                             : {}
                     }
                 >
                     <div
                         className="login__image"
                         style={
-                            window?._env_?.VITE_LOGIN_PAGE_IMAGE
-                                ? { backgroundImage: `url(${window._env_.VITE_LOGIN_PAGE_IMAGE})` }
+                            window?._env_?.LOGIN_PAGE_IMAGE
+                                ? { backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})` }
                                 : {}
                         }
                     />

@@ -231,7 +231,7 @@ export default function App() {
                                 <div id="visible-modal-2" />
                                 {import.meta.env.VITE_NODE_ENV === 'production' &&
                                     window._env_ &&
-                                    window._env_.VITE_HOTJAR_ENABLED && <Hotjar />}
+                                    window._env_.HOTJAR_ENABLED && <Hotjar />}
                             </BreadcrumbStore>
                         </ErrorBoundary>
                     )}

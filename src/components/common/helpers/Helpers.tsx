@@ -1138,7 +1138,7 @@ export const getDeploymentAppType = (
     if (isVirtualEnvironment) {
         return DeploymentAppTypes.MANIFEST_DOWNLOAD
     }
-    if (window._env_.VITE_HIDE_DEPLOYMENT_GROUPS) {
+    if (window._env_.HIDE_DEPLOYMENT_GROUPS) {
         return ''
     }
     if (
@@ -1170,8 +1170,8 @@ export const getNonEditableChartRepoText = (name: string): string => {
 
 export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOptions => {
     const _options: APIOptions = options ? JSON.parse(JSON.stringify(options)) : {}
-    if (window._env_.VITE_TRIGGER_API_TIMEOUT) {
-        _options.timeout = window._env_.VITE_TRIGGER_API_TIMEOUT
+    if (window._env_.TRIGGER_API_TIMEOUT) {
+        _options.timeout = window._env_.TRIGGER_API_TIMEOUT
     }
 
     return _options

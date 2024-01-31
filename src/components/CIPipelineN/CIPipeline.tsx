@@ -114,7 +114,7 @@ export default function CIPipeline({
         name: '',
         args: [],
         materials: [],
-        triggerType: window._env_.VITE_DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
+        triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
         gitHost: undefined,
         webhookEvents: [],
@@ -559,7 +559,7 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation =
-            !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.VITE_FORCE_SECURITY_SCANNING
+            !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
             toast.error('Scanning is mandatory, please enable scanning')
@@ -852,7 +852,7 @@ export default function CIPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.VITE_ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
             return <></>
         }
 

@@ -313,7 +313,7 @@ export default function CICreateDockerfileOption({
                 </CodeEditor>
             </div>
 
-            {window._env_.VITE_ENABLE_BUILD_CONTEXT && (
+            {window._env_.ENABLE_BUILD_CONTEXT && (
                 <BuildContext
                     readOnly={configOverrideView && !allowOverride}
                     isDefaultBuildContext={isDefaultBuildContext()}

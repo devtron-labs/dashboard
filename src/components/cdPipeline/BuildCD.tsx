@@ -688,7 +688,7 @@ export default function BuildCD({
                 <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {renderEnvNamespaceAndTriggerType()}
 
-                {!window._env_.VITE_HIDE_DEPLOYMENT_GROUPS &&
+                {!window._env_.HIDE_DEPLOYMENT_GROUPS &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
                     renderDeploymentAppType()}

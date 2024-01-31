@@ -246,7 +246,7 @@ export default function WorkflowOptionsModal({
                         )}
                     </section>
 
-                    {window._env_.VITE_ENABLE_CI_JOB && (
+                    {window._env_.ENABLE_CI_JOB && (
                         <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
                             <p className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
                                 {WORKFLOW_OPTIONS_MODAL_TYPES.JOB}

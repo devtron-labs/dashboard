@@ -68,7 +68,7 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 -   SENTRY_ORG="devtron-labs"
 -   SENTRY_PROJECT="dashboard"
 -   DSN=""
--   VITE_SENTRY_TRACES_SAMPLE_RATE="0.2"
+-   SENTRY_TRACES_SAMPLE_RATE="0.2"
 
 ### Sentry sourcemap upload
 
@@ -79,31 +79,31 @@ foo@bar:~$ sh sentry.sh
 ### Set custom sentry environment during production deployment, default is staging
 
 ```console
-foo@bar~$ docker run -p 3000:80 -e VITE_SENTRY_ENV=my-custom-env -t artifact/tag
+foo@bar~$ docker run -p 3000:80 -e SENTRY_ENV=my-custom-env -t artifact/tag
 ```
 
 ### Disable sentry error logging during production deployment, default enabled
 
 ```console
-foo@bar~$ docker run -p 3000:80 -e VITE_SENTRY_ERROR_ENABLED=false -t artifact/tag
+foo@bar~$ docker run -p 3000:80 -e ENTRY_ERROR_ENABLED=false -t artifact/tag
 ```
 
 ### Disable sentry performance monitoring during production deployment, default enabled
 
 ```console
-foo@bar~$ docker run -p 3000:80 -e VITE_SENTRY_PERFORMANCE_ENABLED=false -t artifact/tag
+foo@bar~$ docker run -p 3000:80 -e SENTRY_PERFORMANCE_ENABLED=false -t artifact/tag
 ```
 
 ### Enable Hotjar during production deployment, default disabled
 
 ```console
-foo@bar~$ docker run -p 3000:80 -e VITE_HOTJAR_ENABLED=false -t artifact/tag
+foo@bar~$ docker run -p 3000:80 -e HOTJAR_ENABLED=false -t artifact/tag
 ```
 
 ### Enable google analytics during production deployment, default disabled
 
 ```console
-foo@bar~$ docker run -p 3000:80 -e VITE_GA_ENABLED=true -t artifact/tag
+foo@bar~$ docker run -p 3000:80 -e GA_ENABLED=true -t artifact/tag
 ```
 
 ### Create test coverage report and save summary in report.txt

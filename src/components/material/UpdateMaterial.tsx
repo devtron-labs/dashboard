@@ -207,7 +207,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                         url: this.state.material.url,
                         checkoutPath: this.state.material.checkoutPath,
                         filterPattern:
-                            !window._env_.VITE_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS &&
+                            !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS &&
                             this.state.material.isExcludeRepoChecked
                                 ? this.state.material.includeExcludeFilePath
                                       .trim()

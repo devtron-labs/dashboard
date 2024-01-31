@@ -993,10 +993,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.58-beta-1":
-  version "0.0.58-beta-1"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.58-beta-1.tgz#f5ad1e27376114e731ae41b0e31a9c786d72e6e1"
-  integrity sha512-14KwOe7QMnZjkvi9f1HCLg/L/ezvIXk9UaEkMAlDOD9cuaPWW+Lx5Ho1t+GZ5micVWHWCuNeDBTJGz+Gg/IqTA==
+"@devtron-labs/devtron-fe-common-lib@0.0.59-beta-5":
+  version "0.0.59-beta-5"
+  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.59-beta-5/8d026a93eb0c397bcfac5ea499940dba72f33523#8d026a93eb0c397bcfac5ea499940dba72f33523"
+  integrity sha512-HfKuPQFBk3iRkzIMu0I/woI6ijo7e47aUPmwh52F6aNPw0RnaqqYeZDpiTH0xCTJfX1wl1BTaTEgV6Uq0GC2Cg==
   dependencies:
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
@@ -4078,11 +4078,6 @@ globby@^11.0.3, globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
-globrex@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/globrex/-/globrex-0.1.2.tgz#dd5d9ec826232730cd6793a5e33a9302985e6098"
-  integrity sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==
-
 gopd@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/gopd/-/gopd-1.0.1.tgz#29ff76de69dac7489b7c0918a5788e56477c332c"
@@ -6583,11 +6578,6 @@ ts-node@^10.7.0:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
-tsconfck@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/tsconfck/-/tsconfck-3.0.1.tgz#803ca0ed8f2f2075639e4061238f04b99ba85e85"
-  integrity sha512-7ppiBlF3UEddCLeI1JRx5m2Ryq+xk4JrZuq4EuYXykipebaq1dV0Fhgr1hb7CkmHt32QSgOZlcqVLEtHBG4/mg==
-
 tsconfig-paths@^3.15.0:
   version "3.15.0"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.15.0.tgz#5299ec605e55b1abb23ec939ef15edaf483070d4"
@@ -6891,15 +6881,6 @@ vite-plugin-svgr@^2.4.0:
   dependencies:
     "@rollup/pluginutils" "^5.0.2"
     "@svgr/core" "^6.5.1"
-
-vite-tsconfig-paths@^4.2.0:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/vite-tsconfig-paths/-/vite-tsconfig-paths-4.3.1.tgz#28762938151e7c80aec9d70c57e65ddce43a576f"
-  integrity sha512-cfgJwcGOsIxXOLU/nELPny2/LUD/lcf1IbfyeKTv2bsupVbTH/xpFtdQlBmIP1GEK2CjjLxYhFfB+QODFAx5aw==
-  dependencies:
-    debug "^4.1.1"
-    globrex "^0.1.2"
-    tsconfck "^3.0.1"
 
 "vite@^3.0.0 || ^4.0.0", vite@^4.5.0:
   version "4.5.2"

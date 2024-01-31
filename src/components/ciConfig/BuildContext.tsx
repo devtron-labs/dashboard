@@ -119,7 +119,7 @@ const BuildContext: FunctionComponent<BuildContextProps> = ({
         return { label: val, value: val }
     }
 
-    if (!window._env_.VITE_ENABLE_BUILD_CONTEXT) {
+    if (!window._env_.ENABLE_BUILD_CONTEXT) {
         return null
     }
 

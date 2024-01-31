@@ -520,7 +520,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                         </div>
                         <div className="" style={{ width: '32px', height: '20px' }}>
                             <Toggle
-                                disabled={window._env_.VITE_FORCE_SECURITY_SCANNING && this.props.form.scanEnabled}
+                                disabled={window._env_.FORCE_SECURITY_SCANNING && this.props.form.scanEnabled}
                                 selected={this.props.form.scanEnabled}
                                 onSelect={this.props.handleScanToggle}
                             />

@@ -270,7 +270,7 @@ export const Details: React.FC<DetailsType> = ({
         })
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
-    const interval = window._env_.VITE_DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
+    const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
     appDetailsRequestRef.current = appDetails?.deploymentAppDeleteRequest
 
     const aggregatedNodes: AggregatedNodes = useMemo(() => {

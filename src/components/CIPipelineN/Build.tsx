@@ -228,7 +228,7 @@ export const Build = ({
                         </div>
                         <div className="mt-4" style={{ width: '32px', height: '20px' }}>
                             <Toggle
-                                disabled={window._env_.VITE_FORCE_SECURITY_SCANNING && formData.scanEnabled}
+                                disabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
                                 selected={formData.scanEnabled}
                                 onSelect={handleScanToggle}
                                 dataTestId="create-build-pipeline-scan-vulnerabilities-toggle"

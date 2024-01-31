@@ -693,7 +693,7 @@ export default function ResourceList() {
         setSelectedCluster(selected)
         getNamespaceList(selected.value)
 
-        if (selected.value === DEFAULT_CLUSTER_ID && window._env_.VITE_HIDE_DEFAULT_CLUSTER) {
+        if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
                 pathname: URLS.RESOURCE_BROWSER,
             })

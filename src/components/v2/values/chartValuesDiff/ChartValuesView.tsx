@@ -642,7 +642,7 @@ const ChartValuesView = ({
             .catch((error) => {
                 /*
                 helm app delete failed due to:
-                1. cluster not reachable (Helm installed) 
+                1. cluster not reachable (Helm installed)
                 2. ArgoCD dashboard not reachable
                 3. any other event loss
                 */
@@ -1561,7 +1561,7 @@ const ChartValuesView = ({
                                 isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
-                        {!window._env_.VITE_HIDE_DEPLOYMENT_GROUPS &&
+                        {!window._env_.HIDE_DEPLOYMENT_GROUPS &&
                             !isExternalApp &&
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&

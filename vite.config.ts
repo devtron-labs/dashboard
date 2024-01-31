@@ -99,7 +99,7 @@ export default defineConfig(({ mode }) => {
     // } else {
     //     baseConfig['define'] = {
     //         __BASE_URL__: '/dashboard/',
-    //         __REACT_APP_ORCHESTRATOR_ROOT__: '/orchestrator',
+    //         __ORCHESTRATOR_ROOT__: '/orchestrator',
     //     }
     }
 

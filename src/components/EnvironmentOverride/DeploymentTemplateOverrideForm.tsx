@@ -633,7 +633,7 @@ export default function DeploymentTemplateOverrideForm({
             }`}
             onSubmit={handleSaveChanges}
         >
-            {window._env_.VITE_ENABLE_SCOPED_VARIABLES && (
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
                     <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
                 </div>
@@ -653,7 +653,7 @@ export default function DeploymentTemplateOverrideForm({
                 showAppMetricsToggle={
                     state.charts &&
                     state.selectedChart &&
-                    window._env_?.VITE_APPLICATION_METRICS_ENABLED &&
+                    window._env_?.APPLICATION_METRICS_ENABLED &&
                     isGrafanaModuleInstalled &&
                     state.yamlMode
                 }

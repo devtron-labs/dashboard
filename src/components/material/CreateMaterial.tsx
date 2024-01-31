@@ -185,7 +185,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                             gitProviderId: this.state.material.gitProvider.id,
                             fetchSubmodules: this.state.material.fetchSubmodules,
                             filterPattern:
-                                !window._env_.VITE_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS &&
+                                !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS &&
                                 this.state.material.isExcludeRepoChecked
                                     ? this.state.material.includeExcludeFilePath
                                           .trim()
