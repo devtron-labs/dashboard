@@ -911,7 +911,6 @@ export default function DeploymentConfig({
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                 hideLockKeysToggled={hideLockKeysToggled}
                 removedPatches={removedPatches}
-                selectedTabIndex={state.selectedTabIndex}
             />
         )
     }

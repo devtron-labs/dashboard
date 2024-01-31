@@ -44,7 +44,6 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     lockedConfigKeysWithLockType,
     hideLockKeysToggled,
     removedPatches,
-    selectedTabIndex
 }: DeploymentTemplateEditorViewProps) =>{
   
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
@@ -279,7 +278,7 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
 
     useEffect(() => {
         editorOnChange(rhs)
-    },[selectedTabIndex])
+    }, [state.selectedTabIndex])
 
     useEffect(() => {
         if (!convertVariables) return

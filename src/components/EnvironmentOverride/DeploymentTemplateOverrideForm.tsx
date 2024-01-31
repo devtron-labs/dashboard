@@ -637,7 +637,6 @@ export default function DeploymentTemplateOverrideForm({
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockKeysToggled={hideLockKeysToggled}
                     removedPatches={removedPatches}
-                    selectedTabIndex={state.selectedTabIndex}
                 />
             )
         }

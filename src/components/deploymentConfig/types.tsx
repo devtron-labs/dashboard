@@ -227,7 +227,6 @@ export interface DeploymentTemplateEditorViewProps {
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockKeysToggled: React.MutableRefObject<boolean>
     removedPatches:React.MutableRefObject<jsonpatch.Operation[]>
-    selectedTabIndex: number
 }
 
 export interface DeploymentConfigContextType {
