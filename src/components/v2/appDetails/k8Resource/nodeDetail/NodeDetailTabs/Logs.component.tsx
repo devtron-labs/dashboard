@@ -127,13 +127,6 @@ function LogsComponent({
         setPrevContainer(false)
     }
 
-    const handleLogsShown = (option) => {
-        setLogsShownOption({
-            prev: logsShownOption.current,
-            current: option,
-        })
-    }
-
     const handleSearchTextChange = (searchText: string) => {
         if (!searchText) {
             setLogState({
@@ -362,6 +355,18 @@ function LogsComponent({
             const { length, [length - 1]: highlightString } = str.split(' ')
             setHighlightString(highlightString)
             handleCurrentSearchTerm(str)
+        }
+    }
+
+    const handleLogOptionChange = (selected) => {
+        setLogsShownOption({
+            prev: logsShownOption.current,
+            current: selected,
+        })
+        if (selected.value !== CUSTOM_LOGS_FILTER.CUSTOM) {
+            setNewFilteredLogs(true)
+        } else {
+            setShowCustomOptionsMoadal(true)
         }
     }
 
@@ -662,14 +667,7 @@ function LogsComponent({
                         <LinesIcon className="icon-dim-16 mr-8" />
                         <Select
                             options={getPodLogsOptions()}
-                            onChange={(selected) => {
-                                handleLogsShown(selected)
-                                if (selected.value !== CUSTOM_LOGS_FILTER.CUSTOM) {
-                                    setNewFilteredLogs(true)
-                                } else {
-                                    setShowCustomOptionsMoadal(true)
-                                }
-                            }}
+                            onChange={handleLogOptionChange}
                             value={logsShownOption.current}
                             styles={{
                                 ...multiSelectStyles,
@@ -690,9 +688,10 @@ function LogsComponent({
                             <Tippy className="default-tt" arrow={false} placement="top" content={'Download logs'}>
                                 <Download
                                     className={`icon-dim-16 mr-8 cursor ${
-                                        (podContainerOptions?.containerOptions ?? []).length > 0
-                                            ? ''
-                                            : 'cursor-not-allowed dc__opacity-0_5'
+                                        (podContainerOptions?.containerOptions ?? []).length === 0 ||
+                                        (prevContainer && showNoPrevContainer != '')
+                                            ? 'cursor-not-allowed dc__opacity-0_5'
+                                            : ''
                                     }`}
                                     onClick={handleDownloadLogs}
                                 />

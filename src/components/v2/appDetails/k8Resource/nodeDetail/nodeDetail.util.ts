@@ -350,14 +350,16 @@ export const excludeFutureTimingsOptions = (allOptions, index) => {
 }
 
 export const getTimeFromTimestamp = (timestamp) => {
-const date = new Date(+timestamp * 1000); 
-const hours = date.getHours();
-const minutes = date.getMinutes();
-const seconds = date.getSeconds();
-const value= `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-return ALLOW_UNTIL_TIME_OPTIONS.filter((option) => {
-    return option.value == value
-})
+    const date = new Date(+timestamp * 1000)
+    const hours = date.getHours()
+    const minutes = date.getMinutes()
+    const seconds = date.getSeconds()
+    const value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`
+    return ALLOW_UNTIL_TIME_OPTIONS.filter((option) => {
+        return option.value == value
+    })
 }
 
 export const getDurationUnits = () => [

@@ -229,6 +229,7 @@ export const getLogsURL = (
     clusterId?: number,
     namespace?: string,
 ) => {
+    //similar logic exists in downloadLogs function also, recheck changes there also or extract this logic in a common function
     let filter = ''
     if (logsOption.value === CUSTOM_LOGS_FILTER.CUSTOM) {
         filter = getFilterWithValue(customOption.option, customOption.value, customOption.unit)
