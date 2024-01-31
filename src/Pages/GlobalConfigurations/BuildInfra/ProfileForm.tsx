@@ -35,10 +35,20 @@ const ProfileForm: FunctionComponent = () => {
         [profileInputErrors],
     )
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+        }
+    }
+
     const showActionItems = !isLoading && !responseError && profileInput?.configurations
 
     return (
-        <form className="h-100 flexbox-col build-infra pl pr pt pb dc__content-space bcn-0" onSubmit={handleSubmit}>
+        <form
+            className="h-100 flexbox-col build-infra pl pr pt pb dc__content-space bcn-0"
+            onKeyDown={handleKeyDown}
+            onSubmit={handleSubmit}
+        >
             <div className="flexbox-col dc__gap-24 pt pr pb pl h-100 dc__overflow-scroll">
                 <BuildInfraDescriptor breadCrumbs={breadcrumbs} />
 
@@ -67,12 +77,7 @@ const ProfileForm: FunctionComponent = () => {
             </div>
 
             {showActionItems && (
-                <BuildInfraFooter
-                    disabled={formErrorCount !== 0}
-                    hideCancelButton
-                    editProfile
-                    loading={loadingActionRequest}
-                />
+                <BuildInfraFooter disabled={formErrorCount !== 0} editProfile loading={loadingActionRequest} />
             )}
         </form>
     )
