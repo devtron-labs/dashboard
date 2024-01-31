@@ -5,14 +5,14 @@ import { ClusterConnectionResponse, DeploymentStatusDetailsResponse, ModuleConfi
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 
 export function isDatasourceConfigured(envName: string) {
-    const root = import.meta.env.VITE_REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '')
+    const root = window.__REACT_APP_ORCHESTRATOR_ROOT__.replace('/orchestrator', '')
     const URL = `${root}/grafana/api/datasources/id/Prometheus-${envName}`
     return fetchWithFullRoute(URL, 'GET')
 }
 
 export function isDatasourceHealthy(datasourceId: number | string) {
     const timestamp = new Date()
-    const root = import.meta.env.VITE_REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '')
+    const root = window.__REACT_APP_ORCHESTRATOR_ROOT__.replace('/orchestrator', '')
     const URL = `${root}/grafana/api/datasources/proxy/${datasourceId}/api/v1/query?query=1&time=${timestamp.getTime()}`
     return fetchWithFullRoute(URL, 'GET')
 }

@@ -182,7 +182,3 @@ ReactDOM.render(
     </React.StrictMode>,
     root,
 )
-
-// if (import.meta.env.VITE_NODE_ENV === 'development') {
-//     (module as any).hot.accept()
-// }

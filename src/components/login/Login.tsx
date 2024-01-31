@@ -52,7 +52,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             queryParam = ''
         }
         this.setState({
-            continueUrl: encodeURI(`${window.location.origin}/orchestrator/${import.meta.env.BASE_URL}${queryParam}`),
+            continueUrl: encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`),
         })
         getSSOConfigList().then((response) => {
             const list = response.result || []
