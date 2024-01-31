@@ -14,7 +14,7 @@ import { OptionType } from '../../../../../app/types'
 import {AppType, TerminalComponentProps, Options} from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
-import {TerminalSelectionListDataType} from './terminal/terminal.type'
+import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import {get, showError, stopPropagation} from '@devtron-labs/devtron-fe-common-lib'
 import {SocketConnectionType} from '../../../../../ClusterNodes/constants'
 import {TerminalWrapperType} from './terminal/constants'
@@ -212,7 +212,7 @@ function TerminalComponent({
         } else if (selectedContainerName) {
             setSocketConnection(SocketConnectionType.CONNECTING)
         }
-    }, [selectedTerminalType, selectedContainerName])
+    }, [selectedTerminalType, selectedContainerName, params.podName, params.node, params.namespace])
 
     useEffect(() => {
         if (socketConnection === SocketConnectionType.CONNECTING) {

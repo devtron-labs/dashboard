@@ -468,7 +468,7 @@ export default function AppPermissions({
                                 }),
                         ]
                     } else {
-                        tempPermissions[index][name] = [{ label: 'Select all', value: '*' }]
+                        tempPermissions[index]['entityName'] = [{ label: 'Select all', value: '*' }]
                     }
                     tempPermissions[index]['entityNameError'] = null
                 } else {
@@ -605,16 +605,18 @@ export default function AppPermissions({
                         Helm Apps
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        to={_getNavLinkUrl('jobs')}
-                        data-testid="jobs-permission-tab"
-                        className="tab-list__tab-link"
-                        activeClassName="active"
-                    >
-                        Jobs
-                    </NavLink>
-                </li>
+                {serverMode !== SERVER_MODE.EA_ONLY && (
+                    <li className="tab-list__tab">
+                        <NavLink
+                            to={_getNavLinkUrl('jobs')}
+                            data-testid="jobs-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
+                            Jobs
+                        </NavLink>
+                    </li>
+                )}
                 {superAdmin && (
                     <li className="tab-list__tab">
                         <NavLink
@@ -664,16 +666,18 @@ export default function AppPermissions({
                             hideInfoLegend={hideInfoLegend}
                         />
                     </Route>
-                    <Route path={`${path}/jobs`}>
-                        <AppPermissionDetail
-                            accessType={ACCESS_TYPE_MAP.JOBS}
-                            removeDirectPermissionRow={removeDirectPermissionRow}
-                            handleDirectPermissionChange={handleDirectPermissionChange}
-                            AddNewPermissionRow={AddNewPermissionRowLocal}
-                            directPermission={directPermission}
-                            hideInfoLegend={hideInfoLegend}
-                        />
-                    </Route>
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route path={`${path}/jobs`}>
+                            <AppPermissionDetail
+                                accessType={ACCESS_TYPE_MAP.JOBS}
+                                removeDirectPermissionRow={removeDirectPermissionRow}
+                                handleDirectPermissionChange={handleDirectPermissionChange}
+                                AddNewPermissionRow={AddNewPermissionRowLocal}
+                                directPermission={directPermission}
+                                hideInfoLegend={hideInfoLegend}
+                            />
+                        </Route>
+                    )}
                     {superAdmin && (
                         <Route path={`${path}/kubernetes-objects`}>
                             <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
