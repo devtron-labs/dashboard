@@ -242,7 +242,11 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                             <CustomInput
                                                 data-testid="httprequests-routes-path-textbox"
                                                 name={BASIC_FIELDS.PATH}
-                                                data-index={index}
+                                                inputProps={
+                                                    {
+                                                        'data-index': index,
+                                                    } as React.InputHTMLAttributes<HTMLInputElement>
+                                                }
                                                 value={path}
                                                 rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                                 onChange={handleInputChange}

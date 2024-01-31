@@ -268,6 +268,7 @@ export default function NewCDPipeline({
                         description: env.description,
                         isVirtualEnvironment: env.isVirtualEnvironment,
                         allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                        isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
                     }
                 })
                 sortObjectArrayAlphabetically(list, 'name')
@@ -451,8 +452,7 @@ export default function NewCDPipeline({
         form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
         form.customTagStage = pipelineConfigFromRes.customTagStage
         form.isDigestEnforcedForEnv = pipelineConfigFromRes.isDigestEnforcedForEnv
-        form.isDigestEnforcedForPipeline =
-            pipelineConfigFromRes.isDigestEnforcedForEnv || pipelineConfigFromRes.isDigestEnforcedForPipeline
+        form.isDigestEnforcedForPipeline = pipelineConfigFromRes.isDigestEnforcedForPipeline
 
         if (pipelineConfigFromRes?.preDeployStage) {
             if (pipelineConfigFromRes.preDeployStage.steps?.length > 0) {

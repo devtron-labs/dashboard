@@ -150,6 +150,7 @@ export default function BuildCD({
                 ? GeneratedHelmPush.DO_NOT_PUSH
                 : GeneratedHelmPush.PUSH
             _form.allowedDeploymentTypes = selection.allowedDeploymentTypes
+            _form.isDigestEnforcedForEnv = _form.environments.find((env) => env.id == selection.id)?.isDigestEnforcedForEnv
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
         } else {

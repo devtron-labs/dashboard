@@ -638,7 +638,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {PullImageDigest && (
                 <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
-                    <PullImageDigest />
+                    <PullImageDigest isSuperAdmin={isSuperAdmin}/>
                 </Route>
             )}
             {TagListContainer && (
