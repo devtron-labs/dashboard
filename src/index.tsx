@@ -61,10 +61,15 @@ declare global {
         _env_: customEnv
         hj: any
         _hjSettings: any
-        Worker: any,
+        Worker: any
         __BASE_URL__: string
         __REACT_APP_ORCHESTRATOR_ROOT__: string
     }
+}
+
+if (!window.__BASE_URL__ || !window.__REACT_APP_ORCHESTRATOR_ROOT__) {
+    window.__BASE_URL__ = '/dashboard'
+    window.__REACT_APP_ORCHESTRATOR_ROOT__ = 'orchestrator'
 }
 
 const root = document.getElementById('root')
