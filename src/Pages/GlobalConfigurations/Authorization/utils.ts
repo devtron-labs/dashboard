@@ -5,7 +5,7 @@ import { PermissionGroup, User, UserDto } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 
 export const transformUserResponse = (_user: UserDto): User => {
-    const { lastLoginTime, timeToLive, ...user } = _user
+    const { lastLoginTime, timeoutWindowExpression, ...user } = _user
 
     return {
         ...user,
@@ -13,7 +13,10 @@ export const transformUserResponse = (_user: UserDto): User => {
             lastLoginTime === ZERO_TIME_STRING || !lastLoginTime
                 ? LAST_LOGIN_TIME_NULL_STATE
                 : moment(lastLoginTime).format(Moment12HourFormat),
-        timeToLive: timeToLive === ZERO_TIME_STRING || !timeToLive ? '' : moment(timeToLive).format(Moment12HourFormat),
+        timeToLive:
+            timeoutWindowExpression === ZERO_TIME_STRING || !timeoutWindowExpression
+                ? ''
+                : moment(timeoutWindowExpression).format(Moment12HourFormat),
     }
 }
 

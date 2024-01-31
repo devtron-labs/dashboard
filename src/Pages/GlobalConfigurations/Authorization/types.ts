@@ -64,12 +64,12 @@ export interface UserDto {
      */
     lastLoginTime?: string
     /**
-     * Time until which the user is active
-     * Note: Only a user with status 'active' can have 'timeToLive'
+     * Expression for the time until which the user is active
+     * Note: Only a user with status 'active' can have 'timeoutWindowExpression'
      *
      * @default ''
      */
-    timeToLive?: string
+    timeoutWindowExpression?: string
     /**
      * Role filters (direct permissions) for the user
      */
@@ -87,7 +87,15 @@ export interface UserDto {
     roleGroups?: Pick<PermissionGroup, 'id' | 'name' | 'description'>
 }
 
-export type User = UserDto
+export interface User extends Omit<UserDto, 'timeoutWindowExpression'> {
+    /**
+     * Time until which the user is active
+     * Note: Only a user with status 'active' can have 'timeToLive'
+     *
+     * @default ''
+     */
+    timeToLive?: string
+}
 
 export type UserCreateOrUpdatePayload = Pick<
     User,
