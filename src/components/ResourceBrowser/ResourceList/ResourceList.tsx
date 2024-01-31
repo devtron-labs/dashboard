@@ -611,7 +611,7 @@ export default function ResourceList() {
                         'node',
                         'ip',
                     ],
-                    origin: new URL(import.meta.env.VITE_PUBLIC_URL, window.location.href).origin,
+                    origin: new URL(window.__BASE_URL__, window.location.href).origin,
                 },
             })
         }

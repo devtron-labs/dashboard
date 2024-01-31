@@ -61,7 +61,9 @@ declare global {
         _env_: customEnv
         hj: any
         _hjSettings: any
-        Worker: any
+        Worker: any,
+        __BASE_URL__: string
+        __REACT_APP_ORCHESTRATOR_ROOT__: string
     }
 }
 
@@ -168,7 +170,7 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={`${import.meta.env.BASE_URL}`}>
+            <BrowserRouter basename={window.__BASE_URL__}>
                 <App />
             </BrowserRouter>
         ) : null}

@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
             port: 3000,
         },
         build: {
-          sourcemap: true,
+            sourcemap: true,
         },
         plugins: [
             // @TODO: Check if we can remove the config object inside the react plugin
@@ -61,9 +61,9 @@ export default defineConfig(({ mode }) => {
                 process: true,
             }),
             VitePWA({
-              srcDir: 'src',
-              filename: 'prompt-sw.ts',
-              strategies : 'injectManifest',
+                srcDir: 'src',
+                filename: 'prompt-sw.ts',
+                strategies: 'injectManifest',
             }),
         ],
         // test: {
@@ -94,8 +94,15 @@ export default defineConfig(({ mode }) => {
         console.log(mode)
         // Global override for node environment
         baseConfig['define'] = {
+            // __BASE_URL__: '/dashboard/',
+            // __REACT_APP_ORCHESTRATOR_ROOT__: '/orchestrator',
             global: 'globalThis',
         }
+    // } else {
+    //     baseConfig['define'] = {
+    //         __BASE_URL__: '/dashboard/',
+    //         __REACT_APP_ORCHESTRATOR_ROOT__: '/orchestrator',
+    //     }
     }
 
     return baseConfig

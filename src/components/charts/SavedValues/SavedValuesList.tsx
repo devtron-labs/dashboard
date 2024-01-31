@@ -7,7 +7,6 @@ import {
     BreadCrumb,
     useBreadcrumb,
     DeleteDialog,
-    EmptyState,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'

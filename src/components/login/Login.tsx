@@ -23,7 +23,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             },
         }
         this.handleChange = this.handleChange.bind(this)
-        this.autoFillLogin = this.autoFillLogin.bind(this)
+        //this.autoFillLogin = this.autoFillLogin.bind(this)
         this.login = this.login.bind(this)
         this.isFormNotValid = this.isFormNotValid.bind(this)
     }
@@ -84,9 +84,9 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         })
     }
 
-    autoFillLogin(): void {
-        this.setState({ form: { username: 'admin', password: import.meta.env.REACT_APP_PASSWORD } })
-    }
+    // autoFillLogin(): void {
+    //     this.setState({ form: { username: 'admin', password: import.meta.env.REACT_APP_PASSWORD } })
+    // }
 
     isFormNotValid(): boolean {
         let isValid = true
