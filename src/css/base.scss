@@ -2445,6 +2445,10 @@ textarea,
     background-color: var(--N50);
 }
 
+.bc-n50-imp {
+    background-color: var(--N50) !important;
+}
+
 .c-n50 {
     color: var(--N50);
 }
@@ -2844,6 +2848,10 @@ textarea,
 
 .w-250 {
     width: 250px;
+}
+
+.w-250-imp {
+    width: 250px !important;
 }
 
 .w-280 {
