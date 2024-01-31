@@ -766,6 +766,7 @@ export const NO_COMMIT_SELECTED = 'No commit is selected'
 export enum MANIFEST_KEY_FIELDS {
     METADATA = 'metadata',
     MANAGED_FIELDS = 'managedFields',
+    DATA = 'data',
 }
 
 export enum KEY_VALUE {
@@ -811,3 +812,4 @@ export const CVE_ID_NOT_FOUND = "CVE ID not found"
 export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"
 export const NO_HOST_URL = "Please enter host url"
 export const WEBHOOK_NO_API_TOKEN_ERROR = "API Token is required to execute webhook"
+export const DIGEST_DISABLE_TOGGLE_MESSAGE= "Pull image digest policy is enforced in Global Configurations. Go to Global Configurations to change."

@@ -17,15 +17,27 @@ import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    ConditionalWrap,
+    DeploymentAppTypes,
+    noop,
+    showError,
+    ToastBody,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
 import { MODES } from '../../../../../../config'
-import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
-import { getTrimmedManifestData } from '../nodeDetail.util'
+import {
+    EMPTY_YAML_ERROR,
+    SAVE_DATA_VALIDATION_ERROR_MSG,
+} from '../../../../values/chartValuesDiff/ChartValuesView.constants'
+import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
+import Tippy from '@tippyjs/react'
 
 function ManifestComponent({
     selectedTab,
@@ -39,7 +51,14 @@ function ManifestComponent({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string, namespace: string }>()
+    const params = useParams<{
+        actionName: string
+        podName: string
+        nodeType: string
+        node: string
+        group: string
+        namespace: string
+    }>()
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
@@ -54,6 +73,8 @@ function ManifestComponent({
     const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false)
     const [isResourceMissing, setIsResourceMissing] = useState(false)
     const [showInfoText, setShowInfoText] = useState(false)
+    const [showDecodedData, setShowDecodedData] = useState(false)
+    const [secretViewAccess, setSecretViewAccess] = useState(false)
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -84,8 +105,7 @@ function ManifestComponent({
         if (
             isResourceBrowserView ||
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-            appDetails.deploymentAppDeleteRequest)
+            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
         ) {
             markActiveTab('Live manifest')
         }
@@ -104,8 +124,8 @@ function ManifestComponent({
             ])
                 .then((response) => {
                     let _manifest: string
-
-                    _manifest = JSON.stringify(response[0]?.result?.manifest)
+                    setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
+                    _manifest = JSON.stringify(response[0]?.result?.manifestResponse?.manifest || '')
                     setDesiredManifest(response[1]?.result?.manifest || '')
 
                     if (_manifest) {
@@ -177,13 +197,14 @@ function ManifestComponent({
     const handleApplyChanges = () => {
         setLoading(true)
         setLoadingMsg('Applying changes')
+        setShowDecodedData(false)
 
         let manifestString
         try {
             if (!modifiedManifest) {
                 setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
                 // Handled for blocking API call
-                manifestString = ""
+                manifestString = ''
             } else {
                 manifestString = JSON.stringify(YAML.parse(modifiedManifest))
             }
@@ -224,7 +245,7 @@ function ManifestComponent({
                                 className: 'devtron-toast unauthorized',
                             },
                         )
-                    } else if (err.code === 400 || err.code === 409 || err.code === 422 ) {
+                    } else if (err.code === 400 || err.code === 409 || err.code === 422) {
                         const error = err['errors'] && err['errors'][0]
                         if (error && error.code && error.userMessage) {
                             setErrorText(`ERROR ${err.code} > Message: “${error.userMessage}”`)
@@ -264,6 +285,7 @@ function ManifestComponent({
         setModifiedManifest(manifest)
         setActiveManifestEditorData('')
         setErrorText('')
+        setShowDecodedData(false)
     }
 
     const markActiveTab = (_tabName: string) => {
@@ -297,6 +319,56 @@ function ManifestComponent({
         }
         markActiveTab(_tab.name)
         updateEditor(_tab.name)
+    }
+
+    const onChangeToggleShowDecodedValue = (jsonManifestData) => {
+        if (!jsonManifestData?.data) return
+        setShowDecodedData(!showDecodedData)
+        if (!showDecodedData) {
+            setTrimedManifestEditorData(
+                getDecodedEncodedSecretManifestData(jsonManifestData, true, showDecodedData) as string,
+            )
+        } else {
+            setTrimedManifestEditorData(getDecodedEncodedSecretManifestData(jsonManifestData, true, true) as string)
+        }
+    }
+
+    const renderShowDecodedValueCheckbox = () => {
+        const jsonManifestData = YAML.parse(trimedManifestEditorData)
+        if (jsonManifestData?.kind === 'Secret' && !isEditmode && secretViewAccess) {
+            return (
+                <ConditionalWrap
+                    condition={!jsonManifestData?.data}
+                    wrap={(children) => (
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top-start"
+                            content="Nothing to decode, data field not found."
+                        >
+                            {children}
+                        </Tippy>
+                    )}
+                >
+                    <div
+                        className={`${
+                            !jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : ''
+                        } flex left ml-8`}
+                    >
+                        <Checkbox
+                            rootClassName={`${
+                                !jsonManifestData?.data ? 'dc__opacity-0_5 cursor-not-allowed' : 'cursor'
+                            } mb-0-imp h-18`}
+                            id="showDecodedValue"
+                            isChecked={showDecodedData}
+                            onChange={() => onChangeToggleShowDecodedValue(jsonManifestData)}
+                            value={CHECKBOX_VALUE.CHECKED}
+                        />
+                        Show decoded Value
+                    </div>
+                </ConditionalWrap>
+            )
+        }
     }
 
     return isDeleted ? (
@@ -415,7 +487,10 @@ function ManifestComponent({
                                                 ? EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT
                                                 : EA_MANIFEST_SECRET_INFO_TEXT
                                         }
-                                    />
+                                        className="flex left"
+                                    >
+                                        {renderShowDecodedValueCheckbox()}
+                                    </CodeEditor.Information>
                                 )}
                                 {activeTab === 'Compare' && (
                                     <CodeEditor.Header hideDefaultSplitHeader={true}>

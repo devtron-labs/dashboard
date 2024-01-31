@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
@@ -83,13 +83,13 @@ export default function DeleteCDNode({
             disabled={showConfirmationBar && deleteInput !== deleteTitleName}
         >
             {showConfirmationBar && (
-                <input
-                    type="text"
+                <CustomInput
                     disabled={isLoading}
-                    className="form__input mt-12"
+                    rootClassName="mt-12"
                     data-testId="delete-dialog-input"
                     placeholder={`Please type ${deleteTitleName} to confirm`}
                     value={deleteInput}
+                    name="delete-input"
                     onChange={handleDeleteInputChange}
                 />
             )}
