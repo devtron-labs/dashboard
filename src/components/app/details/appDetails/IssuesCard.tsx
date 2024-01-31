@@ -126,10 +126,8 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
 
     const getErrorsList = (): ErrorItem[] => {
         const errorsList = []
-        let errorCounter = 0
 
         if (clusterConnectionError) {
-            errorCounter += clusterConnectionError ? 1 : 0
             errorsList.push({
                 error: 'Cluster is not reachable',
                 message: `The underlying resources cannot be deleted as the cluster${
@@ -140,7 +138,6 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
 
         // Error message For helm apps only
         if (releaseStatus) {
-            errorCounter += releaseStatus ? 1 : 0
             errorsList.push({
                 error: releaseStatus.status,
                 message: releaseStatus.description,
@@ -149,7 +146,6 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
 
         // Error message For Argo apps only
         if (conditions?.length) {
-            errorCounter += conditions?.length ? conditions.length : 0
             conditions.forEach((condition) => {
                 errorsList.push({
                     error: condition.type,
@@ -159,7 +155,6 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         }
 
         if (isImagePullBackOff && !appDetails.externalCi) {
-            errorCounter += isImagePullBackOff && !appDetails.externalCi ? 1 : 0
             errorsList.push({
                 error: 'ImagePullBackOff',
                 message: renderErrorHeaderMessage(appDetails, 'sync-error', showApplicationDetailedModal),
