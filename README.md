@@ -148,9 +148,9 @@ module.exports = function (app) {
 #### **`.env.development`**
 
 ```console
-GRAFANA_ORG_ID=2
+VITE_GRAFANA_ORG_ID=2
 REACT_APP_EDITOR=code
-VITE_REACT_APP_ORCHESTRATOR_ROOT=/orchestrator
+VITE_ORCHESTRATOR_ROOT=/orchestrator
 REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 ```
 
@@ -159,9 +159,9 @@ REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 #### **`.env.development`**
 
 ```console
-GRAFANA_ORG_ID=2
+VITE_GRAFANA_ORG_ID=2
 REACT_APP_EDITOR=code
-VITE_REACT_APP_ORCHESTRATOR_ROOT=http://demo.devtron.info:32080/orchestrator
+VITE_ORCHESTRATOR_ROOT=http://demo.devtron.info:32080/orchestrator
 REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 ```
 

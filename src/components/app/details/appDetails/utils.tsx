@@ -402,7 +402,7 @@ export function addQueryParamToGrafanaURL(
 ): string {
     const startTime: string = calendarInputs.startDate
     const endTime: string = calendarInputs.endDate
-    url += `?orgId=${import.meta.env.VITE_REACT_APP_GRAFANA_ORG_ID}`
+    url += `?orgId=${window.__VITE_GRAFANA_ORG_ID__}`
     url += `&refresh=10s`
     url += `&var-app=${appId}`
     url += `&var-env=${envId}`

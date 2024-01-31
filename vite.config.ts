@@ -94,8 +94,6 @@ export default defineConfig(({ mode }) => {
         console.log(mode)
         // Global override for node environment
         baseConfig['define'] = {
-            // __BASE_URL__: '/dashboard/',
-            // __REACT_APP_ORCHESTRATOR_ROOT__: '/orchestrator',
             global: 'globalThis',
         }
     // } else {

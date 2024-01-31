@@ -64,12 +64,14 @@ declare global {
         Worker: any
         __BASE_URL__: string
         __REACT_APP_ORCHESTRATOR_ROOT__: string
+        __VITE_GRAFANA_ORG_ID__: number
     }
 }
 
 if (!window.__BASE_URL__ || !window.__REACT_APP_ORCHESTRATOR_ROOT__) {
-    window.__BASE_URL__ = '/dashboard'
-    window.__REACT_APP_ORCHESTRATOR_ROOT__ = 'orchestrator'
+    window.__BASE_URL__ = import.meta.env.BASE_URL || '/dashboard'
+    window.__REACT_APP_ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || 'orchestrator'
+    window.__VITE_GRAFANA_ORG_ID__ = import.meta.env.VITE_GRAFANA_ORG_ID || 2
 }
 
 const root = document.getElementById('root')
@@ -150,7 +152,7 @@ if (!window || !window._env_) {
         VITE_HIDE_DEPLOYMENT_GROUPS: true,
         VITE_HIDE_GITOPS_OR_HELM_OPTION: false,
         VITE_HIDE_APPLICATION_GROUPS: false,
-        K8S_CLIENT: import.meta.env.VITE_REACT_APP_K8S_CLIENT === 'true',
+        K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
         VITE_USE_V2: true,
         VITE_CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         VITE_CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
