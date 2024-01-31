@@ -1022,34 +1022,6 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
     return matchString.replace(regex, highlightText)
 }
 
-interface HighlightSearchTextProps {
-    /**
-     * The text to be highlighted
-     */
-    searchText: string
-    /**
-     * The whole text string
-     */
-    text: string
-    /**
-     * The classes to be applied to the highlighted text
-     */
-    highlightClasses?: string
-}
-
-export const highlightSearchText = ({ searchText, text, highlightClasses }: HighlightSearchTextProps): string => {
-    if (!searchText) {
-        return text
-    }
-
-    try {
-        const regex = new RegExp(searchText, 'gi')
-        return text.replace(regex, (match) => `<span class="${highlightClasses}">${match}</span>`)
-    } catch (error) {
-        return text
-    }
-}
-
 export const trackByGAEvent = (category: string, action: string): void => {
     ReactGA.event({
         category: category,
