@@ -27,7 +27,7 @@ const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListi
         return errorsList?.map((errorItem) => {
             return (
                 <div className="issues-listing-modal__body__row">
-                    <div className="issues-listing-modal__body__row__col-1">{errorItem.error}</div>
+                    <div className="issues-listing-modal__body__row__col-1 dc__capitalize">{errorItem.error}</div>
                     <div className="issues-listing-modal__body__row__col-2">{errorItem.message}</div>
                 </div>
             )
