@@ -51,7 +51,6 @@ export const InputForSelectedOption = ({
     const handleFocusChange = ({ focused: isFocused }) => {
         setFocused(isFocused)
     }
-    const minValue = filterTypeRadio === CUSTOM_LOGS_FILTER.DURATION ? 0 : -1
 
     const setUntilTimeOptionsWithExcluded = () => {
         const nearestOption = getNearestTimeOptionBeforeNow()
@@ -96,8 +95,8 @@ export const InputForSelectedOption = ({
         let errorString
         if (e.target.value === '') {
             errorString = 'This field is required'
-        } else if (e.target.value === '0') {
-            errorString = 'Value cannot be 0'
+        } else if (Number(e.target.value) < 0) {
+            errorString = 'Value must be greater than 0'
         } else if (customLogFilterOptions[filterTypeRadio].error) {
             errorString = ''
         }
@@ -109,10 +108,9 @@ export const InputForSelectedOption = ({
 
     const handleInputChange = (e) => {
         checkInputError(e)
-        const val = Number(e.target.value) < minValue ? minValue.toString() : e.target.value
         setCustomLogFilterOptions((prevState) => ({
             ...prevState,
-            [filterTypeRadio]: { ...prevState[filterTypeRadio], value: val },
+            [filterTypeRadio]: { ...prevState[filterTypeRadio], value: e.target.value },
         }))
     }
 
@@ -138,7 +136,7 @@ export const InputForSelectedOption = ({
                             <input
                                 type="number"
                                 autoComplete="off"
-                                min={minValue}
+                                min={1}
                                 className="input-focus-none"
                                 value={customLogFilterOptions[filterTypeRadio].value}
                                 onChange={handleInputChange}
