@@ -95,7 +95,7 @@ export const InputForSelectedOption = ({
         let errorString
         if (e.target.value === '') {
             errorString = 'This field is required'
-        } else if (Number(e.target.value) < 0) {
+        } else if (Number(e.target.value) <= 0) {
             errorString = 'Value must be greater than 0'
         } else if (customLogFilterOptions[filterTypeRadio].error) {
             errorString = ''

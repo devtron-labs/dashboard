@@ -188,33 +188,40 @@ export const downloadLogs = async (
     }
     logsURL += `${filter}`
     setDownloadInProgress(true)
-    const response = await fetch(logsURL)
-    try {
-        const data = await (response as any).blob()
+    await fetch(logsURL)
+        .then(async (response) => {
+            try {
+                if(response.status === 204){
+                    toast.error(response.statusText)
+                    return;
+                }
+                console.log('response', response)
+                const data = await (response as any).blob()
+                // Create a new URL object
+                const blobUrl = URL.createObjectURL(data)
 
-        // Create a new URL object
-        const blobUrl = URL.createObjectURL(data)
+                // Create a link element
+                const a = document.createElement('a')
+                a.href = logsURL
+                a.download = `podlogs-${nodeName}-${new Date().getTime()}.log`
 
-        // Create a link element
-        const a = document.createElement('a')
-        a.href = logsURL
-        a.download = `podlogs-${nodeName}-${new Date().getTime()}.log`
+                // Append the link element to the DOM
+                document.body.appendChild(a)
 
-        // Append the link element to the DOM
-        document.body.appendChild(a)
+                // Programmatically click the link to start the download
+                a.click()
 
-        // Programmatically click the link to start the download
-        a.click()
-
-        setTimeout(() => {
-            URL.revokeObjectURL(blobUrl)
-            document.body.removeChild(a)
-        }, 0)
-    } catch (e) {
-        toast.error(e)
-    } finally {
-        setDownloadInProgress(false)
-    }
+                setTimeout(() => {
+                    URL.revokeObjectURL(blobUrl)
+                    document.body.removeChild(a)
+                }, 0)
+            } catch (e) {
+                toast.error(e)
+            } finally {
+                setDownloadInProgress(false)
+            }
+        })
+        .catch((e) => toast.error(e))
 }
 
 export const getLogsURL = (
