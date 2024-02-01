@@ -811,8 +811,8 @@ export const CVE_ID_NOT_FOUND = 'CVE ID not found'
 export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
 export const NO_HOST_URL = 'Please enter host url'
 export const WEBHOOK_NO_API_TOKEN_ERROR = 'API Token is required to execute webhook'
-export const DIGEST_DISABLE_TOGGLE_MESSAGE= "Pull image digest policy is enforced in Global Configurations. Go to Global Configurations to change."
-
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY= "Enforced from Global Configurations. Go to Global Configurations to change."
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE= "Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here."
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export const API_STATUS_CODES = {

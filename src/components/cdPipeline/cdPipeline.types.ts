@@ -58,6 +58,7 @@ export interface Environment {
     isClusterCdActive: boolean
     isVirtualEnvironment?: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
+    isDigestEnforcedForEnv?: boolean
 }
 export interface CommonError {
     isValid: boolean
@@ -135,6 +136,7 @@ export interface PipelineConfig {
     userApprovalConfig?: {
         requiredCount: number
     }
+    isDigestEnforcedForEnv?: boolean
 }
 
 export interface BasicCDPipelineModalProps {
