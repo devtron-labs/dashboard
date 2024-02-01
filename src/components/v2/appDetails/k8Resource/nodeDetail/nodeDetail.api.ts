@@ -192,10 +192,9 @@ export const downloadLogs = async (
         .then(async (response) => {
             try {
                 if(response.status === 204){
-                    toast.error(response.statusText)
+                    toast.error('No logs found')
                     return;
                 }
-                console.log('response', response)
                 const data = await (response as any).blob()
                 // Create a new URL object
                 const blobUrl = URL.createObjectURL(data)
