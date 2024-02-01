@@ -4,7 +4,7 @@ import { importComponentFromFELibrary } from '../../../components/common'
 import { BuildInfraProps } from './types'
 import ProfileForm from './ProfileForm'
 
-const BuildInfraRouter = importComponentFromFELibrary('BuildInfraRouter')
+const BuildInfraRouter = importComponentFromFELibrary('BuildInfraRouter', null, 'function')
 
 export const BuildInfra: FunctionComponent<BuildInfraProps> = ({ isSuperAdmin }) => {
     if (!isSuperAdmin) {
