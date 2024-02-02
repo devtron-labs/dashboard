@@ -597,6 +597,7 @@ export default function DeploymentConfig({
             })
             saveEligibleChangesCb && closeLockedDiffDrawerWithChildModal()
             state.showConfirmation && handleConfirmationDialog(false)
+            setHideLockedKeys(false)
         }
     }
 
