@@ -3,6 +3,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     ConditionalWrap,
+    CustomInput,
     Drawer,
     GenericEmptyState,
     Progressing,
@@ -327,25 +328,17 @@ export default function CreateAppGroup({
         return (
             <div className="p-20 bcn-0 dc__overflow-auto" style={{ height: 'calc(100vh - 128px)' }}>
                 <div className="form__row mb-16">
-                    <span className="form__label dc__required-field">Name</span>
-                    <input
+                    <CustomInput
+                        label="Name"
                         tabIndex={1}
-                        className="form__input"
-                        autoComplete="off"
                         placeholder="Enter filter name"
-                        type="text"
                         value={appGroupName}
                         name="name"
                         onChange={onInputChange}
                         disabled={selectedAppGroup && !!selectedAppGroup.value}
+                        isRequiredField={true}
+                        error={showErrorMsg && nameErrorMessage()}
                     />
-
-                    {showErrorMsg && (
-                        <span className="form__error">
-                            <Error className="form__icon form__icon--error" />
-                            {nameErrorMessage()}
-                        </span>
-                    )}
                 </div>
                 <div className="form__row mb-16">
                     <span className="form__label">Description (Max 50 characters)</span>

@@ -48,6 +48,10 @@ interface customEnv {
     LOGIN_PAGE_IMAGE?: string
     LOGIN_PAGE_IMAGE_BG?: string
     HIDE_DEFAULT_CLUSTER?: boolean
+    GLOBAL_API_TIMEOUT?: number
+    TRIGGER_API_TIMEOUT?: number
+    LOGIN_DT_LOGO?: string
+    SIDEBAR_DT_LOGO?: string
 }
 declare global {
     interface Window {
@@ -150,6 +154,10 @@ if (!window || !window._env_) {
         LOGIN_PAGE_IMAGE: '',
         LOGIN_PAGE_IMAGE_BG: '',
         HIDE_DEFAULT_CLUSTER: false,
+        GLOBAL_API_TIMEOUT: 60000,
+        TRIGGER_API_TIMEOUT: 60000,
+        LOGIN_DT_LOGO: '',
+        SIDEBAR_DT_LOGO: '',
     }
 }
 

@@ -371,7 +371,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                                         </td>
                                         <td className="security-policy__data-cell">
                                             <ReactSelect
-                                                menuPortalTarget={document.getElementById('root')}
+                                                menuPosition="fixed"
                                                 closeMenuOnScroll={true}
                                                 value={selectedValue}
                                                 onChange={(selected) => {

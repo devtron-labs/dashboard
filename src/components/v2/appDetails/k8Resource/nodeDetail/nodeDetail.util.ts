@@ -15,6 +15,7 @@ import { ManifestData, NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 import { MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { decode } from '../../../../../util/Util'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -416,4 +417,15 @@ export const getK8sResourcePayloadAppType = (appType: string) => {
     } else {
        return K8sResourcePayloadAppType.HELM_APP
     }
+}
+export const getDecodedEncodedSecretManifestData = (
+    manifestData: ManifestData,
+    returnAsString: boolean = false,
+    isEncoded?: boolean,
+): ManifestData | string => {
+    const encodedData = {
+        ...manifestData,
+        [MANIFEST_KEY_FIELDS.DATA]: decode(manifestData[MANIFEST_KEY_FIELDS.DATA], isEncoded),
+    }
+    return returnAsString ? JSON.stringify(encodedData) : manifestData
 }

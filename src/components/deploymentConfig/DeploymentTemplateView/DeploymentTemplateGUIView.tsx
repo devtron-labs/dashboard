@@ -1,5 +1,5 @@
 import React, { useContext, useRef } from 'react'
-import { InfoColourBar, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, InfoColourBar, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { BASIC_FIELDS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { validateBasicView } from '../DeploymentConfig.utils'
 import { BasicFieldErrorObj, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
@@ -172,23 +172,19 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                         <div className="row-container mb-16">
                             {renderLabel('Port', 'Port for the container', true)}
                             <div>
-                                <input
-                                    type="text"
+                                <CustomInput
                                     name={BASIC_FIELDS.PORT}
                                     value={currentBasicFieldValues?.[BASIC_FIELDS.PORT]}
-                                    className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    rootClassName="w-200-imp br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     data-testid="containerport-textbox"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
-                                    autoComplete="off"
+                                    error={
+                                        currentBasicFieldValuesErrorObj?.port &&
+                                        !currentBasicFieldValuesErrorObj.port.isValid &&
+                                        currentBasicFieldValuesErrorObj.port.message
+                                    }
                                 />
-                                {currentBasicFieldValuesErrorObj?.port &&
-                                    !currentBasicFieldValuesErrorObj.port.isValid && (
-                                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                            <span>{currentBasicFieldValuesErrorObj.port.message}</span>
-                                        </span>
-                                    )}
                             </div>
                         </div>
                         <div
@@ -213,15 +209,14 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                             <div className="mb-12">
                                 <div className="row-container mb-12">
                                     {renderLabel('Host', 'Host name')}
-                                    <input
+                                    <CustomInput
                                         type="text"
                                         data-testid="httprequests-routes-host-textbox"
                                         name={BASIC_FIELDS.HOST}
                                         value={currentBasicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
-                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         onChange={handleInputChange}
                                         readOnly={readOnly}
-                                        autoComplete="off"
                                     />
                                 </div>
                                 <div className="row-container mb-4">
@@ -240,16 +235,18 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     (path: string, index: number) => (
                                         <div className="row-container mb-4" key={`${BASIC_FIELDS.PATH}-${index}`}>
                                             <div />
-                                            <input
-                                                type="text"
+                                            <CustomInput
                                                 data-testid="httprequests-routes-path-textbox"
                                                 name={BASIC_FIELDS.PATH}
-                                                data-index={index}
+                                                inputProps={
+                                                    {
+                                                        'data-index': index,
+                                                    } as React.InputHTMLAttributes<HTMLInputElement>
+                                                }
                                                 value={path}
-                                                className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                                rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                                 onChange={handleInputChange}
                                                 readOnly={readOnly}
-                                                autoComplete="off"
                                             />
                                             <Close
                                                 className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
@@ -264,8 +261,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                         <div className="row-container mb-8">
                             {renderLabel('CPU', 'CPU available to the application', true)}
                             <div>
-                                <input
-                                    type="text"
+                                <CustomInput
                                     data-testid="resources-cpu-textbox"
                                     name={BASIC_FIELDS.RESOURCES_CPU}
                                     value={
@@ -273,43 +269,37 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                             BASIC_FIELDS.CPU
                                         ]
                                     }
-                                    className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    rootClassName="w-200-imp br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
-                                    autoComplete="off"
+                                    error={
+                                        currentBasicFieldValuesErrorObj?.cpu &&
+                                        !currentBasicFieldValuesErrorObj.cpu.isValid &&
+                                        currentBasicFieldValuesErrorObj.cpu.message
+                                    }
                                 />
-                                {currentBasicFieldValuesErrorObj?.cpu && !currentBasicFieldValuesErrorObj.cpu.isValid && (
-                                    <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                        <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                        <span>{currentBasicFieldValuesErrorObj.cpu.message}</span>
-                                    </span>
-                                )}
                             </div>
                         </div>
                         <div className="row-container mb-16">
                             {renderLabel('Memory', 'Memory available to the application', true)}
                             <div>
-                                <input
+                                <CustomInput
                                     data-testid="resources-memory-textbox"
-                                    type="text"
                                     name={BASIC_FIELDS.RESOURCES_MEMORY}
                                     value={
                                         currentBasicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
                                             BASIC_FIELDS.MEMORY
                                         ]
                                     }
-                                    className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    rootClassName="w-200-imp br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
-                                    autoComplete="off"
+                                    error={
+                                        currentBasicFieldValuesErrorObj?.memory &&
+                                        !currentBasicFieldValuesErrorObj.memory.isValid &&
+                                        currentBasicFieldValuesErrorObj.memory.message
+                                    }
                                 />
-                                {currentBasicFieldValuesErrorObj?.memory &&
-                                    !currentBasicFieldValuesErrorObj.memory.isValid && (
-                                        <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                            <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                            <span>{currentBasicFieldValuesErrorObj.memory.message}</span>
-                                        </span>
-                                    )}
                             </div>
                         </div>
                         <div className="fw-6 fs-14 cn-9 mb-8">Environment Variables</div>

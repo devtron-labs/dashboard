@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
-import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { useForm } from '../common'
-import {
-    CIBuildConfigType,
-    CIBuildType,
-    showError,
-    Progressing,
-    ConfirmationDialog,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { saveCIConfig, updateCIConfig } from './service'
-import { CIBuildArgType, CIConfigFormProps, LoadingState, ProcessedWorkflowsType } from './types'
-import { processWorkflow } from '../app/details/triggerView/workflow.service'
-import { WorkflowCreate } from '../app/details/triggerView/config'
+import { CIBuildArgType, CIConfigFormProps, LoadingState } from './types'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
 import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
@@ -40,7 +31,6 @@ export default function CIConfigForm({
     reload,
     appId,
     selectedCIPipeline,
-    configOverrideWorkflows,
     configOverrideView,
     allowOverride,
     updateDockerConfigOverride,
@@ -82,7 +72,7 @@ export default function CIConfigForm({
             : ciConfig && ciConfig.dockerRegistry
             ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
             : dockerRegistries.find((reg) => reg.isDefault)
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+    const { state, handleOnChange, handleOnSubmit } = useForm(
         getCIConfigFormState(ciConfig, selectedCIPipeline, currentMaterial, currentRegistry),
         CI_CONFIG_FORM_VALIDATION,
         onValidation,
@@ -107,11 +97,9 @@ export default function CIConfigForm({
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatorm)
     const [showCustomPlatformConfirmation, setShowCustomPlatformConfirmation] = useState<boolean>(false)
     const [showConfigOverrideDiff, setShowConfigOverrideDiff] = useState<boolean>(false)
-    const [processedWorkflows, setProcessedWorkflows] = useState<ProcessedWorkflowsType>({
-        processing: false,
-        workflows: [],
-    })
-    const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden && _ci?.pipelineType !== CIPipelineBuildType.CI_JOB)
+    const configOverridenPipelines = ciConfig?.ciPipelines?.filter(
+        (_ci) => _ci.isDockerConfigOverridden && _ci?.pipelineType !== CIPipelineBuildType.CI_JOB,
+    )
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
         initCurrentCIBuildConfig(
             allowOverride,
@@ -269,30 +257,6 @@ export default function CIConfigForm({
         )
     }
 
-    const processFetchedWorkflows = async () => {
-        if (!processedWorkflows.processing) {
-            try {
-                setProcessedWorkflows({
-                    ...processedWorkflows,
-                    processing: true,
-                })
-                const { result } = await getWorkflowList(appId)
-                const { workflows } = processWorkflow(
-                    result,
-                    ciConfig,
-                    null,
-                    null,
-                    WorkflowCreate,
-                    WorkflowCreate.workflow,
-                )
-
-                setProcessedWorkflows({ processing: false, workflows })
-            } catch (err) {
-                showError(err)
-            }
-        }
-    }
-
     const handleOnChangeConfig = (e) => {
         handleOnChange(e)
 
@@ -336,9 +300,6 @@ export default function CIConfigForm({
 
     const toggleConfigOverrideDiffModal = () => {
         setShowConfigOverrideDiff(!showConfigOverrideDiff)
-        if (!showConfigOverrideDiff) {
-            processFetchedWorkflows()
-        }
     }
 
     const { repository, dockerfile, projectPath, registry, repository_name, buildContext, key, value } = state
@@ -434,13 +395,13 @@ export default function CIConfigForm({
                 </div>
             )}
             {showCustomPlatformConfirmation && renderConfirmationModal()}
+            {/* Might cause bug in future since we are toggling the state but directly closes the modal on empty workflow */}
+            {/* TODO: Connect with product if empty state is better? */}
             {configOverridenPipelines?.length > 0 && showConfigOverrideDiff && (
                 <CIConfigDiffView
                     parentReloading={parentReloading}
                     ciConfig={ciConfig}
                     configOverridenPipelines={configOverridenPipelines}
-                    configOverrideWorkflows={configOverrideWorkflows}
-                    processedWorkflows={processedWorkflows}
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                     reload={reload}
                     gitMaterials={sourceConfig.material}

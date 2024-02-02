@@ -8,6 +8,7 @@ import {
     ConfirmationDialog,
     GenericEmptyState,
     useAsync,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as EnvIcon } from '../../assets/icons/ic-env.svg';
 import { ReactComponent as BranchIcon } from '../../assets/icons/misc/branch.svg';
@@ -238,15 +239,27 @@ export function BulkActionEdit() {
     if (loading) {
         return <Progressing pageLoader />
     }
+
+    const handleEditGroupName = (e) => {
+         dispatch({ type: 'editGroupName', value: e.target.value })
+    }
+    
     return (
         <div className="bulk-action-page bulk-action-page--edit">
             <section className="form-section">
                 <div className="form-container">
                     <h2 className="form__title">{`${Number(id) === 0 ? 'Create' : 'Update'} Deployment Group`}</h2>
                     <div className="form__label">
-                        <label className="dc__required-field">Group name</label>
-                        <input autoComplete="off" disabled={Number(id) > 0} type="text" value={state.groupName} onChange={e => dispatch({ type: 'editGroupName', value: e.target.value })} placeholder="Deployment group" className="form__input" />
-                        {state.groupNameError && <label className="form__error flex left"><Info color="#f33e3e" style={{height:'16px', width:'16px'}}/>{state.groupNameError}</label>}
+                        <CustomInput
+                            label="Group name"
+                            name="groupName"
+                            disabled={Number(id) > 0}
+                            value={state.groupName}
+                            onChange={handleEditGroupName}
+                            placeholder="Deployment group"
+                            isRequiredField={true}
+                            error={state.groupNameError}
+                        />
                     </div>
                     <TitledCard
                         number={1}
@@ -400,7 +413,7 @@ function TitledCard({ number, completed = false, title, next, onClick, children 
             <div className={`title-container ${completed ? 'active' : ''}`}>
                 <div className="index flex">{number}</div>
                 <div className="title flex left cn-9">{title}</div>
-                <div className="next flex">{completed && typeof next === 'function' && <button className="cta" onClick={next} type="button">Next</button>}</div>
+                <div className="next flex">{completed && typeof next === 'function' && <button className="cta flex" onClick={next} type="button">Next</button>}</div>
             </div>
             {children}
         </div>

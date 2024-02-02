@@ -15,6 +15,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     VisibleModal,
+    WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -24,7 +25,6 @@ import {
     CIMaterialRouterProps,
     MATERIAL_TYPE,
     NodeAttr,
-    WorkflowNodeType,
     WorkflowType,
 } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
@@ -140,12 +140,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const handledLocation = useRef(false)
     const abortControllerRef = useRef(new AbortController())
 
-    useEffect(
-        () => () => {
-            handledLocation.current = false
-        },
-        [],
-    )
+    useEffect(() => {
+         if (ApprovalMaterialModal) {
+             getConfigs()
+         }
+         return () => {
+             handledLocation.current = false
+         }
+    }, [])
 
     useEffect(() => {
         if (envId) {
@@ -165,20 +167,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             // URL Encoding for Bulk is not planned as of now
             setShowBulkCDModal(false)
             if (location.search.includes('approval-node')) {
-                getConfigs()
                 const searchParams = new URLSearchParams(location.search)
                 const nodeId = Number(searchParams.get('approval-node'))
                 if (!isNaN(nodeId)) {
                     onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-                }
-                else {
+                } else {
                     toast.error('Invalid node id')
                     history.push({
                         search: '',
                     })
                 }
-            }
-            else if (location.search.includes('rollback-node')) {
+            }  
+             else if (location.search.includes('rollback-node')) {
                 const searchParams = new URLSearchParams(location.search)
                 const nodeId = Number(searchParams.get('rollback-node'))
                 if (!isNaN(nodeId)) {

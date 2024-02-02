@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
+import { NavLink, Switch, Route, Redirect, useLocation } from 'react-router-dom'
 import {
     APPROVER_ACTION,
     CONFIG_APPROVER_ACTION,
@@ -49,9 +49,10 @@ export default function AppPermissions({
         appsListHelmApps,
         fetchJobsList,
         jobsList,
-        superAdmin
+        superAdmin,
     } = useUserGroupContext()
     const { url, path } = useRouteMatch()
+    const location = useLocation()
     const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
         entity: EntityTypes.DIRECT,
         entityName: [],
@@ -110,30 +111,30 @@ export default function AppPermissions({
         }
     }
 
-   async function setAllWorkflows(jobOptions) {
-       let jobNames
-       let appIdWorkflowNamesMapping
-       let workflowOptions = []
-       jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
-       const { result } = await getAllWorkflowsForAppNames(jobNames)
-       appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
-       for (const jobName in appIdWorkflowNamesMapping) {
-           workflowOptions.push({
-               label: jobName,
-               options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
-                   label: workflow,
-                   value: workflow,
-               })),
-           })
-       }
+    async function setAllWorkflows(jobOptions) {
+        let jobNames
+        let appIdWorkflowNamesMapping
+        let workflowOptions = []
+        jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
+        const { result } = await getAllWorkflowsForAppNames(jobNames)
+        appIdWorkflowNamesMapping = result.appIdWorkflowNamesMapping
+        for (const jobName in appIdWorkflowNamesMapping) {
+            workflowOptions.push({
+                label: jobName,
+                options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
+                    label: workflow,
+                    value: workflow,
+                })),
+            })
+        }
 
-       return [
-           { label: 'All Workflows', value: '*' },
-           ...workflowOptions.reduce((acc, option) => {
-               return [...acc, ...option.options]
-           }, []),
-       ]
-   }
+        return [
+            { label: 'All Workflows', value: '*' },
+            ...workflowOptions.reduce((acc, option) => {
+                return [...acc, ...option.options]
+            }, []),
+        ]
+    }
 
     function setAllEnv(directRolefilter: APIRoleFilter) {
         if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
@@ -438,7 +439,7 @@ export default function AppPermissions({
         }
     }
 
-    async function handleDirectPermissionChange(index, selectedValue, actionMeta,workflowList?) {
+    async function handleDirectPermissionChange(index, selectedValue, actionMeta, workflowList?) {
         const { action, option, name } = actionMeta
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {
@@ -467,7 +468,7 @@ export default function AppPermissions({
                                 }),
                         ]
                     } else {
-                        tempPermissions[index][name] = [{ label: 'Select all', value: '*' }]
+                        tempPermissions[index]['entityName'] = [{ label: 'Select all', value: '*' }]
                     }
                     tempPermissions[index]['entityNameError'] = null
                 } else {
@@ -573,13 +574,19 @@ export default function AppPermissions({
         }
     }
 
+    // To persist the search params
+    const _getNavLinkUrl = (tabName) => (location) => ({
+        ...location,
+        pathname: `${url}/${tabName}`,
+    })
+
     return (
         <>
             <ul role="tablist" className="tab-list mt-12 dc__border-bottom">
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink
-                            to={`${url}/devtron-apps`}
+                            to={_getNavLinkUrl('devtron-apps')}
                             data-testid="devtron-app-permission-tab"
                             className="tab-list__tab-link"
                             activeClassName="active"
@@ -590,7 +597,7 @@ export default function AppPermissions({
                 )}
                 <li className="tab-list__tab">
                     <NavLink
-                        to={`${url}/helm-apps`}
+                        to={_getNavLinkUrl('helm-apps')}
                         data-testid="helm-app-permission-tab"
                         className="tab-list__tab-link"
                         activeClassName="active"
@@ -598,20 +605,22 @@ export default function AppPermissions({
                         Helm Apps
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
-                    <NavLink
-                        to={`${url}/jobs`}
-                        data-testid="jobs-permission-tab"
-                        className="tab-list__tab-link"
-                        activeClassName="active"
-                    >
-                        Jobs
-                    </NavLink>
-                </li>
+                {serverMode !== SERVER_MODE.EA_ONLY && (
+                    <li className="tab-list__tab">
+                        <NavLink
+                            to={_getNavLinkUrl('jobs')}
+                            data-testid="jobs-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
+                            Jobs
+                        </NavLink>
+                    </li>
+                )}
                 {superAdmin && (
                     <li className="tab-list__tab">
                         <NavLink
-                            to={`${url}/kubernetes-objects`}
+                            to={_getNavLinkUrl('kubernetes-objects')}
                             data-testid="kube-resource-permission-tab"
                             className="tab-list__tab-link"
                             activeClassName="active"
@@ -623,7 +632,7 @@ export default function AppPermissions({
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
                         <NavLink
-                            to={`${url}/chart-groups`}
+                            to={_getNavLinkUrl('chart-groups')}
                             data-testid="chart-group-permission-tab"
                             className="tab-list__tab-link"
                             activeClassName="active"
@@ -657,16 +666,18 @@ export default function AppPermissions({
                             hideInfoLegend={hideInfoLegend}
                         />
                     </Route>
-                    <Route path={`${path}/jobs`}>
-                        <AppPermissionDetail
-                            accessType={ACCESS_TYPE_MAP.JOBS}
-                            removeDirectPermissionRow={removeDirectPermissionRow}
-                            handleDirectPermissionChange={handleDirectPermissionChange}
-                            AddNewPermissionRow={AddNewPermissionRowLocal}
-                            directPermission={directPermission}
-                            hideInfoLegend={hideInfoLegend}
-                        />
-                    </Route>
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <Route path={`${path}/jobs`}>
+                            <AppPermissionDetail
+                                accessType={ACCESS_TYPE_MAP.JOBS}
+                                removeDirectPermissionRow={removeDirectPermissionRow}
+                                handleDirectPermissionChange={handleDirectPermissionChange}
+                                AddNewPermissionRow={AddNewPermissionRowLocal}
+                                directPermission={directPermission}
+                                hideInfoLegend={hideInfoLegend}
+                            />
+                        </Route>
+                    )}
                     {superAdmin && (
                         <Route path={`${path}/kubernetes-objects`}>
                             <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
@@ -681,7 +692,13 @@ export default function AppPermissions({
                             />
                         </Route>
                     )}
-                    <Redirect to={serverMode !== SERVER_MODE.EA_ONLY ? `${path}/devtron-apps` : `${path}/helm-apps`} />
+                    <Redirect
+                        // Preserving the search params
+                        to={{
+                            ...location,
+                            pathname: serverMode !== SERVER_MODE.EA_ONLY ? `${path}/devtron-apps` : `${path}/helm-apps`,
+                        }}
+                    />
                 </Switch>
             </div>
         </>
@@ -755,8 +772,8 @@ function AppPermissionDetail({
                                 key={idx}
                                 permission={permission}
                                 removeRow={removeDirectPermissionRow}
-                                handleDirectPermissionChange={(value, actionMeta,workflowList?) =>
-                                    handleDirectPermissionChange(idx, value, actionMeta,workflowList)
+                                handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
+                                    handleDirectPermissionChange(idx, value, actionMeta, workflowList)
                                 }
                             />
                         </div>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
-import { Switch, Route, Redirect } from 'react-router-dom'
+import React, { useState, useEffect, useRef, useMemo, useCallback, useContext, lazy } from 'react'
+import { Switch, Route, Redirect, useLocation, useHistory } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import {
     showError,
@@ -13,16 +13,16 @@ import {
     MultiValueRemove,
     multiSelectStyles,
     getRandomColor,
-    not,
     noop,
     useEffectAfterMount,
     GenericEmptyState,
     useAsync,
+    ERROR_EMPTY_SCREEN,
+    TOAST_ACCESS_DENIED,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     NavigationArrow,
     useKeyDown,
-    removeItemsFromArray,
     getRandomString,
     sortBySelected,
     mapByKey,
@@ -78,15 +78,17 @@ import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../
 import { getSSOConfigList } from '../login/login.service'
 import {
     EMPTY_STATE_STATUS,
-    ERROR_EMPTY_SCREEN,
     SSO_NOT_CONFIGURED_STATE_TEXTS,
-    TOAST_ACCESS_DENIED,
     USER_NOT_EDITABLE,
 } from '../../config/constantMessaging'
 import { getJobs } from '../Jobs/Service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { ADD_USER_EXPANDED_SEARCH_VALUE, EXPANDED_TILE_SEARCH_KEY } from './constants'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
+const AuthorizationGlobalConfigWrapper = importComponentFromFELibrary('AuthorizationGlobalConfigWrapper')
+const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
+const SSOLogin = lazy(() => import('../login/SSOLogin'))
 
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
@@ -134,16 +136,16 @@ export function useUserGroupContext() {
     return context
 }
 
-function HeaderSection(type: string) {
-    const isUserPremissions = type === 'user'
+function HeaderSection(type: 'user' | 'group') {
+    const isUserPermissions = type === 'user'
 
     return (
         <div data-testid={`${type}-auth-page-header`} className="auth-page__header pt-20">
             <h2 className="auth-page__header-title form__title">
-                {isUserPremissions ? 'User permissions' : 'Permission groups'}
+                {isUserPermissions ? 'User permissions' : 'Permission groups'}
             </h2>
             <p className="form__subtitle">
-                {isUserPremissions
+                {isUserPermissions
                     ? "Manage your organization's users and their permissions."
                     : 'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'}
                 &nbsp;
@@ -151,10 +153,10 @@ function HeaderSection(type: string) {
                     data-testid={`${type}-auth-page-learn-more-link`}
                     className="dc__link"
                     rel="noreferrer noopener"
-                    href={isUserPremissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
+                    href={isUserPermissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
                     target="_blank"
                 >
-                    Learn more about {isUserPremissions ? 'User permissions' : 'Permission groups'}
+                    Learn more about {isUserPermissions ? 'User permissions' : 'Permission groups'}
                 </a>
             </p>
         </div>
@@ -179,7 +181,9 @@ export default function UserGroupRoute() {
     )
     const [appsList, setAppsList] = useState(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState(new Map())
-    const [jobsList,setJobsList] = useState(new Map())
+    const [jobsList, setJobsList] = useState(new Map())
+    // For handling the auto assign flow for enterprise
+    const [isAutoAssignFlowEnabled, setIsAutoAssignFlowEnabled] = useState(false)
 
     useEffect(() => {
         if (!lists) return
@@ -209,7 +213,7 @@ export default function UserGroupRoute() {
             setJobsList(
                 (jobsList) =>
                     new Map(
-                        missingProjects.reduce((jobsList, projectId, index) => {
+                        missingProjects.reduce((jobsList, projectId) => {
                             jobsList.set(projectId, {
                                 loading: false,
                                 result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
@@ -230,7 +234,6 @@ export default function UserGroupRoute() {
         }
     }
 
-
     async function fetchAppList(projectIds: number[]) {
         if (serverMode === SERVER_MODE.EA_ONLY) return
         const missingProjects = projectIds.filter((projectId) => !appsList.has(projectId))
@@ -246,7 +249,7 @@ export default function UserGroupRoute() {
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsList((appList) => {
                 return new Map(
-                    missingProjects.reduce((appList, projectId, index) => {
+                    missingProjects.reduce((appList, projectId) => {
                         appList.set(projectId, {
                             loading: false,
                             result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
@@ -282,7 +285,7 @@ export default function UserGroupRoute() {
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsListHelmApps((appListHelmApps) => {
                 return new Map(
-                    missingProjects.reduce((appListHelmApps, projectId, index) => {
+                    missingProjects.reduce((appListHelmApps, projectId) => {
                         appListHelmApps.set(projectId, {
                             loading: false,
                             result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
@@ -347,11 +350,49 @@ export default function UserGroupRoute() {
                     }}
                 >
                     <Switch>
+                        <Route
+                            path={`${path}/login-service`}
+                            render={(props) => {
+                                return <SSOLogin {...props} />
+                            }}
+                        />
                         <Route path={`${path}/users`}>
-                            <UserGroupList type="user" reloadLists={reloadLists} renderHeaders={HeaderSection} />
+                            <ConditionalWrap
+                                condition={!!AuthorizationGlobalConfigWrapper}
+                                wrap={(children) => (
+                                    <AuthorizationGlobalConfigWrapper
+                                        setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}
+                                    >
+                                        {children}
+                                    </AuthorizationGlobalConfigWrapper>
+                                )}
+                            >
+                                <UserGroupList
+                                    type="user"
+                                    reloadLists={reloadLists}
+                                    renderHeaders={HeaderSection}
+                                    isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                                />
+                            </ConditionalWrap>
                         </Route>
                         <Route path={`${path}/groups`}>
-                            <UserGroupList type="group" reloadLists={reloadLists} renderHeaders={HeaderSection} />
+                            <ConditionalWrap
+                                condition={!!AuthorizationGlobalConfigWrapper}
+                                wrap={(children) => (
+                                    <AuthorizationGlobalConfigWrapper
+                                        setIsAutoAssignFlowEnabled={setIsAutoAssignFlowEnabled}
+                                    >
+                                        {children}
+                                    </AuthorizationGlobalConfigWrapper>
+                                )}
+                            >
+                                <UserGroupList
+                                    type="group"
+                                    reloadLists={reloadLists}
+                                    renderHeaders={HeaderSection}
+                                    isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                                />
+                            </ConditionalWrap>
                         </Route>
                         <Route path={`${path}/${Routes.API_TOKEN}`}>
                             <ApiTokens />
@@ -367,8 +408,9 @@ export default function UserGroupRoute() {
 const UserGroupList: React.FC<{
     type: 'user' | 'group'
     reloadLists: () => void
-    renderHeaders: (type: string) => JSX.Element
-}> = ({ type, reloadLists, renderHeaders }) => {
+    renderHeaders: (type: 'user' | 'group') => JSX.Element
+    isAutoAssignFlowEnabled: boolean
+}> = ({ type, reloadLists, renderHeaders, isAutoAssignFlowEnabled }) => {
     const [loading, data, error, reload, setState] = useAsync(type === 'user' ? getUserList : getGroupList, [type])
     const [fetchingSSOConfigList, ssoConfigListdata, , ,] = useAsync(getSSOConfigList, [type], type === 'user')
     const result = (data && data['result']) || []
@@ -378,6 +420,20 @@ const UserGroupList: React.FC<{
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
     const { roles, customRoles } = useUserGroupContext()
+
+    const location = useLocation()
+    const history = useHistory()
+    const searchParams = new URLSearchParams(location.search)
+    const expandedTile = searchParams.get(EXPANDED_TILE_SEARCH_KEY) || ''
+
+    const updateCollapsedTile = (id?: string) => {
+        if (id) {
+            searchParams.set(EXPANDED_TILE_SEARCH_KEY, id)
+        } else {
+            searchParams.delete(EXPANDED_TILE_SEARCH_KEY)
+        }
+        history.replace({ search: searchParams.toString() })
+    }
 
     useEffect(() => {
         switch (keys.join(',').toLowerCase()) {
@@ -413,8 +469,9 @@ const UserGroupList: React.FC<{
     }, [result.length, loading])
 
     const updateCallback = useCallback(
-        (index: number, payload) => {
+        (id: CreateUser['id'], payload) => {
             const newResult = [...result]
+            const index = result.findIndex((userOrGroup) => userOrGroup.id === id)
             newResult[index] = payload
             setState((state) => ({ ...state, result: newResult }))
         },
@@ -422,15 +479,8 @@ const UserGroupList: React.FC<{
     )
 
     const deleteCallback = useCallback(
-        (email_id: string) => {
-            // find index from the filtered list
-            const index = result.findIndex((userOrGroup) => userOrGroup.email_id === email_id)
-
-            // remove the item from the filtered list
-            const newResult = removeItemsFromArray(result, index, 1)
-
-            // update the state
-            setState((state) => ({ ...state, result: newResult }))
+        (id: CreateUser['id']) => {
+            setState((state) => ({ ...state, result: result.filter((userOrGroup) => userOrGroup.id !== id) }))
         },
         [result.length],
     )
@@ -464,6 +514,7 @@ const UserGroupList: React.FC<{
         } else {
             setAddHash(getRandomString())
         }
+        updateCollapsedTile()
     }
 
     function processUsersDataToExport(result: CreateUser[]) {
@@ -606,6 +657,7 @@ const UserGroupList: React.FC<{
                 className="auth-page__body-users__list-container"
             >
                 {renderHeaders(type)}
+                {type === 'group' && isAutoAssignFlowEnabled && <PermissionGroupInfoBar />}
                 {result.length > 0 && (
                     <div className="flex dc__content-space">
                         <div className="search dc__position-rel en-2 bw-1 br-4 mb-16 bcn-0">
@@ -630,23 +682,27 @@ const UserGroupList: React.FC<{
                         )}
                     </div>
                 )}
-
                 {!(filteredAndSorted.length === 0 && result.length > 0) && (
                     <AddUser
                         cancelCallback={cancelCallback}
                         key={addHash}
                         text={`Add ${type}`}
                         type={type}
-                        open={!result || result?.length === 0}
+                        collapsed={expandedTile !== ADD_USER_EXPANDED_SEARCH_VALUE && result?.length !== 0}
+                        setCollapsed={updateCollapsedTile}
                         {...{ createCallback, updateCallback, deleteCallback }}
+                        isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                     />
                 )}
-                {filteredAndSorted.map((data, index) => (
+                {filteredAndSorted.map((data) => (
                     <CollapsedUserOrGroup
                         key={data.id}
                         {...data}
                         type={type}
-                        {...{ updateCallback, deleteCallback, createCallback, index }}
+                        {...{ updateCallback, deleteCallback, createCallback }}
+                        isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
+                        collapsed={expandedTile !== String(data.id)}
+                        setCollapsed={updateCollapsedTile}
                     />
                 ))}
                 {filteredAndSorted.length === 0 && result.length > 0 && (
@@ -658,7 +714,6 @@ const UserGroupList: React.FC<{
 }
 
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
-    index,
     email_id = null,
     id = null,
     name = null,
@@ -667,8 +722,10 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     updateCallback,
     deleteCallback,
     createCallback,
+    isAutoAssignFlowEnabled,
+    collapsed,
+    setCollapsed,
 }) => {
-    const [collapsed, setCollapsed] = useState(true)
     const [dataLoading, data, dataError, reloadData, setData] = useAsync(
         type === 'group' ? () => getGroupId(id) : () => getUserId(id),
         [id, type],
@@ -678,17 +735,17 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
 
     useEffect(() => {
         if (!dataError) return
-        setCollapsed(true)
+        setCollapsed()
         showError(dataError)
     }, [dataError])
 
     function cancelCallback(e) {
-        setCollapsed(not)
+        setCollapsed(collapsed ? String(id) : undefined)
     }
 
-    function updateCallbackOverride(index, data) {
+    function updateCallbackOverride(id, data) {
         setData((state) => ({ ...state, result: data }))
-        updateCallback(index, data)
+        updateCallback(id, data)
     }
 
     function getToolTipContent(user: string): string {
@@ -706,7 +763,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         if (isAdminOrSystemUser) {
             noop()
         } else {
-            setCollapsed(not)
+            setCollapsed(collapsed ? String(id) : undefined)
         }
     }
 
@@ -761,10 +818,9 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 updateCallback: updateCallbackOverride,
                                 deleteCallback,
                                 createCallback,
-                                index,
-                                email_id,
                                 cancelCallback,
                             }}
+                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                         />
                     ) : (
                         <GroupForm
@@ -774,7 +830,6 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 updateCallback: updateCallbackOverride,
                                 deleteCallback,
                                 createCallback,
-                                index,
                                 cancelCallback,
                             }}
                         />
@@ -788,28 +843,31 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
 interface AddUser {
     text: string
     type: 'user' | 'group'
-    open: boolean
     updateCallback: (...args) => void
     deleteCallback: (...args) => void
     createCallback: (...args) => void
     cancelCallback: (...args) => void
+    collapsed: boolean
+    setCollapsed: (id?: string) => void
+    isAutoAssignFlowEnabled: boolean
 }
 const AddUser: React.FC<AddUser> = ({
     text = '',
     type = '',
-    open = false,
     updateCallback,
     deleteCallback,
     createCallback,
     cancelCallback,
+    collapsed,
+    setCollapsed,
+    isAutoAssignFlowEnabled,
 }) => {
-    const [collapsed, setCollapsed] = useState(!open)
     return (
         <article className={`user-list flex column left ${collapsed ? 'user-list--collapsed' : ''} user-list--add`}>
             <div
                 className={`${collapsed ? 'pointer' : ''} user-list__header user-list__header  w-100`}
                 data-testid={collapsed ? `add-${type}-button` : ''}
-                onClick={!collapsed ? noop : (e) => setCollapsed(not)}
+                onClick={!collapsed ? noop : () => setCollapsed(ADD_USER_EXPANDED_SEARCH_VALUE)}
             >
                 {collapsed && <AddIcon className="add-svg mr-16" />}
                 <span className="user-list__email-name flex left column">
@@ -825,13 +883,12 @@ const AddUser: React.FC<AddUser> = ({
                     {type === 'user' ? (
                         <UserForm
                             id={null}
-                            index={null}
                             {...{ updateCallback, deleteCallback, createCallback, cancelCallback }}
+                            isAutoAssignFlowEnabled={isAutoAssignFlowEnabled}
                         />
                     ) : (
                         <GroupForm
                             id={null}
-                            index={null}
                             {...{ updateCallback, deleteCallback, createCallback, cancelCallback }}
                         />
                     )}
@@ -865,17 +922,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     permission,
     handleDirectPermissionChange,
     index,
-    removeRow
+    removeRow,
 }) => {
-    const {
-        environmentsList,
-        projectsList,
-        appsList,
-        envClustersList,
-        appsListHelmApps,
-        customRoles,
-        jobsList
-    } = useUserGroupContext()
+    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles, jobsList } =
+        useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
@@ -906,7 +956,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
-
 
     const RoleValueContainer = ({
         children,
@@ -1067,7 +1116,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         if (permission.entity === EntityTypes.JOB && permission.entityName.length > 0) {
             setWorkflowsForJobs(permission)
         }
-                        
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
     useEffect(() => {
@@ -1419,8 +1467,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             GroupHeading: workflowGroupHeading,
                         }}
                         isDisabled={!permission.team}
-                        onChange={(value,actionMeta)=>{
-                            handleDirectPermissionChange(value,actionMeta,workflowList)
+                        onChange={(value, actionMeta) => {
+                            handleDirectPermissionChange(value, actionMeta, workflowList)
                         }}
                         inputValue={workflowInput}
                         onBlur={() => {
@@ -1486,7 +1534,7 @@ const workflowGroupHeading = (props) => {
     return <GroupHeading {...props} hideClusterName={true} />
 }
 
-const AppOption = ({props,permission}) => {
+const AppOption = ({ props, permission }) => {
     const { selectOption, data } = props
     return (
         <div
@@ -1659,7 +1707,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
 const ValueContainer = (props) => {
     let length = props.getValue().length
     let optionLength = props.options.length
-    if (props.selectProps.name === 'environment'||props.selectProps.name === 'workflow') {
+    if (props.selectProps.name === 'environment' || props.selectProps.name === 'workflow') {
         let _optionLength = 0
         props.options.forEach((option) => {
             _optionLength += option.options?.length

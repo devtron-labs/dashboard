@@ -304,7 +304,6 @@ export default function NavigationRoutes() {
         return <Reload />
     } else {
         const _isOnboardingPage = isOnboardingPage()
-
         return (
             <mainContext.Provider
                 value={{
@@ -324,6 +323,7 @@ export default function NavigationRoutes() {
                     installedModuleMap,
                     currentServerInfo,
                     isAirgapped,
+                    isSuperAdmin
                 }}
             >
                 <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
@@ -526,14 +526,14 @@ export function RedirectUserWithSentry({ isFirstLoginUser }) {
 }
 
 export function RedirectToAppList() {
-    const { push } = useHistory()
+    const { replace } = useHistory()
     const { serverMode } = useContext(mainContext)
     useEffect(() => {
         let baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
         if (serverMode == SERVER_MODE.FULL) {
-            push(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
+            replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
         } else {
-            push(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
+            replace(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
         }
     }, [])
     return null

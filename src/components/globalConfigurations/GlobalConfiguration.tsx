@@ -1,9 +1,9 @@
-import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
+import React, { lazy, useState, useEffect, Suspense, useContext, createContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
-import { showError, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Toggle, ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
@@ -23,7 +23,9 @@ import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { BodyType } from './globalConfiguration.type'
+import { BodyType, ProtectedInputType } from './globalConfiguration.type'
+import CodeEditor from '../CodeEditor/CodeEditor'
+import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -34,14 +36,14 @@ const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
-const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
-const CodeEditor = lazy(() => import('../CodeEditor/CodeEditor'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
+const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
+const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -124,22 +126,24 @@ export default function GlobalConfiguration(props) {
         <main className="global-configuration">
             <PageHeader headerName="Global configurations" />
             <Router history={useHistory()}>
-                <section className="global-configuration__navigation">
-                    <NavItem serverMode={serverMode} />
-                </section>
-                <section className="global-configuration__component-wrapper">
-                    <Suspense fallback={<Progressing pageLoader />}>
-                        <ErrorBoundary>
-                            <Body
-                                isSuperAdmin={props.isSuperAdmin}
-                                getHostURLConfig={getHostURLConfig}
-                                checkList={checkList}
-                                serverMode={serverMode}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                            />
-                        </ErrorBoundary>
-                    </Suspense>
-                </section>
+                <GlobalConfigurationProvider>
+                    <section className="global-configuration__navigation">
+                        <NavItem serverMode={serverMode} />
+                    </section>
+                    <section className="global-configuration__component-wrapper">
+                        <Suspense fallback={<Progressing pageLoader />}>
+                            <ErrorBoundary>
+                                <Body
+                                    isSuperAdmin={props.isSuperAdmin}
+                                    getHostURLConfig={getHostURLConfig}
+                                    checkList={checkList}
+                                    serverMode={serverMode}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                />
+                            </ErrorBoundary>
+                        </Suspense>
+                    </section>
+                </GlobalConfigurationProvider>
             </Router>
         </main>
     )
@@ -153,6 +157,8 @@ function NavItem({ serverMode }) {
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
         Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
     })
+    const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
+
     let moduleStatusTimer = null
     const ConfigRequired = [
         {
@@ -192,12 +198,17 @@ function NavItem({ serverMode }) {
             component: CustomChartList,
             isAvailableInEA: false,
         },
-        { name: 'SSO Login Services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {
             name: 'Authorization',
             href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
             preventDefaultKey: URLS.GLOBAL_CONFIG_AUTH,
             group: [
+                {
+                    name: 'SSO Login Services',
+                    dataTestId: 'authorization-sso-login-link',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/login-service`,
+                    isAvailableInEA: true,
+                },
                 {
                     name: 'User Permissions',
                     dataTestId: 'authorization-user-permissions-link',
@@ -260,28 +271,57 @@ function NavItem({ serverMode }) {
     }
 
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
+        const onTippyClose = () => {
+            // Resetting the tippy state
+            setTippyConfig({
+                showTippy: false
+            })
+        }
+
         return (
-            <NavLink
-                to={`${route.href}`}
-                key={route.href}
-                activeClassName="active-route"
-                data-testid={route.dataTestId}
-                className={`${
-                    route.name === 'API tokens' &&
-                    location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                        ? 'active-route'
-                        : ''
-                }`}
-                onClick={(e) => {
-                    if (!preventOnClickOp) {
-                        handleGroupCollapsedState(e, route)
-                    }
-                }}
+            // FIXME: Reuse the renderNavItem function for all nav item to extend the tippy support to all links
+            <ConditionalWrap
+                condition={tippyConfig.showTippy && tippyConfig.showOnRoute === route.href}
+                wrap={(children) => (
+                    <TippyCustomized
+                        theme={TippyTheme.black}
+                        className="w-300 ml-2"
+                        placement="right"
+                        showCloseButton
+                        trigger="manual"
+                        interactive
+                        showOnCreate
+                        arrow
+                        animation="shift-toward-subtle"
+                        onClose={onTippyClose}
+                        {...tippyConfig}
+                    >
+                        {children}
+                    </TippyCustomized>
+                )}
             >
-                <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
-                    <div>{route.name}</div>
-                </div>
-            </NavLink>
+                <NavLink
+                    to={`${route.href}`}
+                    key={`${route.name}-${route.href}`}
+                    activeClassName="active-route"
+                    data-testid={route.dataTestId}
+                    className={`${
+                        route.name === 'API tokens' &&
+                        location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
+                            ? 'active-route'
+                            : ''
+                    }`}
+                    onClick={(e) => {
+                        if (!preventOnClickOp) {
+                            handleGroupCollapsedState(e, route)
+                        }
+                    }}
+                >
+                    <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
+                        <div>{route.name}</div>
+                    </div>
+                </NavLink>
+            </ConditionalWrap>
         )
     }
 
@@ -391,15 +431,17 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {CatalogFramework && <NavLink
-                        to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                        key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                        activeClassName="active-route"
-                    >
-                        <div className="flexbox flex-justify">Catalog Framework</div>
-                    </NavLink>}
+                    {CatalogFramework && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Catalog Framework</div>
+                        </NavLink>
+                    )}
 
-                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES &&  (
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -418,6 +460,17 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Plugins</div>
                         </NavLink>
                     )}
+
+                    {PullImageDigest && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
+                            key={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Pull Image Digest</div>
+                        </NavLink>
+                    )}
+
                     {TagListContainer && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_TAGS}
@@ -434,6 +487,15 @@ function NavItem({ serverMode }) {
                             activeClassName="active-route"
                         >
                             <div className="flexbox flex-justify">Filter condition</div>
+                        </NavLink>
+                    )}
+                    {LockConfiguration && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Lock Deployment config</div>
                         </NavLink>
                     )}
                 </>
@@ -461,13 +523,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
                     return (
-                        <div className="flexbox">
-                            <ClusterList
-                                {...props}
-                                serverMode={serverMode}
-                                isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
-                            />
-                        </div>
+                        <ClusterList
+                            {...props}
+                            serverMode={serverMode}
+                            isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
+                        />
                     )
                 }}
             />
@@ -477,14 +537,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_HOST_URL}
                     render={(props) => {
                         return (
-                            <div className="flexbox">
-                                <HostURLConfiguration
-                                    {...props}
-                                    isSuperAdmin={isSuperAdmin}
-                                    refreshGlobalConfig={getHostURLConfig}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                />
-                            </div>
+                            <HostURLConfiguration
+                                {...props}
+                                isSuperAdmin={isSuperAdmin}
+                                refreshGlobalConfig={getHostURLConfig}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                            />
                         )
                     }}
                 />,
@@ -492,33 +550,21 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     key={URLS.GLOBAL_CONFIG_GITOPS}
                     path={URLS.GLOBAL_CONFIG_GITOPS}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                            </div>
-                        )
+                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_PROJECT}
                     path={URLS.GLOBAL_CONFIG_PROJECT}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <Project {...props} isSuperAdmin={isSuperAdmin} />
-                            </div>
-                        )
+                        return <Project {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_GIT}
                     path={URLS.GLOBAL_CONFIG_GIT}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                            </div>
-                        )
+                        return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
                 <Route
@@ -526,14 +572,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                     render={(props) => {
                         return (
-                            <div className="flexbox">
-                                <Docker
-                                    {...props}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                    isSuperAdmin={isSuperAdmin}
-                                    isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
-                                />
-                            </div>
+                            <Docker
+                                {...props}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                                isSuperAdmin={isSuperAdmin}
+                                isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
+                            />
                         )
                     }}
                 />,
@@ -547,13 +591,6 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
                     <CustomChartList />
                 </Route>,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_LOGIN}
-                    path={URLS.GLOBAL_CONFIG_LOGIN}
-                    render={(props) => {
-                        return <SSOLogin {...props} />
-                    }}
-                />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_AUTH}
                     path={URLS.GLOBAL_CONFIG_AUTH}
@@ -594,6 +631,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <PluginsPolicy />
                 </Route>
             )}
+            {PullImageDigest && (
+                <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
+                    <PullImageDigest isSuperAdmin={isSuperAdmin}/>
+                </Route>
+            )}
             {TagListContainer && (
                 <Route path={URLS.GLOBAL_CONFIG_TAGS}>
                     <TagListContainer />
@@ -602,6 +644,14 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             {FilterConditions && (
                 <Route path={URLS.GLOBAL_CONFIG_FILTER_CONDITION}>
                     <FilterConditions isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            {LockConfiguration && (
+                <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
+                    <LockConfiguration
+                        isSuperAdmin={isSuperAdmin}
+                        CodeEditor={CodeEditor}
+                    />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
@@ -632,10 +682,18 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
 function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...props }) {
     const handleToggle = () => {
         if (!isButtonDisabled) {
-            onSelect(!enabled);
+            onSelect(!enabled)
         }
-    };
-    return <Toggle dataTestId="toggle-button" {...props} onSelect={handleToggle} selected={enabled} disabled={isButtonDisabled} />
+    }
+    return (
+        <Toggle
+            dataTestId="toggle-button"
+            {...props}
+            onSelect={handleToggle}
+            selected={enabled}
+            disabled={isButtonDisabled}
+        />
+    )
 }
 
 function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
@@ -672,66 +730,21 @@ function handleError(error: any): any[] {
     return error
 }
 
-export function CustomInput({
-    name,
-    value,
-    error,
-    onChange,
-    onBlur = (e) => {},
-    onFocus = (e) => {},
-    label,
-    type = 'text',
-    disabled = false,
-    autoComplete = 'off',
-    labelClassName = '',
-    placeholder = '',
-    tabIndex = 1,
-    dataTestid = '',
-}) {
-    return (
-        <div className="flex column left top">
-            <label className={`form__label ${labelClassName}`}>{label}</label>
-            <input
-                data-testid={dataTestid}
-                type={type}
-                name={name}
-                autoComplete="off"
-                className="form__input"
-                onChange={(e) => {
-                    e.persist()
-                    onChange(e)
-                }}
-                onBlur={onBlur}
-                onFocus={onFocus}
-                placeholder={placeholder}
-                value={value}
-                disabled={disabled}
-                tabIndex={tabIndex}
-            />
-            {handleError(error).map((err) => (
-                <div className="form__error">
-                    <FormError className="form__icon form__icon--error" />
-                    {err}
-                </div>
-            ))}
-        </div>
-    )
-}
-
 export function ProtectedInput({
     name,
     value,
     error,
     onChange,
-    label,
-    type = 'text',
+    label= '',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-}) {
+    onBlur= (e) => {},
+    isRequiredField = false,
+}: ProtectedInputType) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -739,7 +752,7 @@ export function ProtectedInput({
 
     return (
         <div className="flex column left top ">
-            <label htmlFor="" className={`form__label ${labelClassName}`}>
+            <label htmlFor="" className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}>
                 {label}
             </label>
             <div className="dc__position-rel w-100">
@@ -756,6 +769,7 @@ export function ProtectedInput({
                     }}
                     value={value}
                     disabled={disabled}
+                    onBlur={onBlur}
                 />
                 <ShowHide
                     className="protected-input__toggle"

@@ -14,6 +14,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     noop,
+    CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
@@ -40,7 +41,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     constructor(props) {
         super(props)
         this.state = {
-            view: ViewType.FORM,
+            view: ViewType.LOADING,
             code: 0,
             projects: [],
             disableForm: false,
@@ -72,6 +73,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     async componentDidMount() {
+        this.setState({ view: ViewType.LOADING })
         try {
             const { result } = await getTeamListMin()
             sortObjectArrayAlphabetically(result, 'name')
@@ -306,31 +308,19 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             <div className="scrollable-content p-20">
                 <div className="form__row">
                     <div className={`${this.props.isJobView ? 'mb-12' : ''}`}>
-                        <span className="form__label dc__required-field">
-                            {this.props.isJobView ? 'Job' : 'App'} Name
-                        </span>
-                        <input
+                        <CustomInput
                             ref={(node) => (this._inputAppName = node)}
                             data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
-                            className="form__input"
-                            type="text"
                             name="app-name"
+                            label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
                             value={this.state.form.appName}
                             placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
-                            autoComplete="off"
                             autoFocus={true}
                             tabIndex={1}
                             onChange={this.handleAppname}
-                            required
+                            isRequiredField={true}
+                            error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
                         />
-                        <span className="form__error">
-                            {appNameErrors && !this.state.isValid.appName ? (
-                                <>
-                                    <Error className="form__icon form__icon--error" />
-                                    {errorObject[0].message} <br />
-                                </>
-                            ) : null}
-                        </span>
                     </div>
                     {!this.props.isJobView && (
                         <span className="form__text-field-info form__text-field-info--create-app">

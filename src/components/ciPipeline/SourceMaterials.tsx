@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { SourceTypeMap, URLS } from '../../config'
 import ReactSelect, { components } from 'react-select'
 import { Link, useLocation } from 'react-router-dom'
-import error from '../../assets/icons/misc/errorInfo.svg'
 import git from '../../assets/icons/git/git.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator } from '../charts/charts.util'
@@ -11,7 +10,7 @@ import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import Tippy from '@tippyjs/react'
 
@@ -93,9 +92,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         )
     }
 
-    function onBlur(e) {
+    async function onBlur() {
         if (props.handleOnBlur) {
-            props.handleOnBlur(e)
+            await props.handleOnBlur()
         }
     }
 
@@ -161,7 +160,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             placeholder="Source Type"
                                             classNamePrefix={`select-build-pipeline-sourcetype-${index}`}
                                             isSearchable={false}
-                                            menuPortalTarget={document.getElementById('visible-modal')}
+                                            menuPosition="fixed"
                                             options={
                                                 !isMultiGit
                                                     ? props.ciPipelineSourceTypeOptions
@@ -195,50 +194,46 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }}
                                         />
 
-                                        <div className="h-18"></div>
+                                        <div className="h-24"></div>
                                     </div>
                                 </ConditionalWrap>
 
                                 {isBranchFixed && (
                                     <div className="w-50 ml-8 left">
-                                        <div>
-                                            <label className="form__label mb-6 dc__required-field">Branch Name</label>
-                                            <input
-                                                className="form__input"
-                                                autoComplete="off"
-                                                placeholder="Eg. main"
-                                                type="text"
-                                                data-testid={`build-pipeline-branch-name-textbox${index}`}
-                                                disabled={!props.handleSourceChange}
-                                                value={mat.value}
-                                                onChange={(event) => {
-                                                    props?.handleSourceChange(
-                                                        event,
-                                                        mat.gitMaterialId,
-                                                        SourceTypeMap.BranchFixed,
-                                                    )
-                                                }}
-                                                autoFocus={true}
-                                                onBlur={onBlur}
-                                            />
-                                        </div>
-                                        {errorObj && !errorObj.isValid ? (
-                                            <span className="form__error ci-error ">
-                                                <img src={error} className="form__icon" />
-                                                {props.validationRules?.sourceValue(_materials[index].value).message}
-                                            </span>
-                                        ) : (
-                                            <div className="h-18"></div>
-                                        )}
+                                        <CustomInput
+                                            label="Branch Name"
+                                            rootClassName="h-40"
+                                            name="branchName"
+                                            placeholder="Eg. main"
+                                            type="text"
+                                            data-testid={`build-pipeline-branch-name-textbox${index}`}
+                                            disabled={!props.handleSourceChange}
+                                            value={mat.value}
+                                            onChange={(event) => {
+                                                props?.handleSourceChange(
+                                                    event,
+                                                    mat.gitMaterialId,
+                                                    SourceTypeMap.BranchFixed,
+                                                )
+                                            }}
+                                            handleOnBlur={onBlur}
+                                            isRequiredField={true}
+                                            error={
+                                                errorObj &&
+                                                !errorObj.isValid &&
+                                                props.validationRules?.sourceValue(_materials[index].value).message
+                                            }
+                                        />
+                                        {/* Note: In case Error is not shown added height*/}
+                                         {errorObj?.isValid && <div className="h-24"></div>} 
                                     </div>
                                 )}
 
                                 {isBranchRegex && (
                                     <div className="w-50 ml-8">
-                                        <label className="form__label mb-6 dc__required-field">Branch Regex</label>
-                                        <input
-                                            className="form__input"
-                                            autoComplete="off"
+                                        <CustomInput
+                                            label="Branch Regex"
+                                            name="branchRegex"
                                             placeholder="Eg. feature.*"
                                             type="text"
                                             data-testid={`build-pipeline-branch-name-textbox${index}`}
@@ -251,19 +246,13 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                     SourceTypeMap.BranchRegex,
                                                 )
                                             }}
-                                            autoFocus={true}
+                                            error={
+                                                errorObj && !errorObj.isValid
+                                                    && props.validationRules?.sourceValue(_materials[index].regex).message
+                                            }
                                         />
-                                        {errorObj && !errorObj.isValid ? (
-                                            <span
-                                                className="form__error ci-error "
-                                                data-testid="build-pipeline-validation-error-message"
-                                            >
-                                                <img src={error} className="form__icon" />
-                                                {props.validationRules?.sourceValue(_materials[index].regex).message}
-                                            </span>
-                                        ) : (
-                                            <div className="h-18"></div>
-                                        )}
+                                          {/* Note: In case Error is not shown */}
+                                        {errorObj?.isValid && <div className="h-24"></div>}
                                     </div>
                                 )}
                             </div>

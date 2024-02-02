@@ -30,6 +30,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'function',
 )
 
+// This is being used in case of helm app detail page
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
@@ -39,14 +40,16 @@ const AppDetailsComponent = ({
     loadingResourceTree,
 }: AppDetailsComponentType) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const [streamData, setStreamData] = useState<AppStreamData>(null)
+    const [streamData] = useState<AppStreamData>(null)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
-    const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const location = useLocation()
     const deploymentModalShownRef = useRef(null)
     const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
     deploymentModalShownRef.current =location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
+    // State to track the loading state for the timeline data when the detailed status modal opens
+    const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
+    const shouldFetchTimelineRef = useRef(false)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -63,11 +66,13 @@ const AppDetailsComponent = ({
         }
     }, [])
     useEffect(() => {
-        if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
-            deploymentModalShownRef.current = true
-        } else {
-            deploymentModalShownRef.current = false
+        const isModalOpen = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
+        // Reset the loading state when the modal is closed
+        if (shouldFetchTimelineRef.current && !isModalOpen) {
+            setIsInitialTimelineDataLoading(true)
         }
+        // The timeline should be fetched by default if the modal is open
+        shouldFetchTimelineRef.current = isModalOpen
     }, [location.search])
 
     useEffect(() => {
@@ -91,16 +96,17 @@ const AppDetailsComponent = ({
     }
 
     const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
+        const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
+
         // Deployments status details for Helm apps
-        getDeploymentStatusDetail(
-            params.appId,
-            params.envId,
-            showTimeline ?? deploymentModalShownRef.current,
-            '',
-            true,
-        ).then((deploymentStatusDetailRes) => {
-            processDeploymentStatusData(deploymentStatusDetailRes.result)
-        })
+        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, '', true).then(
+            (deploymentStatusDetailRes) => {
+                processDeploymentStatusData(deploymentStatusDetailRes.result)
+                if (shouldFetchTimeline) {
+                    setIsInitialTimelineDataLoading(false)
+                }
+            },
+        )
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
@@ -109,14 +115,6 @@ const AppDetailsComponent = ({
                 ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
                 : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
-        if (
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
-            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
-        ) {
-            deploymentModalShownRef.current = false
-        }
         // If deployment status is in progress then fetch data in every 10 seconds
         if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
             deploymentStatusTimer = setTimeout(() => {
@@ -129,16 +127,6 @@ const AppDetailsComponent = ({
         }
         setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
     }
-
-    // if app type not of EA, then call stream API
-    const syncSSE = useEventSource(
-        `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
-        [params.appId, params.envId],
-        !!appDetails?.appName &&
-            !!appDetails?.environmentName &&
-            appDetails?.appType?.toString() != AppType.EXTERNAL_HELM_CHART.toString(),
-        (event) => setStreamData(JSON.parse(event.data)),
-    )
 
     const renderHelmAppDetails = (): JSX.Element => {
         if (isVirtualEnv.current && VirtualAppDetailsEmptyState) {
@@ -221,6 +209,7 @@ const AppDetailsComponent = ({
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnv.current}
+                    isLoading={isInitialTimelineDataLoading}
                 />
             )}
         </div>

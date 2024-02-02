@@ -8,15 +8,14 @@ import {
     CiPipelineResult,
     Workflow,
     WorkflowResult,
-    PipelineType,
-    WorkflowNodeType,
+    AddDimensionsToDownstreamDeploymentsParams,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
-import { TriggerTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, TriggerTypeMap, WorkflowNodeType, PipelineType, DownstreamNodesEnvironmentsType } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { BlackListedCI } from '../../../workflowEditor/types'
 
@@ -272,7 +271,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         ciNode.y = startY + workflowOffset.offsetY
 
         if ((ciNode.downstreamNodes?.length ?? 0) > 0) {
-            addDimensionsToDownstreamDeployments(ciNode.downstreamNodes, dimensions, ciNode.x, ciNode.y)
+            addDimensionsToDownstreamDeployments({downstreams: ciNode.downstreamNodes, dimensions,startX: ciNode.x,startY: ciNode.y})
         }
 
         const finalWorkflow = new Array<NodeAttr>()
@@ -294,6 +293,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
                     dimensions.type === WorkflowDimensionType.CREATE &&
                     node.parentPipelineType === PipelineType.WEBHOOK
                 ) {
+                    // Maybe need to manipulate it
                     node.x = node.x - 40
                 }
                 node.preNode && finalWorkflow.push(node.preNode)
@@ -324,6 +324,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
         workflow.nodes = finalWorkflow
     })
 
+    // FIXME: This might be the key to solve scrolling workflows in case one scrolls, all other scrolls
     workflows.forEach((workflow) => (workflow.width = maxWorkflowWidth))
 }
 
@@ -348,10 +349,17 @@ function addDownstreams(workflows: WorkflowType[]) {
 
             if (!!parentNode) {
                 const _downstream = type + '-' + node.id
+                const environmentDetails: DownstreamNodesEnvironmentsType = {
+                    environmentId: node.environmentId,
+                    environmentName: node.environmentName,
+                }
+
                 if (parentNode.postNode) {
                     parentNode.postNode.downstreams.push(_downstream)
+                    parentNode.postNode.downstreamEnvironments?.push(environmentDetails)
                 } else {
                     parentNode.downstreams.push(_downstream)
+                    parentNode.downstreamEnvironments?.push(environmentDetails)
                 }
                 parentNode.downstreamNodes.push(node)
             }
@@ -360,16 +368,25 @@ function addDownstreams(workflows: WorkflowType[]) {
     })
 }
 
-function addDimensionsToDownstreamDeployments(
-    downstreams: Array<NodeAttr>,
-    dimensions: WorkflowDimensions,
-    startX: number,
-    startY: number,
-) {
-    let lastY = startY
+/**
+ * 
+ * @description This function is used to add dimensions to downstream deployments, we are recursively traversing the downstream deployments and adding dimensions to them, on each iteration we are updating the lastY coordinate which is used to calculate the Y coordinate of the next deployment, this value is going to be maximum Y coordinate we have encountered so far.
+ * @returns maximum Y coordinate we have encountered so far
+ */
+const addDimensionsToDownstreamDeployments = ({
+    downstreams,
+    dimensions,
+    startX,
+    startY,
+}: AddDimensionsToDownstreamDeploymentsParams): number => {
+    const cdNodesGap = dimensions.cDNodeSizes.nodeHeight + dimensions.cDNodeSizes.distanceY
+    // Shifting the Y coordinates here since, we are anyways adding cdNodesGap to maxY on start of each iteration and dont want to add that in the end of iteration
+    let maxY = startY - cdNodesGap
     for (let index = 0; index < downstreams.length; index++) {
         const element = downstreams[index]
-        let cdNodeY = lastY
+        maxY = maxY + cdNodesGap
+        const cdNodeY = maxY
+        // From here onwards For Y value we will only change maxY for next iteration and wont need to change current cdNodeY
         let cdNodeX = startX + dimensions.cDNodeSizes.nodeWidth + dimensions.cDNodeSizes.distanceX
 
         if (element.preNode) {
@@ -389,19 +406,11 @@ function addDimensionsToDownstreamDeployments(
             lastX = element.postNode.x
         }
 
-        lastY = cdNodeY + dimensions.cDNodeSizes.nodeHeight + dimensions.cDNodeSizes.distanceY
-
         if ((element.downstreamNodes?.length ?? 0) > 0) {
-            addDimensionsToDownstreamDeployments(element.downstreamNodes, dimensions, lastX, cdNodeY)
-            lastY =
-                element.downstreamNodes[element.downstreamNodes.length - 1].y +
-                dimensions.cDNodeSizes.nodeHeight +
-                dimensions.cDNodeSizes.distanceY
+            maxY = addDimensionsToDownstreamDeployments({downstreams: element.downstreamNodes, dimensions, startX: lastX, startY: cdNodeY})
         }
-
-        //for next iteration use Y coordinate of the last element in downstreamNodes as it will have maximum Y coordinate
-        startY = lastY
     }
+    return maxY
 }
 
 function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): WorkflowType {
@@ -453,6 +462,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             url: '',
             id: `${WorkflowNodeType.GIT}-${materialName}-${index}`,
             downstreams: [`${WorkflowNodeType.CI}-${ciPipeline.id}`],
+            downstreamEnvironments: [],
             type: WorkflowNodeType.GIT,
             icon: 'git',
             branch: getStaticCurrentBranchName(ciMaterial),
@@ -486,6 +496,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         type: WorkflowNodeType.CI,
         inputMaterialList: [],
         downstreams: [],
+        downstreamEnvironments: [],
         isExternalCI: ciPipeline.isExternal,
         // Can't rely on pipelineType for legacy pipelines, so using parentCiPipeline as well
         isLinkedCI: ciPipeline.pipelineType !== PipelineType.LINKED_CD && !!ciPipeline.parentCiPipeline,
@@ -517,6 +528,7 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
         type: WorkflowNodeType.WEBHOOK,
         inputMaterialList: [],
         downstreams: [],
+        downstreamEnvironments: [],
         isExternalCI: true,
         isLinkedCI: false,
         linkedCount: 0,
@@ -545,6 +557,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             activeIn: false,
             activeOut: false,
             downstreams: [`${WorkflowNodeType.CD}-${cdPipeline.id}`],
+            downstreamEnvironments: [],
             type: WorkflowNodeType.PRE_CD,
             status: cdPipeline.preDeployStage?.status || cdPipeline.preStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
@@ -581,6 +594,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         activeIn: false,
         activeOut: false,
         downstreams: cdDownstreams,
+        downstreamEnvironments: [],
         type: WorkflowNodeType.CD,
         status: DEFAULT_STATUS,
         triggerType: TriggerTypeMap[trigger],
@@ -604,7 +618,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
-        isLast: isLast
+        isLast: isLast,
+        deploymentAppCreated: cdPipeline?.deploymentAppCreated,
     } as NodeAttr
     stageIndex++
 
@@ -623,6 +638,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             activeIn: false,
             activeOut: false,
             downstreams: [],
+            downstreamEnvironments: [],
             type: WorkflowNodeType.POST_CD,
             status: cdPipeline.postDeployStage?.status || cdPipeline.postStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
@@ -674,4 +690,35 @@ function getCINodeHeight(dimensionType: WorkflowDimensionType, pipeline: CiPipel
         return WorkflowTrigger.externalCINodeSizes?.nodeHeight ?? 0 //external CI
     }
     return WorkflowTrigger.cINodeSizes.nodeHeight
+}
+
+export function getAllChildDownstreams(node: CommonNodeAttr, workflow: any): { downstreamNodes: CommonNodeAttr[] } {
+    let downstreamNodes = []
+    // Not using downstreamNodes since they get deleted in service itself
+    if (node?.downstreams?.length) {
+        node.downstreams.forEach((downstreamData) => {
+            // separating id and type from downstreamData by splitting on -
+            const [type, id] = downstreamData.split('-')
+            const _node = workflow.nodes?.find((wfNode) => String(wfNode.id) === id && wfNode.type === type)
+            if (_node) {
+                const { downstreamNodes: _downstreamNodes } = getAllChildDownstreams(_node, workflow)
+                downstreamNodes = [...downstreamNodes, ..._downstreamNodes]
+            }
+        })
+    }
+    return { downstreamNodes: [...downstreamNodes, node] }
+}
+
+export function getMaxYFromFirstLevelDownstream(node: CommonNodeAttr, workflow: any): number {
+    let maxY = 0
+    if (node?.downstreams?.length) {
+        node.downstreams.forEach((downstreamData) => {
+            const [type, id] = downstreamData.split('-')
+            const _node = workflow.nodes?.find((wfNode) => String(wfNode.id) === id && wfNode.type === type)
+            if (_node) {
+                maxY = Math.max(maxY, _node.y)
+            }
+        })
+    }
+    return maxY
 }
