@@ -225,7 +225,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                             }
                                         />
                                         {/* Note: In case Error is not shown added height */}
-                                        {errorObj?.isValid && <div className="h-24" />}
+                                        {(errorObj?.isValid || islinkedCI) && <div className="h-24" />}
                                     </div>
                                 )}
 

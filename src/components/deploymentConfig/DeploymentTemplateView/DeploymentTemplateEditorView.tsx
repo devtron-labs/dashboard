@@ -11,7 +11,7 @@ import {
     CompareApprovalAndDraftSelectedOption,
 } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
-import { versionComparator } from '../../common'
+import { importComponentFromFELibrary, versionComparator } from '../../common'
 import { SortingOrder } from '../../app/types'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
 import CodeEditor from '../../CodeEditor/CodeEditor'
@@ -26,7 +26,9 @@ import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 
-export default function DeploymentTemplateEditorView({
+const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTemplate', null, 'function')
+
+const DeploymentTemplateEditorView = ({
     isEnvOverride,
     globalChartRefId,
     readOnly,
@@ -39,7 +41,11 @@ export default function DeploymentTemplateEditorView({
     convertVariables,
     setConvertVariables,
     groupedData,
-}: DeploymentTemplateEditorViewProps) {
+    hideLockedKeys,
+    lockedConfigKeysWithLockType,
+    hideLockKeysToggled,
+    removedPatches,
+}: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
@@ -49,7 +55,6 @@ export default function DeploymentTemplateEditorView({
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
     const baseDeploymentAbortController = useRef(null)
-
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
     const [draftLoading, setDraftLoading] = useState(false)
@@ -278,9 +283,11 @@ export default function DeploymentTemplateEditorView({
     }
 
     useEffect(() => {
-        if (!convertVariables) {
-            return
-        }
+        editorOnChange(rhs)
+    }, [state.selectedTabIndex])
+
+    useEffect(() => {
+        if (!convertVariables) return
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {
@@ -309,7 +316,7 @@ export default function DeploymentTemplateEditorView({
     const valueLHS = isIdMatch ? defaultValue : source[selectedOptionId] // fetch LHS data from respective cache store
 
     // final value for LHS
-    const lhs = convertVariables ? resolvedValuesLHS : valueLHS
+    let lhs = convertVariables ? resolvedValuesLHS : valueLHS
 
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
@@ -317,7 +324,25 @@ export default function DeploymentTemplateEditorView({
     const valueRHS = shouldUseDraftData ? selectedData : value
 
     // final value for RHS
-    const rhs = convertVariables ? resolvedValuesRHS : valueRHS
+    let rhs = convertVariables ? resolvedValuesRHS : valueRHS
+    if (getLockFilteredTemplate && isValues) {
+        try {
+            const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
+                hideLockedKeys,
+                lhs,
+                rhs,
+                lockedConfigKeysWithLockType,
+                removedPatches,
+                hideLockKeysToggled,
+                unableToParseYaml: state.unableToParseYaml,
+                readOnly,
+            })
+            lhs = updatedLHS
+            rhs = updatedRHS
+        } catch (err) {
+            showError(err)
+        }
+    }
 
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header
@@ -484,3 +509,5 @@ export default function DeploymentTemplateEditorView({
         <DeploymentTemplateGUIView fetchingValues={fetchingValues} value={value} readOnly={readOnly} />
     )
 }
+
+export default React.memo(DeploymentTemplateEditorView)

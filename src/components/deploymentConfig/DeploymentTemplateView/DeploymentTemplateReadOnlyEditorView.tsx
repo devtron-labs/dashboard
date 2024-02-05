@@ -1,17 +1,35 @@
 import React, { useContext } from 'react'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
+import YAML from 'yaml'
+import { importComponentFromFELibrary } from '../../common'
+const applyPatches = importComponentFromFELibrary('applyPatches', null, 'function')
+
 
 export default function DeploymentTemplateReadOnlyEditorView({
     value,
     isEnvOverride,
+    lockedConfigKeysWithLockType,
+    hideLockedKeys,
+    removedPatches
 }: DeploymentTemplateReadOnlyEditorViewProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+
+    //filtereing the locked keys from the yaml
+    if (applyPatches) {
+        if (hideLockedKeys) {
+            const filteredValue = getUnlockedJSON(YAML.parse(value), lockedConfigKeysWithLockType.config ?? [], false)
+            removedPatches.current = filteredValue.removedPatches
+            value = YAML.stringify(filteredValue.newDocument)
+        } else {
+            value = YAML.stringify(applyPatches(YAML.parse(value), removedPatches.current))
+        }
+    }
 
     const renderCodeEditor = (): JSX.Element => {
         return (
