@@ -1,7 +1,8 @@
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import {Options, OptionsBase } from '../../appDetails.type'
-import { MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { Options, OptionsBase } from '../../appDetails.type'
+import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from './NodeDetailTabs/node.type'
 
 export enum NodeDetailTab {
     EVENTS = 'EVENTS',
@@ -83,4 +84,25 @@ interface ManifestMetadata {
 export interface ManifestData {
     [MANIFEST_KEY_FIELDS.METADATA]?: ManifestMetadata
     [key: string]: any
+}
+
+export interface CustomLogsModalProps {
+    setSelectedCustomLogFilter: React.Dispatch<
+        React.SetStateAction<SelectedCustomLogFilterType>
+    >
+    selectedCustomLogFilter: SelectedCustomLogFilterType
+    setNewFilteredLogs: React.Dispatch<React.SetStateAction<boolean>>
+    setLogsShownOption: React.Dispatch<
+        React.SetStateAction<{
+            prev: { label: string; value: string; type: CUSTOM_LOGS_FILTER }
+            current: { label: string; value: string; type: CUSTOM_LOGS_FILTER }
+        }>
+    >
+    setShowCustomOptionsMoadal: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface InputSelectionProps {
+    customLogFilterOptions: CustomLogFilterOptionsType
+    setCustomLogFilterOptions: React.Dispatch<React.SetStateAction<CustomLogFilterOptionsType>>
+    filterTypeRadio: string
 }
