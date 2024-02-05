@@ -314,6 +314,11 @@ p.sentence-case:first-letter {
     background-image: url('../assets/icons/ic-checkbox-selected.svg');
 }
 
+// TODO: update the icon
+.form__checkbox:checked[value='BULK_CHECKED']~.form__checkbox-container {
+    background-image: url('../assets/icons/ic-charts.svg');
+}
+
 .any-selected {
 
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');

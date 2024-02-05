@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { SortingParams, UserStatusDto } from '@devtron-labs/devtron-fe-common-lib'
 import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
+import { SortableKeys } from './UserPermissions/List/constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -132,3 +133,10 @@ export interface UserRole {
      */
     superAdmin: boolean
 }
+
+export type UserBulkDeletePayload =
+    | {
+          ids: User['id'][]
+      }
+    // TODO: Add status as well
+    | { filterConfig: Pick<BaseFilterQueryParams<SortableKeys>, 'searchKey'> }

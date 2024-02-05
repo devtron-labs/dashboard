@@ -5,6 +5,8 @@ import {
     showError,
     DeleteDialog,
     ConditionalWrap,
+    Checkbox,
+    CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -33,11 +35,16 @@ const UserPermissionRow = ({
     index,
     showStatus,
     refetchUserPermissionList,
+    isChecked = false,
+    toggleChecked,
+    showCheckbox: _showCheckbox,
 }: UserPermissionRowProps) => {
     const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [isModalLoading, setIsModalLoading] = useState(false)
+
+    const showCheckbox = _showCheckbox || isChecked
 
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen)
@@ -57,22 +64,42 @@ const UserPermissionRow = ({
         }
     }
 
+    const handleChecked = () => {
+        toggleChecked(id)
+    }
+
     return (
         <>
             <div
                 className={`user-permission__row ${
                     showStatus ? 'user-permission__row--with-status' : ''
-                } dc__visible-hover dc__visible-hover--parent pl-20 pr-20 dc__hover-n50`}
+                } dc__visible-hover dc__visible-hover--parent pl-20 pr-20 ${
+                    isChecked && !isAdminOrSystemUser ? 'bc-b50' : ''
+                } dc__hover-n50`}
             >
                 {/* Note (v2): no checkbox for admin/system */}
-                <span
-                    className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
-                    style={{
-                        backgroundColor: getRandomColor(emailId),
-                    }}
-                >
-                    {emailId[0]}
-                </span>
+                <div className="flex dc__content-start">
+                    {(!showCheckbox || isAdminOrSystemUser) && (
+                        <span
+                            className={`icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4 ${
+                                isAdminOrSystemUser ? '' : 'dc__visible-hover--hide-child'
+                            }`}
+                            style={{
+                                backgroundColor: getRandomColor(emailId),
+                            }}
+                        >
+                            {emailId[0]}
+                        </span>
+                    )}
+                    {!isAdminOrSystemUser && (
+                        <Checkbox
+                            isChecked={isChecked}
+                            onChange={handleChecked}
+                            rootClassName={`mb-0 ${showCheckbox ? '' : 'dc__visible-hover--child'}`}
+                            value={CHECKBOX_VALUE.CHECKED}
+                        />
+                    )}
+                </div>
                 {isAdminOrSystemUser ? (
                     <span className="flexbox">
                         <Tippy

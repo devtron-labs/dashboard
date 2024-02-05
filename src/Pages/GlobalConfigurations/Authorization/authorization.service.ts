@@ -16,6 +16,7 @@ import {
     PermissionGroupCreateOrUpdatePayload,
     PermissionGroupDto,
     User,
+    UserBulkDeletePayload,
     UserCreateOrUpdatePayload,
     UserDto,
     UserRole,
@@ -72,6 +73,18 @@ export const getUserList = async (
         throw error
     }
 }
+
+export const deleteUserInBulk = (payload: UserBulkDeletePayload) =>
+    trash(
+        `${Routes.USER}/bulk`,
+        'ids' in payload
+            ? { ids: payload.ids }
+            : {
+                  listingRequest: {
+                      ...payload.filterConfig,
+                  },
+              },
+    )
 
 // Permission Groups
 export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Promise<PermissionGroup> => {
