@@ -24,8 +24,7 @@ let stageMap = {
 }
 
 export const getAppList = (request, options?) => {
-    let URL = Routes.APP_LIST
-    return post(URL, request, options)
+    return post(Routes.APP_LIST, request, options)
 }
 
 export function getCITriggerInfo(params: { envId: number | string; ciArtifactId: number | string }) {
