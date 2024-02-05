@@ -3,7 +3,7 @@ import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-with-image.svg'
 import { PullImageDigestToggleType } from './types'
-import { DIGEST_DISABLE_TOGGLE_MESSAGE } from '../../config'
+import { DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE, DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY } from '../../config'
 
 function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleType): JSX.Element {
     const handleImageDigestToggle = (): void => {
@@ -12,19 +12,29 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
         setFormData(_formData)
     }
 
+    const getContentText = () => {
+        let text = ''
+        if (formData.isDigestEnforcedForPipeline && formData.isDigestEnforcedForEnv) {
+            text = DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE
+        } else if (formData.isDigestEnforcedForEnv) {
+            text = DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY
+        }
+        return text
+    }
+
     const renderDogestToggle = () => {
         return (
             <ConditionalWrap
                 condition={formData.isDigestEnforcedForEnv}
                 wrap={(children) => (
-                    <Tippy className="default-tt w-200" content={DIGEST_DISABLE_TOGGLE_MESSAGE}>
+                    <Tippy className="default-tt w-200" content={getContentText()}>
                         <div>{children}</div>
                     </Tippy>
                 )}
             >
                 <div className={`w-32 h-20 ${formData.isDigestEnforcedForEnv ? 'dc__opacity-0_4' : ''}`}>
                     <Toggle
-                        selected={formData.isDigestEnforcedForPipeline}
+                        selected={formData.isDigestEnforcedForPipeline || formData.isDigestEnforcedForEnv}
                         onSelect={handleImageDigestToggle}
                         dataTestId="create-build-pipeline-image-pull-digest-toggle"
                         disabled={formData.isDigestEnforcedForEnv}

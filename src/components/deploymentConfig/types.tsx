@@ -3,6 +3,7 @@ import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import * as jsonpatch from 'fast-json-patch'
 
 export interface DeploymentObject {
     id: number | null
@@ -204,6 +205,9 @@ export interface DeploymentTemplateOptionsTabProps {
 export interface DeploymentTemplateReadOnlyEditorViewProps {
     value: string
     isEnvOverride?: boolean
+    lockedConfigKeysWithLockType: ConfigKeysWithLockType
+    hideLockedKeys: boolean
+    removedPatches:React.MutableRefObject<jsonpatch.Operation[]>
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -219,6 +223,10 @@ export interface DeploymentTemplateEditorViewProps {
     convertVariables?: boolean
     setConvertVariables?: (convertVariables: boolean) => void
     groupedData?: any
+    hideLockedKeys: boolean
+    lockedConfigKeysWithLockType: ConfigKeysWithLockType
+    hideLockKeysToggled: React.MutableRefObject<boolean>
+    removedPatches:React.MutableRefObject<jsonpatch.Operation[]>
 }
 
 export interface DeploymentConfigContextType {
