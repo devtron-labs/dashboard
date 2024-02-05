@@ -914,7 +914,7 @@ button.anchor {
     color: var(--B500);
     border: solid 1px #b5d3f2;
     background-blend-mode: multiply;
-    background-image: linear-gradient(to bottom, #f0f7ff, #f0f7ff);
+    background-image: linear-gradient(to bottom, var(--B50), var(--B50));
 }
 
 .dc__saved-filter__clear-btn--dark {
@@ -1802,7 +1802,7 @@ button.anchor {
     &.active {
         color: var(--B500);
         font-weight: 600;
-        background: #f0f7ff;
+        background: var(--B50);
     }
 }
 
@@ -1981,7 +1981,7 @@ button.anchor {
     padding: 16px;
     border-radius: 4px;
     border: solid 1px var(--B200);
-    background-color: #f0f7ff;
+    background-color: var(--B50);
     font-size: 14px;
 }
 
@@ -2450,6 +2450,10 @@ input,
 textarea,
 .bc-n50 {
     background-color: var(--N50);
+}
+
+.bc-b50 {
+    background-color: var(--B50);
 }
 
 .c-n50 {
@@ -4106,3 +4110,10 @@ textarea::placeholder {
 }
 
 // End: accouncement banner
+
+.bulk-selection-widget {
+    border: 1px solid var(--B500);
+    background: var(--B50);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(5px);
+}
