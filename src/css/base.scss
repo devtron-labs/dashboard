@@ -2134,6 +2134,10 @@ button.anchor {
 
 .dc__border-top-n1 {
     border-top: solid 1px var(--N100);
+
+    &--important {
+        border-top: solid 1px var(--N100) !important;
+    }
 }
 
 .dc__border-bottom-n1 {
