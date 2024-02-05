@@ -140,7 +140,6 @@ if (!window || !window._env_) {
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
         K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true',
-        USE_V2: true,
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
