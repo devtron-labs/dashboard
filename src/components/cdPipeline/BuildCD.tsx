@@ -57,7 +57,7 @@ export default function BuildCD({
     dockerRegistries,
     envIds,
     isGitOpsRepoNotConfigured,
-    noGitOpsModuleInstalledAndConfigured,,
+    noGitOpsModuleInstalledAndConfigured,
 }) {
     const {
         formData,
@@ -75,7 +75,7 @@ export default function BuildCD({
         selectedCDStageTypeValue,
         setSelectedCDStageTypeValue,
         appId,
-        setReloadNoGitOpsRepoConfiguredModal,,
+        setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const history = useHistory()
