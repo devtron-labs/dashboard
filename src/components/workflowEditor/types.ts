@@ -225,6 +225,8 @@ export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType>
     customTag?: CustomTagType
     enableCustomTag?: boolean
     customTagStage?: string
+    isDigestEnforcedForPipeline?: boolean
+    isDigestEnforcedForEnv?: boolean
 }
 
 export interface PipelineFormDataErrorType {
