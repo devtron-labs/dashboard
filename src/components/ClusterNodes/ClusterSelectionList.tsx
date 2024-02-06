@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { handleUTCTime } from '../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, Progressing, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
@@ -73,37 +73,36 @@ export default function ClusterSelectionList({
         setSearchText('')
     }
 
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
+    const handleFilterKeyPress = (value): void => {
+            handleFilterChanges(value)
             setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
-        }
+    }
+
+    const handleSearchChange = (value): void => {
+        setSearchText(value)
+    }
+
+    const handleOnBlur = (event): void => {
+        event.stopPropagation()
+        let _searchText = event.target.value
+        _searchText = _searchText?.trim()
+        handleFilterChanges(_searchText)
+        setSearchText(_searchText)
     }
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    type="text"
-                    placeholder="Search clusters"
-                    value={searchText}
-                    className="search__input"
-                    onChange={(event) => {
-                        setSearchText(event.target.value)
-                    }}
-                    onKeyDown={handleFilterKeyPress}
-                    disabled={clusterListLoader}
-                />
-                {searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
-            </div>
+            <SearchBar
+                initialSearchText={searchText}
+                handleSearchChange={handleSearchChange}
+                handleEnter={handleFilterKeyPress}
+                containerClassName="w-250-imp"
+                inputProps={{
+                    placeholder: 'Search clusters',
+                    autoFocus: true,
+                }}
+                handleOnBlur={handleOnBlur}
+            />
         )
     }
 
