@@ -21,7 +21,19 @@ export interface UserPermissionListHeaderProps {
     getDataToExport: () => ReturnType<typeof getUserList>
 }
 
-export interface UserPermissionTableProps {
+export enum BulkSelectionModalTypes {
+    deleteConfirmation = 'deleteConfirmation',
+    selectAllAcrossPages = 'selectAllAcrossPages',
+    clearAllAcrossPages = 'clearAllAcrossPages',
+}
+
+export type BulkSelectionModalConfig = {
+    type: BulkSelectionModalTypes
+    onSuccess?: () => void
+    onCancel?: () => void
+} | null
+
+export interface UserPermissionContainerProps {
     showStatus: boolean
     error: any
     getUserDataForExport: UserPermissionListHeaderProps['getDataToExport']
@@ -30,10 +42,49 @@ export interface UserPermissionTableProps {
     users: User[]
     refetchUserPermissionList: UserPermissionRowProps['refetchUserPermissionList']
     urlFilters: UseUrlFiltersReturnType<SortableKeys>
+    bulkSelectionModalConfig: BulkSelectionModalConfig
+    setBulkSelectionModalConfig: (config: BulkSelectionModalConfig) => void
+}
+
+export interface UserPermissionTableProps
+    extends Pick<
+        UserPermissionContainerProps,
+        'showStatus' | 'urlFilters' | 'users' | 'totalCount' | 'refetchUserPermissionList'
+    > {
+    isLoading: boolean
+    showPagination: boolean
+    isActionsDisabled: boolean
 }
 
 export interface BulkSelectionActionWidgetProps
-    extends Pick<UserPermissionTableProps, 'urlFilters' | 'showStatus' | 'refetchUserPermissionList'> {
+    extends Pick<
+        UserPermissionContainerProps,
+        'showStatus' | 'setBulkSelectionModalConfig' | 'refetchUserPermissionList'
+    > {
     parentRef: MutableRefObject<HTMLDivElement>
     count: number
+    areActionsDisabled: boolean
+    // TODO: Something better
+    filterConfig: {
+        searchKey: string
+    }
+    selectedUsersCount: number
+}
+
+export interface BulkSelectionClearConfirmationModalProps {
+    type: BulkSelectionModalTypes.clearAllAcrossPages | BulkSelectionModalTypes.selectAllAcrossPages
+    onClose: () => void
+    onSubmit: () => void
+}
+
+export interface BulkUserDeleteModalProps
+    extends Pick<UserPermissionContainerProps, 'refetchUserPermissionList' | 'urlFilters'> {
+    selectedUsersCount: number
+    onClose: () => void
+}
+
+export interface BulkSelectionModalProps
+    extends BulkSelectionModalConfig,
+        Pick<UserPermissionContainerProps, 'refetchUserPermissionList' | 'urlFilters' | 'setBulkSelectionModalConfig'> {
+    selectedUsersCount: number
 }

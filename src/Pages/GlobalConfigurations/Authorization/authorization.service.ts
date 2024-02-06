@@ -80,9 +80,7 @@ export const deleteUserInBulk = (payload: UserBulkDeletePayload) =>
         'ids' in payload
             ? { ids: payload.ids }
             : {
-                  listingRequest: {
-                      ...payload.filterConfig,
-                  },
+                  listingRequest: payload.filterConfig,
               },
     )
 

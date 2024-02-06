@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import {
     SortingOrder,
     useAsync,
@@ -15,13 +15,17 @@ import { SortableKeys } from './constants'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { User } from '../../types'
 import { getIsAdminOrSystemUser } from '../utils'
-import UserPermissionTable from './UserPermissionTable'
+import UserPermissionContainer from './UserPermissionContainer'
+import { BulkSelectionModalConfig, BulkSelectionModalTypes } from './types'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const showStatus = !!StatusHeaderCell
 
 const UserPermissionList = () => {
+    const [bulkSelectionModalConfig, setBulkSelectionModalConfig] = useState<BulkSelectionModalConfig>({
+        type: null,
+    })
     const urlFilters = useUrlFilters<SortableKeys>({
         initialSortKey: SortableKeys.email,
     })
@@ -45,6 +49,10 @@ const UserPermissionList = () => {
                 abortControllerRef,
             ),
         [filterConfig],
+        true,
+        {
+            resetOnChange: false,
+        },
     )
     const allOnThisPageIdentifiers = useMemo(
         () =>
@@ -69,12 +77,22 @@ const UserPermissionList = () => {
             sortOrder: SortingOrder.ASC,
         })
 
+    const getSelectAllDialogStatus = () => {
+        // Set to show the modal, the function is called only if there is an existing selection,
+        // so the modal won't open if there is no selection
+        setBulkSelectionModalConfig({
+            type: BulkSelectionModalTypes.selectAllAcrossPages,
+        })
+
+        return SelectAllDialogStatus.OPEN
+    }
+
     return (
         <BulkSelectionProvider<BulkSelectionIdentifiersType<Record<User['id'], boolean>>>
             identifiers={allOnThisPageIdentifiers}
-            getSelectAllDialogStatus={() => SelectAllDialogStatus.CLOSED}
+            getSelectAllDialogStatus={getSelectAllDialogStatus}
         >
-            <UserPermissionTable
+            <UserPermissionContainer
                 showStatus={showStatus}
                 error={error}
                 getUserDataForExport={getUserDataForExport}
@@ -83,6 +101,8 @@ const UserPermissionList = () => {
                 users={result?.users ?? []}
                 refetchUserPermissionList={reload}
                 urlFilters={urlFilters}
+                bulkSelectionModalConfig={bulkSelectionModalConfig}
+                setBulkSelectionModalConfig={setBulkSelectionModalConfig}
             />
         </BulkSelectionProvider>
     )
