@@ -44,6 +44,7 @@ const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
+const DeploymentBlackoutWindow = importComponentFromFELibrary('DeploymentBlackoutWindow')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -461,6 +462,16 @@ function NavItem({ serverMode }) {
                         </NavLink>
                     )}
 
+                    {DeploymentBlackoutWindow && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_DEPLOYMENT_BLACKOUT_WINDOW}
+                            key={URLS.GLOBAL_CONFIG_DEPLOYMENT_BLACKOUT_WINDOW}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Deployment Blackout Window</div>
+                        </NavLink>
+                    )}
+
                     {PullImageDigest && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
@@ -629,6 +640,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
+                </Route>
+            )}
+             {DeploymentBlackoutWindow && (
+                <Route path={URLS.GLOBAL_CONFIG_DEPLOYMENT_BLACKOUT_WINDOW}>
+                    <DeploymentBlackoutWindow isSuperAdmin={isSuperAdmin}/>
                 </Route>
             )}
             {PullImageDigest && (
