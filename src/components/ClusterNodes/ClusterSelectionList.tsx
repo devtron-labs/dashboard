@@ -98,6 +98,7 @@ export default function ClusterSelectionList({
                 inputProps={{
                     placeholder: 'Search clusters',
                     autoFocus: true,
+                    disabled: minLoader,
                 }}
                 handleOnBlur={handleOnBlur}
             />
