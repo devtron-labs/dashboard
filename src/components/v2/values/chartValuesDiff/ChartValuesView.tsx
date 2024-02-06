@@ -889,15 +889,17 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
-                    deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
-                    gitRepoURL: (staleData || !commonState.gitRepoURL?.gitRepoURL)
-                    ? 'Default'
-                    : commonState.gitRepoURL.gitRepoURL,
-                }            
-                res = await installChart(payload)
-                if (res.status === 205) {
-                    setIsDrawerOpen(true)
+                    deploymentAppType: isVirtualEnvironmentOnSelector
+                        ? DeploymentAppTypes.MANIFEST_DOWNLOAD
+                        : commonState.deploymentAppType,
+                    gitRepoURL:
+                        staleData || !commonState.gitRepoURL?.gitRepoURL
+                            ? allowedCustomBool
+                                ? 'Default'
+                                : ''
+                            : commonState.gitRepoURL.gitRepoURL,
                 }
+                res = await installChart(payload)
             } else if (isCreateValueView) {
                 const payload = {
                     name: valueName,
@@ -905,7 +907,7 @@ function ChartValuesView({
                     values: commonState.modifiedValuesYaml,
                 }
                 if (chartValueId !== '0') {
-                    const chartVersionObj=commonState.chartVersionsData.find(
+                    const chartVersionObj = commonState.chartVersionsData.find(
                         (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
                     )
                     payload['id'] = parseInt(chartValueId)
@@ -943,18 +945,27 @@ function ChartValuesView({
                 toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
-              appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName, res.result?.helmPackageName)
+                appDetails?.isVirtualEnvironment &&
+                    onClickManifestDownload(
+                        res.result.installedAppId,
+                        +envId,
+                        res.result.appName,
+                        res.result?.helmPackageName,
+                    )
                 toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
                 IndexStore.publishAppDetails({} as AppDetails, null)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 toast.error(SOME_ERROR_MSG)
             }
-
         } catch (err) {
-            if (err['code'] === 408) {
-                toast.error("Some global configurations for GitOps has changed")
+            if (err['code'] === 409) {
+                setIsDrawerOpen(true)
+                toast.error('Some global configurations for GitOps has changed')
                 setStaleData(true)
+                setIsDrawerOpen(true)
+            } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900') {
+                setAllowedCustomBool(true)
                 setIsDrawerOpen(true)
             } else {
                 showError(err)

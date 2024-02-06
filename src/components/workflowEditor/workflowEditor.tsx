@@ -539,12 +539,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
-                                    noGitOpsModuleInstalledAndConfigured={this.state.noGitOpsModuleInstalledAndConfigured}
+                                    noGitOpsModuleInstalledAndConfigured={
+                                        this.state.noGitOpsModuleInstalledAndConfigured
+                                    }
                                     isLastNode={
                                         this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
                                     }
                                     isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
                                     changeCIPayload={this.state.changeCIPayload}
+                                    reloadAppConfig={this.props.reloadAppConfig}
                                 />
                             )
                         }}

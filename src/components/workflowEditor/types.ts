@@ -90,6 +90,7 @@ export interface WorkflowEditProps
     ciPipelines?: any[]
     filteredEnvIds?: string
     reloadEnvironments?: () => void
+    reloadAppConfig?: () => void
 }
 
 export interface AddWorkflowState {
@@ -131,7 +132,8 @@ export interface NoGitOpsConfiguredWarningType {
 export interface NoGitOpsRepoConfiguredWarningType {
     closePopup: () => void
     appId: number
-    text:string
+    text: string
+    reload: () => void
 }
 
 export interface ReloadNoGitOpsRepoConfiguredModalType {
@@ -303,6 +305,7 @@ export interface PipelineContext {
     savedCustomTagPattern?: string
     selectedCDStageTypeValue?: OptionType
     setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
+    setReloadNoGitOpsRepoConfiguredModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface SourceTypeCardProps {

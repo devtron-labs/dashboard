@@ -359,7 +359,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 .then((response) => {
                     const resp = response.result
                     const errorMap = resp.stageErrorMap
-                    if (errorMap != null && Object.keys(errorMap).length == 0) {
+                    if (errorMap == null || Object.keys(errorMap).length == 0) {
                         this.props.handleChecklistUpdate('gitOps')
                         toast.success('Configuration saved successfully')
                         this.setState({

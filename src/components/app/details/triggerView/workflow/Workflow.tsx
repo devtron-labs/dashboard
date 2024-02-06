@@ -232,7 +232,7 @@ export class Workflow extends Component<WorkflowProps> {
                 isVirtualEnvironment={node.isVirtualEnvironment}
                 isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
                 deploymentAppType={node.deploymentAppType}
-
+                appId={this.props.appId}
             />
         )
     }

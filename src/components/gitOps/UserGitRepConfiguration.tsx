@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
 import UserGitRepo from './UserGitRepo'
 import { UserGitRepoConfigurationProps } from './gitops.type'
-import { repoType, URLS } from '../../config'
+import { repoType } from '../../config'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
@@ -14,6 +14,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     respondOnSuccess,
     appId,
     navItems,
+    reloadAppConfig,
 }: UserGitRepoConfigurationProps) => {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
@@ -85,11 +86,6 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
         setShowReloadModal(false)
     }
 
-    const reload = () => {
-        history.push(`/app/${appId}/edit/${URLS.APP_WORKFLOW_CONFIG}`)
-        window.location.reload()
-    }
-
     function handleSaveButton() {
         const payload = {
             appId,
@@ -104,7 +100,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                 history.push(navItems[stageIndex + 1].href)
             })
             .catch((err) => {
-                if (err['code'] === 408) {
+                if (err['code'] === 409) {
                     setShowReloadModal(true)
                 } else {
                     showError(err)
@@ -137,13 +133,14 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                         data-testid="save_cluster_list_button_after_selection"
                         className="cta h-36 lh-36 "
                         type="button"
+                        disabled={!gitOpsRepoURL && selectedRepoType === repoType.CONFIGURE}
                         onClick={handleSaveButton}
                     >
                         {loading ? <Progressing /> : 'Save'}
                     </button>
                 </div>
             )}
-            {showReloadModal && <ReloadNoGitOpsRepoConfiguredModal closePopup={closePopup} reload={reload} />}
+            {showReloadModal && <ReloadNoGitOpsRepoConfiguredModal closePopup={closePopup} reload={reloadAppConfig} />}
         </div>
     )
 }

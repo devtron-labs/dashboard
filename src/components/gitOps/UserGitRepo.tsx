@@ -1,5 +1,6 @@
 import { InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React, { FunctionComponent } from 'react'
+import './gitops.scss'
 import { repoType } from '../../config/constants'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'

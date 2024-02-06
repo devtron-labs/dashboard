@@ -160,6 +160,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }, [filteredAppIds])
 
+    const reloadTriggerView = () => {
+        setPageViewType(ViewType.LOADING)
+        inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        getWorkflowsData()
+    }
+
     useEffect(()=>{
         if (!handledLocation.current && filteredWorkflows?.length) {
             handledLocation.current = true
@@ -2164,6 +2170,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     toggleInvalidateCache: toggleInvalidateCache,
                     getMaterialByCommit: getMaterialByCommit,
                     getFilteredMaterial: getFilteredMaterial,
+                    reloadTriggerView: reloadTriggerView,
                 }}
             >
                 {renderWorkflow()}

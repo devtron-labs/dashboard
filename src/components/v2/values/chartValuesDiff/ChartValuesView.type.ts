@@ -90,7 +90,7 @@ export interface DeploymentAppSelectorType {
     handleDeploymentAppTypeSelection?: (event) => void
     isDeployChartView: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
-    gitRepoURL: boolean
+    gitRepoURL: string
 }
 
 export interface DeploymentAppRadioGroupType {

@@ -9,19 +9,22 @@ import { TriggerViewContext } from '../../config'
 import { triggerStatus } from '../../../cicdHistory/History.components'
 import { envDescriptionTippy } from './workflow.utils'
 import { DeploymentAppTypes, DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
-import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import NoGitOpsRepoConfiguredWarning, { ReloadNoGitOpsRepoConfiguredModal } from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
-    gitOpsRepoWarningCondition =
-        this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured
     constructor(props) {
         super(props)
         this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
         this.state = {
             showGitOpsRepoConfiguredWarning: false,
+            gitopsConflictLoading: false,
+            reloadNoGitOpsRepoConfiguredModal: false,
+            gitOpsRepoWarningCondition:
+                this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured,
         }
     }
+
     getCDNodeDetailsURL(): string {
         return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
             this.props.environmentId
@@ -33,6 +36,15 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             return
         }
         this.props.history.push(this.getCDNodeDetailsURL())
+    }
+
+    componentDidUpdate(prevProps: Readonly<TriggerCDNodeProps>, prevState: Readonly<TriggerCDNodeState>): void {
+        if (prevProps.isGitOpsRepoNotConfigured !== this.props.isGitOpsRepoNotConfigured) {
+            this.setState({
+                gitOpsRepoWarningCondition:
+                    this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured,
+            })
+        }
     }
 
     renderStatus(title?: string) {
@@ -77,20 +89,31 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
     }
 
     handleShowGitOpsRepoConfiguredWarning = (): void => {
-        this.gitOpsRepoWarningCondition &&
-            this.setState((prevState) => ({
-                showGitOpsRepoConfiguredWarning: !prevState.showGitOpsRepoConfiguredWarning,
-            }))
+        this.state.gitOpsRepoWarningCondition &&
+            this.setState({
+                showGitOpsRepoConfiguredWarning: true,
+            })
+    }
+
+    closeNoGitOpsRepoConfiguredWarning = (): void => {
+        this.setState({
+            showGitOpsRepoConfiguredWarning: false,
+        })
+    }
+    closeReloadNoGitOpsRepoConfiguredModal = (): void => {
+        this.setState({
+            reloadNoGitOpsRepoConfiguredModal: false,
+        })
     }
 
     handleRollbackClick = (context): void => {
-        !this.gitOpsRepoWarningCondition && context.onClickRollbackMaterial(+this.props.id)
+        !this.state.gitOpsRepoWarningCondition && context.onClickRollbackMaterial(+this.props.id)
         this.handleShowGitOpsRepoConfiguredWarning()
     }
 
     handleImageSelection = (event, context): void => {
         event.stopPropagation()
-        !this.gitOpsRepoWarningCondition &&
+        !this.state.gitOpsRepoWarningCondition &&
             context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
         this.handleShowGitOpsRepoConfiguredWarning()
     }
@@ -147,7 +170,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                                         data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
                                         className="workflow-node__deploy-btn"
                                         onClick={(event) => {
-                                            this.handleImageSelection(event,context)
+                                            this.handleImageSelection(event, context)
                                         }}
                                     >
                                         Select Image
@@ -156,9 +179,16 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                             </div>
                             {this.state.showGitOpsRepoConfiguredWarning && (
                                 <NoGitOpsRepoConfiguredWarning
-                                    closePopup={this.handleShowGitOpsRepoConfiguredWarning}
-                                    appId={+this.props.match.params.appId}
+                                    closePopup={this.closeNoGitOpsRepoConfiguredWarning}
+                                    appId={this.props.appId}
                                     text={gitOpsRepoNotConfiguredWithEnforcedEnv(this.props.environmentName)}
+                                    reload={context.reloadTriggerView}
+                                />
+                            )}
+                            {this.state.reloadNoGitOpsRepoConfiguredModal && (
+                                <ReloadNoGitOpsRepoConfiguredModal
+                                    closePopup={this.closeReloadNoGitOpsRepoConfiguredModal}
+                                    reload={context.reloadTriggerView}
                                 />
                             )}
                         </>

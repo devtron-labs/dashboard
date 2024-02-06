@@ -234,7 +234,6 @@ export function processWorkflow(
             acc[ciPipeline.id] = ciPipeline
             return acc
         }, {})
-
     return { appName, isGitOpsRepoNotConfigured: workflow.isGitOpsRepoNotConfigured, workflows, filteredCIPipelines, cachedCDConfigResponse: cdResponse, blackListedCI }
 }
 

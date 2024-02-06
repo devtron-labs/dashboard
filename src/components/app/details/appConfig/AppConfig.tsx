@@ -57,6 +57,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
     const [userRole, setUserRole] = useState<UserRoleType>()
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
     const [showRepoOnDelete, setShowRepoOnDelete] = useState('')
+    const [reload, setReload] = useState(false)
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
         statusCode: 0,
@@ -86,6 +87,13 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                 })
         }
     }, [appName])
+
+
+    const reloadAppConfig = () => {
+        history.push(`/app/${appId}/edit`)
+        setState((prevState) => ({ ...prevState, view: ViewType.LOADING }))
+        setReload(!reload)
+    }
 
     useEffect(() => {
         Promise.all([
@@ -145,7 +153,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                 showError(errors)
                 setState({ ...state, view: ViewType.ERROR, statusCode: errors.code })
             })
-    }, [filteredEnvIds])
+    }, [filteredEnvIds,reload])
 
     function reloadWorkflows() {
         getWorkflowList(appId).then((response) => {
@@ -431,6 +439,8 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                             configProtectionData={state.configProtectionData}
                             filteredEnvIds={filteredEnvIds}
                             isGitOpsConfigurationRequired={isGitOpsConfigurationRequired}
+                            reloadAppConfig={reloadAppConfig}
+                            maximumAllowedUrl={state.maximumAllowedUrl}
                         />
                     </div>
                 </div>

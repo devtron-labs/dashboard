@@ -51,7 +51,7 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
 import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
-import NoGitOpsRepoConfiguredWarning from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import NoGitOpsRepoConfiguredWarning, { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import {
     gitOpsRepoNotConfigured,
     gitOpsRepoNotConfiguredWithEnforcedEnv,
@@ -70,7 +70,8 @@ export default function NewCDPipeline({
     isLastNode,
     noGitOpsModuleInstalledAndConfigured,
     changeCIPayload,
-    isGitOpsRepoNotConfigured
+    isGitOpsRepoNotConfigured,
+    reloadAppConfig
 }: NewCDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -86,6 +87,7 @@ export default function NewCDPipeline({
         show: false,
         text: '',
     })
+    const[reloadNoGitOpsRepoConfiguredModal, setReloadNoGitOpsRepoConfiguredModal] = useState<boolean>(false)
 
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string
@@ -763,7 +765,7 @@ export default function NewCDPipeline({
     }
 
     const savePipeline = () => {
-        if(checkForGitOpsRepoNotConfigured())return
+        if (checkForGitOpsRepoNotConfigured()) return
         const isUnique = checkUniqueness(formData, true)
         if (!isUnique) {
             toast.error('All task names must be unique')
@@ -774,7 +776,7 @@ export default function NewCDPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         if (
-            !formDataErrorObj.buildStage.isValid || 
+            !formDataErrorObj.buildStage.isValid ||
             !formDataErrorObj.preBuildStage.isValid ||
             !formDataErrorObj.postBuildStage.isValid
         ) {
@@ -814,13 +816,19 @@ export default function NewCDPipeline({
                 }
             })
             .catch((error: ServerErrors) => {
-                showError(error)
                 setLoadingData(false)
+                if (error.code === 409) {
+                    setReloadNoGitOpsRepoConfiguredModal(true)
+                } else showError(error)
             })
     }
 
     const hideDeleteModal = () => {
         setShowDeleteModal(false)
+    }
+    
+    const handleCloseModal=()=>{
+        setReloadNoGitOpsRepoConfiguredModal(false)
     }
 
     const setForceDeleteDialogData = (serverError) => {
@@ -995,7 +1003,8 @@ export default function NewCDPipeline({
             setIsEnvUsedState,
             savedCustomTagPattern,
             selectedCDStageTypeValue,
-            setSelectedCDStageTypeValue
+            setSelectedCDStageTypeValue,
+            setReloadNoGitOpsRepoConfiguredModal,
         }
     }, [
         formData,
@@ -1132,13 +1141,20 @@ export default function NewCDPipeline({
                         </div>
                     </>
                 )}
+
+                {reloadNoGitOpsRepoConfiguredModal && (
+                    <ReloadNoGitOpsRepoConfiguredModal closePopup={handleCloseModal} reload={reloadAppConfig} />
+                )}
+
                 {gitOpsRepoConfiguredWarning.show && (
                     <NoGitOpsRepoConfiguredWarning
                         closePopup={handleShowGitOpsRepoConfiguredWarning}
                         appId={+appId}
                         text={gitOpsRepoConfiguredWarning.text}
+                        reload={reloadAppConfig}
                     />
                 )}
+
                 {cdPipelineId && showDeleteModal && (
                     <DeleteCDNode
                         deleteDialog={deleteDialog}

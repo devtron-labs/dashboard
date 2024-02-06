@@ -241,10 +241,14 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     isVirtualEnvironment?: boolean
     isGitOpsRepoNotConfigured?: boolean
     deploymentAppType: DeploymentAppTypes
+    appId: number
 }
 
 export interface TriggerCDNodeState {
     showGitOpsRepoConfiguredWarning: boolean
+    gitopsConflictLoading: boolean
+    reloadNoGitOpsRepoConfiguredModal: boolean
+    gitOpsRepoWarningCondition: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -287,7 +291,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
-    appId?: number
+    appId: number
     isSelected?: boolean
     fromAppGrouping?: boolean
     handleSelectionChange?: (_appId: number) => void
@@ -311,6 +315,7 @@ export interface TriggerViewContextType {
     toggleInvalidateCache: () => void
     getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => void
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
+    reloadTriggerView: () => void
 }
 
 export enum BulkSelectionEvents {

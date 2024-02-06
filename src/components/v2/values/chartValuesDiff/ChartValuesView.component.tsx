@@ -15,6 +15,7 @@ import { importComponentFromFELibrary, Select } from '../../../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
+import './ChartValuesView.scss'
 
 import {
     Progressing,
@@ -25,6 +26,7 @@ import {
     DeploymentAppTypes,
     Drawer,
     CustomInput,
+    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -186,9 +188,18 @@ export const DeploymentAppSelector = ({
                     <div className="fs-14">
                         Manifests are committed to
                         <div>
-                            <a className="dc__ellipsis-right cursor" href="link">
-                                {gitRepoURL}
-                            </a>
+                            <Tippy
+                                theme={TippyTheme.black}
+                                className="default-tt manifest-repo-link dc__min-width-fit-content"
+                                arrow={false}
+                                placement="bottom-start"
+                                animation="shift-toward-subtle"
+                                content={gitRepoURL}
+                            >
+                                <a className="dc__block dc__ellipsis-right cursor" href={gitRepoURL}>
+                                    {gitRepoURL}
+                                </a>
+                            </Tippy>
                         </div>
                     </div>
                     <hr />
@@ -303,10 +314,10 @@ export const GitOpsDrawer = ({
     setIsDrawerOpen,
     showRepoSelector,
 }: gitOpsDrawerType): JSX.Element => {
-    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT);
+    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
-    const [repoURL, setRepoURL] = useState("")
+    const [repoURL, setRepoURL] = useState('')
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -318,8 +329,8 @@ export const GitOpsDrawer = ({
     }, [deploymentAppType, allowedDeploymentTypes, window._env_.HIDE_GITOPS_OR_HELM_OPTION])
 
     const handleRepoTypeChange = (newRepoType: string) => {
-        setSelectedRepoType(newRepoType);
-    };
+        setSelectedRepoType(newRepoType)
+    }
 
     const handleCloseButton = () => {
         setIsDeploymentAllowed(false)
@@ -331,15 +342,15 @@ export const GitOpsDrawer = ({
     }
 
     const handleRepoTextChange = (newRepoText: string) => {
-        setRepoURL(newRepoText);
+        setRepoURL(newRepoText)
         dispatch({
             type: ChartValuesViewActionTypes.setGitRepoURL,
             payload: { gitRepoURL: newRepoText },
         })
-    };
+    }
 
     const handleSaveButton = () => {
-        if(selectedRepoType === repoType.CONFIGURE && repoURL.length === 0) {
+        if (selectedRepoType === repoType.CONFIGURE && repoURL.length === 0) {
             return
         }
         setGitOpsState(true)
@@ -408,6 +419,7 @@ export const GitOpsDrawer = ({
                                 data-testid="save_cluster_list_button_after_selection"
                                 className="cta h-36 lh-36"
                                 type="button"
+                                disabled={selectedRepoType === repoType.CONFIGURE && !repoURL}
                                 onClick={handleSaveButton}
                             >
                                 Save
@@ -422,12 +434,9 @@ export const GitOpsDrawer = ({
                     <div className="">
                         <span>
                             Commit deployment manifests to
-                            <EditIcon className="icon-dim-16 cursor ml-28 pt-4" onClick={toggleDrawer} />
+                            <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a
-                            className="dc__ellipsis-right flex left fs-13 fw-4 lh-20 cursor pb-4"
-                            onClick={toggleDrawer}
-                        >{`${
+                        <a className="repo-url-link" onClick={toggleDrawer}>{`${
                             visibleRepoURL.length > 0
                                 ? visibleRepoURL === repoType.DEFAULT || staleData
                                     ? 'Auto-create repository'
@@ -435,10 +444,10 @@ export const GitOpsDrawer = ({
                                 : 'Set GitOps repository'
                         }`}</a>
                     </div>
-                    {(visibleRepoURL.length === 0 && visibleRepoURL !== repoType.DEFAULT) && renderValidationErrorLabel()}
+                    {visibleRepoURL.length === 0 && visibleRepoURL !== repoType.DEFAULT && renderValidationErrorLabel()}
                 </div>
             ) : null}
-            <hr/>
+            <hr />
         </>
     )
 }
@@ -451,7 +460,9 @@ export const ChartProjectSelector = ({
 }: ChartProjectSelectorType): JSX.Element => {
     return (
         <label className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="project-name-heading">Project</span>
+            <span className="form__label required-field" data-testid="project-name-heading">
+                Project
+            </span>
             <ReactSelect
                 components={{
                     IndicatorSeparator: null,

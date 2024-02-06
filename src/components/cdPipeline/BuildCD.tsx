@@ -8,8 +8,8 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useContext } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { useParams, useHistory } from 'react-router-dom'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
@@ -39,6 +39,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
+import { getGitOpsRepoConfig } from '../../services/service'
 
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -55,7 +56,7 @@ export default function BuildCD({
     dockerRegistries,
     envIds,
     isGitOpsRepoNotConfigured,
-    noGitOpsModuleInstalledAndConfigured
+    noGitOpsModuleInstalledAndConfigured,
 }) {
     const {
         formData,
@@ -72,9 +73,13 @@ export default function BuildCD({
         savedCustomTagPattern,
         selectedCDStageTypeValue,
         setSelectedCDStageTypeValue,
-        appId
+        appId,
+        setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
+    const history = useHistory()
+
+    const [gitopsConflictLoading, setGitopsConflictLoading] = useState(false)
     let { cdPipelineId } = useParams<{
         appId: string
         workflowId: string
@@ -224,7 +229,23 @@ export default function BuildCD({
             )
         } else return null
     }
-    
+
+    const checkGitOpsRepoConflict = () => {
+        setGitopsConflictLoading(true)
+        getGitOpsRepoConfig(+appId)
+            .then(() => {
+                history.push(`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+            })
+            .catch((err) => {
+                if (err.code === 409) {
+                    setReloadNoGitOpsRepoConfiguredModal(true)
+                }
+            })
+            .finally(() => {
+                setGitopsConflictLoading(false)
+            })
+    }
+
     const gitOpsRepoConfigInfoBar = (content: string) => {
         return (
             <InfoColourBar
@@ -232,9 +253,10 @@ export default function BuildCD({
                 classname="warn mb-16"
                 Icon={Warn}
                 iconClass="warning-icon"
+                linkClass={`flex ${gitopsConflictLoading ? 'loading-dots-cb5 cursor-not-allowed' : ''}`}
                 linkText="Configure GitOps Repository"
                 internalLink
-                redirectLink={`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`}
+                linkOnClick={checkGitOpsRepoConflict}
             />
         )
     }

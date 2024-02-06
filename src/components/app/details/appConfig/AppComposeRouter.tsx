@@ -61,7 +61,9 @@ export default function AppComposeRouter({
     reloadEnvironments,
     configProtectionData,
     filteredEnvIds,
-    isGitOpsConfigurationRequired
+    isGitOpsConfigurationRequired,
+    reloadAppConfig,
+    maximumAllowedUrl
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -180,6 +182,7 @@ export default function AppComposeRouter({
                             respondOnSuccess={respondOnSuccess}
                             appId={+appId}
                             navItems={navItems}
+                            reloadAppConfig={reloadAppConfig}
                         />
                     </Route>
                 )}
@@ -206,6 +209,7 @@ export default function AppComposeRouter({
                                 getWorkflows={getWorkflows}
                                 filteredEnvIds={filteredEnvIds}
                                 reloadEnvironments={reloadEnvironments}
+                                reloadAppConfig={reloadAppConfig}
                             />
                         )}
                     />,
@@ -223,6 +227,7 @@ export default function AppComposeRouter({
                         )}
                     />,
                 ]}
+                <Redirect to={`${maximumAllowedUrl}`} />
             </Switch>
         )
     }

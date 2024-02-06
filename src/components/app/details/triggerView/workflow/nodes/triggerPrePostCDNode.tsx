@@ -120,6 +120,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                                     closePopup={this.handleShowGitOpsRepoConfiguredWarning}
                                     appId={+this.props.match.params.appId}
                                     text={gitOpsRepoNotConfiguredWithEnforcedEnv(this.props.environmentName)}
+                                    reload={context.reloadTriggerView}
                                 />
                             )}
                         </>

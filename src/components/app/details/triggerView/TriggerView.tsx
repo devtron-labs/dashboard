@@ -130,6 +130,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getEnvironments()
     }
 
+    reloadTriggerView = () => {
+        this.setState({
+            view: ViewType.LOADING,
+        })
+        this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
+        this.getWorkflows()
+    }
+
     getEnvironments = () => {
         getEnvironmentListMinPublic()
             .then((response) => {
@@ -861,9 +869,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             className: 'devtron-toast unauthorized',
                         },
                     )
-                } else if( errors instanceof ServerErrors &&
-                    Array.isArray(errors.errors) && errors.code === 409){
-                        errors.errors.map((err) => toast.error(err.internalMessage))
+                } else if (errors instanceof ServerErrors && Array.isArray(errors.errors) && errors.code === 409) {
+                    errors.errors.map((err) => toast.error(err.internalMessage))
                 } else {
                     errors.errors.map((error) => {
                         if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
@@ -1256,6 +1263,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             index={index}
                             filteredCIPipelines={this.state.filteredCIPipelines}
                             environmentLists={this.state.environmentLists}
+                            appId={+this.props.match.params.appId}
                         />
                     )
                 })}
@@ -1331,6 +1339,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         toggleInvalidateCache: this.toggleInvalidateCache,
                         getMaterialByCommit: this.getMaterialByCommit,
                         getFilteredMaterial: this.getFilteredMaterial,
+                        reloadTriggerView: this.reloadTriggerView,
                     }}
                 >
                     {this.renderHostErrorMessage()}

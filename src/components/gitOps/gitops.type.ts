@@ -75,6 +75,7 @@ export interface UserGitRepoConfigurationProps {
     respondOnSuccess: () => void
     appId: number
     navItems: CustomNavItemsType[]
+    reloadAppConfig?: () => void
 }
 export interface UserGitRepoProps {
     setRepoURL: (string) => void

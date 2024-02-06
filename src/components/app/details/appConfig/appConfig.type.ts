@@ -111,6 +111,8 @@ export interface AppComposeRouterProps {
     configProtectionData: any[]
     filteredEnvIds?: string
     isGitOpsConfigurationRequired?: boolean
+    reloadAppConfig: () => void
+    maximumAllowedUrl: string
 }
 
 export interface EnvironmentOverridesProps {
