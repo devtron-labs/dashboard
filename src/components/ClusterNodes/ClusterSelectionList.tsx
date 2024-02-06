@@ -77,7 +77,7 @@ export default function ClusterSelectionList({
     }
 
     const handleSearchChange = (value): void => {
-        setSearchText(value)
+        setSearchText(value.trim())
     }
 
     const handleOnBlur = (event): void => {
@@ -100,7 +100,6 @@ export default function ClusterSelectionList({
                     autoFocus: true,
                     disabled: minLoader,
                 }}
-                handleOnBlur={handleOnBlur}
             />
         )
     }
