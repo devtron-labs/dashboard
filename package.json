@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.59-beta-14",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.61",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
         "@rjsf/validator-ajv8": "^5.13.3",

@@ -2898,6 +2898,10 @@ textarea,
     width: 250px;
 }
 
+.w-250-imp {
+    width: 250px !important;
+}
+
 .w-280 {
     width: 280px;
 }
@@ -3760,6 +3764,10 @@ textarea::placeholder {
 }
 
 // opacity
+.dc__opacity-0_4 {
+    opacity: 0.4;
+}
+
 .dc__opacity-0_5 {
     opacity: 0.5;
 }

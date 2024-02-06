@@ -164,6 +164,10 @@ function EnvironmentSelectorComponent({
 
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
+    const handleScaleWorkloads = () => {
+        setWorkloadsModal(true)
+    }
+
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
@@ -280,10 +284,10 @@ function EnvironmentSelectorComponent({
                             Urls
                         </button>
                     )}
-                    {!showWorkloadsModal && !isVirtualEnvironment && (
+                    {!isVirtualEnvironment && (
                         <button
                             className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
-                            onClick={() => setWorkloadsModal(true)}
+                            onClick={handleScaleWorkloads}
                             data-testid="scale-workload-button-app-details"
                         >
                             <ScaleObjects className="mr-4" /> Scale workloads

@@ -10,6 +10,7 @@ export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
         ...base,
         backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N50)' : 'white',
+        opacity: state.isDisabled ? 0.5 : 1,
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
         textOverflow: 'ellipsis',
         fontWeight: '500',

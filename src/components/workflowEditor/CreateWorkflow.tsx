@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { AddWorkflowProps, AddWorkflowState } from './types';
-import { DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { createWorkflow, updateWorkflow } from './service';
 import { toast } from 'react-toastify';
 import { getWorkflowList } from '../../services/service';
 import error from '../../assets/icons/misc/errorInfo.svg';
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 
 export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflowState>  {
     _inputName: HTMLInputElement;
@@ -77,19 +78,34 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
     render() {
         let isValid = this.isNameValid();
         let title = this.props.match.params.workflowId ? "Edit Workflow" : "Add Workflow";
-        return <DialogForm title={title} className="" close={(event) => this.props.onClose()} onSave={this.saveWorkflow} isLoading={false} closeOnESC={true}>
-            <label className="form__row">
-                <span className="form__label dc__required-field">Workflow Name</span>
-                <input autoComplete="off" ref={node => { if (node) node.focus(); this._inputName = node }} className="form__input" type="text" name="workflow-name" value={this.state.name}
-                    placeholder="e.g. production workflow" autoFocus={true} tabIndex={1} onChange={this.handleWorkflowName} required />
-                {this.state.showError && !isValid ? <span className="form__error">
-                    <img src={error} alt="" className="form__icon" /> This is required Field
-                            </span>
-                    : null}
-            </label>
-            <DialogFormSubmit tabIndex={2}>
-               Save
-            </DialogFormSubmit>
-        </DialogForm>
+        return (
+            <DialogForm
+                title={title}
+                className=""
+                close={(event) => this.props.onClose()}
+                onSave={this.saveWorkflow}
+                isLoading={false}
+                closeOnESC={true}
+            >
+                <label className="form__row">
+                    <CustomInput
+                        ref={(node) => {
+                            if (node) node.focus()
+                            this._inputName = node
+                        }}
+                        name="workflow-name"
+                        label="Workflow Name"
+                        value={this.state.name}
+                        placeholder="e.g. production workflow"
+                        autoFocus={true}
+                        tabIndex={1}
+                        onChange={this.handleWorkflowName}
+                        isRequiredField={true}
+                        error={this.state.showError && !isValid && REQUIRED_FIELD_MSG}
+                    />
+                </label>
+                <DialogFormSubmit tabIndex={2}>Save</DialogFormSubmit>
+            </DialogForm>
+        )
     }
 }

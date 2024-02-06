@@ -126,6 +126,8 @@ export default function NewCDPipeline({
         repoName: '',
         selectedRegistry: null,
         generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
+        isDigestEnforcedForPipeline: false,
+        isDigestEnforcedForEnv: false,
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [savedCustomTagPattern, setSavedCustomTagPattern] = useState<string>('')
@@ -261,6 +263,7 @@ export default function NewCDPipeline({
                         description: env.description,
                         isVirtualEnvironment: env.isVirtualEnvironment,
                         allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                        isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
                     }
                 })
                 sortObjectArrayAlphabetically(list, 'name')
@@ -444,6 +447,8 @@ export default function NewCDPipeline({
         form.customTag = pipelineConfigFromRes.customTag
         form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
         form.customTagStage = pipelineConfigFromRes.customTagStage
+        form.isDigestEnforcedForEnv = pipelineConfigFromRes.isDigestEnforcedForEnv
+        form.isDigestEnforcedForPipeline = pipelineConfigFromRes.isDigestEnforcedForPipeline
 
         if (pipelineConfigFromRes?.preDeployStage) {
             if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
@@ -565,6 +570,8 @@ export default function NewCDPipeline({
             },
             enableCustomTag: formData.enableCustomTag,
             customTagStage: formData?.customTagStage ? formData.customTagStage : StageTypeEnums.PRE_CD,
+            isDigestEnforcedForPipeline: formData.isDigestEnforcedForPipeline,
+            isDigestEnforcedForEnv: formData.isDigestEnforcedForEnv,
         }
 
         if (isVirtualEnvironment) {
