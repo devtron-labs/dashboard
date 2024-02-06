@@ -104,13 +104,6 @@ const NoGitOpsRepoConfiguredWarning: FunctionComponent<NoGitOpsRepoConfiguredWar
                                 <span> Configure</span>
                                 <ArrowRight className="icon-dim-16" />
                             </ButtonWithLoader>
-                            {/* <NavLink
-                        className="cta sso__warn-button btn-confirm flex dc__gap-8"
-                        to={`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`}
-                    >
-                        Configure
-                        <ArrowRight className="icon-dim-16" />
-                    </NavLink> */}
                         </div>
                     </div>
                 </VisibleModal2>
