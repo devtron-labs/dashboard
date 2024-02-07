@@ -3,11 +3,11 @@ import {
     BulkSelectionEvents,
     Pagination,
     SortableTableHeaderCell,
-    useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { toast } from 'react-toastify'
 import { importComponentFromFELibrary } from '../../../../../components/common'
+import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 import { User } from '../../types'
 import { SortableKeys, userListLoading } from './constants'
 import { UserPermissionTableProps } from './types'
@@ -32,7 +32,7 @@ const UserPermissionTable = ({
         selectedIdentifiers: bulkSelectionState,
         getSelectedIdentifiersCount,
         isBulkSelectionApplied,
-    } = useBulkSelection<Record<User['id'], boolean>>()
+    } = useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
 
     const sortByEmail = () => {

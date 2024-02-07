@@ -3,10 +3,10 @@ import {
     BulkSelectionEvents,
     Pagination,
     SortableTableHeaderCell,
-    useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { toast } from 'react-toastify'
+import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 import { PermissionGroup } from '../../types'
 import { permissionGroupLoading, SortableKeys } from './constants'
 import PermissionGroupRow from './PermissionGroupRow'
@@ -27,7 +27,7 @@ const PermissionGroupTable = ({
         selectedIdentifiers: bulkSelectionState,
         getSelectedIdentifiersCount,
         isBulkSelectionApplied,
-    } = useBulkSelection<Record<PermissionGroup['id'], boolean>>()
+    } = useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
 
     const sortByName = () => {

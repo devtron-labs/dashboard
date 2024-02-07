@@ -4,14 +4,14 @@ import {
     DraggableButton,
     DraggablePositionVariant,
     DraggableWrapper,
-    useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '../../../../../components/common'
-import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Tilde } from '../../../../../assets/icons/ic-tilde.svg'
-import { User } from '../../types'
-import { BulkSelectionActionWidgetProps, BulkSelectionModalTypes } from './types'
+import { importComponentFromFELibrary } from '../../../../../../components/common'
+import { ReactComponent as Trash } from '../../../../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
+import { ReactComponent as Tilde } from '../../../../../../assets/icons/ic-tilde.svg'
+import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
+import { BulkSelectionActionWidgetProps } from './types'
+import { BulkSelectionModalTypes } from './constants'
 
 const BulkStatusUpdateDropdown = importComponentFromFELibrary('BulkStatusUpdateDropdown', null, 'function')
 
@@ -21,12 +21,12 @@ const BulkSelectionActionWidget = ({
     count,
     areActionsDisabled,
     setBulkSelectionModalConfig,
-    refetchUserPermissionList,
+    refetchList,
     filterConfig,
-    selectedUsersCount,
+    selectedIdentifiersCount,
     isCountApproximate = false,
 }: BulkSelectionActionWidgetProps) => {
-    const { handleBulkSelection } = useBulkSelection<Record<User['id'], boolean>>()
+    const { handleBulkSelection } = useAuthorizationBulkSelection()
 
     const openBulkDeleteModal = () => {
         setBulkSelectionModalConfig({
@@ -60,9 +60,9 @@ const BulkSelectionActionWidget = ({
                 {showStatus && (
                     <BulkStatusUpdateDropdown
                         disabled={areActionsDisabled}
-                        refetchUserPermissionList={refetchUserPermissionList}
+                        refetchUserPermissionList={refetchList}
                         filterConfig={filterConfig}
-                        selectedUsersCount={selectedUsersCount}
+                        selectedUsersCount={selectedIdentifiersCount}
                     />
                 )}
                 <div className="flex dc__gap-8">

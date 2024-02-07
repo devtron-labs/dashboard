@@ -5,21 +5,19 @@ import {
     noop,
     Reload,
     TOAST_ACCESS_DENIED,
-    useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useRef } from 'react'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES } from '../../../../../config'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
-import { PermissionGroup } from '../../types'
-import BulkSelectionActionWidget from '../../UserPermissions/List/BulkSelectionActionWidget'
-import BulkSelectionModal from '../../UserPermissions/List/BulkSelectionModal'
-import { BulkSelectionModalProps, BulkSelectionModalTypes } from '../../UserPermissions/List/types'
+import BulkSelectionActionWidget from '../../shared/components/BulkSelection/BulkSelectionActionWidget'
+import BulkSelectionModal from '../../shared/components/BulkSelection/BulkSelectionModal'
 import NoPermissionGroups from './NoPermissionGroups'
 import PermissionGroupListHeader from './PermissionGroupListHeader'
 import PermissionGroupTable from './PermissionGroupTable'
 import { PermissionGroupContainerProps } from './types'
+import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 
 const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
 
@@ -41,8 +39,7 @@ const PermissionGroupContainer = ({
     const { searchKey, handleSearch: _handleSearch, clearFilters } = urlFilters
 
     const draggableRef = useRef<HTMLDivElement>()
-    const { getSelectedIdentifiersCount, isBulkSelectionApplied } =
-        useBulkSelection<Record<PermissionGroup['id'], boolean>>()
+    const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
     const selectedUsersCount = isBulkSelectionApplied ? totalCount : getSelectedIdentifiersCount()
 
@@ -125,11 +122,11 @@ const PermissionGroupContainer = ({
                         showStatus={false}
                         areActionsDisabled={showLoadingState || isClearBulkSelectionModalOpen}
                         setBulkSelectionModalConfig={setBulkSelectionModalConfig}
-                        refetchUserPermissionList={refetchPermissionGroupList}
+                        refetchList={refetchPermissionGroupList}
                         filterConfig={{
                             searchKey: urlFilters.searchKey,
                         }}
-                        selectedUsersCount={selectedUsersCount}
+                        selectedIdentifiersCount={selectedUsersCount}
                         isCountApproximate={isBulkSelectionApplied}
                     />
                 )}
@@ -137,10 +134,9 @@ const PermissionGroupContainer = ({
             {isClearBulkSelectionModalOpen && (
                 <BulkSelectionModal
                     {...bulkSelectionModalConfig}
-                    refetchUserPermissionList={refetchPermissionGroupList}
-                    // TODO (v2): FIX the type
-                    urlFilters={urlFilters as unknown as BulkSelectionModalProps['urlFilters']}
-                    selectedUsersCount={selectedUsersCount}
+                    refetchList={refetchPermissionGroupList}
+                    urlFilters={urlFilters}
+                    selectedIdentifiersCount={selectedUsersCount}
                     setBulkSelectionModalConfig={setBulkSelectionModalConfig}
                 />
             )}

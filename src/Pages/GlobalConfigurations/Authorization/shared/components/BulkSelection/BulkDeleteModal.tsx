@@ -5,32 +5,25 @@ import {
     Progressing,
     SELECT_ALL_ACROSS_PAGES_LOCATOR,
     showError,
-    useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
-import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-medium-delete.svg'
-import { deleteUserInBulk } from '../../authorization.service'
-import { User, UserBulkDeletePayload } from '../../types'
-import { BulkUserDeleteModalProps } from './types'
+import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-medium-delete.svg'
+import { deleteUserInBulk } from '../../../authorization.service'
+import { UserBulkDeletePayload } from '../../../types'
+import { BulkDeleteModalProps } from './types'
+import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
 
-const BulkUserDeleteModal = ({
-    selectedUsersCount,
-    onClose,
-    urlFilters,
-    refetchUserPermissionList,
-}: BulkUserDeleteModalProps) => {
+const BulkDeleteModal = ({ selectedIdentifiersCount, onClose, urlFilters, refetchList }: BulkDeleteModalProps) => {
     const [isDeleteLoading, setIsDeleteLoading] = useState(false)
 
     const [deleteConfirmationText, setDeleteConfirmationText] = useState('')
 
-    const { selectedIdentifiers: bulkSelectionState, handleBulkSelection } =
-        // TODO (v2): Use Type from types
-        useBulkSelection<Record<User['id'], boolean>>()
+    const { selectedIdentifiers: bulkSelectionState, handleBulkSelection } = useAuthorizationBulkSelection()
 
     const isBulkSelectionApplied = bulkSelectionState[SELECT_ALL_ACROSS_PAGES_LOCATOR]
 
-    const confirmationText = `delete ${selectedUsersCount} ${selectedUsersCount > 1 ? 'users' : 'user'}`
+    const confirmationText = `delete ${selectedIdentifiersCount} ${selectedIdentifiersCount > 1 ? 'users' : 'user'}`
     const isDeleteDisabled = isDeleteLoading || deleteConfirmationText !== confirmationText
 
     const handleChange = (e) => {
@@ -57,7 +50,7 @@ const BulkUserDeleteModal = ({
             handleBulkSelection({
                 action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
             })
-            refetchUserPermissionList()
+            refetchList()
             onClose()
         } catch (err) {
             showError(err)
@@ -82,7 +75,7 @@ const BulkUserDeleteModal = ({
         <ConfirmationDialog className="w-400">
             <DeleteIcon className="icon-dim-48" />
             <ConfirmationDialog.Body
-                title={`Delete ${selectedUsersCount} user account(s)`}
+                title={`Delete ${selectedIdentifiersCount} user account(s)`}
                 subtitle="Selected user accounts will be deleted and their permissions will be revoked. Are you sure?"
             >
                 <CustomInput
@@ -108,4 +101,4 @@ const BulkUserDeleteModal = ({
     )
 }
 
-export default BulkUserDeleteModal
+export default BulkDeleteModal

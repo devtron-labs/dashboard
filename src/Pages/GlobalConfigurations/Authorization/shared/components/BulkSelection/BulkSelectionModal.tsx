@@ -1,14 +1,15 @@
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import BulkSelectionClearConfirmationModal from './BulkSelectionClearConfirmationModal'
-import BulkUserDeleteModal from './BulkUserDeleteModal'
-import { BulkSelectionModalProps, BulkSelectionModalTypes } from './types'
+import BulkDeleteModal from './BulkDeleteModal'
+import { BulkSelectionModalProps } from './types'
+import { BulkSelectionModalTypes } from './constants'
 
 const BulkSelectionModal = ({
     type,
-    refetchUserPermissionList,
+    refetchList,
     urlFilters,
-    selectedUsersCount,
+    selectedIdentifiersCount,
     setBulkSelectionModalConfig,
     onSuccess = noop,
     onCancel = noop,
@@ -21,11 +22,12 @@ const BulkSelectionModal = ({
     switch (type) {
         case BulkSelectionModalTypes.deleteConfirmation:
             return (
-                <BulkUserDeleteModal
+                <BulkDeleteModal
                     onClose={handleClose}
-                    selectedUsersCount={selectedUsersCount}
-                    refetchUserPermissionList={refetchUserPermissionList}
+                    selectedIdentifiersCount={selectedIdentifiersCount}
+                    refetchList={refetchList}
                     urlFilters={urlFilters}
+                    // TODO: Add support for permission groups as well
                 />
             )
         case BulkSelectionModalTypes.selectAllAcrossPages:

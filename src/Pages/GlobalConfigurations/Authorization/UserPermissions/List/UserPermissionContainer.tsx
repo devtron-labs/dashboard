@@ -5,18 +5,17 @@ import {
     noop,
     Reload,
     TOAST_ACCESS_DENIED,
-    useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useRef } from 'react'
 import { API_STATUS_CODES } from '../../../../../config'
 import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
-import { User } from '../../types'
 import NoUsers from './NoUsers'
-import { BulkSelectionModalTypes, UserPermissionContainerProps } from './types'
+import { UserPermissionContainerProps } from './types'
 import UserPermissionListHeader from './UserPermissionListHeader'
-import BulkSelectionActionWidget from './BulkSelectionActionWidget'
-import BulkSelectionModal from './BulkSelectionModal'
+import BulkSelectionActionWidget from '../../shared/components/BulkSelection/BulkSelectionActionWidget'
+import BulkSelectionModal from '../../shared/components/BulkSelection/BulkSelectionModal'
 import UserPermissionTable from './UserPermissionTable'
+import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 
 const UserPermissionContainer = ({
     showStatus,
@@ -35,7 +34,7 @@ const UserPermissionContainer = ({
     const { searchKey, handleSearch: _handleSearch, clearFilters } = urlFilters
 
     const draggableRef = useRef<HTMLDivElement>()
-    const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useBulkSelection<Record<User['id'], boolean>>()
+    const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
     const selectedUsersCount = isBulkSelectionApplied ? totalCount : getSelectedIdentifiersCount()
 
@@ -116,11 +115,11 @@ const UserPermissionContainer = ({
                             showStatus={showStatus}
                             areActionsDisabled={showLoadingState || isClearBulkSelectionModalOpen}
                             setBulkSelectionModalConfig={setBulkSelectionModalConfig}
-                            refetchUserPermissionList={refetchUserPermissionList}
+                            refetchList={refetchUserPermissionList}
                             filterConfig={{
                                 searchKey: urlFilters.searchKey,
                             }}
-                            selectedUsersCount={selectedUsersCount}
+                            selectedIdentifiersCount={selectedUsersCount}
                             isCountApproximate={isBulkSelectionApplied}
                         />
                     )}
@@ -130,9 +129,9 @@ const UserPermissionContainer = ({
             {isClearBulkSelectionModalOpen && (
                 <BulkSelectionModal
                     {...bulkSelectionModalConfig}
-                    refetchUserPermissionList={refetchUserPermissionList}
+                    refetchList={refetchUserPermissionList}
                     urlFilters={urlFilters}
-                    selectedUsersCount={selectedUsersCount}
+                    selectedIdentifiersCount={selectedUsersCount}
                     setBulkSelectionModalConfig={setBulkSelectionModalConfig}
                 />
             )}

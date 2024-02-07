@@ -1,8 +1,9 @@
 import React from 'react'
-import { BulkSelectionEvents, ConfirmationDialog, useBulkSelection } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as CleanBrush } from '../../../../../assets/icons/ic-clean-brush-medium.svg'
-import { BulkSelectionClearConfirmationModalProps, BulkSelectionModalTypes } from './types'
-import { User } from '../../types'
+import { BulkSelectionEvents, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as CleanBrush } from '../../../../../../assets/icons/ic-clean-brush-medium.svg'
+import { BulkSelectionModalTypes } from './constants'
+import { BulkSelectionClearConfirmationModalProps } from './types'
+import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
 
 const config = {
     [BulkSelectionModalTypes.clearAllAcrossPages]: {
@@ -19,7 +20,7 @@ const config = {
 
 const BulkSelectionClearConfirmationModal = ({ type, onClose, onSubmit }: BulkSelectionClearConfirmationModalProps) => {
     const { title, subTitle, buttonText } = config[type]
-    const { handleBulkSelection } = useBulkSelection<Record<User['id'], boolean>>()
+    const { handleBulkSelection } = useAuthorizationBulkSelection()
 
     const handleSubmit = () => {
         if (type === BulkSelectionModalTypes.selectAllAcrossPages) {

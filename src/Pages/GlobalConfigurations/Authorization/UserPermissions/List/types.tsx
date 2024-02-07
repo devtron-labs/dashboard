@@ -1,6 +1,6 @@
 import { SearchBarProps, ServerError, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
-import { MutableRefObject } from 'react'
 import { getUserList } from '../../authorization.service'
+import { BulkSelectionActionWidgetProps, BulkSelectionModalConfig } from '../../shared/components/BulkSelection'
 import { User } from '../../types'
 import { SortableKeys } from './constants'
 
@@ -21,19 +21,8 @@ export interface UserPermissionListHeaderProps {
     getDataToExport: () => ReturnType<typeof getUserList>
 }
 
-export enum BulkSelectionModalTypes {
-    deleteConfirmation = 'deleteConfirmation',
-    selectAllAcrossPages = 'selectAllAcrossPages',
-    clearAllAcrossPages = 'clearAllAcrossPages',
-}
-
-export type BulkSelectionModalConfig = {
-    type: BulkSelectionModalTypes
-    onSuccess?: () => void
-    onCancel?: () => void
-} | null
-
-export interface UserPermissionContainerProps {
+export interface UserPermissionContainerProps
+    extends Pick<BulkSelectionActionWidgetProps, 'setBulkSelectionModalConfig'> {
     showStatus: boolean
     error: ServerError
     getUserDataForExport: UserPermissionListHeaderProps['getDataToExport']
@@ -43,7 +32,6 @@ export interface UserPermissionContainerProps {
     refetchUserPermissionList: UserPermissionRowProps['refetchUserPermissionList']
     urlFilters: UseUrlFiltersReturnType<SortableKeys>
     bulkSelectionModalConfig: BulkSelectionModalConfig
-    setBulkSelectionModalConfig: (config: BulkSelectionModalConfig) => void
 }
 
 export interface UserPermissionTableProps
@@ -54,38 +42,4 @@ export interface UserPermissionTableProps
     isLoading: boolean
     showPagination: boolean
     isActionsDisabled: boolean
-}
-
-export interface BulkSelectionActionWidgetProps
-    extends Pick<
-        UserPermissionContainerProps,
-        'showStatus' | 'setBulkSelectionModalConfig' | 'refetchUserPermissionList'
-    > {
-    parentRef: MutableRefObject<HTMLDivElement>
-    count: number
-    areActionsDisabled: boolean
-    // TODO (v2): Something better
-    filterConfig: {
-        searchKey: string
-    }
-    selectedUsersCount: number
-    isCountApproximate?: boolean
-}
-
-export interface BulkSelectionClearConfirmationModalProps {
-    type: BulkSelectionModalTypes.clearAllAcrossPages | BulkSelectionModalTypes.selectAllAcrossPages
-    onClose: () => void
-    onSubmit: () => void
-}
-
-export interface BulkUserDeleteModalProps
-    extends Pick<UserPermissionContainerProps, 'refetchUserPermissionList' | 'urlFilters'> {
-    selectedUsersCount: number
-    onClose: () => void
-}
-
-export interface BulkSelectionModalProps
-    extends BulkSelectionModalConfig,
-        Pick<UserPermissionContainerProps, 'refetchUserPermissionList' | 'urlFilters' | 'setBulkSelectionModalConfig'> {
-    selectedUsersCount: number
 }

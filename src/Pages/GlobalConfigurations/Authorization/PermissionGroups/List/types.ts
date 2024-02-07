@@ -1,7 +1,7 @@
 import { SearchBarProps, ServerError, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { getPermissionGroupList } from '../../authorization.service'
+import { BulkSelectionModalConfig } from '../../shared/components/BulkSelection'
 import { PermissionGroup } from '../../types'
-import { BulkSelectionModalConfig } from '../../UserPermissions/List/types'
 import { SortableKeys } from './constants'
 
 export interface PermissionGroupRowProps extends PermissionGroup {

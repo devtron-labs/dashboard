@@ -12,9 +12,9 @@ import {
 
 import { getPermissionGroupList } from '../../authorization.service'
 import { SortableKeys } from './constants'
-import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../UserPermissions/List/types'
 import { PermissionGroup } from '../../types'
 import PermissionGroupContainer from './PermissionGroupContainer'
+import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../shared/components/BulkSelection'
 
 const PermissionGroupList = () => {
     // TODO (v2): Move the type to a common place
