@@ -2629,6 +2629,12 @@ textarea,
     }
 }
 
+.icon-stroke-b5 {
+    path, rect {
+        stroke: var(--B500);
+    }
+}
+
 .icon-fill-blue-imp path {
     fill: var(--B500) !important;
 }
