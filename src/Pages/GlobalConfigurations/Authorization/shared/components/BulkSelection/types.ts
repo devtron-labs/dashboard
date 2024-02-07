@@ -1,7 +1,7 @@
 import { UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { MutableRefObject } from 'react'
 import { PermissionGroup, User } from '../../../types'
-import { BulkSelectionModalTypes } from './constants'
+import { BulkSelectionEntityTypes, BulkSelectionModalTypes } from './constants'
 
 export type BulkSelectionState = Record<User['id'] | PermissionGroup['id'], boolean>
 
@@ -34,6 +34,7 @@ export interface BulkSelectionModalProps
         > {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     urlFilters: UseUrlFiltersReturnType<any>
+    entityType: BulkSelectionEntityTypes
 }
 
 export interface BulkSelectionClearConfirmationModalProps {
@@ -43,7 +44,7 @@ export interface BulkSelectionClearConfirmationModalProps {
 }
 
 export interface BulkDeleteModalProps
-    extends Pick<BulkSelectionModalProps, 'refetchList' | 'urlFilters'>,
+    extends Pick<BulkSelectionModalProps, 'refetchList' | 'urlFilters' | 'entityType'>,
         Pick<BulkSelectionActionWidgetProps, 'selectedIdentifiersCount'> {
     onClose: () => void
 }

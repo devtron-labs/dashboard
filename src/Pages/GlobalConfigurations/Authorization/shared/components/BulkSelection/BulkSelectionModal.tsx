@@ -13,6 +13,7 @@ const BulkSelectionModal = ({
     setBulkSelectionModalConfig,
     onSuccess = noop,
     onCancel = noop,
+    entityType,
 }: BulkSelectionModalProps) => {
     const handleClose = () => {
         setBulkSelectionModalConfig(null)
@@ -27,7 +28,7 @@ const BulkSelectionModal = ({
                     selectedIdentifiersCount={selectedIdentifiersCount}
                     refetchList={refetchList}
                     urlFilters={urlFilters}
-                    // TODO: Add support for permission groups as well
+                    entityType={entityType}
                 />
             )
         case BulkSelectionModalTypes.selectAllAcrossPages:

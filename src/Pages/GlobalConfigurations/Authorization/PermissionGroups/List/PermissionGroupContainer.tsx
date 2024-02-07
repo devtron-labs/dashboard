@@ -18,6 +18,7 @@ import PermissionGroupListHeader from './PermissionGroupListHeader'
 import PermissionGroupTable from './PermissionGroupTable'
 import { PermissionGroupContainerProps } from './types'
 import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
+import { BulkSelectionEntityTypes } from '../../shared/components/BulkSelection/constants'
 
 const PermissionGroupInfoBar = importComponentFromFELibrary('PermissionGroupInfoBar', noop, 'function')
 
@@ -138,6 +139,7 @@ const PermissionGroupContainer = ({
                     urlFilters={urlFilters}
                     selectedIdentifiersCount={selectedUsersCount}
                     setBulkSelectionModalConfig={setBulkSelectionModalConfig}
+                    entityType={BulkSelectionEntityTypes.permissionGroups}
                 />
             )}
         </>

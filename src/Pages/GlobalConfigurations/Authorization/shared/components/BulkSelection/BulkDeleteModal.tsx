@@ -3,27 +3,57 @@ import {
     ConfirmationDialog,
     CustomInput,
     Progressing,
-    SELECT_ALL_ACROSS_PAGES_LOCATOR,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-medium-delete.svg'
-import { deleteUserInBulk } from '../../../authorization.service'
-import { UserBulkDeletePayload } from '../../../types'
+import { deletePermissionGroupInBulk, deleteUserInBulk } from '../../../authorization.service'
+import { UserBulkDeletePayload, PermissionGroupBulkDeletePayload } from '../../../types'
+import { BulkSelectionEntityTypes } from './constants'
 import { BulkDeleteModalProps } from './types'
 import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
 
-const BulkDeleteModal = ({ selectedIdentifiersCount, onClose, urlFilters, refetchList }: BulkDeleteModalProps) => {
+const getModalConfig = ({ selectedIdentifiersCount }: Pick<BulkDeleteModalProps, 'selectedIdentifiersCount'>) =>
+    ({
+        [BulkSelectionEntityTypes.users]: {
+            title: `Delete ${selectedIdentifiersCount} user account(s)`,
+            subTitle: 'Selected user account(s) will be deleted and their permissions will be revoked. Are you sure?',
+            buttonText: 'Delete User(s)',
+            successToastText: 'Selected user(s) deleted successfully',
+            confirmationText: `delete ${selectedIdentifiersCount} ${selectedIdentifiersCount > 1 ? 'users' : 'user'}`,
+        },
+        [BulkSelectionEntityTypes.permissionGroups]: {
+            title: `Delete ${selectedIdentifiersCount} groups(s)`,
+            subTitle:
+                'Selected group(s) will be deleted and revoke permissions from users added to these groups. Are you sure?',
+            buttonText: 'Delete Group(s)',
+            successToastText: 'Selected group(s) deleted successfully',
+            confirmationText: `delete ${selectedIdentifiersCount} ${selectedIdentifiersCount > 1 ? 'groups' : 'group'}`,
+        },
+    } as const)
+
+const BulkDeleteModal = ({
+    entityType,
+    selectedIdentifiersCount,
+    onClose,
+    urlFilters,
+    refetchList,
+}: BulkDeleteModalProps) => {
     const [isDeleteLoading, setIsDeleteLoading] = useState(false)
 
     const [deleteConfirmationText, setDeleteConfirmationText] = useState('')
 
-    const { selectedIdentifiers: bulkSelectionState, handleBulkSelection } = useAuthorizationBulkSelection()
+    const {
+        selectedIdentifiers: bulkSelectionState,
+        handleBulkSelection,
+        isBulkSelectionApplied,
+    } = useAuthorizationBulkSelection()
 
-    const isBulkSelectionApplied = bulkSelectionState[SELECT_ALL_ACROSS_PAGES_LOCATOR]
+    const { title, subTitle, buttonText, successToastText, confirmationText } = getModalConfig({
+        selectedIdentifiersCount,
+    })[entityType]
 
-    const confirmationText = `delete ${selectedIdentifiersCount} ${selectedIdentifiersCount > 1 ? 'users' : 'user'}`
     const isDeleteDisabled = isDeleteLoading || deleteConfirmationText !== confirmationText
 
     const handleChange = (e) => {
@@ -34,18 +64,31 @@ const BulkDeleteModal = ({ selectedIdentifiersCount, onClose, urlFilters, refetc
         setIsDeleteLoading(true)
         const selectedUserIds = Object.keys(bulkSelectionState).map(Number)
 
-        const payload: UserBulkDeletePayload = isBulkSelectionApplied
-            ? {
-                  filterConfig: {
-                      searchKey: urlFilters.searchKey,
-                  },
-              }
-            : {
-                  ids: selectedUserIds,
-              }
         try {
-            await deleteUserInBulk(payload)
-            toast.success('Selected user(s) deleted successfully')
+            if (entityType === BulkSelectionEntityTypes.users) {
+                const payload: UserBulkDeletePayload = isBulkSelectionApplied
+                    ? {
+                          filterConfig: {
+                              searchKey: urlFilters.searchKey,
+                          },
+                      }
+                    : {
+                          ids: selectedUserIds,
+                      }
+                await deleteUserInBulk(payload)
+            } else {
+                const payload: PermissionGroupBulkDeletePayload = isBulkSelectionApplied
+                    ? {
+                          filterConfig: {
+                              searchKey: urlFilters.searchKey,
+                          },
+                      }
+                    : {
+                          ids: selectedUserIds,
+                      }
+                await deletePermissionGroupInBulk(payload)
+            }
+            toast.success(successToastText)
             setIsDeleteLoading(false)
             handleBulkSelection({
                 action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
@@ -67,19 +110,16 @@ const BulkDeleteModal = ({ selectedIdentifiersCount, onClose, urlFilters, refetc
 
     const getLabel = () => (
         <span>
-            Type <span className="fw-6">‘{confirmationText}’</span> to confirm
+            Type <span className="fw-6">&apos;{confirmationText}&apos;</span> to confirm
         </span>
     )
 
     return (
         <ConfirmationDialog className="w-400">
             <DeleteIcon className="icon-dim-48" />
-            <ConfirmationDialog.Body
-                title={`Delete ${selectedIdentifiersCount} user account(s)`}
-                subtitle="Selected user accounts will be deleted and their permissions will be revoked. Are you sure?"
-            >
+            <ConfirmationDialog.Body title={title} subtitle={subTitle}>
                 <CustomInput
-                    name="user-delete-confirmation"
+                    name="bulk-delete-confirmation"
                     value={deleteConfirmationText}
                     onChange={handleChange}
                     label={getLabel()}
@@ -93,8 +133,13 @@ const BulkDeleteModal = ({ selectedIdentifiersCount, onClose, urlFilters, refetc
                 <button type="button" className="cta cancel" disabled={isDeleteLoading} onClick={onClose}>
                     Cancel
                 </button>
-                <button type="submit" className="cta delete" disabled={isDeleteDisabled} onClick={handleBulkDelete}>
-                    {isDeleteLoading ? <Progressing /> : 'Delete users'}
+                <button
+                    type="submit"
+                    className="cta delete dc__no-text-transform"
+                    disabled={isDeleteDisabled}
+                    onClick={handleBulkDelete}
+                >
+                    {isDeleteLoading ? <Progressing /> : buttonText}
                 </button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>

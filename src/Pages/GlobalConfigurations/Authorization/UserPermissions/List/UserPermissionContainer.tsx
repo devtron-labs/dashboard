@@ -16,6 +16,7 @@ import BulkSelectionActionWidget from '../../shared/components/BulkSelection/Bul
 import BulkSelectionModal from '../../shared/components/BulkSelection/BulkSelectionModal'
 import UserPermissionTable from './UserPermissionTable'
 import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
+import { BulkSelectionEntityTypes } from '../../shared/components/BulkSelection/constants'
 
 const UserPermissionContainer = ({
     showStatus,
@@ -133,6 +134,7 @@ const UserPermissionContainer = ({
                     urlFilters={urlFilters}
                     selectedIdentifiersCount={selectedUsersCount}
                     setBulkSelectionModalConfig={setBulkSelectionModalConfig}
+                    entityType={BulkSelectionEntityTypes.users}
                 />
             )}
         </>

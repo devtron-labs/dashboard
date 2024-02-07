@@ -13,6 +13,7 @@ import { Routes } from '../../../config'
 import {
     BaseFilterQueryParams,
     PermissionGroup,
+    PermissionGroupBulkDeletePayload,
     PermissionGroupCreateOrUpdatePayload,
     PermissionGroupDto,
     User,
@@ -132,6 +133,16 @@ export const getPermissionGroupList = async (
 }
 
 export const deletePermissionGroup = (id: PermissionGroup['id']) => trash(`${Routes.USER_ROLE_GROUP}/${id}`)
+
+export const deletePermissionGroupInBulk = (payload: PermissionGroupBulkDeletePayload) =>
+    trash(
+        `${Routes.USER_ROLE_GROUP}/bulk`,
+        'ids' in payload
+            ? { ids: payload.ids }
+            : {
+                  listingRequest: payload.filterConfig,
+              },
+    )
 
 // Others
 export const getCustomRoles = async (): Promise<ResponseType<CustomRoles[]>> => {
