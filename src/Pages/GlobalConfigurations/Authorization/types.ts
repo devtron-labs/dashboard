@@ -139,7 +139,7 @@ export type UserBulkDeletePayload =
           ids: User['id'][]
           filterConfig?: never
       }
-    // TODO: Add status as well
+    // TODO (v2): Add status as well
     | {
           ids?: never
           filterConfig: Pick<BaseFilterQueryParams<SortableKeys>, 'searchKey'>

@@ -4,7 +4,6 @@ import {
     ERROR_EMPTY_SCREEN,
     noop,
     Reload,
-    SELECT_ALL_ACROSS_PAGES_LOCATOR,
     TOAST_ACCESS_DENIED,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -36,13 +35,9 @@ const UserPermissionContainer = ({
     const { searchKey, handleSearch: _handleSearch, clearFilters } = urlFilters
 
     const draggableRef = useRef<HTMLDivElement>()
-    const { selectedIdentifiers: bulkSelectionState } = useBulkSelection<Record<User['id'], boolean>>()
-    const isSomeRowChecked = Object.values(bulkSelectionState).some(Boolean)
-    const isBulkSelectionApplied = bulkSelectionState[SELECT_ALL_ACROSS_PAGES_LOCATOR]
-    const selectedUsersCount = isBulkSelectionApplied
-        ? // TODO: Use constant and check how to exclude admin/system when filter is applied
-          totalCount - 2
-        : Object.keys(bulkSelectionState).filter(Boolean).length
+    const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useBulkSelection<Record<User['id'], boolean>>()
+    const isSomeRowChecked = getSelectedIdentifiersCount() > 0
+    const selectedUsersCount = isBulkSelectionApplied ? totalCount : getSelectedIdentifiersCount()
 
     if (!showLoadingState) {
         if (error) {
@@ -114,21 +109,22 @@ const UserPermissionContainer = ({
                     ) : (
                         <FiltersEmptyState clearFilters={clearFilters} />
                     )}
+                    {isSomeRowChecked && selectedUsersCount > 0 && (
+                        <BulkSelectionActionWidget
+                            count={selectedUsersCount}
+                            parentRef={draggableRef}
+                            showStatus={showStatus}
+                            areActionsDisabled={showLoadingState || isClearBulkSelectionModalOpen}
+                            setBulkSelectionModalConfig={setBulkSelectionModalConfig}
+                            refetchUserPermissionList={refetchUserPermissionList}
+                            filterConfig={{
+                                searchKey: urlFilters.searchKey,
+                            }}
+                            selectedUsersCount={selectedUsersCount}
+                            isCountApproximate={isBulkSelectionApplied}
+                        />
+                    )}
                 </div>
-                {isSomeRowChecked && selectedUsersCount > 0 && (
-                    <BulkSelectionActionWidget
-                        count={selectedUsersCount}
-                        parentRef={draggableRef}
-                        showStatus={showStatus}
-                        areActionsDisabled={showLoadingState || isClearBulkSelectionModalOpen}
-                        setBulkSelectionModalConfig={setBulkSelectionModalConfig}
-                        refetchUserPermissionList={refetchUserPermissionList}
-                        filterConfig={{
-                            searchKey: urlFilters.searchKey,
-                        }}
-                        selectedUsersCount={selectedUsersCount}
-                    />
-                )}
             </div>
 
             {isClearBulkSelectionModalOpen && (

@@ -1,4 +1,4 @@
-import { SearchBarProps, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
+import { SearchBarProps, ServerError, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { MutableRefObject } from 'react'
 import { getUserList } from '../../authorization.service'
 import { User } from '../../types'
@@ -35,7 +35,7 @@ export type BulkSelectionModalConfig = {
 
 export interface UserPermissionContainerProps {
     showStatus: boolean
-    error: any
+    error: ServerError
     getUserDataForExport: UserPermissionListHeaderProps['getDataToExport']
     showLoadingState: boolean
     totalCount: number
@@ -64,11 +64,12 @@ export interface BulkSelectionActionWidgetProps
     parentRef: MutableRefObject<HTMLDivElement>
     count: number
     areActionsDisabled: boolean
-    // TODO: Something better
+    // TODO (v2): Something better
     filterConfig: {
         searchKey: string
     }
     selectedUsersCount: number
+    isCountApproximate?: boolean
 }
 
 export interface BulkSelectionClearConfirmationModalProps {

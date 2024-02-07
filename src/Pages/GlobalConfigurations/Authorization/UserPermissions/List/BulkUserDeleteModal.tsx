@@ -25,7 +25,7 @@ const BulkUserDeleteModal = ({
     const [deleteConfirmationText, setDeleteConfirmationText] = useState('')
 
     const { selectedIdentifiers: bulkSelectionState, handleBulkSelection } =
-        // TODO: Use Type from types
+        // TODO (v2): Use Type from types
         useBulkSelection<Record<User['id'], boolean>>()
 
     const isBulkSelectionApplied = bulkSelectionState[SELECT_ALL_ACROSS_PAGES_LOCATOR]

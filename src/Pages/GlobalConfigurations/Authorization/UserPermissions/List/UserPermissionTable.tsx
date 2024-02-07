@@ -2,7 +2,6 @@ import {
     BulkSelection,
     BulkSelectionEvents,
     Pagination,
-    SELECT_ALL_ACROSS_PAGES_LOCATOR,
     SortableTableHeaderCell,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -28,10 +27,13 @@ const UserPermissionTable = ({
 }: UserPermissionTableProps) => {
     const { sortBy, sortOrder, handleSorting, offset, pageSize, changePage, changePageSize } = urlFilters
 
-    const { handleBulkSelection, selectedIdentifiers: bulkSelectionState } =
-        useBulkSelection<Record<User['id'], boolean>>()
-    const isSomeRowChecked = Object.values(bulkSelectionState).some(Boolean)
-    const isBulkSelectionApplied = bulkSelectionState[SELECT_ALL_ACROSS_PAGES_LOCATOR]
+    const {
+        handleBulkSelection,
+        selectedIdentifiers: bulkSelectionState,
+        getSelectedIdentifiersCount,
+        isBulkSelectionApplied,
+    } = useBulkSelection<Record<User['id'], boolean>>()
+    const isSomeRowChecked = getSelectedIdentifiersCount() > 0
 
     const sortByEmail = () => {
         handleSorting(SortableKeys.email)
