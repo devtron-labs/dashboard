@@ -1014,8 +1014,8 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
         return matchString
     }
     const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
-
-    const regex = new RegExp(searchText, 'gi')
+    const escapedSearchText = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters handling
+    const regex = new RegExp(escapedSearchText, 'gi');
     return matchString.replace(regex, highlightText)
 }
 
