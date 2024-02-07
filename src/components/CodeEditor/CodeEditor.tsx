@@ -1,10 +1,15 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
-import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
-import { useJsonYaml, Select, RadioGroup } from '../common'
-import { Progressing, copyToClipboard, useWindowSize } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
+import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor'
+import { useJsonYaml, Select } from '../common'
+import {
+    Progressing,
+    copyToClipboard,
+    useWindowSize,
+    StyledRadioGroup as RadioGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg';
 import YAML from 'yaml'
 import './codeEditor.scss';

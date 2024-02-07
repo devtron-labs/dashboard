@@ -7,7 +7,7 @@ import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-ob
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg'
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap } from '../../../common'
+import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import './NodeTreeTabList.scss'
 import ReactGA from 'react-ga4'
 

@@ -30,6 +30,7 @@ import {
     DeploymentAppTypes,
     PipelineType,
     CustomInput,
+    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -58,10 +59,15 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
-import { EnvFormatOptions, formatHighlightedTextDescription, GroupHeading, groupStyle } from '../v2/common/ReactSelect.utils'
+import {
+    EnvFormatOptions,
+    formatHighlightedTextDescription,
+    GroupHeading,
+    groupStyle,
+} from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionalWrap, createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
+import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import {
     DEPLOY_IMAGE_EXTERNALSOURCE,

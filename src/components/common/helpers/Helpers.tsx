@@ -508,14 +508,6 @@ function useDelayedEffect(callback, delay, deps = []) {
     }, deps)
 }
 
-interface ConditionalWrapper<T> {
-    condition: boolean
-    wrap: (children: T) => T
-    children: T
-}
-export const ConditionalWrap: React.FC<ConditionalWrapper<any>> = ({ condition, wrap, children }) =>
-    condition ? wrap(children) : <>{children}</>
-
 export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = false) {
     const [json, setJson] = useState('')
     const [yaml, setYaml] = useState('')

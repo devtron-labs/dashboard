@@ -1,5 +1,5 @@
 import React from 'react'
-import { Info, RadioGroup } from '../common'
+import { Info } from '../common'
 import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
@@ -17,6 +17,7 @@ import {
     VIEW_MODE,
 } from './Secret/secret.utils'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
+import { StyledRadioGroup as RadioGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { CM_SECRET_STATE } from './Constants'
 import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as HideIcon } from '../../assets/icons/ic-visibility-off.svg'

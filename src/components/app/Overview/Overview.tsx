@@ -12,8 +12,9 @@ import {
     useAsync,
     getRandomColor,
     noop,
+    StyledRadioGroup as RadioGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { EditableTextArea, RadioGroup, handleUTCTime, importComponentFromFELibrary } from '../../common'
+import { EditableTextArea, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'

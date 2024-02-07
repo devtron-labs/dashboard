@@ -8,7 +8,6 @@ import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import Select, { components } from 'react-select'
-import { RadioGroup } from '../common'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { CredentialType, ManageRegistryType } from './dockerType'
@@ -23,6 +22,7 @@ import {
     MultiValueRemove,
     Option,
     CustomInput,
+    StyledRadioGroup as RadioGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 

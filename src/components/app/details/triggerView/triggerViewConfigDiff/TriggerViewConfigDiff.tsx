@@ -9,12 +9,11 @@ import ReactSelect, { components } from 'react-select'
 import { DropdownIndicator, Option } from '../../../../v2/common/ReactSelect.utils'
 import { getCommonConfigSelectStyles } from '../config'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap } from '../../../../common'
 import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { Toggle, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,

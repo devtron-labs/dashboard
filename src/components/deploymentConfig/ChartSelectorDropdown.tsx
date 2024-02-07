@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { RadioGroup, sortObjectArrayAlphabetically, versionComparator } from '../common'
-import { PopupMenu, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { sortObjectArrayAlphabetically, versionComparator } from '../common'
+import { PopupMenu, stopPropagation, StyledRadioGroup as RadioGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ChartSelectorModalType, DeploymentChartVersionType } from './types'
 import { SortingOrder } from '../app/types'

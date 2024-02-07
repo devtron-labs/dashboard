@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { getDeploymentAppType, importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
+import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
     showError,
     Progressing,
@@ -13,6 +13,7 @@ import {
     GenericEmptyState,
     ResponseType,
     DeploymentAppTypes,
+    StyledRadioGroup as RadioGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getReleaseInfo,

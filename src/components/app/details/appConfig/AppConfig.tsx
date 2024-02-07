@@ -9,7 +9,7 @@ import {
     ViewType,
     isCDPipelineCreated,
 } from '../../../../config'
-import { ConditionalWrap, importComponentFromFELibrary } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import {
     showError,
     Progressing,
@@ -18,6 +18,7 @@ import {
     ConfirmationDialog,
     TippyCustomized,
     TippyTheme,
+    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'

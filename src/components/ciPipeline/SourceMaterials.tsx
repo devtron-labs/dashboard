@@ -10,8 +10,7 @@ import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { CustomInput, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
-import { ConditionalWrap } from '../common'
+import { CustomInput, InfoColourBar, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {

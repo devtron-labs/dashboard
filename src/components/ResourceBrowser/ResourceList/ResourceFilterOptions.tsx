@@ -11,7 +11,7 @@ import {
     FILTER_SELECT_COMMON_STYLES,
     NAMESPACE_NOT_APPLICABLE_OPTION
 } from '../Constants'
-import { ConditionalWrap } from '../../common'
+import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
