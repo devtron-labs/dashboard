@@ -1013,10 +1013,14 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
     if (!searchText) {
         return matchString
     }
-    const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
-    const escapedSearchText = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters handling
-    const regex = new RegExp(escapedSearchText, 'gi');
-    return matchString.replace(regex, highlightText)
+    try {
+        const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
+        const escapedSearchText = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // Escape special characters handling
+        const regex = new RegExp(escapedSearchText, 'gi')
+        return matchString.replace(regex, highlightText)
+    } catch (err) {
+        return matchString
+    }
 }
 
 export const trackByGAEvent = (category: string, action: string): void => {
