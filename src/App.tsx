@@ -164,12 +164,14 @@ export default function App() {
     }
 
     useEffect(() => {
+        if (window.isSecureContext && navigator.serviceWorker) {
         // check for sw updates on page change
         navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
         if (!needRefresh) {
             return
         }
         update()
+    }
     }, [location])
 
     function onUpdate() {
