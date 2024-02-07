@@ -4,9 +4,6 @@ import { TippyCustomized, TippyTheme, copyToClipboard } from '@devtron-labs/devt
 import IndexStore from '../../index.store'
 import Tippy from '@tippyjs/react'
 import { getElapsedTime } from '../../../../common'
-import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
 import PodHeaderComponent from './PodHeader.component'
 import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
@@ -21,6 +18,9 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
+import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
+import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
+import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp, isExternalApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -213,11 +213,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             return (
                                 <div className="flex left cn-9 m-0 dc__no-decore">
                                     <div className="" key={node.name}>
-                                        {node.name}:{node.namespace}:{val}
+                                        {node.name}.{node.namespace}:{val}
                                         <Clipboard
                                             className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                             onClick={(event) => {
-                                                toggleClipBoardPort(event, `${node.name}:${node.namespace}:${val}`)
+                                                toggleClipBoardPort(event, `${node.name}.${node.namespace}:${val}`)
                                             }}
                                         />
                                     </div>
@@ -241,7 +241,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             <Clipboard
                                 className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                                 onClick={(event) => {
-                                    toggleClipBoardPort(event, `${node.name}:${node.namespace}:${node.port[0]}`)
+                                    toggleClipBoardPort(event, `${node.name}.${node.namespace}:${node.port[0]}`)
                                 }}
                             />
                         </span>
@@ -444,7 +444,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {params.nodeType === NodeType.Service.toLowerCase() &&
                             node.kind !== 'Endpoints' &&
                             node.kind !== 'EndpointSlice' && (
-                                <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
+                                <div className="col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon">
                                     {portNumberPlaceHolder(node)}
                                     {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
                                 </div>
