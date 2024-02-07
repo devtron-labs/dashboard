@@ -137,10 +137,8 @@ export interface UserRole {
 export type UserBulkDeletePayload =
     | {
           ids: User['id'][]
-          filterConfig?: never
       }
     // TODO (v2): Add status as well
     | {
-          ids?: never
           filterConfig: Pick<BaseFilterQueryParams<SortableKeys>, 'searchKey'>
       }
