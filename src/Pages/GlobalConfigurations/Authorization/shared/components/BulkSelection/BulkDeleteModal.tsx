@@ -70,6 +70,7 @@ const BulkDeleteModal = ({
                     ? {
                           filterConfig: {
                               searchKey: urlFilters.searchKey,
+                              status: urlFilters.statuses,
                           },
                       }
                     : {

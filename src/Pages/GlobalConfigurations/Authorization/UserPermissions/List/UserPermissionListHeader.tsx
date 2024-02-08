@@ -10,13 +10,18 @@ import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic
 import { UserPermissionListHeaderProps } from './types'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
+import { importComponentFromFELibrary } from '../../../../../components/common'
+
+const StatusFilterDropdown = importComponentFromFELibrary('StatusFilterDropdown', null, 'function')
 
 const UserPermissionListHeader = ({
     disabled,
-    // showStatus,
+    showStatus,
     handleSearch,
     initialSearchText,
     getDataToExport,
+    handleStatusFilterChange,
+    statuses,
 }: UserPermissionListHeaderProps) => {
     const { path } = useRouteMatch()
     const { isSuperAdmin } = useMainContext()
@@ -61,8 +66,7 @@ const UserPermissionListHeader = ({
                     handleEnter={handleSearch}
                     initialSearchText={initialSearchText}
                 />
-                {/* TODO (v3): Add the multi-select filtering */}
-                {/* {showStatus && <div>Status</div>} */}
+                {showStatus && <StatusFilterDropdown value={statuses} onChange={handleStatusFilterChange} />}
                 <div className="dc__divider h-20" />
                 <Link to={`${path}/add`} type="button" className="cta anchor flex dc__gap-6 h-32">
                     <PlusIcon className="icon-dim-14 mw-14" />

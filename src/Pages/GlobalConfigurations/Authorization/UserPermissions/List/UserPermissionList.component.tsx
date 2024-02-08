@@ -8,6 +8,7 @@ import {
     SelectAllDialogStatus,
     BulkSelectionProvider,
     BulkSelectionIdentifiersType,
+    UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getUserList } from '../../authorization.service'
@@ -17,18 +18,54 @@ import { User } from '../../types'
 import { getIsAdminOrSystemUser } from '../utils'
 import UserPermissionContainer from './UserPermissionContainer'
 import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../shared/components/BulkSelection'
+import useSearchParams from '../../shared/components/useSearchParams/useSearchParams'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const showStatus = !!StatusHeaderCell
 
+interface SearchParams {
+    status: UserStatus[]
+}
+
+const parseSearchParams = (searchParams: URLSearchParams): SearchParams => ({
+    status: searchParams
+        .getAll('status')
+        .filter((status) =>
+            [UserStatus.active, UserStatus.inactive, UserStatus.temporary].includes(status as UserStatus),
+        ) as UserStatus[],
+})
+
 const UserPermissionList = () => {
     const [bulkSelectionModalConfig, setBulkSelectionModalConfig] = useState<BulkSelectionModalConfig>({
         type: null,
     })
-    const urlFilters = useUrlFilters<SortableKeys>({
+    const {
+        params: { status },
+        updateSearchParams,
+    } = useSearchParams<SearchParams>({
+        parseSearchParams,
+    })
+
+    const _urlFilters = useUrlFilters<SortableKeys>({
         initialSortKey: SortableKeys.email,
     })
+
+    const updateStatuses = (statuses: UserStatus[]) => {
+        updateSearchParams({
+            status: statuses,
+            pageNumber: 1,
+        } as SearchParams)
+        // TODO (v2): We cannot do this since the search params won't change
+        // _urlFilters.changePage(1)
+    }
+
+    const clearFilters = () => {
+        _urlFilters.clearFilters()
+        updateSearchParams({} as SearchParams, { overrideExisting: true })
+    }
+
+    const urlFilters = { ..._urlFilters, statuses: status, updateStatuses, clearFilters }
     const { pageSize, offset, searchKey, sortBy, sortOrder } = urlFilters
     const filterConfig = useMemo(
         () => ({
@@ -37,8 +74,9 @@ const UserPermissionList = () => {
             searchKey,
             sortBy,
             sortOrder,
+            status,
         }),
-        [pageSize, offset, searchKey, sortBy, sortOrder],
+        [pageSize, offset, searchKey, sortBy, sortOrder, JSON.stringify(status)],
     )
 
     const abortControllerRef = useRef(new AbortController())

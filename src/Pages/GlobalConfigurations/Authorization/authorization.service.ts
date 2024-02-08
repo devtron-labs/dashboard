@@ -20,10 +20,10 @@ import {
     UserBulkDeletePayload,
     UserCreateOrUpdatePayload,
     UserDto,
+    UserListFilterParams,
     UserRole,
 } from './types'
 import { transformUserResponse } from './utils'
-import { SortableKeys as UserListSortableKeys } from './UserPermissions/List/constants'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 
 // User Permissions
@@ -49,7 +49,7 @@ export const createOrUpdateUser = (data: UserCreateOrUpdatePayload) => {
 export const deleteUser = (userId: User['id']) => trash(`${Routes.USER}/${userId}`)
 
 export const getUserList = async (
-    queryParams: BaseFilterQueryParams<UserListSortableKeys>,
+    queryParams: UserListFilterParams,
     signal?: AbortSignal,
 ): Promise<{
     users: User[]

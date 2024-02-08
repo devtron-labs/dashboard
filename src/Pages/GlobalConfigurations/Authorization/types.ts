@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
-import { SortingParams, UserStatusDto } from '@devtron-labs/devtron-fe-common-lib'
+import { SortingParams, UserStatus, UserStatusDto } from '@devtron-labs/devtron-fe-common-lib'
 import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
+import { SortableKeys as UserListSortableKeys } from './UserPermissions/List/constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -121,6 +122,10 @@ export type BaseFilterQueryParams<T> = {
     showAll?: boolean
 } & SortingParams<T>
 
+export type UserListFilterParams = BaseFilterQueryParams<UserListSortableKeys> & {
+    status: UserStatus[]
+}
+
 // Others
 export interface UserRole {
     /**
@@ -137,9 +142,8 @@ export type UserBulkDeletePayload =
     | {
           ids: User['id'][]
       }
-    // TODO (v2): Add status as well
     | {
-          filterConfig: Pick<BaseFilterQueryParams<unknown>, 'searchKey'>
+          filterConfig: Pick<UserListFilterParams, 'searchKey' | 'status'>
       }
 
 export type PermissionGroupBulkDeletePayload =

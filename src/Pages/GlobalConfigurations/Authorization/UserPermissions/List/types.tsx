@@ -1,4 +1,4 @@
-import { SearchBarProps, ServerError, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
+import { SearchBarProps, ServerError, UserStatus, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { getUserList } from '../../authorization.service'
 import { BulkSelectionActionWidgetProps, BulkSelectionModalConfig } from '../../shared/components/BulkSelection'
 import { User } from '../../types'
@@ -19,6 +19,8 @@ export interface UserPermissionListHeaderProps {
     handleSearch: SearchBarProps['handleEnter']
     initialSearchText: SearchBarProps['initialSearchText']
     getDataToExport: () => ReturnType<typeof getUserList>
+    statuses: UserStatus[]
+    handleStatusFilterChange: (statuses: UserStatus[]) => void
 }
 
 export interface UserPermissionContainerProps
@@ -30,7 +32,10 @@ export interface UserPermissionContainerProps
     totalCount: number
     users: User[]
     refetchUserPermissionList: UserPermissionRowProps['refetchUserPermissionList']
-    urlFilters: UseUrlFiltersReturnType<SortableKeys>
+    urlFilters: UseUrlFiltersReturnType<SortableKeys> & {
+        statuses: UserPermissionListHeaderProps['statuses']
+        updateStatuses: UserPermissionListHeaderProps['handleStatusFilterChange']
+    }
     bulkSelectionModalConfig: BulkSelectionModalConfig
 }
 

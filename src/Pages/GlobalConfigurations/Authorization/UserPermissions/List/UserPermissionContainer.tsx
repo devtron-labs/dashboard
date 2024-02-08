@@ -32,7 +32,7 @@ const UserPermissionContainer = ({
 }: UserPermissionContainerProps) => {
     const isClearBulkSelectionModalOpen = !!bulkSelectionModalConfig?.type
 
-    const { searchKey, handleSearch: _handleSearch, clearFilters } = urlFilters
+    const { searchKey, handleSearch: _handleSearch, clearFilters, statuses, updateStatuses } = urlFilters
 
     const draggableRef = useRef<HTMLDivElement>()
     const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useAuthorizationBulkSelection()
@@ -52,8 +52,10 @@ const UserPermissionContainer = ({
             return <Reload reload={refetchUserPermissionList} className="flex-grow-1" />
         }
 
+        const areFiltersApplied = !(searchKey || statuses.length)
+
         // The null state is shown only when filters are not applied
-        if (totalCount === 0 && !searchKey) {
+        if (totalCount === 0 && areFiltersApplied) {
             return <NoUsers />
         }
     }
@@ -84,6 +86,14 @@ const UserPermissionContainer = ({
             .catch(noop)
     }
 
+    const handleStatusFilterChange = (selectedStatuses: UserPermissionContainerProps['urlFilters']['statuses']) => {
+        applyFilter()
+            .then(() => {
+                updateStatuses(selectedStatuses)
+            })
+            .catch(noop)
+    }
+
     return (
         <>
             <div className="flexbox-col flex-grow-1" ref={draggableRef}>
@@ -94,6 +104,8 @@ const UserPermissionContainer = ({
                         handleSearch={handleSearch}
                         initialSearchText={searchKey}
                         getDataToExport={getUserDataForExport}
+                        handleStatusFilterChange={handleStatusFilterChange}
+                        statuses={statuses}
                     />
                     {showLoadingState || (totalCount && users.length) ? (
                         <UserPermissionTable
@@ -119,6 +131,7 @@ const UserPermissionContainer = ({
                             refetchList={refetchUserPermissionList}
                             filterConfig={{
                                 searchKey: urlFilters.searchKey,
+                                statuses: urlFilters.statuses,
                             }}
                             selectedIdentifiersCount={selectedUsersCount}
                             isCountApproximate={isBulkSelectionApplied}

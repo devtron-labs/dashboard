@@ -1,4 +1,4 @@
-import { UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatus, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { MutableRefObject } from 'react'
 import { PermissionGroup, User } from '../../../types'
 import { BulkSelectionEntityTypes, BulkSelectionModalTypes } from './constants'
@@ -18,6 +18,8 @@ export interface BulkSelectionActionWidgetProps {
     // TODO (v2): Something better
     filterConfig: {
         searchKey: string
+        // Only for users
+        statuses?: UserStatus[]
     }
     selectedIdentifiersCount: number
     isCountApproximate?: boolean
@@ -33,7 +35,10 @@ export interface BulkSelectionModalProps
             'refetchList' | 'setBulkSelectionModalConfig' | 'selectedIdentifiersCount'
         > {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    urlFilters: UseUrlFiltersReturnType<any>
+    urlFilters: UseUrlFiltersReturnType<any> & {
+        // Required for users
+        statuses?: UserStatus[]
+    }
     entityType: BulkSelectionEntityTypes
 }
 
