@@ -62,7 +62,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     }))
                 })
                 .then(() => {
-                    this._configName.focus()
+                    this._configName?.focus()
                 })
                 .catch((error) => {
                     showError(error)
