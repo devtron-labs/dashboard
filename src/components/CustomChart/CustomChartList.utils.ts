@@ -1,6 +1,6 @@
-import { SortingOrder } from "../app/types"
-import { sortObjectArrayAlphabetically, versionComparator } from "../common"
-import { ChartDetailType } from "./types"
+import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { sortObjectArrayAlphabetically, versionComparator } from '../common'
+import { ChartDetailType } from './types'
 
 export const processChartData = (data: ChartDetailType[]): ChartDetailType[] => {
     let resultData = []

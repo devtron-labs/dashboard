@@ -1,5 +1,5 @@
 import React from 'react'
-import { AppStatus, ErrorScreenManager, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, ErrorScreenManager, Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import { Pagination } from '../../common'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
@@ -167,7 +167,7 @@ export default function JobListView(props: JobListViewProps) {
     }
 
     const renderPagination = () => {
-        if (props.size > 20) {
+        if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={props.size}

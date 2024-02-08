@@ -35,7 +35,7 @@ const ClusterList = lazy(() => import('../cluster/Cluster'))
 const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
-const UserGroup = lazy(() => import('../userGroups/UserGroup'))
+const Authorization = lazy(() => import('../../Pages/GlobalConfigurations/Authorization'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
@@ -124,7 +124,7 @@ export default function GlobalConfiguration(props) {
 
     return (
         <main className="global-configuration">
-            <PageHeader headerName="Global configurations" />
+            <PageHeader headerName="Global Configurations" />
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
                     <section className="global-configuration__navigation">
@@ -206,29 +206,29 @@ function NavItem({ serverMode }) {
                 {
                     name: 'SSO Login Services',
                     dataTestId: 'authorization-sso-login-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/login-service`,
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.SSO_LOGIN_SERVICES}`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'User Permissions',
                     dataTestId: 'authorization-user-permissions-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.USER_PERMISSIONS}`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'Permission Groups',
                     dataTestId: 'authorization-permission-groups-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/groups`,
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.PERMISSION_GROUPS}`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'API Tokens',
                     dataTestId: 'authorization-api-tokens-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`,
                     isAvailableInEA: true,
                 },
             ],
-            component: UserGroup,
+            component: Authorization,
             isAvailableInEA: true,
         },
         {
@@ -404,7 +404,7 @@ function NavItem({ serverMode }) {
                                     >
                                         {route.name}
                                         <Dropdown
-                                            className="icon-dim-24 rotate"
+                                            className="icon-dim-20 rotate fcn-6"
                                             style={{
                                                 ['--rotateBy' as any]: !collapsedState[route.name] ? '180deg' : '0deg',
                                             }}
@@ -486,7 +486,7 @@ function NavItem({ serverMode }) {
                             key={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
                             activeClassName="active-route"
                         >
-                            <div className="flexbox flex-justify">Filter condition</div>
+                            <div className="flexbox flex-justify">Filter Condition</div>
                         </NavLink>
                     )}
                     {LockConfiguration && (
@@ -495,7 +495,7 @@ function NavItem({ serverMode }) {
                             key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
                             activeClassName="active-route"
                         >
-                            <div className="flexbox flex-justify">Lock Deployment config</div>
+                            <div className="flexbox flex-justify">Lock Deployment Config</div>
                         </NavLink>
                     )}
                 </>
@@ -594,9 +594,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route
                     key={URLS.GLOBAL_CONFIG_AUTH}
                     path={URLS.GLOBAL_CONFIG_AUTH}
-                    render={(props) => {
-                        return <UserGroup />
-                    }}
+                    component={Authorization}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
@@ -633,7 +631,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {PullImageDigest && (
                 <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
-                    <PullImageDigest />
+                    <PullImageDigest isSuperAdmin={isSuperAdmin}/>
                 </Route>
             )}
             {TagListContainer && (

@@ -1080,7 +1080,7 @@ export default function ResourceList() {
     }
     return (
         <ShortcutProvider>
-            <div className="resource-browser-container h-100">
+            <div className="resource-browser-container h-100 bcn-0">
                 <PageHeader
                     isBreadcrumbs={!!clusterId}
                     breadCrumbs={renderBreadcrumbs}

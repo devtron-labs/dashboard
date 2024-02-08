@@ -46,6 +46,7 @@ import {
     URLS,
     PATTERNS,
     OCIRegistryStorageActionType,
+    DEFAULT_SECRET_PLACEHOLDER,
 } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -57,7 +58,7 @@ import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ReactSelect, { components } from 'react-select'
-import { AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
+import { AuthenticationType } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'

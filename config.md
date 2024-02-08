@@ -15,7 +15,6 @@
 | SENTRY_PERFORMANCE_ENABLED         | false     |  To send persormance sentry      |
 | SENTRY_DSN                         | ''        | SENTRY Data Source Name |
 | SENTRY_TRACES_SAMPLE_RATE          | 0.2       | Rate at which data send to sentry.(min=0 max=1)|
-| USE_V2                             | "true"    | Use the v2 APIs                                 |
 | ENABLE_RESTART_WORKLOAD            | "false"    | Show restart pods option in app details page   |
 | ENABLE_BUILD_CONTEXT               | "true"    | Enable build context in Devtron UI             |
 | FORCE_SECURITY_SCANNING            | "false"   | Force security scanning                         |

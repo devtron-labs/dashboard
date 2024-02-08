@@ -1,4 +1,4 @@
-import { SortingOrder } from "../../app/types";
+import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 
 export function getVersionArr(version: string): number[] {
     if (!version) return [0, 0, 0];

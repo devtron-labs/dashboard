@@ -63,8 +63,6 @@ export interface SaveClusterPayloadType {
     sshTunnelConfig: Record<string, string>
 }
 
-export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
-
 export enum ClusterComponentStatus {
     WF_UNKNOWN = 'WF_UNKNOWN',
     REQUEST_ACCEPTED = 'REQUEST_ACCEPTED',

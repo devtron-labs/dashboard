@@ -111,13 +111,11 @@ export const Routes = {
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
+    USER_PERMISSIONS: 'users',
+    PERMISSION_GROUPS: 'groups',
+    SSO_LOGIN_SERVICES: 'login-service',
     API_TOKEN: 'api-token',
     API_TOKEN_WEBHOOK: 'api-token/webhook',
-    USER_CREATE: 'user/create',
-    USER_UPDATE: 'user/update',
-    USER_LIST: 'user/all',
-    ALL_USERS_LIST: 'user/detail/get',
-    ALL_GROUPS_LIST: 'user/role/group/detailed/get',
 
     DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_CONFIG_MAP_GET: 'configmap/applevel/get',
@@ -247,6 +245,7 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
+    USER: 'user'
 }
 
 export const ViewType = {
@@ -291,7 +290,7 @@ export const PATTERNS = {
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
     CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, //Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
     ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
-
+    ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
 }
 
 export const TriggerType = {
@@ -362,7 +361,7 @@ export const DOCUMENTATION = {
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
     JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
-    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`
+    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -439,7 +438,7 @@ export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageAction
 
 export const RegistryStorageType = {
     OCI_PRIVATE: 'OCI_PRIVATE',
-    OCI_PUBLIC: 'OCI_PUBLIC'
+    OCI_PUBLIC: 'OCI_PUBLIC',
 }
 
 export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
@@ -492,18 +491,18 @@ export interface RegistryPayloadType {
 }
 
 export const RegistryType = {
-   DOCKER_HUB: 'docker-hub',
-   ACR: 'acr',
-   QUAY: 'quay',
-   OTHER: 'other',
-   ECR: 'ecr',
-   ARTIFACT_REGISTRY: 'artifact-registry',
-   GCR: 'gcr'
+    DOCKER_HUB: 'docker-hub',
+    ACR: 'acr',
+    QUAY: 'quay',
+    OTHER: 'other',
+    ECR: 'ecr',
+    ARTIFACT_REGISTRY: 'artifact-registry',
+    GCR: 'gcr',
 }
 
 export const RegistryTypeName = {
-    'OCI_PRIVATE': 'Private Registry',
-    'OCI_PUBLIC': 'Public Registry'
+    OCI_PRIVATE: 'Private Registry',
+    OCI_PUBLIC: 'Public Registry',
 }
 
 export const AppCreationType = {
@@ -574,7 +573,7 @@ export const EXTERNAL_TYPES = {
         ESO_HashiCorpVault: 'Hashi Corp Vault',
         ESO_AWSSecretsManager: 'AWS Secrets Manager',
         ESO_GoogleSecretsManager: 'Google Secrets Manager',
-        ESO_AzureSecretsManager: 'Azure Secrets Manager'
+        ESO_AzureSecretsManager: 'Azure Secrets Manager',
     },
     [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
         '': 'Kubernetes ConfigMap',
@@ -802,14 +801,109 @@ export const ManifestMessaging = {
 }
 
 export const SERVER_ERROR_CODES = {
-    RELEASE_NOT_FOUND: "7001",
+    RELEASE_NOT_FOUND: '7001',
     CHART_ALREADY_EXISTS: '5001',
     CHART_NAME_RESERVED: '5002',
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
-export const CVE_ID_NOT_FOUND = "CVE ID not found"
-export const CONFIGURE_LINK_NO_NAME = "Please provide name for the tool you want to link"
-export const NO_HOST_URL = "Please enter host url"
-export const WEBHOOK_NO_API_TOKEN_ERROR = "API Token is required to execute webhook"
-export const DIGEST_DISABLE_TOGGLE_MESSAGE= "Pull image digest policy is enforced in Global Configurations. Go to Global Configurations to change."
+export const CVE_ID_NOT_FOUND = 'CVE ID not found'
+export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
+export const NO_HOST_URL = 'Please enter host url'
+export const WEBHOOK_NO_API_TOKEN_ERROR = 'API Token is required to execute webhook'
+
+export enum CUSTOM_LOGS_FILTER {
+    SINCE = 'since',
+    LINES = 'lines',
+    DURATION = 'duration',
+    ALL = 'all',
+    CUSTOM = 'custom',
+}
+
+export const CUSTOM_LOGS_OPTIONS = [
+    {
+        label: 'Set duration',
+        value: CUSTOM_LOGS_FILTER.DURATION,
+    },
+    {
+        label: 'Set lines',
+        value: CUSTOM_LOGS_FILTER.LINES,
+    },
+    {
+        label: 'Since date & time',
+        value: CUSTOM_LOGS_FILTER.SINCE,
+    },
+    {
+        label: 'All available',
+        value: CUSTOM_LOGS_FILTER.ALL,
+    },
+]
+
+export const ALLOW_UNTIL_TIME = {
+    '12:00 AM': '00:00:00',
+    '12:30 AM': '00:30:00',
+    '01:00 AM': '01:00:00',
+    '01:30 AM': '01:30:00',
+    '02:00 AM': '02:00:00',
+    '02:30 AM': '02:30:00',
+    '03:00 AM': '03:00:00',
+    '03:30 AM': '03:30:00',
+    '04:00 AM': '04:00:00',
+    '04:30 AM': '04:30:00',
+    '05:00 AM': '05:00:00',
+    '05:30 AM': '05:30:00',
+    '06:00 AM': '06:00:00',
+    '06:30 AM': '06:30:00',
+    '07:00 AM': '07:00:00',
+    '07:30 AM': '07:30:00',
+    '08:00 AM': '08:00:00',
+    '08:30 AM': '08:30:00',
+    '09:00 AM': '09:00:00',
+    '09:30 AM': '09:30:00',
+    '10:00 AM': '10:00:00',
+    '10:30 AM': '10:30:00',
+    '11:00 AM': '11:00:00',
+    '11:30 AM': '11:30:00',
+    '12:00 PM': '12:00:00',
+    '12:30 PM': '12:30:00',
+    '01:00 PM': '13:00:00',
+    '01:30 PM': '13:30:00',
+    '02:00 PM': '14:00:00',
+    '02:30 PM': '14:30:00',
+    '03:00 PM': '15:00:00',
+    '03:30 PM': '15:30:00',
+    '04:00 PM': '16:00:00',
+    '04:30 PM': '16:30:00',
+    '05:00 PM': '17:00:00',
+    '05:30 PM': '17:30:00',
+    '06:00 PM': '18:00:00',
+    '06:30 PM': '18:30:00',
+    '07:00 PM': '19:00:00',
+    '07:30 PM': '19:30:00',
+    '08:00 PM': '20:00:00',
+    '08:30 PM': '20:30:00',
+    '09:00 PM': '21:00:00',
+    '09:30 PM': '21:30:00',
+    '10:00 PM': '22:00:00',
+    '10:30 PM': '22:30:00',
+    '11:00 PM': '23:00:00',
+    '11:30 PM': '23:30:00',
+}
+
+export const ALLOW_UNTIL_TIME_OPTIONS: any[] = Object.entries(ALLOW_UNTIL_TIME).map(([key, value]) => ({
+    label: key,
+    value: value,
+}))
+
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY= "Enforced from Global Configurations. Go to Global Configurations to change."
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE= "Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here."
+export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
+
+export const API_STATUS_CODES = {
+    UNAUTHORIZED: 401,
+    PERMISSION_DENIED: 403,
+    NOT_FOUND: 404,
+    EXPECTATION_FAILED: 417
+}
+
+export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3

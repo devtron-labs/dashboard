@@ -1682,8 +1682,15 @@ button.anchor {
     }
 
     &.dc__visible-hover--parent:hover {
-        .dc__visible-hover--child {
-            display: inherit;
+        .dc__visible-hover {
+            &--child {
+                display: inherit;
+            }
+
+            // For hiding a child on hover on parent
+            &--hide-child {
+                display: none;
+            }
         }
     }
 }
@@ -2674,6 +2681,10 @@ textarea,
     min-width: 4px !important;
 }
 
+.mw-12 {
+    min-width: 12px !important;
+}
+
 .mw-14 {
     min-width: 14px !important;
 }
@@ -2716,6 +2727,10 @@ textarea,
 
 .w-auto-imp {
     width: auto !important;
+}
+
+.w-8 {
+    width: 8px;
 }
 
 .w-32 {
@@ -2844,6 +2859,10 @@ textarea,
 
 .w-250 {
     width: 250px;
+}
+
+.w-250-imp {
+    width: 250px !important;
 }
 
 .w-280 {
@@ -3232,6 +3251,10 @@ textarea,
     min-height: 600px;
 }
 
+.mxh-20 {
+    max-height: 20px;
+}
+
 .mxh-64 {
     max-height: 64px;
 }
@@ -3609,6 +3632,10 @@ textarea,
     gap: 20px;
 }
 
+.dc__gap-24 {
+    gap: 24px;
+}
+
 .dc__gap-32 {
     gap: 32px;
 }
@@ -3838,6 +3865,10 @@ textarea::placeholder {
     color: var(--N000);
     user-select: none;
     border: solid 1px transparent;
+}
+
+.dc__zi-1 {
+    z-index: 1;
 }
 
 .dc__zi-4 {
