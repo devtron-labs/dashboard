@@ -412,6 +412,7 @@ export interface LogsComponentProps extends NodeDetailPropsType {
     targetContainerOption?: OptionType[]
     ephemeralFormAdvanced?: EphemeralFormAdvancedType
     imageListOption?: OptionType[]
+    isExternalApp?: boolean
 }
 
 export interface TerminalComponentProps {
