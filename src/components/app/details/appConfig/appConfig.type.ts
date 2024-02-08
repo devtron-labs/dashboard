@@ -71,9 +71,9 @@ export interface AppConfigNavigationProps {
     hideConfigHelp: boolean
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
-    environmentList?: any[]
+    environmentList?: EnvDetails[]
     isBaseConfigProtected?: boolean
-    reloadEnvironments:()=> void
+    reloadEnvironments: () => void
 }
 
 export interface AppComposeRouterProps {
@@ -93,7 +93,7 @@ export interface AppComposeRouterProps {
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
     isBaseConfigProtected?: boolean
-    reloadEnvironments:()=> void
+    reloadEnvironments: () => void
     configProtectionData: any[]
     filteredEnvIds?: string
 }
@@ -124,7 +124,7 @@ export interface EnvironmentOverrideRouterProps {
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
     allEnvs?: any[]
-    reloadEnvironments: ()=> void
+    reloadEnvironments: () => void
 }
 
 export interface NextButtonProps {
@@ -132,4 +132,27 @@ export interface NextButtonProps {
     navItems: CustomNavItemsType[]
     currentStageName: STAGE_NAME
     isDisabled: boolean
+}
+
+interface EnvDetails {
+    appStatus: string
+    environmentId: number
+    environmentName: string
+    appMetrics: boolean
+    infraMetrics: boolean
+    prod: boolean
+    chartRefId: number
+    lastDeployed: string
+    lastDeployedBy: string
+    lastDeployedImage: string
+    deploymentAppDeleteRequest: boolean
+    description: string
+    isVirtualEnvironment: boolean
+    clusterId: number
+    pipelineId: number
+    isProtected: boolean
+}
+
+export interface NewRouterComponentProps {
+    environmentList: EnvDetails[]
 }

@@ -4,6 +4,7 @@ import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import AddChartSource from '../../charts/list/AddChartSource'
 
+// @FIXME: Rename this component, as it is specific to the Charts or make it generic
 export function Accordian({ header, options, value, onChange, onClickViewChartButton,dataTestId }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
     const [showAddSource, toggleAddSource] = useState<boolean>(false)

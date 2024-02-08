@@ -161,6 +161,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 currentStep: completedSteps,
             },
             {
+                // @TODO: Remove this configmaps and secrets
                 title: 'ConfigMaps',
                 href: `/app/${appId}/edit/configmap`,
                 stage: 'CONFIGMAP',
@@ -205,4 +206,22 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
     }
 
     return { navItems }
+}
+
+export const APP_CONFIG_ENV_OVERRIDE_OPTIONS = {
+    DEPLOYMENT_TEMPLATE: {
+        key: 'deployment-template',
+        displayName: 'Deployment template',
+        isMulti: false,
+    },
+    CONFIGMAP: {
+        key: 'configmap',
+        displayName: 'ConfigMap',
+        isMulti: true,
+    },
+    SECRET: {
+        key: 'secrets',
+        displayName: 'Secrets',
+        isMulti: true,
+    },
 }

@@ -51,6 +51,20 @@ const EnvOverridesHelpNote = () => {
     )
 }
 
+const EnvRoute = ({envOverride}) => {
+    const { url } = useRouteMatch()
+    const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}`
+    return (
+        <NavLink
+            className='app-compose__nav-item cursor'
+            to={`${LINK}/${URLS.APP_DEPLOYMENT_CONFIG}`}
+        >
+            {envOverride.environmentName}
+        </NavLink>
+    )
+}
+
+// @TODO: All of the isJobView checks can be removed as EnvOverrideRoute will be only for the job view now
 const EnvOverrideRoute = ({
     envOverride,
     isJobView,
@@ -393,10 +407,10 @@ export default function EnvironmentOverrideRouter({
     }
 
     const renderEnvsNav = (): JSX.Element => {
-        if ((isJobView ? jobEnvs : allEnvs).length) {
+        if (isJobView && jobEnvs.length) {
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                    {(isJobView ? jobEnvs : allEnvs).map((env, index) => {
+                    {jobEnvs.map((env, index) => {
                         return (
                             !env.deploymentAppDeleteRequest && (
                                 <EnvOverrideRoute
@@ -408,6 +422,21 @@ export default function EnvironmentOverrideRouter({
                                     appId={appId}
                                     workflowsRes={workflowsRes}
                                     isEnvProtected={env.isProtected}
+                                />
+                            )
+                        )
+                    })}
+                </div>
+            )
+        } else if(!isJobView && allEnvs.length ) {
+            return (
+                <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
+                    {allEnvs.map((env, index) => {
+                        return (
+                            !env.deploymentAppDeleteRequest && (
+                                <EnvRoute
+                                    envOverride={env}
+                                    key={env.environmentName}
                                 />
                             )
                         )
