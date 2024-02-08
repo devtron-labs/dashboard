@@ -1,1 +1,1 @@
-export * from './TerminalWrapper';
+export * from './TerminalWrapper'

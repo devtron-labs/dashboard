@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
-import { ViewType, DOCUMENTATION } from '../../config'
+import { showError, Progressing, ErrorScreenManager, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { withRouter } from 'react-router-dom'
+import { ViewType, DOCUMENTATION, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
 import {
     GitOpsState,
     GitOpsProps,
@@ -12,11 +15,9 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
 import { handleOnFocus, parsePassword } from '../common'
-import { showError, Progressing, ErrorScreenManager, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
-import { toast } from 'react-toastify'
 import {
     updateGitOpsConfiguration,
     saveGitOpsConfiguration,
@@ -25,13 +26,11 @@ import {
 } from './gitops.service'
 import '../login/login.scss'
 import './gitops.scss'
-import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
-import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {

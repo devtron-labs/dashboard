@@ -1,9 +1,12 @@
+import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../config'
 import { AppEnvironment } from '../../../services/service.types'
 
 /**
  * Mock data for the shimmer loader
  */
-export const loadingEnvironmentList: AppEnvironment[] = Array.from(Array(3).keys()).map((index) => ({
+export const loadingEnvironmentList: AppEnvironment[] = Array.from(
+    Array(DEFAULT_SHIMMER_LOADING_TABLE_ROWS).keys(),
+).map((index) => ({
     environmentId: index,
     environmentName: '',
     appMetrics: false,
