@@ -41,7 +41,6 @@ import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { SelectedCustomLogFilterType } from './node.type'
 import CustomLogsModal from './CustomLogsModal/CustomLogsModal'
 
-
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
 
@@ -52,6 +51,7 @@ function LogsComponent({
     setLogSearchTerms,
     isResourceBrowserView,
     selectedResource,
+    isExternalApp,
 }: LogsComponentProps) {
     const [logsShownOption, setLogsShownOption] = useState({
         prev: getPodLogsOptions()[5],
@@ -679,25 +679,27 @@ function LogsComponent({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        <div className="h-16 dc__border-right ml-8 mr-8"></div>
-                        {downloadInProgress ? (
-                            <Progressing
-                                size={16}
-                                styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
-                            />
-                        ) : (
-                            <Tippy className="default-tt" arrow={false} placement="top" content={'Download logs'}>
-                                <Download
-                                    className={`icon-dim-16 mr-8 cursor ${
-                                        (podContainerOptions?.containerOptions ?? []).length === 0 ||
-                                        (prevContainer && showNoPrevContainer != '')
-                                            ? 'cursor-not-allowed dc__opacity-0_5'
-                                            : ''
-                                    }`}
-                                    onClick={handleDownloadLogs}
+                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8"></div>}
+
+                        {!isExternalApp &&
+                            (downloadInProgress ? (
+                                <Progressing
+                                    size={16}
+                                    styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
                                 />
-                            </Tippy>
-                        )}
+                            ) : (
+                                <Tippy className="default-tt" arrow={false} placement="top" content={'Download logs'}>
+                                    <Download
+                                        className={`icon-dim-16 mr-8 cursor ${
+                                            (podContainerOptions?.containerOptions ?? []).length === 0 ||
+                                            (prevContainer && showNoPrevContainer != '')
+                                                ? 'cursor-not-allowed dc__opacity-0_5'
+                                                : ''
+                                        }`}
+                                        onClick={handleDownloadLogs}
+                                    />
+                                </Tippy>
+                            ))}
                     </div>
                     <div className="dc__border-right "></div>
                     <form

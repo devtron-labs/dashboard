@@ -388,6 +388,7 @@ function NodeDetailComponent({
                                 ephemeralContainerType={ephemeralContainerType}
                                 targetContainerOption={targetContainerOption}
                                 imageListOption={imageListOption}
+                                isExternalApp={isExternalApp}
                             />
                         </div>
                     </Route>
