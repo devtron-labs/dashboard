@@ -225,7 +225,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }
                                         />
                                         {/* Note: In case Error is not shown added height*/}
-                                         {errorObj?.isValid && <div className="h-24"></div>} 
+                                        {(errorObj?.isValid || islinkedCI) && <div className="h-24"></div>}
                                     </div>
                                 )}
 
@@ -247,11 +247,12 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 )
                                             }}
                                             error={
-                                                errorObj && !errorObj.isValid
-                                                    && props.validationRules?.sourceValue(_materials[index].regex).message
+                                                errorObj &&
+                                                !errorObj.isValid &&
+                                                props.validationRules?.sourceValue(_materials[index].regex).message
                                             }
                                         />
-                                          {/* Note: In case Error is not shown */}
+                                        {/* Note: In case Error is not shown */}
                                         {errorObj?.isValid && <div className="h-24"></div>}
                                     </div>
                                 )}
