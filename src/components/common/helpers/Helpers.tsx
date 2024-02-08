@@ -19,6 +19,7 @@ import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
+import { PATTERNS } from '../../../config/constants'
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
@@ -1013,10 +1014,14 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
     if (!searchText) {
         return matchString
     }
-    const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
-
-    const regex = new RegExp(searchText, 'gi')
-    return matchString.replace(regex, highlightText)
+    try {
+        const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
+        const escapedSearchText = searchText.replace(PATTERNS.ESCAPED_CHARACTERS, '\\$&') // Escape special characters handling
+        const regex = new RegExp(escapedSearchText, 'gi')
+        return matchString.replace(regex, highlightText)
+    } catch (err) {
+        return matchString
+    }
 }
 
 export const trackByGAEvent = (category: string, action: string): void => {
