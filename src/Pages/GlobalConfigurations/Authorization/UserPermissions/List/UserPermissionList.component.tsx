@@ -56,6 +56,7 @@ const UserPermissionList = () => {
             sortOrder,
             status,
         }),
+        // Using stringify as the status is a array to avoid infinite re-renders
         [pageSize, offset, searchKey, sortBy, sortOrder, JSON.stringify(status)],
     )
 

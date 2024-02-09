@@ -63,7 +63,7 @@ export const handleToggleCheckForBulkSelection =
         ReturnType<typeof useAuthorizationBulkSelection>,
         'isBulkSelectionApplied' | 'bulkSelectionState' | 'handleBulkSelection'
     >) =>
-    (id: User['id']) => {
+    (id: User['id'] | PermissionGroup['id']) => {
         if (isBulkSelectionApplied) {
             handleBulkSelection({
                 action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,

@@ -68,7 +68,7 @@ const UserPermissionContainer = ({
 
     const showPagination = totalCount > DEFAULT_BASE_PAGE_SIZE
 
-    const applyFilter = () =>
+    const confirmApplyFilter = () =>
         new Promise((resolve, reject) => {
             if (isBulkSelectionApplied) {
                 setBulkSelectionModalConfig({
@@ -82,7 +82,7 @@ const UserPermissionContainer = ({
         })
 
     const handleSearch = (text: string) => {
-        applyFilter()
+        confirmApplyFilter()
             .then(() => {
                 _handleSearch(text)
             })
@@ -90,7 +90,7 @@ const UserPermissionContainer = ({
     }
 
     const handleStatusFilterChange = (selectedStatuses: UserPermissionContainerProps['urlFilters']['status']) => {
-        applyFilter()
+        confirmApplyFilter()
             .then(() => {
                 updateStatusFilter(selectedStatuses)
             })
