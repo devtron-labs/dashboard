@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
-import { SortingParams, UserStatus, UserStatusDto } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatusDto, UserListFilterParams, BaseFilterQueryParams } from '@devtron-labs/devtron-fe-common-lib'
 import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
-import { SortableKeys as UserListSortableKeys } from './UserPermissions/List/constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -102,29 +101,6 @@ export type UserCreateOrUpdatePayload = Pick<
     User,
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'groups'
 >
-
-export type BaseFilterQueryParams<T> = {
-    /**
-     * Offset for the list result
-     */
-    offset?: number
-    /**
-     * Number of items required in the list
-     */
-    size?: number
-    /**
-     * Search string (if any)
-     */
-    searchKey?: string
-    /**
-     * If true, all items are returned with any search / filtering applied without pagination
-     */
-    showAll?: boolean
-} & SortingParams<T>
-
-export type UserListFilterParams = BaseFilterQueryParams<UserListSortableKeys> & {
-    status: UserStatus[]
-}
 
 // Others
 export interface UserRole {

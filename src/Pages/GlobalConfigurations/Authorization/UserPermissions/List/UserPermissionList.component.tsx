@@ -9,10 +9,10 @@ import {
     BulkSelectionProvider,
     BulkSelectionIdentifiersType,
     UserStatus,
+    UserListSortableKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getUserList } from '../../authorization.service'
-import { SortableKeys } from './constants'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { User } from '../../types'
 import { getIsAdminOrSystemUser, parseSearchParams } from '../utils'
@@ -29,8 +29,8 @@ const UserPermissionList = () => {
         type: null,
     })
 
-    const { status, ..._urlFilters } = useUrlFilters<SortableKeys, UserListFilter>({
-        initialSortKey: SortableKeys.email,
+    const { status, ..._urlFilters } = useUrlFilters<UserListSortableKeys, UserListFilter>({
+        initialSortKey: UserListSortableKeys.email,
         parseSearchParams,
     })
 
@@ -91,7 +91,7 @@ const UserPermissionList = () => {
             showAll: true,
             offset: null,
             size: null,
-            sortBy: SortableKeys.email,
+            sortBy: UserListSortableKeys.email,
             sortOrder: SortingOrder.ASC,
         })
 

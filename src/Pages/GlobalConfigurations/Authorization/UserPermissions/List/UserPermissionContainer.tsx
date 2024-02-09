@@ -19,7 +19,7 @@ import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../sh
 import { BulkSelectionEntityTypes } from '../../shared/components/BulkSelection/constants'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 
-const FilterChips = importComponentFromFELibrary('FilterChips', null, 'function')
+const UserListFilterToolbar = importComponentFromFELibrary('UserListFilterToolbar', null, 'function')
 
 const UserPermissionContainer = ({
     showStatus,
@@ -115,15 +115,13 @@ const UserPermissionContainer = ({
                         status={status}
                     />
                     {showStatus && (
-                        <div className="pr-20 pl-20">
-                            <FilterChips
-                                filterConfig={{
-                                    status: urlFilters.status,
-                                }}
-                                clearFilters={clearFilters}
-                                handleStatusFilterRemove={handleFilterRemove}
-                            />
-                        </div>
+                        <UserListFilterToolbar
+                            filterConfig={{
+                                status: urlFilters.status,
+                            }}
+                            clearFilters={clearFilters}
+                            onRemoveFilter={handleFilterRemove}
+                        />
                     )}
                     {showLoadingState || (totalCount && users.length) ? (
                         <UserPermissionTable

@@ -1,9 +1,14 @@
-import { BulkSelection, Pagination, SortableTableHeaderCell } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BulkSelection,
+    Pagination,
+    SortableTableHeaderCell,
+    UserListSortableKeys,
+} from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 import { handleToggleCheckForBulkSelection } from '../../utils'
-import { SortableKeys, userListLoading } from './constants'
+import { userListLoading } from './constants'
 import { UserPermissionTableProps } from './types'
 import UserPermissionRow from './UserPermissionRow'
 
@@ -26,11 +31,11 @@ const UserPermissionTable = ({
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
 
     const sortByEmail = () => {
-        handleSorting(SortableKeys.email)
+        handleSorting(UserListSortableKeys.email)
     }
 
     const sortByLastLogin = () => {
-        handleSorting(SortableKeys.lastLogin)
+        handleSorting(UserListSortableKeys.lastLogin)
     }
 
     const toggleCheckForBulkSelection = handleToggleCheckForBulkSelection({
@@ -54,14 +59,14 @@ const UserPermissionTable = ({
                 <SortableTableHeaderCell
                     title="Email"
                     triggerSorting={sortByEmail}
-                    isSorted={sortBy === SortableKeys.email}
+                    isSorted={sortBy === UserListSortableKeys.email}
                     sortOrder={sortOrder}
                     disabled={isActionsDisabled}
                 />
                 <SortableTableHeaderCell
                     title="Last Login"
                     triggerSorting={sortByLastLogin}
-                    isSorted={sortBy === SortableKeys.lastLogin}
+                    isSorted={sortBy === UserListSortableKeys.lastLogin}
                     sortOrder={sortOrder}
                     disabled={isActionsDisabled}
                 />

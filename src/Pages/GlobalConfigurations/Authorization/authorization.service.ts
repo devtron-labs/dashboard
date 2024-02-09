@@ -1,5 +1,6 @@
 import {
     APIOptions,
+    BaseFilterQueryParams,
     get,
     getUrlWithSearchParams,
     post,
@@ -7,11 +8,11 @@ import {
     ResponseType,
     showError,
     trash,
+    UserListFilterParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CustomRoles } from './shared/components/userGroups/userGroups.types'
 import { Routes } from '../../../config'
 import {
-    BaseFilterQueryParams,
     PermissionGroup,
     PermissionGroupBulkDeletePayload,
     PermissionGroupCreateOrUpdatePayload,
@@ -20,7 +21,6 @@ import {
     UserBulkDeletePayload,
     UserCreateOrUpdatePayload,
     UserDto,
-    UserListFilterParams,
     UserRole,
 } from './types'
 import { transformUserResponse } from './utils'
