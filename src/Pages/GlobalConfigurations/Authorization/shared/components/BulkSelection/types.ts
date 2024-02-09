@@ -1,5 +1,6 @@
-import { UserStatus, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
+import { UserListSortableKeys, UserStatus, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { MutableRefObject } from 'react'
+import { SortableKeys } from '../../../PermissionGroups/List/constants'
 import { PermissionGroup, User } from '../../../types'
 import { UserListFilter } from '../../../UserPermissions/List/types'
 import { BulkSelectionEntityTypes, BulkSelectionModalTypes } from './constants'
@@ -32,16 +33,11 @@ export type BulkSelectionModalProps = BulkSelectionModalConfig &
     Pick<BulkSelectionActionWidgetProps, 'refetchList' | 'setBulkSelectionModalConfig' | 'selectedIdentifiersCount'> &
     (
         | {
-              urlFilters: UseUrlFiltersReturnType<
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  any,
-                  UserListFilter
-              >
+              urlFilters: UseUrlFiltersReturnType<UserListSortableKeys, UserListFilter>
               entityType: BulkSelectionEntityTypes.users
           }
         | {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              urlFilters: UseUrlFiltersReturnType<any>
+              urlFilters: UseUrlFiltersReturnType<SortableKeys>
               entityType: BulkSelectionEntityTypes.permissionGroups
           }
     )
