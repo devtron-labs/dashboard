@@ -269,7 +269,8 @@ src/components/app/list/types.tsx
 src/components/app/list-new/AppList.tsx
 src/components/app/list-new/AppListService.ts
 src/components/app/list-new/Constants.ts
-src/components/app/list-new/HelmAppList.tsx
+src/components/app/list-new/ExternalArgoList.tsx
+src/components/app/list-new/
 src/components/app/service.ts
 src/components/app/types.ts
 src/components/app/typing.d.ts
