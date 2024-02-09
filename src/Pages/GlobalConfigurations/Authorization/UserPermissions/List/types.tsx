@@ -1,8 +1,10 @@
 import { SearchBarProps, ServerError, UserStatus, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { getUserList } from '../../authorization.service'
 import { BulkSelectionActionWidgetProps, BulkSelectionModalConfig } from '../../shared/components/BulkSelection'
-import { User } from '../../types'
+import { User, UserListFilterParams } from '../../types'
 import { SortableKeys } from './constants'
+
+export type UserListFilter = Pick<UserListFilterParams, 'status'>
 
 export interface UserPermissionRowProps extends User {
     index: number
@@ -19,8 +21,8 @@ export interface UserPermissionListHeaderProps {
     handleSearch: SearchBarProps['handleEnter']
     initialSearchText: SearchBarProps['initialSearchText']
     getDataToExport: () => ReturnType<typeof getUserList>
-    statuses: UserStatus[]
-    handleStatusFilterChange: (statuses: UserStatus[]) => void
+    status: UserStatus[]
+    handleStatusFilterChange: (status: UserStatus[]) => void
 }
 
 export interface UserPermissionContainerProps
@@ -32,9 +34,8 @@ export interface UserPermissionContainerProps
     totalCount: number
     users: User[]
     refetchUserPermissionList: UserPermissionRowProps['refetchUserPermissionList']
-    urlFilters: UseUrlFiltersReturnType<SortableKeys> & {
-        statuses: UserPermissionListHeaderProps['statuses']
-        updateStatuses: UserPermissionListHeaderProps['handleStatusFilterChange']
+    urlFilters: UseUrlFiltersReturnType<SortableKeys, UserListFilter> & {
+        updateStatusFilter: (status: UserStatus[]) => void
     }
     bulkSelectionModalConfig: BulkSelectionModalConfig
 }

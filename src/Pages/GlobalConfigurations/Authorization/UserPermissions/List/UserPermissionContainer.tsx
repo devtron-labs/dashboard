@@ -35,7 +35,7 @@ const UserPermissionContainer = ({
 }: UserPermissionContainerProps) => {
     const isClearBulkSelectionModalOpen = !!bulkSelectionModalConfig?.type
 
-    const { searchKey, handleSearch: _handleSearch, clearFilters, statuses, updateStatuses } = urlFilters
+    const { searchKey, handleSearch: _handleSearch, clearFilters, status, updateStatusFilter } = urlFilters
 
     const draggableRef = useRef<HTMLDivElement>()
     const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useAuthorizationBulkSelection()
@@ -55,7 +55,7 @@ const UserPermissionContainer = ({
             return <Reload reload={refetchUserPermissionList} className="flex-grow-1" />
         }
 
-        const areFiltersApplied = !(searchKey || statuses.length)
+        const areFiltersApplied = !(searchKey || status.length)
 
         // The null state is shown only when filters are not applied
         if (totalCount === 0 && areFiltersApplied) {
@@ -89,16 +89,12 @@ const UserPermissionContainer = ({
             .catch(noop)
     }
 
-    const handleStatusFilterChange = (selectedStatuses: UserPermissionContainerProps['urlFilters']['statuses']) => {
+    const handleStatusFilterChange = (selectedStatuses: UserPermissionContainerProps['urlFilters']['status']) => {
         applyFilter()
             .then(() => {
-                updateStatuses(selectedStatuses)
+                updateStatusFilter(selectedStatuses)
             })
             .catch(noop)
-    }
-
-    const clearSelectedStatuses = () => {
-        handleStatusFilterChange([])
     }
 
     const handleFilterRemove = (filterConfig) => {
@@ -116,15 +112,15 @@ const UserPermissionContainer = ({
                         initialSearchText={searchKey}
                         getDataToExport={getUserDataForExport}
                         handleStatusFilterChange={handleStatusFilterChange}
-                        statuses={statuses}
+                        status={status}
                     />
                     {showStatus && (
                         <div className="pr-20 pl-20">
                             <FilterChips
                                 filterConfig={{
-                                    status: urlFilters.statuses,
+                                    status: urlFilters.status,
                                 }}
-                                clearFilters={clearSelectedStatuses}
+                                clearFilters={clearFilters}
                                 handleStatusFilterRemove={handleFilterRemove}
                             />
                         </div>
@@ -153,7 +149,7 @@ const UserPermissionContainer = ({
                             refetchList={refetchUserPermissionList}
                             filterConfig={{
                                 searchKey: urlFilters.searchKey,
-                                statuses: urlFilters.statuses,
+                                status: urlFilters.status,
                             }}
                             selectedIdentifiersCount={selectedUsersCount}
                             isCountApproximate={isBulkSelectionApplied}

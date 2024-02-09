@@ -1,8 +1,10 @@
 import moment from 'moment'
+import { BulkSelectionEvents } from '@devtron-labs/devtron-fe-common-lib'
 import { CustomRoleAndMeta, CustomRoles, EntityTypes } from './shared/components/userGroups/userGroups.types'
 import { ACCESS_TYPE_MAP, Moment12HourFormat, ZERO_TIME_STRING } from '../../../config'
 import { PermissionGroup, User, UserDto } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
+import { useAuthorizationBulkSelection } from './shared/components/BulkSelection'
 
 export const transformUserResponse = (_user: UserDto): User => {
     const { lastLoginTime, timeoutWindowExpression, ...user } = _user
@@ -51,3 +53,43 @@ export const getRoleFiltersToExport = (
             application: roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications',
             role: customRoles.possibleRolesMeta[roleFilter.action]?.value || '-',
         }))
+
+export const handleToggleCheckForBulkSelection =
+    ({
+        isBulkSelectionApplied,
+        handleBulkSelection,
+        bulkSelectionState,
+    }: Pick<
+        ReturnType<typeof useAuthorizationBulkSelection>,
+        'isBulkSelectionApplied' | 'bulkSelectionState' | 'handleBulkSelection'
+    >) =>
+    (id: User['id']) => {
+        if (isBulkSelectionApplied) {
+            handleBulkSelection({
+                action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,
+                data: {
+                    identifierIds: [id],
+                },
+            })
+            return
+        }
+
+        handleBulkSelection(
+            bulkSelectionState[id]
+                ? {
+                      action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
+                      data: {
+                          identifierIds: [id],
+                      },
+                  }
+                : {
+                      action: BulkSelectionEvents.SELECT_IDENTIFIER,
+                      data: {
+                          identifierObject: {
+                              ...bulkSelectionState,
+                              [id]: true,
+                          },
+                      },
+                  },
+        )
+    }

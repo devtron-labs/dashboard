@@ -1,5 +1,12 @@
 import React, { useState } from 'react'
-import { Checkbox, CHECKBOX_VALUE, DeleteDialog, getRandomColor, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BulkSelectionEvents,
+    Checkbox,
+    CHECKBOX_VALUE,
+    DeleteDialog,
+    getRandomColor,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
@@ -7,6 +14,7 @@ import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-i
 
 import { PermissionGroupRowProps } from './types'
 import { deletePermissionGroup } from '../../authorization.service'
+import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 
 const PermissionGroupRow = ({
     id,
@@ -21,6 +29,7 @@ const PermissionGroupRow = ({
     const { path } = useRouteMatch()
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [isModalLoading, setIsModalLoading] = useState(false)
+    const { isBulkSelectionApplied, handleBulkSelection } = useAuthorizationBulkSelection()
 
     const showCheckbox = _showCheckbox || isChecked
 
@@ -35,6 +44,14 @@ const PermissionGroupRow = ({
             toast.success('Group deleted')
             refetchPermissionGroupList()
             setIsDeleteModalOpen(false)
+
+            // Clearing the selection on single delete since the selected one might be removed
+            if (!isBulkSelectionApplied) {
+                handleBulkSelection({
+                    action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+                })
+                toast.info('All previous selections have been cleared')
+            }
         } catch (err) {
             showError(err)
         } finally {

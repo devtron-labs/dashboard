@@ -1,14 +1,8 @@
-import {
-    BulkSelection,
-    BulkSelectionEvents,
-    Pagination,
-    SortableTableHeaderCell,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { BulkSelection, Pagination, SortableTableHeaderCell } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import { toast } from 'react-toastify'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
-import { User } from '../../types'
+import { handleToggleCheckForBulkSelection } from '../../utils'
 import { SortableKeys, userListLoading } from './constants'
 import { UserPermissionTableProps } from './types'
 import UserPermissionRow from './UserPermissionRow'
@@ -27,12 +21,8 @@ const UserPermissionTable = ({
 }: UserPermissionTableProps) => {
     const { sortBy, sortOrder, handleSorting, offset, pageSize, changePage, changePageSize } = urlFilters
 
-    const {
-        handleBulkSelection,
-        selectedIdentifiers: bulkSelectionState,
-        getSelectedIdentifiersCount,
-        isBulkSelectionApplied,
-    } = useAuthorizationBulkSelection()
+    const { handleBulkSelection, bulkSelectionState, getSelectedIdentifiersCount, isBulkSelectionApplied } =
+        useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
 
     const sortByEmail = () => {
@@ -43,37 +33,11 @@ const UserPermissionTable = ({
         handleSorting(SortableKeys.lastLogin)
     }
 
-    const toggleCheckForBulkSelection = (id: User['id']) => {
-        if (isBulkSelectionApplied) {
-            handleBulkSelection({
-                action: BulkSelectionEvents.CLEAR_IDENTIFIERS_AFTER_ACROSS_SELECTION,
-                data: {
-                    identifierIds: [id],
-                },
-            })
-            toast.info('All previous selections have been cleared')
-            return
-        }
-
-        handleBulkSelection(
-            bulkSelectionState[id]
-                ? {
-                      action: BulkSelectionEvents.CLEAR_IDENTIFIERS,
-                      data: {
-                          identifierIds: [id],
-                      },
-                  }
-                : {
-                      action: BulkSelectionEvents.SELECT_IDENTIFIER,
-                      data: {
-                          identifierObject: {
-                              ...bulkSelectionState,
-                              [id]: true,
-                          },
-                      },
-                  },
-        )
-    }
+    const toggleCheckForBulkSelection = handleToggleCheckForBulkSelection({
+        isBulkSelectionApplied,
+        handleBulkSelection,
+        bulkSelectionState,
+    })
 
     return (
         <div className="flexbox-col flex-grow-1 show-shimmer-loading">

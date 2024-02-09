@@ -17,7 +17,6 @@ import PermissionGroupContainer from './PermissionGroupContainer'
 import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../shared/components/BulkSelection'
 
 const PermissionGroupList = () => {
-    // TODO (v2): Move the type to a common place
     const [bulkSelectionModalConfig, setBulkSelectionModalConfig] = useState<BulkSelectionModalConfig>({
         type: null,
     })

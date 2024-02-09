@@ -7,6 +7,7 @@ import {
     ConditionalWrap,
     Checkbox,
     CHECKBOX_VALUE,
+    BulkSelectionEvents,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -23,6 +24,7 @@ import { deleteUser } from '../../authorization.service'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
+import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
 
@@ -43,6 +45,7 @@ const UserPermissionRow = ({
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [isModalLoading, setIsModalLoading] = useState(false)
+    const { handleBulkSelection, isBulkSelectionApplied } = useAuthorizationBulkSelection()
 
     const showCheckbox = _showCheckbox || isChecked
 
@@ -57,7 +60,14 @@ const UserPermissionRow = ({
             toast.success('User deleted')
             refetchUserPermissionList()
             setIsDeleteModalOpen(false)
-            // TODO (v2): Should we clear the bulk selection
+
+            // Clearing the selection on single delete since the selected one might be removed
+            if (!isBulkSelectionApplied) {
+                handleBulkSelection({
+                    action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+                })
+                toast.info('All previous selections have been cleared')
+            }
         } catch (err) {
             showError(err)
         } finally {

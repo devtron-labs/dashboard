@@ -21,7 +21,7 @@ const UserPermissionListHeader = ({
     initialSearchText,
     getDataToExport,
     handleStatusFilterChange,
-    statuses,
+    status,
 }: UserPermissionListHeaderProps) => {
     const { path } = useRouteMatch()
     const { isSuperAdmin } = useMainContext()
@@ -66,7 +66,7 @@ const UserPermissionListHeader = ({
                     handleEnter={handleSearch}
                     initialSearchText={initialSearchText}
                 />
-                {showStatus && <StatusFilterDropdown value={statuses} onChange={handleStatusFilterChange} />}
+                {showStatus && <StatusFilterDropdown value={status} onChange={handleStatusFilterChange} />}
                 <div className="dc__divider h-20" />
                 <Link to={`${path}/add`} type="button" className="cta anchor flex dc__gap-6 h-32">
                     <PlusIcon className="icon-dim-14 mw-14" />

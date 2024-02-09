@@ -128,7 +128,6 @@ const PermissionGroupContainer = ({
                             searchKey: urlFilters.searchKey,
                         }}
                         selectedIdentifiersCount={selectedUsersCount}
-                        isCountApproximate={isBulkSelectionApplied}
                     />
                 )}
             </div>

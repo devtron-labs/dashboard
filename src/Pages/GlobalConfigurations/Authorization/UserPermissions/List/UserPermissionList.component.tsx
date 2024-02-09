@@ -15,58 +15,37 @@ import { getUserList } from '../../authorization.service'
 import { SortableKeys } from './constants'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { User } from '../../types'
-import { getIsAdminOrSystemUser } from '../utils'
+import { getIsAdminOrSystemUser, parseSearchParams } from '../utils'
 import UserPermissionContainer from './UserPermissionContainer'
 import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../shared/components/BulkSelection'
-import useSearchParams from '../../shared/components/useSearchParams/useSearchParams'
+import { UserListFilter } from './types'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const showStatus = !!StatusHeaderCell
 
-interface SearchParams {
-    status: UserStatus[]
-}
-
-const parseSearchParams = (searchParams: URLSearchParams): SearchParams => ({
-    status: searchParams
-        .getAll('status')
-        .filter((status) =>
-            [UserStatus.active, UserStatus.inactive, UserStatus.temporary].includes(status as UserStatus),
-        ) as UserStatus[],
-})
-
 const UserPermissionList = () => {
     const [bulkSelectionModalConfig, setBulkSelectionModalConfig] = useState<BulkSelectionModalConfig>({
         type: null,
     })
-    const {
-        params: { status },
-        updateSearchParams,
-    } = useSearchParams<SearchParams>({
+
+    const { status, ..._urlFilters } = useUrlFilters<SortableKeys, UserListFilter>({
+        initialSortKey: SortableKeys.email,
         parseSearchParams,
     })
 
-    const _urlFilters = useUrlFilters<SortableKeys>({
-        initialSortKey: SortableKeys.email,
-    })
-
-    const updateStatuses = (statuses: UserStatus[]) => {
-        updateSearchParams({
-            status: statuses,
-            pageNumber: 1,
-        } as SearchParams)
-        // TODO (v2): We cannot do this since the search params won't change
-        // _urlFilters.changePage(1)
+    const updateStatusFilter = (_status: UserStatus[]) => {
+        _urlFilters.updateSearchParams({
+            status: _status,
+        })
     }
 
-    const clearFilters = () => {
-        // TODO (v2): Should we clear selection on reset filter? Same for permission groups
-        _urlFilters.clearFilters()
-        updateSearchParams({} as SearchParams, { overrideExisting: true })
+    const urlFilters = {
+        ..._urlFilters,
+        status,
+        updateStatusFilter,
     }
 
-    const urlFilters = { ..._urlFilters, statuses: status, updateStatuses, clearFilters }
     const { pageSize, offset, searchKey, sortBy, sortOrder } = urlFilters
     const filterConfig = useMemo(
         () => ({

@@ -44,11 +44,7 @@ const BulkDeleteModal = ({
 
     const [deleteConfirmationText, setDeleteConfirmationText] = useState('')
 
-    const {
-        selectedIdentifiers: bulkSelectionState,
-        handleBulkSelection,
-        isBulkSelectionApplied,
-    } = useAuthorizationBulkSelection()
+    const { bulkSelectionState, handleBulkSelection, isBulkSelectionApplied } = useAuthorizationBulkSelection()
 
     const { title, subTitle, buttonText, successToastText, confirmationText } = getModalConfig({
         selectedIdentifiersCount,
@@ -70,7 +66,8 @@ const BulkDeleteModal = ({
                     ? {
                           filterConfig: {
                               searchKey: urlFilters.searchKey,
-                              status: urlFilters.statuses,
+                              // added this check for type compatibility
+                              status: 'status' in urlFilters ? urlFilters.status : [],
                           },
                       }
                     : {
