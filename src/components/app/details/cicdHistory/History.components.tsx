@@ -15,7 +15,7 @@ import { not, GenericEmptyState, showError } from '@devtron-labs/devtron-fe-comm
 import { CIListItem, CopyTippyWithText } from './Artifacts'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { getUserRole } from '../../../userGroups/userGroup.service'
+import { getUserRole } from '../../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()

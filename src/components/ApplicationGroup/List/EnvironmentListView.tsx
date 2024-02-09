@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, toastAccessDenied, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, toastAccessDenied, useAsync, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -58,7 +58,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
     }
 
     const renderPagination = () => {
-        if (envCount >= 20) {
+        if (envCount >= DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={envCount}

@@ -267,6 +267,17 @@ $color-suffix: 00;
         }
     }
 
+    &.success {
+        @include cta(var(--G500), var(--N0), transparent);
+
+        &:hover,
+        &:active,
+        &:focus {
+            @include cta(var(--G600), var(--N0), transparent);
+        }
+    }
+
+    /// Button with red border and text
     &.delete {
         @include cta(white, var(--R500), var(--R500));
 
@@ -277,6 +288,27 @@ $color-suffix: 00;
         &:active,
         &:focus {
             @include cta(var(--R600), white, white);
+        }
+    }
+
+    /// Button with red background
+    &.danger {
+        @include cta(var(--R500), var(--N0), transparent);
+
+        &:hover,
+        &:active,
+        &:focus {
+            @include cta(var(--R600), var(--N0), transparent);
+        }
+    }
+
+    &.warning {
+        @include cta(var(--Y500), var(--N900), transparent);
+
+        &:hover,
+        &:active,
+        &:focus {
+            @include cta(var(--Y600), var(--N900), transparent);
         }
     }
 
@@ -302,12 +334,15 @@ $color-suffix: 00;
     }
 
     &.delete,
+    &.danger,
     &.small,
     &.ghosted,
     &.secondary,
     &.cancel,
     &.neutral,
     &.tertiary,
+    &.success,
+    &.warning,
     & {
 
         &:disabled,

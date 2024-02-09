@@ -11,7 +11,7 @@ import {
 } from './clusterNodes.service'
 import { GroupHeading, menuComponentForImage, Option } from '../../components/v2/common/ReactSelect.utils'
 import { clusterImageDescription, convertToOptionsList } from '../common'
-import { Checkbox, CHECKBOX_VALUE, get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, get, OptionType, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
 import { ClusterTerminalType, NodeTaintType } from './types'
@@ -29,7 +29,6 @@ import {
     SELECT_TITLE,
     SocketConnectionType,
 } from './constants'
-import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { useHistory, useLocation } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'

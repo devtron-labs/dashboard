@@ -37,8 +37,8 @@ import {
     StageNames,
     STAGE_NAME,
 } from './appConfig.type'
-import { getUserRole } from '../../../userGroups/userGroup.service'
-import { UserRoleType } from '../../../userGroups/userGroups.types'
+import { getUserRole } from '../../../../Pages/GlobalConfigurations/Authorization/authorization.service'
+import { UserRoleType } from '../../../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import { DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../config/constantMessaging'
 import { getNavItems, isUnlocked } from './AppConfig.utils'
 import AppComposeRouter from './AppComposeRouter'
