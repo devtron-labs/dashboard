@@ -50,7 +50,6 @@ const PermissionGroupRow = ({
                 handleBulkSelection({
                     action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
                 })
-                toast.info('All previous selections have been cleared')
             }
         } catch (err) {
             showError(err)

@@ -100,7 +100,7 @@ const BulkDeleteModal = ({
     }
 
     const handleKeyDown = async (event: KeyboardEvent) => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && !isDeleteDisabled) {
             event.preventDefault()
             await handleBulkDelete()
         }
