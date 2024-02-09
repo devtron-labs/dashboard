@@ -70,14 +70,14 @@ export default function ExternalArgoList({
                 init()
             }
         }
-    }, [payloadParsedFromUrl])
+    }, [payloadParsedFromUrl, dataStateType, clusterIdsCsv])
 
-    // Mount on data rendering first time
+    // when external app data comes
     useEffect(() => {
         if (dataStateType == AppListViewType.LIST) {
             handleFilteration()
         }
-    }, [dataStateType])
+    }, [argoAppsList])
 
     useEffect(() => {
         updateDataSyncing(true)
@@ -86,7 +86,6 @@ export default function ExternalArgoList({
             .then((argoAppsListResponse) => {
                 setArgoAppsList(argoAppsListResponse.result)
                 setDataStateType(AppListViewType.LIST)
-                _getExternalHelmApps()
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -97,7 +96,7 @@ export default function ExternalArgoList({
                 updateDataSyncing(false)
                 setFetchingExternalAppsState(false)
             })
-    }, [clusterIdsCsv, appStatus, syncListData])
+    }, [clusterIdsCsv])
 
     // reset data
     function init() {
@@ -107,12 +106,6 @@ export default function ExternalArgoList({
         setClusterIdsCsv(_getClusterIdsFromRequestUrl())
         setAppStatus(_getAppStatusFromRequestUrl())
         setFetchingExternalAppsState(false)
-    }
-
-    function _getExternalHelmApps() {
-        if (clusterIdsCsv) {
-            setFetchingExternalAppsState(true)
-        }
     }
 
     function _getClusterIdsFromRequestUrl() {
@@ -225,7 +218,7 @@ export default function ExternalArgoList({
 
     const renderArgoListRow = (app: ArgoAppListResult): JSX.Element => {
         return (
-            <Link key={app.appName} to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
+            <Link to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
                 <div className="app-list__cell--icon">
                     <LazyImage
                         className="dc__chart-grid-item__icon icon-dim-24"
@@ -267,9 +260,12 @@ export default function ExternalArgoList({
         return (
             <div data-testid="external-argo-list-container">
                 {renderHeaders()}
+                {filteredArgoAppsList.length}
                 {filteredArgoAppsList
                     .slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size)
-                    .map((app) => renderArgoListRow(app))}
+                    .map((app, index) => (
+                        <div key={`${app.appName}-${index}`}>{renderArgoListRow(app)} </div>
+                    ))}
             </div>
         )
     }
@@ -392,7 +388,6 @@ export default function ExternalArgoList({
             )
         )
     }
-
     return (
         <>
             {dataStateType === AppListViewType.LOADING && (
