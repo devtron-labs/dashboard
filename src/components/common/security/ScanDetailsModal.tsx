@@ -77,7 +77,6 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
         }
         this.callGetAPI = this.callGetAPI.bind(this)
         this.scanDetailsRef = React.createRef<HTMLDivElement>()
-        this.outsideClickHandler = this.outsideClickHandler.bind(this)
     }
 
     componentDidMount() {

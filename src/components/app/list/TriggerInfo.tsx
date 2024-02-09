@@ -56,7 +56,6 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
         this.commitInfoRef = React.createRef<HTMLDivElement>()
         this.selectMaterial = this.selectMaterial.bind(this)
         this.toggleChanges = this.toggleChanges.bind(this)
-        this.outsideClickHandler = this.outsideClickHandler.bind(this)
     }
 
     outsideClickHandler = (evt): void => {
