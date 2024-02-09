@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
+// TODO (v2): Merge with useUrlFilters
 const useSearchParams = <T,>({
     serializeToSearchParams,
     parseSearchParams,

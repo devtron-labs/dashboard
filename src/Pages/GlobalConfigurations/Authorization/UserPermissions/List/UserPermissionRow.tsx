@@ -57,6 +57,7 @@ const UserPermissionRow = ({
             toast.success('User deleted')
             refetchUserPermissionList()
             setIsDeleteModalOpen(false)
+            // TODO (v2): Should we clear the bulk selection
         } catch (err) {
             showError(err)
         } finally {

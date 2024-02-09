@@ -61,6 +61,7 @@ const UserPermissionList = () => {
     }
 
     const clearFilters = () => {
+        // TODO (v2): Should we clear selection on reset filter? Same for permission groups
         _urlFilters.clearFilters()
         updateSearchParams({} as SearchParams, { overrideExisting: true })
     }

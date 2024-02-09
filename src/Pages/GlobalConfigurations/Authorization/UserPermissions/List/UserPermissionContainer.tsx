@@ -17,6 +17,9 @@ import BulkSelectionModal from '../../shared/components/BulkSelection/BulkSelect
 import UserPermissionTable from './UserPermissionTable'
 import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 import { BulkSelectionEntityTypes } from '../../shared/components/BulkSelection/constants'
+import { importComponentFromFELibrary } from '../../../../../components/common'
+
+const FilterChips = importComponentFromFELibrary('FilterChips', null, 'function')
 
 const UserPermissionContainer = ({
     showStatus,
@@ -94,6 +97,14 @@ const UserPermissionContainer = ({
             .catch(noop)
     }
 
+    const clearSelectedStatuses = () => {
+        handleStatusFilterChange([])
+    }
+
+    const handleFilterRemove = (filterConfig) => {
+        handleStatusFilterChange(filterConfig.status)
+    }
+
     return (
         <>
             <div className="flexbox-col flex-grow-1" ref={draggableRef}>
@@ -107,6 +118,17 @@ const UserPermissionContainer = ({
                         handleStatusFilterChange={handleStatusFilterChange}
                         statuses={statuses}
                     />
+                    {showStatus && (
+                        <div className="pr-20 pl-20">
+                            <FilterChips
+                                filterConfig={{
+                                    status: urlFilters.statuses,
+                                }}
+                                clearFilters={clearSelectedStatuses}
+                                handleStatusFilterRemove={handleFilterRemove}
+                            />
+                        </div>
+                    )}
                     {showLoadingState || (totalCount && users.length) ? (
                         <UserPermissionTable
                             showStatus={showStatus}
