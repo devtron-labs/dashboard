@@ -260,7 +260,6 @@ export default function ExternalArgoList({
         return (
             <div data-testid="external-argo-list-container">
                 {renderHeaders()}
-                {filteredArgoAppsList.length}
                 {filteredArgoAppsList
                     .slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size)
                     .map((app, index) => (
