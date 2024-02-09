@@ -304,7 +304,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
             if (state.canDeleteApp)
                 return (
                     <DeleteDialog
-                        title={`Delete '${state.appName}'?`}
+                        title={`Delete '${appName}'?`}
                         delete={deleteAppHandler}
                         closeDelete={() => {
                             setState((state) => ({ ...state, showDeleteConfirm: false }))

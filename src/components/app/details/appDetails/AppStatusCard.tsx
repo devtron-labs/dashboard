@@ -5,6 +5,7 @@ import { ReactComponent as Question } from '../../../../assets/icons/ic-help-out
 import { AppStatusCardType } from './appDetails.type'
 import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import LoadingCard from './LoadingCard'
+import './appDetails.scss'
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())

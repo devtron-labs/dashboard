@@ -12,10 +12,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
     if (cardLoading) return <LoadingCard />
 
     return (
-        <div
-            data-testid="chart-used-card"
-            className="app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 w-200"
-        >
+        <div data-testid="chart-used-card" className="app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-200">
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content dc__ellipsis-right">
                     <div className="app-details-info-card__top-container__content__title-wrapper">

@@ -538,7 +538,7 @@ export interface SourceInfoType {
     moderate: number
     low: number
 }
-  showVulnerabilitiesModal?: () => void
+  showVulnerabilitiesModal?: (e) => void
   toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
   envId?: number | string
   ciArtifactId?: number 

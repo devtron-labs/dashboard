@@ -22,6 +22,7 @@ import {
     DEPLOYMENT_STATUS,
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
+    DEFAULT_STATUS_TEXT,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC, ScanDetailsModal } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
@@ -177,7 +178,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const environment = useMemo(() => {
         return envList.find((env) => env.environmentId === +params.envId)
     }, [envList, params.envId])
-
+    
     return (
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && envList.length > 0 && (
@@ -264,7 +265,7 @@ export const Details: React.FC<DetailsType> = ({
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
-            deploymentStatusText: DEFAULT_STATUS,
+            deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
@@ -552,7 +553,8 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    const showVulnerabilitiesModal = useCallback(() => {
+    const showVulnerabilitiesModal = useCallback((e) => {
+        e.stopPropagation()
         toggleScanDetailsModal(true)
     }, [toggleScanDetailsModal])
 
@@ -663,7 +665,7 @@ export const Details: React.FC<DetailsType> = ({
                 <div className="mb-9"></div>
             )}
             {loadingResourceTree ? (
-                <div className="bcn-0 dc__border-top h-100">
+                <div className="bcn-0 h-100">
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (

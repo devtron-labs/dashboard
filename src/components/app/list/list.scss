@@ -80,10 +80,11 @@
 }
 
 .app-list__header {
-    height: 36px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 20px 1.5fr repeat(4, 1fr) 1.5fr 76px;
     align-items: center;
-    justify-content: stretch;
+    grid-template-rows: 36px;
+    grid-column-gap: 16px;
     font-size: 12px;
     font-weight: 600;
     font-style: normal;
@@ -95,13 +96,17 @@
     z-index: var(--app-list-header-index);
 }
 
+
 .saved-filters + .app-list .app-list__header {
     top: 116px;
 }
 
 .app-list__row {
     min-height: 48px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 20px 1.5fr repeat(4, 1fr) 1.5fr 76px;
+    align-items: center;
+    grid-column-gap: 16px;
     font-size: 13px;
     font-weight: 400;
     font-style: normal;
@@ -113,18 +118,15 @@
     padding-left: 20px;
     cursor: pointer;
     background-color: white;
-    box-shadow: inset 0 -1px 0 0 var(--N100);
+    border-bottom: 1px solid var(--N100);
 }
 
 .app-list__cell {
-    flex-basis: 16%;
-    flex-grow: 1;
     min-width: 0px;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
-    padding: 0px 20px;
     background-color: inherit;
 }
 
@@ -142,13 +144,11 @@
 }
 
 .app-list__cell--icon {
-    width: 40px;
     height: 24px;
 }
 
 .app-list__cell--name {
     justify-content: flex-start;
-    flex-basis: 18%;
     padding-left: 0px;
 }
 
@@ -157,7 +157,6 @@
 }
 
 .app-list__cell--status {
-    flex-basis: 16%;
     position: relative;
     overflow: visible;
 }
@@ -170,7 +169,6 @@
 .app-list__cell--cluster,
 .app-list__cell--namespace,
 .app-list__cell--app_status {
-    flex-basis: 14%;
     justify-content: flex-start;
 }
 
@@ -200,7 +198,6 @@
     visibility: hidden;
     justify-content: flex-end;
     padding-right: 0px;
-    flex-basis: 76px;
 }
 
 .cell__link {
@@ -479,4 +476,14 @@
 
 .jobs-view-container .app-list .app-list__row .app-list__cell.app-list__cell--action {
     justify-content: flex-end;
+}
+
+.resource-list {
+    &__table-row {
+        display: grid;
+        align-items: center;
+        grid-template-columns: 20px 1.5fr repeat(4, 1fr) 1.5fr 76px;
+        column-gap: 16px;
+        grid-template-rows: 40px;
+    }
 }

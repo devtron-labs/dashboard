@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import {
     showError,
     Progressing,
-    VisibleModal,
     Reload,
     ScanVulnerabilitiesTable,
     VulnerabilityType,
+    Drawer,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import { ViewType, URLS } from '../../../config';
@@ -50,10 +50,10 @@ interface ScanDetailsModalState {
     scanToolId?:number
 }
 
-export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetailsModalState>{
-
+export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetailsModalState> {
+    scanDetailsRef = null
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             view: ViewType.LOADING,
             severityCount: {
@@ -62,24 +62,36 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                 low: 0,
             },
             scanExecutionId: 0,
-            lastExecution: "",
+            lastExecution: '',
             appId: 0,
-            appName: "",
+            appName: '',
             envId: 0,
-            envName: "",
-            pod: "",
-            replicaSet: "",
-            image: "",
+            envName: '',
+            pod: '',
+            replicaSet: '',
+            image: '',
             objectType: 'app',
             vulnerabilities: [],
             scanned: false,
             scanEnabled: false,
         }
-        this.callGetAPI = this.callGetAPI.bind(this);
+        this.callGetAPI = this.callGetAPI.bind(this)
+        this.scanDetailsRef = React.createRef<HTMLDivElement>()
+        this.outsideClickHandler = this.outsideClickHandler.bind(this)
     }
 
     componentDidMount() {
-        this.callGetAPI();
+        this.callGetAPI()
+        document.addEventListener('click', this.outsideClickHandler)
+    }
+    componentWillUnmount() {
+        document.removeEventListener('click', this.outsideClickHandler)
+    }
+    outsideClickHandler = (evt): void => {
+        if (this.scanDetailsRef.current && !this.scanDetailsRef.current.contains(evt.target)) {
+            console.log('outside click', evt)
+            this.props.close()
+        }
     }
 
     callGetAPI() {
@@ -172,75 +184,70 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
         )
     }
 
-
     renderCount() {
-        let total = this.state.severityCount.critical + this.state.severityCount.moderate + this.state.severityCount.low;
-        return <>
-            <div className="scanned-object__bar mb-16">
-                <div className="scanned-object__critical-count" style={{ width: `${100 * this.state.severityCount.critical / total}%` }}></div>
-                <div className="scanned-object__moderate-count" style={{ width: `${100 * this.state.severityCount.moderate / total}%` }}></div>
-                <div className="scanned-object__low-count" style={{ width: `${100 * this.state.severityCount.low / total}%` }}></div>
-            </div>
-            <div className="flexbox">
-                <p className="scanned-object__counts">
-                    <span className="scanned-object__icon scanned-object__critical-count"></span>Critical<span className="fw-6 ml-5 mr-20">{this.state.severityCount.critical}</span>
-                </p>
-                <p className="scanned-object__counts">
-                    <span className="scanned-object__icon scanned-object__moderate-count"></span>Moderate<span className="fw-6 ml-5 mr-20">{this.state.severityCount.moderate}</span>
-                </p>
-                <p className="scanned-object__counts">
-                    <span className="scanned-object__icon scanned-object__low-count"></span>Low<span className="fw-6 ml-5 mr-20">{this.state.severityCount.low}</span>
-                </p>
-            </div>
-        </>
+        let total = this.state.severityCount.critical + this.state.severityCount.moderate + this.state.severityCount.low
+        return (
+            <>
+                <div className="scanned-object__bar mb-16">
+                    <div
+                        className="scanned-object__critical-count"
+                        style={{ width: `${(100 * this.state.severityCount.critical) / total}%` }}
+                    ></div>
+                    <div
+                        className="scanned-object__moderate-count"
+                        style={{ width: `${(100 * this.state.severityCount.moderate) / total}%` }}
+                    ></div>
+                    <div
+                        className="scanned-object__low-count"
+                        style={{ width: `${(100 * this.state.severityCount.low) / total}%` }}
+                    ></div>
+                </div>
+                <div className="flexbox">
+                    <p className="scanned-object__counts">
+                        <span className="scanned-object__icon scanned-object__critical-count"></span>Critical
+                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.critical}</span>
+                    </p>
+                    <p className="scanned-object__counts">
+                        <span className="scanned-object__icon scanned-object__moderate-count"></span>Moderate
+                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.moderate}</span>
+                    </p>
+                    <p className="scanned-object__counts">
+                        <span className="scanned-object__icon scanned-object__low-count"></span>Low
+                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.low}</span>
+                    </p>
+                </div>
+            </>
+        )
     }
     renderTable() {
-        return <div className="scanned-object__results">
-            <ScanVulnerabilitiesTable vulnerabilities={this.state.vulnerabilities} />
-        </div>
+        return (
+            <div className="scanned-object__results">
+                <ScanVulnerabilitiesTable vulnerabilities={this.state.vulnerabilities} />
+            </div>
+        )
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) {
-            return <VisibleModal className="">
+        return (
+            <Drawer position="right" width="800px" onEscape={this.props.close}>
                 <div className="modal-body--scan-details">
                     {this.renderHeader()}
-                    <div className="trigger-modal__body trigger-modal__body--security-scan">
-                        <Progressing pageLoader />
-                    </div>
-                </div>
-            </VisibleModal>
-        }
-        else if (this.state.view === ViewType.ERROR) {
-            return <VisibleModal className="">
-                <div className="modal-body--scan-details">
-                    {this.renderHeader()}
-                    <div className="trigger-modal__body trigger-modal__body--security-scan">
-                        <Reload reload={this.callGetAPI} />
-                    </div>
-                </div>
-            </VisibleModal>
-        }
-        else if (this.state.view === ViewType.FORM && this.state.vulnerabilities.length === 0) {
-            return (
-                <VisibleModal className="">
-                    <div className="modal-body--scan-details">
-                        {this.renderHeader()}
-                        <div className="trigger-modal__body trigger-modal__body--security-scan">
+                    <div className="trigger-modal__body trigger-modal__body--security-scan" ref={this.scanDetailsRef}>
+                        {this.state.view === ViewType.LOADING ? (
+                            <Progressing pageLoader />
+                        ) : this.state.view === ViewType.ERROR ? (
+                            <Reload reload={this.callGetAPI} />
+                        ) : this.state.view === ViewType.FORM && this.state.vulnerabilities.length === 0 ? (
                             <NoVulnerabilityViewWithTool scanToolId={this.state.scanToolId} />
-                        </div>
+                        ) : (
+                            <div className="trigger-modal__body trigger-modal__body--security-scan">
+                                {this.renderScannedObjectInfo()}
+                                {this.renderTable()}
+                            </div>
+                        )}
                     </div>
-                </VisibleModal>
-            )
-        }
-        else return <VisibleModal className="">
-            <div className="modal-body--scan-details">
-                {this.renderHeader()}
-                <div className="trigger-modal__body trigger-modal__body--security-scan">
-                    {this.renderScannedObjectInfo()}
-                    {this.renderTable()}
                 </div>
-            </div>
-        </VisibleModal >
+            </Drawer>
+        )
     }
 }
