@@ -186,13 +186,14 @@
 
 .confirmation-dialog__subtitle {
     font-size: 13px;
-    color: var(--N700);
+    color: var(--N800);
+    line-height: 20px;
 }
 
 .confirmation-dialog__button-group {
     margin-top: 32px;
     button {
-        margin-left: 16px;
+        margin-left: 12px;
     }
 }
 

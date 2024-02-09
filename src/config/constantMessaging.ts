@@ -80,7 +80,7 @@ export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
 
 export const TOAST_BUTTON_TEXT_VIEW_DETAILS = 'VIEW DETAILS'
 export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
-    title: 'No users Added',
+    title: 'No users added',
     subTitle: 'Add users and assign group or direct permissions',
     notConfigured: 'SSO Login not configured:',
     infoText:
@@ -94,7 +94,6 @@ export const ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a p
 export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
 export const DELETE_DEPLOYMENT = 'Deleting deployment'
 export const VIEW_DELETION_STATUS = 'View deletion status'
-export const USER_NOT_EDITABLE = 'user cannot be edited'
 
 // Empty state messgaes
 export const ERROR_EMPTY_SCREEN = {
