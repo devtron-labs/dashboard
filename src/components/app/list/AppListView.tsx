@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { AppStatus, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, Progressing, ErrorScreenManager, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../config'
 import { Pagination, handleUTCTime } from '../../common'
 import { Link } from 'react-router-dom'
@@ -256,7 +256,7 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     renderPagination() {
-        if (this.props.size > 20) {
+        if (this.props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={this.props.size}

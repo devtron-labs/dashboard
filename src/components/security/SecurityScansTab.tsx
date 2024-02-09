@@ -1,55 +1,56 @@
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Close } from '../../assets/icons/ic-error.svg';
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
-import { getInitData, getSecurityScanList } from './security.service';
-import { Option as SelectSingleOption } from '../v2/common/ReactSelect.utils';
-import { DropdownIndicator, styles, ValueContainer, Option } from './security.util';
-import { ScanDetailsModal, Pagination } from '../common'
 import {
     showError,
     Progressing,
     ErrorScreenManager as ErrorScreen,
     GenericEmptyState,
+    DEFAULT_BASE_PAGE_SIZE
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../config';
-import { ReactSelectOptionType, SecurityScansTabState } from './security.types';
-import ReactSelect from 'react-select';
-import AppNotDeployed from '../../assets/img/app-not-deployed.png';
-import NoResults from '../../assets/img/empty-noresult@2x.png';
-import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
+import ReactSelect from 'react-select'
+import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-error.svg'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
+import { getInitData, getSecurityScanList } from './security.service'
+import { Option as SelectSingleOption } from '../v2/common/ReactSelect.utils'
+import { DropdownIndicator, styles, ValueContainer, Option } from './security.util'
+import { ScanDetailsModal, Pagination } from '../common'
+import { ViewType } from '../../config'
+import { ReactSelectOptionType, SecurityScansTabState } from './security.types'
+import AppNotDeployed from '../../assets/img/app-not-deployed.png'
+import NoResults from '../../assets/img/empty-noresult@2x.png'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export class SecurityScansTab extends Component<RouteComponentProps<{}>, SecurityScansTabState> {
 
   constructor(props) {
     super(props);
     this.state = {
-      responseCode: 0,
-      view: ViewType.LOADING,
-      searchObject: { label: "application", value: 'appName' },
-      searchObjectValue: "",
-      searchApplied: false,
-      filters: {
-        environments: [],
-        clusters: [],
-        severity: [],
-      },
-      filtersApplied: {
-        environments: [],
-        clusters: [],
-        severity: [],
-      },
-      size: 0,
-      offset: 0,
-      pageSize: 20,
-      securityScans: [],
-      uniqueId: {
-        imageScanDeployInfoId: 0,
-        appId: 0,
-        envId: 0,
-      },
-      name: "",
+        responseCode: 0,
+        view: ViewType.LOADING,
+        searchObject: { label: 'application', value: 'appName' },
+        searchObjectValue: '',
+        searchApplied: false,
+        filters: {
+            environments: [],
+            clusters: [],
+            severity: [],
+        },
+        filtersApplied: {
+            environments: [],
+            clusters: [],
+            severity: [],
+        },
+        size: 0,
+        offset: 0,
+        pageSize: DEFAULT_BASE_PAGE_SIZE,
+        securityScans: [],
+        uniqueId: {
+            imageScanDeployInfoId: 0,
+            appId: 0,
+            envId: 0,
+        },
+        name: '',
     }
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
@@ -101,15 +102,15 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     let offset = searchStr.get('offset');
     let search = searchStr.get('search')
     let payload = {
-      offset: Number(offset) || 0,
-      size: Number(pageSize) || 20,
-      search: search || "", 
-      cveName: "",
-      appName: "",
-      objectName: "",
-      severity: filtersApplied.severity.map((s) => s.value),
-      clusterIds: filtersApplied.clusters.map((s) => s.value),
-      envIds: filtersApplied.environments.map((s) => s.value),
+        offset: Number(offset) || 0,
+        size: Number(pageSize) || DEFAULT_BASE_PAGE_SIZE,
+        search: search || '',
+        cveName: '',
+        appName: '',
+        objectName: '',
+        severity: filtersApplied.severity.map((s) => s.value),
+        clusterIds: filtersApplied.clusters.map((s) => s.value),
+        envIds: filtersApplied.environments.map((s) => s.value),
     }
     if (this.state.searchObject) {
       payload[this.state.searchObject.value] = this.state.searchObjectValue
@@ -361,7 +362,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
   }
 
   renderPagination() {
-    if (this.state.size > 20) {
+    if (this.state.size > DEFAULT_BASE_PAGE_SIZE) {
       return <Pagination
         size={this.state.size}
         pageSize={this.state.pageSize}

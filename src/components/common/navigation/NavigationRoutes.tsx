@@ -17,7 +17,7 @@ import {
     updateLoginCount,
 } from '../../../services/service'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
-import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import {
     getAllModulesInfo,
     getModuleInfo,
@@ -25,9 +25,10 @@ import {
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
-import { getUserRole } from '../../userGroups/userGroup.service'
+import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { AppListResponse } from '../../app/list-new/AppListType'
+import { MainContext } from './types'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -44,17 +45,20 @@ const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/Resour
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-export const mainContext = createContext<any>(null)
+export const mainContext = createContext<MainContext>(null)
+
+export const useMainContext = () => useContext(mainContext)
+
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
-    const [serverMode, setServerMode] = useState(undefined)
+    const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [pageOverflowEnabled, setPageOverflowEnabled] = useState<boolean>(true)
-    const [currentServerInfo, setCurrentServerInfo] = useState<{ serverInfo: ServerInfo; fetchingServerInfo: boolean }>(
+    const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>(
         {
             serverInfo: undefined,
             fetchingServerInfo: false,

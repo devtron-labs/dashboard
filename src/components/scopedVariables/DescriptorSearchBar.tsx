@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { SearchBarProps } from './types'
 
 // NOTE: This is intended to be enter based search bar
+/**
+ * @deprecated Use `SearchBar` from common-lib instead
+ */
 export default function SearchBar({
     onSearch,
     Icon,
