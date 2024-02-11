@@ -3,6 +3,9 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { SearchBarType } from './AppGroup.types'
 
+/**
+ * @deprecated Use SearchBar form common lib instead
+ */
 export default function SearchBar({
     placeholder,
     searchText,

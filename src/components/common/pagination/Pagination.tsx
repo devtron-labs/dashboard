@@ -4,6 +4,9 @@ import './pagination.css'
 
 const VISIBLE_PAGES_LIMIT = 5
 
+/**
+ * @deprecated Use `Pagination` from common lib instead
+ */
 export class Pagination extends Component<PaginationProps, PaginationState> {
     node
 

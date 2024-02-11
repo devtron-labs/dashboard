@@ -1,3 +1,5 @@
+import { Moment } from 'moment'
+import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 import { SelectedResourceType } from '../../../appDetails.type'
 
@@ -40,4 +42,21 @@ export interface PodEventsType {
     status: string
     errorReason: string
     eventsResponse: any
+}
+
+export interface SelectedCustomLogFilterType {
+    option: string
+    value: string
+    unit?: string
+}
+
+export interface CustomLogFilterOptionsType {
+    [CUSTOM_LOGS_FILTER.DURATION]: { value: string; unit: string; error: string }
+    [CUSTOM_LOGS_FILTER.LINES]: { value: string; error: string }
+    [CUSTOM_LOGS_FILTER.SINCE]: {
+        value: string
+        date: Moment
+        time: { label: string; value: string; isDisabled?: boolean }
+    }
+    [CUSTOM_LOGS_FILTER.ALL]: { value: string }
 }

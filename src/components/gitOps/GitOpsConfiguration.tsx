@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { showError, Progressing, ErrorScreenManager, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { withRouter } from 'react-router-dom'
-import { ViewType, DOCUMENTATION } from '../../config'
+import { ViewType, DOCUMENTATION, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
 import {
     GitOpsState,
     GitOpsProps,
@@ -31,7 +31,6 @@ import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.sv
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
-import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {

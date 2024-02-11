@@ -438,11 +438,6 @@ export enum NodeDetailTabs {
 }
 export type NodeDetailTabsType = keyof typeof NodeDetailTabs
 
-export enum SortingOrder {
-    ASC = 'ASC',
-    DESC = 'DESC',
-}
-
 export interface EditAppRequest {
     id: number
     labels: TagType[]

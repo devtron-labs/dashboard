@@ -275,8 +275,9 @@ export default function CiWebhookModal({
                         <button
                             type="button"
                             className="mr-20 dc__transparent dc__align-right"
-                            onClick={() => onEditShowEditableCiModal(ciPipelineMaterialId, workflowId)}
+                            onClick={() => onEditShowEditableCiModal(ciPipelineId, workflowId)}
                         >
+                            // Here the CI model requires the CiPipelineId not the CiPipelineMaterialId
                             <Edit className=" icon-dim-24" />
                         </button>
                     </div>

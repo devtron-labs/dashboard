@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { PopupMenu, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { PopupMenu, stopPropagation, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 import { RadioGroup, sortObjectArrayAlphabetically, versionComparator } from '../common'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ChartSelectorModalType, DeploymentChartVersionType } from './types'
-import { SortingOrder } from '../app/types'
 import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS } from './constants'
 import { DEPLOYMENT } from '../../config'
 
