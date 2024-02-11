@@ -774,7 +774,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     trigger="click"
                                     interactive
                                 >
-                                    <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
+                                    <div className="flex">
+                                        <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
+                                    </div>
                                 </TippyCustomized>
                             </span>
                         </div>
@@ -908,7 +910,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 placement="bottom"
                                                 content="Devtron will create the directory and clone the code in it"
                                             >
-                                                <Question className="icon-dim-16 ml-4" />
+                                                <div className="flex">
+                                                    <Question className="icon-dim-16 ml-4" />
+                                                </div>
                                             </Tippy>
                                         </span>
                                         <div className="fs-12 cn-7">
@@ -949,7 +953,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         placement="bottom"
                                         content="This will use credentials from default remote of parent repository."
                                     >
-                                        <Question className="icon-dim-16 ml-4" />
+                                        <div className="flex">
+                                            <Question className="icon-dim-16 ml-4" />
+                                        </div>
                                     </Tippy>
                                 </span>
                                 <div className="fs-12 cn-7">

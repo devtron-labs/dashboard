@@ -128,7 +128,9 @@ const BuildContextLabel = () => {
                 trigger="click"
                 interactive
             >
-                <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                <div className="flex">
+                    <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                </div>
             </TippyCustomized>
         </label>
     )
@@ -164,7 +166,9 @@ const BuilderTippy = () => {
             trigger="click"
             interactive
         >
-            <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+            <div>
+                <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+            </div>
         </TippyCustomized>
     )
 }

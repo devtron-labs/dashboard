@@ -130,7 +130,7 @@ const ChartListPopUp = ({
                     className={`chartRepo_form__subtitle dc__float-right dc__link flex ${!fetching ? 'cursor' : ''}`}
                     onClick={refetchCharts}
                 >
-                    {fetching ? <Progressing size={16} /> : <SyncIcon />}
+                    <div className="flex">{fetching ? <Progressing size={16} /> : <SyncIcon />}</div>
                 </a>
             </Tippy>
         )

@@ -152,10 +152,12 @@ export default function CIConfigDiffView({
                     </Link>
                 </Tippy>
                 <Tippy className="default-tt" arrow={false} placement="top" content="Delete override">
-                    <DeleteIcon
-                        className="icon-dim-24 scr-5 cursor"
-                        onClick={() => toggleDeleteDialogVisibility(_wfId)}
-                    />
+                    <div className="flex">
+                        <DeleteIcon
+                            className="icon-dim-24 scr-5 cursor"
+                            onClick={() => toggleDeleteDialogVisibility(_wfId)}
+                        />
+                    </div>
                 </Tippy>
             </div>
         )

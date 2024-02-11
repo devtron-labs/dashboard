@@ -59,7 +59,9 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                             placement="top"
                             content="The health status of your app"
                         >
-                            <Question className="icon-dim-16 mt-2" />
+                            <div className="flex">
+                                <Question className="icon-dim-16 mt-2" />
+                            </div>
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">

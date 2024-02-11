@@ -62,7 +62,9 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                             placement="top"
                             content="Last deployment was triggered with this commit"
                         >
-                            <Question className="icon-dim-16 mt-2" />
+                            <div className="flex">
+                                <Question className="icon-dim-16 mt-2" />
+                            </div>
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">

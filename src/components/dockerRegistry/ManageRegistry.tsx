@@ -346,7 +346,9 @@ const ManageRegistry = ({
                         trigger="click"
                         interactive
                     >
-                        <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                        <div className="flex">
+                            <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                        </div>
                     </TippyCustomized>
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />

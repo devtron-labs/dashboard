@@ -210,11 +210,13 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
                 trigger="mouseenter click"
                 interactive
             >
-                <CopyIcon
-                    data-copy-text={copyText}
-                    className="pointer ml-6 icon-dim-16"
-                    onClick={onClickCopyToClipboard}
-                />
+                <div className="flex">
+                    <CopyIcon
+                        data-copy-text={copyText}
+                        className="pointer ml-6 icon-dim-16"
+                        onClick={onClickCopyToClipboard}
+                    />
+                </div>
             </Tippy>
         </>
     )

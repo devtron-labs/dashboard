@@ -459,11 +459,13 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return (
                 <div className="dc__block mt-20 mb-20">
                     <Tippy placement="top" content="Delete">
-                        <Delete
-                            className="icon-dim-24 mr-20 notification-tab__option"
-                            onClick={this.showDeleteModal}
-                            data-testid="notification-delete-button"
-                        />
+                        <div className="flex">
+                            <Delete
+                                className="icon-dim-24 mr-20 notification-tab__option"
+                                onClick={this.showDeleteModal}
+                                data-testid="notification-delete-button"
+                            />
+                        </div>
                     </Tippy>
                     <PopupMenu
                         onToggleCallback={(isOpen) => {
@@ -474,7 +476,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                     >
                         <PopupMenu.Button rootClassName="popup-button--notification-tab">
                             <Tippy placement="top" content="Modify Events">
-                                <Bell className="icon-dim-24 mr-20 notification-tab__option" />
+                                <div className="flex">
+                                    <Bell className="icon-dim-24 mr-20 notification-tab__option" />
+                                </div>
                             </Tippy>
                         </PopupMenu.Button>
                         <PopupMenu.Body>
@@ -528,7 +532,12 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </PopupMenu.Body>
                     </PopupMenu>
                     <Tippy placement="top" content="Modify Recipients">
-                        <User className="icon-dim-24 mr-20 notification-tab__option" onClick={this.showModifyModal} />
+                        <div className="flex">
+                            <User
+                                className="icon-dim-24 mr-20 notification-tab__option"
+                                onClick={this.showModifyModal}
+                            />
+                        </div>
                     </Tippy>
                 </div>
             )
@@ -661,21 +670,27 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 <td className="pipeline-list__stages flexbox flex-justify">
                                     {row.trigger ? (
                                         <Tippy placement="top" content="on trigger">
-                                            <Play className="icon-dim-20 icon-n5" />
+                                            <div className="flex">
+                                                <Play className="icon-dim-20 icon-n5" />
+                                            </div>
                                         </Tippy>
                                     ) : (
                                         <span className="icon-dim-20" />
                                     )}
                                     {row.success ? (
                                         <Tippy placement="top" content="on success">
-                                            <Check className="icon-dim-20 icon-n5" />
+                                            <div className="flex">
+                                                <Check className="icon-dim-20 icon-n5" />
+                                            </div>
                                         </Tippy>
                                     ) : (
                                         <span className="icon-dim-20" />
                                     )}
                                     {row.failure ? (
                                         <Tippy placement="top" content="on failure">
-                                            <Info className="icon-dim-20 icon-n5" />
+                                            <div className="flex">
+                                                <Info className="icon-dim-20 icon-n5" />
+                                            </div>
                                         </Tippy>
                                     ) : (
                                         <span className="icon-dim-20" />

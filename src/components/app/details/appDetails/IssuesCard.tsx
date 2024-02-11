@@ -197,7 +197,9 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
                             placement="top"
                             content="Issues or errors detected in the current deployment"
                         >
-                            <Question className="icon-dim-16 mt-2" />
+                            <div className="flex">
+                                <Question className="icon-dim-16 mt-2" />
+                            </div>
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">

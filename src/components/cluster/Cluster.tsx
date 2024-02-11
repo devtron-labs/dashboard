@@ -784,10 +784,12 @@ const Cluster = ({
                                                         arrow={false}
                                                         content="Edit Environment"
                                                     >
-                                                        <PencilEdit
-                                                            className="cursor icon-dim-20 mr-12"
-                                                            onClick={showWindowModal}
-                                                        />
+                                                        <div className="">
+                                                            <PencilEdit
+                                                                className="icon-dim-20 mr-12"
+                                                                onClick={showWindowModal}
+                                                            />
+                                                        </div>
                                                     </Tippy>
                                                     {envDelete ? (
                                                         <Progressing size={20} />
@@ -797,11 +799,13 @@ const Cluster = ({
                                                             arrow={false}
                                                             content="Delete Environment"
                                                         >
-                                                            <DeleteEnvironment
-                                                                data-testid={`env-delete-button-${environment_name}`}
-                                                                className="icon-dim-20 cursor"
-                                                                onClick={showToggleConfirmation}
-                                                            />
+                                                            <div className="">
+                                                                <DeleteEnvironment
+                                                                    data-testid={`env-delete-button-${environment_name}`}
+                                                                    className="icon-dim-20 cursor"
+                                                                    onClick={showToggleConfirmation}
+                                                                />
+                                                            </div>
                                                         </Tippy>
                                                     )}
                                                 </div>

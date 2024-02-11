@@ -322,14 +322,16 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                         }}
                         interactive
                     >
-                        <Clipboard
-                            className="pointer hover-only icon-dim-16"
-                            onClick={() => {
-                                copyToClipboard(webhookDetails?.webhookUrl, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
+                        <div className="flex">
+                            <Clipboard
+                                className="pointer hover-only icon-dim-16"
+                                onClick={() => {
+                                    copyToClipboard(webhookDetails?.webhookUrl, () => {
+                                        setCopied(true)
+                                    })
+                                }}
+                            />
+                        </div>
                     </Tippy>
                 </div>
             </div>
@@ -364,7 +366,9 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                         </>
                     }
                 >
-                    <Question className="icon-dim-16 ml-6" />
+                    <div className="flex">
+                        <Question className="icon-dim-16 ml-6" />
+                    </div>
                 </Tippy>
             </div>
         )
@@ -404,14 +408,16 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                         }}
                         interactive
                     >
-                        <Clipboard
-                            className="ml-8 mt-5 pointer hover-only icon-dim-16"
-                            onClick={() => {
-                                copyToClipboard(token, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
+                        <div className="flex">
+                            <Clipboard
+                                className="ml-8 mt-5 pointer hover-only icon-dim-16"
+                                onClick={() => {
+                                    copyToClipboard(token, () => {
+                                        setCopied(true)
+                                    })
+                                }}
+                            />
+                        </div>
                     </Tippy>
                 </div>
             </div>
@@ -518,15 +524,17 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                         }}
                         interactive
                     >
-                        <Clipboard
-                            className="pointer hover-only icon-dim-16 dc__position-abs"
-                            style={{ right: '8px' }}
-                            onClick={() => {
-                                copyToClipboard(value, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
+                        <div className="flex">
+                            <Clipboard
+                                className="pointer hover-only icon-dim-16 dc__position-abs"
+                                style={{ right: '8px' }}
+                                onClick={() => {
+                                    copyToClipboard(value, () => {
+                                        setCopied(true)
+                                    })
+                                }}
+                            />
+                        </div>
                     </Tippy>
                 )}
                 <code>{value}</code>

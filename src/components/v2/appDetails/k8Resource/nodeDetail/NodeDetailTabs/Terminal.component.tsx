@@ -115,15 +115,17 @@ const TerminalComponent = ({
                                     placement="bottom"
                                     content={`${data.isExternal ? 'Externally created ephemeral containers cannot be removed' : 'Remove container'}`}
                                 >
-                                    <Cross
-                                        className={`icon-dim-16 ${data.isExternal ? 'cursor-not-allowed dc__opacity-0_5' : 'cursor'} ${props.isFocused && !data.isExternal ? 'scr-5' : ''}`}
-                                        onClick={(selected) => {
-                                            stopPropagation(selected)
-                                            if (!data.isExternal) {
-                                                deleteEphemeralContainer(props.label)
-                                            }
-                                        }}
-                                    />
+                                    <div className="flex">
+                                        <Cross
+                                            className={`icon-dim-16 ${data.isExternal ? 'cursor-not-allowed dc__opacity-0_5' : 'cursor'} ${props.isFocused && !data.isExternal ? 'scr-5' : ''}`}
+                                            onClick={(selected) => {
+                                                stopPropagation(selected)
+                                                if (!data.isExternal) {
+                                                    deleteEphemeralContainer(props.label)
+                                                }
+                                            }}
+                                        />
+                                    </div>
                                 </Tippy>
                             )}
                             {props.label}

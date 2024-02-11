@@ -30,7 +30,9 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
                             placement="top"
                             content="Chart used to deploy to this application"
                         >
-                            <Question className="icon-dim-16 mt-2" />
+                            <div className="flex">
+                                <Question className="icon-dim-16 mt-2" />
+                            </div>
                         </Tippy>
                     </div>
                     <div className="fs-13 fw-6 dc__ellipsis-right" data-testid="full-chart-name-with-version">

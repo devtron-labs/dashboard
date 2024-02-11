@@ -1122,15 +1122,19 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                             placement="bottom"
                             content={isSocketConnecting ? 'Disconnect' : 'Connect'}
                         >
-                            {isSocketConnecting ? (
-                                <Disconnect className="icon-dim-20 mr-5" onClick={onClickDisconnectTab} />
-                            ) : (
-                                <Connect className="icon-dim-20 mr-5" onClick={onClickConnectTab} />
-                            )}
+                            <div className="flex">
+                                {isSocketConnecting ? (
+                                    <Disconnect className="icon-dim-20 mr-5" onClick={onClickDisconnectTab} />
+                                ) : (
+                                    <Connect className="icon-dim-20 mr-5" onClick={onClickConnectTab} />
+                                )}
+                            </div>
                         </Tippy>
 
                         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                            <Abort className="icon-dim-20 mr-8 ml-8" onClick={onClickAbort} />
+                            <div className="flex">
+                                <Abort className="icon-dim-20 mr-8 ml-8" onClick={onClickAbort} />
+                            </div>
                         </Tippy>
                     </div>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
@@ -1154,7 +1158,9 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                     </Tippy>
 
                     <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+                    <div className="flex">
                         <Abort className="icon-dim-20 mr-16 ml-8" onClick={onLogsCleared} />
+                    </div>
                     </Tippy>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                 </>

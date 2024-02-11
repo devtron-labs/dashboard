@@ -149,7 +149,9 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                         trigger="click"
                         interactive
                     >
-                        <QuestionIcon className="icon-dim-16 fcn-6 ml-8 cursor" onClick={stopPropagation} />
+                        <div className="flex">
+                            <QuestionIcon className="icon-dim-16 fcn-6 ml-8 cursor" onClick={stopPropagation} />
+                        </div>
                     </TippyCustomized>
                 </div>
                 {DRAIN_NODE_OPTIONS.map((option) => {
@@ -176,10 +178,12 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                                 trigger="click"
                                 interactive
                             >
-                                <QuestionIcon
-                                    className="drain-option-help-icon icon-dim-16 fcn-6 ml-8 cursor"
-                                    onClick={stopPropagation}
-                                />
+                                <div>
+                                    <QuestionIcon
+                                        className="drain-option-help-icon icon-dim-16 fcn-6 ml-8 cursor"
+                                        onClick={stopPropagation}
+                                    />
+                                </div>
                             </TippyCustomized>
                         </div>
                     )

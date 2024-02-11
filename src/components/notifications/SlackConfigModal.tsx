@@ -185,6 +185,37 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
         this.saveSlackConfig()
     }
 
+    renderWebhookUrlLabel = () => {
+        return (
+            <div className="flex">
+                <div className="dc__required-field">Webhook URL </div>
+                <div>
+                    <Tippy
+                        className="default-tt"
+                        arrow
+                        trigger="click"
+                        interactive
+                        placement="top"
+                        content={
+                            <a
+                                href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: 'white', textTransform: 'none' }}
+                            >
+                                Learn how to setup slack webhooks
+                            </a>
+                        }
+                    >
+                        <div className="flex">
+                            <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
+                        </div>
+                    </Tippy>
+                </div>
+            </div>
+        )
+    }
+
     render() {
         const project = this.state.projectList.find((p) => p.id === this.state.form.projectId)
         let body
@@ -214,30 +245,9 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                             />
                         </label>
                         <label className="form__row">
-                            <span className="form__label dc__required-field">
-                                Webhook URL
-                                <Tippy
-                                    className="default-tt"
-                                    arrow
-                                    trigger="click"
-                                    interactive
-                                    placement="top"
-                                    content={
-                                        <a
-                                            href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ color: 'white', textTransform: 'none' }}
-                                        >
-                                            Learn how to setup slack webhooks
-                                        </a>
-                                    }
-                                >
-                                    <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
-                                </Tippy>
-                            </span>
                             <CustomInput
                                 data-testid="add-webhook-url"
+                                label={this.renderWebhookUrlLabel()}
                                 type="text"
                                 name="app-name"
                                 value={this.state.form.webhookUrl}
@@ -250,8 +260,8 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                             />
                         </label>
                         <div>
-                            <label className="form__label dc__required-field">
-                                Project
+                            <label className="form__label flexbox-imp">
+                                <span className="dc__required-field">Project</span>
                                 <Tippy
                                     className="default-tt"
                                     arrow
@@ -260,7 +270,9 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                     placement="top"
                                     content="Required to control user Acccess"
                                 >
-                                    <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
+                                    <div>
+                                        <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
+                                    </div>
                                 </Tippy>
                             </label>
                             <Select

@@ -265,7 +265,9 @@ const EnvironmentSelectorComponent = ({
                                 isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                             }`}
                         >
-                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                            <div className="flex">
+                                <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                            </div>
                         </Tippy>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (

@@ -391,7 +391,9 @@ export default function HelmAppList({
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy className="default-tt" arrow placement="top" content={ENVIRONMENT_HEADER_TIPPY_CONTENT}>
-                        <HelpOutlineIcon className="icon-dim-20" />
+                        <div className="flex">
+                            <HelpOutlineIcon className="icon-dim-20" />
+                        </div>
                     </Tippy>
                 </div>
                 <div className="app-list__cell app-list__cell--cluster">

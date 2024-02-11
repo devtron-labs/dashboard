@@ -176,7 +176,9 @@ export default function Docker({ ...props }) {
                     trigger="click"
                     interactive
                 >
-                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    <div className="flex">
+                        <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    </div>
                 </TippyCustomized>
             </div>
             {dockerRegistryList.map((docker) => (
@@ -1072,7 +1074,9 @@ const DockerForm = ({
                                 trigger="click"
                                 interactive
                             >
-                                <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                                <div className="flex">
+                                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                                </div>
                             </TippyCustomized>
                         </div>
                         <div className="cb-5 cursor" onClick={onClickShowManageModal}>
@@ -1324,7 +1328,9 @@ const DockerForm = ({
                             </span>
                         }
                     >
-                        <Question className="icon-dim-20 ml-8" />
+                        <div className="flex">
+                            <Question className="icon-dim-20 ml-8" />
+                        </div>
                     </Tippy>
                 </div>
             )
@@ -1731,7 +1737,9 @@ const DockerForm = ({
                                             placement="top"
                                             content={<span className="dc__block w-160">{tippy}</span>}
                                         >
-                                            <Question className="icon-dim-16 ml-4" />
+                                            <div className="flex">
+                                                <Question className="icon-dim-16 ml-4" />
+                                            </div>
                                         </Tippy>
                                     )}
                                 </label>

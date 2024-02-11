@@ -189,7 +189,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <HeaderIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <HeaderIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.BOLD:
@@ -200,7 +202,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <BoldIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <BoldIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.ITALIC:
@@ -211,7 +215,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <ItalicIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <ItalicIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.STRIKETHROUGH:
@@ -222,7 +228,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <StrikethroughIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <StrikethroughIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.LINK:
@@ -233,7 +241,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <LinkIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <LinkIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.QUOTE:
@@ -244,7 +254,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <QuoteIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <QuoteIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.CODE:
@@ -255,7 +267,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <CodeIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <CodeIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.IMAGE:
@@ -266,7 +280,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <ImageIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <ImageIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.UNORDERED_LIST:
@@ -277,7 +293,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <UnorderedListIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <UnorderedListIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.ORDERED_LIST:
@@ -288,7 +306,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <OrderedListIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <OrderedListIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.CHECKED_LIST:
@@ -299,7 +319,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <CheckedListIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <CheckedListIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
         }

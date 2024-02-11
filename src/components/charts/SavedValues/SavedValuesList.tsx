@@ -303,11 +303,13 @@ export default function SavedValuesList() {
                                                 placement="bottom"
                                                 content="Use value to deploy"
                                             >
-                                                <Launch
-                                                    className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon scn-6"
-                                                    onClick={() => redirectToChartValuePage(chartData.id, true)}
-                                                    data-testid="preset-element-options-0"
-                                                />
+                                                <div className="flex">
+                                                    <Launch
+                                                        className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon scn-6"
+                                                        onClick={() => redirectToChartValuePage(chartData.id, true)}
+                                                        data-testid="preset-element-options-0"
+                                                    />
+                                                </div>
                                             </Tippy>
                                             <Tippy
                                                 className="default-tt"
@@ -315,11 +317,13 @@ export default function SavedValuesList() {
                                                 placement="bottom"
                                                 content="Edit value"
                                             >
-                                                <Edit
-                                                    className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon"
-                                                    onClick={() => redirectToChartValuePage(chartData.id)}
-                                                    data-testid="preset-element-options-1"
-                                                />
+                                                <div className="flex">
+                                                    <Edit
+                                                        className="icon-dim-18 mr-16 dc__vertical-align-middle pointer action-icon"
+                                                        onClick={() => redirectToChartValuePage(chartData.id)}
+                                                        data-testid="preset-element-options-1"
+                                                    />
+                                                </div>
                                             </Tippy>
                                             <Tippy
                                                 className="default-tt"
@@ -327,11 +331,13 @@ export default function SavedValuesList() {
                                                 placement="bottom"
                                                 content="Delete value"
                                             >
-                                                <Delete
-                                                    className="icon-dim-18 dc__vertical-align-middle pointer action-icon"
-                                                    onClick={() => onDeleteButtonClick(chartData)}
-                                                    data-testid="preset-element-options-2"
-                                                />
+                                                <div className="flex">
+                                                    <Delete
+                                                        className="icon-dim-18 dc__vertical-align-middle pointer action-icon"
+                                                        onClick={() => onDeleteButtonClick(chartData)}
+                                                        data-testid="preset-element-options-2"
+                                                    />
+                                                </div>
                                             </Tippy>
                                         </div>
                                     </div>

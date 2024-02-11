@@ -57,7 +57,7 @@ export default function DeploymentConfigFormCTA({
     const renderWrappedChildren = (children) => {
         return (
             <Tippy className="default-tt w-200" arrow={false} placement="top-end" content={getCTATippyContent()}>
-                {children}
+               <div>{children}</div>
             </Tippy>
         )
     }
