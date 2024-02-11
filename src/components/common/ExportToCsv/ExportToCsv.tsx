@@ -10,7 +10,7 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamat
 import { Moment12HourExportFormat } from '../../../config'
 import './exportToCsv.scss'
 
-export default function ExportToCsv({ apiPromise, fileName, className, disabled }: ExportToCsvProps) {
+export default function ExportToCsv({ apiPromise, fileName, className, disabled, showOnlyIcon = false }: ExportToCsvProps) {
     const [exportingData, setExportingData] = useState(false)
     const [showExportingModal, setShowExportingModal] = useState(false)
     const [errorExportingData, setErrorExportingData] = useState(false)
@@ -128,7 +128,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
     }
 
     return (
-        <div className={`export-to-csv-button ${className}`}>
+        <div className={`export-to-csv-button ${showOnlyIcon ? 'w-32 h-32' : ''} ${className}`}>
             <ConditionalWrap
                 condition={disabled}
                 wrap={(children) => (
@@ -138,12 +138,14 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
                 )}
             >
                 <button
-                    className={`flex cta ghosted w-100 h-36 ${disabled ? 'nothing-to-export' : ''}`}
+                    className={`flex cta ghosted flex dc__gap-8 ${showOnlyIcon ? 'h-32 w-32 mw-none' : 'w-100 h-36'} ${
+                        disabled ? 'nothing-to-export' : ''
+                    }`}
                     onClick={generateDataToExport}
                     data-testid="export-csv-button"
                 >
-                    <ExportIcon className="icon-dim-16 mr-8" />
-                    <span>Export CSV</span>
+                    <ExportIcon className="icon-dim-16" />
+                    {!showOnlyIcon && <span>Export CSV</span>}
                 </button>
             </ConditionalWrap>
             <CSVLink

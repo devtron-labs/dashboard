@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
-import { ConfirmationDialog, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, Progressing, VisibleModal, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { versionComparator } from '../../common'
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
@@ -26,7 +26,6 @@ import {
     getDeploymentConfigDropdownStyles,
     getDraftOption,
 } from '../constants'
-import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'

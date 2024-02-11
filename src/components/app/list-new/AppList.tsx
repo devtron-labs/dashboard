@@ -27,7 +27,7 @@ import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmpt
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
-import { getUserRole } from '../../userGroups/userGroup.service'
+import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'

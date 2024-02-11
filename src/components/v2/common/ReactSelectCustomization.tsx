@@ -120,6 +120,51 @@ export const multiSelectStyles = {
         ...base,
         color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
     }),
+    singleValue: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        fontSize: '13px',
+    }),
+}
+
+export const podsDropdownStyles = {
+    menu: (base) => ({
+        ...base,
+        zIndex: 9999,
+        width: '120px',
+        borderRadius: '4px',
+    }),
+    control: (base) => ({
+        ...base,
+        borderColor: 'transparent',
+        backgroundColor: 'transparent',
+        minHeight: '24px !important',
+        cursor: 'pointer',
+    }),
+    input: (base) => ({
+        ...base,
+        margin: '0',
+        paddingTop: '0',
+    }),
+    singleValue: (base) => ({
+        ...base,
+        fontWeight: 600,
+        color: '#000A14',
+        marginLeft: '2px',
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: '0',
+    }),
+    valueContainer: (base) => ({
+        ...base,
+        padding: '0 8px',
+    }),
+    menuList: (base) => ({
+        ...base,
+        maxHeight: '200px',
+        borderRadius: '4px',
+    }),
 }
 
 interface CustomSelect {

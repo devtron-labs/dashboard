@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Checkbox, CHECKBOX_VALUE, get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, get, OptionType, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
@@ -30,7 +30,6 @@ import {
     SELECT_TITLE,
     SocketConnectionType,
 } from './constants'
-import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
 import {

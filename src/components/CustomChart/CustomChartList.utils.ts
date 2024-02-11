@@ -1,4 +1,4 @@
-import { SortingOrder } from '../app/types'
+import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 import { sortObjectArrayAlphabetically, versionComparator } from '../common'
 import { ChartDetailType } from './types'
 

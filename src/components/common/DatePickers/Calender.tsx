@@ -40,7 +40,7 @@ const selectedSpanStyles = {
     },
 }
 
-const customDayStyles = {
+export const customDayStyles = {
     selectedStartStyles: selectedStyles,
     selectedEndStyles: selectedStyles,
     hoveredSpanStyles,

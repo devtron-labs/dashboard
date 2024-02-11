@@ -1,0 +1,109 @@
+.custom-logs-modal {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    margin-top: 40px;
+    background-color: white;
+}
+
+.custom-logs-radio-group {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    border: none;
+    border-radius: 0;
+    width: 180px;
+    padding: 16px 12px;
+    border-right: 1px solid var(--N100);
+
+    .form__radio-item {
+        border: none;
+        flex-grow: 0;
+    }
+
+    .form__radio-item-content {
+        display: flex;
+        align-items: center;
+        padding: 6px 8px;
+        .radio__title{
+            line-height: 20px;
+        }
+    }
+
+    .form__radio-item-content:hover {
+        background-color: var(--N50);
+    }
+}
+
+.option-input-container {
+    align-self: flex-start;
+    padding: 16px 18px;
+    flex-grow: 1;
+}
+
+.input-focus-none {
+    width: 175px;
+    padding: 8px;
+    border-radius: 4px 0 0 4px;
+    border-width: 1px 0 1px 1px;
+    border-style: solid;
+    border-color: var(--N200);
+    color: var(--N900);
+    font-size: 13px;
+    line-height: 20px;
+
+    &:focus,
+    &:hover {
+        outline: none;
+    }
+}
+
+.logs-date-picker {
+    display: flex;
+    padding: 8px;
+    justify-content: flex-start;
+    width: 160px;
+    margin-right: 8px;
+    border-radius: 4px;
+    height: 38px;
+    border: 1px solid var(--N200);
+    background-color: var(--N50);
+
+}
+
+.SingleDatePickerInput {
+    display: flex;
+    width: 169px;
+    height: 38px;
+    padding: 8px 11px 4px;
+    border: 1px solid var(--N200);
+    background: var(--N50);
+    margin-right: 8px;
+
+}
+
+.SingleDatePickerInput_calendarIcon {
+    padding: 0;
+    margin: 0;
+    margin-right: 8px
+}
+
+.SingleDatePickerInput__withBorder .DateInput {
+    height: max-content;
+    background: var(--N50)
+}
+
+.DateInput_input {
+    font-size: 13px;
+    color: var(--N900);
+    padding: 0px;
+    background: var(--N50);
+
+    &.DateInput_input__focused {
+        border: none
+    }
+}
+
+.DateInput_fang {
+    display: none;
+}

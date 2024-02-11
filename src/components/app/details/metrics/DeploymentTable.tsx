@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import React, { Component } from 'react';
+import { Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { ReactComponent as Sort } from '../../../../assets/icons/ic-sort.svg'
 import { ReactComponent as SortUp } from '../../../../assets/icons/ic-sort-up.svg'
@@ -169,7 +169,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
     }
 
     renderPagination() {
-        if (this.state.pagination.size > 20) {
+        if (this.state.pagination.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={this.state.pagination.size}

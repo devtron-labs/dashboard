@@ -5,6 +5,7 @@ import {
     Progressing,
     ErrorScreenManager as ErrorScreen,
     GenericEmptyState,
+    DEFAULT_BASE_PAGE_SIZE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
@@ -41,7 +42,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             },
             size: 0,
             offset: 0,
-            pageSize: 20,
+            pageSize: DEFAULT_BASE_PAGE_SIZE,
             securityScans: [],
             uniqueId: {
                 imageScanDeployInfoId: 0,
@@ -105,7 +106,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         const search = searchStr.get('search')
         const payload = {
             offset: Number(offset) || 0,
-            size: Number(pageSize) || 20,
+            size: Number(pageSize) || DEFAULT_BASE_PAGE_SIZE,
             search: search || '',
             cveName: '',
             appName: '',
@@ -412,7 +413,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     }
 
     renderPagination() {
-        if (this.state.size > 20) {
+        if (this.state.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={this.state.size}

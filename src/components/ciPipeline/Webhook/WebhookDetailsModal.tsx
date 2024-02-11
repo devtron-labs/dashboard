@@ -20,14 +20,13 @@ import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.sv
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
-import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
 import { Option } from '../../v2/common/ReactSelect.utils'
-import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
+import { getUserRole, createOrUpdateUser } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
-import { createGeneratedAPIToken } from '../../apiTokens/service'
-import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
+import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
+import { ActionTypes, EntityTypes } from '../../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import {
     CURL_PREFIX,
     PLAYGROUND_TAB_LIST,
@@ -40,6 +39,7 @@ import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, W
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
+import { UserCreateOrUpdatePayload } from '../../../Pages/GlobalConfigurations/Authorization/types'
 
 export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -190,9 +190,9 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             }
             const { result } = await createGeneratedAPIToken(payload)
             if (result) {
-                const userPermissionPayload: CreateUser = {
+                const userPermissionPayload: UserCreateOrUpdatePayload = {
                     id: result.userId,
-                    email_id: result.userIdentifier,
+                    emailId: result.userIdentifier,
                     groups: [],
                     roleFilters: [
                         {
@@ -206,7 +206,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     ],
                     superAdmin: false,
                 }
-                const { result: userPermissionResponse } = await saveUser(userPermissionPayload)
+                const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)
                 if (userPermissionResponse) {
                     setGeneratedAPIToken(result.token)
                 }

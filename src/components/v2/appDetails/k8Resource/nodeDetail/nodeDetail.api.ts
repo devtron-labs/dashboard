@@ -1,5 +1,5 @@
-import { DeploymentAppTypes, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../../../../config'
+import { DeploymentAppTypes, post, put, trash, Host } from '@devtron-labs/devtron-fe-common-lib'
+import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config';
 import {
     AppDetails,
     AppType,
@@ -8,6 +8,7 @@ import {
     SelectedResourceType,
 } from '../../appDetails.type'
 import { ParamsType } from './nodeDetail.type'
+import { toast } from 'react-toastify';
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
@@ -145,16 +146,115 @@ function getEventHelmApps(
     return post(Routes.EVENTS, requestData)
 }
 
+const getFilterWithValue = (type: string, value: string,unit?:string) => {
+    switch (type) {
+        case CUSTOM_LOGS_FILTER.DURATION:
+            return `&sinceSeconds=${Number(value) * (unit === 'hours' ? 3600 : 60)}`
+        case CUSTOM_LOGS_FILTER.LINES:
+            return `&tailLines=${value}`
+        case CUSTOM_LOGS_FILTER.SINCE:
+            return `&sinceTime=${value}`
+        case CUSTOM_LOGS_FILTER.ALL:
+            return ''
+    }
+}
+
+export const downloadLogs = async (
+    setDownloadInProgress: (downloadInProgress: boolean) => void,
+    ad: AppDetails,
+    nodeName: string,
+    container: string,
+    prevContainerLogs: boolean,
+    logsOption?: { label: string; value: string; type: CUSTOM_LOGS_FILTER },
+    customOption?: { option: string; value: string; unit?: string },
+    isResourceBrowserView?: boolean,
+    clusterId?: number,
+    namespace?: string,
+) => {
+    let filter = ''
+    if (logsOption.value === CUSTOM_LOGS_FILTER.CUSTOM) {
+        filter = getFilterWithValue(customOption.option, customOption.value, customOption.unit)
+    } else {
+        filter = getFilterWithValue(logsOption.type, logsOption.value)
+    }
+    let logsURL = `${Host}/${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
+    const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
+    const appId =
+        ad.appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
+            : getAppId(ad.clusterId, ad.namespace, applicationObject)
+    if (isResourceBrowserView) {
+        logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
+    } else {
+        const appType =
+            ad.appType == AppType.DEVTRON_APP
+                ? K8sResourcePayloadAppType.DEVTRON_APP
+                : K8sResourcePayloadAppType.HELM_APP
+        const deploymentType =
+            ad.deploymentAppType == DeploymentAppTypes.HELM
+                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
+                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        if (appType === 0) {
+            logsURL += `&namespace=${ad.namespace}`
+        }
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
+    }
+    logsURL += `${filter}`
+    setDownloadInProgress(true)
+    await fetch(logsURL)
+        .then(async (response) => {
+            try {
+                if(response.status === 204){
+                    toast.error('No logs found')
+                    return;
+                }
+                const data = await (response as any).blob()
+                // Create a new URL object
+                const blobUrl = URL.createObjectURL(data)
+
+                // Create a link element
+                const a = document.createElement('a')
+                a.href = logsURL
+                a.download = `podlogs-${nodeName}-${new Date().getTime()}.log`
+
+                // Append the link element to the DOM
+                document.body.appendChild(a)
+
+                // Programmatically click the link to start the download
+                a.click()
+
+                setTimeout(() => {
+                    URL.revokeObjectURL(blobUrl)
+                    document.body.removeChild(a)
+                }, 0)
+            } catch (e) {
+                toast.error(e)
+            } finally {
+                setDownloadInProgress(false)
+            }
+        })
+        .catch((e) => toast.error(e))
+}
+
 export const getLogsURL = (
     ad: AppDetails,
     nodeName: string,
     Host: string,
     container: string,
     prevContainerLogs: boolean,
+    logsOption?: { label: string; value: string; type: CUSTOM_LOGS_FILTER },
+    customOption?: { option: string; value: string; unit?: string },
     isResourceBrowserView?: boolean,
     clusterId?: number,
     namespace?: string,
 ) => {
+    //similar logic exists in downloadLogs function also, recheck changes there also or extract this logic in a common function
+    let filter = ''
+    if (logsOption.value === CUSTOM_LOGS_FILTER.CUSTOM) {
+        filter = getFilterWithValue(customOption.option, customOption.value, customOption.unit)
+    } else {
+        filter = getFilterWithValue(logsOption.type, logsOption.value)
+    }
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const appId =
         ad.appType == AppType.DEVTRON_APP
@@ -179,7 +279,7 @@ export const getLogsURL = (
         }
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
-    return `${logsURL}&follow=true&tailLines=500`
+    return `${logsURL}&follow=true${filter}`
 }
 
 export const createResource = (

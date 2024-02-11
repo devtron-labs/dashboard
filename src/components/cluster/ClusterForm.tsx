@@ -31,7 +31,6 @@ import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-righ
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
     AuthenticationType,
-    DEFAULT_SECRET_PLACEHOLDER,
     DataListType,
     UserDetails,
     SaveClusterPayloadType,
@@ -39,7 +38,7 @@ import {
     SSHAuthenticationType,
 } from './cluster.type'
 
-import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
+import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,
