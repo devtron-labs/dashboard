@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { showError, Progressing, Checkbox, Drawer, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Checkbox, Drawer, CustomInput, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactSelect from 'react-select'
 import { validateEmail } from '../common'
@@ -365,7 +365,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                     <div className="form__button-group-bottom flexbox flex-justify">
                         <Checkbox
                             isChecked={this.state.form.default}
-                            value="CHECKED"
+                            value={CHECKBOX_VALUE.CHECKED}
                             tabIndex={6}
                             disabled={this.props.shouldBeDefault}
                             onChange={this.handleCheckbox}

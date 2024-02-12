@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect, Suspense, useContext, createContext } from 'react'
+import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import {
@@ -43,6 +43,8 @@ const Project = lazy(() => import('../project/ProjectList'))
 const Authorization = lazy(() => import('../../Pages/GlobalConfigurations/Authorization'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
+// NOTE: Might import from index itself
+const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
@@ -503,6 +505,16 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Lock Deployment Config</div>
                         </NavLink>
                     )}
+
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Build Infra</div>
+                        </NavLink>
+                    )}
                 </>
             )}
         </div>
@@ -618,6 +630,13 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                     <ExternalLinks />
                 </Route>,
+                ...(serverMode !== SERVER_MODE.EA_ONLY
+                    ? [
+                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                              <BuildInfra isSuperAdmin={isSuperAdmin} />
+                          </Route>,
+                      ]
+                    : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>

@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-import { showError, Progressing, Checkbox, Drawer, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Checkbox, Drawer, CustomInput, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { validateEmail } from '../common'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ViewType } from '../../config/constants'
 import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { SMTPConfigModalProps, SMTPConfigModalState } from './types'
@@ -267,7 +266,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                     <div className="form__button-group-bottom flexbox flex-justify">
                         <Checkbox
                             isChecked={this.state.form.default}
-                            value="CHECKED"
+                            value={CHECKBOX_VALUE.CHECKED}
                             tabIndex={6}
                             disabled={this.props.shouldBeDefault}
                             onChange={this.handleCheckbox}
