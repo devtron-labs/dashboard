@@ -367,7 +367,7 @@ function GitForm({
         {
             name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.{5,}$/ },
+                validator: { error: 'Atleast 5 chars required', regex: /^.{5,}$/ },
             },
             url: {
                 required: true,
