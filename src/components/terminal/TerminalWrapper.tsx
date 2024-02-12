@@ -258,7 +258,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         }
 
         socket.onclose = function (evt) {
-            if (window._env_.LOG_TERMINAL_EVENTS_TO_SENTRY) logExceptionToSentry(evt)
+            if (window._env_.LOG_TERMINAL_EVENTS_TO_SENTRY && evt.reason !== 'Normal closure') logExceptionToSentry(evt)
             setSocketConnection('DISCONNECTED')
         }
 

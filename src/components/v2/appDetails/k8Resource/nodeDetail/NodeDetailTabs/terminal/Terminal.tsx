@@ -179,7 +179,7 @@ export default function TerminalView({
         }
 
         _socket.onclose = function (evt) {
-            if (window._env_.LOG_TERMINAL_EVENTS_TO_SENTRY) logExceptionToSentry(evt)
+            if (window._env_.LOG_TERMINAL_EVENTS_TO_SENTRY && evt.reason !== 'Normal closure') logExceptionToSentry(evt)
             disableInput()
             _terminal.writeln('')
             _terminal.writeln('---------------------------------------------')
