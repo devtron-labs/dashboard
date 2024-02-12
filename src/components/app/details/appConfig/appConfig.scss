@@ -202,3 +202,11 @@
         width: 96px;
     }
 }
+
+.new-navigation-router {
+    &__header {
+        &__back-cta {
+            background: var(--N50);
+        }
+    }
+}
