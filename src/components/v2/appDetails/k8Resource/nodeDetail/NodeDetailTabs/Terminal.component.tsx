@@ -8,7 +8,12 @@ import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
 import { getCustomOptionSelectionStyle } from '../../../../common/ReactSelect.utils'
-import { getContainerSelectStyles, getGroupedContainerOptions, getShellSelectStyles } from '../nodeDetail.util'
+import {
+    getK8sResourcePayloadAppType,
+    getContainerSelectStyles,
+    getGroupedContainerOptions,
+    getShellSelectStyles,
+} from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
 import { AppType, TerminalComponentProps, Options } from '../../../appDetails.type'
@@ -58,12 +63,15 @@ const TerminalComponent = ({
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
     const appDetails = IndexStore.getAppDetails()
     const nodeName = isResourceBrowserView ? params.node : params.podName
+    const selectedNamespace = appDetails.resourceTree?.nodes?.find(
+        (nd) => nd.name === params.podName || nd.name === params.podName,
+    )?.namespace
 
     function Option(props) {
         const { selectProps, data, style } = props
         const getPayload = (containerName: string) => {
             const payload: ResponsePayload = {
-                namespace: isResourceBrowserView ? selectedResource.namespace : appDetails.namespace,
+                namespace: isResourceBrowserView ? selectedResource.namespace : selectedNamespace,
                 clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
                 podName: isResourceBrowserView ? params.node : params.podName,
                 basicData: {
@@ -147,18 +155,20 @@ const TerminalComponent = ({
                       appDetails.environmentId,
                   )
                 : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
-
+        const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
+        } else if (isExternalArgoApp) {
+            url += `${appDetails.clusterId}`
         } else {
             url += `${appId}`
         }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}/${nodeName}/${
+        url += `/${isResourceBrowserView ? selectedResource.namespace : isExternalArgoApp ? selectedNamespace : appDetails.namespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return `${url}?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
+            return `${url}?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
         }
         return url
     }

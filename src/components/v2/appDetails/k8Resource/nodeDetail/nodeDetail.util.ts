@@ -1,5 +1,7 @@
 import {
+    AppType,
     EnvType,
+    K8sResourcePayloadAppType,
     LogState,
     NodeType,
     Options,
@@ -460,6 +462,15 @@ export const getTrimmedManifestData = (
     return returnAsString ? JSON.stringify(manifestData) : manifestData
 }
 
+export const getK8sResourcePayloadAppType = (appType: string) => {
+    if (appType === AppType.DEVTRON_APP) {
+      return  K8sResourcePayloadAppType.DEVTRON_APP
+    } else if (appType === AppType.EXTERNAL_ARGO_APP) {
+       return K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
+    } else {
+       return K8sResourcePayloadAppType.HELM_APP
+    }
+}
 export const getDecodedEncodedSecretManifestData = (
     manifestData: ManifestData,
     returnAsString: boolean = false,

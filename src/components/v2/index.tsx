@@ -187,7 +187,7 @@ const RouterComponent = ({ envType }) => {
             {renderErrorScreen()}
             {!errorResponseCode && (
                 <>
-                    {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
+                    {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />} 
                     <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                         <Switch>
                             <Route path={`${path}/${URLS.APP_OVERVIEW}`}>

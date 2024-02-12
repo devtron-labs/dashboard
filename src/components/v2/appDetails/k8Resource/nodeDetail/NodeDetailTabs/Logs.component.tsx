@@ -51,6 +51,7 @@ const LogsComponent = ({
     setLogSearchTerms,
     isResourceBrowserView,
     selectedResource,
+    isExternalApp,
 }: LogsComponentProps) => {
     const [logsShownOption, setLogsShownOption] = useState({
         prev: getPodLogsOptions()[5],
@@ -277,7 +278,6 @@ const LogsComponent = ({
         if (isResourceBrowserView) {
             const nodeName = podContainerOptions.podOptions[0].name
             pods.push(nodeName)
-
             for (const _co of podContainerOptions.containerOptions) {
                 if (_co.selected) {
                     urls.push(
@@ -287,6 +287,7 @@ const LogsComponent = ({
                             Host,
                             _co.name,
                             prevContainer,
+                            params.podName,
                             logsShownOption.current,
                             selectedCustomLogFilter,
                             isResourceBrowserView,
@@ -315,6 +316,7 @@ const LogsComponent = ({
                         Host,
                         _pwc[1],
                         prevContainer,
+                        params.podName,
                         logsShownOption.current,
                         selectedCustomLogFilter,
                     ),
@@ -673,15 +675,16 @@ const LogsComponent = ({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        <div className="h-16 dc__border-right ml-8 mr-8"></div>
-                        {downloadInProgress ? (
-                            <Progressing
-                                size={16}
-                                styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
-                            />
-                        ) : (
-                            <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                <div className="flex">
+                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8"></div>}
+
+                        {!isExternalApp &&
+                            (downloadInProgress ? (
+                                <Progressing
+                                    size={16}
+                                    styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
+                                />
+                            ) : (
+                                <Tippy className="default-tt" arrow={false} placement="top" content={'Download logs'}>
                                     <Download
                                         className={`icon-dim-16 mr-8 cursor ${
                                             (podContainerOptions?.containerOptions ?? []).length === 0 ||
@@ -691,9 +694,8 @@ const LogsComponent = ({
                                         }`}
                                         onClick={handleDownloadLogs}
                                     />
-                                </div>
-                            </Tippy>
-                        )}
+                                </Tippy>
+                            ))}
                     </div>
                     <div className="dc__border-right " />
                     <form

@@ -25,7 +25,6 @@ import {
 } from '../../AppGroup.types'
 import './envOverview.scss'
 import { Moment12HourFormat } from '../../../../config'
-import { EditDescRequest } from '../../../app/types'
 import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
 import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
