@@ -1,3 +1,4 @@
+import { Moment } from 'moment'
 import {
     AppType,
     EnvType,
@@ -16,7 +17,6 @@ import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { decode } from '../../../../../util/Util'
-import { Moment } from 'moment'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -464,12 +464,12 @@ export const getTrimmedManifestData = (
 
 export const getK8sResourcePayloadAppType = (appType: string) => {
     if (appType === AppType.DEVTRON_APP) {
-      return  K8sResourcePayloadAppType.DEVTRON_APP
-    } else if (appType === AppType.EXTERNAL_ARGO_APP) {
-       return K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
-    } else {
-       return K8sResourcePayloadAppType.HELM_APP
+        return K8sResourcePayloadAppType.DEVTRON_APP
     }
+    if (appType === AppType.EXTERNAL_ARGO_APP) {
+        return K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
+    }
+    return K8sResourcePayloadAppType.HELM_APP
 }
 export const getDecodedEncodedSecretManifestData = (
     manifestData: ManifestData,

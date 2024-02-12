@@ -69,21 +69,27 @@ export const multiSelectStyles = {
 }
 
 export const DropdownIndicator = (props) => {
-    return <components.DropdownIndicator {...props}>
-        <ArrowDown className="icon-dim-20 icon-n5" />
-    </components.DropdownIndicator>
+    return (
+        <components.DropdownIndicator {...props}>
+            <ArrowDown className="icon-dim-20 icon-n5" />
+        </components.DropdownIndicator>
+    )
 }
 
 export const MultiValueLabel = (props) => {
-    let item = props.data;
-    return <components.MultiValueLabel {...props} validator={validateEmail} >
-        {item.data.dest === "" && !validateEmail(props.children) ? <RedWarning className="icon-dim-20 mr-5 scr-5" /> : null}
-        {item.data.dest === "" && validateEmail(props.children) ? <Email className="icon-dim-20 mr-5" /> : null}
-        {item.data.dest === "ses" || item.data.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
-        {item.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
-        {item.data.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null}
-        {props.children}
-    </components.MultiValueLabel>
+    const item = props.data
+    return (
+        <components.MultiValueLabel {...props} validator={validateEmail}>
+            {item.data.dest === '' && !validateEmail(props.children) ? (
+                <RedWarning className="icon-dim-20 mr-5 scr-5" />
+            ) : null}
+            {item.data.dest === '' && validateEmail(props.children) ? <Email className="icon-dim-20 mr-5" /> : null}
+            {item.data.dest === 'ses' || item.data.dest === 'email' ? <Email className="icon-dim-20 mr-5" /> : null}
+            {item.data.dest === 'slack' ? <Slack className="icon-dim-20 mr-5" /> : null}
+            {item.data.dest === 'webhook' ? <Webhook className="icon-dim-20 mr-5" /> : null}
+            {props.children}
+        </components.MultiValueLabel>
+    )
 }
 
 export const MultiValueContainer = ({ validator, ...props }) => {
@@ -91,48 +97,51 @@ export const MultiValueContainer = ({ validator, ...props }) => {
     const { label } = data
     const isValidEmail = validator ? validator(data.data.recipient) : true
 
-    if (data.data.dest === "" || data.data.dest === "ses" || data.data.dest === "email") {
-        return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
-            <div className="flex fs-12 ml-4">
-                {!isValidEmail ? <RedWarning className="mr-4" /> : <Email className="icon-dim-20 mr-5" />}
-                <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
-            </div>
-            {children[1]}
-        </components.MultiValueContainer>
+    if (data.data.dest === '' || data.data.dest === 'ses' || data.data.dest === 'email') {
+        return (
+            <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
+                <div className="flex fs-12 ml-4">
+                    {!isValidEmail ? <RedWarning className="mr-4" /> : <Email className="icon-dim-20 mr-5" />}
+                    <div className={`${isValidEmail ? 'cn-9' : 'cr-5'}`}>{label}</div>
+                </div>
+                {children[1]}
+            </components.MultiValueContainer>
+        )
     }
-    
-        return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
+
+    return (
+        <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
             <div className="flex fs-12 ml-4">
-                {data.data.dest === "slack" && <Slack className="icon-dim-20 mr-5" /> }
-                {data.data.dest === "webhook" && <Webhook className="icon-dim-20 mr-5" /> }
+                {data.data.dest === 'slack' && <Slack className="icon-dim-20 mr-5" />}
+                {data.data.dest === 'webhook' && <Webhook className="icon-dim-20 mr-5" />}
                 <div className="cn-9">{label}</div>
             </div>
             {children[1]}
         </components.MultiValueContainer>
-    
+    )
 }
 
 export const Option = (props) => {
-    let item = props.data;
+    const item = props.data
     if (item && item?.__isNew__) {
-        return <components.Option {...props} >
+        return <components.Option {...props}>{props.children}</components.Option>
+    }
+    return (
+        <components.Option {...props}>
+            {item.data.dest === 'ses' || item.data.dest === 'email' ? <Email className="icon-dim-20 mr-5" /> : null}
+            {item.data.dest === 'slack' && <Slack className="icon-dim-20 mr-5" />}
+            {item.data.dest === 'webhook' && <Webhook className="icon-dim-20 mr-5" />}
             {props.children}
         </components.Option>
-    }
-    else return <components.Option {...props} >
-        {item.data.dest === "ses" || item.data.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
-        {item.data.dest === "slack" && <Slack className="icon-dim-20 mr-5" /> }
-        {item.data.dest === "webhook" && <Webhook className="icon-dim-20 mr-5" /> }
-        {props.children}
-    </components.Option>
+    )
 }
 
 export const renderPipelineTypeIcon = (row) => {
-      if (row.isVirtualEnvironment) {
-          return <Rocket className="icon-dim-24" />
-      } if (row.pipelineType === 'CI' || row.type === 'CI') {
-          return <CI className="icon-dim-20 dc__flip" />
-      } else {
-          return <CD className="icon-dim-20 dc__flip" />
-      }
-  }
+    if (row.isVirtualEnvironment) {
+        return <Rocket className="icon-dim-24" />
+    }
+    if (row.pipelineType === 'CI' || row.type === 'CI') {
+        return <CI className="icon-dim-20 dc__flip" />
+    }
+    return <CD className="icon-dim-20 dc__flip" />
+}

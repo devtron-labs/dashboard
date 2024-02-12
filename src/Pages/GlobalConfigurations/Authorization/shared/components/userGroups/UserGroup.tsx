@@ -140,10 +140,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 {value === '*'
                     ? 'Admin'
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                    ? customRoles.possibleRolesMetaForHelm[value].value
-                    : permission.entity === EntityTypes.JOB
-                    ? customRoles.possibleRolesMetaForJob[value].value
-                    : customRoles.possibleRolesMeta[value].value}
+                      ? customRoles.possibleRolesMetaForHelm[value].value
+                      : permission.entity === EntityTypes.JOB
+                        ? customRoles.possibleRolesMetaForJob[value].value
+                        : customRoles.possibleRolesMeta[value].value}
                 {ApproverPermission && (permission.approver || primaryActionRole.configApprover) && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
@@ -247,8 +247,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                     ? appsList
                     : isJobs
-                    ? jobsList
-                    : appsListHelmApps
+                      ? jobsList
+                      : appsListHelmApps
                 ).get(projectId)?.result) ||
             []
         )?.map((app) => ({
@@ -318,8 +318,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         (permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                             ? customRoles.possibleRolesMetaForHelm
                             : permission.accessType === ACCESS_TYPE_MAP.JOBS
-                            ? customRoles.possibleRolesMetaForJob
-                            : customRoles.possibleRolesMeta)[value]?.value
+                              ? customRoles.possibleRolesMetaForJob
+                              : customRoles.possibleRolesMeta)[value]?.value
                     }
                 </span>
                 <small className="light-color">
@@ -327,8 +327,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         (permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                             ? customRoles.possibleRolesMetaForHelm
                             : permission.accessType === ACCESS_TYPE_MAP.JOBS
-                            ? customRoles.possibleRolesMetaForJob
-                            : customRoles.possibleRolesMeta)[value]?.description
+                              ? customRoles.possibleRolesMetaForJob
+                              : customRoles.possibleRolesMeta)[value]?.description
                     }
                 </small>
             </div>
@@ -384,12 +384,13 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         return (
             <div className="flex left column">
                 <span>{option.label}</span>
-                {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && option.value === HELM_APP_UNASSIGNED_PROJECT && (
-                    <>
-                        <small className="light-color">Apps without an assigned project</small>
-                        <div className="unassigned-project-border" />
-                    </>
-                )}
+                {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS &&
+                    option.value === HELM_APP_UNASSIGNED_PROJECT && (
+                        <>
+                            <small className="light-color">Apps without an assigned project</small>
+                            <div className="unassigned-project-border" />
+                        </>
+                    )}
             </div>
         )
     }
@@ -558,8 +559,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ? (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                                   ? appsList
                                   : permission.entity === EntityTypes.JOB
-                                  ? jobsList
-                                  : appsListHelmApps
+                                    ? jobsList
+                                    : appsListHelmApps
                               ).get(projectId)?.loading
                             : false
                     }
@@ -659,8 +660,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             backgroundColor: state.isSelected
                                 ? 'var(--B100)'
                                 : state.isFocused
-                                ? 'var(--N100)'
-                                : 'white',
+                                  ? 'var(--N100)'
+                                  : 'white',
                             fontWeight: state.isSelected ? 600 : 'normal',
                             cursor: state.isDisabled ? 'not-allowed' : 'pointer',
                             marginRight: '8px',
@@ -716,8 +717,6 @@ const AppOption = ({ props, permission }) => {
         </div>
     )
 }
-
-
 
 export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
     ({ chartPermission, setChartPermission, hideInfoLegend }) => {
@@ -793,8 +792,8 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                             chartPermission.action === ActionTypes.ADMIN
                                 ? chartGroupEditOptions[0]
                                 : chartPermission.action === ActionTypes.VIEW
-                                ? { label: 'Deny', value: 'Deny' }
-                                : { label: 'Specific Chart Groups', value: 'Specific Charts' }
+                                  ? { label: 'Deny', value: 'Deny' }
+                                  : { label: 'Specific Chart Groups', value: 'Specific Charts' }
                         }
                         isDisabled={chartPermission.action === ActionTypes.ADMIN}
                         options={chartGroupEditOptions}

@@ -4,8 +4,6 @@ import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 
 export class SecurityPolicyGlobal extends Component<RouteComponentProps<{}>, {}> {
     render() {
-        return (
-            <SecurityPolicyEdit level="global" />
-        )
+        return <SecurityPolicyEdit level="global" />
     }
 }

@@ -39,7 +39,7 @@ import { MainContext } from './types'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
-const ExternalArgoApps =  lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
+const ExternalArgoApps = lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
 const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
 const V2Details = lazy(() => import('../../v2/index'))
@@ -65,12 +65,10 @@ export default function NavigationRoutes() {
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [pageOverflowEnabled, setPageOverflowEnabled] = useState<boolean>(true)
-    const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>(
-        {
-            serverInfo: undefined,
-            fetchingServerInfo: false,
-        },
-    )
+    const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
+        serverInfo: undefined,
+        fetchingServerInfo: false,
+    })
     const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
@@ -466,7 +464,10 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         )}
                     />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
-                    <Route path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`} render={() => <ExternalArgoApps />} />
+                    <Route
+                        path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
+                        render={() => <ExternalArgoApps />}
+                    />
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}

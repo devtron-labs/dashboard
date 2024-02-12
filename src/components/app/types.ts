@@ -573,18 +573,18 @@ export interface PayloadParsedFromURL {
     teams?
 }
 
-export interface ExternalArgoListType{
-    serverMode?: string,
-    payloadParsedFromUrl: PayloadParsedFromURL,
-    sortApplicationList,
-    clearAllFilters,
-    fetchingExternalApps,
-    setFetchingExternalAppsState,
-    updateDataSyncing,
-    setShowPulsatingDotState,
-    masterFilters,
-    syncListData,
-    isArgoInstalled: boolean,
+export interface ExternalArgoListType {
+    serverMode?: string
+    payloadParsedFromUrl: PayloadParsedFromURL
+    sortApplicationList
+    clearAllFilters
+    fetchingExternalApps
+    setFetchingExternalAppsState
+    updateDataSyncing
+    setShowPulsatingDotState
+    masterFilters
+    syncListData
+    isArgoInstalled: boolean
 }
 export interface EditDescRequest {
     id: number

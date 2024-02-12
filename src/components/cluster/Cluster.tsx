@@ -29,7 +29,15 @@ import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environm
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
+import {
+    DOCUMENTATION,
+    SERVER_MODE,
+    ViewType,
+    URLS,
+    CONFIGURATION_TYPES,
+    AppCreationType,
+    DEFAULT_SECRET_PLACEHOLDER,
+} from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'

@@ -660,7 +660,7 @@ const LogsComponent = ({
                         >
                             <span className="fs-12 ">Prev. container</span>
                         </Checkbox>
-                        <div className="h-16 dc__border-right ml-8 mr-8"></div>
+                        <div className="h-16 dc__border-right ml-8 mr-8" />
                         <LinesIcon className="icon-dim-16 mr-8" />
                         <Select
                             options={getPodLogsOptions()}
@@ -675,7 +675,7 @@ const LogsComponent = ({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8"></div>}
+                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8" />}
 
                         {!isExternalApp &&
                             (downloadInProgress ? (
@@ -684,7 +684,7 @@ const LogsComponent = ({
                                     styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
                                 />
                             ) : (
-                                <Tippy className="default-tt" arrow={false} placement="top" content={'Download logs'}>
+                                <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
                                     <Download
                                         className={`icon-dim-16 mr-8 cursor ${
                                             (podContainerOptions?.containerOptions ?? []).length === 0 ||

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { ReactComponent as Sort } from '../../../../assets/icons/ic-sort.svg'

@@ -33,7 +33,13 @@ import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/H
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
 import ExternalArgoList from './ExternalArgoList'
-import { buildArgoAppListUrl, buildDevtronAppListUrl, buildHelmAppListUrl, getChangeAppTabURL, getCurrentTabName } from './list.utils'
+import {
+    buildArgoAppListUrl,
+    buildDevtronAppListUrl,
+    buildHelmAppListUrl,
+    getChangeAppTabURL,
+    getCurrentTabName,
+} from './list.utils'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -74,7 +80,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [appCount, setAppCount] = useState(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
 
-
     // on page load
     useEffect(() => {
         setCurrentTab(getCurrentTabName(params.appType, isExternalArgo))
@@ -99,8 +104,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
-                    applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, getCurrentTabName(params.appType, isExternalArgo))
-                    getModuleInfo(ModuleNameMap.CICD) //To check the latest status and show user reload toast
+                    applyClusterSelectionFilterOnPageLoadIfSingle(
+                        initData.filters.clusters,
+                        getCurrentTabName(params.appType, isExternalArgo),
+                    )
+                    getModuleInfo(ModuleNameMap.CICD) // To check the latest status and show user reload toast
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -357,7 +365,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     const updateAppListURL = (queryStr?: string, selectedAppTab?: string): void => {
         let url = ''
-        const _currentTab = selectedAppTab ? selectedAppTab : currentTab
+        const _currentTab = selectedAppTab || currentTab
         if (_currentTab === AppListConstants.AppTabs.DEVTRON_APPS) {
             url = buildDevtronAppListUrl()
         } else if (_currentTab === AppListConstants.AppTabs.ARGO_APPS) {
@@ -386,7 +394,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             delete query['hOffset']
         }
 
-        let queryStr = queryString.stringify(query)
+        const queryStr = queryString.stringify(query)
         updateAppListURL(queryStr)
     }
 
@@ -483,7 +491,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 : ids.toString()
         query['offset'] = 0
         query['hOffset'] = 0
-        let queryStr = queryString.stringify(query)
+        const queryStr = queryString.stringify(query)
         updateAppListURL(queryStr, selectedAppTab)
     }
 
@@ -525,8 +533,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             query[queryParamType] =
                 filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString() ? clustId : arr.toString()
 
-            if (query[queryParamType] == '') delete query[queryParamType]
-            let queryStr = queryString.stringify(query)
+            if (query[queryParamType] == '') {
+                delete query[queryParamType]
+            }
+            const queryStr = queryString.stringify(query)
             updateAppListURL(queryStr)
         }
     }
@@ -550,7 +560,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setSearchApplied(false)
         setSearchString('')
 
-        let queryStr = queryString.stringify(query)
+        const queryStr = queryString.stringify(query)
         updateAppListURL(queryStr)
     }
 
@@ -563,7 +573,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         })
         query['orderBy'] = key
         query['sortOrder'] = query['sortOrder'] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC
-        let queryStr = queryString.stringify(query)
+        const queryStr = queryString.stringify(query)
         updateAppListURL(queryStr)
     }
 
@@ -668,7 +678,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     function renderMasterFilters() {
-        let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
+        const _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
         const appStatusFilters =
             params.appType === AppListConstants.AppType.HELM_APPS
                 ? masterFilters.appStatus.slice(0, masterFilters.appStatus.length - 1)
@@ -720,10 +730,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                         type={AppListConstants.FilterType.APP_STATUS}
                                         applyFilter={applyFilter}
                                         onShowHideFilterContent={onShowHideFilterContent}
-                                        isFirstLetterCapitalize={true}
-                                        dataTestId={'app-status-filter'}
+                                        isFirstLetterCapitalize
+                                        dataTestId="app-status-filter"
                                     />
-                                    <span className="filter-divider"></span>
+                                    <span className="filter-divider" />
                                 </>
                             )}
                             <Filter
@@ -737,11 +747,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 type={AppListConstants.FilterType.PROJECT}
                                 applyFilter={applyFilter}
                                 onShowHideFilterContent={onShowHideFilterContent}
-                                dataTestId={'projects-filter'}
+                                dataTestId="projects-filter"
                             />
                             {serverMode == SERVER_MODE.FULL && (
                                 <>
-                                    <span className="filter-divider"></span>
+                                    <span className="filter-divider" />
                                     <Filter
                                         list={masterFilters.environments}
                                         isDisabled={dataStateType === AppListViewType.LOADING}
@@ -753,11 +763,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                         type={AppListConstants.FilterType.ENVIRONMENT}
                                         applyFilter={applyFilter}
                                         onShowHideFilterContent={onShowHideFilterContent}
-                                        dataTestId={'environment-filter'}
+                                        dataTestId="environment-filter"
                                     />
                                 </>
                             )}
-                            <span className="filter-divider"></span>
+                            <span className="filter-divider" />
                         </>
                     )}
                     <Filter
@@ -772,7 +782,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
                         showPulsatingDot={showPulsatingDot}
-                        dataTestId={'cluster-filter'}
+                        dataTestId="cluster-filter"
                         appType={params.appType}
                     />
                     {!isExternalArgo && (
@@ -789,14 +799,14 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             type={AppListConstants.FilterType.NAMESPACE}
                             applyFilter={applyFilter}
                             isDisabled={!_isAnyClusterFilterApplied}
-                            disableTooltipMessage={'Select a cluster first'}
-                            isLabelHtml={true}
+                            disableTooltipMessage="Select a cluster first"
+                            isLabelHtml
                             onShowHideFilterContent={onShowHideFilterContent}
                             loading={fetchingNamespaces}
                             errored={fetchingNamespacesErrored}
-                            errorMessage={'Could not load namespaces'}
+                            errorMessage="Could not load namespaces"
                             errorCallbackFunction={_forceFetchAndSetNamespaces}
-                            dataTestId={'namespace-filter'}
+                            dataTestId="namespace-filter"
                         />
                     )}
                     {showExportCsvButton && (
@@ -1001,7 +1011,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     isArgoInstalled={isArgoInstalled}
                 />
             )
-        } else if (params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.EA_ONLY) {
+        }
+        if (params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.EA_ONLY) {
             return (
                 <div style={{ height: 'calc(100vh - 250px)' }}>
                     <EAEmptyState
@@ -1012,7 +1023,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     />
                 </div>
             )
-        } else if (params.appType === AppListConstants.AppType.HELM_APPS) {
+        }
+        if (params.appType === AppListConstants.AppType.HELM_APPS) {
             return (
                 <>
                     <HelmAppList
@@ -1035,7 +1047,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 </>
             )
-        } else if (params.appType === AppListConstants.AppType.ARGO_APPS) {
+        }
+        if (params.appType === AppListConstants.AppType.ARGO_APPS) {
             return (
                 <>
                     <ExternalArgoList
@@ -1062,9 +1075,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     if (dataStateType === AppListViewType.ERROR) {
-        return <div className="h-100 flex">
-            <ErrorScreenManager code={errorResponseCode} />
-        </div>
+        return (
+            <div className="h-100 flex">
+                <ErrorScreenManager code={errorResponseCode} />
+            </div>
+        )
     }
 
     return (

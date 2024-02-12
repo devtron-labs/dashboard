@@ -10,6 +10,7 @@ import {
     getUnlockedJSON,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
+import * as jsonpatch from 'fast-json-patch'
 import {
     getDeploymentTemplate,
     updateDeploymentTemplate,
@@ -53,7 +54,7 @@ import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateVi
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import * as jsonpatch from 'fast-json-patch'
+
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
@@ -718,9 +719,11 @@ export default function DeploymentConfig({
     }
 
     const handleTabSelection = (index: number) => {
-        if (state.unableToParseYaml) return
-         //setting true to update codeditor values with current locked keys checkbox value
-         hideLockKeysToggled.current = true
+        if (state.unableToParseYaml) {
+            return
+        }
+        // setting true to update codeditor values with current locked keys checkbox value
+        hideLockKeysToggled.current = true
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
@@ -874,12 +877,12 @@ export default function DeploymentConfig({
         let result = null
         if (isCompareAndApprovalState) {
             result = await fetchManifestData(state.draftValues)
+        } else if (applyPatches && hideLockedKeys) {
+            result = fetchManifestData(
+                YAML.stringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
+            )
         } else {
-            if (applyPatches && hideLockedKeys) {
-                result = fetchManifestData(
-                    YAML.stringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
-                )
-            } else result = await fetchManifestData(state.tempFormData)
+            result = await fetchManifestData(state.tempFormData)
         }
         return result
     }

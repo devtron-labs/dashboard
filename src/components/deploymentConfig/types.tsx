@@ -1,9 +1,9 @@
 import React from 'react'
 import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import * as jsonpatch from 'fast-json-patch'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import * as jsonpatch from 'fast-json-patch'
 
 export interface DeploymentObject {
     id: number | null
@@ -207,7 +207,7 @@ export interface DeploymentTemplateReadOnlyEditorViewProps {
     isEnvOverride?: boolean
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockedKeys: boolean
-    removedPatches:React.MutableRefObject<jsonpatch.Operation[]>
+    removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -226,7 +226,7 @@ export interface DeploymentTemplateEditorViewProps {
     hideLockedKeys: boolean
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockKeysToggled: React.MutableRefObject<boolean>
-    removedPatches:React.MutableRefObject<jsonpatch.Operation[]>
+    removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
 }
 
 export interface DeploymentConfigContextType {

@@ -286,7 +286,9 @@ const DeploymentTemplateEditorView = ({
     }, [state.selectedTabIndex])
 
     useEffect(() => {
-        if (!convertVariables) return
+        if (!convertVariables) {
+            return
+        }
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {

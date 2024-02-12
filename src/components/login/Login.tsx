@@ -24,7 +24,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             },
         }
         this.handleChange = this.handleChange.bind(this)
-        //this.autoFillLogin = this.autoFillLogin.bind(this)
+        // this.autoFillLogin = this.autoFillLogin.bind(this)
         this.login = this.login.bind(this)
         this.isFormNotValid = this.isFormNotValid.bind(this)
     }
@@ -249,9 +249,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 <div
                     className="login__bg"
                     style={
-                        window?._env_?.LOGIN_PAGE_IMAGE_BG
-                            ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG }
-                            : {}
+                        window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}
                     }
                 >
                     <div

@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
-import link from '../../../../../../assets/icons/ic-link.svg';
-import { ReactComponent as ICLinkedCINode } from '../../../../../../assets/icons/ic-node-build-linked.svg'
-import { TriggerStatus } from '../../../../config';
-import { DEFAULT_STATUS, URLS } from '../../../../../../config'
 import Tippy from '@tippyjs/react'
+import link from '../../../../../../assets/icons/ic-link.svg'
+import { ReactComponent as ICLinkedCINode } from '../../../../../../assets/icons/ic-node-build-linked.svg'
+import { TriggerStatus } from '../../../../config'
+import { DEFAULT_STATUS, URLS } from '../../../../../../config'
 
 export interface CINodeProps extends RouteComponentProps<{}> {
     x: number
@@ -42,13 +42,21 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
     }
 
     renderStatus() {
-        const url = this.getCIDetailsURL();
-        const status = this.props.status ? this.props.status.toLowerCase() : "";
-        const hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
-        if (hideDetails)
-            {return <div data-testid="cd-trigger-status" className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                {this.props.status}
-            </div>}
+        const url = this.getCIDetailsURL()
+        const status = this.props.status ? this.props.status.toLowerCase() : ''
+        const hideDetails =
+            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
+        if (hideDetails) {
+            return (
+                <div
+                    data-testid="cd-trigger-status"
+                    className="dc__cd-trigger-status"
+                    style={{ color: TriggerStatus[status] }}
+                >
+                    {this.props.status}
+                </div>
+            )
+        }
         return (
             <div
                 data-testid="cd-trigger-status"
@@ -76,7 +84,9 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
             <div
                 className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
                 onClick={(e) => {
-                    if (!hideDetails) {this.redirectToCIDetails()}
+                    if (!hideDetails) {
+                        this.redirectToCIDetails()
+                    }
                 }}
             >
                 {this.props.linkedCount ? (

@@ -1158,9 +1158,9 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                     </Tippy>
 
                     <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                    <div className="flex">
-                        <Abort className="icon-dim-20 mr-16 ml-8" onClick={onLogsCleared} />
-                    </div>
+                        <div className="flex">
+                            <Abort className="icon-dim-20 mr-16 ml-8" onClick={onLogsCleared} />
+                        </div>
                     </Tippy>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                 </>

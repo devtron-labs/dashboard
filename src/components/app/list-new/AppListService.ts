@@ -10,7 +10,7 @@ import {
 import { APP_STATUS } from '../config'
 import { getProjectList } from '../../project/service'
 import { getClusterList } from '../../cluster/cluster.service'
-import { AppListResponse } from './AppListType';
+import { AppListResponse } from './AppListType'
 
 async function commonAppFilters(serverMode) {
     if (serverMode === SERVER_MODE.FULL) {
@@ -177,7 +177,7 @@ export const getNamespaces = (
     })
 }
 
-export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string) : Promise<AppListResponse> => {
+export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string): Promise<AppListResponse> => {
     let url = Routes.CHART_INSTALLED
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`

@@ -121,7 +121,7 @@ export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
 }
 
 export const getArgoAppDetail = (appName: string, clusterId: string, namespace: string) => {
-    return get(`${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`);
+    return get(`${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`)
 }
 
 export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {

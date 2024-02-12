@@ -10,7 +10,13 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamat
 import { Moment12HourExportFormat } from '../../../config'
 import './exportToCsv.scss'
 
-export default function ExportToCsv({ apiPromise, fileName, className, disabled, showOnlyIcon = false }: ExportToCsvProps) {
+export default function ExportToCsv({
+    apiPromise,
+    fileName,
+    className,
+    disabled,
+    showOnlyIcon = false,
+}: ExportToCsvProps) {
     const [exportingData, setExportingData] = useState(false)
     const [showExportingModal, setShowExportingModal] = useState(false)
     const [errorExportingData, setErrorExportingData] = useState(false)

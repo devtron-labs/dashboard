@@ -45,7 +45,7 @@ const AppDetailsComponent = ({
     const location = useLocation()
     const deploymentModalShownRef = useRef(null)
     const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
-    deploymentModalShownRef.current =location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
+    deploymentModalShownRef.current = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
     // State to track the loading state for the timeline data when the detailed status modal opens
     const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
     const shouldFetchTimelineRef = useRef(false)
@@ -171,9 +171,8 @@ const AppDetailsComponent = ({
                     loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                     isVirtualEnvironment={isVirtualEnv.current}
                     appType={appDetails?.appType}
-
                 />
-                {!appDetails.deploymentAppDeleteRequest  && (
+                {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
                         appStreamData={streamData}
                         loadingDetails={loadingDetails || !appDetails?.appType}
