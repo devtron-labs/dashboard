@@ -305,7 +305,9 @@ export default function CICreateDockerfileOption({
                                     }}
                                     interactive
                                 >
-                                    <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
+                                    <div className="flex">
+                                        <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
+                                    </div>
                                 </Tippy>
                             )}
                         </div>

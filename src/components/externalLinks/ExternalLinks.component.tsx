@@ -161,7 +161,7 @@ export const AppLevelExternalLinks = ({
                         heading={linkOption.label}
                         infoText={linkOption.description}
                     >
-                        {children}
+                        <div>{children}</div>
                     </TippyCustomized>
                 )}
             >
@@ -240,7 +240,7 @@ export const NodeLevelExternalLinks = ({
                         heading={data.label}
                         infoText={data.description}
                     >
-                        {children}
+                        <div>{children}</div>
                     </TippyCustomized>
                 )}
             >

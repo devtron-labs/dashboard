@@ -720,7 +720,9 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                             arrow={false}
                             content="How often this app is deployed to production?"
                         >
-                            <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                            <div className="flex">
+                                <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                            </div>
                         </Tippy>
                         <span className="cursor" onClick={this.props.setFrequencyMetric}>
                             {renderCategoryTag(this.props.frequencyBenchmark.name)}{' '}
@@ -751,7 +753,9 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                             <p className="graph-legend__primary-label">
                                 Change Failure Rate
                                 <Tippy className="default-tt" arrow={false} content="How often does the pipeline fail?">
-                                    <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                                    <div className="flex">
+                                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                                    </div>
                                 </Tippy>
                                 <span className="cursor" onClick={this.props.setFailureMetric}>
                                     {renderCategoryTag(this.props.failureRateBenchmark?.name)}{' '}
@@ -796,7 +800,9 @@ export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndL
                     <p className="graph-legend__primary-label">
                         {this.props.label}
                         <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
-                            <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                            <div className="flex">
+                                <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                            </div>
                         </Tippy>
                     </p>
                     <p className="graph-legend__primary-value">
@@ -812,7 +818,9 @@ export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndL
                 <p className="graph-legend__primary-label">
                     {this.props.label}
                     <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
-                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                        <div className="flex">
+                            <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                        </div>
                     </Tippy>
                     <span className="cursor" onClick={this.props.setMetric}>
                         {renderCategoryTag(this.props.benchmark?.name)}{' '}

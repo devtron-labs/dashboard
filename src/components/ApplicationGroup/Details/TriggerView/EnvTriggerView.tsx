@@ -2090,7 +2090,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return (
             <div className="flex">
                 <Tippy className="default-tt" arrow={false} placement="top" content="Clear selection">
-                    <Close className="icon-dim-18 scr-5 mr-16 cursor mw-18" onClick={clearAppList} />
+                    <div className="flex">
+                        <Close className="icon-dim-18 scr-5 mr-16 cursor mw-18" onClick={clearAppList} />
+                    </div>
                 </Tippy>
                 <div>
                     <div data-testid="selected-application-text" className="fs-13 fw-6 cn-9">

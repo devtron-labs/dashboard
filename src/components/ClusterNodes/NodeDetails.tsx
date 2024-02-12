@@ -267,14 +267,16 @@ export default function NodeDetails({
                     }}
                     interactive
                 >
-                    <Clipboard
-                        className="ml-8 mt-5 cursor hover-only icon-dim-16"
-                        onClick={() => {
-                            copyToClipboard(`${key}=${value || ''}`, () => {
-                                setCopied(true)
-                            })
-                        }}
-                    />
+                    <div className="flex">
+                        <Clipboard
+                            className="ml-8 mt-5 cursor hover-only icon-dim-16"
+                            onClick={() => {
+                                copyToClipboard(`${key}=${value || ''}`, () => {
+                                    setCopied(true)
+                                })
+                            }}
+                        />
+                    </div>
                 </Tippy>
             </div>
         )
@@ -323,14 +325,16 @@ export default function NodeDetails({
                     }}
                     interactive
                 >
-                    <Clipboard
-                        className="ml-8 mt-5 cursor hover-only icon-dim-16"
-                        onClick={() => {
-                            copyToClipboard(key, () => {
-                                setCopied(true)
-                            })
-                        }}
-                    />
+                    <div className="flex">
+                        <Clipboard
+                            className="ml-8 mt-5 cursor hover-only icon-dim-16"
+                            onClick={() => {
+                                copyToClipboard(key, () => {
+                                    setCopied(true)
+                                })
+                            }}
+                        />
+                    </div>
                 </Tippy>
             </div>
         )
@@ -758,14 +762,16 @@ export default function NodeDetails({
                                             }}
                                             interactive
                                         >
-                                            <Clipboard
-                                                className="ml-5 mt-5 cursor hover-only icon-dim-14 mw-14"
-                                                onClick={() => {
-                                                    copyToClipboard(pod.name, () => {
-                                                        setCopied(true)
-                                                    })
-                                                }}
-                                            />
+                                            <div className="flex">
+                                                <Clipboard
+                                                    className="ml-5 mt-5 cursor hover-only icon-dim-14 mw-14"
+                                                    onClick={() => {
+                                                        copyToClipboard(pod.name, () => {
+                                                            setCopied(true)
+                                                        })
+                                                    }}
+                                                />
+                                            </div>
                                         </Tippy>
                                         <ResourceBrowserActionMenu
                                             clusterId={clusterId}

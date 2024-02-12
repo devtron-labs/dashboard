@@ -168,7 +168,9 @@ export const FailureLegendEmptyState = (props) => {
             <p className="graph-legend__primary-label">
                 Change Failure Rate
                 <Tippy className="default-tt" arrow={false} content="How often does the pipeline fail?">
-                    <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                    <div className="flex">
+                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                    </div>
                 </Tippy>
             </p>
             <div className="mt-16">

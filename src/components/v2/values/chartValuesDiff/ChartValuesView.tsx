@@ -1561,7 +1561,7 @@ const ChartValuesView = ({
                                 isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
-                        {!window._env_.HIDE_DEPLOYMENT_GROUPS &&
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                             !isExternalApp &&
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&

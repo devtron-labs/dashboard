@@ -337,12 +337,14 @@ export const AppMetrics: React.FC<{
                             <div className="app-metrics-graph__title flexbox flex-justify">
                                 CPU Usage
                                 <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                    <Fullscreen
-                                        className="icon-dim-16 cursor fcn-5"
-                                        onClick={(e) => {
-                                            setChartName(ChartType.Cpu)
-                                        }}
-                                    />
+                                    <div className="flex">
+                                        <Fullscreen
+                                            className="icon-dim-16 cursor fcn-5"
+                                            onClick={(e) => {
+                                                setChartName(ChartType.Cpu)
+                                            }}
+                                        />
+                                    </div>
                                 </Tippy>
                             </div>
                             <iframe title={ChartType.Cpu} src={graphs.cpu} className="app-metrics-graph__iframe" />
@@ -351,12 +353,14 @@ export const AppMetrics: React.FC<{
                             <div className="app-metrics-graph__title flexbox flex-justify">
                                 Memory Usage
                                 <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                    <Fullscreen
-                                        className="icon-dim-16 cursor fcn-5"
-                                        onClick={(e) => {
-                                            setChartName(ChartType.Ram)
-                                        }}
-                                    />
+                                    <div className="flex">
+                                        <Fullscreen
+                                            className="icon-dim-16 cursor fcn-5"
+                                            onClick={(e) => {
+                                                setChartName(ChartType.Ram)
+                                            }}
+                                        />
+                                    </div>
                                 </Tippy>
                             </div>
                             <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
@@ -373,12 +377,14 @@ export const AppMetrics: React.FC<{
                                     <ThroughputSelect status={statusCode} handleStatusChange={handleStatusChange} />
                                 </h3>
                                 <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                    <Fullscreen
-                                        className="icon-dim-16 cursor fcn-5"
-                                        onClick={(e) => {
-                                            setChartName(ChartType.Status)
-                                        }}
-                                    />
+                                    <div className="flex">
+                                        <Fullscreen
+                                            className="icon-dim-16 cursor fcn-5"
+                                            onClick={(e) => {
+                                                setChartName(ChartType.Status)
+                                            }}
+                                        />
+                                    </div>
                                 </Tippy>
                             </div>
                             <iframe
@@ -399,12 +405,14 @@ export const AppMetrics: React.FC<{
                                     </h3>
                                 </div>
                                 <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                                <div className="flex">
                                     <Fullscreen
                                         className="icon-dim-16 cursor fcn-5"
                                         onClick={(e) => {
                                             setChartName(ChartType.Latency)
                                         }}
                                     />
+                                </div>
                                 </Tippy>
                             </div>
                             <iframe

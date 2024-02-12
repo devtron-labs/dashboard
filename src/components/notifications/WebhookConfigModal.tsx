@@ -236,11 +236,13 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     }}
                     interactive
                 >
-                    <Clipboard
-                        data-value={this.state.webhookAttribute[attribute]}
-                        className="ml-8 pointer hover-only icon-dim-16"
-                        onClick={this.copyToClipboard}
-                    />
+                    <div className="flex">
+                        <Clipboard
+                            data-value={this.state.webhookAttribute[attribute]}
+                            className="ml-8 pointer hover-only icon-dim-16"
+                            onClick={this.copyToClipboard}
+                        />
+                    </div>
                 </Tippy>
             </div>
         )

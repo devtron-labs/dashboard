@@ -1143,7 +1143,7 @@ export const getDeploymentAppType = (
     if (isVirtualEnvironment) {
         return DeploymentAppTypes.MANIFEST_DOWNLOAD
     }
-    if (window._env_.HIDE_DEPLOYMENT_GROUPS) {
+    if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
         return ''
     }
     if (

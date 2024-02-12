@@ -424,7 +424,9 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                             trigger="click"
                             interactive
                         >
-                            <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
+                            <div className="flex">
+                                <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
+                            </div>
                         </TippyCustomized>
                     </h3>
                     <div className="cta-search-filter-container flex">

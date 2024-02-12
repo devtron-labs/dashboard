@@ -97,7 +97,7 @@ export default function NewCDPipeline({
         environments: [],
         environmentName: '',
         namespace: '',
-        deploymentAppType: window._env_.HIDE_DEPLOYMENT_GROUPS ? '' : DeploymentAppTypes.HELM,
+        deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],

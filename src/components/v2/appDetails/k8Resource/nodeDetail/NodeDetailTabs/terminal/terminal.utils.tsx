@@ -50,7 +50,9 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={selectData.infoContent}
                 >
-                    <HelpIcon className="icon-dim-16 cursor" />
+                    <div className="flex">
+                        <HelpIcon className="icon-dim-16 cursor" />
+                    </div>
                 </TippyCustomized>
             )}
             <div className="cn-6 ml-8 mr-4">{selectData.title}</div>
@@ -154,27 +156,31 @@ const closeExpandView = (viewData: CloseExpandView) => {
                     placement="top"
                     content={viewData.isFullScreen ? 'Restore height' : 'Maximise height'}
                 >
-                    {viewData.isFullScreen ? (
-                        <ExitScreen
-                            className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
-                            data-testid="cluster-terminal-exit-screen-button"
-                            onClick={viewData.toggleScreenView}
-                        />
-                    ) : (
-                        <FullScreen
-                            className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
-                            data-testid="cluster-terminal-full-screen-button"
-                            onClick={viewData.toggleScreenView}
-                        />
-                    )}
+                    <div>
+                        {viewData.isFullScreen ? (
+                            <ExitScreen
+                                className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
+                                data-testid="cluster-terminal-exit-screen-button"
+                                onClick={viewData.toggleScreenView}
+                            />
+                        ) : (
+                            <FullScreen
+                                className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
+                                data-testid="cluster-terminal-full-screen-button"
+                                onClick={viewData.toggleScreenView}
+                            />
+                        )}
+                    </div>
                 </Tippy>
             )}
             <Tippy className="default-tt" arrow={false} placement="top" content="Close">
-                <Close
-                    className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
-                    data-testid="cluster-terminal-close-screen-button"
-                    onClick={viewData.closeTerminalModal}
-                />
+                <div className="flex">
+                    <Close
+                        className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
+                        data-testid="cluster-terminal-close-screen-button"
+                        onClick={viewData.closeTerminalModal}
+                    />
+                </div>
             </Tippy>
         </span>
     )
@@ -242,7 +248,9 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
                         <div className="p-12 w-300 fs-13 fw-4">{CLUSTER_TERMINAL_MESSAGING.DEBUG_MODE_TEXT}</div>
                     }
                 >
-                    <HelpIcon className="icon-dim-16 mr-8 cursor" />
+                    <div>
+                        <HelpIcon className="icon-dim-16 mr-8 cursor" />
+                    </div>
                 </TippyCustomized>
             )}
             <span>Debug Mode</span>

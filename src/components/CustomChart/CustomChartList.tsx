@@ -14,11 +14,11 @@ import {
     Progressing,
     ErrorScreenManager,
     GenericEmptyState,
-    TippyCustomized,
     TippyTheme,
     InfoColourBar,
     closeOnEscKeyPressed,
     Host,
+    TippyCustomized,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
@@ -190,29 +190,36 @@ export default function CustomChartList() {
         ) : null
     }
 
+    const handleQuestion = () => {
+        return (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300 h-100 fcv-5"
+                placement="right"
+                Icon={HelpIcon}
+                heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
+                infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
+                additionalContent={additionalRegistryTitleTippyContent()}
+                showCloseButton
+                trigger="click"
+                interactive
+                documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
+                documentationLink={DOCUMENTATION.CUSTOM_CHART}
+            >
+                <div className="flex">
+                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                </div>
+            </TippyCustomized>
+        )
+    }
+
     const renderChartList = (): JSX.Element => {
         return (
             <div className="chart-list" data-testid="custom-charts-list">
                 <div className="flexbox dc__content-space cn-9 fw-6 fs-16 mb-20">
-                    <div className="flex left">
+                    <div className="flex row ml-0">
                         {CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300"
-                            placement="top"
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
-                            heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
-                            infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
-                            additionalContent={additionalRegistryTitleTippyContent()}
-                            documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
-                            documentationLink={DOCUMENTATION.CUSTOM_CHART}
-                            showCloseButton
-                            trigger="click"
-                            interactive
-                        >
-                            <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </TippyCustomized>
+                        {handleQuestion()}
                     </div>
                     {renderUploadButton()}
                 </div>

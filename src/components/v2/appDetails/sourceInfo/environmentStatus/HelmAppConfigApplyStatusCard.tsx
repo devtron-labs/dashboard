@@ -23,7 +23,9 @@ const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppCon
                             arrow={false}
                             content="Whether or not your last helm install was successful"
                         >
-                            <Question className="cursor icon-dim-16 ml-4" />
+                            <div className="flex">
+                                <Question className="cursor icon-dim-16 ml-4" />
+                            </div>
                         </Tippy>
                     </div>
                     <div className={`f-${releaseStatus['status'].toLowerCase()} dc__capitalize fw-6 fs-14 lh-20`}>

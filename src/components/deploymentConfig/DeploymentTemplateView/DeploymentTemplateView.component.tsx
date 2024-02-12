@@ -288,7 +288,9 @@ export const renderEditorHeading = (
                             : 'Base configurations are overridden for this file'
                     }
                 >
-                    <Locked className="icon-dim-16 fcn-6 ml-10" />
+                    <div className="flex">
+                        <Locked className="icon-dim-16 fcn-6 ml-10" />
+                    </div>
                 </Tippy>
             )}
         </div>
@@ -378,7 +380,9 @@ export const CompareWithApprovalPendingAndDraft = ({
                                 : 'Base configurations are overridden for this file'
                         }
                     >
-                        <Locked className="icon-dim-16 fcn-6 ml-10" />
+                        <div className="flex">
+                            <Locked className="icon-dim-16 fcn-6 ml-10" />
+                        </div>
                     </Tippy>
                 )}
             </div>

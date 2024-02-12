@@ -547,7 +547,9 @@ export const LogsView: React.FC<LogsView> = ({
                                     </div>
                                 }
                             >
-                                <Question />
+                                <div className="flex">
+                                    <Question />
+                                </div>
                             </Tippy>
                         </form>
                     </div>

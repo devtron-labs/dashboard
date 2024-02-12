@@ -183,7 +183,9 @@ const PageHeader = ({
                                 placement="top"
                                 content={<span style={{ display: 'block', width: '66px' }}> {tippyMessage} </span>}
                             >
-                                <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                                <div className="flex">
+                                    <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                                </div>
                             </Tippy>
                         </a>
                     )}
@@ -201,7 +203,9 @@ const PageHeader = ({
                             documentationLink={tippyRedirectLink}
                             documentationLinkText="Learn More"
                         >
-                            <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                            <div className="flex">
+                                <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                            </div>
                         </TippyCustomized>
                     )}
                     {markAsBeta && renderBetaTag()}

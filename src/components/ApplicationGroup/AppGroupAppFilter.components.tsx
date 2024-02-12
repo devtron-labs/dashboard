@@ -98,10 +98,17 @@ export const Option = (props): JSX.Element => {
                 return (
                     <div className="flex">
                         <Tippy className="default-tt" arrow={false} content="Edit group">
-                            <Edit className="icon-dim-32 pt-8 pr-6 pb-8 pl-8 cursor" onClick={showEditPopup} />
+                            <div className="flex">
+                                <Edit className="icon-dim-32 pt-8 pr-6 pb-8 pl-8 cursor" onClick={showEditPopup} />
+                            </div>
                         </Tippy>
                         <Tippy className="default-tt" arrow={false} content="Delete group">
-                            <Trash className="scn-6 icon-dim-32 pt-8 pr-8 pb-8 pl-6 cursor" onClick={showDeletePopup} />
+                            <div className="flex">
+                                <Trash
+                                    className="scn-6 icon-dim-32 pt-8 pr-8 pb-8 pl-6 cursor"
+                                    onClick={showDeletePopup}
+                                />
+                            </div>
                         </Tippy>
                     </div>
                 )

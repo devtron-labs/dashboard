@@ -690,10 +690,12 @@ export const Name: React.FC<{
                             content={copied ? 'Copied!' : 'Copy to clipboard.'}
                             trigger="mouseenter click"
                         >
-                            <Clipboard
-                                className="hover-only icon-dim-18 pointer"
-                                onClick={(e) => copyToClipboard(nodeDetails?.name, () => setCopied(true))}
-                            />
+                            <div className="flex">
+                                <Clipboard
+                                    className="hover-only icon-dim-18 pointer"
+                                    onClick={(e) => copyToClipboard(nodeDetails?.name, () => setCopied(true))}
+                                />
+                            </div>
                         </Tippy>
                     </div>
                     {(nodeDetails?.status || nodeDetails?.health?.status) && (

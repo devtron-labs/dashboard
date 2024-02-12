@@ -225,7 +225,9 @@ export const InputPluginSelection = ({
                 {(variableData.refVariableStage ||
                     (variableData?.variableType && variableData.variableType !== 'NEW')) && (
                     <Tippy content={TIPPY_VAR_MSG} placement="bottom-start" animation="shift-away" arrow={false}>
-                        <Var className="dc__position-abs dc__left-6 icon-dim-18 icon-n4" />
+                        <div className="flex">
+                            <Var className="dc__position-abs dc__left-6 icon-dim-18 icon-n4" />
+                        </div>
                     </Tippy>
                 )}
             </PopupMenu.Button>

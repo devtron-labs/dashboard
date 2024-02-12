@@ -130,7 +130,9 @@ export class AppListView extends Component<AppListViewProps> {
                                 placement="top"
                                 content="Environment is a unique combination of cluster and namespace"
                             >
-                                <HelpOutlineIcon className="icon-dim-16" />
+                                <div className="flex">
+                                    <HelpOutlineIcon className="icon-dim-16" />
+                                </div>
                             </Tippy>
                         </div>
                         <div className="app-list__cell app-list__cell--cluster">
@@ -226,12 +228,12 @@ export class AppListView extends Component<AppListViewProps> {
                                                     placement="top"
                                                     content={app.defaultEnv.lastDeployedTime}
                                                 >
-                                                    <p
+                                                    <div
                                                         className="dc__truncate-text  m-0"
                                                         data-testid="last-deployed-time"
                                                     >
                                                         {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
-                                                    </p>
+                                                    </div>
                                                 </Tippy>
                                             )}
                                         </div>

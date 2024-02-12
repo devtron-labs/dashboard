@@ -48,11 +48,13 @@ export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResize
                 className="default-tt"
                 content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}
             >
-                {fullScreenView ? (
-                    <ZoomOut className="zoom zoom--out pointer" onClick={toggleFullScreen} />
-                ) : (
-                    <ZoomIn className="zoom zoom--in pointer" onClick={toggleFullScreen} />
-                )}
+                <div>
+                    {fullScreenView ? (
+                        <ZoomOut className="zoom zoom--out pointer" onClick={toggleFullScreen} />
+                    ) : (
+                        <ZoomIn className="zoom zoom--in pointer" onClick={toggleFullScreen} />
+                    )}
+                </div>
             </Tippy>
         )
     )

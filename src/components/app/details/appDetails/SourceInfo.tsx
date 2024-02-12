@@ -129,7 +129,9 @@ export const SourceInfo = ({
                             isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                        <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                        <div className="flex">
+                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                        </div>
                     </Tippy>
                 )}
                 {isdeploymentAppDeleting && (
@@ -174,24 +176,22 @@ export const SourceInfo = ({
                                         </button>
                                     </ConditionalWrap>
                                 )}
-                                {window._env_.ENABLE_RESTART_WORKLOAD &&
-                                    !isVirtualEnvironment &&
-                                    setRotateModal && (
-                                        <ConditionalWrap
-                                            condition={appDetails?.userApprovalConfig?.length > 0}
-                                            wrap={conditionalScalePodsButton}
+                                {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
+                                    <ConditionalWrap
+                                        condition={appDetails?.userApprovalConfig?.length > 0}
+                                        wrap={conditionalScalePodsButton}
+                                    >
+                                        <button
+                                            data-testid="app-details-rotate-pods-modal-button"
+                                            className="cta cta-with-img small cancel fs-12 fw-6 ml-6"
+                                            onClick={setRotateModal}
+                                            disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
-                                            <button
-                                                data-testid="app-details-rotate-pods-modal-button"
-                                                className="cta cta-with-img small cancel fs-12 fw-6 ml-6"
-                                                onClick={setRotateModal}
-                                                disabled={appDetails?.userApprovalConfig?.length > 0}
-                                            >
-                                                <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
-                                                Restart workloads
-                                            </button>
-                                        </ConditionalWrap>
-                                    )}
+                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
+                                            Restart workloads
+                                        </button>
+                                    </ConditionalWrap>
+                                )}
                             </div>
                         )}
                     </>

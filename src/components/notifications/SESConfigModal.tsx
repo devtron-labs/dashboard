@@ -109,7 +109,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                     this.setState(state)
                 })
                 .then(() => {
-                    this._configName.focus()
+                    this._configName?.focus()
                 })
                 .catch((error) => {
                     showError(error)
