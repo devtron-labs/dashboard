@@ -161,17 +161,19 @@ export default function App() {
 
     function update() {
         updateServiceWorker(true)
+        // Trigger page reload
+        window.location.reload()
     }
 
     useEffect(() => {
         if (window.isSecureContext && navigator.serviceWorker) {
-        // check for sw updates on page change
-        navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
-        if (!needRefresh) {
-            return
+            // check for sw updates on page change
+            navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
+            if (!needRefresh) {
+                return
+            }
+            update()
         }
-        update()
-    }
     }, [location])
 
     function onUpdate() {
