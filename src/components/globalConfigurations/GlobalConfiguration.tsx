@@ -608,11 +608,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
                     <CustomChartList />
                 </Route>,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_AUTH}
-                    path={URLS.GLOBAL_CONFIG_AUTH}
-                    component={Authorization}
-                />,
+                <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
                     path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
@@ -655,7 +651,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {PullImageDigest && (
                 <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
-                    <PullImageDigest isSuperAdmin={isSuperAdmin}/>
+                    <PullImageDigest isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {TagListContainer && (

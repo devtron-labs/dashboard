@@ -24,13 +24,13 @@ export enum AppType {
     DEVTRON_APP = 'devtron_app',
     DEVTRON_HELM_CHART = 'devtron_helm_chart',
     EXTERNAL_HELM_CHART = 'external_helm_chart',
-    EXTERNAL_ARGO_APP = 'external_argo_app'
+    EXTERNAL_ARGO_APP = 'external_argo_app',
 }
 
 export enum K8sResourcePayloadAppType {
     DEVTRON_APP = 0,
     HELM_APP = 1,
-    EXTERNAL_ARGO_APP = 2
+    EXTERNAL_ARGO_APP = 2,
 }
 
 export enum K8sResourcePayloadDeploymentType {
@@ -530,10 +530,10 @@ export interface NodeComponentProps {
     handleFocusTabs: () => void
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
-    isDevtronApp?:boolean
+    isDevtronApp?: boolean
     isExternalApp?: boolean
 }
-export interface AppDetailsComponentType{
+export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]
     monitoringTools?: OptionTypeWithIcon[]
     isExternalApp: boolean

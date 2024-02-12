@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
 import { Progressing, getLockedJSON, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
+import * as jsonpatch from 'fast-json-patch'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
 import { ConfigKeysWithLockType, DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { EDITOR_VIEW } from '../deploymentConfig/constants'
@@ -27,7 +28,6 @@ import {
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import * as jsonpatch from 'fast-json-patch'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
@@ -392,7 +392,7 @@ export default function DeploymentTemplateOverrideForm({
             return
         }
 
-        //setting true to update codeditor values with current locked keys checkbox value
+        // setting true to update codeditor values with current locked keys checkbox value
         hideLockKeysToggled.current = true
 
         dispatch({
@@ -604,7 +604,7 @@ export default function DeploymentTemplateOverrideForm({
             return (
                 <DeploymentTemplateReadOnlyEditorView
                     value={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
-                    isEnvOverride={true}
+                    isEnvOverride
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
                     removedPatches={removedPatches}
@@ -620,7 +620,7 @@ export default function DeploymentTemplateOverrideForm({
         }
         return (
             <DeploymentTemplateEditorView
-                isEnvOverride={true}
+                isEnvOverride
                 value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
                 defaultValue={
                     state.data && state.openComparison

@@ -17,7 +17,7 @@ export default function K8ResourceComponent({
     externalLinks,
     monitoringTools,
     isDevtronApp,
-    isExternalApp
+    isExternalApp,
 }: K8ResourceComponentProps) {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
 

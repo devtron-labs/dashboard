@@ -1,5 +1,12 @@
 import React, { Component } from 'react'
-import { showError, Progressing, Checkbox, Drawer, CustomInput, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Checkbox,
+    Drawer,
+    CustomInput,
+    CHECKBOX_VALUE,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { validateEmail } from '../common'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'

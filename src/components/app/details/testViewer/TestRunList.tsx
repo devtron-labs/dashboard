@@ -1,16 +1,16 @@
 import React, { useState, useMemo } from 'react'
 import { useParams, useRouteMatch, generatePath, useHistory, Route, Switch } from 'react-router'
 import { Progressing, multiSelectStyles, Option, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import Select, {components} from 'react-select';
-import { mapByKey, Td, DropdownIcon, DatePicker } from '../../../common'
-import {getCIPipelines } from '../../service'
-import { getTriggerList, getFilters } from './service'
+import Select, { components } from 'react-select'
 import { BarChart, Bar, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import moment from 'moment'
+import { mapByKey, Td, DropdownIcon, DatePicker } from '../../../common'
+import { getCIPipelines } from '../../service'
+import { getTriggerList, getFilters } from './service'
 import { ReactComponent as EmptyTests } from '../../../../assets/img/ic-empty-tests.svg'
 import { SelectedNames } from './Test.types'
 import './TestRunDetails.scss'
 import { TestRunDetails } from './TestRunDetails'
-import moment from 'moment'
 
 export default function TestRunList() {
     const params = useParams<{ appId: string; pipelineId?: string }>()
@@ -25,7 +25,13 @@ export default function TestRunList() {
     })
     const [focusedDate, setFocusedDate] = useState(null)
 
-    if (ciPipelinesLoading) {return <div className="w-100" style={{height:'100%'}}><Progressing pageLoader/></div>}
+    if (ciPipelinesLoading) {
+        return (
+            <div className="w-100" style={{ height: '100%' }}>
+                <Progressing pageLoader />
+            </div>
+        )
+    }
     if (!ciPipelinesLoading && (!ciPipelinesResult?.result || ciPipelinesResult?.result?.length === 0)) {
         return <TestsPlaceholder subtitle="Reports for executed test cases will be available here" />
     }
@@ -100,12 +106,14 @@ const CISelector: React.FC<{ pipelines: any[] }> = ({ pipelines }) => {
     )
 }
 
-const TestsPlaceholder = ({title="Test Reports", subtitle=""}) => {
-    return(
+const TestsPlaceholder = ({ title = 'Test Reports', subtitle = '' }) => {
+    return (
         <div className="w-100 flex column" style={{ height: '100%' }}>
             <EmptyTests />
             <div className="fs-16 fw-6 cn-9">{title}</div>
-            <p className="fs-12 cn-7" style={{width:'250px', textAlign:'center'}}>{subtitle}</p>
+            <p className="fs-12 cn-7" style={{ width: '250px', textAlign: 'center' }}>
+                {subtitle}
+            </p>
         </div>
     )
 }
@@ -272,8 +280,12 @@ const TestsFilter: React.FC<{ component }> = ({ component: Component }) => {
     const availableOptions: TestsFilterOptions = useMemo(() => {
         const { testsuite, packageName } = (result?.result?.testsuite || []).reduce(
             (agg, curr, idx) => {
-                if (curr.name) {agg.testsuite.push(curr.name);}
-                if (curr.package) {agg.packageName.push(curr.package);}
+                if (curr.name) {
+                    agg.testsuite.push(curr.name)
+                }
+                if (curr.package) {
+                    agg.packageName.push(curr.package)
+                }
                 return agg
             },
             { testsuite: [], packageName: [] },
@@ -298,7 +310,7 @@ const TestsFilter: React.FC<{ component }> = ({ component: Component }) => {
 
     function handleChange(selected, change) {
         const { action, name, option } = change
-        if (action === "select-option" && name === "type"){
+        if (action === 'select-option' && name === 'type') {
             setSelectedType(option?.value)
             setSelectionState('name')
         } else if (action === 'remove-value') {
@@ -380,12 +392,12 @@ const TestsFilter: React.FC<{ component }> = ({ component: Component }) => {
 const CustomFilterMenu = ({ title, props }) => {
     return (
         <components.Menu {...props}>
-                <>
+            <>
                 <span style={{ height: '32px' }} className="fs-12 fw-6 cn-4 flex left w-100 ml-12">
                     {title}
                 </span>
                 {props.children}
-                </>
-            </components.Menu>
+            </>
+        </components.Menu>
     )
 }

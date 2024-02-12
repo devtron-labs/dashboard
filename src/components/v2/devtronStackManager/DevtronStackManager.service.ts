@@ -144,8 +144,8 @@ export const executeServerAction = (serverActionRequest: ModuleActionRequest): P
 }
 
 export const getAllModules = (): Promise<AllModuleInfoResponse> => {
-    return fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then(
-        (res) => res.json(),
+    return fetch(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.API_VERSION_V2}/${Routes.MODULES_API}`).then((res) =>
+        res.json(),
     )
 }
 

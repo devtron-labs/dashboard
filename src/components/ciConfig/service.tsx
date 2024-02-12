@@ -16,13 +16,13 @@ export function getDockerRegistryMinAuth(appId: string, isStorageActionPush?: bo
 }
 
 export const getBuildpackMetadata = (): Promise<any> => {
-    return fetch(`${window?._env_?.CENTRAL_API_ENDPOINT || 'https://api.devtron.ai'}/buildpackMetadata`).then(
-        (res) => res.json(),
+    return fetch(`${window?._env_?.CENTRAL_API_ENDPOINT || 'https://api.devtron.ai'}/buildpackMetadata`).then((res) =>
+        res.json(),
     )
 }
 
 export const getDockerfileTemplate = (): Promise<any> => {
-    return fetch(`${window?._env_?.CENTRAL_API_ENDPOINT || 'https://api.devtron.ai'}/dockerfileTemplate`).then(
-        (res) => res.json(),
+    return fetch(`${window?._env_?.CENTRAL_API_ENDPOINT || 'https://api.devtron.ai'}/dockerfileTemplate`).then((res) =>
+        res.json(),
     )
 }

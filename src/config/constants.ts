@@ -249,7 +249,7 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
-    USER: 'user'
+    USER: 'user',
 }
 
 export const ViewType = {
@@ -393,12 +393,12 @@ export const AppListConstants = {
     AppTabs: {
         DEVTRON_APPS: 'Devtron Apps',
         HELM_APPS: 'Helm Apps',
-        ARGO_APPS: 'ArgoCD Apps'
+        ARGO_APPS: 'ArgoCD Apps',
     },
     AppType: {
         DEVTRON_APPS: 'd',
         HELM_APPS: 'h',
-        ARGO_APPS: 'a'
+        ARGO_APPS: 'a',
     },
     FilterType: {
         PROJECT: 'team',
@@ -898,18 +898,20 @@ export const ALLOW_UNTIL_TIME = {
 
 export const ALLOW_UNTIL_TIME_OPTIONS: any[] = Object.entries(ALLOW_UNTIL_TIME).map(([key, value]) => ({
     label: key,
-    value: value,
+    value,
 }))
 
-export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY= "Enforced from Global Configurations. Go to Global Configurations to change."
-export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE= "Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here."
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
+    'Enforced from Global Configurations. Go to Global Configurations to change.'
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
+    'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export const API_STATUS_CODES = {
     UNAUTHORIZED: 401,
     PERMISSION_DENIED: 403,
     NOT_FOUND: 404,
-    EXPECTATION_FAILED: 417
+    EXPECTATION_FAILED: 417,
 }
 
 export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3

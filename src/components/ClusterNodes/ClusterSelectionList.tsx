@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import { handleUTCTime } from '../common'
 import { Progressing, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+import { handleUTCTime } from '../common'
 import { ClusterDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
@@ -72,8 +72,8 @@ export default function ClusterSelectionList({
     }
 
     const handleFilterKeyPress = (value): void => {
-            handleFilterChanges(value)
-            setSearchApplied(true)
+        handleFilterChanges(value)
+        setSearchApplied(true)
     }
 
     const handleSearchChange = (value): void => {

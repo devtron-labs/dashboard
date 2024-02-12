@@ -405,14 +405,14 @@ export const AppMetrics: React.FC<{
                                     </h3>
                                 </div>
                                 <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                <div className="flex">
-                                    <Fullscreen
-                                        className="icon-dim-16 cursor fcn-5"
-                                        onClick={(e) => {
-                                            setChartName(ChartType.Latency)
-                                        }}
-                                    />
-                                </div>
+                                    <div className="flex">
+                                        <Fullscreen
+                                            className="icon-dim-16 cursor fcn-5"
+                                            onClick={(e) => {
+                                                setChartName(ChartType.Latency)
+                                            }}
+                                        />
+                                    </div>
                                 </Tippy>
                             </div>
                             <iframe
