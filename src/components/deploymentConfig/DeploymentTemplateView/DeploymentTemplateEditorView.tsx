@@ -315,7 +315,7 @@ const DeploymentTemplateEditorView = ({
     const valueLHS = isIdMatch ? defaultValue : source[selectedOptionId] // fetch LHS data from respective cache store
 
     // final value for LHS
-    let lhs = convertVariables ? resolvedValuesLHS : valueLHS
+    let lhs = (convertVariables ? resolvedValuesLHS : valueLHS) ?? ''
 
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
@@ -323,7 +323,7 @@ const DeploymentTemplateEditorView = ({
     const valueRHS = shouldUseDraftData ? selectedData : value
 
     // final value for RHS
-    let rhs = convertVariables ? resolvedValuesRHS : valueRHS
+    let rhs = (convertVariables ? resolvedValuesRHS : valueRHS) ?? ''
     if (getLockFilteredTemplate && isValues) {
         try {
             const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
