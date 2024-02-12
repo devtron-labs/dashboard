@@ -720,7 +720,9 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                             arrow={false}
                             content="How often this app is deployed to production?"
                         >
-                             <span> <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" /></span>  
+                            <span>
+                                <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                            </span>
                         </Tippy>
                         <span className="cursor" onClick={this.props.setFrequencyMetric}>
                             {renderCategoryTag(this.props.frequencyBenchmark.name)}{' '}
