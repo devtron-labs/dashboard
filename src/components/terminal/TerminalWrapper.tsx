@@ -12,6 +12,8 @@ import ReactGA from 'react-ga4';
 import './terminal.scss';
 import { Scroller } from '../app/details/cicdHistory/History.components';
 import { SocketConnectionType } from '../app/details/appDetails/appDetails.type';
+import { logExceptionToSentry } from '@devtron-labs/devtron-fe-common-lib'
+
 
 interface TerminalViewProps {
     appDetails: AppDetails;
@@ -256,7 +258,8 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         }
 
         socket.onclose = function (evt) {
-            setSocketConnection('DISCONNECTED');
+            if (window._env_.LOG_TERMINAL_EVENTS_TO_SENTRY) logExceptionToSentry(evt)
+            setSocketConnection('DISCONNECTED')
         }
 
         socket.onerror = function (evt) {
