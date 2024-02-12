@@ -36,7 +36,7 @@ const EnvironmentStatusComponent = ({
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
-    const status = appDetails.resourceTree?.status || ''
+    const status = appDetails.resourceTree?.status || appDetails?.appStatus || ''
     const showHibernationStatusMessage =
         status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { url } = useRouteMatch()

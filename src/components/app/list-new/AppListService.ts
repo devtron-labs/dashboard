@@ -1,4 +1,4 @@
-import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get } from '@devtron-labs/devtron-fe-common-lib'
 import { getNamespaceListMin as getNamespaceList, getAppFilters } from '../../../services/service'
 import { Routes, SERVER_MODE } from '../../../config'
 import {
@@ -10,40 +10,7 @@ import {
 import { APP_STATUS } from '../config'
 import { getProjectList } from '../../project/service'
 import { getClusterList } from '../../cluster/cluster.service'
-
-export interface AppListResponse extends ResponseType {
-    result?: AppsListResult
-}
-
-interface AppsListResult {
-    clusterIds: number[]
-    applicationType: string // DEVTRON-CHART-STORE, DEVTRON-APP ,HELM-APP
-    errored: boolean
-    errorMsg: string
-    helmApps: HelmApp[]
-}
-
-export interface HelmApp {
-    appName: string
-    appId: string
-    isExternal: boolean
-    chartName: string
-    chartVersion: string
-    chartAvatar: string
-    projectId: number
-    lastDeployedAt: string
-    environmentDetail: AppEnvironmentDetail
-    appStatus: string
-}
-
-export interface AppEnvironmentDetail {
-    environmentName: string
-    environmentId: number
-    namespace: string
-    clusterName: string
-    clusterId: number
-    isVirtualEnvironment?: boolean
-}
+import { AppListResponse } from './AppListType';
 
 async function commonAppFilters(serverMode) {
     if (serverMode === SERVER_MODE.FULL) {
@@ -210,8 +177,19 @@ export const getNamespaces = (
     })
 }
 
-export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string): Promise<AppListResponse> => {
-    let url = `${Routes.CHART_INSTALLED}`
+export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string) : Promise<AppListResponse> => {
+    let url = Routes.CHART_INSTALLED
+    if (clusterIdsCsv) {
+        url = `${url}?clusterIds=${clusterIdsCsv}`
+    }
+    if (appStatuses) {
+        url = `${url}${clusterIdsCsv ? '&' : '?'}appStatuses=${appStatuses}`
+    }
+    return get(url)
+}
+
+export const getArgoInstalledExternalApps = (clusterIdsCsv: string, appStatuses?: string) => {
+    let url = Routes.ARGO_APPS
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
     }

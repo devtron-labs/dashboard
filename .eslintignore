@@ -231,6 +231,9 @@ src/components/app/list/appStatus/AppStatus.tsx
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
 src/components/app/list/types.tsx
+src/components/app/list-new/ExternalArgoList.tsx
+src/components/externalArgoApps/ExternalArgoApp.tsx
+src/components/externalArgoApps/ExternalArgoAppDetail.tsx
 src/components/app/service.ts
 src/components/app/types.ts
 src/components/bulkEdits/BulkEdits.tsx

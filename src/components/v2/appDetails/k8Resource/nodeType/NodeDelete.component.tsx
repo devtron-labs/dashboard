@@ -13,7 +13,7 @@ import dots from '../../../assets/icons/ic-menu-dot.svg'
 import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
-import { NodeType } from '../../appDetails.type'
+import { AppType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
@@ -28,6 +28,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
     const { queryParams } = useSearchString()
+    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
 
     function describeNodeWrapper(tab) {
         queryParams.set('kind', params.podName)
@@ -65,16 +66,18 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
                 ) : (
                     ''
                 )}
-                <span
-                    data-testid="delete-resource-button"
-                    className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                    onClick={(e) => {
-                        setShowDeleteConfirmation(true)
-                    }}
-                >
-                    <span>Delete</span>
-                    <Trash className="icon-dim-20 scr-5" />
-                </span>
+                {!isExternalArgoApp && (
+                    <span
+                        data-testid="delete-resource-button"
+                        className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
+                        onClick={(e) => {
+                            setShowDeleteConfirmation(true)
+                        }}
+                    >
+                        <span>Delete</span>
+                        <Trash className="icon-dim-20 scr-5" />
+                    </span>
+                )}
             </div>
         )
     }

@@ -34,11 +34,12 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
-import { AppListResponse } from '../../app/list-new/AppListService'
+import { AppListResponse } from '../../app/list-new/AppListType'
 import { MainContext } from './types'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
+const ExternalArgoApps =  lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
 const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
 const V2Details = lazy(() => import('../../v2/index'))
@@ -465,6 +466,7 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         )}
                     />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
+                    <Route path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`} render={() => <ExternalArgoApps />} />
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}
