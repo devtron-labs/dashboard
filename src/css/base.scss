@@ -1683,6 +1683,7 @@ button.anchor {
 
     &.dc__visible-hover--parent:hover {
         .dc__visible-hover {
+            // If we give this class then the element will be visible on hover
             &--child {
                 display: inherit;
             }
@@ -2065,6 +2066,10 @@ button.anchor {
 
 .dc__border-dashed {
     border: 1px dashed var(--N200);
+
+    &--n3 {
+        border: 1px dashed var(--N300);
+    }
 }
 
 .dc__border-n1 {
@@ -2109,6 +2114,10 @@ button.anchor {
 
 .dc__border-bottom-2 {
     border-bottom: 2px solid var(--N200);
+
+    &--b5 {
+        border-bottom: 2px solid var(--B500) !important;
+    }
 }
 
 .dc__border-left {
@@ -2125,6 +2134,10 @@ button.anchor {
 
 .dc__border-top-n1 {
     border-top: solid 1px var(--N100);
+
+    &--important {
+        border-top: solid 1px var(--N100) !important;
+    }
 }
 
 .dc__border-bottom-n1 {
@@ -2198,8 +2211,16 @@ button.anchor {
     max-width: none !important;
 }
 
+.dc__mxw-90 {
+    max-width: 90px;
+}
+
 .dc__mxw-120 {
     max-width: 120px;
+}
+
+.dc__mxw-160 {
+    max-width: 160px;
 }
 
 .dc__mxw-200 {
@@ -2208,6 +2229,10 @@ button.anchor {
 
 .dc__mxw-200-imp {
     max-width: 200px !important;
+}
+
+.dc__mxw-250 {
+    max-width: 250px;
 }
 
 .dc__mxw-300 {
@@ -2222,6 +2247,10 @@ button.anchor {
     max-width: 400px;
 }
 
+.dc__mxw-420 {
+    max-width: 420px;
+}
+
 .dc__mxw-500 {
     max-width: 500px;
 }
@@ -2232,6 +2261,10 @@ button.anchor {
 
 .dc__mxw-800 {
     max-width: 800px;
+}
+
+.dc__mxw-920 {
+    max-width: 920px;
 }
 
 .dc__mxw-960 {
@@ -2454,6 +2487,10 @@ textarea,
 
 .bc-b50 {
     background-color: var(--B50);
+
+    &--imp {
+        background-color: var(--B50) !important;
+    }
 }
 
 .c-n50 {
@@ -2592,6 +2629,12 @@ textarea,
     }
 }
 
+.icon-stroke-b5 {
+    path, rect {
+        stroke: var(--B500);
+    }
+}
+
 .icon-fill-blue-imp path {
     fill: var(--B500) !important;
 }
@@ -2723,6 +2766,10 @@ textarea,
 
 .mw-116 {
     min-width: 116px;
+}
+
+.mw-140 {
+    min-width: 140px;
 }
 
 .mw-232 {
@@ -2942,6 +2989,10 @@ textarea,
 }
 
 // Width in percentage
+.mw-100p {
+    min-width: 100%;
+}
+
 .w-25 {
     width: 25%;
 }
@@ -2990,6 +3041,10 @@ textarea,
     width: auto;
 }
 
+.dc__width-min-content {
+    width: min-content;
+}
+
 .dc_width-max-content {
     width: max-content;
 }
@@ -3006,6 +3061,10 @@ textarea,
 //min width
 .min-w-200 {
     min-width: 200px;
+}
+
+.min-w-140 {
+    min-width: 140px;
 }
 
 .dc__mnw-100 {
@@ -3465,6 +3524,10 @@ textarea,
     margin-bottom: -1px;
 }
 
+.mb-neg-2{
+    margin-bottom: -2px;
+}
+
 .m-0-imp {
     margin: 0 !important;
 }
@@ -3572,6 +3635,14 @@ textarea,
 
 .dc__overflow-scroll {
     overflow: scroll !important;
+}
+
+.dc__hide-hscroll {
+    overflow-x: hidden;
+}
+
+.dc__hscroll {
+    overflow-x: scroll;
 }
 
 .dc__no-svg-fill {
@@ -3879,6 +3950,10 @@ textarea::placeholder {
     z-index: 4;
 }
 
+.dc__zi-5 {
+    z-index: 5;
+}
+
 .dc__zi-20 {
     z-index: 20;
 }
@@ -4114,6 +4189,16 @@ textarea::placeholder {
 .bulk-selection-widget {
     border: 1px solid var(--B500);
     background: rgba(240, 247, 255, 0.72);
-    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.35);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.20);
     backdrop-filter: blur(4px);
+}
+
+// Tab behaviors
+.dc__tab-focus {
+    outline: none;
+
+    &:focus-visible {
+        outline: 5px auto -webkit-focus-ring-color !important;
+        outline-offset: 1px;
+    }
 }

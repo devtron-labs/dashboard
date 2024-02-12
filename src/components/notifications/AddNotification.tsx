@@ -12,6 +12,7 @@ import {
     MultiValueRemove,
     RadioGroup,
     RadioGroupItem,
+    CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -694,7 +695,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                     dataTestId={`trigger-notification-checkbox-${rowIndex}`}
                                                     rootClassName="gray"
                                                     isChecked={row.trigger}
-                                                    value={'CHECKED'}
+                                                    value={CHECKBOX_VALUE.CHECKED}
                                                     onChange={(e) => {
                                                         this.handlePipelineEventType(rowIndex, 'trigger')
                                                     }}
@@ -724,7 +725,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                     dataTestId={`failure-notification-checkbox-${rowIndex}`}
                                                     rootClassName="red"
                                                     isChecked={row.failure}
-                                                    value={'CHECKED'}
+                                                    value={CHECKBOX_VALUE.CHECKED}
                                                     onChange={(e) => {
                                                         this.handlePipelineEventType(rowIndex, 'failure')
                                                     }}
