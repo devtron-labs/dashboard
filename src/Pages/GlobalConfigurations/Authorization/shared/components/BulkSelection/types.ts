@@ -27,6 +27,7 @@ export interface BulkSelectionActionWidgetProps {
     setBulkSelectionModalConfig: (config: BulkSelectionModalConfig) => void
     refetchList: () => void
     showStatus: boolean
+    entityType: BulkSelectionEntityTypes
 }
 
 export type BulkSelectionModalProps = BulkSelectionModalConfig &

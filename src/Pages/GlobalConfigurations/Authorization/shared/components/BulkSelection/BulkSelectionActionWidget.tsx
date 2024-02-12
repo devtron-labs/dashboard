@@ -5,13 +5,14 @@ import {
     DraggablePositionVariant,
     DraggableWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { ReactComponent as Trash } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Tilde } from '../../../../../../assets/icons/ic-tilde.svg'
 import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
 import { BulkSelectionActionWidgetProps } from './types'
-import { BulkSelectionModalTypes } from './constants'
+import { BulkSelectionEntityTypes, BulkSelectionModalTypes } from './constants'
 
 const BulkStatusUpdateDropdown = importComponentFromFELibrary('BulkStatusUpdateDropdown', null, 'function')
 
@@ -25,6 +26,7 @@ const BulkSelectionActionWidget = ({
     filterConfig,
     selectedIdentifiersCount,
     isCountApproximate = false,
+    entityType,
 }: BulkSelectionActionWidgetProps) => {
     const { handleBulkSelection } = useAuthorizationBulkSelection()
 
@@ -46,6 +48,7 @@ const BulkSelectionActionWidget = ({
             positionVariant={DraggablePositionVariant.PARENT_BOTTOM_CENTER}
             parentRef={parentRef}
             zIndex="calc(var(--modal-index) - 1)"
+            layoutFixDelta={67}
         >
             <div className="flex dc__gap-8 pt-12 pb-12 pr-12 pl-8 bulk-selection-widget br-8">
                 <DraggableButton dragClassName="drag-selector" />
@@ -66,25 +69,34 @@ const BulkSelectionActionWidget = ({
                     />
                 )}
                 <div className="flex dc__gap-8">
-                    <button
-                        type="button"
-                        className="dc__transparent flex p-0"
-                        onClick={openBulkDeleteModal}
-                        aria-label="Delete selected user"
-                        disabled={areActionsDisabled}
+                    <Tippy
+                        className="default-tt"
+                        arrow={false}
+                        placement="top"
+                        content={entityType === BulkSelectionEntityTypes.users ? 'Delete user(s)' : 'Delete group(s)'}
                     >
-                        <Trash className="scn-6 icon-dim-28 p-6 icon-delete" />
-                    </button>
+                        <button
+                            type="button"
+                            className="dc__transparent flex p-0"
+                            onClick={openBulkDeleteModal}
+                            aria-label="Delete selected user"
+                            disabled={areActionsDisabled}
+                        >
+                            <Trash className="scn-6 icon-dim-28 p-6 icon-delete" />
+                        </button>
+                    </Tippy>
                     <div className="dc__divider h-16" />
-                    <button
-                        type="button"
-                        className="dc__transparent flex p-0"
-                        onClick={clearBulkSelection}
-                        aria-label="Clear bulk selection"
-                        disabled={areActionsDisabled}
-                    >
-                        <Close className="fcn-6 icon-dim-28 p-6" />
-                    </button>
+                    <Tippy className="default-tt" arrow={false} placement="top" content="Clear Selection(s)">
+                        <button
+                            type="button"
+                            className="dc__transparent flex p-0"
+                            onClick={clearBulkSelection}
+                            aria-label="Clear bulk selection"
+                            disabled={areActionsDisabled}
+                        >
+                            <Close className="fcn-6 icon-dim-28 p-6" />
+                        </button>
+                    </Tippy>
                 </div>
             </div>
         </DraggableWrapper>

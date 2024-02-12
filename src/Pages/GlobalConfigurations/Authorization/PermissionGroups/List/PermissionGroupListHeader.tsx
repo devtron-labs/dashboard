@@ -55,7 +55,7 @@ const PermissionGroupListHeader = ({
             <div className="flex dc__gap-8">
                 <SearchBar
                     inputProps={{
-                        placeholder: 'Search groups',
+                        placeholder: 'Search group',
                     }}
                     handleEnter={handleSearch}
                     initialSearchText={initialSearchText}

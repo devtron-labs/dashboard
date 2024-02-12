@@ -61,7 +61,7 @@ const UserPermissionListHeader = ({
             <div className="flex dc__gap-8">
                 <SearchBar
                     inputProps={{
-                        placeholder: 'Search User',
+                        placeholder: 'Search user',
                     }}
                     handleEnter={handleSearch}
                     initialSearchText={initialSearchText}

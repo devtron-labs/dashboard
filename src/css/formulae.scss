@@ -116,6 +116,11 @@ $style in $margins {
     .fs-#{$i} {
         font-size: 0px + $i;
     }
+
+    // To override the custom font-size
+    .fs-#{$i}-imp {
+        font-size: 0px + $i !important;
+    }
 }
 
 //color from B,N,G,Y,R and 100 to 900

@@ -151,6 +151,7 @@ const UserPermissionContainer = ({
                             }}
                             selectedIdentifiersCount={selectedUsersCount}
                             isCountApproximate={isBulkSelectionApplied}
+                            entityType={BulkSelectionEntityTypes.users}
                         />
                     )}
                 </div>
