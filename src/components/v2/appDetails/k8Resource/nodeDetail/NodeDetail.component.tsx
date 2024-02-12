@@ -34,6 +34,7 @@ function NodeDetailComponent({
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
+    isExternalApp
 }: NodeDetailPropsType) {
     const location = useLocation()
     const [applicationObjectTabs] = useSharedState(
@@ -387,6 +388,7 @@ function NodeDetailComponent({
                                 ephemeralContainerType={ephemeralContainerType}
                                 targetContainerOption={targetContainerOption}
                                 imageListOption={imageListOption}
+                                isExternalApp={isExternalApp}
                             />
                         </div>
                     </Route>

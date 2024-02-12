@@ -12,3 +12,9 @@ export interface LabelTags {
 export interface ChartHeaderComponentType{
   errorResponseCode?: number
 }
+
+export interface EAHeaderComponentType{
+  title: string
+  redirectURL: string
+  appType: string
+}

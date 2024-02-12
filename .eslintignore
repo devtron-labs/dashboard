@@ -270,6 +270,13 @@ src/components/app/list-new/AppList.tsx
 src/components/app/list-new/AppListService.ts
 src/components/app/list-new/Constants.ts
 src/components/app/list-new/HelmAppList.tsx
+src/components/app/list-new/ExternalArgoList.tsx
+src/components/app/list-new/ExternalArgoApp.tsx
+src/components/app/list-new/ExternalArgoAppDetail.tsx
+src/components/externalArgoApps/externalArgoApp.type.ts
+src/components/v2/appDetails/sourceInfo/environmentStatus/CurrentSyncStatus.tsx
+src/components/v2/appDetails/sourceInfo/environmentStatus/notesDrawer.type.ts
+src/components/app/list-new/AppListType.tsx
 src/components/app/service.ts
 src/components/app/types.ts
 src/components/app/typing.d.ts

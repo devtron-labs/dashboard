@@ -3,7 +3,7 @@ import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store';
 import { LogSearchTermType } from '../appDetails.type';
 import LogsComponent from '../k8Resource/nodeDetail/NodeDetailTabs/Logs.component';
 
-function LogAnalyzerComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTermType) {
+function LogAnalyzerComponent({ logSearchTerms, setLogSearchTerms, isExternalApp }: LogSearchTermType) {
     useEffect(() => {
         AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.log_analyzer);
     }, []);
@@ -15,6 +15,7 @@ function LogAnalyzerComponent({ logSearchTerms, setLogSearchTerms }: LogSearchTe
                 isDeleted={false}
                 logSearchTerms={logSearchTerms}
                 setLogSearchTerms={setLogSearchTerms}
+                isExternalApp={isExternalApp}
             />
         </div>
     );

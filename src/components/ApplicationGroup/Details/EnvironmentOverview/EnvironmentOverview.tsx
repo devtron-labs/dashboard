@@ -23,8 +23,6 @@ import {
 import './envOverview.scss'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../../../config'
-import { EditDescRequest } from '../../../app/types'
-import { toast } from 'react-toastify'
 import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
 import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'

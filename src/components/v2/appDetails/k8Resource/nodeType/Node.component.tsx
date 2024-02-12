@@ -4,9 +4,6 @@ import { TippyCustomized, TippyTheme, copyToClipboard } from '@devtron-labs/devt
 import IndexStore from '../../index.store'
 import Tippy from '@tippyjs/react'
 import { getElapsedTime } from '../../../../common'
-import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
 import PodHeaderComponent from './PodHeader.component'
 import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
@@ -21,8 +18,11 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
+import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
+import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
+import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
 
-function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
+function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp, isExternalApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
     const history = useHistory()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
@@ -45,7 +45,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp
 
     useEffect(() => {
-        if (externalLinks.length > 0) {
+        if (externalLinks?.length > 0) {
             const _podLevelExternalLinks = []
             const _containerLevelExternalLinks = []
 
@@ -441,7 +441,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </div>
                             </div>
                         </div>
-                        {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
+                        {params.nodeType === NodeType.Service.toLowerCase() &&
+                            node.kind !== 'Endpoints' &&
+                            node.kind !== 'EndpointSlice' && (
                                 <div className="col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon">
                                     {portNumberPlaceHolder(node)}
                                     {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
@@ -487,7 +489,10 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 )}
                             </div>
                         )}
-                        {node?.kind !== NodeType.Containers && node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && (
+                        {node?.kind !== NodeType.Containers &&
+                            node?.kind !== 'Endpoints' &&
+                            node?.kind !== 'EndpointSlice' &&
+                            !isExternalApp && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                                 </div>

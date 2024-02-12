@@ -24,11 +24,13 @@ export enum AppType {
     DEVTRON_APP = 'devtron_app',
     DEVTRON_HELM_CHART = 'devtron_helm_chart',
     EXTERNAL_HELM_CHART = 'external_helm_chart',
+    EXTERNAL_ARGO_APP = 'external_argo_app'
 }
 
 export enum K8sResourcePayloadAppType {
     DEVTRON_APP = 0,
     HELM_APP = 1,
+    EXTERNAL_ARGO_APP = 2
 }
 
 export enum K8sResourcePayloadDeploymentType {
@@ -155,7 +157,7 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 
 export interface AppDetails {
-    appId: number
+    appId?: number
     appName: string
     appStoreAppName?: string
     appStoreAppVersion?: string
@@ -193,6 +195,7 @@ export interface AppDetails {
     isVirtualEnvironment?: boolean
     imageTag?: string
     helmPackageName?: string
+    appStatus?: string
     chartAvatar?: string
 }
 
@@ -389,6 +392,7 @@ interface Sync {
 export interface LogSearchTermType {
     logSearchTerms: Record<string, string>
     setLogSearchTerms: React.Dispatch<React.SetStateAction<Record<string, string>>>
+    isExternalApp?: boolean
 }
 
 export interface NodeDetailPropsType extends LogSearchTermType {
@@ -398,6 +402,7 @@ export interface NodeDetailPropsType extends LogSearchTermType {
     addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
     selectedResource?: SelectedResourceType
     removeTabByIdentifier?: (id: string) => string
+    isExternalApp?: boolean
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {
@@ -408,6 +413,7 @@ export interface LogsComponentProps extends NodeDetailPropsType {
     targetContainerOption?: OptionType[]
     ephemeralFormAdvanced?: EphemeralFormAdvancedType
     imageListOption?: OptionType[]
+    isExternalApp?: boolean
 }
 
 export interface TerminalComponentProps {
@@ -427,6 +433,8 @@ export interface TerminalComponentProps {
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
     tabRef?: MutableRefObject<HTMLDivElement>
+    appType?: string
+    isExternalApp?: boolean
 }
 
 export interface OptionsBase {
@@ -498,6 +506,7 @@ export interface NodeTreeDetailTabProps {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
+    isExternalApp?: boolean
 }
 
 export interface K8ResourceComponentProps {
@@ -506,6 +515,7 @@ export interface K8ResourceComponentProps {
     handleFocusTabs: () => void;
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
+    isExternalApp?: boolean
     isDevtronApp?: boolean
 }
 
@@ -514,4 +524,13 @@ export interface NodeComponentProps {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?:boolean
+    isExternalApp?: boolean
+}
+export interface AppDetailsComponentType{
+    externalLinks?: ExternalLink[]
+    monitoringTools?: OptionTypeWithIcon[]
+    isExternalApp: boolean
+    _init?: () => void
+    loadingDetails: boolean
+    loadingResourceTree: boolean
 }

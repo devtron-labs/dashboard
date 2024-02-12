@@ -6,7 +6,7 @@ import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
 
-function DeploymentTypeIcon({ deploymentAppType }: { deploymentAppType: string }): JSX.Element {
+function DeploymentTypeIcon({ deploymentAppType, isExternalArgoApp }: { deploymentAppType: string, isExternalArgoApp?: boolean }): JSX.Element {
     const renderDeploymentTypeIcon = () => {
         if (
             (deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD ||
@@ -14,7 +14,7 @@ function DeploymentTypeIcon({ deploymentAppType }: { deploymentAppType: string }
             VirtualEnvHelpTippy
         ) {
             return <VirtualEnvHelpTippy isVirtualIcon={true} />
-        } else if (deploymentAppType === DeploymentAppTypes.GITOPS) {
+        } else if (deploymentAppType === DeploymentAppTypes.GITOPS || isExternalArgoApp) {
             return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
         } else if (deploymentAppType === DeploymentAppTypes.HELM) {
             return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />

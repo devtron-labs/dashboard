@@ -5,6 +5,7 @@ import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
 import { getCustomOptionSelectionStyle } from '../../../../common/ReactSelect.utils'
 import {
+    getK8sResourcePayloadAppType,
     getContainerSelectStyles,
     getGroupedContainerOptions,
     getShellSelectStyles,
@@ -55,22 +56,21 @@ function TerminalComponent({
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
     const appDetails = IndexStore.getAppDetails()
     const nodeName = isResourceBrowserView ? params.node : params.podName
-
+    const selectedNamespace = appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName)?.namespace
+    
     function Option(props) {
       const { selectProps, data, style } = props
       const getPayload = (containerName: string) => {
-        let payload: ResponsePayload = {
-          namespace: isResourceBrowserView
-          ? selectedResource.namespace
-          : appDetails.namespace,
-      clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-      podName: isResourceBrowserView ? params.node : params.podName,
-            basicData: {
-                containerName: containerName,
-            },
-        }
-        return payload
-    }
+          let payload: ResponsePayload = {
+              namespace: isResourceBrowserView ? selectedResource.namespace : selectedNamespace,
+              clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
+              podName: isResourceBrowserView ? params.node : params.podName,
+              basicData: {
+                  containerName: containerName,
+              },
+          }
+          return payload
+      }
 
       const deleteEphemeralContainer = (containerName: string) => {
           deleteEphemeralUrl(
@@ -145,18 +145,23 @@ function TerminalComponent({
                       appDetails.namespace,
                       appDetails.appName,
                   )
-
+        const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
-        } else {
+        } else if(isExternalArgoApp){
+            url += `${appDetails.clusterId}` 
+        }else {
             url += `${appId}`
         }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}/${nodeName}/${
+
+        url += `/${isResourceBrowserView ? selectedResource.namespace : isExternalArgoApp ? selectedNamespace : appDetails.namespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
+            return (
+                url+`?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
+            )
         }
         return url
     }

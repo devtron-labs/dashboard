@@ -30,11 +30,13 @@ function EnvironmentSelectorComponent({
     _init,
     loadingResourceTree,
     isVirtualEnvironment,
+    appType
 }: {
     isExternalApp: boolean
     _init?: () => void
     loadingResourceTree: boolean
     isVirtualEnvironment?: boolean
+    appType: string
 }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
@@ -50,7 +52,7 @@ function EnvironmentSelectorComponent({
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
-
+    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {
             getAppOtherEnvironmentMin(params.appId)
@@ -244,12 +246,13 @@ function EnvironmentSelectorComponent({
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
-                                    {appDetails.environmentName || <span>&nbsp;</span>}
+                                    {appDetails.environmentName || appDetails.namespace || <span>&nbsp;</span>}
                                 </div>
+                               
                             )}
                         </div>
                     </div>
-                    {appDetails?.deploymentAppType && (
+                    {(appDetails?.deploymentAppType || isExternalArgoApp) && (
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -259,7 +262,7 @@ function EnvironmentSelectorComponent({
                                 isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                             }`}
                         >
-                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} isExternalArgoApp={isExternalArgoApp}/>
                         </Tippy>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
@@ -272,7 +275,7 @@ function EnvironmentSelectorComponent({
                 </div>
             </div>
 
-            {!loadingResourceTree && (
+            {!loadingResourceTree && appType !== AppType.EXTERNAL_ARGO_APP && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button

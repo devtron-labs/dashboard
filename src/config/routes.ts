@@ -15,9 +15,11 @@ export const URLS = {
     RESOURCE_BROWSER: '/resource-browser',
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
+    EXTERNAL_ARGO_APP: 'eaa',
     APP_LIST: 'list',
     APP_LIST_DEVTRON: 'd',
     APP_LIST_HELM: 'h',
+    APP_LIST_ARGO: 'a',
     APPS: '/devtron-apps', // for V2 router
     HELM_CHARTS: 'helm-apps', // for V2 router
     APP_VALUES: 'values', // for V2 router
