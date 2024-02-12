@@ -1010,6 +1010,9 @@ export const handleOnFocus = (e): void => {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const highlightSearchedText = (searchText: string, matchString: string): string => {
     if (!searchText) {
         return matchString
