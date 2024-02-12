@@ -11,14 +11,15 @@ import {
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
+import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/authorization.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
-import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
+import { PATTERNS } from '../../../config/constants'
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
@@ -1005,10 +1006,14 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
     if (!searchText) {
         return matchString
     }
-    const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
-
-    const regex = new RegExp(searchText, 'gi')
-    return matchString.replace(regex, highlightText)
+    try {
+        const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
+        const escapedSearchText = searchText.replace(PATTERNS.ESCAPED_CHARACTERS, '\\$&') // Escape special characters handling
+        const regex = new RegExp(escapedSearchText, 'gi')
+        return matchString.replace(regex, highlightText)
+    } catch (err) {
+        return matchString
+    }
 }
 
 export const trackByGAEvent = (category: string, action: string): void => {

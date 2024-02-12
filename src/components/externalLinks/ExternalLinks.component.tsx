@@ -21,7 +21,6 @@ import {
     NodeLevelSelectStyles,
     onImageLoadError,
 } from './ExternalLinks.utils'
-import { UserRoleType } from '../userGroups/userGroups.types'
 import {
     TippyCustomized,
     TippyTheme,
@@ -29,6 +28,7 @@ import {
     GenericEmptyState,
     ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
@@ -96,7 +96,7 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
             classname={`info_bar fs-12 pl-12 pr-12 ${listingView ? 'mt-12 mb-12' : 'dc__mxw-300 m-20'}`}
             Icon={InfoIcon}
             iconClass="h-20"
-            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
+            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global Configurations' : 'Global Configurations.'}
             internalLink={true}
             redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
         />

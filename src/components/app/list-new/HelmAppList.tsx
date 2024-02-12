@@ -7,6 +7,7 @@ import {
     ServerErrors,
     Host,
     GenericEmptyState,
+    DEFAULT_BASE_PAGE_SIZE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
@@ -681,7 +682,7 @@ export default function HelmAppList({
 
     function renderPagination(): JSX.Element {
         return (
-            filteredHelmAppsList.length > 20 &&
+            filteredHelmAppsList.length > DEFAULT_BASE_PAGE_SIZE &&
             !fetchingExternalApps && (
                 <Pagination
                     size={filteredHelmAppsList.length}

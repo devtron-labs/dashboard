@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { versionComparator } from '../../common'
-import { ConfirmationDialog, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, Progressing, VisibleModal, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
@@ -25,7 +25,6 @@ import {
     getDeploymentConfigDropdownStyles,
     getDraftOption,
 } from '../constants'
-import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import { toast } from 'react-toastify'
