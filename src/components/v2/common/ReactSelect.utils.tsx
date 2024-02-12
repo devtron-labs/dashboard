@@ -124,6 +124,7 @@ export function Option(props) {
 export function DropdownIndicator(props) {
     return (
         <components.DropdownIndicator {...props}>
+            {/* FIXME: Why are we hard coding test id here? */}
             <ArrowDown className="icon-dim-20 icon-n5" data-testid="overview-project-edit-dropdown" />
         </components.DropdownIndicator>
     )

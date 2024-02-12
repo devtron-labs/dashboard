@@ -3,7 +3,14 @@ import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
-import { showError, Progressing, Toggle, ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Toggle,
+    ConditionalWrap,
+    TippyCustomized,
+    TippyTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
@@ -38,6 +45,8 @@ const Project = lazy(() => import('../project/ProjectList'))
 const Authorization = lazy(() => import('../../Pages/GlobalConfigurations/Authorization'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
+// NOTE: Might import from index itself
+const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
@@ -274,7 +283,7 @@ function NavItem({ serverMode }) {
         const onTippyClose = () => {
             // Resetting the tippy state
             setTippyConfig({
-                showTippy: false
+                showTippy: false,
             })
         }
 
@@ -498,6 +507,16 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Lock Deployment Config</div>
                         </NavLink>
                     )}
+
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Build Infra</div>
+                        </NavLink>
+                    )}
                 </>
             )}
         </div>
@@ -613,6 +632,13 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                     <ExternalLinks />
                 </Route>,
+                ...(serverMode !== SERVER_MODE.EA_ONLY
+                    ? [
+                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                              <BuildInfra isSuperAdmin={isSuperAdmin} />
+                          </Route>,
+                      ]
+                    : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
@@ -646,10 +672,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {LockConfiguration && (
                 <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration
-                        isSuperAdmin={isSuperAdmin}
-                        CodeEditor={CodeEditor}
-                    />
+                    <LockConfiguration isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
@@ -733,14 +756,14 @@ export function ProtectedInput({
     value,
     error,
     onChange,
-    label= '',
+    label = '',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-    onBlur= (e) => {},
+    onBlur = (e) => {},
     isRequiredField = false,
 }: ProtectedInputType) {
     const [shown, toggleShown] = useState(false)
@@ -750,7 +773,10 @@ export function ProtectedInput({
 
     return (
         <div className="flex column left top ">
-            <label htmlFor="" className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}>
+            <label
+                htmlFor=""
+                className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}
+            >
                 {label}
             </label>
             <div className="dc__position-rel w-100">

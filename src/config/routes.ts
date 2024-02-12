@@ -78,6 +78,7 @@ export const URLS = {
     GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
     GLOBAL_CONFIG_LOCK_CONFIG: '/global-config/lock-config',
+    GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     SECURITY: '/security',
