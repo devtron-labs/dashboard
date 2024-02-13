@@ -270,8 +270,8 @@ export interface CIPipelineDataType {
     id: number
     ciMaterial: any[]
     dockerArgs: any
-    parentCiPipeline?: number //required in case of linked CI
-    parentAppId?: number //required in case of linked CI
+    parentCiPipeline?: number // required in case of linked CI
+    parentAppId?: number // required in case of linked CI
     active: true
     externalCiConfig: any
     isExternal: boolean
@@ -292,13 +292,13 @@ export interface CIPipelineState {
     loadingData: boolean
     form: PipelineFormType
     ciPipeline: CIPipelineDataType
-    sourcePipelineURL?: string //required Linked CI
+    sourcePipelineURL?: string // required Linked CI
     showDeleteModal: boolean
     showDockerArgs: boolean
     showPreBuild: boolean
     showDocker: boolean
     showPostBuild: boolean
-    isAdvanced?: boolean //required for CIPipeline
+    isAdvanced?: boolean // required for CIPipeline
 }
 
 export interface LinkedCIPipelineState {
@@ -393,10 +393,10 @@ export interface BuildType {
 }
 
 export interface PreBuildType {
-  presetPlugins: PluginDetailType[]
-  sharedPlugins: PluginDetailType[]
-  mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
-  isJobView?: boolean
+    presetPlugins: PluginDetailType[]
+    sharedPlugins: PluginDetailType[]
+    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
+    isJobView?: boolean
 }
 
 export enum CIPipelineBuildType {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { components } from 'react-select'
-import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
 import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
 import { getAppListMin } from '../../services/service'
 
 let timeoutId
@@ -64,7 +64,7 @@ export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <DropDownIcon
-                className={`rotate`}
+                className="rotate"
                 style={{
                     ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg',
                     height: '24px',

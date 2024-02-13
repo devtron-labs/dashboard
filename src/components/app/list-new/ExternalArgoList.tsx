@@ -8,12 +8,13 @@ import {
     AppStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
+import { Link } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import { OrderBy, SortBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
 import { Pagination, LazyImage } from '../../common'
 import { URLS } from '../../../config'
 import { AppListViewType } from '../config'
-import { Link } from 'react-router-dom'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import { Empty } from '../list/emptyView/Empty'
@@ -28,7 +29,6 @@ import {
 } from './Constants'
 import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
 import { ExternalArgoListType } from '../types'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
 import { ArgoAppListResult } from './AppListType'
 
@@ -155,8 +155,8 @@ export default function ExternalArgoList({
     }
 
     function _isOnlyAllClusterFilterationApplied() {
-        let _isAllClusterSelected = !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
-        let _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked)
+        const _isAllClusterSelected = !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
+        const _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked)
         return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected
     }
 
@@ -178,14 +178,14 @@ export default function ExternalArgoList({
     function renderHeaders() {
         return (
             <div className="app-list__header">
-                <div className="app-list__cell--icon"></div>
+                <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     <button className="app-list__cell-header flex" onClick={sortByAppName}>
                         {APP_LIST_HEADERS.AppName}
                         {sortBy == SortBy.APP_NAME ? (
-                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
+                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`} />
                         ) : (
-                            <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                            <span className="sort-col dc__opacity-0_5 ml-4" />
                         )}
                     </button>
                 </div>
@@ -196,12 +196,7 @@ export default function ExternalArgoList({
                 )}
                 <div className="app-list__cell app-list__cell--env">
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
-                    <Tippy
-                        className="default-tt"
-                        arrow={true}
-                        placement="top"
-                        content={ENVIRONMENT_HEADER_TIPPY_CONTENT}
-                    >
+                    <Tippy className="default-tt" arrow placement="top" content={ENVIRONMENT_HEADER_TIPPY_CONTENT}>
                         <HelpOutlineIcon className="icon-dim-20" />
                     </Tippy>
                 </div>
@@ -237,9 +232,9 @@ export default function ExternalArgoList({
                 <div className="app-list__cell app-list__cell--env">
                     <p
                         className="dc__truncate-text  m-0"
-                        data-testid={`${app.clusterName + '__' + app.namespace}-environment`}
+                        data-testid={`${`${app.clusterName}__${app.namespace}`}-environment`}
                     >
-                        {app.clusterName + '__' + app.namespace}
+                        {`${app.clusterName}__${app.namespace}`}
                     </p>
                 </div>
                 <div className="app-list__cell app-list__cell--cluster">
@@ -330,7 +325,7 @@ export default function ExternalArgoList({
                     image={noChartInClusterImage}
                     title={APPLIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}
                     subTitle={APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
-                    isButtonAvailable={true}
+                    isButtonAvailable
                     renderButton={handleButton}
                 />
             </div>
@@ -340,11 +335,14 @@ export default function ExternalArgoList({
     function renderNoApplicationState() {
         if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
             return askToClearFiltersWithSelectClusterTip()
-        } else if (_isOnlyAllClusterFilterationApplied()) {
+        }
+        if (_isOnlyAllClusterFilterationApplied()) {
             return askToConnectAClusterForNoResult()
-        } else if (_isAnyFilterationApplied()) {
+        }
+        if (_isAnyFilterationApplied()) {
             return askToClearFilters()
-        } else if (!clusterIdsCsv) {
+        }
+        if (!clusterIdsCsv) {
             return askToSelectClusterId()
         }
     }
@@ -352,9 +350,8 @@ export default function ExternalArgoList({
     function renderFullModeApplicationListContainer() {
         if (filteredArgoAppsList.length === 0) {
             return renderNoApplicationState()
-        } else {
-            return renderApplicationList()
         }
+        return renderApplicationList()
     }
 
     function changePageSize(size: number): void {

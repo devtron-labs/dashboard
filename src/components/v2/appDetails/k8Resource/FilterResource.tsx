@@ -1,9 +1,9 @@
-import React from 'react';
-import IndexStore from '../index.store';
-import { StatusFilterButtonComponent } from './StatusFilterButton.component';
-import { Node } from '../appDetails.type';
+import React from 'react'
+import IndexStore from '../index.store'
+import { StatusFilterButtonComponent } from './StatusFilterButton.component'
+import { Node } from '../appDetails.type'
 
-export default function FilterResource({ nodes }: { nodes: Array<Node>}) {
+export default function FilterResource({ nodes }: { nodes: Array<Node> }) {
     {
         /* ---for  later purpose---- */
     }
@@ -24,5 +24,5 @@ export default function FilterResource({ nodes }: { nodes: Array<Node>}) {
                 <StatusFilterButtonComponent nodes={nodes} />
             </div>
         </div>
-    );
+    )
 }

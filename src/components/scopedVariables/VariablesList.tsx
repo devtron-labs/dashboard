@@ -17,7 +17,11 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
     const renderVariablesListItem = ({ data, classes, tooltip }: VariablesListItemProps) => (
         <div className={classes}>
             {tooltip ? (
-                <Tippy content={data?.length ? data : NO_DESCRIPTION_MESSAGE} className="default-tt dc__word-break-all" placement="top">
+                <Tippy
+                    content={data?.length ? data : NO_DESCRIPTION_MESSAGE}
+                    className="default-tt dc__word-break-all"
+                    placement="top"
+                >
                     {data?.length ? (
                         <p className="dc__ellipsis-right cn-9 fs-13 fw-4 lh-20 m-0">{data}</p>
                     ) : (
@@ -30,7 +34,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
         </div>
     )
 
-    if (!variablesList?.length)
+    if (!variablesList?.length) {
         return (
             <GenericEmptyState
                 image={NoResults}
@@ -38,6 +42,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                 subTitle={NO_VARIABLES_MESSAGE.SUBTITLE}
             />
         )
+    }
 
     return (
         <div className="dc__overflow-scroll h-100 flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch flex-grow-1 dc__no-shrink">

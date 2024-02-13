@@ -7,6 +7,11 @@ import {
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
+import yamlJsParser from 'yaml'
+import ReactSelect from 'react-select'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import CreatableSelect from 'react-select/creatable'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import {
     EphemeralContainerDrawerType,
@@ -24,24 +29,19 @@ import {
     filterImageList,
 } from '../../../../common'
 import sampleConfig from './sampleConfig.json'
-import yamlJsParser from 'yaml'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
 import { DropdownIndicator, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
-import ReactSelect from 'react-select'
-import { toast } from 'react-toastify'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.svg'
-import { ReactComponent as QuestionIcon } from '../../../../v2/assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
-import Tippy from '@tippyjs/react'
-import CreatableSelect from 'react-select/creatable'
 import { selectStyles } from './nodeDetail.util'
 import { SwitchItemValues } from '../../../../login/constants'
 
-function EphemeralContainerDrawer({
+const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
     params,
     setResourceContainers,
@@ -57,7 +57,7 @@ function EphemeralContainerDrawer({
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
     selectedNamespaceByClickingPod,
-}: EphemeralContainerDrawerType) {
+}: EphemeralContainerDrawerType) => {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
@@ -83,7 +83,7 @@ function EphemeralContainerDrawer({
 
     const handleEphemeralContainerTypeClick = (containerType) => {
         try {
-            let jsonManifest = JSON.parse(
+            const jsonManifest = JSON.parse(
                 JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)),
             )
             if (jsonManifest) {
@@ -117,7 +117,7 @@ function EphemeralContainerDrawer({
             if (!selectedimageValue) {
                 imageListOption.push(parsedImageOption)
             }
-            setSelectedImageList(selectedimageValue ? selectedimageValue : parsedImageOption)
+            setSelectedImageList(selectedimageValue || parsedImageOption)
         } catch (err) {}
     }
 
@@ -170,9 +170,9 @@ function EphemeralContainerDrawer({
                         iconClass="fcv-5"
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
-                        showCloseButton={true}
+                        showCloseButton
                         trigger="click"
-                        interactive={true}
+                        interactive
                     >
                         <div className="flex">
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-8 cursor" />
@@ -191,7 +191,7 @@ function EphemeralContainerDrawer({
     }
 
     const handleEphemeralChange = (selected, key, defaultOptions) => {
-        let defaultVal = defaultOptions.length && defaultOptions[0]
+        const defaultVal = defaultOptions.length && defaultOptions[0]
         if (key === 'image') {
             const newImageOption = {
                 value: selected.value,
@@ -357,7 +357,9 @@ function EphemeralContainerDrawer({
     }
 
     const handleManifestAdvanceConfiguration = (e) => {
-        if (switchManifest !== SwitchItemValues.Configuration) return
+        if (switchManifest !== SwitchItemValues.Configuration) {
+            return
+        }
         setEphemeralFormAdvanced({
             ...ephemeralFormAdvanced,
             advancedData: {
@@ -375,7 +377,7 @@ function EphemeralContainerDrawer({
     }
 
     const renderAdvancedEphemeral = () => {
-        let codeEditorBody =
+        const codeEditorBody =
             switchManifest === SwitchItemValues.Configuration
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
@@ -403,11 +405,12 @@ function EphemeralContainerDrawer({
 
     const onSave = () => {
         setLoader(true)
-        setShowEphemeralContainerDrawer(true)     
+        setShowEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
             namespace: isResourceBrowserView
                 ? selectedNamespaceByClickingPod
-                : appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName)?.namespace,
+                : appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName)
+                      ?.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
             podName: isResourceBrowserView ? params.node : params.podName,
         }
@@ -461,7 +464,7 @@ function EphemeralContainerDrawer({
                 })
 
                 const _containers = containers
-                let containerName = response.result
+                const containerName = response.result
                 _containers.push({
                     name: containerName,
                     isInitContainer: false,

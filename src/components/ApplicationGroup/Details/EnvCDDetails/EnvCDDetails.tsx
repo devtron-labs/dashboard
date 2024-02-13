@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Progressing, showError, sortCallback, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
+import { Route } from 'react-router-dom'
 import { useInterval, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
-import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { TriggerOutput } from '../../../app/details/cdDetails/CDDetails'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { getAppsCDConfigMin } from '../../AppGroup.service'
@@ -17,7 +18,6 @@ import {
 } from '../../../app/details/cicdHistory/types'
 import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import { Route } from 'react-router-dom'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
 import '../../../app/details/appDetails/appDetails.scss'
@@ -77,7 +77,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     useEffect(() => {
         // check for more
-        if (loading || !deploymentHistoryResult) return
+        if (loading || !deploymentHistoryResult) {
+            return
+        }
         if (!deploymentHistoryResult?.result?.cdWorkflows?.length) {
             return
         }
@@ -119,7 +121,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     async function pollHistory() {
         // polling
-        if (!pipelineId || !appId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !appId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) {
+            return
+        }
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -173,9 +177,11 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     if ((!hasMoreLoading && loading) || (loadingDeploymentHistory && triggerHistory.size === 0)) {
         return <Progressing pageLoader />
-    } else if (result && !Array.isArray(result[0]?.['value']?.result)) {
+    }
+    if (result && !Array.isArray(result[0]?.['value']?.result)) {
         return <AppNotConfigured />
-    } else if (!result || (appId && dependencyState[1] !== appId)) {
+    }
+    if (!result || (appId && dependencyState[1] !== appId)) {
         return null
     }
 
@@ -230,45 +236,43 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     />
                 </Route>
             )
-        } else if (!appId) {
+        }
+        if (!appId) {
             return (
                 <EmptyView
                     title={APP_GROUP_CD_DETAILS.noSelectedApp.title}
                     subTitle={APP_GROUP_CD_DETAILS.noSelectedApp.subTitle}
                 />
             )
-        } else {
-            const selectedApp = pipelineList.find((envData) => envData.appId === +appId)
-            return (
-                <EmptyView
-                    title={APP_GROUP_CD_DETAILS.noDeployment.title}
-                    subTitle={APP_GROUP_CD_DETAILS.noDeployment.getSubtitle(selectedApp?.appName)}
-                />
-            )
         }
+        const selectedApp = pipelineList.find((envData) => envData.appId === +appId)
+        return (
+            <EmptyView
+                title={APP_GROUP_CD_DETAILS.noDeployment.title}
+                subTitle={APP_GROUP_CD_DETAILS.noDeployment.getSubtitle(selectedApp?.appName)}
+            />
+        )
     }
 
     return (
-        <>
-            <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-                {!fullScreenView && (
-                    <div className="ci-details__history">
-                        <Sidebar
-                            filterOptions={envOptions}
-                            type={HistoryComponentType.GROUP_CD}
-                            hasMore={hasMore}
-                            triggerHistory={triggerHistory}
-                            setPagination={setPagination}
-                            fetchIdData={fetchTriggerIdData}
-                            handleViewAllHistory={handleViewAllHistory}
-                        />
-                    </div>
-                )}
-                <div className="ci-details__body">
-                    {renderDetail()}
-                    {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
+        <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+            {!fullScreenView && (
+                <div className="ci-details__history">
+                    <Sidebar
+                        filterOptions={envOptions}
+                        type={HistoryComponentType.GROUP_CD}
+                        hasMore={hasMore}
+                        triggerHistory={triggerHistory}
+                        setPagination={setPagination}
+                        fetchIdData={fetchTriggerIdData}
+                        handleViewAllHistory={handleViewAllHistory}
+                    />
                 </div>
+            )}
+            <div className="ci-details__body">
+                {renderDetail()}
+                <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
-        </>
+        </div>
     )
 }

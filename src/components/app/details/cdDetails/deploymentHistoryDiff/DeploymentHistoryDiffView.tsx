@@ -1,14 +1,14 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
+import YAML from 'yaml'
+import { useParams } from 'react-router'
+import Tippy from '@tippyjs/react'
+import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { DeploymentHistorySingleValue } from '../cd.type'
 import { DeploymentHistoryParamsType, DeploymentTemplateHistoryType } from './types'
-import YAML from 'yaml'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
-import { useParams } from 'react-router'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, MODES } from '../../../../../config'
-import Tippy from '@tippyjs/react'
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentHistoryDiffView({
     currentConfiguration,
@@ -28,18 +28,18 @@ export default function DeploymentHistoryDiffView({
     useEffect(() => {
         if (ref.current) {
             const dynamicHeight = ref.current?.clientHeight + 255 + (!previousConfigAvailable ? 55 : 0)
-            setCodeEditorHeight((innerHeight - dynamicHeight < 400 ? 400 : innerHeight - dynamicHeight) + 'px')
+            setCodeEditorHeight(`${innerHeight - dynamicHeight < 400 ? 400 : innerHeight - dynamicHeight}px`)
         }
     }, [ref.current?.clientHeight])
 
     const getTheme = () => {
         if (isDeleteDraft) {
             return 'delete-draft'
-        } else if (isUnpublished) {
-            return 'unpublished'
-        } else {
-            return null
         }
+        if (isUnpublished) {
+            return 'unpublished'
+        }
+        return null
     }
 
     // check if variable snapshot is {} or not
@@ -70,7 +70,7 @@ export default function DeploymentHistoryDiffView({
                 }
                 height={codeEditorHeight}
                 diffView={previousConfigAvailable && true}
-                readOnly={true}
+                readOnly
                 noParsing
                 mode={MODES.YAML}
                 theme={getTheme()}
@@ -138,7 +138,7 @@ export default function DeploymentHistoryDiffView({
                                             `configuration-deployment-template-heading-${index}`,
                                         )
                                     ) : (
-                                        <div></div>
+                                        <div />
                                     )}
                                     {!isDeleteDraft && baseValue?.value ? (
                                         renderDetailedValue(
@@ -147,7 +147,7 @@ export default function DeploymentHistoryDiffView({
                                             `configuration-deployment-template-heading-${index}`,
                                         )
                                     ) : (
-                                        <div className={isDeleteDraft ? 'code-editor-red-diff' : ''}></div>
+                                        <div className={isDeleteDraft ? 'code-editor-red-diff' : ''} />
                                     )}
                                 </Fragment>
                             )

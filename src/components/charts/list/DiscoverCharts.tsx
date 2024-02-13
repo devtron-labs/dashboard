@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef, useContext, useMemo } from 'react'
 import {
-    Select,
-    mapByKey,
-    sortOptionsByLabel,
-} from '../../common'
-import { showError, Progressing, ConditionalWrap, InfoColourBar, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
+    showError,
+    Progressing,
+    ConditionalWrap,
+    InfoColourBar,
+    DevtronProgressing,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
-import { useHistory, useLocation, useRouteMatch } from 'react-router'
+import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import { Select, mapByKey, sortOptionsByLabel } from '../../common'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import ChartSelect from '../util/ChartSelect'
 import ChartGroupList from './ChartGroup'
@@ -17,13 +21,10 @@ import AdvancedConfig from '../AdvancedConfig'
 import useChartGroup from '../useChartGroup'
 import { DeployableCharts, deployChartGroup, getChartProviderList } from '../charts.service'
 import { ChartGroupEntry, Chart, EmptyCharts, ChartListType } from '../charts.types'
-import { toast } from 'react-toastify'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
-import { Prompt } from 'react-router'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import Tippy from '@tippyjs/react'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
@@ -41,7 +42,7 @@ import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
 
-//TODO: move to service
+// TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
     return charts
         .filter((chart) => chart.isEnabled)
@@ -58,7 +59,7 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
         })
 }
 
-function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
+const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useContext(mainContext)
     const location = useLocation()
     const history = useHistory()
@@ -85,7 +86,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         applyFilterOnCharts,
         resetPaginationOffset,
         setGitOpsConfigAvailable,
-        setEnvironmentList
+        setEnvironmentList,
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -129,7 +130,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                     }
                 })
                 .sort(sortOptionsByLabel),
-        [chartLists]
+        [chartLists],
     )
 
     useEffect(() => {
@@ -138,14 +139,13 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
             chartRepos && initialiseFromQueryParams(chartRepos)
             callApplyFilterOnCharts(true)
             getGitOpsModuleInstalledAndConfigured()
-
         }
     }, [chartRepos, location.search, state.loading])
 
     const getChartFilter = async () => {
         setIsLoading(true)
         try {
-            let chartRepos = (await getChartProviderList()).result || []
+            const chartRepos = (await getChartProviderList()).result || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
@@ -156,19 +156,18 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         }
     }
 
-    async function getGitOpsModuleInstalledAndConfigured(){
+    async function getGitOpsModuleInstalledAndConfigured() {
         await isGitOpsModuleInstalledAndConfigured().then((response) => {
-            setGitOpsConfigAvailable(response.result.isInstalled &&
-                !response.result.isConfigured)
+            setGitOpsConfigAvailable(response.result.isInstalled && !response.result.isConfigured)
         })
     }
 
-    const handleDeployButtonClick= (): void => {
-      handleActionButtonClick(false)
+    const handleDeployButtonClick = (): void => {
+        handleActionButtonClick(false)
     }
 
-    const handleAdvancedButtonClick= (): void => {
-      handleActionButtonClick(true)
+    const handleAdvancedButtonClick = (): void => {
+        handleActionButtonClick(true)
     }
 
     const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
@@ -183,12 +182,10 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
     const handleContinueWithHelm = (_clickedOnAdvance: boolean): void => {
         if (_clickedOnAdvance) {
             configureChart(0)
+        } else if (state.advanceVisited) {
+            handleInstall()
         } else {
-            if (state.advanceVisited) {
-                handleInstall()
-            } else {
-                toggleDeployModal(true)
-            }
+            toggleDeployModal(true)
         }
     }
 
@@ -221,7 +218,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
             await deployChartGroup(project.id, deployableCharts)
-            let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
+            const url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
             history.push(url)
             toast.success('Deployment initiated')
         } catch (err) {
@@ -237,29 +234,41 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
     }
 
     function initialiseFromQueryParams(chartRepoList): void {
-        let searchParams = new URLSearchParams(location.search)
-        let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
-        let allRegistryIds: string = searchParams.get(QueryParams.RegistryId)
-        let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
-        let appStoreName: string = searchParams.get(QueryParams.AppStoreName)
+        const searchParams = new URLSearchParams(location.search)
+        const allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
+        const allRegistryIds: string = searchParams.get(QueryParams.RegistryId)
+        const deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
+        const appStoreName: string = searchParams.get(QueryParams.AppStoreName)
         let chartRepoIdArray = []
         let ociRegistryArray = []
-        if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(',')
-        if (allRegistryIds) ociRegistryArray = allRegistryIds.split(',')
+        if (allChartRepoIds) {
+            chartRepoIdArray = allChartRepoIds.split(',')
+        }
+        if (allRegistryIds) {
+            ociRegistryArray = allRegistryIds.split(',')
+        }
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId) => parseInt(chartRepoId))
         ociRegistryArray = ociRegistryArray.map((ociRegistryId) => ociRegistryId)
 
-        let selectedRepos = []
+        const selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
-            let chartRepo = chartRepoList?.find((item) => +item.value === chartRepoIdArray[i])
-            if (chartRepo) selectedRepos.push(chartRepo)
+            const chartRepo = chartRepoList?.find((item) => +item.value === chartRepoIdArray[i])
+            if (chartRepo) {
+                selectedRepos.push(chartRepo)
+            }
         }
         for (let i = 0; i < ociRegistryArray.length; i++) {
-            let registry = chartRepoList?.find((item) => item.value === ociRegistryArray[i])
-            if (registry) selectedRepos.push(registry)
+            const registry = chartRepoList?.find((item) => item.value === ociRegistryArray[i])
+            if (registry) {
+                selectedRepos.push(registry)
+            }
         }
-        if (selectedRepos) setSelectedChartRepo(selectedRepos)
-        if (deprecated) setIncludeDeprecated(parseInt(deprecated))
+        if (selectedRepos) {
+            setSelectedChartRepo(selectedRepos)
+        }
+        if (deprecated) {
+            setIncludeDeprecated(parseInt(deprecated))
+        }
         if (appStoreName) {
             setSearchApplied(true)
             setAppStoreName(appStoreName)
@@ -275,7 +284,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         setChartListloading(false)
     }
 
-    async function callPaginationOnCharts(){
+    async function callPaginationOnCharts() {
         await applyFilterOnCharts(location.search, false)
     }
 
@@ -388,10 +397,10 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
             </ChartEmptyState>
         ) : (
             <ChartEmptyState
-                title={'No charts available right now'}
-                subTitle={'The connected chart repositories are syncing or no charts are available.'}
+                title="No charts available right now"
+                subTitle="The connected chart repositories are syncing or no charts are available."
                 onClickViewChartButton={handleViewAllCharts}
-                buttonText={'View connected chart repositories'}
+                buttonText="View connected chart repositories"
             />
         )
     }
@@ -400,16 +409,16 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         <>
             <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
-                    <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
+                    <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                 </ConditionalWrap>
 
                 <Prompt
                     when={isLeavingPageNotAllowed.current}
-                    message={'Your changes will be lost. Do you want to leave without deploying?'}
+                    message="Your changes will be lost. Do you want to leave without deploying?"
                 />
                 {!state.loading ? (
                     <div className="discover-charts__body">
-                        {typeof state.configureChartIndex != 'number' && (chartRepos?.length > 0) && (
+                        {typeof state.configureChartIndex !== 'number' && chartRepos?.length > 0 && (
                             <ChartHeaderFilter
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
@@ -441,86 +450,91 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                                                 handleNameChange={handleNameChange}
                                                 discardValuesYamlChanges={discardValuesYamlChanges}
                                             />
-                                        ) : randerChartStoreEmptyState()}
+                                        ) : (
+                                            randerChartStoreEmptyState()
+                                        )}
                                     </div>
                                 ) : (
-                                    <>
-                                        <div className="discover-charts__body-details">
-                                            {typeof state.configureChartIndex === 'number' ? (
-                                                <>
-                                                    <AdvancedConfig
-                                                        chart={state.charts[state.configureChartIndex]}
-                                                        index={state.configureChartIndex}
-                                                        handleValuesYaml={handleValuesYaml}
-                                                        getChartVersionsAndValues={getChartVersionsAndValues}
-                                                        fetchChartValues={fetchChartValues}
-                                                        handleChartValueChange={handleChartValueChange}
-                                                        handleChartVersionChange={handleChartVersionChange}
-                                                        handleEnvironmentChange={handleEnvironmentChange}
-                                                        handleNameChange={handleNameChange}
-                                                        discardValuesYamlChanges={discardValuesYamlChanges}
-                                                    />
-                                                </>
-                                            ) : (
-                                                <div className={`h-100 ${!isGrid ? 'chart-list-view ' : ''}`}>
-                                                    {serverMode == SERVER_MODE.FULL &&
-                                                        !searchApplied &&
-                                                        selectedChartRepo.length === 0 && (
-                                                            <ChartGroupListMin
-                                                                chartGroups={state.chartGroups.slice(0, isGrid ? 5 : 1)}
-                                                                showChartGroupModal={showChartGroupModal}
-                                                                toggleChartGroupModal={toggleChartGroupModal}
-                                                                isGrid={isGrid}
-                                                                renderCreateGroupButton={renderCreateGroupButton}
+                                    <div className="discover-charts__body-details">
+                                        {typeof state.configureChartIndex === 'number' ? (
+                                            <AdvancedConfig
+                                                chart={state.charts[state.configureChartIndex]}
+                                                index={state.configureChartIndex}
+                                                handleValuesYaml={handleValuesYaml}
+                                                getChartVersionsAndValues={getChartVersionsAndValues}
+                                                fetchChartValues={fetchChartValues}
+                                                handleChartValueChange={handleChartValueChange}
+                                                handleChartVersionChange={handleChartVersionChange}
+                                                handleEnvironmentChange={handleEnvironmentChange}
+                                                handleNameChange={handleNameChange}
+                                                discardValuesYamlChanges={discardValuesYamlChanges}
+                                            />
+                                        ) : (
+                                            <div className={`h-100 ${!isGrid ? 'chart-list-view ' : ''}`}>
+                                                {serverMode == SERVER_MODE.FULL &&
+                                                    !searchApplied &&
+                                                    selectedChartRepo.length === 0 && (
+                                                        <ChartGroupListMin
+                                                            chartGroups={state.chartGroups.slice(0, isGrid ? 5 : 1)}
+                                                            showChartGroupModal={showChartGroupModal}
+                                                            toggleChartGroupModal={toggleChartGroupModal}
+                                                            isGrid={isGrid}
+                                                            renderCreateGroupButton={renderCreateGroupButton}
+                                                        />
+                                                    )}
+                                                {chartList.length ? (
+                                                    <>
+                                                        <ChartListHeader charts={state.charts} />
+                                                        <div
+                                                            className={`chart-grid ${!isGrid ? 'list-view' : ''}`}
+                                                            data-testid={`chart-${!isGrid ? 'list-view' : 'grid-view'}`}
+                                                        >
+                                                            {chartList
+                                                                .slice(0, showDeployModal ? 12 : chartList.length)
+                                                                .map((chart, index) => (
+                                                                    <ChartSelect
+                                                                        key={chart.id}
+                                                                        chart={chart}
+                                                                        selectedCount={
+                                                                            state.selectedInstances[chart.id]?.length
+                                                                        }
+                                                                        showCheckBoxOnHoverOnly={
+                                                                            state.charts.length === 0
+                                                                        }
+                                                                        addChart={addChart}
+                                                                        showDescription={!isGrid}
+                                                                        subtractChart={subtractChart}
+                                                                        onClick={(chartId) =>
+                                                                            state.charts.length === 0
+                                                                                ? history.push(
+                                                                                      `${url}/chart/${chart.id}`,
+                                                                                  )
+                                                                                : selectChart(chartId)
+                                                                        }
+                                                                        datatestid={`single-${index}`}
+                                                                    />
+                                                                ))}
+                                                            {state.hasMoreCharts && (
+                                                                <DetectBottom callback={reloadNextAfterBottom} />
+                                                            )}
+                                                        </div>
+                                                        {state.hasMoreCharts && (
+                                                            <Progressing
+                                                                size={25}
+                                                                styles={{ height: '0%', paddingBottom: '5px' }}
                                                             />
                                                         )}
-                                                    {chartList.length ? (
-                                                        <>
-                                                            <ChartListHeader charts={state.charts} />
-                                                            <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`} data-testid={`chart-${!isGrid ? 'list-view' : 'grid-view'}`}>
-                                                                {chartList
-                                                                    .slice(0, showDeployModal ? 12 : chartList.length)
-                                                                    .map((chart,index) => (
-                                                                        <ChartSelect
-                                                                            key={chart.id}
-                                                                            chart={chart}
-                                                                            selectedCount={
-                                                                                state.selectedInstances[chart.id]
-                                                                                    ?.length
-                                                                            }
-                                                                            showCheckBoxOnHoverOnly={
-                                                                                state.charts.length === 0
-                                                                            }
-                                                                            addChart={addChart}
-                                                                            showDescription={!isGrid}
-                                                                            subtractChart={subtractChart}
-                                                                            onClick={(chartId) =>
-                                                                                state.charts.length === 0
-                                                                                    ? history.push(
-                                                                                          `${url}/chart/${chart.id}`,
-                                                                                      )
-                                                                                    : selectChart(chartId)
-                                                                            }
-                                                                            datatestid={`single-${index}`}
-                                                                        />
-
-                                                                    ))}
-                                                                {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
-
-
-                                                            </div>
-                                                            {state.hasMoreCharts && <Progressing size={25} styles={{height:'0%', paddingBottom:'5px'}}/>}
-
-                                                        </>
-                                                    ) : randerChartStoreEmptyState()}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </>
+                                                    </>
+                                                ) : (
+                                                    randerChartStoreEmptyState()
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
                             </>
                         )}
-                        <aside className={`summary`}>
+                        <aside className="summary">
                             <MultiChartSummary
                                 charts={state.charts}
                                 configureChartIndex={state.configureChartIndex}
@@ -542,7 +556,12 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                             >
                                 {state.advanceVisited && (
                                     <div>
-                                        <label className="dc__required-field" data-testid="advanced-option-project-heading">Project</label>
+                                        <label
+                                            className="dc__required-field"
+                                            data-testid="advanced-option-project-heading"
+                                        >
+                                            Project
+                                        </label>
                                         <Select
                                             rootClassName={`${project.error ? 'popup-button--error' : ''}`}
                                             value={project.id}
@@ -625,7 +644,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                         </aside>
                     </div>
                 ) : (
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
+                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 )}
             </div>
             {showDeployModal ? (
@@ -662,7 +681,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
     )
 }
 
-export default function DiscoverCharts({isSuperAdmin} : {isSuperAdmin: boolean}) {
+export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     const match = useRouteMatch()
     const { path } = match
 
@@ -683,13 +702,13 @@ export default function DiscoverCharts({isSuperAdmin} : {isSuperAdmin: boolean})
     )
 }
 
-function ChartListHeader({ charts }) {
+const ChartListHeader = ({ charts }) => {
     return (
         <div>
             <h3 className="chart-grid__title pl-20 pr-20 pt-16" data-testid="chart-store-chart-heading">
                 {charts.length === 0 ? 'All Charts' : 'Select Charts'}
             </h3>
-            <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading" >
+            <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
                 Select chart to deploy. &nbsp;
                 <a
                     className="dc__link"
@@ -705,7 +724,7 @@ function ChartListHeader({ charts }) {
     )
 }
 
-export function EmptyChartGroup({
+export const EmptyChartGroup = ({
     title,
     removeLearnMore = false,
     image,
@@ -715,13 +734,15 @@ export function EmptyChartGroup({
     styles,
     toggleChartGroupModal,
     showChartGroupModal,
-}: EmptyCharts) {
+}: EmptyCharts) => {
     const { url } = useRouteMatch()
     return (
         <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
             <div>
-                <div className="fs-16 fw-6" data-testid="chart-group-heading">{title || 'Chart group'}</div>
+                <div className="fs-16 fw-6" data-testid="chart-group-heading">
+                    {title || 'Chart group'}
+                </div>
                 <div className="cn-7" data-testid="chart-group-subheading">
                     {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
@@ -731,7 +752,7 @@ export function EmptyChartGroup({
                         rel="noreferrer noopener"
                         target="_blank"
                         className="dc__link"
-                        data-testid='chart-group-link'
+                        data-testid="chart-group-link"
                     >
                         Learn more about chart groups
                     </a>
@@ -755,7 +776,7 @@ export function EmptyChartGroup({
     )
 }
 
-export function ChartGroupListMin({
+export const ChartGroupListMin = ({
     chartGroups,
     toggleChartGroupModal,
     showChartGroupModal,
@@ -767,7 +788,7 @@ export function ChartGroupListMin({
     toggleChartGroupModal?: React.Dispatch<React.SetStateAction<boolean>>
     isGrid?: boolean
     renderCreateGroupButton?: () => JSX.Element
-}) {
+}) => {
     const history = useHistory()
     const match = useRouteMatch()
     if (chartGroups.length == 0) {
@@ -777,7 +798,7 @@ export function ChartGroupListMin({
     }
 
     const redirectToGroup = () => {
-        history.push(match.url + '/group')
+        history.push(`${match.url}/group`)
     }
 
     return (
@@ -806,9 +827,7 @@ export function ChartGroupListMin({
                 </div>
             </div>
             <div className={`chart-grid ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
-                {chartGroups?.map((chartGroup, idx) => (
-                    <ChartGroupCard key={idx} chartGroup={chartGroup} />
-                ))}
+                {chartGroups?.map((chartGroup, idx) => <ChartGroupCard key={idx} chartGroup={chartGroup} />)}
             </div>
         </div>
     )

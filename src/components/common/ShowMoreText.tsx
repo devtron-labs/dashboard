@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-export function ShowMoreText({ text }) {
+export const ShowMoreText = ({ text }) => {
     const ellipsisText = useRef(null)
     const [showToggle, setShowToggle] = useState(false)
     const [showAllText, setShowAllText] = useState(false)

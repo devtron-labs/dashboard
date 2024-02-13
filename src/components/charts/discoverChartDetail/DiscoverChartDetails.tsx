@@ -1,16 +1,23 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    useEffectAfterMount,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
+import { toast } from 'react-toastify'
 import { List } from '../../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
 import { getAvailableCharts } from '../../../services/service'
 import { DiscoverChartDetailsProps, DeploymentProps } from './types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
-import { marked } from 'marked'
-import * as DOMPurify from 'dompurify';
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
@@ -22,7 +29,6 @@ import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import { ChartValuesType } from '../charts.types'
-import { toast } from 'react-toastify'
 
 const DiscoverDetailsContext = React.createContext(null)
 const uncheckedCheckboxInputElement = `<input checked="" disabled="" type="checkbox">`
@@ -76,7 +82,9 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     }
 
     function filterOption({ data: { label, value, ...rest } }, searchString: string): boolean {
-        if (!searchString) return true
+        if (!searchString) {
+            return true
+        }
         searchString = searchString.toLowerCase()
         const match: boolean =
             label.toLowerCase().includes(searchString) || (rest?.chart_name || '').toLowerCase().includes(searchString)
@@ -113,7 +121,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     async function fetchVersions() {
         setLoading(true)
         try {
-            let { result } = await getChartVersionsMin(chartId)
+            const { result } = await getChartVersionsMin(chartId)
             if (result?.length) {
                 setChartVersions(result)
                 selectVersion(result[0]?.id)
@@ -153,7 +161,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     }
 
     async function redirectToChartValues() {
-        let url = getChartValuesURL(chartId)
+        const url = getChartValuesURL(chartId)
         history.push(url)
     }
 
@@ -167,10 +175,14 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     }, [selectedVersion])
 
     useEffect(() => {
-        let chartValues = chartValuesList.find((chrtValue) => {
-            if (chrtValue.kind === 'DEFAULT' && chrtValue.id === selectedVersion) return chrtValue
+        const chartValues = chartValuesList.find((chrtValue) => {
+            if (chrtValue.kind === 'DEFAULT' && chrtValue.id === selectedVersion) {
+                return chrtValue
+            }
         })
-        if (chartValues) setChartValues(chartValues)
+        if (chartValues) {
+            setChartValues(chartValues)
+        }
     }, [selectedVersion, chartValuesList])
 
     const renderBreadcrumbs = () => {
@@ -195,7 +207,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
             }}
         >
             <div className="chart-detail-container">
-                <PageHeader isBreadcrumbs={true} breadCrumbs={renderBreadcrumbs} />
+                <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                 {loading ? (
                     <Progressing pageLoader />
                 ) : (
@@ -237,11 +249,11 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                                                     <span style={{ color: 'var(--R500)' }}>&nbsp;(Deprecated)</span>
                                                 )
                                             }
-                                            showCloseButton={true}
+                                            showCloseButton
                                             onClose={goBackToDiscoverChart}
                                         />
                                         <ChartValuesView
-                                            isDeployChartView={true}
+                                            isDeployChartView
                                             installedConfigFromParent={chartInformation as ChartInstalledConfig}
                                             chartValuesListFromParent={chartValuesList}
                                             chartVersionsDataFromParent={availableVersions}
@@ -286,8 +298,8 @@ const Deployment: React.FC<DeploymentProps> = ({
     const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])
 
     useEffect(() => {
-        const _deployedChartValues = [],
-            _presetChartValues = []
+        const _deployedChartValues = []
+        const _presetChartValues = []
         for (let index = 0; index < chartValuesList.length; index++) {
             const _chartValue = chartValuesList[index]
             const chartValueObj: ChartValuesType = {
@@ -332,7 +344,13 @@ const Deployment: React.FC<DeploymentProps> = ({
     return (
         <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
             <div className="dc__chart-grid-item__icon-wrapper">
-                <img src={icon} onError={handleImageError} className="dc__chart-grid-item__icon" alt="chart icon" data-testid="chart-type-image" />
+                <img
+                    src={icon}
+                    onError={handleImageError}
+                    className="dc__chart-grid-item__icon"
+                    alt="chart icon"
+                    data-testid="chart-type-image"
+                />
             </div>
             <div className="mb-16">
                 <div className="repository" data-testid="chart-type">
@@ -345,17 +363,27 @@ const Deployment: React.FC<DeploymentProps> = ({
                     </div>
                 )}
             </div>
-            <button type="button" className="flex cta h-36" data-testid="configure-and-deploy-button"onClick={handleDeploy}>
+            <button
+                type="button"
+                className="flex cta h-36"
+                data-testid="configure-and-deploy-button"
+                onClick={handleDeploy}
+            >
                 Configure & Deploy
             </button>
-            <button type="button" className="flex cta h-36 cb-5 cancel mt-8" data-testid="preset-values-button" onClick={openSavedValuesList}>
+            <button
+                type="button"
+                className="flex cta h-36 cb-5 cancel mt-8"
+                data-testid="preset-values-button"
+                onClick={openSavedValuesList}
+            >
                 Preset values
             </button>
         </div>
     )
 }
 
-function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
+const ReadmeRowHorizontal = ({ readme = null, version = '', ...props }) => {
     const [collapsed, toggleCollapse] = useState(true)
     return (
         <div className="discover__readme discover__readme--horizontal" data-testid="readme-file-button">
@@ -378,28 +406,34 @@ function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
     )
 }
 
-function isReadmeInputCheckbox(text: string) { 
-    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) { 
-        return true;
+function isReadmeInputCheckbox(text: string) {
+    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) {
+        return true
     }
-    return false;
+    return false
 }
-export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) {
+export const MarkDown = ({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) => {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
-    const mdeRef = useRef(null);
+    const mdeRef = useRef(null)
 
     renderer.listitem = function (text: string) {
         if (isReadmeInputCheckbox(text)) {
             text = text
-            .replace(uncheckedCheckboxInputElement , '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>')
-            .replace(checkedCheckboxInputElement, '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>');
-            return `<li style="list-style: none">${text}</li>`     
-        } 
-        return `<li>${text}</li>`;     
-    };
+                .replace(
+                    uncheckedCheckboxInputElement,
+                    '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>',
+                )
+                .replace(
+                    checkedCheckboxInputElement,
+                    '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>',
+                )
+            return `<li style="list-style: none">${text}</li>`
+        }
+        return `<li>${text}</li>`
+    }
 
-    renderer.image = function (href: string, title: string, text: string) { 
+    renderer.image = function (href: string, title: string, text: string) {
         return `<img src="${href}" alt="${text}" title="${title}" class="max-w-100">`
     }
 
@@ -415,8 +449,8 @@ export function MarkDown({ markdown = '', className = '', breaks = false, disabl
     }
 
     renderer.heading = function (text, level) {
-        const escapedText = disableEscapedText? "" :text.toLowerCase().replace(/[^\w]+/g, '-')
-          
+        const escapedText = disableEscapedText ? '' : text.toLowerCase().replace(/[^\w]+/g, '-')
+
         return `
           <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
                 <h${level} data-testid="deployment-template-readme-version">

@@ -94,11 +94,12 @@ export const IMAGE_SCAN_TOOL = {
     Trivy: 'Trivy',
 }
 
-export const DEFAULT_ENV = "devtron-ci"
+export const DEFAULT_ENV = 'devtron-ci'
 
 export const EMPTY_STATE = {
     title: 'No matching results',
-    subtitle: 'We couldn’t find any matching images'
+    subtitle: 'We couldn’t find any matching images',
 }
 
-export const EXCLUDED_IMAGE_TOOLTIP = "This image is excluded for new deployment as it does not match the filter conditions configured for this environment."
+export const EXCLUDED_IMAGE_TOOLTIP =
+    'This image is excluded for new deployment as it does not match the filter conditions configured for this environment.'

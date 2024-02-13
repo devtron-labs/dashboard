@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { useParams } from 'react-router-dom'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DEPLOYMENT_STATUS,
     MANIFEST_STATUS_HEADERS,
@@ -8,7 +9,6 @@ import {
     TERMINAL_STATUS_MAP,
     TIMELINE_STATUS,
 } from '../../../../config'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ShowMoreText } from '../../../common/ShowMoreText'
 import { getManualSync } from '../../service'
 import { DeploymentStatusDetailRowType } from './appDetails.type'
@@ -24,12 +24,12 @@ import AppStatusDetailsChart from '../../../v2/appDetails/sourceInfo/environment
 import { ErrorInfoStatusBar } from './ErrorInfoStatusBar'
 import { statusIcon } from '../../config'
 
-export function DeploymentStatusDetailRow({
+export const DeploymentStatusDetailRow = ({
     type,
     hideVerticalConnector,
     deploymentDetailedData,
     streamData,
-}: DeploymentStatusDetailRowType) {
+}: DeploymentStatusDetailRowType) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
     const [collapsed, toggleCollapsed] = useState<boolean>(statusBreakDownType.isCollapsed)
@@ -145,11 +145,7 @@ export function DeploymentStatusDetailRow({
                         </div>
                     )}
                     <div>
-                        <AppStatusDetailsChart
-                            appStreamData={streamData}
-                            filterRemoveHealth={true}
-                            showFooter={false}
-                        />
+                        <AppStatusDetailsChart appStreamData={streamData} filterRemoveHealth showFooter={false} />
                     </div>
                 </div>
             )
@@ -167,13 +163,13 @@ export function DeploymentStatusDetailRow({
             case 'inprogress':
                 return (
                     <div className="icon-dim-20">
-                        <div className="pulse-highlight"></div>
+                        <div className="pulse-highlight" />
                     </div>
                 )
             case 'unreachable':
                 return <Close className="icon-dim-20" />
             case 'loading':
-                return <div className={`dc__app-summary__icon icon-dim-20 mr-6 progressing progressing--node`}></div>
+                return <div className="dc__app-summary__icon icon-dim-20 mr-6 progressing progressing--node" />
             case 'disconnect':
                 return <Disconnect className="icon-dim-20" />
             case 'time_out':
@@ -189,8 +185,8 @@ export function DeploymentStatusDetailRow({
                 type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
                 nonDeploymentError={deploymentDetailedData.nonDeploymentError}
                 errorMessage={deploymentDetailedData.deploymentError}
-                hideVerticalConnector={true}
-                hideErrorIcon={true}
+                hideVerticalConnector
+                hideErrorIcon
             />
         )
     }
@@ -226,14 +222,15 @@ export function DeploymentStatusDetailRow({
                     {((type === TIMELINE_STATUS.KUBECTL_APPLY && statusBreakDownType.kubeList?.length) ||
                         (type === TIMELINE_STATUS.APP_HEALTH &&
                             appHealthDropDownlist.includes(statusBreakDownType.icon)) ||
-                        ((type === TIMELINE_STATUS.GIT_COMMIT || type === TIMELINE_STATUS.ARGOCD_SYNC) && statusBreakDownType.icon === 'failed')) && (
-                            <DropDownIcon
-                                style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
-                                className="icon-dim-24 rotate pointer"
-                                onClick={toggleDropdown}
-                                data-testid="steps-deployment-history-dropdown"
-                            />
-                        )}
+                        ((type === TIMELINE_STATUS.GIT_COMMIT || type === TIMELINE_STATUS.ARGOCD_SYNC) &&
+                            statusBreakDownType.icon === 'failed')) && (
+                        <DropDownIcon
+                            style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
+                            className="icon-dim-24 rotate pointer"
+                            onClick={toggleDropdown}
+                            data-testid="steps-deployment-history-dropdown"
+                        />
+                    )}
                 </div>
                 {isHelmManifestPushFailed && renderErrorInfoBar()}
             </div>
@@ -242,7 +239,7 @@ export function DeploymentStatusDetailRow({
             {type === TIMELINE_STATUS.ARGOCD_SYNC && renderDetailedData()}
             {type === TIMELINE_STATUS.KUBECTL_APPLY && renderDetailedData()}
             {type === TIMELINE_STATUS.APP_HEALTH && renderDetailChart()}
-            {!hideVerticalConnector && <div className="vertical-connector"></div>}
+            {!hideVerticalConnector && <div className="vertical-connector" />}
         </>
     )
 }

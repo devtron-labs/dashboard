@@ -15,19 +15,19 @@ export const buildArgoAppListUrl = (): string => {
 export const getCurrentTabName = (appType: string, isExternalArgo: boolean): string => {
     if (appType === AppListConstants.AppType.DEVTRON_APPS) {
         return AppListConstants.AppTabs.DEVTRON_APPS
-    } else if (isExternalArgo) {
-        return AppListConstants.AppTabs.ARGO_APPS
-    } else {
-        return AppListConstants.AppTabs.HELM_APPS
     }
+    if (isExternalArgo) {
+        return AppListConstants.AppTabs.ARGO_APPS
+    }
+    return AppListConstants.AppTabs.HELM_APPS
 }
 
 export const getChangeAppTabURL = (appTabType) => {
     if (appTabType === AppListConstants.AppTabs.DEVTRON_APPS) {
         return buildDevtronAppListUrl()
-    } else if (appTabType === AppListConstants.AppTabs.ARGO_APPS) {
-        return buildArgoAppListUrl()
-    } else {
-        return buildHelmAppListUrl()
     }
+    if (appTabType === AppListConstants.AppTabs.ARGO_APPS) {
+        return buildArgoAppListUrl()
+    }
+    return buildHelmAppListUrl()
 }

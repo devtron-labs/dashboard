@@ -7,6 +7,9 @@ import {
     processDeployedTime,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import { StatusConstants } from '../../../app/list-new/Constants'
 import { EditableTextArea } from '../../../common'
@@ -21,7 +24,6 @@ import {
     StatusDrawer,
 } from '../../AppGroup.types'
 import './envOverview.scss'
-import moment from 'moment'
 import { Moment12HourFormat } from '../../../../config'
 import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
 import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
@@ -30,7 +32,6 @@ import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-u
 import { ReactComponent as DevtronIcon } from '../../../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
 import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
-import Tippy from '@tippyjs/react'
 import { HibernateModal } from './HibernateModal'
 import { UnhibernateModal } from './UnhibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
@@ -62,7 +63,9 @@ export default function EnvironmentOverview({
 
     useEffect(() => {
         return () => {
-            if (timerId.current) clearInterval(timerId.current)
+            if (timerId.current) {
+                clearInterval(timerId.current)
+            }
         }
     }, [])
 
@@ -71,7 +74,9 @@ export default function EnvironmentOverview({
         fetchDeployments()
         timerId.current = setInterval(fetchDeployments, 30000)
         return () => {
-            if (timerId.current) clearInterval(timerId.current)
+            if (timerId.current) {
+                clearInterval(timerId.current)
+            }
         }
     }, [appGroupListData])
 
@@ -107,12 +112,10 @@ export default function EnvironmentOverview({
             } else {
                 setSelectedAppIds([])
             }
+        } else if (checked) {
+            setSelectedAppIds([...selectedAppIds, +value])
         } else {
-            if (checked) {
-                setSelectedAppIds([...selectedAppIds, +value])
-            } else {
-                setSelectedAppIds(selectedAppIds.filter((item) => item !== +value))
-            }
+            setSelectedAppIds(selectedAppIds.filter((item) => item !== +value))
         }
     }
 
@@ -203,7 +206,7 @@ export default function EnvironmentOverview({
                                 onChange={handleSelect}
                                 checked={isSelected}
                             />
-                            <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`}></span>
+                            <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`} />
                         </label>
                     )}
                     {!isVirtualEnv && <AppStatus appStatus={item.appStatus} hideStatusMessage />}
@@ -211,15 +214,13 @@ export default function EnvironmentOverview({
                 </div>
                 <AppStatus
                     appStatus={item.lastDeployed ? item.deploymentStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
-                    isDeploymentStatus={true}
+                    isDeploymentStatus
                     isVirtualEnv={isVirtualEnv}
                 />
                 {item?.lastDeployedImage && (
                     <div className="cn-7 fs-13 flexbox">
                         <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
-                            <div
-                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4`}
-                            >
+                            <div className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4">
                                 <DockerIcon className="icon-dim-14" />
                                 {isLastDeployedExpanded ? (
                                     <div className="mono dc__ellipsis-left direction-left">
@@ -278,8 +279,8 @@ export default function EnvironmentOverview({
                         {appGroupListData.environmentName}
                     </div>
                     <EditableTextArea
-                        emptyState={'Write a short description for this environment'}
-                        placeholder={'Write a short description for this environment'}
+                        emptyState="Write a short description for this environment"
+                        placeholder="Write a short description for this environment"
                         rows={4}
                         initialText={description}
                         updateContent={handleSaveDescription}
@@ -374,7 +375,7 @@ export default function EnvironmentOverview({
                                     <input
                                         type="checkbox"
                                         className="form__checkbox"
-                                        value={'ALL'}
+                                        value="ALL"
                                         onChange={handleSelect}
                                         checked={selectedAppIds.length === appListData.appInfoList.length}
                                     />
@@ -383,10 +384,10 @@ export default function EnvironmentOverview({
                                             selectedAppIds.length === appListData.appInfoList.length
                                                 ? 'tick-icon'
                                                 : selectedAppIds.length > 0
-                                                ? 'any-selected'
-                                                : ''
+                                                  ? 'any-selected'
+                                                  : ''
                                         }`}
-                                    ></span>
+                                    />
                                 </label>
                                 {!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}
                                 <span>{OVERVIEW_HEADER.APPLICATION}</span>

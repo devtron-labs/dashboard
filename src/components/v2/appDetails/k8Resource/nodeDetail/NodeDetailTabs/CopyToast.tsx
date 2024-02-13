@@ -1,34 +1,34 @@
-import React from 'react';
-import { copyToClipboard } from '@devtron-labs/devtron-fe-common-lib';
-import { ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.svg';
-import '../../../../../../../node_modules/xterm/css/xterm.css';
-import '../../../../../LogViewer/LogViewer.scss';
-import './nodeDetailTab.scss';
+import React from 'react'
+import { copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.svg'
+import 'xterm/css/xterm.css'
+import '../../../../../LogViewer/LogViewer.scss'
+import './nodeDetailTab.scss'
 
 interface toastType {
-    showCopyToast: boolean;
+    showCopyToast: boolean
 }
 
-function CopyToast({ showCopyToast }: toastType) {
+const CopyToast = ({ showCopyToast }: toastType) => {
     return (
-            <span
-                className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
-                style={{ zIndex: 9 }}
-            >
-                <CheckIcon className="icon-dim-24 scn-9" />
-                <div className="">Copied!</div>
-            </span>
-    );
+        <span
+            className={`br-8 bcn-0 cn-9 clipboard-toast ${showCopyToast ? 'clipboard-toast--show' : ''}`}
+            style={{ zIndex: 9 }}
+        >
+            <CheckIcon className="icon-dim-24 scn-9" />
+            <div className="">Copied!</div>
+        </span>
+    )
 }
 
 function handleSelectionChange(terminal, setPopupText): void {
     terminal.onSelectionChange(() => {
-        copyToClipboard(terminal.getSelection());
+        copyToClipboard(terminal.getSelection())
         if (terminal.getSelection()) {
-            setPopupText(true);
+            setPopupText(true)
         }
-    });
+    })
 }
 
-export default CopyToast;
-export { handleSelectionChange };
+export default CopyToast
+export { handleSelectionChange }

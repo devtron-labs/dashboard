@@ -2,6 +2,16 @@ import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
 import {
+    Progressing,
+    DeleteDialog,
+    RadioGroup,
+    RadioGroupItem,
+    ConditionalWrap,
+    DeploymentAppTypes,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import {
     DropdownIndicator,
     EnvFormatOptions,
     formatHighlightedText,
@@ -12,15 +22,6 @@ import {
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
-import {
-    Progressing,
-    DeleteDialog,
-    RadioGroup,
-    RadioGroupItem,
-    ConditionalWrap,
-    DeploymentAppTypes,
-    CustomInput,
-} from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -48,7 +49,6 @@ import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.s
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION } from '../../../../config'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -65,7 +65,7 @@ export const ChartEnvironmentSelector = ({
     invalidaEnvironment,
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
-    isOCICompliantChart
+    isOCICompliantChart,
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
@@ -78,14 +78,14 @@ export const ChartEnvironmentSelector = ({
     }
 
     const renderOCIContainerRegistryText = () => {
-       if (isOCICompliantChart) {
-           return (
-               <div className="cn-7 fs-12 pt-16 flexbox">
-                   <InfoIcon className="icon-dim-20 mr-4" />
-                   Charts from container registries can be deployed via helm only.
-               </div>
-           )
-       }
+        if (isOCICompliantChart) {
+            return (
+                <div className="cn-7 fs-12 pt-16 flexbox">
+                    <InfoIcon className="icon-dim-20 mr-4" />
+                    Charts from container registries can be deployed via helm only.
+                </div>
+            )
+        }
     }
 
     const renderVirtualTippy = (): JSX.Element => {
@@ -93,7 +93,7 @@ export const ChartEnvironmentSelector = ({
             return (
                 <div className="flex left">
                     <div className="ml-4 mr-4">(Virtual)</div>
-                    <VirtualEnvHelpTippy showVirtualText={true}/>
+                    <VirtualEnvHelpTippy showVirtualText />
                 </div>
             )
         }
@@ -105,16 +105,17 @@ export const ChartEnvironmentSelector = ({
 
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
-            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left" data-testid="environment-heading">
+            <h2
+                className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left"
+                data-testid="environment-heading"
+            >
                 Environment {renderVirtualTippy()}
             </h2>
             {isExternal ? (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
                     {installedAppInfo
                         ? installedAppInfo.environmentName
-                        : releaseInfo.deployedAppDetail.environmentDetail.clusterName +
-                          '__' +
-                          releaseInfo.deployedAppDetail.environmentDetail.namespace}
+                        : `${releaseInfo.deployedAppDetail.environmentDetail.clusterName}__${releaseInfo.deployedAppDetail.environmentDetail.namespace}`}
                 </span>
             ) : (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9" data-testid="environemnt-value">
@@ -124,7 +125,9 @@ export const ChartEnvironmentSelector = ({
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="environment-name-heading">Deploy to environment</span>
+            <span className="form__label required-field" data-testid="environment-name-heading">
+                Deploy to environment
+            </span>
             <ReactSelect
                 components={{
                     IndicatorSeparator: null,
@@ -152,7 +155,7 @@ export const DeploymentAppSelector = ({
     isUpdate,
     handleDeploymentAppTypeSelection,
     isDeployChartView,
-    allowedDeploymentTypes
+    allowedDeploymentTypes,
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
@@ -194,62 +197,66 @@ export const DeploymentAppSelector = ({
     )
 }
 
-const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: string): JSX.Element=>{
-  return (
-      <Tippy className="default-tt w-200" arrow={false} content={tippyContent}>
-          <div className={`${isFromCDPipeline ? '' : 'bcn-1'}`} style={{ flex: isFromCDPipeline ? '' : '1 1 auto' }}>
-              {children}
-          </div>
-      </Tippy>
-  )
+const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: string): JSX.Element => {
+    return (
+        <Tippy className="default-tt w-200" arrow={false} content={tippyContent}>
+            <div className={`${isFromCDPipeline ? '' : 'bcn-1'}`} style={{ flex: isFromCDPipeline ? '' : '1 1 auto' }}>
+                {children}
+            </div>
+        </Tippy>
+    )
 }
 
 export const DeploymentAppRadioGroup = ({
-  isDisabled,
-  deploymentAppType,
-  handleOnChange,
-  allowedDeploymentTypes,
-  rootClassName,
-  isFromCDPipeline
+    isDisabled,
+    deploymentAppType,
+    handleOnChange,
+    allowedDeploymentTypes,
+    rootClassName,
+    isFromCDPipeline,
 }: DeploymentAppRadioGroupType): JSX.Element => {
-  return (
-      <RadioGroup
-          value={deploymentAppType}
-          name="DeploymentAppTypeGroup"
-          onChange={handleOnChange}
-          disabled={isDisabled}
-          className={rootClassName ?? ''}
-      >
-          <ConditionalWrap
-              condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-              wrap={(children) =>
-                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
-              }
-          >
-              <RadioGroupItem
-                  dataTestId="helm-deployment"
-                  value={DeploymentAppTypes.HELM}
-                  disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-              >
-                  Helm
-              </RadioGroupItem>
-          </ConditionalWrap>
-          <ConditionalWrap
-              condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-              wrap={(children) =>
-                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via GitOps')
-              }
-          >
-              <RadioGroupItem
-                  dataTestId="gitops-deployment"
-                  value={DeploymentAppTypes.GITOPS}
-                  disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-              >
-                  GitOps
-              </RadioGroupItem>
-          </ConditionalWrap>
-      </RadioGroup>
-  )
+    return (
+        <RadioGroup
+            value={deploymentAppType}
+            name="DeploymentAppTypeGroup"
+            onChange={handleOnChange}
+            disabled={isDisabled}
+            className={rootClassName ?? ''}
+        >
+            <ConditionalWrap
+                condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                wrap={(children) =>
+                    RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
+                }
+            >
+                <RadioGroupItem
+                    dataTestId="helm-deployment"
+                    value={DeploymentAppTypes.HELM}
+                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                >
+                    Helm
+                </RadioGroupItem>
+            </ConditionalWrap>
+            <ConditionalWrap
+                condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                wrap={(children) =>
+                    RadioWithTippy(
+                        children,
+                        isFromCDPipeline,
+                        'Deployment to this environment is not allowed via GitOps',
+                    )
+                }
+            >
+                <RadioGroupItem
+                    dataTestId="gitops-deployment"
+                    value={DeploymentAppTypes.GITOPS}
+                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                >
+                    GitOps
+                </RadioGroupItem>
+            </ConditionalWrap>
+        </RadioGroup>
+    )
 }
 
 export const ChartProjectSelector = ({
@@ -260,7 +267,9 @@ export const ChartProjectSelector = ({
 }: ChartProjectSelectorType): JSX.Element => {
     return (
         <label className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="project-name-heading">Project</span>
+            <span className="form__label required-field" data-testid="project-name-heading">
+                Project
+            </span>
             <ReactSelect
                 components={{
                     IndicatorSeparator: null,
@@ -330,7 +339,9 @@ export const ChartValuesSelector = ({
 }: ChartValuesSelectorType) => {
     return (
         <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">Chart Values</span>
+            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">
+                Chart Values
+            </span>
             <ChartValuesSelect
                 className="chart-values-selector"
                 chartValuesList={chartValuesList}
@@ -383,7 +394,9 @@ export const ChartVersionValuesSelector = ({
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
         <div className="chart-values-view__readme">
-            <div className="code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">Readme</div>
+            <div className="code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">
+                Readme
+            </div>
             {fetchingReadMe ? (
                 <Progressing pageLoader />
             ) : (
@@ -459,10 +472,9 @@ export const ValueNameInput = ({
                 handleOnBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
-                isRequiredField={true}
+                isRequiredField
                 error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
-            /> 
-            
+            />
         </label>
     )
 }
@@ -485,7 +497,7 @@ export const AppNameInput = ({
                 onChange={(e) => handleAppNameChange(e.target.value)}
                 handleOnBlur={handleAppNameOnBlur}
                 data-testid="app-name-input"
-                isRequiredField={true}
+                isRequiredField
                 error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
             />
         </label>
@@ -552,8 +564,8 @@ export const UpdateApplicationButton = ({
                                   chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
                               }`
                             : isDeployChartView
-                            ? UPDATE_APP_BUTTON_TEXTS.Deploying
-                            : UPDATE_APP_BUTTON_TEXTS.Updating}
+                              ? UPDATE_APP_BUTTON_TEXTS.Deploying
+                              : UPDATE_APP_BUTTON_TEXTS.Updating}
                     </span>
                     <span className="ml-10">
                         <Progressing />
@@ -571,4 +583,3 @@ export const UpdateApplicationButton = ({
         </button>
     )
 }
-

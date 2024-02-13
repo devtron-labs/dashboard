@@ -9,7 +9,7 @@ import { SuggestionsProps, SuggestionType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
 import { NO_DEFINED_DESCRIPTION, NO_DEFINED_VALUE } from './constants'
 
-function Suggestions({ handleDeActivation, loading, variables, reloadVariables, error }: SuggestionsProps) {
+const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, error }: SuggestionsProps) => {
     const [suggestions, setSuggestions] = useState<SuggestionType[]>(variables)
     const [clearSearch, setClearSearch] = useState<boolean>(false)
     const [highlightText, setHighlightText] = useState<string>('')
@@ -146,7 +146,9 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
             )
         }
 
-        if (!enableSearch) return <Reload reload={reloadVariables} className="bcn-0 pb-16" />
+        if (!enableSearch) {
+            return <Reload reload={reloadVariables} className="bcn-0 pb-16" />
+        }
 
         return renderSuggestions()
     }

@@ -21,7 +21,7 @@ export interface ProtectedInputType {
     name: string
     value: string | number
     onChange: (e: any) => void
-    error?: React.ReactNode  
+    error?: React.ReactNode
     label?: React.ReactNode
     tabIndex?: number
     disabled?: boolean
@@ -30,5 +30,5 @@ export interface ProtectedInputType {
     placeholder?: string
     dataTestid: string
     onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-    isRequiredField?: boolean,
+    isRequiredField?: boolean
 }

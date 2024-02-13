@@ -8,6 +8,6 @@ export interface tCell {
 }
 
 export interface Table {
-   tHead: tCell[]
-   tBody: tCell[][]
+    tHead: tCell[]
+    tBody: tCell[][]
 }

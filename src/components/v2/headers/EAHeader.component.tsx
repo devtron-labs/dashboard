@@ -1,14 +1,14 @@
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { URLS, AppListConstants } from '../../../config'
 import ReactGA from 'react-ga4'
 import { useParams, useRouteMatch } from 'react-router'
+import { URLS, AppListConstants } from '../../../config'
 import './header.scss'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { EAHeaderComponentType } from './appHeader.type'
 
-function EAHeaderComponent({ title, redirectURL, appType }: EAHeaderComponentType) {
+const EAHeaderComponent = ({ title, redirectURL, appType }: EAHeaderComponentType) => {
     const match = useRouteMatch()
     const params = useParams<{ appId: string; appName: string }>()
 
@@ -82,11 +82,11 @@ function EAHeaderComponent({ title, redirectURL, appType }: EAHeaderComponentTyp
     return (
         <div className="app-header-wrapper helm-app-page-header" style={{ gridTemplateColumns: 'unset' }}>
             <PageHeader
-                isBreadcrumbs={true}
-                showTabs={true}
+                isBreadcrumbs
+                showTabs
                 renderHeaderTabs={renderExternalHelmApp}
                 breadCrumbs={renderBreadcrumbs}
-                showAnnouncementHeader={true}
+                showAnnouncementHeader
             />
         </div>
     )

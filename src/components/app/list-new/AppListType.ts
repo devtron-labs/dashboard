@@ -12,16 +12,13 @@ export interface ArgoAppListResponse extends ArgoAppListResult {
     result?: ArgoAppListResult
 }
 
-export interface AppListResponse extends ResponseType {
-    result?: AppsListResult
-}
-
-interface AppsListResult {
-    clusterIds: number[]
-    applicationType: string 
-    errored: boolean
-    errorMsg: string
-    helmApps: HelmApp[]
+export interface AppEnvironmentDetail {
+    environmentName: string
+    environmentId: number
+    namespace: string
+    clusterName: string
+    clusterId: number
+    isVirtualEnvironment?: boolean
 }
 
 export interface HelmApp {
@@ -37,11 +34,14 @@ export interface HelmApp {
     appStatus: string
 }
 
-export interface AppEnvironmentDetail {
-    environmentName: string
-    environmentId: number
-    namespace: string
-    clusterName: string
-    clusterId: number
-    isVirtualEnvironment?: boolean
+interface AppsListResult {
+    clusterIds: number[]
+    applicationType: string // DEVTRON-CHART-STORE, DEVTRON-APP ,HELM-APP
+    errored: boolean
+    errorMsg: string
+    helmApps: HelmApp[]
+}
+
+export interface AppListResponse extends ResponseType {
+    result?: AppsListResult
 }

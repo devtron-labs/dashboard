@@ -4,7 +4,7 @@ import { appSelectorStyle, DropdownIndicator, noOptionsMessage } from '../AppSel
 import { EnvSelectorType } from './AppGroup.types'
 import { envListOptions } from './AppGroup.utils'
 
-export function EnvSelector({ onChange, envId, envName }: EnvSelectorType) {
+export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     const defaultOptions = { value: envId, label: envName }
 
     return (

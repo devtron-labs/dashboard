@@ -1,70 +1,70 @@
-import { DeploymentAppTypes, ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
+import { DeploymentAppTypes, ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
-    code: number;
-    status?: string;
-    result: any;
+    code: number
+    status?: string
+    result: any
 }
 
 export interface CDPipelines {
-    pipelines: CDPipeline[];
+    pipelines: CDPipeline[]
 }
 
 type DeploymentStrategyType = 'CANARY' | 'ROLLING' | 'RECREATE' | 'BLUE_GREEN'
 
 export interface DeploymentStrategy {
-    deploymentTemplate: DeploymentStrategyType;
-    config: any;
-    default: boolean;
+    deploymentTemplate: DeploymentStrategyType
+    config: any
+    default: boolean
 }
 
 export interface PrePostStage {
-    triggerType: 'AUTOMATIC' | 'MANUAL';
-    name: string;
-    config: string;
+    triggerType: 'AUTOMATIC' | 'MANUAL'
+    name: string
+    config: string
 }
 
 export interface CDPipeline {
-    id: number;
-    environmentId: number;
-    environmentName: string;
-    description: string;
-    ciPipelineId: number;
-    triggerType: string;
-    name: string;
-    strategies: DeploymentStrategy[];
-    deploymentTemplate: string;
-    preStage: PrePostStage;
-    postStage: PrePostStage;
-    preStageConfigMapSecretNames: { configMaps: string[], secrets: string[] };
-    postStageConfigMapSecretNames: { configMaps: string[], secrets: string[] };
-    runPreStageInEnv: boolean;
-    runPostStageInEnv: boolean;
-    isClusterCdActive: boolean;
+    id: number
+    environmentId: number
+    environmentName: string
+    description: string
+    ciPipelineId: number
+    triggerType: string
+    name: string
+    strategies: DeploymentStrategy[]
+    deploymentTemplate: string
+    preStage: PrePostStage
+    postStage: PrePostStage
+    preStageConfigMapSecretNames: { configMaps: string[]; secrets: string[] }
+    postStageConfigMapSecretNames: { configMaps: string[]; secrets: string[] }
+    runPreStageInEnv: boolean
+    runPostStageInEnv: boolean
+    isClusterCdActive: boolean
     deploymentAppType?: DeploymentAppTypes
 }
 
 export interface AppListMin extends ResponseType {
-    result?: { id: number, name: string }[];
+    result?: { id: number; name: string }[]
 }
 
 export interface ProjectFilteredApps extends ResponseType {
     result?: {
-        projectId: number;
-        projectName: string;
+        projectId: number
+        projectName: string
         appList: {
-            id: number;
-            name: string;
+            id: number
+            name: string
         }[]
     }[]
 }
 
 export interface AppEnvironment {
-    environmentId: number;
-    environmentName: string;
-    appMetrics: boolean;
-    infraMetrics: boolean;
-    prod: boolean;
+    environmentId: number
+    environmentName: string
+    appMetrics: boolean
+    infraMetrics: boolean
+    prod: boolean
     chartRefId?: number
     lastDeployed?: string
     lastDeployedBy?: string
@@ -89,54 +89,54 @@ export interface AllWorkflows extends ResponseType {
 }
 
 export interface LastExecutionResponseType {
-    code: number;
-    status: string;
+    code: number
+    status: string
     result: {
-        scanExecutionId: number;
-        lastExecution: string;
-        appId?: number;
-        appName?: string;
-        envId?: number;
-        envName?: string;
-        pod?: string;
-        replicaSet?: string;
-        image?: string;
-        objectType: 'app' | 'chart';
-        scanned: boolean;
-        scanEnabled: boolean;
+        scanExecutionId: number
+        lastExecution: string
+        appId?: number
+        appName?: string
+        envId?: number
+        envName?: string
+        pod?: string
+        replicaSet?: string
+        image?: string
+        objectType: 'app' | 'chart'
+        scanned: boolean
+        scanEnabled: boolean
         severityCount: {
-            critical: number;
-            moderate: number;
-            low: number;
-        },
-        vulnerabilities: VulnerabilityType[];
-        scanToolId ?:number
+            critical: number
+            moderate: number
+            low: number
+        }
+        vulnerabilities: VulnerabilityType[]
+        scanToolId?: number
     }
 }
 
 export interface LastExecutionMinResponseType {
-    code: number;
-    status: string;
+    code: number
+    status: string
     result: {
-        lastExecution: string;
-        imageScanDeployInfoId: number;
+        lastExecution: string
+        imageScanDeployInfoId: number
         severityCount: {
-            critical: number;
-            moderate: number;
-            low: number;
-        },
+            critical: number
+            moderate: number
+            low: number
+        }
     }
 }
 
 export interface HostURLConfig {
-    id: number,
-    key: string;
-    value: string,
-    active: boolean,
+    id: number
+    key: string
+    value: string
+    active: boolean
 }
 
 export interface HostURLConfigResponse extends ResponseType {
-    result?: HostURLConfig;
+    result?: HostURLConfig
 }
 
 export interface ClusterEnvironmentDetailList extends ResponseType {
@@ -144,28 +144,28 @@ export interface ClusterEnvironmentDetailList extends ResponseType {
 }
 
 export interface ClusterEnvironmentDetail {
-    id: number, //envId
-    environment_name : string,
-    active: boolean,
-    cluster_id : number
-    cluster_name : string,
-    namespace : string
+    id: number // envId
+    environment_name: string
+    active: boolean
+    cluster_id: number
+    cluster_name: string
+    namespace: string
 }
 
-export interface EnvironmentListHelmResponse extends ResponseType{
+export interface EnvironmentListHelmResponse extends ResponseType {
     result?: EnvironmentListHelmResult[]
 }
 
 export interface EnvironmentListHelmResult {
-    clusterId : number,
-    clusterName : string,
-    environments : EnvironmentHelmResult[]
+    clusterId: number
+    clusterName: string
+    environments: EnvironmentHelmResult[]
 }
 
 export interface EnvironmentHelmResult {
-    environmentId : number,
-    environmentName: string,
-    namespace: string,
+    environmentId: number
+    environmentName: string
+    namespace: string
     environmentIdentifier: string
     isVirtualEnvironment?: boolean // Need to confirm for not full mode
     allowedDeploymentTypes?: DeploymentAppTypes[]
@@ -183,7 +183,7 @@ export interface Cluster {
     isVirtualCluster?: boolean
 }
 export interface LoginCountType extends ResponseType {
-  result?: LoginCount
+    result?: LoginCount
 }
 
 export interface LoginCount {
@@ -193,9 +193,9 @@ export interface LoginCount {
 }
 
 export interface AppRouterType {
-  isSuperAdmin?: boolean
-  appListCount: number
-  loginCount: number
+    isSuperAdmin?: boolean
+    appListCount: number
+    loginCount: number
 }
 
 export interface ConfigOverrideWorkflowDetails {
@@ -205,7 +205,6 @@ export interface ConfigOverrideWorkflowDetails {
     id: number
     name: string
 }
-
 
 export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
     result?: {

@@ -1,7 +1,7 @@
+import YAML from 'yaml'
 import { CM_SECRET_STATE } from './Constants'
 import { getSecretInitState } from './Secret/secret.utils'
 import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './Types'
-import YAML from 'yaml'
 import { decode } from '../../util/Util'
 
 const secureValues = (data, isExternalType) => {
@@ -22,7 +22,8 @@ export const processCurrentData = (configMapSecretData, cmSecretStateLabel, comp
             configMapSecretData.data,
             componentType === 'secret' && configMapSecretData.externalType === '',
         )
-    } else if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData?.defaultData) {
+    }
+    if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData?.defaultData) {
         return secureValues(
             configMapSecretData.defaultData,
             componentType === 'secret' && configMapSecretData.externalType === '',

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { showError, GenericEmptyState, ImageTagsContainer, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
+import Tippy from '@tippyjs/react'
+import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
@@ -11,7 +12,6 @@ import { ReactComponent as Down } from '../../../../assets/icons/ic-arrow-down.s
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import Tippy from '@tippyjs/react'
 import '../cIDetails/ciDetails.scss'
 import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
@@ -61,7 +61,9 @@ export default function Artifacts({
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
-        if (!copied) return
+        if (!copied) {
+            return
+        }
         setTimeout(() => setCopied(false), 2000)
     }, [copied])
 
@@ -80,7 +82,8 @@ export default function Artifacts({
 
     if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING || status.toLowerCase() === TERMINAL_STATUS_MAP.STARTING) {
         return <CIProgressView />
-    } else if (isJobView && !blobStorageEnabled) {
+    }
+    if (isJobView && !blobStorageEnabled) {
         return (
             <div className="flex column p-24 w-100 h-100">
                 <GenericEmptyState
@@ -93,14 +96,20 @@ export default function Artifacts({
                     <span className="fs-13 fw-4 mr-8 ml-8">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
                     </span>
-                    <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
+                    <a
+                        className="fs-13 fw-6 cb-5 dc__no-decor"
+                        href={DOCUMENTATION.BLOB_STORAGE}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
                     <OpenInNew className="icon-dim-20 ml-8" />
                 </div>
             </div>
         )
-    } else if (isJobView && !isArtifactUploaded) {
+    }
+    if (isJobView && !isArtifactUploaded) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
@@ -108,17 +117,15 @@ export default function Artifacts({
                 image={noartifact}
             />
         )
-    } else if (
-        status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED ||
-        status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
-    ) {
+    }
+    if (status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED || status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED) {
         if (isJobCI) {
             return (
                 <GenericEmptyState
                     title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifacts}
                     subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifactsError}
                 />
-            ) 
+            )
         }
 
         return (
@@ -127,7 +134,8 @@ export default function Artifacts({
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
-    } else if (!artifactId && status.toLowerCase() === TERMINAL_STATUS_MAP.SUCCEEDED) {
+    }
+    if (!artifactId && status.toLowerCase() === TERMINAL_STATUS_MAP.SUCCEEDED) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsFound}
@@ -135,60 +143,56 @@ export default function Artifacts({
                 image={noartifact}
             />
         )
-    } else {
-        return (
-            <div className={`flex left column p-16 ${jobCIClass??''}`}>
-                {!isJobView && type !== HistoryComponentType.CD && (
-                    <CIListItem
-                        type="artifact"
-                        ciPipelineId={ciPipelineId}
-                        artifactId={artifactId}
-                        imageComment={imageComment}
-                        imageReleaseTags={imageReleaseTags}
-                        appReleaseTagNames={appReleaseTagNames}
-                        tagsEditable={tagsEditable}
-                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                        isSuperAdmin={isSuperAdmin}
-                        
-
-                    >
-                        <div className="flex column left hover-trigger">
-                            <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
-                                <CopyTippyWithText
-                                    copyText={extractImage(artifact)}
-                                    copied={copied}
-                                    setCopied={setCopied}
-                                />
-                            </div>
-                            <div className="cn-7 fs-12 flex left" data-testid="artifact-image-text">
-                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
-                            </div>
-                        </div>
-                    </CIListItem>
-                )}
-                {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
-                    <CIListItem 
-                        type="report" 
-                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                        isSuperAdmin={isSuperAdmin}
-                    >
-                        <div className="flex column left">
-                    
-                            <div className="cn-9 fs-14">Reports.zip</div>
-                            <button
-                                type="button"
-                                onClick={handleArtifact}
-                                className="anchor p-0 cb-5 fs-12 flex left pointer"
-                            >
-                                Download
-                                <Download className="ml-5 icon-dim-16" />
-                            </button>
-                        </div>
-                    </CIListItem>
-                )}
-            </div>
-        )
     }
+    return (
+        <div className={`flex left column p-16 ${jobCIClass ?? ''}`}>
+            {!isJobView && type !== HistoryComponentType.CD && (
+                <CIListItem
+                    type="artifact"
+                    ciPipelineId={ciPipelineId}
+                    artifactId={artifactId}
+                    imageComment={imageComment}
+                    imageReleaseTags={imageReleaseTags}
+                    appReleaseTagNames={appReleaseTagNames}
+                    tagsEditable={tagsEditable}
+                    hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                    isSuperAdmin={isSuperAdmin}
+                >
+                    <div className="flex column left hover-trigger">
+                        <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
+                            <CopyTippyWithText
+                                copyText={extractImage(artifact)}
+                                copied={copied}
+                                setCopied={setCopied}
+                            />
+                        </div>
+                        <div className="cn-7 fs-12 flex left" data-testid="artifact-image-text">
+                            <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                        </div>
+                    </div>
+                </CIListItem>
+            )}
+            {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
+                <CIListItem
+                    type="report"
+                    hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                    isSuperAdmin={isSuperAdmin}
+                >
+                    <div className="flex column left">
+                        <div className="cn-9 fs-14">Reports.zip</div>
+                        <button
+                            type="button"
+                            onClick={handleArtifact}
+                            className="anchor p-0 cb-5 fs-12 flex left pointer"
+                        >
+                            Download
+                            <Download className="ml-5 icon-dim-16" />
+                        </button>
+                    </div>
+                </CIListItem>
+            )}
+        </div>
+    )
 }
 
 export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
@@ -204,13 +208,15 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
                 placement="bottom"
                 content={copied ? 'Copied!' : 'Copy to clipboard.'}
                 trigger="mouseenter click"
-                interactive={true}
+                interactive
             >
-                <CopyIcon
-                    data-copy-text={copyText}
-                    className="pointer ml-6 icon-dim-16"
-                    onClick={onClickCopyToClipboard}
-                />
+                <div className="flex">
+                    <CopyIcon
+                        data-copy-text={copyText}
+                        className="pointer ml-6 icon-dim-16"
+                        onClick={onClickCopyToClipboard}
+                    />
+                </div>
             </Tippy>
         </>
     )
@@ -269,7 +275,7 @@ export const CIListItem = ({
 
             <div
                 className={`dc__h-fit-content ci-artifact ci-artifact--${type} image-tag-parent-card bcn-0 br-4 dc__border p-12 w-100 dc__mxw-800 ${
-                    CIListHeader && headerMetaDataPresent  ? 'dc__no-top-radius dc__no-top-border' : ''
+                    CIListHeader && headerMetaDataPresent ? 'dc__no-top-radius dc__no-top-border' : ''
                 }`}
                 data-testid="hover-on-report-artifact"
             >

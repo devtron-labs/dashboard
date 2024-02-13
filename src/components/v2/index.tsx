@@ -1,9 +1,9 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, Redirect, useLocation, useHistory } from 'react-router'
 import { Switch, Route } from 'react-router-dom'
+import { ErrorScreenManager, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
-import { ErrorScreenManager, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import ValuesComponent from './values/ChartValues.component'
 import AppHeaderComponent from './headers/AppHeader.component'
 import ChartHeaderComponent from './headers/ChartHeader.component'
@@ -25,7 +25,7 @@ import { HelmAppOverview } from './HelmAppOverview/HelpAppOverview'
 
 let initTimer = null
 
-function RouterComponent({ envType }) {
+const RouterComponent = ({ envType }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path } = useRouteMatch()
     const location = useLocation()
@@ -171,23 +171,23 @@ function RouterComponent({ envType }) {
                     <AppDetailsEmptyState envType={EnvType.CHART} />
                 </div>
             )
-        } else if (errorResponseCode) {
+        }
+        if (errorResponseCode) {
             return (
                 <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
-        } else {
-            return null
         }
+        return null
     }
 
     return (
-        <React.Fragment>
+        <>
             {renderErrorScreen()}
             {!errorResponseCode && (
                 <>
-                    {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />} 
+                    {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
                     <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
                         <Switch>
                             <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
@@ -224,7 +224,7 @@ function RouterComponent({ envType }) {
                     </Suspense>
                 </>
             )}
-        </React.Fragment>
+        </>
     )
 }
 

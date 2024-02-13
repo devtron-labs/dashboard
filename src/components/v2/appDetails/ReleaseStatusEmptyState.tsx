@@ -1,6 +1,7 @@
 import React from 'react'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
-function ReleaseStatusEmptyState({ message, description }) {
+
+const ReleaseStatusEmptyState = ({ message, description }) => {
     return (
         <div className="bcn-0 flex h-100">
             <div className="flex column h-100 w-50">

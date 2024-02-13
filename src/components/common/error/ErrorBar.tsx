@@ -104,6 +104,7 @@ export default function ErrorBar({ appDetails }: ErrorBarType) {
                                     href="https://discord.devtron.ai/"
                                     className="cb-5 fs-13 anchor w-auto dc__no-decor flex"
                                     target="_blank"
+                                    rel="noreferrer"
                                 >
                                     Chat with support
                                 </a>

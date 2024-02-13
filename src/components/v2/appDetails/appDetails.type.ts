@@ -1,7 +1,7 @@
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
-import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
 
@@ -24,13 +24,13 @@ export enum AppType {
     DEVTRON_APP = 'devtron_app',
     DEVTRON_HELM_CHART = 'devtron_helm_chart',
     EXTERNAL_HELM_CHART = 'external_helm_chart',
-    EXTERNAL_ARGO_APP = 'external_argo_app'
+    EXTERNAL_ARGO_APP = 'external_argo_app',
 }
 
 export enum K8sResourcePayloadAppType {
     DEVTRON_APP = 0,
     HELM_APP = 1,
-    EXTERNAL_ARGO_APP = 2
+    EXTERNAL_ARGO_APP = 2,
 }
 
 export enum K8sResourcePayloadDeploymentType {
@@ -52,7 +52,7 @@ export enum AggregationKeys {
     Administration = 'Administration',
     CustomResource = 'Custom Resource',
     OtherResources = 'Other Resources',
-    Events = 'Events'
+    Events = 'Events',
 }
 
 export enum NodeStatus {
@@ -61,7 +61,7 @@ export enum NodeStatus {
     Progressing = 'progressing',
     Missing = 'missing',
     Suspended = 'suspended',
-    Unknown = 'unknown'
+    Unknown = 'unknown',
 }
 
 export enum NodeType {
@@ -109,51 +109,51 @@ export enum NodeType {
 // export type NodeType = keyof typeof NodeType;
 
 export function getAggregator(nodeType: NodeType): AggregationKeys {
-  switch (nodeType.toLowerCase()) {
-    case NodeType.DaemonSet.toLowerCase():
-    case NodeType.Deployment.toLowerCase():
-    case NodeType.Pod.toLowerCase():
-    case NodeType.ReplicaSet.toLowerCase():
-    case NodeType.Job.toLowerCase():
-    case NodeType.CronJob.toLowerCase():
-    case NodeType.ReplicationController.toLowerCase():
-    case NodeType.StatefulSet.toLowerCase():
-        return AggregationKeys.Workloads
-    case NodeType.Ingress.toLowerCase():
-    case NodeType.Service.toLowerCase():
-    case NodeType.Endpoints.toLowerCase():
-    case NodeType.EndpointSlice.toLowerCase():
-    case NodeType.NetworkPolicy.toLowerCase():
-        return AggregationKeys.Networking
-    case NodeType.ConfigMap.toLowerCase():
-    case NodeType.Secret.toLowerCase():
-    case NodeType.PersistentVolume.toLowerCase():
-    case NodeType.PersistentVolumeClaim.toLowerCase():
-    case NodeType.StorageClass.toLowerCase():
-    case NodeType.VolumeSnapshot.toLowerCase():
-    case NodeType.VolumeSnapshotContent.toLowerCase():
-    case NodeType.VolumeSnapshotClass.toLowerCase():
-    case NodeType.PodDisruptionBudget.toLowerCase():
-        return AggregationKeys.ConfigAndStorage
-    case NodeType.ServiceAccount.toLowerCase():
-    case NodeType.ClusterRoleBinding.toLowerCase():
-    case NodeType.RoleBinding.toLowerCase():
-    case NodeType.ClusterRole.toLowerCase():
-    case NodeType.Role.toLowerCase():
-    case NodeType.PodSecurityPolicy.toLowerCase():
-        return AggregationKeys.RBAC
-    case NodeType.MutatingWebhookConfiguration.toLowerCase():
-    case NodeType.ValidatingWebhookConfiguration.toLowerCase():
-        return AggregationKeys.Administration
-    case NodeType.Alertmanager.toLowerCase():
-    case NodeType.Prometheus.toLowerCase():
-    case NodeType.ServiceMonitor.toLowerCase():
-        return AggregationKeys.CustomResource
-    case NodeType.Event.toLowerCase():
-        return AggregationKeys.Events
-    default:
-        return AggregationKeys.CustomResource
-}
+    switch (nodeType.toLowerCase()) {
+        case NodeType.DaemonSet.toLowerCase():
+        case NodeType.Deployment.toLowerCase():
+        case NodeType.Pod.toLowerCase():
+        case NodeType.ReplicaSet.toLowerCase():
+        case NodeType.Job.toLowerCase():
+        case NodeType.CronJob.toLowerCase():
+        case NodeType.ReplicationController.toLowerCase():
+        case NodeType.StatefulSet.toLowerCase():
+            return AggregationKeys.Workloads
+        case NodeType.Ingress.toLowerCase():
+        case NodeType.Service.toLowerCase():
+        case NodeType.Endpoints.toLowerCase():
+        case NodeType.EndpointSlice.toLowerCase():
+        case NodeType.NetworkPolicy.toLowerCase():
+            return AggregationKeys.Networking
+        case NodeType.ConfigMap.toLowerCase():
+        case NodeType.Secret.toLowerCase():
+        case NodeType.PersistentVolume.toLowerCase():
+        case NodeType.PersistentVolumeClaim.toLowerCase():
+        case NodeType.StorageClass.toLowerCase():
+        case NodeType.VolumeSnapshot.toLowerCase():
+        case NodeType.VolumeSnapshotContent.toLowerCase():
+        case NodeType.VolumeSnapshotClass.toLowerCase():
+        case NodeType.PodDisruptionBudget.toLowerCase():
+            return AggregationKeys.ConfigAndStorage
+        case NodeType.ServiceAccount.toLowerCase():
+        case NodeType.ClusterRoleBinding.toLowerCase():
+        case NodeType.RoleBinding.toLowerCase():
+        case NodeType.ClusterRole.toLowerCase():
+        case NodeType.Role.toLowerCase():
+        case NodeType.PodSecurityPolicy.toLowerCase():
+            return AggregationKeys.RBAC
+        case NodeType.MutatingWebhookConfiguration.toLowerCase():
+        case NodeType.ValidatingWebhookConfiguration.toLowerCase():
+            return AggregationKeys.Administration
+        case NodeType.Alertmanager.toLowerCase():
+        case NodeType.Prometheus.toLowerCase():
+        case NodeType.ServiceMonitor.toLowerCase():
+            return AggregationKeys.CustomResource
+        case NodeType.Event.toLowerCase():
+            return AggregationKeys.Events
+        default:
+            return AggregationKeys.CustomResource
+    }
 }
 
 export interface AppDetails {
@@ -399,7 +399,14 @@ export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
     markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
-    addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
+    addTab?: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+    ) => boolean
     selectedResource?: SelectedResourceType
     removeTabByIdentifier?: (id: string) => string
     isExternalApp?: boolean
@@ -438,24 +445,24 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
 }
 
 export interface OptionsBase {
-    name: string;
+    name: string
     isInitContainer?: boolean
     isEphemeralContainer?: boolean
     isExternal?: boolean
 }
 
 export interface Options extends OptionsBase {
-    selected: boolean;
+    selected: boolean
 }
 export interface PodContainerOptions {
-    podOptions: Options[];
-    containerOptions: Options[];
+    podOptions: Options[]
+    containerOptions: Options[]
 }
 
 export interface LogState {
-    selectedPodOption: string;
-    selectedContainerOption: string;
-    grepTokens?: any;
+    selectedPodOption: string
+    selectedContainerOption: string
+    grepTokens?: any
 }
 
 export interface AppStatusDetailType {
@@ -510,9 +517,9 @@ export interface NodeTreeDetailTabProps {
 }
 
 export interface K8ResourceComponentProps {
-    clickedNodes: Map<string, string>;
-    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>;
-    handleFocusTabs: () => void;
+    clickedNodes: Map<string, string>
+    registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
+    handleFocusTabs: () => void
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isExternalApp?: boolean
@@ -520,13 +527,13 @@ export interface K8ResourceComponentProps {
 }
 
 export interface NodeComponentProps {
-    handleFocusTabs: () => void,
+    handleFocusTabs: () => void
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
-    isDevtronApp?:boolean
+    isDevtronApp?: boolean
     isExternalApp?: boolean
 }
-export interface AppDetailsComponentType{
+export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]
     monitoringTools?: OptionTypeWithIcon[]
     isExternalApp: boolean

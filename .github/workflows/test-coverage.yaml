@@ -5,7 +5,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             - name: Jest coverage report
               uses: ArtiomTr/jest-coverage-report-action@v2.1.2
               id: coverage
