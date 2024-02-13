@@ -153,6 +153,6 @@ interface EnvDetails {
     isProtected: boolean
 }
 
-export interface NewRouterComponentProps {
+export interface CMSecretListRouterProps {
     environmentList: EnvDetails[]
 }

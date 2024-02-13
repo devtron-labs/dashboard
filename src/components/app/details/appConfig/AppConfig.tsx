@@ -18,14 +18,11 @@ import {
     ConfirmationDialog,
     TippyCustomized,
     TippyTheme,
-    multiSelectStyles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ProtectedIcon } from '../../../../assets/icons/ic-shield-protect-fill.svg'
-import { ReactComponent as DownArrowFull } from '../../../../assets/icons/ic-down-arrow-full.svg'
-import { ReactComponent as DownArrow } from '../../../../assets/icons/ic-chevron-down.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import DockerFileInUse from '../../../../assets/img/ic-dockerfile-in-use.png'
 import { toast } from 'react-toastify'
@@ -39,16 +36,14 @@ import {
     CustomNavItemsType,
     StageNames,
     STAGE_NAME,
-    NewRouterComponentProps,
 } from './appConfig.type'
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
 import { DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../config/constantMessaging'
-import { APP_CONFIG_ENV_OVERRIDE_OPTIONS, getNavItems, isUnlocked } from './AppConfig.utils'
+import { getNavItems, isUnlocked } from './AppConfig.utils'
 import AppComposeRouter from './AppComposeRouter'
 import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
-import Select, { components } from 'react-select'
-import cmSecretsMockData from './cm-secrets-mock'
+import CMSecretListRouter from './CMSecretListRouter'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
@@ -391,7 +386,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                     {/* @TODO: figure out the condition to be added here instead of the hardcoded value */}
                     {getNavigationCondition() ? (
                         <div>
-                            <NewRouterComponent environmentList={state.environmentList} />
+                            <CMSecretListRouter environmentList={state.environmentList} />
                         </div>
                     ) : (
                         <div
@@ -577,184 +572,3 @@ function Navigation({
     )
 }
 
-const baseConfigurationOption = { label: 'Base Configurations', value: -1 }
-
-const Options = () => {
-    return <div></div>
-}
-
-// @TODO: Rename this component and everywhere in the classNames
-const NewRouterComponent = ({ environmentList }: NewRouterComponentProps) => {
-    const history = useHistory()
-    const { url } = useRouteMatch()
-    // const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}`
-
-    // @TODO: check how to use this setActiveSideNavOption
-    const [activeSideNavOption, setActiveSideNavOption] = useState(
-        APP_CONFIG_ENV_OVERRIDE_OPTIONS.DEPLOYMENT_TEMPLATE.key,
-    )
-    const [options, setOptions] = useState<{ label: string; value: number }[]>([])
-    const [selectedEnv, setSelectedEnv] = useState<{ label: string; value: number }>(options[0])
-    const [cmList, setCMList] = useState([])
-    const [secretList, setSecretList] = useState([])
-    const [configMapOptionCollapsed, setConfigMapOptionCollapsed] = useState<boolean>(false)
-    const [secretOptionCollapsed, setSecretOptionCollapsed] = useState<boolean>(false)
-
-    useEffect(() => {
-        const opts = environmentList.map((env) => {
-            return {
-                label: env.environmentName,
-                value: env.environmentId,
-            }
-        })
-        setOptions(opts)
-
-        // @TODO: Make the api call to get all the cms and secrets instead of reading it from the mock
-        setCMList(cmSecretsMockData.result.resourceConfig.filter((cm) => cm.type === 'ConfigMap'))
-        setSecretList(cmSecretsMockData.result.resourceConfig.filter((cs) => cs.type === 'Secret'))
-    }, [])
-
-    const handleCollapsableNavOptionSelection = (navOptionKey: string) => {
-        if (navOptionKey === 'configmap') {
-            setConfigMapOptionCollapsed(!configMapOptionCollapsed)
-        } else {
-            setSecretOptionCollapsed(!secretOptionCollapsed)
-        }
-    }
-    /**
-     * Renders all of the navigation options for the selected environment
-     * @returns all the options for the selected environment
-     */
-    const renderEnvOverrideOptions = () => {
-        const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${selectedEnv?.value}`
-        return (
-            <div className="pb-8 bcn-0 h-100 dc__overflow-scroll">
-                {Object.values(APP_CONFIG_ENV_OVERRIDE_OPTIONS).map((navOption, idx) => {
-                    if (navOption.isMulti) {
-                        const options = navOption.key === 'configmap' ? cmList : secretList
-                        return (
-                            options.length > 0 && (
-                                <React.Fragment key={`${navOption.key}-${idx}`}>
-                                    <h3
-                                        className="cn-7 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-14-imp pr-18 dc__uppercase pointer"
-                                        onClick={() => handleCollapsableNavOptionSelection(navOption.key)}
-                                        key={`${navOption.key}-${idx}`}
-                                    >
-                                        <DownArrowFull
-                                            className="icon-dim-8 ml-6 mr-12 icon-color-grey rotate"
-                                            style={{
-                                                ['--rotateBy' as any]:
-                                                    (navOption.key === 'configmap' && configMapOptionCollapsed) ||
-                                                    (navOption.key === 'secrets' && secretOptionCollapsed)
-                                                        ? '-90deg'
-                                                        : '0deg',
-                                            }}
-                                        />
-                                        {navOption.displayName}
-                                    </h3>
-                                    {((navOption.key === 'configmap' && !configMapOptionCollapsed) ||
-                                        (navOption.key === 'secrets' && !secretOptionCollapsed)) &&
-                                        options.map((_option) => {
-                                            return (
-                                                <div className="pt-1 pb-1 pr-10 ml-23 dc__border-left">
-                                                    <NavLink
-                                                        activeClassName="active"
-                                                        className="app-compose__nav-item cursor"
-                                                        to={`${LINK}/${navOption.key}/${_option.name}`}
-                                                    >
-                                                        {_option.name}
-                                                    </NavLink>
-                                                </div>
-                                            )
-                                        })}
-                                </React.Fragment>
-                            )
-                        )
-                    } else {
-                        return (
-                            <div
-                                className={`flex left pointer ml-6 mr-6 pl-16 pr-18 fs-13 lh-20 dc__overflow-hidden dc__border-radius-4-imp ${
-                                    navOption.key === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
-                                }`}
-                                data-value={navOption.key}
-                                key={navOption.key}
-                            >
-                                <NavLink
-                                    data-testid="env-deployment-template"
-                                    className="app-compose__nav-item cursor"
-                                    to={`${LINK}/${navOption.key}`}
-                                >
-                                    {navOption.displayName}
-                                </NavLink>
-                            </div>
-                        )
-                    }
-                })}
-            </div>
-        )
-    }
-
-    return (
-        <div className="new-navigation-router dc__border-right h-100">
-            <div data-testid="new-navigation-router-header" className="new-navigation-router__header flexbox dc__align-items-center pt-6">
-                <div
-                    onClick={() => {
-                        history.goBack()
-                    }}
-                    className="new-navigation-router__header__back-cta cursor dc__text-center dc__border dc__border-radius-4-imp h-20 w-20 ml-10 mt-1"
-                >
-                    <DownArrow className="icon-dim-16 dc__flip-90" />
-                </div>
-                <Select
-                    value={selectedEnv}
-                    options={options}
-                    styles={{
-                        ...multiSelectStyles,
-                        control: (base, state) => ({
-                            border: 'none',
-                            minHeight: '20px',
-                            display: 'grid',
-                            gridTemplateColumns: 'auto 20px',
-                            justifyContent: 'flex-start',
-                            gap: '4px',
-                            alignItems: 'center',
-                            // cursor: 'pointer',
-                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                        }),
-                        singleValue: (base) => ({
-                            ...base,
-                            padding: 0,
-                            margin: 0,
-                            color: 'var(--N700)',
-                            fontSize: '12px',
-                            fontWeight: '400',
-                        }),
-                        option: (base) => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                        }),
-                        // indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
-                        dropdownIndicator: (base, state) => ({
-                            ...base,
-                            transition: 'all .2s ease',
-                            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                            padding: 0,
-                        }),
-                        menu: (base) => ({ ...base, width: '200px' }),
-                    }}
-                    onChange={(selected) => {
-                        history.push(`${selected.label}`)
-                        setSelectedEnv(selected)
-                    }}
-                    isSearchable
-                    // @TODO: See if the custom options are needed here
-                    // components={{Option: }}
-                />
-            </div>
-            <div className="dc__border-bottom-n1 mt-8 mb-8" />
-            {renderEnvOverrideOptions()}
-        </div>
-    )
-}
