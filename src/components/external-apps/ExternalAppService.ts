@@ -1,7 +1,7 @@
-import {get, put, trash, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
-import {Routes} from '../../config';
-import {ResourceTree} from '../v2/appDetails/appDetails.type';
-import { AppEnvironmentDetail, HelmApp } from '../app/list-new/AppListType';
+import { get, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config'
+import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListType'
+import { ResourceTree } from '../v2/appDetails/appDetails.type'
 import { getAPIOptionsWithTriggerTimeout } from '../common'
 
 export interface ReleaseInfoResponse extends ResponseType {
@@ -21,21 +21,21 @@ export interface UpdateReleaseResponse extends ResponseType {
 }
 
 export interface HelmAppDetailAndInstalledAppInfo {
-    appDetail : HelmAppDetail,
-    installedAppInfo : InstalledAppInfo,
+    appDetail: HelmAppDetail
+    installedAppInfo: InstalledAppInfo
 }
 
 export interface ReleaseAndInstalledAppInfo {
-    releaseInfo : ReleaseInfo,
-    installedAppInfo : InstalledAppInfo,
+    releaseInfo: ReleaseInfo
+    installedAppInfo: InstalledAppInfo
 }
 
 export interface ReleaseInfo {
     deployedAppDetail: HelmApp
-    defaultValues: string,
-    overrideValues: string,
-    mergedValues: string,
-    readme: string,
+    defaultValues: string
+    overrideValues: string
+    mergedValues: string
+    readme: string
     valuesSchemaJson?: string
 }
 
@@ -56,11 +56,11 @@ export interface InstalledAppInfo {
 }
 
 export interface HelmAppDetail {
-    applicationStatus: string,
-    releaseStatus: HelmReleaseStatus,
-    lastDeployed: DeployedAt,
-    chartMetadata: ChartMetadata,
-    resourceTreeResponse: ResourceTree,
+    applicationStatus: string
+    releaseStatus: HelmReleaseStatus
+    lastDeployed: DeployedAt
+    chartMetadata: ChartMetadata
+    resourceTreeResponse: ResourceTree
     environmentDetails: AppEnvironmentDetail
 }
 
@@ -83,8 +83,8 @@ export interface ChartMetadata {
 }
 
 export interface HelmReleaseStatus {
-    status: string,
-    message: string,
+    status: string
+    message: string
     description: string
 }
 
@@ -111,40 +111,42 @@ export interface UpdateAppReleaseRequest {
 }
 
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
-    let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
-    return get(url);
+    const url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`
+    return get(url)
 }
 
 export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
-    let url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
-    return get(url);
+    const url = `${Routes.HELM_RELEASE_APP_DETAIL_API}?appId=${appId}`
+    return get(url)
 }
 
 export const getArgoAppDetail = (appName: string, clusterId: string, namespace: string) => {
-    return get(`${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`);
+    return get(`${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`)
 }
 
 export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {
-    let url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
-    return trash(url);
+    const url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
+    return trash(url)
 }
 
-export const updateAppReleaseWithoutLinking = (requestPayload: UpdateAppReleaseWithoutLinkingRequest): Promise<UpdateReleaseResponse> => {
+export const updateAppReleaseWithoutLinking = (
+    requestPayload: UpdateAppReleaseWithoutLinkingRequest,
+): Promise<UpdateReleaseResponse> => {
     const options = getAPIOptionsWithTriggerTimeout()
-    return put(Routes.HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API, requestPayload, options);
-};
+    return put(Routes.HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API, requestPayload, options)
+}
 
 export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest): Promise<any> => {
     const options = getAPIOptionsWithTriggerTimeout()
-    return put(Routes.UPDATE_APP_API, requestPayload, options);
-};
+    return put(Routes.UPDATE_APP_API, requestPayload, options)
+}
 
 export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<UpdateReleaseResponse> => {
     const options = getAPIOptionsWithTriggerTimeout()
-    return put(Routes.HELM_LINK_TO_CHART_STORE_API, request, options);
-};
+    return put(Routes.HELM_LINK_TO_CHART_STORE_API, request, options)
+}
 
 export const getManifestUrlInfo = (appId: string): Promise<ResponseType> => {
-    let url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
-    return get(url);
+    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
+    return get(url)
 }

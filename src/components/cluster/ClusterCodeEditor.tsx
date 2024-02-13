@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
+import YAML from 'yaml'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
-import YAML from 'yaml'
 import { MODES } from '../../config/constants'
 
 export default function ClusterCodeEditor() {
@@ -32,37 +32,35 @@ export default function ClusterCodeEditor() {
     }
 
     return (
-        <>
-            <div className="code-editor-container">
-                <CodeEditor
-                    value={saveYamlData}
-                    height={514}
-                    diffView={false}
-                    onChange={onChangeEditorValue}
-                    mode={MODES.YAML}
-                >
-                    <CodeEditor.Header>
-                        <div className="user-list__subtitle flex p-8">
-                            <span className="flex left">Paste the contents of kubeconfig file here</span>
-                            <div className="dc__link ml-auto cursor">
-                                {uploadState !== UPLOAD_STATE.UPLOADING && (
-                                    <div onClick={handleBrowseFileClick} className="flex">
-                                        Browse file...
-                                    </div>
-                                )}
-                            </div>
-                            <input
-                                type="file"
-                                ref={inputFileRef}
-                                onChange={onFileChange}
-                                accept=".yaml"
-                                style={{ display: 'none' }}
-                            />
+        <div className="code-editor-container">
+            <CodeEditor
+                value={saveYamlData}
+                height={514}
+                diffView={false}
+                onChange={onChangeEditorValue}
+                mode={MODES.YAML}
+            >
+                <CodeEditor.Header>
+                    <div className="user-list__subtitle flex p-8">
+                        <span className="flex left">Paste the contents of kubeconfig file here</span>
+                        <div className="dc__link ml-auto cursor">
+                            {uploadState !== UPLOAD_STATE.UPLOADING && (
+                                <div onClick={handleBrowseFileClick} className="flex">
+                                    Browse file...
+                                </div>
+                            )}
                         </div>
-                        <CodeEditor.ValidationError />
-                    </CodeEditor.Header>
-                </CodeEditor>
-            </div>
-        </>
+                        <input
+                            type="file"
+                            ref={inputFileRef}
+                            onChange={onFileChange}
+                            accept=".yaml"
+                            style={{ display: 'none' }}
+                        />
+                    </div>
+                    <CodeEditor.ValidationError />
+                </CodeEditor.Header>
+            </CodeEditor>
+        </div>
     )
 }

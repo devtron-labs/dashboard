@@ -15,6 +15,8 @@ import {
     FilterStates,
     useSuperAdmin,
 } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { components } from 'react-select'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
@@ -29,9 +31,7 @@ import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
-import ReactSelect, { components } from 'react-select'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -191,11 +191,11 @@ export default function BulkCDTrigger({
                                 const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
                                 _tagNotFoundWarningsMap.set(
                                     response.value['appId'],
-                                    "Tag '" +
-                                        (selectedTagName.value?.length > 15
-                                            ? selectedTagName.value.substring(0, 10) + '...'
-                                            : selectedTagName.value) +
-                                        `' ${_warningMessage}`,
+                                    `Tag '${
+                                        selectedTagName.value?.length > 15
+                                            ? `${selectedTagName.value.substring(0, 10)}...`
+                                            : selectedTagName.value
+                                    }' ${_warningMessage}`,
                                 )
                                 return _tagNotFoundWarningsMap
                             })
@@ -207,11 +207,11 @@ export default function BulkCDTrigger({
                                 const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
                                 _tagNotFoundWarningsMap.set(
                                     response.value['appId'],
-                                    "Tag '" +
-                                        (selectedTagName.value?.length > 15
-                                            ? selectedTagName.value.substring(0, 10) + '...'
-                                            : selectedTagName.value) +
-                                        `' not found`,
+                                    `Tag '${
+                                        selectedTagName.value?.length > 15
+                                            ? `${selectedTagName.value.substring(0, 10)}...`
+                                            : selectedTagName.value
+                                    }' not found`,
                                 )
                                 return _tagNotFoundWarningsMap
                             })
@@ -392,31 +392,31 @@ export default function BulkCDTrigger({
                         artifactIndex = -1
                         _tagNotFoundWarningsMap.set(
                             app.appId,
-                            "Tag '" +
-                                (selectedTag.value?.length > 15
-                                    ? selectedTag.value.substring(0, 10) + '...'
-                                    : selectedTag.value) +
-                                "' is not eligible",
+                            `Tag '${
+                                selectedTag.value?.length > 15
+                                    ? `${selectedTag.value.substring(0, 10)}...`
+                                    : selectedTag.value
+                            }' is not eligible`,
                         )
                     } else if (app.material?.[artifactIndex]?.vulnerable) {
                         artifactIndex = -1
                         _tagNotFoundWarningsMap.set(
                             app.appId,
-                            "Tag '" +
-                                (selectedTag.value?.length > 15
-                                    ? selectedTag.value.substring(0, 10) + '...'
-                                    : selectedTag.value) +
-                                "' has security vulnerabilities",
+                            `Tag '${
+                                selectedTag.value?.length > 15
+                                    ? `${selectedTag.value.substring(0, 10)}...`
+                                    : selectedTag.value
+                            }' has security vulnerabilities`,
                         )
                     }
                 } else {
                     _tagNotFoundWarningsMap.set(
                         app.appId,
-                        "Tag '" +
-                            (selectedTag.value?.length > 15
-                                ? selectedTag.value.substring(0, 10) + '...'
-                                : selectedTag.value) +
-                            "' not found",
+                        `Tag '${
+                            selectedTag.value?.length > 15
+                                ? `${selectedTag.value.substring(0, 10)}...`
+                                : selectedTag.value
+                        }' not found`,
                     )
                 }
 
@@ -428,11 +428,11 @@ export default function BulkCDTrigger({
                         artifactIndex = -1
                         _tagNotFoundWarningsMap.set(
                             app.appId,
-                            "Tag '" +
-                                (selectedTag.value?.length > 15
-                                    ? selectedTag.value.substring(0, 10) + '...'
-                                    : selectedTag.value) +
-                                "' is soft-deleted",
+                            `Tag '${
+                                selectedTag.value?.length > 15
+                                    ? `${selectedTag.value.substring(0, 10)}...`
+                                    : selectedTag.value
+                            }' is soft-deleted`,
                         )
                     }
                 }
@@ -491,7 +491,7 @@ export default function BulkCDTrigger({
             Control: (props) => {
                 return (
                     <components.Control {...props}>
-                        {<Tag className="ml-8 mt-8 mb-8 flex icon-dim-16" />}
+                        <Tag className="ml-8 mt-8 mb-8 flex icon-dim-16" />
                         {props.children}
                     </components.Control>
                 )

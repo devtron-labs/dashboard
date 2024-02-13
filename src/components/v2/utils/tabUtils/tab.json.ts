@@ -1,42 +1,40 @@
-
-
 export const DefaultViewTabsJSON = [
     {
-        name: "TERMINAL",
-        isSelected: false
+        name: 'TERMINAL',
+        isSelected: false,
     },
     {
-        name: "SUMMARY",
-        isSelected: false
+        name: 'SUMMARY',
+        isSelected: false,
     },
     {
-        name: "MANIFEST",
-        isSelected: true
+        name: 'MANIFEST',
+        isSelected: true,
     },
     {
-        name: "EVENTS",
-        isSelected: false
+        name: 'EVENTS',
+        isSelected: false,
     },
     {
-        name: "LOGS",
-        isSelected: false
+        name: 'LOGS',
+        isSelected: false,
     },
 ]
 
 export const ManifestTabJSON = [
     {
-        name: "Live manifest",
+        name: 'Live manifest',
         isSelected: true,
-        isDisabled: false
-     },
-    {
-        name: "Compare",
-        isSelected: false,
-        isDisabled: false
+        isDisabled: false,
     },
     {
-        name: "Helm generated manifest",
+        name: 'Compare',
         isSelected: false,
-        isDisabled: false
-    }
+        isDisabled: false,
+    },
+    {
+        name: 'Helm generated manifest',
+        isSelected: false,
+        isDisabled: false,
+    },
 ]

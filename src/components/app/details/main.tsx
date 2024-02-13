@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
-import { ErrorBoundary, sortOptionsByLabel } from '../../common'
 import {
     showError,
     Progressing,
@@ -10,6 +9,9 @@ import {
     DeleteDialog,
     ErrorScreenManager,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { MultiValue } from 'react-select'
+import { toast } from 'react-toastify'
+import { ErrorBoundary, sortOptionsByLabel } from '../../common'
 import { URLS } from '../../../config'
 import AppConfig from './appConfig/AppConfig'
 import { getAppMetaInfo } from '../service'
@@ -20,13 +22,11 @@ import Overview from '../Overview/Overview'
 import { AppHeader } from './AppHeader'
 import './appDetails/appDetails.scss'
 import './app.scss'
-import { MultiValue } from 'react-select'
 import { AppFilterTabs } from '../../ApplicationGroup/Constants'
 import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
-import { toast } from 'react-toastify'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -83,7 +83,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 const processedGroupData = {
                     value: group.id.toString(),
                     label: group.name,
-                    //@ts-ignore
+                    // @ts-ignore
                     appIds: group.resourceIds,
                     description: group.description,
                 }
@@ -141,8 +141,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         } catch (err) {
             if (err['code'] === 403) {
                 setErrorStatusCode(403)
-            }
-            else {
+            } else {
                 showError(err)
             }
         }
@@ -170,7 +169,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 setShowDeleteGroup(true)
             }
         } catch (err) {
-            let _map = new Map<string, boolean>()
+            const _map = new Map<string, boolean>()
             if (err['code'] === 403) {
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
@@ -180,7 +179,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         if (!_map.get(element)) {
                             _map.set(element, true)
                         }
-                        for (let idx in selectedAppList) {
+                        for (const idx in selectedAppList) {
                             if (element === selectedAppList[idx].label) {
                                 unauthorizedCount++
                             }
@@ -201,11 +200,13 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 arrUnauthorized = []
                 unauthorizedCount = 0
                 return
-            } else {
-                setShowCreateGroup(true)
-                setShowDeleteGroup(false)
-                if (_delete) setIsPopupBox(true)
             }
+            setShowCreateGroup(true)
+            setShowDeleteGroup(false)
+            if (_delete) {
+                setIsPopupBox(true)
+            }
+
             showError(err)
         }
     }
@@ -234,10 +235,10 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
         const _allAppLists: number[] = []
-        for (let app of _allAppList) {
+        for (const app of _allAppList) {
             _allAppLists.push(+app.id)
         }
-        let _permissionData = {
+        const _permissionData = {
             id: +appId,
             resourceIds: _allAppLists,
             parentResourceId: +appId,
@@ -323,7 +324,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     setSelectedGroupFilter={setSelectedGroupFilter}
                     openCreateGroup={openCreateGroup}
                     openDeleteGroup={openDeleteGroup}
-                    isSuperAdmin={true}
+                    isSuperAdmin
                 />
             )}
             {showCreateGroup && (

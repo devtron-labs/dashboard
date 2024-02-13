@@ -103,6 +103,7 @@ const GitInfoTab: React.FC<{ tab: string; gitLink: string; gitProvider: string; 
                 href={gitLink}
                 className="ml-28 cursor fs-13 onlink"
                 data-testid="gitops-create-organization-link"
+                rel="noreferrer"
             >
                 How to create {gitProviderGroupAlias} in {gitProvider} ?
             </a>
@@ -151,7 +152,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     fetchGitOpsConfigurationList() {
         getGitOpsConfigurationList()
             .then((response) => {
-                let form = response.result?.find((item) => item.active) ?? {
+                const form = response.result?.find((item) => item.active) ?? {
                     ...DefaultGitOpsConfig,
                     ...DefaultShortGitOps,
                     host: GitHost[this.state.providerTab],
@@ -182,8 +183,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return
         }
 
-        let newGitOps = event.target.value
-        let form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
+        const newGitOps = event.target.value
+        const form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
             ...DefaultGitOpsConfig,
             ...DefaultShortGitOps,
             host: GitHost[newGitOps],
@@ -216,7 +217,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         : 'This is a required field',
             },
             isFormEdited: false,
-            //After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must dissapear
+            // After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must dissapear
             isUrlValidationError: key === 'host' ? false : this.state.isUrlValidationError,
         })
     }
@@ -250,7 +251,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     isInvalid() {
-        let isError = this.state.isError
+        let { isError } = this.state
         if (!this.state.isFormEdited) {
             isError = this.getFormErrors(this.state.form)
             this.setState({
@@ -400,8 +401,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             const payload = this.getPayload()
             validateGitOpsConfiguration(payload)
                 .then((response) => {
-                    let resp = response.result
-                    let errorMap = resp.stageErrorMap
+                    const resp = response.result
+                    const errorMap = resp.stageErrorMap
                     if (errorMap != null && Object.keys(errorMap).length > 0) {
                         this.setState({
                             validationStatus: VALIDATION_STATUS.FAILURE,
@@ -433,13 +434,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     getGitOpsOrgId = () => {
         if (this.state.providerTab === GitProvider.GITLAB) {
             return 'gitLabGroupId'
-        } else if (this.state.providerTab === GitProvider.AZURE_DEVOPS) {
-            return 'azureProjectName'
-        } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
-            return 'bitBucketProjectKey'
-        } else {
-            return 'gitHubOrgId'
         }
+        if (this.state.providerTab === GitProvider.AZURE_DEVOPS) {
+            return 'azureProjectName'
+        }
+        if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
+            return 'bitBucketProjectKey'
+        }
+        return 'gitHubOrgId'
     }
 
     updateGitopsUrl(value: string): void {
@@ -456,12 +458,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     render() {
         const suggestedURL = this.suggestedValidGitOpsUrl()
-        let key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
-        let warning =
+        const key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
+        const warning =
             'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
+        }
+        if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="global-configuration__component flex dc__align-reload-center">
                     <ErrorScreenManager code={this.state.statusCode} reloadClass="dc__align-reload-center" />
@@ -490,7 +493,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return (
                 <div className="flex">
                     <span className="dc__required-field">{label}</span>&nbsp;
-                    <a target="_blank" href={link} className="cursor fs-13 onlink ml-4">
+                    <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
                         {linkText}
                     </a>
                 </div>
@@ -561,28 +564,28 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             this.state.providerTab === GitProvider.GITLAB
                                 ? GitLink.GITLAB
                                 : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                ? GitLink.AZURE_DEVOPS
-                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                ? GitLink.BITBUCKET_WORKSPACE
-                                : GitLink.GITHUB
+                                  ? GitLink.AZURE_DEVOPS
+                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                    ? GitLink.BITBUCKET_WORKSPACE
+                                    : GitLink.GITHUB
                         }
                         gitProvider={
                             this.state.providerTab === GitProvider.GITLAB
                                 ? 'GitLab'
                                 : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                ? 'Azure'
-                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                ? 'BitBucket'
-                                : 'GitHub'
+                                  ? 'Azure'
+                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                    ? 'BitBucket'
+                                    : 'GitHub'
                         }
                         gitProviderGroupAlias={
                             this.state.providerTab === GitProvider.GITLAB
                                 ? 'group'
                                 : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                ? 'project'
-                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                ? 'workspace'
-                                : 'organization'
+                                  ? 'project'
+                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                    ? 'workspace'
+                                    : 'organization'
                         }
                     />
 
@@ -606,8 +609,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             this.state.providerTab === GitProvider.AZURE_DEVOPS
                                 ? 'gitops-azure-organisation-url-textbox'
                                 : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                ? 'gitops-bitbucket-host-url-textbox'
-                                : 'gitops-github-gitlab-host-url-textbox'
+                                  ? 'gitops-bitbucket-host-url-textbox'
+                                  : 'gitops-github-gitlab-host-url-textbox'
                         }
                     />
                     {this.state.isUrlValidationError && this.state.form.host.length ? (
@@ -648,7 +651,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 tabIndex={1}
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                                 dataTestid="gitops-bitbucket-workspace-id-textbox"
-                                isRequiredField={true}
+                                isRequiredField
                             />
                         )}
                     </div>
@@ -671,12 +674,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 this.state.providerTab === GitProvider.AZURE_DEVOPS
                                     ? 'gitops-azure-project-name-textbox'
                                     : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                    ? 'gitops-bitbucket-project-textbox'
-                                    : this.state.providerTab === GitProvider.GITLAB
-                                    ? 'gitops-gitlab-group-id-textbox'
-                                    : 'gitops-github-organisation-name-textbox'
+                                      ? 'gitops-bitbucket-project-textbox'
+                                      : this.state.providerTab === GitProvider.GITLAB
+                                        ? 'gitops-gitlab-group-id-textbox'
+                                        : 'gitops-github-organisation-name-textbox'
                             }
-                            isRequiredField={true}
+                            isRequiredField
                         />
                     </div>
                     {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
@@ -705,22 +708,22 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     this.state.providerTab === GitProvider.GITLAB
                                         ? 'GitLab Username'
                                         : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                        ? 'Azure DevOps Username'
-                                        : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                        ? 'Bitbucket Username'
-                                        : 'GitHub Username'
+                                          ? 'Azure DevOps Username'
+                                          : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                            ? 'Bitbucket Username'
+                                            : 'GitHub Username'
                                 }
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
                                 dataTestid={
                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                         ? 'gitops-azure-username-textbox'
                                         : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                        ? 'gitops-bitbucket-username-textbox'
-                                        : this.state.providerTab === GitProvider.GITLAB
-                                        ? 'gitops-gitlab-username-textbox'
-                                        : 'gitops-github-username-textbox'
+                                          ? 'gitops-bitbucket-username-textbox'
+                                          : this.state.providerTab === GitProvider.GITLAB
+                                            ? 'gitops-gitlab-username-textbox'
+                                            : 'gitops-github-username-textbox'
                                 }
-                                isRequiredField={true}
+                                isRequiredField
                             />
                         </div>
                         <div>
@@ -743,12 +746,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                         ? 'gitops-azure-pat-textbox'
                                         : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                        ? 'gitops-bitbucket-pat-textbox'
-                                        : this.state.providerTab === GitProvider.GITLAB
-                                        ? 'gitops-gitlab-pat-textbox'
-                                        : 'gitops-github-pat-textbox'
+                                          ? 'gitops-bitbucket-pat-textbox'
+                                          : this.state.providerTab === GitProvider.GITLAB
+                                            ? 'gitops-gitlab-pat-textbox'
+                                            : 'gitops-github-pat-textbox'
                                 }
-                                isRequiredField={true}
+                                isRequiredField
                                 handleOnBlur={this.handleOnBlur}
                             />
                         </div>

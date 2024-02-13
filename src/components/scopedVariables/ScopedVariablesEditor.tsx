@@ -47,7 +47,9 @@ export default function ScopedVariablesEditor({
 
     const handleSave = async () => {
         const variablesObj = handleParsing(editorData)
-        if (!variablesObj) return
+        if (!variablesObj) {
+            return
+        }
         try {
             setIsSaving(true)
             const res = await postScopedVariables(variablesObj)
@@ -69,7 +71,9 @@ export default function ScopedVariablesEditor({
 
     const handleReview = async () => {
         const variablesObj = handleParsing(editorData)
-        if (!variablesObj) return
+        if (!variablesObj) {
+            return
+        }
         try {
             setLoadingSavedScopedVariables(true)
             const res = await getScopedVariablesJSON()

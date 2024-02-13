@@ -1,10 +1,16 @@
-import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config';
 import { DeploymentAppTypes, post, put, trash, Host } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetails, AppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
-import { ParamsType } from './nodeDetail.type';
-import { getK8sResourcePayloadAppType } from './nodeDetail.util';
+import { toast } from 'react-toastify'
+import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
+import {
+    AppDetails,
+    AppType,
+    K8sResourcePayloadAppType,
+    K8sResourcePayloadDeploymentType,
+    SelectedResourceType,
+} from '../../appDetails.type'
+import { ParamsType } from './nodeDetail.type'
+import { getK8sResourcePayloadAppType } from './nodeDetail.util'
 
-import { toast } from 'react-toastify';
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
 }
@@ -23,7 +29,10 @@ export const getManifestResource = (
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
     const url =
-        Routes.MANIFEST + (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView ? `?externalArgoApplicationName=${ad.appName}` : '')
+        Routes.MANIFEST +
+        (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView
+            ? `?externalArgoApplicationName=${ad.appName}`
+            : '')
     return post(url, requestData)
 }
 
@@ -116,7 +125,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     } else {
         requestBody = {
             ...requestBody,
-            appId: appId,
+            appId,
         }
     }
     if (updatedManifest) {
@@ -149,11 +158,15 @@ function getEventHelmApps(
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, nodeName, nodeType)
-    const url = Routes.EVENTS + ((ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView) ? `?externalArgoApplicationName=${ad.appName}` : '')
+    const url =
+        Routes.EVENTS +
+        (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView
+            ? `?externalArgoApplicationName=${ad.appName}`
+            : '')
     return post(url, requestData)
 }
 
-const getFilterWithValue = (type: string, value: string,unit?:string) => {
+const getFilterWithValue = (type: string, value: string, unit?: string) => {
     switch (type) {
         case CUSTOM_LOGS_FILTER.DURATION:
             return `&sinceSeconds=${Number(value) * (unit === 'hours' ? 3600 : 60)}`
@@ -211,9 +224,9 @@ export const downloadLogs = async (
     await fetch(logsURL)
         .then(async (response) => {
             try {
-                if(response.status === 204){
+                if (response.status === 204) {
                     toast.error('No logs found')
-                    return;
+                    return
                 }
                 const data = await (response as any).blob()
                 // Create a new URL object
@@ -256,7 +269,7 @@ export const getLogsURL = (
     clusterId?: number,
     namespace?: string,
 ) => {
-    //similar logic exists in downloadLogs function also, recheck changes there also or extract this logic in a common function
+    // similar logic exists in downloadLogs function also, recheck changes there also or extract this logic in a common function
     let filter = ''
     if (logsOption.value === CUSTOM_LOGS_FILTER.CUSTOM) {
         filter = getFilterWithValue(customOption.option, customOption.value, customOption.unit)
@@ -264,7 +277,9 @@ export const getLogsURL = (
         filter = getFilterWithValue(logsOption.type, logsOption.value)
     }
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
-    const selectedNamespace = ad.resourceTree?.nodes?.find((nd) => nd.name === podName || nd.name === nodeName )?.namespace
+    const selectedNamespace = ad.resourceTree?.nodes?.find(
+        (nd) => nd.name === podName || nd.name === nodeName,
+    )?.namespace
 
     const appId =
         ad.appType === AppType.DEVTRON_APP
@@ -303,7 +318,13 @@ export const createResource = (
     return post(Routes.CREATE_RESOURCE, requestData)
 }
 
-const getEphemeralURL = (isResourceBrowserView: boolean, params: ParamsType, appType: string, appIds: string, appName: string) => {
+const getEphemeralURL = (
+    isResourceBrowserView: boolean,
+    params: ParamsType,
+    appType: string,
+    appIds: string,
+    appName: string,
+) => {
     let url: string = Routes.EPHEMERAL_CONTAINERS
     if (isResourceBrowserView) {
         url += `?identifier=${params.clusterId}`
@@ -331,7 +352,7 @@ export const generateEphemeralUrl = (
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
 
-    let url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
+    const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
     return post(url, requestData)
 }
 
@@ -351,6 +372,6 @@ export const deleteEphemeralUrl = (
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
 
-    let url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
+    const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
     return trash(url, requestData)
 }

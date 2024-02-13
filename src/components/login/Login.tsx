@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import dt from '../../assets/icons/logo/logo-dt.svg'
-import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { getCookie, ServerErrors, Host, Progressing, showError, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import LoginIcons from '../../assets/icons/LoginSprite.svg'
+import dt from '../../assets/icons/logo/logo-dt.svg'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
 import { LoginProps, LoginFormState } from './login.types'
 import { loginAsAdmin } from './login.service'
@@ -24,42 +24,47 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             },
         }
         this.handleChange = this.handleChange.bind(this)
-        this.autoFillLogin = this.autoFillLogin.bind(this)
+        // this.autoFillLogin = this.autoFillLogin.bind(this)
         this.login = this.login.bind(this)
         this.isFormNotValid = this.isFormNotValid.bind(this)
     }
+
     componentDidMount() {
-        let queryString = new URLSearchParams(this.props.location.search)
+        const queryString = new URLSearchParams(this.props.location.search)
         let queryParam = queryString.get('continue')
 
-        //1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
-        //If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
-        //queryParam is '/' for first time login, queryParam != "/" becomes false at login page. Hence toast won't appear
-        //at the time of first login.
-        //2. Also if the cookie is deleted/changed after some time from the database at backend then getCookie(TOKEN_COOKIE_NAME)
-        //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
-        //login page with Please login again toast appearing.
+        // 1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
+        // If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
+        // queryParam is '/' for first time login, queryParam != "/" becomes false at login page. Hence toast won't appear
+        // at the time of first login.
+        // 2. Also if the cookie is deleted/changed after some time from the database at backend then getCookie(TOKEN_COOKIE_NAME)
+        // becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
+        // login page with Please login again toast appearing.
 
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
             toast.error('Please login again')
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
-            let url = `${this.props.location.pathname}?continue=${queryParam}`
+            const url = `${this.props.location.pathname}?continue=${queryParam}`
             this.props.history.push(url)
         }
-        if (!queryParam) queryParam = ''
+        if (!queryParam) {
+            queryParam = ''
+        }
         this.setState({
-            continueUrl: encodeURI(`${window.location.origin}/orchestrator${process.env.PUBLIC_URL}${queryParam}`),
+            continueUrl: encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`),
         })
         getSSOConfigList().then((response) => {
-            let list = response.result || []
+            const list = response.result || []
             this.setState({
                 loginList: list,
             })
         })
         if (typeof Storage !== 'undefined') {
-            if (localStorage.isDashboardAccessed) return
+            if (localStorage.isDashboardAccessed) {
+                return
+            }
             dashboardAccessed()
                 .then((response) => {
                     if (response.result) {
@@ -80,13 +85,13 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         })
     }
 
-    autoFillLogin(): void {
-        this.setState({ form: { username: 'admin', password: process.env.REACT_APP_PASSWORD } })
-    }
+    // autoFillLogin(): void {
+    //     this.setState({ form: { username: 'admin', password: import.meta.env.REACT_APP_PASSWORD } })
+    // }
 
     isFormNotValid(): boolean {
         let isValid = true
-        let keys = ['username', 'password']
+        const keys = ['username', 'password']
         keys.map((key) => {
             if (key === 'password') {
                 isValid = isValid && this.state.form[key]?.length >= 6
@@ -105,14 +110,14 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     login(e): void {
         e.preventDefault()
-        let data = this.state.form
+        const data = this.state.form
         this.setState({ loading: true })
         loginAsAdmin(data)
             .then((response) => {
                 if (response.result.token) {
                     this.setState({ loading: false })
-                    let queryString = this.props.location.search.split('continue=')[1]
-                    let url = queryString ? `${queryString}` : URLS.APP
+                    const queryString = this.props.location.search.split('continue=')[1]
+                    const url = queryString ? `${queryString}` : URLS.APP
                     this.props.history.push(url)
                     localStorage.setItem('isAdminLogin', 'true')
                 }
@@ -125,17 +130,19 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     renderLoginPrivacyText = () => {
         if (window.location.origin === PREVIEW_DEVTRON) {
-            return <div className="flex mt-12">
-                By logging in, you agree to our
-                <a href={PRIVACY_POLICY} target="blank" className="ml-4 bc-5">
-                    Privacy Policy
-                </a>
-            </div>
+            return (
+                <div className="flex mt-12">
+                    By logging in, you agree to our
+                    <a href={PRIVACY_POLICY} target="blank" className="ml-4 bc-5">
+                        Privacy Policy
+                    </a>
+                </div>
+            )
         }
     }
 
     renderSSOLoginPage() {
-        const search = this.props.location.search
+        const { search } = this.props.location
 
         return (
             <div className="login__control">
@@ -158,7 +165,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                                 onClick={this.onClickSSO}
                             >
                                 <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
-                                    <use href={`${LoginIcons}#${item.name}`}></use>
+                                    <use href={`${LoginIcons}#${item.name}`} />
                                 </svg>
                                 Login with
                                 <span className="ml-5 dc__first-letter-capitalize" data-testid="login-with-text">
@@ -176,7 +183,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     }
 
     renderAdminLoginPage() {
-        let search = this.props.location.search
+        const { search } = this.props.location
 
         return (
             <div className="login__control">
@@ -199,7 +206,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                         onChange={this.handleChange}
                     />
                     <CustomInput
-                        type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'}
+                        type={import.meta.env.VITE_NODE_ENV !== 'development' ? 'password' : 'text'}
                         data-testid="password-textbox"
                         rootClassName="fs-14"
                         placeholder="Password"
@@ -229,7 +236,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             Login using SSO service
                         </NavLink>
                     ) : (
-                        <p className="login__link"></p>
+                        <p className="login__link" />
                     )}
                 </form>
             </div>
@@ -239,8 +246,20 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     render() {
         return (
             <div className="login">
-                <div className="login__bg" style={window?._env_?.LOGIN_PAGE_IMAGE_BG?{backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG}:{}}>
-                    <div className="login__image" style={window?._env_?.LOGIN_PAGE_IMAGE?{backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})`}:{}} />
+                <div
+                    className="login__bg"
+                    style={
+                        window?._env_?.LOGIN_PAGE_IMAGE_BG ? { backgroundColor: window._env_.LOGIN_PAGE_IMAGE_BG } : {}
+                    }
+                >
+                    <div
+                        className="login__image"
+                        style={
+                            window?._env_?.LOGIN_PAGE_IMAGE
+                                ? { backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})` }
+                                : {}
+                        }
+                    />
                 </div>
                 <div className="login__section">
                     <Switch>

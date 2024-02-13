@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { not, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { useHistory } from 'react-router'
+import { useLocation } from 'react-router-dom'
 import { SourceTypeMap } from '../../config'
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
-import EmptyStateCIMaterial from '../app/details/triggerView//EmptyStateCIMaterial'
+import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
 import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -17,10 +20,7 @@ import { ReactComponent as Hide } from '../../assets/icons/ic-visibility-off.svg
 import { ReactComponent as Show } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
-import Tippy from '@tippyjs/react'
-import { getCIPipelineURL, importComponentFromFELibrary } from '../common'
-import { useHistory } from 'react-router'
-import { useLocation } from 'react-router-dom'
+import { getCIPipelineURL, importComponentFromFELibrary } from '.'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
@@ -102,7 +102,7 @@ export default function GitInfoMaterial({
     function renderMaterialSource() {
         const refreshMaterial = {
             refresh: triggerViewContext.refreshMaterial,
-            pipelineId: pipelineId,
+            pipelineId,
         }
         return (
             <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
@@ -144,19 +144,13 @@ export default function GitInfoMaterial({
                         arrow={false}
                         placement="top"
                         content={selectedMaterial.value}
-                        interactive={true}
+                        interactive
                     >
                         <div className="dc__ellipsis-right">{selectedMaterial.value}</div>
                     </Tippy>
                 )}
                 {selectedMaterial.regex && (
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="top"
-                        content="Change branch"
-                        interactive={true}
-                    >
+                    <Tippy className="default-tt" arrow={false} placement="top" content="Change branch" interactive>
                         <button data-testid={dataTestId} type="button" className="dc__transparent flexbox">
                             <Edit className="icon-dim-16" />
                         </button>
@@ -291,7 +285,7 @@ export default function GitInfoMaterial({
     }
 
     function renderMaterialHistory(selectedMaterial: CIMaterialType) {
-        let anyCommit = selectedMaterial.history?.length > 0
+        const anyCommit = selectedMaterial.history?.length > 0
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
         return (
@@ -348,7 +342,7 @@ export default function GitInfoMaterial({
                                 <CiPipelineSourceConfig
                                     sourceType={selectedMaterial.type}
                                     sourceValue={selectedMaterial.value}
-                                    showTooltip={true}
+                                    showTooltip
                                     baseText="configured filters"
                                     showIcons={false}
                                 />

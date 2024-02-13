@@ -1,10 +1,10 @@
+import * as queryString from 'query-string'
+import moment from 'moment'
 import { ZERO_TIME_STRING } from '../../config'
 import { AppListViewType } from '../app/config'
 import { JobCIPipeline, JobListState, JobListStateAction, JobListStateActionTypes } from './Types'
-import * as queryString from 'query-string'
 import { OrderBy, SortBy } from '../app/list/types'
 import { handleUTCTime } from '../common'
-import moment from 'moment'
 import { JobPipeline } from '../app/types'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
@@ -75,8 +75,6 @@ export const jobListModal = (jobContainers) => {
     )
 }
 
-
-
 const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
     return (
         ciPipelines?.map((ciPipeline) => {
@@ -97,7 +95,7 @@ const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
                         : '-',
                 status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
                 environmentName: ciPipeline.environmentName || '-',
-                lastTriggeredEnvironmentName: ciPipeline.lastTriggeredEnvironmentName
+                lastTriggeredEnvironmentName: ciPipeline.lastTriggeredEnvironmentName,
             }
         }) ?? []
     )
@@ -136,12 +134,9 @@ const getDefaultPipeline = (ciPipelines) => {
 const getLastTriggeredJob = (jobList) => {
     let selectedJob = jobList[0]
     let ms = moment(new Date(0)).valueOf()
-    for (let job of jobList) {
-        let time =
-            job.lastDeployedTime && job.lastDeployedTime.length
-                ? job.lastDeployedTime
-                : new Date(0)
-        let tmp = moment(time).utc(true).subtract(5, 'hours').subtract(30, 'minutes').valueOf()
+    for (const job of jobList) {
+        const time = job.lastDeployedTime && job.lastDeployedTime.length ? job.lastDeployedTime : new Date(0)
+        const tmp = moment(time).utc(true).subtract(5, 'hours').subtract(30, 'minutes').valueOf()
         if (tmp > ms) {
             ms = tmp
             selectedJob = job
@@ -151,16 +146,18 @@ const getLastTriggeredJob = (jobList) => {
 }
 
 const handleDeploymentInitiatedStatus = (status: string): string => {
-    if (status.replace(/\s/g, '').toLowerCase() == 'deploymentinitiated') return 'progressing'
-    else return status
+    if (status.replace(/\s/g, '').toLowerCase() == 'deploymentinitiated') {
+        return 'progressing'
+    }
+    return status
 }
 
 export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams): any => {
-    let params = queryString.parse(searchParams)
-    let search = params.search || ''
-    let appStatus = params.appStatus || ''
-    let teams = params.team || ''
-    let environments = params.environment || ''
+    const params = queryString.parse(searchParams)
+    const search = params.search || ''
+    const appStatus = params.appStatus || ''
+    const teams = params.team || ''
+    const environments = params.environment || ''
     const teamsArr = teams
         .toString()
         .split(',')
@@ -214,7 +211,7 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
         }
     })
     setMasterFilters(_masterFilters)
-    ////// update master filters data ends (check/uncheck)
+    /// /// update master filters data ends (check/uncheck)
 
     const sortBy = params.orderBy || SortBy.APP_NAME
     const sortOrder = params.sortOrder || OrderBy.ASC
@@ -223,11 +220,11 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
     const pageSizes = new Set([20, 40, 50])
 
     if (!pageSizes.has(pageSize)) {
-        //handle invalid pageSize
+        // handle invalid pageSize
         pageSize = 20
     }
     if (offset % pageSize != 0) {
-        //pageSize must be a multiple of offset
+        // pageSize must be a multiple of offset
         offset = 0
     }
 
@@ -236,9 +233,9 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
         appNameSearch: search,
         appStatuses: appStatusArr,
         environments: environmentsArr,
-        sortBy: sortBy,
-        sortOrder: sortOrder,
-        offset: offset,
+        sortBy,
+        sortOrder,
+        offset,
         size: +pageSize,
     }
 }
@@ -255,16 +252,15 @@ export const populateQueryString = (searchParams: string): Record<string, any> =
 }
 
 export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): string => {
-    const status = jobPipeline.status === "notdeployed" ? "" : jobPipeline.status;
-    if (status === "") {
-        if (jobPipeline.environmentName === "") {
+    const status = jobPipeline.status === 'notdeployed' ? '' : jobPipeline.status
+    if (status === '') {
+        if (jobPipeline.environmentName === '') {
             return DEFAULT_ENV
         }
         return jobPipeline.environmentName
-    } else {
-        if (jobPipeline.lastTriggeredEnvironmentName === "") {
-            return DEFAULT_ENV
-        }
-        return jobPipeline.lastTriggeredEnvironmentName
     }
+    if (jobPipeline.lastTriggeredEnvironmentName === '') {
+        return DEFAULT_ENV
+    }
+    return jobPipeline.lastTriggeredEnvironmentName
 }

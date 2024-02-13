@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+import App from './App'
 
 interface customEnv {
     SENTRY_ENV?: string
@@ -50,6 +50,9 @@ interface customEnv {
     HIDE_DEFAULT_CLUSTER?: boolean
     GLOBAL_API_TIMEOUT?: number
     TRIGGER_API_TIMEOUT?: number
+    NODE_REACT_APP_GIT_SHA?: string
+    REACT_APP_GIT_SHA?: string
+    NODE_ENV?: string
     LOGIN_DT_LOGO?: string
     SIDEBAR_DT_LOGO?: string
 }
@@ -59,16 +62,26 @@ declare global {
         hj: any
         _hjSettings: any
         Worker: any
+        __BASE_URL__: string
+        __ORCHESTRATOR_ROOT__: string
+        __GRAFANA_ORG_ID__: number
     }
 }
 
+if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
+    window.__BASE_URL__ = import.meta.env.BASE_URL || '/dashboard'
+    window.__ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || 'orchestrator'
+    window.__GRAFANA_ORG_ID__ = import.meta.env.VITE_GRAFANA_ORG_ID || 2
+}
+
 const root = document.getElementById('root')
-if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY_ERROR_ENABLED) {
+if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._env_.SENTRY_ERROR_ENABLED) {
     const integrationArr = []
     integrationArr.push(new CaptureConsole({ levels: ['error'] }))
     if (window._env_.SENTRY_PERFORMANCE_ENABLED) {
         integrationArr.push(new BrowserTracing())
     }
+
     Sentry.init({
         beforeBreadcrumb(breadcrumb, hint) {
             if (breadcrumb.category === 'console') {
@@ -85,7 +98,7 @@ if (process.env.NODE_ENV === 'production' && window._env_ && window._env_.SENTRY
         dsn: window._env_.SENTRY_DSN || '',
         integrations: integrationArr,
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
-        ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
+        ...(window._env_.NODE_REACT_APP_GIT_SHA ? { release: `dashboard@${window._env_.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
         beforeSend(event) {
             const errorList = event?.exception?.values || []
@@ -140,7 +153,7 @@ if (!window || !window._env_) {
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
-        K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true',
+        K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
@@ -164,14 +177,10 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={`${process.env.PUBLIC_URL}/`}>
+            <BrowserRouter basename={window.__BASE_URL__}>
                 <App />
             </BrowserRouter>
         ) : null}
     </React.StrictMode>,
     root,
 )
-
-if (process.env.NODE_ENV === 'development') {
-    (module as any).hot.accept()
-}

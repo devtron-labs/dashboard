@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import Complete from '../../assets/img/ic-empty-done@2x.png';
-import { AllChartsCheck } from './AllChartsCheck';
-import CustomAppDeploy from './CustomAppDeploy';
-import SampleAppDeploy from './SampleAppDeploy';
+import React, { Component } from 'react'
+import Complete from '../../assets/img/ic-empty-done@2x.png'
+import { AllChartsCheck } from './AllChartsCheck'
+import CustomAppDeploy from './CustomAppDeploy'
+import SampleAppDeploy from './SampleAppDeploy'
 
 export class AllCheckModal extends Component {
     render() {
@@ -15,6 +15,6 @@ export class AllCheckModal extends Component {
                 <CustomAppDeploy parentClassName="bcg-1 flexbox" imageClassName="pb-12" />
                 <AllChartsCheck />
             </div>
-        );
+        )
     }
 }

@@ -8,7 +8,7 @@ import { AppDetails, AppType } from '../v2/appDetails/appDetails.type'
 import IndexStore from '../v2/appDetails/index.store'
 import { ExternalArgoAppDetailType } from './externalArgoApp.type'
 
-function ExternalArgoAppDetail({ appName, clusterId, isExternalApp, namespace }: ExternalArgoAppDetailType) {
+const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }: ExternalArgoAppDetailType) => {
     const location = useLocation()
     const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
@@ -68,7 +68,8 @@ function ExternalArgoAppDetail({ appName, clusterId, isExternalApp, namespace }:
                 <Progressing pageLoader />
             </div>
         )
-    } else if (errorResponseCode) {
+    }
+    if (errorResponseCode) {
         return (
             <div className="dc__loading-wrapper">
                 <ErrorScreenManager code={errorResponseCode} />

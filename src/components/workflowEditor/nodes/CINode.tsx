@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { WorkflowNodeType, SelectedNode } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { NodeAttr } from '../../app/details/triggerView/types'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
 import link from '../../../assets/icons/ic-link.svg'
-import Tippy from '@tippyjs/react'
-import { Link } from 'react-router-dom'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 
 export interface CINodeProps {
@@ -131,22 +131,13 @@ export class CINode extends Component<CINodeProps> {
                             <span className="workflow-node__text-light" data-testid="linked-indication-name">
                                 {!this.props.isJobView && pipeline}
                             </span>
-                            <Tippy
-                                className="default-tt"
-                                arrow={true}
-                                placement="bottom"
-                                content={this.props.title}
-                            >
+                            <Tippy className="default-tt" arrow placement="bottom" content={this.props.title}>
                                 <div className="dc__ellipsis-left">{this.props.title}</div>
                             </Tippy>
                             {this.props.isJobView && (
                                 <>
-                                    <span className="fw-4 fs-11">
-                                        Env: {env ? env.environment_name : DEFAULT_ENV}
-                                    </span>
-                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">
-                                        {!env && '(Default)'}
-                                    </span>
+                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : DEFAULT_ENV}</span>
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && '(Default)'}</span>
                                 </>
                             )}
                         </div>

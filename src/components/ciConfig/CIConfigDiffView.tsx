@@ -9,18 +9,18 @@ import {
     Reload,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { Workflow } from '../workflowEditor/Workflow'
-import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
 import { CIConfigDiffViewProps, GetCIPipelineModalURLType, ProcessedWorkflowsType } from './types'
 import { NodeAttr, WorkflowType } from '../app/details/triggerView/types'
 import { CIBuildConfigDiff } from './CIBuildConfigDiff'
-import Tippy from '@tippyjs/react'
 import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
-import { toast } from 'react-toastify'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
 import { WorkflowCreate } from '../app/details/triggerView/config'
@@ -84,7 +84,7 @@ export default function CIConfigDiffView({
     // NOTE: Even on reload after delete the data is going to be stale since we are not updating configOverrideWorkflows
     const _configOverridenWorkflows = configOverrideWorkflows.filter((_cwf) => {
         const _ciPipeline = configOverridenPipelines?.find((_ci) => _ci.id === _cwf.ciPipelineId)
-        if (!!_ciPipeline) {
+        if (_ciPipeline) {
             wfCIMap.set(_cwf.id, _ciPipeline.id)
             return _ciPipeline
         }
@@ -152,10 +152,12 @@ export default function CIConfigDiffView({
                     </Link>
                 </Tippy>
                 <Tippy className="default-tt" arrow={false} placement="top" content="Delete override">
-                    <DeleteIcon
-                        className="icon-dim-24 scr-5 cursor"
-                        onClick={() => toggleDeleteDialogVisibility(_wfId)}
-                    />
+                    <div className="flex">
+                        <DeleteIcon
+                            className="icon-dim-24 scr-5 cursor"
+                            onClick={() => toggleDeleteDialogVisibility(_wfId)}
+                        />
+                    </div>
                 </Tippy>
             </div>
         )
@@ -176,14 +178,15 @@ export default function CIConfigDiffView({
 
             if (gitMaterialCount === 1) {
                 return 110 + _cdNamesList.length * 20
-            } else if (gitMaterialCount === 2) {
+            }
+            if (gitMaterialCount === 2) {
                 return _cdNamesList.length <= 5
                     ? 200
                     : _cdNamesList.length <= 7
-                    ? 230
-                    : _cdNamesList.length <= 9
-                    ? 250
-                    : 280
+                      ? 230
+                      : _cdNamesList.length <= 9
+                        ? 250
+                        : 280
             }
         }
 

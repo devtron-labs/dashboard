@@ -133,5 +133,5 @@ export const CI_BUILD_TYPE_OPTIONS: CIBuildTypeOptionType[] = [
 
 export const CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT = {
     TITLE: 'Repo to place Dockerfile',
-    TITLE_INFO: 'Dockerfile will be placed at the root of the selected repo path'
+    TITLE_INFO: 'Dockerfile will be placed at the root of the selected repo path',
 }

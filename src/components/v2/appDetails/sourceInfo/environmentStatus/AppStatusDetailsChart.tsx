@@ -9,7 +9,11 @@ import { AggregatedNodes } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import { STATUS_SORTING_ORDER } from './constants'
 
-export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealth = false, showFooter }: AppStatusDetailsChartType) {
+export default function AppStatusDetailsChart({
+    appStreamData,
+    filterRemoveHealth = false,
+    showFooter,
+}: AppStatusDetailsChartType) {
     const _appDetails = IndexStore.getAppDetails()
     const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [currentFilter, setCurrentFilter] = useState('')
@@ -73,10 +77,7 @@ export default function AppStatusDetailsChart({ appStreamData, filterRemoveHealt
                 <div className="pt-16 pl-20 pb-8">
                     <div className="flexbox pr-20 w-100">
                         <div>
-                            <StatusFilterButtonComponent
-                                nodes={flattenedNodes}
-                                handleFilterClick={onFilterClick}
-                            />
+                            <StatusFilterButtonComponent nodes={flattenedNodes} handleFilterClick={onFilterClick} />
                         </div>
                     </div>
                 </div>

@@ -1,19 +1,5 @@
 import React, { useState } from 'react'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
-import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
-import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import error from '../../assets/icons/misc/errorInfo.svg'
 import Select, { components } from 'react-select'
-import { RadioGroup } from '../common'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
-import { CredentialType, ManageRegistryType } from './dockerType'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import {
     TippyCustomized,
     TippyTheme,
@@ -24,9 +10,23 @@ import {
     Option,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
+import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
+import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
+import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
+import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
+import error from '../../assets/icons/misc/errorInfo.svg'
+import { RadioGroup } from '../common'
+import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
+import { CredentialType, ManageRegistryType } from './dockerType'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-24 icon-n4" />
@@ -34,7 +34,7 @@ export function DropdownIndicator(props) {
     )
 }
 
-function ManageRegistry({
+const ManageRegistry = ({
     clusterOption,
     blackList,
     setBlackList,
@@ -53,7 +53,7 @@ function ManageRegistry({
     setCustomCredential,
     setErrorValidation,
     errorValidation,
-}: ManageRegistryType) {
+}: ManageRegistryType) => {
     const [showAlertBar, setAlertBar] = useState<boolean>(false)
 
     const toggleBlackListEnabled = () => {
@@ -85,11 +85,11 @@ function ManageRegistry({
             (blackList.length === 0 && whiteList.length === clusterOption.length)
         ) {
             return 'None'
-        } else if (isWhiteList) {
-            return `Cluster except ${appliedClusterList}`
-        } else {
-            return `All Cluster except ${ignoredClusterList}`
         }
+        if (isWhiteList) {
+            return `Cluster except ${appliedClusterList}`
+        }
+        return `All Cluster except ${ignoredClusterList}`
     }
 
     const renderActionButton = (): JSX.Element => {
@@ -145,7 +145,7 @@ function ManageRegistry({
         }
         return (
             <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
-                <div className={`flex fs-12 pl-4 pr-4`}>
+                <div className="flex fs-12 pl-4 pr-4">
                     <div className="cn-9">{label}</div>
                 </div>
                 {children[1]}
@@ -196,54 +196,56 @@ function ManageRegistry({
     const renderIgnoredCluster = (): JSX.Element => {
         if (whiteList.length > 0) {
             return renderNoSelectionView()
-        } else if (whiteList.length === 0 && !blackListEnabled) {
-            return renderNotDefinedView('blacklist')
-        } else {
-            return (
-                <Select
-                    isDisabled={whiteList.length > 0}
-                    placeholder="Select cluster"
-                    components={{
-                        MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
-                        DropdownIndicator,
-                        ClearIndicator,
-                        MultiValueRemove,
-                        Option,
-                    }}
-                    styles={{
-                        ...multiSelectStyles,
-                        multiValue: (base) => ({
-                            ...base,
-                            border: `1px solid var(--N200)`,
-                            borderRadius: `4px`,
-                            background: 'white',
-                            height: '30px',
-                            margin: '0 8px 0 0',
-                            padding: '1px',
-                        }),
-                        indicatorSeparator: (base) => ({
-                            ...base,
-                            display: blackList.length > 0 ? 'block' : 'none',
-                        }),
-                    }}
-                    closeMenuOnSelect={false}
-                    isMulti
-                    name="blacklist"
-                    options={clusterOption}
-                    hideSelectedOptions={false}
-                    value={blackList}
-                    onChange={(selected, { ...args }) => onBlackListClusterSelection(selected, { ...args })}
-                />
-            )
         }
+        if (whiteList.length === 0 && !blackListEnabled) {
+            return renderNotDefinedView('blacklist')
+        }
+        return (
+            <Select
+                isDisabled={whiteList.length > 0}
+                placeholder="Select cluster"
+                components={{
+                    MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
+                    DropdownIndicator,
+                    ClearIndicator,
+                    MultiValueRemove,
+                    Option,
+                }}
+                styles={{
+                    ...multiSelectStyles,
+                    multiValue: (base) => ({
+                        ...base,
+                        border: `1px solid var(--N200)`,
+                        borderRadius: `4px`,
+                        background: 'white',
+                        height: '30px',
+                        margin: '0 8px 0 0',
+                        padding: '1px',
+                    }),
+                    indicatorSeparator: (base) => ({
+                        ...base,
+                        display: blackList.length > 0 ? 'block' : 'none',
+                    }),
+                }}
+                closeMenuOnSelect={false}
+                isMulti
+                name="blacklist"
+                options={clusterOption}
+                hideSelectedOptions={false}
+                value={blackList}
+                onChange={(selected, { ...args }) => onBlackListClusterSelection(selected, { ...args })}
+            />
+        )
     }
 
     const renderAppliedCluster = (): JSX.Element => {
         if (blackList.length > 0) {
             return renderNoSelectionView()
-        } else if (blackList.length === 0 && blackListEnabled) {
+        }
+        if (blackList.length === 0 && blackListEnabled) {
             return renderNotDefinedView('whitelist')
-        } else if (blackList.length === 0) {
+        }
+        if (blackList.length === 0) {
             return (
                 <Select
                     components={{
@@ -293,9 +295,8 @@ function ManageRegistry({
             if (!e.target.value) {
                 setErrorValidation(true)
                 return null
-            } else {
-                setErrorValidation(false)
             }
+            setErrorValidation(false)
         } else {
             setCustomCredential({
                 ...customCredential,
@@ -312,6 +313,7 @@ function ManageRegistry({
                     className="dc__link"
                     href="https://docs.devtron.ai/v/v0.6/getting-started/global-configurations/docker-registries#specify-image-pull-secret"
                     target="_blank"
+                    rel="noreferrer"
                 >
                     image pull secret name created via CLI
                 </a>
@@ -340,11 +342,13 @@ function ManageRegistry({
                                             the registry. You can control which clusters have access to the pull image
                                             from private repositories.
                                         "
-                        showCloseButton={true}
+                        showCloseButton
                         trigger="click"
-                        interactive={true}
+                        interactive
                     >
-                        <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                        <div className="flex">
+                            <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                        </div>
                     </TippyCustomized>
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />

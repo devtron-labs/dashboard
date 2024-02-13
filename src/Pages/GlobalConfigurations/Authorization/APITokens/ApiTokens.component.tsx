@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './apiToken.scss'
 import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -138,45 +138,43 @@ const ApiTokens = () => {
 
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
-            <>
-                <div data-testid="api-token-page" className="api-token-container flexbox-col flex-grow-1">
-                    <Switch>
-                        <Route path={`${path}/list`}>
-                            <APITokenList
-                                tokenList={filteredTokenList}
-                                renderSearchToken={renderSearchToken}
-                                reload={getData}
-                            />
-                        </Route>
-                        <Route path={`${path}/create`}>
-                            <CreateAPIToken
-                                setShowGenerateModal={setShowGenerateModal}
-                                showGenerateModal={showGenerateModal}
-                                handleGenerateTokenActionButton={handleActionButton}
-                                setSelectedExpirationDate={setSelectedExpirationDate}
-                                selectedExpirationDate={selectedExpirationDate}
-                                tokenResponse={tokenResponse}
-                                setTokenResponse={setTokenResponse}
-                                reload={getData}
-                            />
-                        </Route>
-                        <Route path={`${path}/edit/:id`}>
-                            <EditAPIToken
-                                handleRegenerateActionButton={handleActionButton}
-                                setShowRegeneratedModal={setShowRegenerateTokenModal}
-                                showRegeneratedModal={showRegenerateTokenModal}
-                                setSelectedExpirationDate={setSelectedExpirationDate}
-                                selectedExpirationDate={selectedExpirationDate}
-                                tokenList={tokenList}
-                                setCopied={setCopied}
-                                copied={copied}
-                                reload={getData}
-                            />
-                        </Route>
-                        <Redirect to={`${path}/list`} />
-                    </Switch>
-                </div>
-            </>
+            <div data-testid="api-token-page" className="api-token-container flexbox-col flex-grow-1">
+                <Switch>
+                    <Route path={`${path}/list`}>
+                        <APITokenList
+                            tokenList={filteredTokenList}
+                            renderSearchToken={renderSearchToken}
+                            reload={getData}
+                        />
+                    </Route>
+                    <Route path={`${path}/create`}>
+                        <CreateAPIToken
+                            setShowGenerateModal={setShowGenerateModal}
+                            showGenerateModal={showGenerateModal}
+                            handleGenerateTokenActionButton={handleActionButton}
+                            setSelectedExpirationDate={setSelectedExpirationDate}
+                            selectedExpirationDate={selectedExpirationDate}
+                            tokenResponse={tokenResponse}
+                            setTokenResponse={setTokenResponse}
+                            reload={getData}
+                        />
+                    </Route>
+                    <Route path={`${path}/edit/:id`}>
+                        <EditAPIToken
+                            handleRegenerateActionButton={handleActionButton}
+                            setShowRegeneratedModal={setShowRegenerateTokenModal}
+                            showRegeneratedModal={showRegenerateTokenModal}
+                            setSelectedExpirationDate={setSelectedExpirationDate}
+                            selectedExpirationDate={selectedExpirationDate}
+                            tokenList={tokenList}
+                            setCopied={setCopied}
+                            copied={copied}
+                            reload={getData}
+                        />
+                    </Route>
+                    <Redirect to={`${path}/list`} />
+                </Switch>
+            </div>
         )
     }
 

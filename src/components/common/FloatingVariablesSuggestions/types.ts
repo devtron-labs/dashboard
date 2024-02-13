@@ -1,4 +1,4 @@
-import { DraggableBounds } from "react-draggable"
+import { DraggableBounds } from 'react-draggable'
 
 export interface SuggestionType {
     variableName: string

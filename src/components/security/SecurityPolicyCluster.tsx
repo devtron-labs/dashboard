@@ -1,50 +1,62 @@
-import React, { Component } from 'react';
-import { RouteComponentProps, NavLink } from 'react-router-dom';
-import { SecurityPolicyEdit } from './SecurityPolicyEdit';
-import { getClusterListMinNoAuth } from './security.service';
+import React, { Component } from 'react'
+import { RouteComponentProps, NavLink } from 'react-router-dom'
 import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../config';
-import { SecurityPolicyClusterState } from './security.types';
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
+import { SecurityPolicyEdit } from './SecurityPolicyEdit'
+import { getClusterListMinNoAuth } from './security.service'
+import { ViewType } from '../../config'
+import { SecurityPolicyClusterState } from './security.types'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 
-export class SecurityPolicyCluster extends Component<RouteComponentProps<{ clusterId: string; }>, SecurityPolicyClusterState> {
-
+export class SecurityPolicyCluster extends Component<
+    RouteComponentProps<{ clusterId: string }>,
+    SecurityPolicyClusterState
+> {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             view: ViewType.LOADING,
-            clusterSearch: "",
-            clusterList: []
+            clusterSearch: '',
+            clusterList: [],
         }
-        this.handleSearchChange = this.handleSearchChange.bind(this);
+        this.handleSearchChange = this.handleSearchChange.bind(this)
     }
 
     componentDidMount() {
-        getClusterListMinNoAuth().then((response) => {
-            let list = response.result || [];
-            list = list.map((env) => {
-                return {
-                    id: env.id,
-                    name: env.cluster_name,
-                }
+        getClusterListMinNoAuth()
+            .then((response) => {
+                let list = response.result || []
+                list = list.map((env) => {
+                    return {
+                        id: env.id,
+                        name: env.cluster_name,
+                    }
+                })
+                list = list.sort((a, b) => sortCallback('name', a, b))
+                this.setState({ clusterList: list, view: ViewType.FORM })
             })
-            list = list.sort((a, b) => sortCallback('name', a, b))
-            this.setState({ clusterList: list, view: ViewType.FORM });
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR });
-        })
+            .catch((error) => {
+                showError(error)
+                this.setState({ view: ViewType.ERROR })
+            })
     }
 
     handleSearchChange(e) {
-        this.setState({ clusterSearch: e.target.value });
+        this.setState({ clusterSearch: e.target.value })
     }
 
     renderList() {
-        const url = this.props.match.url;
-        if (this.state.view === ViewType.LOADING) return <div style={{ height: "280px" }}><Progressing pageLoader /></div>
-        else if (this.state.view === ViewType.LOADING) return <Reload />
-        else return (
+        const { url } = this.props.match
+        if (this.state.view === ViewType.LOADING) {
+            return (
+                <div style={{ height: '280px' }}>
+                    <Progressing pageLoader />
+                </div>
+            )
+        }
+        if (this.state.view === ViewType.LOADING) {
+            return <Reload />
+        }
+        return (
             <table className="security-policy-cluster__table">
                 <tbody>
                     <tr>
@@ -84,7 +96,13 @@ export class SecurityPolicyCluster extends Component<RouteComponentProps<{ clust
 
     renderContent() {
         if (this.props.match.params.clusterId) {
-            return <SecurityPolicyEdit level="cluster" id={Number(`${this.props.match.params.clusterId}`)} key={`${this.props.match.params.clusterId}`} />
+            return (
+                <SecurityPolicyEdit
+                    level="cluster"
+                    id={Number(`${this.props.match.params.clusterId}`)}
+                    key={`${this.props.match.params.clusterId}`}
+                />
+            )
         }
         return (
             <>
@@ -103,9 +121,6 @@ export class SecurityPolicyCluster extends Component<RouteComponentProps<{ clust
     }
 
     render() {
-        return <>
-
-            {this.renderContent()}
-        </>
+        return <>{this.renderContent()}</>
     }
 }

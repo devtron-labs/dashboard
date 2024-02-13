@@ -1,7 +1,7 @@
-import { Routes } from '../../config'
 import { get, put, post } from '@devtron-labs/devtron-fe-common-lib'
+import yaml from 'yaml'
+import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
-import yamlJsParser from 'yamljs'
 
 export function getDeploymentTemplate(
     id: number,
@@ -13,11 +13,10 @@ export function getDeploymentTemplate(
         return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
             signal: abortSignal,
         })
-    } else {
-        return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
-            signal: abortSignal,
-        })
     }
+    return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+        signal: abortSignal,
+    })
 }
 
 export function getDeploymentTemplateData(
@@ -119,10 +118,9 @@ function configMapModal(configMap, appId: number) {
             secretsValuesOverride: configMap.secret_data,
             configMapJsonStr: JSON.stringify(configMap.config_map_data || {}, undefined, 2),
             secretsJsonStr: JSON.stringify(configMap.secret_data || {}, undefined, 2),
-            configMapYaml: yamlJsParser.stringify(configMap.config_map_data),
-            secretsYaml: yamlJsParser.stringify(configMap.secret_data),
+            configMapYaml: yaml.stringify(configMap.config_map_data),
+            secretsYaml: yaml.stringify(configMap.secret_data),
         }
-    } else {
-        return null
     }
+    return null
 }

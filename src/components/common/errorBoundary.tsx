@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import * as Sentry from '@sentry/browser'
-import bugFixing from '../../assets/img/bug_fixing.svg'
 import { Reload } from '@devtron-labs/devtron-fe-common-lib'
+import bugFixing from '../../assets/img/bug_fixing.svg'
+
 interface errorBoundaryState {
     eventId: any
     hasError: boolean
@@ -51,13 +52,13 @@ export default class ErrorBoundary extends Component<{}, errorBoundaryState> {
                         className="cta flex dc__no-decor"
                         target="_blank"
                         onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId })}
+                        rel="noreferrer"
                     >
                         Report feedback
                     </a>
                 </div>
             )
-        } else {
-            return this.props.children
         }
+        return this.props.children
     }
 }

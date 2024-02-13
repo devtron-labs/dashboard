@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { AppMetaInfo } from '../../app/types'
 import { getHelmAppOverviewInfo } from '../../app/service'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import AppOverview from '../../app/Overview/Overview'
 
 export const HelmAppOverview = (props: { appId: string; setErrorResponseCode: (code) => void }) => {

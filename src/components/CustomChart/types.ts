@@ -1,4 +1,5 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+
 export interface ChartDetailType {
     id: number
     chartDescription: string

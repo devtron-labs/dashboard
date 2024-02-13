@@ -1,6 +1,6 @@
 import React from 'react'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 
 interface KeyValueFileInputProps {
     index: number
@@ -13,7 +13,7 @@ interface KeyValueFileInputProps {
     handleDelete: (index: number) => void
 }
 
-export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (props) {
+export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = (props) => {
     return (
         <div className="form__key-value-file">
             <Trash
@@ -33,7 +33,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
                         props.handleChange(props.index, 'fileName', event.target.value)
                     }}
                     name="fileName"
-                    isRequiredField={true}
+                    isRequiredField
                 />
             </div>
             <div className="mb-16">
@@ -47,7 +47,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
                         props.handleChange(props.index, 'name', event.target.value)
                     }}
                     name="secret-key"
-                    isRequiredField={true}
+                    isRequiredField
                 />
             </div>
             <div className="mb-16">
@@ -57,7 +57,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
                     placeholder="Enter the property"
                     value={props.property}
                     disabled={props.disabled}
-                    helperText={'Property to extract if secret in backend is a JSON object'}
+                    helperText="Property to extract if secret in backend is a JSON object"
                     onChange={(event) => {
                         props.handleChange(props.index, 'property', event.target.value)
                     }}
@@ -69,7 +69,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
                 <label className="flexbox mr-16">
                     <input
                         type="radio"
-                        name={props.index + 'isBinary'}
+                        name={`${props.index}isBinary`}
                         checked={props.isBinary}
                         disabled={props.disabled}
                         onClick={(event) => props.handleChange(props.index, 'isBinary', !props.isBinary)}
@@ -79,7 +79,7 @@ export const KeyValueFileInput: React.FC<KeyValueFileInputProps> = function (pro
                 <label className="flexbox mr-16">
                     <input
                         type="radio"
-                        name={props.index + 'isBinary'}
+                        name={`${props.index}isBinary`}
                         checked={!props.isBinary}
                         disabled={props.disabled}
                         onClick={(event) => props.handleChange(props.index, 'isBinary', !props.isBinary)}
