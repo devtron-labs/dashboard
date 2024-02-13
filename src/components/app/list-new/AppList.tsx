@@ -1083,13 +1083,13 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <>
+        <div>
             <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
             {renderMasterFilters()}
             {renderAppliedFilters()}
             {renderAppTabs()}
             {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
             {renderAppListBody()}
-        </>
+        </div>
     )
 }
