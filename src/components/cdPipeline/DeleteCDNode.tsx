@@ -18,7 +18,9 @@ export default function DeleteCDNode({
     showConfirmationBar,
 }: Readonly<DeleteCDNodeProps>) {
     const [deleteInput, setDeleteInput] = useState<string>('')
-    const deleteTitle = showConfirmationBar ? `Delete Pipeline for '${deleteTitleName}' ?` : `Delete '${deleteTitleName}' ?`
+    const deleteTitle = showConfirmationBar
+        ? `Delete Pipeline for '${deleteTitleName}' ?`
+        : `Delete '${deleteTitleName}' ?`
 
     const handleDeleteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDeleteInput(e.target.value)

@@ -14,7 +14,11 @@ import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType }
 import { importComponentFromFELibrary } from '../../../common'
 
 const DeploymentApprovalInfo = importComponentFromFELibrary('DeploymentApprovalInfo')
-const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary('processVirtualEnvironmentDeploymentData', null, 'function')
+const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
+    'processVirtualEnvironmentDeploymentData',
+    null,
+    'function',
+)
 
 let deploymentStatusTimer = null
 export default function DeploymentDetailSteps({
@@ -24,7 +28,7 @@ export default function DeploymentDetailSteps({
     installedAppVersionHistoryId,
     isGitops,
     userApprovalMetadata,
-    isVirtualEnvironment
+    isVirtualEnvironment,
 }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -33,7 +37,10 @@ export default function DeploymentDetailSteps({
         deploymentStatus?.toUpperCase() !== TIMELINE_STATUS.ABORTED,
     )
     const isVirtualEnv = useRef(isVirtualEnvironment)
-    const processedData = (isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData() :  processDeploymentStatusDetailsData()
+    const processedData =
+        isVirtualEnv.current && processVirtualEnvironmentDeploymentData
+            ? processVirtualEnvironmentDeploymentData()
+            : processDeploymentStatusDetailsData()
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>(processedData)
 
@@ -52,20 +59,19 @@ export default function DeploymentDetailSteps({
 
     useEffect(() => {
         isVirtualEnv.current = isVirtualEnvironment
-    },[isVirtualEnvironment])
+    }, [isVirtualEnvironment])
 
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(appId, envId, true, triggerId, isHelmApps, installedAppVersionHistoryId).then(
-            (deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(appId, envId, true, triggerId, isHelmApps, installedAppVersionHistoryId)
+            .then((deploymentStatusDetailRes) => {
                 deploymentStatus !== 'Aborted' && processDeploymentStatusData(deploymentStatusDetailRes.result)
-            }
-        )
-        .catch((e) => {
-          setDeploymentListLoader(false)
-      })
-      .finally(()=>{
-        setDeploymentListLoader(false)
-      })
+            })
+            .catch((e) => {
+                setDeploymentListLoader(false)
+            })
+            .finally(() => {
+                setDeploymentListLoader(false)
+            })
     }
     const clearDeploymentStatusTimer = (): void => {
         if (deploymentStatusTimer) {
@@ -74,7 +80,10 @@ export default function DeploymentDetailSteps({
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = (isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+        const processedDeploymentStatusDetailsData =
+            isVirtualEnv.current && processVirtualEnvironmentDeploymentData
+                ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
+                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
         // If deployment status is in progress then fetch data in every 10 seconds
 
@@ -91,7 +100,7 @@ export default function DeploymentDetailSteps({
     }
 
     const redirectToDeploymentStatus = () => {
-      isHelmApps
+        isHelmApps
             ? history.push({
                   pathname: `${URLS.APP}/${URLS.DEVTRON_CHARTS}/${URLS.APP_DEPLOYMNENT_HISTORY}/${appId}/env/${envId}/${URLS.DETAILS}/${URLS.APP_DETAILS_K8}`,
                   search: DEPLOYMENT_STATUS_QUERY_PARAM,
@@ -112,7 +121,8 @@ export default function DeploymentDetailSteps({
         </div>
     ) : deploymentListLoader ? (
         <Progressing pageLoader />
-    ) : !isVirtualEnv.current && !deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
+    ) : !isVirtualEnv.current &&
+      !deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
         <div className="h-100 flex">
             <CDEmptyState
                 title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_PROGRESSING.TITLE}
@@ -122,7 +132,7 @@ export default function DeploymentDetailSteps({
                 actionHandler={redirectToDeploymentStatus}
                 subtitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_PROGRESSING.SUBTITLE}
                 actionButtonText="Check live status"
-                actionButtonIconRight={true}
+                actionButtonIconRight
                 dataTestId="deployment-progress"
             />
         </div>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
 import NoEligibleCommit from '../../../../assets/gif/no-eligible-commit.gif'
@@ -7,7 +8,6 @@ import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-ri
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -42,7 +42,8 @@ export default function EmptyStateCIMaterial({
                 cta: null,
                 link: null,
             }
-        } else if (isDockerFileError) {
+        }
+        if (isDockerFileError) {
             return {
                 img: ErrorImage,
                 title: <h1 className="dc__empty-title">{dockerFileErrorMsg}</h1>,
@@ -56,7 +57,8 @@ export default function EmptyStateCIMaterial({
                     ) : null,
                 link: null,
             }
-        } else if (isBranchError) {
+        }
+        if (isBranchError) {
             return {
                 img: ErrorImage,
                 title: <h1 className="dc__empty-title">{branchErrorMsg}</h1>,
@@ -76,7 +78,8 @@ export default function EmptyStateCIMaterial({
                     ) : null,
                 link: null,
             }
-        } else if (noSearchResults) {
+        }
+        if (noSearchResults) {
             return {
                 img: NoResults,
                 title: <h1 className="dc__empty-title dc__word-break-all">{noSearchResultsMsg}</h1>,
@@ -88,15 +91,25 @@ export default function EmptyStateCIMaterial({
                 ),
                 link: null,
             }
-        } else if (!anyCommit && !showAllCommits) {
+        }
+        if (!anyCommit && !showAllCommits) {
             return {
                 img: NoEligibleCommit,
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitSubtitle,
-                link: <span data-testid="show-excluded-commits-button" className="dc__link dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
+                link: (
+                    <span
+                        data-testid="show-excluded-commits-button"
+                        className="dc__link dc__underline dc__block cursor"
+                        onClick={toggleExclude}
+                    >
+                        {CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}
+                    </span>
+                ),
                 cta: null,
             }
-        } else if (!anyCommit) {
+        }
+        if (!anyCommit) {
             return {
                 img: EmptyStateImage,
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFound}</h1>,
@@ -104,18 +117,17 @@ export default function EmptyStateCIMaterial({
                 cta: null,
                 link: null,
             }
-        } else {
-            return {
-                img: ErrorImage,
-                title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.FailedToFetch}</h1>,
-                subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.FailedToFetchSubtitle,
-                cta: (
-                    <button type="button" className="cta ghosted small" onClick={onRetry}>
-                        {CI_MATERIAL_EMPTY_STATE_MESSAGING.Retry}
-                    </button>
-                ),
-                link: null,
-            }
+        }
+        return {
+            img: ErrorImage,
+            title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.FailedToFetch}</h1>,
+            subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.FailedToFetchSubtitle,
+            cta: (
+                <button type="button" className="cta ghosted small" onClick={onRetry}>
+                    {CI_MATERIAL_EMPTY_STATE_MESSAGING.Retry}
+                </button>
+            ),
+            link: null,
         }
     }
 
@@ -128,20 +140,20 @@ export default function EmptyStateCIMaterial({
     }
 
     const { title, subtitle, img, cta, link } = getData()
-    return isMaterialLoading ? ( 
-            <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
+    return isMaterialLoading ? (
+        <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
     ) : (
-            <GenericEmptyState
-                image={img}
-                title={title}
-                subTitle={
-                    <>
-                        {subtitle}
-                        {link}
-                    </>
-                }
-                isButtonAvailable={isWebHook}
-                renderButton={handleMaterialLoadingButton}
-            />
+        <GenericEmptyState
+            image={img}
+            title={title}
+            subTitle={
+                <>
+                    {subtitle}
+                    {link}
+                </>
+            }
+            isButtonAvailable={isWebHook}
+            renderButton={handleMaterialLoadingButton}
+        />
     )
 }

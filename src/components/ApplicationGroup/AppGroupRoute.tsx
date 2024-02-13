@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { URLS } from '../../config'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { URLS } from '../../config'
 import EnvironmentsList from './List/EnvironmentsList'
 import { AppContext } from '../common'
 import { AppGroupAdminType } from './AppGroup.types'

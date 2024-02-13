@@ -193,7 +193,10 @@ export const EnvironmentList = ({
                                                             </span>
                                                             <span>{_env.lastDeployedBy}</span>
                                                         </span>
-                                                        <Link to={getDeploymentHistoryLink(_env)} className="anchor cursor">
+                                                        <Link
+                                                            to={getDeploymentHistoryLink(_env)}
+                                                            className="anchor cursor"
+                                                        >
                                                             {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
                                                         </Link>
                                                     </span>

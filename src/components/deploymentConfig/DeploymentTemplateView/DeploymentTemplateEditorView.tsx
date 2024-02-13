@@ -1,4 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import YAML from 'yaml'
+import { Progressing, showError, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import {
     DeploymentChartOptionType,
     DeploymentConfigContextType,
@@ -9,8 +13,6 @@ import {
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
 import { importComponentFromFELibrary, versionComparator } from '../../common'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
-import YAML from 'yaml'
-import { Progressing, showError, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
 import {
@@ -20,13 +22,12 @@ import {
     renderEditorHeading,
 } from './DeploymentTemplateView.component'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
-import { useParams } from 'react-router-dom'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
-import { toast } from 'react-toastify'
+
 const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTemplate', null, 'function')
 
- const DeploymentTemplateEditorView=({
+const DeploymentTemplateEditorView = ({
     isEnvOverride,
     globalChartRefId,
     readOnly,
@@ -43,8 +44,7 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     lockedConfigKeysWithLockType,
     hideLockKeysToggled,
     removedPatches,
-}: DeploymentTemplateEditorViewProps) =>{
-  
+}: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
@@ -90,7 +90,9 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     }
 
     useEffect(() => {
-        if (!showDraftData || isValues) return // hit api only when manifest is selected, for values use local states.
+        if (!showDraftData || isValues) {
+            return
+        } // hit api only when manifest is selected, for values use local states.
         setDraftLoading(true)
         getLocalDaftManifest()
             .then((data) => {
@@ -239,7 +241,8 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     const processFetchedValues = (result, isChartVersionOption, _isEnvOption) => {
         if (isChartVersionOption) {
             return result.defaultAppOverride
-        } else if (_isEnvOption) {
+        }
+        if (_isEnvOption) {
             setOptionOveriddeStatus((prevStatus) => ({
                 ...prevStatus,
                 [state.selectedCompareOption.id]: result.IsOverride,
@@ -249,7 +252,9 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     }
 
     const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
-        if (!isValues) return
+        if (!isValues) {
+            return
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValues,
             payload: fetchedValues,
@@ -257,7 +262,9 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     }
 
     const setFetchedValuesManifest = (fetchedValuesManifest: Record<number | string, string>) => {
-        if (isValues) return
+        if (isValues) {
+            return
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
             payload: fetchedValuesManifest,
@@ -270,9 +277,8 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
                 return 'bcy-1'
             }
             return 'bcb-1'
-        } else {
-            return ''
         }
+        return ''
     }
 
     useEffect(() => {
@@ -280,7 +286,9 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     }, [state.selectedTabIndex])
 
     useEffect(() => {
-        if (!convertVariables) return
+        if (!convertVariables) {
+            return
+        }
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {
@@ -309,7 +317,7 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     const valueLHS = isIdMatch ? defaultValue : source[selectedOptionId] // fetch LHS data from respective cache store
 
     // final value for LHS
-    let lhs = convertVariables ? resolvedValuesLHS : valueLHS
+    let lhs = (convertVariables ? resolvedValuesLHS : valueLHS) ?? ''
 
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
@@ -317,7 +325,7 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     const valueRHS = shouldUseDraftData ? selectedData : value
 
     // final value for RHS
-    let rhs = convertVariables ? resolvedValuesRHS : valueRHS
+    let rhs = (convertVariables ? resolvedValuesRHS : valueRHS) ?? ''
     if (getLockFilteredTemplate && isValues) {
         try {
             const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
@@ -336,11 +344,11 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
             showError(err)
         }
     }
-    
+
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header
             className={`code-editor__header flex left p-0-imp ${getOverrideClass()}`}
-            hideDefaultSplitHeader={true}
+            hideDefaultSplitHeader
         >
             <div className="flex fs-12 fw-6 cn-9 pl-12 pr-12 w-100">
                 {renderEditorHeading(
@@ -360,7 +368,7 @@ const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTem
     )
 
     const renderCodeEditorCompareMode = () => (
-        <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader={true}>
+        <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader>
             <div className="flex column">
                 <div className="code-editor__header flex left w-100 p-0-imp">
                     <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">

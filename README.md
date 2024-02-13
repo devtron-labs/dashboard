@@ -85,7 +85,7 @@ foo@bar~$ docker run -p 3000:80 -e SENTRY_ENV=my-custom-env -t artifact/tag
 ### Disable sentry error logging during production deployment, default enabled
 
 ```console
-foo@bar~$ docker run -p 3000:80 -e SENTRY_ERROR_ENABLED=false -t artifact/tag
+foo@bar~$ docker run -p 3000:80 -e ENTRY_ERROR_ENABLED=false -t artifact/tag
 ```
 
 ### Disable sentry performance monitoring during production deployment, default enabled
@@ -148,9 +148,9 @@ module.exports = function (app) {
 #### **`.env.development`**
 
 ```console
-GRAFANA_ORG_ID=2
+VITE_GRAFANA_ORG_ID=2
 REACT_APP_EDITOR=code
-REACT_APP_ORCHESTRATOR_ROOT=/orchestrator
+VITE_ORCHESTRATOR_ROOT=/orchestrator
 REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 ```
 
@@ -159,9 +159,9 @@ REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 #### **`.env.development`**
 
 ```console
-GRAFANA_ORG_ID=2
+VITE_GRAFANA_ORG_ID=2
 REACT_APP_EDITOR=code
-REACT_APP_ORCHESTRATOR_ROOT=http://demo.devtron.info:32080/orchestrator
+VITE_ORCHESTRATOR_ROOT=http://demo.devtron.info:32080/orchestrator
 REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 ```
 

@@ -1,8 +1,6 @@
-import React, { lazy, useState, useEffect, Suspense, useContext, createContext } from 'react'
+import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
-import { URLS } from '../../config'
-import { ErrorBoundary, importComponentFromFELibrary } from '../common'
 import {
     showError,
     Progressing,
@@ -11,11 +9,12 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import { URLS } from '../../config'
+import { ErrorBoundary, importComponentFromFELibrary } from '../common'
+import arrowTriangle, { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
-import { getHostURLConfiguration } from '../../services/service'
-import { getAppCheckList } from '../../services/service'
+import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
 import './globalConfigurations.scss'
 import {
     ModuleNameMap,
@@ -27,7 +26,6 @@ import {
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
@@ -104,16 +102,16 @@ export default function GlobalConfiguration(props) {
     function fetchCheckList(): void {
         getAppCheckList()
             .then((response) => {
-                let appChecklist = response.result.appChecklist || {}
-                let chartChecklist = response.result.chartChecklist || {}
-                let appStageArray: number[] = Object.values(appChecklist)
-                let chartStageArray: number[] = Object.values(chartChecklist)
-                let appStageCompleted: number = appStageArray.reduce((item, sum) => {
-                    sum = sum + item
+                const appChecklist = response.result.appChecklist || {}
+                const chartChecklist = response.result.chartChecklist || {}
+                const appStageArray: number[] = Object.values(appChecklist)
+                const chartStageArray: number[] = Object.values(chartChecklist)
+                const appStageCompleted: number = appStageArray.reduce((item, sum) => {
+                    sum += item
                     return sum
                 }, 0)
-                let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
-                    sum = sum + item
+                const chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+                    sum += item
                     return sum
                 }, 0)
 
@@ -158,13 +156,13 @@ export default function GlobalConfiguration(props) {
     )
 }
 
-function NavItem({ serverMode }) {
+const NavItem = ({ serverMode }) => {
     const location = useLocation()
     const { installedModuleMap } = useContext(mainContext)
     const [, setForceUpdateTime] = useState(Date.now())
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
-        Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
+        Authorization: !location.pathname.startsWith('/global-config/auth'),
     })
     const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
 
@@ -184,7 +182,7 @@ function NavItem({ serverMode }) {
         },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
-            name: 'Clusters' + (serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'),
+            name: `Clusters${serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'}`,
             href: URLS.GLOBAL_CONFIG_CLUSTER,
             component: ClusterList,
             isAvailableInEA: true,
@@ -305,7 +303,7 @@ function NavItem({ serverMode }) {
                         onClose={onTippyClose}
                         {...tippyConfig}
                     >
-                        {children}
+                        <div> {children}</div>
                     </TippyCustomized>
                 )}
             >
@@ -523,17 +521,17 @@ function NavItem({ serverMode }) {
     )
 }
 
-function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) {
+const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const location = useLocation()
 
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
-        } else if (serverMode === SERVER_MODE.EA_ONLY) {
-            return URLS.GLOBAL_CONFIG_PROJECT
-        } else {
-            return URLS.GLOBAL_CONFIG_HOST_URL
         }
+        if (serverMode === SERVER_MODE.EA_ONLY) {
+            return URLS.GLOBAL_CONFIG_PROJECT
+        }
+        return URLS.GLOBAL_CONFIG_HOST_URL
     }
 
     return (
@@ -610,11 +608,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
                     <CustomChartList />
                 </Route>,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_AUTH}
-                    path={URLS.GLOBAL_CONFIG_AUTH}
-                    component={Authorization}
-                />,
+                <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
                     path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
@@ -657,7 +651,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {PullImageDigest && (
                 <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
-                    <PullImageDigest isSuperAdmin={isSuperAdmin}/>
+                    <PullImageDigest isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {TagListContainer && (
@@ -680,7 +674,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
     )
 }
 
-function Logo({ src = '', style = {}, className = '', children = null }) {
+const Logo = ({ src = '', style = {}, className = '', children = null }) => {
     return (
         <>
             {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
@@ -689,7 +683,7 @@ function Logo({ src = '', style = {}, className = '', children = null }) {
     )
 }
 
-function Title({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) {
+const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) => {
     return (
         <div className="flex column left">
             <div className={`list__title ${className}`} style={style}>
@@ -700,7 +694,7 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...props }) {
+const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...props }) => {
     const handleToggle = () => {
         if (!isButtonDisabled) {
             onSelect(!enabled)
@@ -717,8 +711,10 @@ function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...pr
     )
 }
 
-function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
-    if (React.isValidElement(src)) return src
+const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
+    if (React.isValidElement(src)) {
+        return src
+    }
     return (
         <img
             {...props}
@@ -731,7 +727,7 @@ function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...
     )
 }
 
-export function List({ dataTestId = '', children = null, className = '', ...props }) {
+export const List = ({ dataTestId = '', children = null, className = '', ...props }) => {
     return (
         <div className={`list ${className}`} {...props} data-testid={dataTestId}>
             {children}
@@ -751,7 +747,7 @@ function handleError(error: any): any[] {
     return error
 }
 
-export function ProtectedInput({
+export const ProtectedInput = ({
     name,
     value,
     error,
@@ -765,7 +761,7 @@ export function ProtectedInput({
     dataTestid = '',
     onBlur = (e) => {},
     isRequiredField = false,
-}: ProtectedInputType) {
+}: ProtectedInputType) => {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -812,7 +808,13 @@ export function ProtectedInput({
     )
 }
 
-export function ShowHide({ hidden = true, className = '', onClick = null, defaultOnClick = null, disabled = false }) {
+export const ShowHide = ({
+    hidden = true,
+    className = '',
+    onClick = null,
+    defaultOnClick = null,
+    disabled = false,
+}) => {
     return hidden ? (
         <svg
             xmlns="http://www.w3.org/2000/svg"

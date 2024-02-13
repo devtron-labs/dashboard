@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
+import { Checkbox, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../../v2/common/ReactSelect.utils'
-import { Checkbox, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../../helpers/Helpers'
 import {
     CheckboxWithTippyProps,
@@ -268,7 +268,7 @@ export const CheckboxWithTippy = (props: CheckboxWithTippyProps) => {
                     </Tippy>
                 )}
             >
-                <span className={`fs-13 cn-9 ${!!props.description ? 'text-underline-dashed-300' : ''}`}>
+                <span className={`fs-13 cn-9 ${props.description ? 'text-underline-dashed-300' : ''}`}>
                     {props.title}
                 </span>
             </ConditionalWrap>

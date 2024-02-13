@@ -40,7 +40,12 @@ export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
 
     const renderActionButtons = () => {
         return serverMode === SERVER_MODE.FULL ? (
-            <button type="button" className="flex cta h-32 lh-n" onClick={handleCreateButton} data-testid="create-app-button-on-header">
+            <button
+                type="button"
+                className="flex cta h-32 lh-n"
+                onClick={handleCreateButton}
+                data-testid="create-app-button-on-header"
+            >
                 Create
                 <DropDown className="icon-dim-20" />
             </button>

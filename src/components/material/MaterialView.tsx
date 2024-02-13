@@ -12,8 +12,9 @@ import {
     CHECKBOX_VALUE,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { MaterialViewProps, MaterialViewState } from './material.types'
 import { URLS } from '../../config'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
@@ -28,7 +29,6 @@ import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import Tippy from '@tippyjs/react'
 import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
@@ -90,8 +90,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         {this.props.material.url.includes('github') ? <GitHub /> : null}
                         {this.props.material.url.includes('bitbucket') ? <BitBucket /> : null}
                         {this.props.material.url.includes('gitlab') ||
-                            this.props.material.url.includes('github') ||
-                            this.props.material.url.includes('bitbucket') ? null : (
+                        this.props.material.url.includes('github') ||
+                        this.props.material.url.includes('bitbucket') ? null : (
                             <Git />
                         )}
                     </span>
@@ -107,7 +107,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             <div
                 className="white-card white-card--add-new-item mb-16 dashed"
                 onClick={this.props.toggleCollapse}
-                data-testid={`add-multi-git-repo`}
+                data-testid="add-multi-git-repo"
             >
                 <Add className="icon-dim-24 mr-5 fcb-5 dc__vertical-align-middle" />
                 <span className="dc__artifact-add">Add Git Repository</span>
@@ -134,7 +134,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 url: this.props.material.url,
                 checkoutPath: this.props.material.checkoutPath,
                 gitProviderId: this.props.material.gitProvider.id,
-                fetchSubmodules: this.props.material.fetchSubmodules ? true : false,
+                fetchSubmodules: !!this.props.material.fetchSubmodules,
             },
         }
     }
@@ -165,11 +165,14 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, index) => (
-                            <div key={item.info} className={`${index === 2 ? "h-24" : "h-40"} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}>
-                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 dc__ff-monospace dc__no-border">{item.regex}</div>
-                                <span className={`${index === 2 ? "h-20" : "h-40"} w-436 lh-20`}>
-                                    {item.info}
-                                </span>
+                            <div
+                                key={item.info}
+                                className={`${index === 2 ? 'h-24' : 'h-40'} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}
+                            >
+                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 dc__ff-monospace dc__no-border">
+                                    {item.regex}
+                                </div>
+                                <span className={`${index === 2 ? 'h-20' : 'h-40'} w-436 lh-20`}>{item.info}</span>
                             </div>
                         ))}
                     </div>
@@ -185,24 +188,72 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample1}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample1
+                                    }
                                 </span>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
                                 <div className="h-18 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1.partTwo}</span>
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1.partThree}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath1.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath1.partTwo
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath1.partThree
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath2.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath2.partTwo}</span>
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath2.partThree}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath2.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath2.partTwo
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath2.partThree
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath3.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath3.partTwo}</span>
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath3.partThree}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath3.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath3.partTwo
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample1.regexPath3.partThree
+                                        }
+                                    </span>
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
@@ -214,24 +265,72 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample2}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample2
+                                    }
                                 </span>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
                                 <div className="h-18 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath1.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath1.partTwo}</span>
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath1.partThree}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath1.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath1.partTwo
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath1.partThree
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath2.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath2.partTwo}</span>
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath2.partThree}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath2.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath2.partTwo
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath2.partThree
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath3.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath3.partTwo}</span>
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath3.partThree}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath3.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath3.partTwo
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample2.regexPath3.partThree
+                                        }
+                                    </span>
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
@@ -243,27 +342,66 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partOne}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample3.partOne
+                                    }
                                 </span>
                                 <span className="ml-4 fs-13 fw-4 lh-20">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partTwo}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample3.partTwo
+                                    }
                                 </span>
                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partThree}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample3.partThree
+                                    }
                                 </span>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
                                 <div className="h-18 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath1.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath1.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample3.regexPath1.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample3.regexPath1.partTwo
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath2.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath2.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample3.regexPath2.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample3.regexPath2.partTwo
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath3.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath3.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample3.regexPath3.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample3.regexPath3.partTwo
+                                        }
+                                    </span>
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
@@ -275,22 +413,54 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample4}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample4
+                                    }
                                 </span>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
                                 <div className="h-18 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath1.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath1.partTwo}</span>
-
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample4.regexPath1.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample4.regexPath1.partTwo
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath2.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath2.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample4.regexPath2.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample4.regexPath2.partTwo
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath3.partOne}</span>
-                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath3.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample4.regexPath3.partOne
+                                        }
+                                    </span>
+                                    <span className="fs-13 fw-6 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample4.regexPath3.partTwo
+                                        }
+                                    </span>
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
@@ -302,25 +472,46 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <div className="regex-tippy-container h-58 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
                                 <span className="fs-13 fw-4 lh-20">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partOne}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample5.partOne
+                                    }
                                 </span>
                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partTwo}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample5.partTwo
+                                    }
                                 </span>
                                 <span className="ml-4 fs-13 fw-4 lh-20">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partThree}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample5.partThree
+                                    }
                                 </span>
                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partFour}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample5.partFour
+                                    }
                                 </span>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
                                 <div className="h-18 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample5.regexPath1.partOne}</span>
-
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample5.regexPath1.partOne
+                                        }
+                                    </span>
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample5.regexPath2.partOne}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample5.regexPath2.partOne
+                                        }
+                                    </span>
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
@@ -331,23 +522,32 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <div className="regex-tippy-container h-36 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
                             <div className="flex left">
                                 <span className="fs-13 fw-4 lh-20">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample6.partOne}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample6.partOne
+                                    }
                                 </span>
                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample6.partTwo}
+                                    {
+                                        USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                            .regexExample6.partTwo
+                                    }
                                 </span>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
                                 <div className="h-18 dc__align-items-center p-0 dc__gap-4">
-                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample6.regexPath1.partOne}</span>
+                                    <span className="fs-13 fw-4 lh-10">
+                                        {
+                                            USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample
+                                                .regexPathExample6.regexPath1.partOne
+                                        }
+                                    </span>
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
                                 <Check className="icon-dim-16 mt-2" />
                             </div>
                         </div>
-
-
                     </div>
                 </div>
                 <br />
@@ -495,7 +695,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     if (props.hasValue) {
                                         value = props.getValue()[0].url
                                     }
-                                    let showGit =
+                                    const showGit =
                                         value &&
                                         !value.includes('github') &&
                                         !value.includes('gitlab') &&
@@ -531,7 +731,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
-                            data-testid={`git-repo-url-text-box`}
+                            data-testid="git-repo-url-text-box"
                             error={this.props.isError.url}
                         />
                     </div>
@@ -569,12 +769,14 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     Icon={QuestionFilled}
                                     heading="Exclude file/folders"
                                     infoText=""
-                                    showCloseButton={true}
+                                    showCloseButton
                                     additionalContent={this.tippyContent()}
                                     trigger="click"
-                                    interactive={true}
+                                    interactive
                                 >
-                                    <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
+                                    <div className="flex">
+                                        <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
+                                    </div>
                                 </TippyCustomized>
                             </span>
                         </div>
@@ -600,7 +802,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     {this.props.isLearnHowClicked && (
                                         <div data-testid="exclude-include-learn-how-steps" className="ml-8 mt-8">
                                             <div className="flex left">
-                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <div className="dc__bullet mr-6 ml-6" />
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
                                                 </span>
@@ -616,7 +818,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <br />
                                             </div>
                                             <div className="flex left mt-4">
-                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <div className="dc__bullet mr-6 ml-6" />
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
                                                 </span>
@@ -631,32 +833,30 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
                                                 </span>
-                                                <>
-                                                    <TippyCustomized
-                                                        theme={TippyTheme.white}
-                                                        iconClass="fcv-5"
-                                                        className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
-                                                        heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
-                                                        placement="bottom"
-                                                        Icon={QuestionFilled}
-                                                        infoText=""
-                                                        showCloseButton={true}
-                                                        additionalContent={this.regexInfoSteps()}
-                                                        trigger="click"
-                                                        interactive={true}
+                                                <TippyCustomized
+                                                    theme={TippyTheme.white}
+                                                    iconClass="fcv-5"
+                                                    className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                    heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
+                                                    placement="bottom"
+                                                    Icon={QuestionFilled}
+                                                    infoText=""
+                                                    showCloseButton
+                                                    additionalContent={this.regexInfoSteps()}
+                                                    trigger="click"
+                                                    interactive
+                                                >
+                                                    <span
+                                                        data-testid="exclude-include-use-regex"
+                                                        className="dc__link cursor fs-13 fw-4 ml-8"
                                                     >
-                                                        <span
-                                                            data-testid="exclude-include-use-regex"
-                                                            className="dc__link cursor fs-13 fw-4 ml-8"
-                                                        >
-                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
-                                                        </span>
-                                                    </TippyCustomized>
-                                                </>
+                                                        {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
+                                                    </span>
+                                                </TippyCustomized>
                                                 <br />
                                             </div>
                                             <div className="flex left mt-6">
-                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <div className="dc__bullet mr-6 ml-6" />
                                                 <span className="fs-13 fw-4">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}
                                                 </span>
@@ -674,7 +874,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <textarea
                                     data-testid="exclude-include-commit-textbox"
                                     className="form__textarea dc__no-border-imp mxh-140"
-                                    autoComplete={'off'}
+                                    autoComplete="off"
                                     autoFocus
                                     placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
                                     rows={3}
@@ -708,9 +908,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 className="default-tt w-200"
                                                 arrow={false}
                                                 placement="bottom"
-                                                content={'Devtron will create the directory and clone the code in it'}
+                                                content="Devtron will create the directory and clone the code in it"
                                             >
-                                                <Question className="icon-dim-16 ml-4" />
+                                                <div className="flex">
+                                                    <Question className="icon-dim-16 ml-4" />
+                                                </div>
                                             </Tippy>
                                         </span>
                                         <div className="fs-12 cn-7">
@@ -749,9 +951,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         className="default-tt w-200"
                                         arrow={false}
                                         placement="bottom"
-                                        content={'This will use credentials from default remote of parent repository.'}
+                                        content="This will use credentials from default remote of parent repository."
                                     >
-                                        <Question className="icon-dim-16 ml-4" />
+                                        <div className="flex">
+                                            <Question className="icon-dim-16 ml-4" />
+                                        </div>
                                     </Tippy>
                                 </span>
                                 <div className="fs-12 cn-7">

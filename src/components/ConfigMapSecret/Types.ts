@@ -22,19 +22,19 @@ export interface SuggestedTagOptionType {
 }
 
 export interface OptionsListType {
-    value: string 
+    value: string
     description: string
-    format: string 
+    format: string
     label: string
     stageType: string
     variableType: string
 }
 
-export interface InputPluginSelectionType { 
+export interface InputPluginSelectionType {
     selectedOutputVariable: ExtendedOptionType
     variableOptions?: SuggestedTagOptionType[]
     variableData?: ExtendedOptionType
-    setVariableData?: (tagData:ExtendedOptionType ) => void
+    setVariableData?: (tagData: ExtendedOptionType) => void
     refVar?: React.MutableRefObject<HTMLTextAreaElement>
     noBackDrop?: boolean
     placeholder: string

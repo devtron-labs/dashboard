@@ -21,28 +21,39 @@ export class ValidationRules {
         const re = PATTERNS.APP_NAME
         const regExp = new RegExp(re)
         const test = regExp.test(value)
-        if (value.length === 0) return { isValid: false, message: 'Please provide app name' }
-        if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' }
-        if (value.length > 30) return { isValid: false, message: MAX_LENGTH_30 }
-        else if (!test)
+        if (value.length === 0) {
+            return { isValid: false, message: 'Please provide app name' }
+        }
+        if (value.length < 3) {
+            return { isValid: false, message: 'Atleast 3 characters required' }
+        }
+        if (value.length > 30) {
+            return { isValid: false, message: MAX_LENGTH_30 }
+        }
+        if (!test) {
             return {
                 isValid: false,
                 message:
                     "Min 3 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use 'spaces'",
             }
-        else return { isValid: true, message: '' }
+        }
+        return { isValid: true, message: '' }
     }
 
     team = (projectId: number): { isValid: boolean; message: string } => {
         const found = !!projectId
-        if (found) return { isValid: true, message: '' }
-        else return { isValid: false, message: 'Please select a project' }
+        if (found) {
+            return { isValid: true, message: '' }
+        }
+        return { isValid: false, message: 'Please select a project' }
     }
 
     cloneApp = (cloneAppId: number): { isValid: boolean; message: string } => {
-        let found = !!cloneAppId
-        if (found) return { isValid: true, message: '' }
-        else return { isValid: false, message: 'Please select an application to clone' }
+        const found = !!cloneAppId
+        if (found) {
+            return { isValid: true, message: '' }
+        }
+        return { isValid: false, message: 'Please select an application to clone' }
     }
 
     description = (description: string = ''): { isValid: boolean; message: string } => {

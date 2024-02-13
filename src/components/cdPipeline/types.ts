@@ -37,7 +37,7 @@ export interface DeleteCDNodeProps {
     showConfirmationBar?: boolean
 }
 
-export interface PullImageDigestToggleType{
+export interface PullImageDigestToggleType {
     formData: PipelineFormType
     setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
 }

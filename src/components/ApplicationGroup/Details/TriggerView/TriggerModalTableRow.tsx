@@ -1,35 +1,42 @@
 import React, { useEffect, useState } from 'react'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ResponseRowType, TriggerModalRowType } from '../../AppGroup.types'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ICInfoFilled } from '../../../../assets/icons/ic-info-filled.svg'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { BulkResponseStatus } from '../../Constants'
 import { importComponentFromFELibrary } from '../../../common'
 
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
-export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDownloadPopupOpen }: TriggerModalRowType) {
+export const TriggerModalRow = ({
+    rowData,
+    index,
+    isVirtualEnv,
+    envName,
+    setDownloadPopupOpen,
+}: TriggerModalRowType) => {
     const [downloader, setDownLoader] = useState(false)
     const [isDownloaded, setIsDownLoad] = useState(false)
     const params = {
         appId: rowData.appId,
         envId: rowData.envId,
-        appName: `${rowData.appName}-${envName}`
+        appName: `${rowData.appName}-${envName}`,
     }
 
     const renderStatusIcon = (rowData: ResponseRowType): JSX.Element => {
         if (rowData.status === BulkResponseStatus.SKIP) {
             return <ICInfoFilled className="mr-8 icon-dim-18" />
-        } else if (rowData.status === BulkResponseStatus.UNAUTHORIZE) {
-            return <UnAuthorized className="mr-8 icon-dim-18 fcy-7" />
-        } else if (rowData.status === BulkResponseStatus.PASS) {
-            return <Success className="mr-8 icon-dim-18" />
-        } else {
-            return <Error className="mr-8 icon-dim-18" />
         }
+        if (rowData.status === BulkResponseStatus.UNAUTHORIZE) {
+            return <UnAuthorized className="mr-8 icon-dim-18 fcy-7" />
+        }
+        if (rowData.status === BulkResponseStatus.PASS) {
+            return <Success className="mr-8 icon-dim-18" />
+        }
+        return <Error className="mr-8 icon-dim-18" />
     }
 
     const downloadPackage = (e) => {
@@ -41,13 +48,16 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
     }
 
     useEffect(() => {
-        if(typeof setDownloadPopupOpen === 'function'){
+        if (typeof setDownloadPopupOpen === 'function') {
             setDownloadPopupOpen(downloader)
         }
     }, [downloader])
 
     return (
-        <div className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual': ''}`} key={`response-${rowData.appId}`}>
+        <div
+            className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual' : ''}`}
+            key={`response-${rowData.appId}`}
+        >
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
             <div className="flex left top fs-13 fw-4 cn-9">
                 {renderStatusIcon(rowData)}
@@ -55,7 +65,11 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
             </div>
             <div className="fs-13 fw-4 cn-9">{rowData.message}</div>
             {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (
-                <div className="flex right cursor" data-testid={`bulk-cd-manifest-download-button-${index}`} onClick={downloadPackage}>
+                <div
+                    className="flex right cursor"
+                    data-testid={`bulk-cd-manifest-download-button-${index}`}
+                    onClick={downloadPackage}
+                >
                     {downloader ? (
                         <span className="flex">
                             <Progressing />

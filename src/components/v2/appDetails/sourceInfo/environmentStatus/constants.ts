@@ -1,4 +1,4 @@
-import { NodeStatus } from "../../appDetails.type";
+import { NodeStatus } from '../../appDetails.type'
 
 export const STATUS_SORTING_ORDER = {
     [NodeStatus.Missing]: 1,
