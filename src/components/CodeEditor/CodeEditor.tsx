@@ -237,7 +237,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         if (!validatorSchema) {
             return
         }
-        configureMonacoYaml(monaco, {
+        const config= configureMonacoYaml(monaco, {
           enableSchemaRequest: true,
           isKubernetes,
           schemas: [
@@ -248,6 +248,9 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             },
         ],
         })
+        return ()=>{
+          config.dispose()
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validatorSchema, chartVersion])
     useEffect(() => {
