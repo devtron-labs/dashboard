@@ -128,21 +128,21 @@ foo@bar~$ python uploadTestReport.py
 
 ### Development setup with proxy.
 
-#### **`src/setupProxy.js`**
+#### **`vite.config.ts`**
+Update the `vite.config.ts` file to include the proxy configuration.
+In proxy object, add the target URL of the orchestrator and grafana.
 
 ```js
-const { createProxyMiddleware } = require('http-proxy-middleware')
-
-module.exports = function (app) {
-    app.use(
-        '/orchestrator',
-        createProxyMiddleware({
-            target: 'http://demo.devtron.info:32080',
-            changeOrigin: true,
-            logLevel: 'info',
-        }),
-    )
-}
+server: {
+            port: 3000,
+            proxy: {
+                '/orchestrator': {
+                    target: 'https://preview.devtron.ai/',
+                    changeOrigin: true,
+                },
+                '/grafana': 'https://preview.devtron.ai/',
+            },
+        }
 ```
 
 #### **`.env.development`**
@@ -191,10 +191,10 @@ First you need to have the backend project up and running and the dashboard repo
 
 -   Run yarn in the dashboard repo root
 -   Open the project in your preferred IDE
--   Open the `setupProxy.js` file
+-   Open the `vite.config.ts` file
 -   Change the target URL of the orchestrator. Replace it with the URL of your orchestrator
 -   Save the file
--   Run `npm run start`
+-   Run `yarn start`
 -   Go to `localhost:3000`
 -   Click Login as administrator
 -   Provide Admin as username and password from Devtron BE
