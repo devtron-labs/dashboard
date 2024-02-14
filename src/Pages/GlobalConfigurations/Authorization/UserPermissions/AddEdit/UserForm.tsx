@@ -62,7 +62,6 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
 
     const { userGroupsList, isAutoAssignFlowEnabled } = useAuthorizationContext()
     const userGroupsMap = mapByKey(userGroupsList, 'name')
-    const availableGroups = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
 
     // Form States
     const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
@@ -332,13 +331,6 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
             }
         },
         [emailState],
-    )
-
-    const formatChartGroupOptionLabel = ({ value, label }) => (
-        <div className="flex left column">
-            <span>{label}</span>
-            <small>{userGroupsMap.has(value) ? userGroupsMap.get(value).description : ''}</small>
-        </div>
     )
 
     const handleCreatableBlur = (e) => {
