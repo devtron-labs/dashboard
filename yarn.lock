@@ -984,7 +984,7 @@
 
 "@devtron-labs/devtron-fe-common-lib@0.0.64":
   version "0.0.64"
-  resolved "https://registry.npmjs.org/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.64.tgz"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.64.tgz#4906d2a5f7d2d183933d27216719b77f2d6e9cc1"
   integrity sha512-3aSxCCuDjaKX2M6TACfZNCJkijCmta8SNepxtYkGa+X+vRTC9/65W3M/mwNo6r9Pt/GceuY426NnrwidZbEixA==
   dependencies:
     fast-json-patch "^3.1.1"

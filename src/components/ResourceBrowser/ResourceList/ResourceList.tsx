@@ -398,6 +398,8 @@ export default function ResourceList() {
             if (userRole?.result) {
                 superAdminRef.current = userRole.result.superAdmin
                 initTabsBasedOnRole(false, userRole.result.superAdmin)
+            } else if(window._env_.K8S_CLIENT){
+              initTabsBasedOnRole(false, true)
             }
             if (namespaceList.result) {
                 setNameSpaceList(namespaceList.result)

@@ -37,14 +37,11 @@ function reactVirtualized(): PluginOption {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-    process.env = { ...process.env, ...loadEnv(mode, process.cwd(), '') }
+    process.env = { ...process.env, ...loadEnv(mode, process.cwd(), ''), VITE_K8S_CLIENT: `${mode === 'K8S_CLIENT'}` }
     const baseConfig = {
         base: '/dashboard/',
         preview: {
             port: 3000,
-        },
-        build: {
-            sourcemap: true,
         },
         plugins: [
             // @TODO: Check if we can remove the config object inside the react plugin
@@ -95,11 +92,6 @@ export default defineConfig(({ mode }) => {
         baseConfig['define'] = {
             global: 'globalThis',
         }
-    // } else {
-    //     baseConfig['define'] = {
-    //         __BASE_URL__: '/dashboard/',
-    //         __ORCHESTRATOR_ROOT__: '/orchestrator',
-    //     }
     }
 
     return baseConfig
