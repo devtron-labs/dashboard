@@ -60,8 +60,7 @@ const CreatableChipStyle = {
 const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData: User }) => {
     const { serverMode } = useMainContext()
 
-    const { userGroupsList, isAutoAssignFlowEnabled } = useAuthorizationContext()
-    const userGroupsMap = mapByKey(userGroupsList, 'name')
+    const { isAutoAssignFlowEnabled } = useAuthorizationContext()
 
     // Form States
     const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)

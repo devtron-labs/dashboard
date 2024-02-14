@@ -132,7 +132,6 @@ export interface K8sListItemCardType {
 }
 export interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
-    userGroupsList: any[]
     environmentsList: any[]
     projectsList: any[]
     chartGroupsList: ChartGroup[]

@@ -4,7 +4,6 @@ import { UserGroup } from './shared/components/userGroups/userGroups.types'
 
 const AuthorizationContext = createContext<UserGroup>({
     appsList: new Map(),
-    userGroupsList: [],
     environmentsList: [],
     projectsList: [],
     chartGroupsList: [],

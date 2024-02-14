@@ -19,7 +19,7 @@ import { EntityTypes } from './shared/components/userGroups/userGroups.types'
 import { ACCESS_TYPE_MAP, API_STATUS_CODES, Routes, SERVER_MODE } from '../../../config'
 import { getEnvironmentListHelmApps, getEnvironmentListMin, getProjectFilteredApps } from '../../../services/service'
 import './authorization.scss'
-import { getCustomRoles, getPermissionGroupList } from './authorization.service'
+import { getCustomRoles } from './authorization.service'
 import { AuthorizationProvider } from './AuthorizationProvider'
 import { getMetaPossibleRoles } from './utils'
 import { UserAndGroupPermissionsWrapProps } from './types'
@@ -49,10 +49,7 @@ const UserAndGroupPermissions = () => {
     const { path } = useRouteMatch()
     const [isDataLoading, data, error, reload] = useAsync(() =>
         Promise.all([
-            // TODO (v3): Remove this from here and use type ahead search instead
-            getPermissionGroupList({
-                showAll: true,
-            }),
+            // TODO (v3): Remove this from here
             getProjectList(),
             getEnvironmentListMin(),
             serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
@@ -216,7 +213,7 @@ const UserAndGroupPermissions = () => {
         return <Reload reload={reload} />
     }
 
-    const [userGroups, projects, environments, chartGroups, envClustersList, customRolesList] = data
+    const [projects, environments, chartGroups, envClustersList, customRolesList] = data
 
     return (
         <div className="flexbox-col flex-grow-1 h-100 w-100 dc__content-center">
@@ -225,7 +222,6 @@ const UserAndGroupPermissions = () => {
                 value={{
                     fetchAppList,
                     appsList,
-                    userGroupsList: userGroups?.permissionGroups ?? [],
                     environmentsList: environments?.result ?? [],
                     projectsList: projects?.result ?? [],
                     chartGroupsList: chartGroups?.result?.groups ?? [],

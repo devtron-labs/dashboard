@@ -4,13 +4,18 @@ import {
     MultiValueChipContainer,
     Option,
     OptionType,
+    useAsync,
     UserRoleGroupsTable,
+    Progressing,
+    GenericSectionErrorState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import { User } from '../../../types'
-import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { mapByKey } from '../../../../../../components/common'
+import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import { UserPermissionGroupsSelectorProps } from './types'
+import { getPermissionGroupList } from '../../../authorization.service'
+
+const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const _selectStyles = getCommonSelectStyle()
 
@@ -24,10 +29,14 @@ const selectStyles = {
 
 const MultiValueContainer = (props) => <MultiValueChipContainer {...props} validator={null} />
 
+const LoadingIndicator = () => <Progressing />
+
 const UserPermissionGroupsSelector = ({ userData, userGroups, setUserGroups }: UserPermissionGroupsSelectorProps) => {
-    const { userGroupsList } = useAuthorizationContext()
-    const userGroupsMap = mapByKey(userGroupsList, 'name')
-    const availableGroups = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
+    const [isLoading, result, error, reloadGroupList] = useAsync(() =>
+        getPermissionGroupList({
+            showAll: true,
+        }),
+    )
 
     function populateDataFromAPI(data: User) {
         const { groups } = data
@@ -40,6 +49,16 @@ const UserPermissionGroupsSelector = ({ userData, userGroups, setUserGroups }: U
         }
     }, [userData])
 
+    const { permissionGroups: userGroupsList = [] } = result ?? {}
+
+    const userGroupsMap = mapByKey(userGroupsList, 'name')
+    const groupOptions = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
+    const roleGroups = userGroups.map((group, index) => ({
+        id: index,
+        name: group.value,
+        description: `Test description - ${index}`,
+    }))
+
     const formatChartGroupOptionLabel = ({ value, label }) => (
         <div className="flex left column">
             <span>{label}</span>
@@ -49,8 +68,9 @@ const UserPermissionGroupsSelector = ({ userData, userGroups, setUserGroups }: U
 
     const handleChange = (selected) => setUserGroups((selected || []) as OptionType[])
 
-    const handleDelete = () => {
-        // TODO (v3): Integrate
+    const handleDelete = (id) => {
+        // TODO (v3): Fix & Integrate
+        setUserGroups(userGroups.filter((group, index) => index !== id))
     }
 
     return (
@@ -68,33 +88,37 @@ const UserPermissionGroupsSelector = ({ userData, userGroups, setUserGroups }: U
                         IndicatorSeparator: null,
                         MultiValueContainer,
                         ClearIndicator: null,
-                        // TODO (v3): Fix active state styling
                         Option,
+                        LoadingIndicator,
+                        ...(error
+                            ? {
+                                  // eslint-disable-next-line react/no-unstable-nested-components
+                                  NoOptionsMessage: () => (
+                                      <GenericSectionErrorState withBorder reload={reloadGroupList} />
+                                  ),
+                              }
+                            : {}),
                     }}
                     styles={selectStyles}
                     formatOptionLabel={formatChartGroupOptionLabel}
                     closeMenuOnSelect={false}
                     isMulti
                     name="groups"
-                    options={availableGroups}
+                    options={groupOptions}
                     hideSelectedOptions={false}
                     onChange={handleChange}
-                    // TODO (v3): Check and remove
-                    className="basic-multi-select"
                     id="permission-groups-dropdown"
                     controlShouldRenderValue={false}
+                    isLoading={isLoading}
+                    isDisabled={isLoading}
                 />
             </div>
             {userGroups.length > 0 && (
                 <UserRoleGroupsTable
                     // TODO (v3): Update with API integration
-                    roleGroups={userGroups.map((group, index) => ({
-                        id: index,
-                        name: group.value,
-                        description: 'Test description',
-                    }))}
+                    roleGroups={roleGroups}
                     // TODO (v3): Add the check
-                    showStatus
+                    showStatus={showStatus}
                     handleDelete={handleDelete}
                 />
             )}
