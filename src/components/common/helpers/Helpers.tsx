@@ -21,6 +21,7 @@ import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
 import { PATTERNS } from '../../../config/constants'
 
+let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
 export type IntersectionOptions = {
@@ -32,7 +33,7 @@ export type IntersectionOptions = {
 }
 
 export function validateEmail(email) {
-    var re =
+    const re =
         /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     const result = re.test(String(email).toLowerCase())
     return result
@@ -68,7 +69,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     // in every re-render in component
     const validateState = useCallback(
         (state) => {
-            //check errors in all fields
+            // check errors in all fields
             const hasErrorInState = Object.keys(validationSchema).some((key) => {
                 const isInputFieldRequired = validationSchema[key].required
                 const stateValue = state[key].value // state value
@@ -95,7 +96,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // single validator
-        let _validator = validationSchema[name]?.validator
+        const _validator = validationSchema[name]?.validator
         if (_validator && typeof _validator === 'object') {
             if (!_validateSingleValidator(_validator, value)) {
                 return _validator.error
@@ -103,9 +104,9 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
 
         // multiple validators
-        let _validators = validationSchema[name]?.validators
+        const _validators = validationSchema[name]?.validators
         if (_validators && typeof _validators === 'object' && Array.isArray(_validators)) {
-            let errors = []
+            const errors = []
             _validators.forEach((_validator) => {
                 if (!_validateSingleValidator(_validator, value)) {
                     errors.push(_validator.error)
@@ -124,7 +125,7 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
             setIsDirty(true)
 
             const { name, value } = event.target
-            let error = validateField(name, value)
+            const error = validateField(name, value)
             setState((prevState) => ({
                 ...prevState,
                 [name]: { value, error },
@@ -275,7 +276,7 @@ export function useInterval(callback, delay) {
             savedCallback.current()
         }
         if (delay !== null) {
-            let id = setInterval(tick, delay)
+            const id = setInterval(tick, delay)
             return () => clearInterval(id)
         }
     }, [delay])
@@ -290,16 +291,16 @@ export function shallowEqual(objA, objB) {
         return false
     }
 
-    var keysA = Object.keys(objA)
-    var keysB = Object.keys(objB)
+    const keysA = Object.keys(objA)
+    const keysB = Object.keys(objB)
 
     if (keysA.length !== keysB.length) {
         return false
     }
 
     // Test for A's keys different from B.
-    var bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB)
-    for (var i = 0; i < keysA.length; i++) {
+    const bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB)
+    for (let i = 0; i < keysA.length; i++) {
         if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
             return false
         }
@@ -318,7 +319,8 @@ export function compareObjectLength(objA: any, objB: any): boolean {
 
     if ((isArrayA && !isArrayB) || (!isArrayA && isArrayB)) {
         return false
-    } else if (!isArrayA && !isArrayB) {
+    }
+    if (!isArrayA && !isArrayB) {
         return Object.keys(objA).length === Object.keys(objB).length
     }
 
@@ -329,21 +331,21 @@ export function deepEqual(configA: any, configB: any): boolean {
     try {
         if (configA === configB) {
             return true
-        } else if ((configA && !configB) || (!configA && configB) || !compareObjectLength(configA, configB)) {
-            return false
-        } else {
-            let isEqual = true
-            for (const idx in configA) {
-                if (!isEqual) {
-                    break
-                } else if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {
-                    isEqual = deepEqual(configA[idx], configB[idx])
-                } else if (configA[idx] !== configB[idx]) {
-                    isEqual = false
-                }
-            }
-            return isEqual
         }
+        if ((configA && !configB) || (!configA && configB) || !compareObjectLength(configA, configB)) {
+            return false
+        }
+        let isEqual = true
+        for (const idx in configA) {
+            if (!isEqual) {
+                break
+            } else if (typeof configA[idx] === 'object' && typeof configB[idx] === 'object') {
+                isEqual = deepEqual(configA[idx], configB[idx])
+            } else if (configA[idx] !== configB[idx]) {
+                isEqual = false
+            }
+        }
+        return isEqual
     } catch (err) {
         showError(err)
         return true
@@ -384,7 +386,9 @@ export function useScrollable(options: scrollableInterface) {
     const [autoBottom, toggleAutoBottom] = useState(false)
 
     const target = useCallback((node) => {
-        if (node === null) return
+        if (node === null) {
+            return
+        }
         targetRef.current = node
         wheelListener.current = node.addEventListener('wheel', handleWheel)
         raf_id.current = requestAnimationFrame(rAFCallback)
@@ -406,7 +410,7 @@ export function useScrollable(options: scrollableInterface) {
         }
 
         let topScrollable = true
-        let bottomScrollable = !(
+        const bottomScrollable = !(
             targetRef.current.scrollHeight - targetRef.current.scrollTop ===
             targetRef.current.clientHeight
         )
@@ -430,7 +434,9 @@ export function useScrollable(options: scrollableInterface) {
 
     useThrottledEffect(
         () => {
-            if (!autoBottom || !targetRef.current) return
+            if (!autoBottom || !targetRef.current) {
+                return
+            }
             targetRef.current.scrollBy({
                 top: scrollHeight,
                 left: 0,
@@ -488,7 +494,9 @@ export function useKeyDown() {
     useDelayedEffect(clearKeys, 500, [keys.join('+')])
 
     function clearKeys() {
-        if (keys.length) setKeys([])
+        if (keys.length) {
+            setKeys([])
+        }
     }
 
     const onKeyDown = ({ key }) => {
@@ -527,7 +535,9 @@ export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = f
     }
 
     useEffect(() => {
-        if (!shouldRun) return
+        if (!shouldRun) {
+            return
+        }
         let obj
         let jsonError = null
         let yamlError = null
@@ -594,7 +604,9 @@ export function useEventSource(
     const eventSourceRef = useRef(null)
 
     function closeEventSource() {
-        if (eventSourceRef.current?.close) eventSourceRef.current.close()
+        if (eventSourceRef.current?.close) {
+            eventSourceRef.current.close()
+        }
     }
 
     function handleMessage(event) {
@@ -602,7 +614,9 @@ export function useEventSource(
     }
 
     useEffect(() => {
-        if (!shouldRun) return
+        if (!shouldRun) {
+            return
+        }
         eventSourceRef.current = new EventSource(url, { withCredentials: true })
         eventSourceRef.current.onmessage = handleMessage
         return closeEventSource
@@ -656,13 +670,17 @@ export function useSize(): UseSize {
     })
 
     const target = useCallback((node) => {
-        if (node === null) return
+        if (node === null) {
+            return
+        }
         targetRef.current = node
         return () => (targetRef.current = null)
     }, [])
 
     useEffect(() => {
-        if (!windowWidth || !windowHeight || !targetRef.current) return
+        if (!windowWidth || !windowHeight || !targetRef.current) {
+            return
+        }
         const { x, y, height, width, left, right, top, bottom } = targetRef.current.getBoundingClientRect()
         setDimension({ x, y, height, width, left, right, top, bottom })
     }, [windowHeight, windowWidth])
@@ -704,7 +722,7 @@ export function asyncWrap(promise): any[] {
     return promise.then((result) => [null, result]).catch((err) => [err])
 }
 
-export function Td({ children, to = null, ...props }) {
+export const Td = ({ children, to = null, ...props }) => {
     return (
         <td>
             {to ? (
@@ -718,19 +736,16 @@ export function Td({ children, to = null, ...props }) {
     )
 }
 
-export function FragmentHOC({ children, ...props }) {
+export const FragmentHOC = ({ children, ...props }) => {
     // passes props to children
-    return (
-        <React.Fragment>
-            {React.Children.map(children, (child) => React.cloneElement(child, { ...props }))}
-        </React.Fragment>
-    )
+    return <>{React.Children.map(children, (child) => React.cloneElement(child, { ...props }))}</>
 }
 
 export const sortOptionsByLabel = (optionA, optionB) => {
     if (optionA.label < optionB.label) {
         return -1
-    } else if (optionA.label > optionB.label) {
+    }
+    if (optionA.label > optionB.label) {
         return 1
     }
     return 0
@@ -739,7 +754,8 @@ export const sortOptionsByLabel = (optionA, optionB) => {
 export const sortOptionsByValue = (optionA, optionB) => {
     if (optionA.value < optionB.value) {
         return -1
-    } else if (optionA.value > optionB.value) {
+    }
+    if (optionA.value > optionB.value) {
         return 1
     }
     return 0
@@ -825,7 +841,9 @@ export const convertToOptionsList = (
     customValue?: string,
     customFieldKey?: string,
 ): OptionType[] => {
-    if (!Array.isArray(arr) || !arr) return []
+    if (!Array.isArray(arr) || !arr) {
+        return []
+    }
     return arr.map((ele) => {
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
@@ -842,11 +860,22 @@ export const convertToOptionsList = (
 
 export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
     try {
-        const module = require('@devtron-labs/devtron-fe-lib')
-        if (type === 'function') {
-            return module[componentName] || defaultComponent || null
+        let component = defaultComponent || null
+        if (!module) {
+            const path = '../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js'
+            const modules = import.meta.glob(`../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js`, {
+                eager: true,
+            })
+            module = modules[path]
         }
-        return module[componentName]?.default || defaultComponent || null
+        if (module) {
+            if (type === 'function') {
+                component = module[componentName]
+            } else {
+                component = module[componentName]?.default
+            }
+        }
+        return component
     } catch (e) {
         if (e['code'] !== 'MODULE_NOT_FOUND') {
             throw e
@@ -858,10 +887,10 @@ export const importComponentFromFELibrary = (componentName: string, defaultCompo
 export const getElapsedTime = (createdAt: Date) => {
     const elapsedTime = Math.floor((new Date().getTime() - createdAt.getTime()) / 1000)
     if (elapsedTime >= 0) {
-        const days = Math.floor(elapsedTime / (24 * 60 * 60)),
-            hrs = Math.floor((elapsedTime / (60 * 60)) % 24), // hrs mod (%) 24 hrs to get elapsed hrs
-            mins = Math.floor((elapsedTime / 60) % 60), // mins mod (%) 60 mins to get elapsed mins
-            secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
+        const days = Math.floor(elapsedTime / (24 * 60 * 60))
+        const hrs = Math.floor((elapsedTime / (60 * 60)) % 24) // hrs mod (%) 24 hrs to get elapsed hrs
+        const mins = Math.floor((elapsedTime / 60) % 60) // mins mod (%) 60 mins to get elapsed mins
+        const secs = Math.floor(elapsedTime % 60) // secs mod (%) 60 secs to get elapsed secs
 
         const dh = `${days}d ${hrs}h`
             .split(' ')
@@ -871,7 +900,7 @@ export const getElapsedTime = (createdAt: Date) => {
         if (dh.length > 0) {
             return dh
         }
-        //return age in minutes and seconds
+        // return age in minutes and seconds
         return `${mins}m ${secs}s`
             .split(' ')
             .filter((a) => !a.startsWith('0'))
@@ -893,9 +922,9 @@ export const processK8SObjects = (
     disableGroupFilter?: boolean,
 ): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceGroupType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
-    let _selectedResource: ApiResourceGroupType,
-        isShowNamespace = false,
-        isShowEvent = false
+    let _selectedResource: ApiResourceGroupType
+    const isShowNamespace = false
+    const isShowEvent = false
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
         const groupParent = disableGroupFilter
@@ -952,7 +981,7 @@ export function createClusterEnvGroup<T>(
             optionLabel
                 ? {
                       label: obj[optionLabel],
-                      value: obj[optionValue ? optionValue : optionLabel],
+                      value: obj[optionValue || optionLabel],
                       description: obj['description'],
                       isVirtualEnvironment: obj['isVirtualEnvironment'],
                       isClusterCdActive: obj['isClusterCdActive'],
@@ -976,12 +1005,12 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
     if (!duration) {
         return totalTimeInSec
     }
-    //Parses time(format:- ex. 4h20m) in second
+    // Parses time(format:- ex. 4h20m) in second
     const matchesNumber = duration.match(/\d+/g)
     const matchesChar = duration.match(/[dhms]/g)
     for (let i = 0; i < matchesNumber.length; i++) {
-        let _unit = matchesChar[i]
-        let _unitVal = +matchesNumber[i]
+        const _unit = matchesChar[i]
+        const _unitVal = +matchesNumber[i]
         switch (_unit) {
             case 'd':
                 totalTimeInSec += _unitVal * 24 * 60 * 60
@@ -1010,6 +1039,9 @@ export const handleOnFocus = (e): void => {
     }
 }
 
+/**
+ * @deprecated
+ */
 export const highlightSearchedText = (searchText: string, matchString: string): string => {
     if (!searchText) {
         return matchString
@@ -1026,13 +1058,15 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
 
 export const trackByGAEvent = (category: string, action: string): void => {
     ReactGA.event({
-        category: category,
-        action: action,
+        category,
+        action,
     })
 }
 
 export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
-    if (!list) return []
+    if (!list) {
+        return []
+    }
     let emptyHeadingCount = 0
     const objList: Record<string, OptionType[]> = list?.reduce((acc, obj) => {
         if (obj.nodeGroup) {
@@ -1111,9 +1145,11 @@ export const getDeploymentAppType = (
 ): string => {
     if (isVirtualEnvironment) {
         return DeploymentAppTypes.MANIFEST_DOWNLOAD
-    } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
+    }
+    if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
         return ''
-    } else if (
+    }
+    if (
         selectedDeploymentAppType &&
         allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
     ) {
@@ -1125,14 +1161,14 @@ export const getDeploymentAppType = (
 export const hasApproverAccess = (approverList: string[]): boolean => {
     const loginInfo = getLoginInfo()
     let hasAccess = false
-    if(approverList?.length > 0) {
-    for (const approver of approverList) {
-        if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
-            hasAccess = true
-            break
+    if (approverList?.length > 0) {
+        for (const approver of approverList) {
+            if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
+                hasAccess = true
+                break
+            }
         }
     }
-}
     return hasAccess
 }
 

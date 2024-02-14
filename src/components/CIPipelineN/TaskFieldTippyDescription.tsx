@@ -7,7 +7,7 @@ interface TippyDescriptionType {
     contentDescription?: string
 }
 
-function TaskFieldTippyDescription({ taskField, contentDescription }: TippyDescriptionType) {
+const TaskFieldTippyDescription = ({ taskField, contentDescription }: TippyDescriptionType) => {
     return (
         <div className="fw-6 fs-13 lh-32 cn-7" style={{ maxWidth: '220px' }}>
             <Tippy

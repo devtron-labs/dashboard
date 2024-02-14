@@ -166,7 +166,7 @@ export default function IdentifierSelector({
                     <CreatableSelect
                         value={selectedIdentifiers}
                         options={clusters}
-                        isMulti={true}
+                        isMulti
                         closeMenuOnSelect={false}
                         inputValue={identifierSearchInput}
                         onInputChange={handleOnInputChange}
@@ -198,7 +198,7 @@ export default function IdentifierSelector({
                     <CreatableSelect
                         value={selectedIdentifiers}
                         options={allApps}
-                        isMulti={true}
+                        isMulti
                         closeMenuOnSelect={false}
                         inputValue={identifierSearchInput}
                         onInputChange={handleOnInputChange}

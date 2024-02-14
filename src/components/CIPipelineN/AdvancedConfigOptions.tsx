@@ -13,9 +13,7 @@ import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import '../ciConfig/CIConfig.scss'
 
-export default function AdvancedConfigOptions({
-    ciPipeline,
-}: AdvancedConfigOptionsProps) {
+export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOptionsProps) {
     const { formData, setFormData, loadingState, setLoadingState, formDataErrorObj, setFormDataErrorObj } =
         useContext(pipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
@@ -23,7 +21,7 @@ export default function AdvancedConfigOptions({
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
     const [parentState, setParentState] = useState<CIConfigParentState>({
         loadingState: ComponentStates.loading,
-        selectedCIPipeline: ciPipeline ? Object.assign({}, ciPipeline) : null,
+        selectedCIPipeline: ciPipeline ? { ...ciPipeline } : null,
         dockerRegistries: null,
         sourceConfig: null,
         ciConfig: null,
@@ -98,21 +96,18 @@ export default function AdvancedConfigOptions({
         value: CIBuildConfigType | OptionType[] | boolean | string,
     ): void => {
         // Shallow copy all data from formData to _form
-        const _form = Object.assign({}, formData)
+        const _form = { ...formData }
 
         // Init the dockerConfigOverride with global values if dockerConfigOverride data is not present
         if (!formData.dockerConfigOverride || !Object.keys(formData.dockerConfigOverride).length) {
             if (parentState.selectedCIPipeline?.isDockerConfigOverridden) {
-                _form.dockerConfigOverride = Object.assign({}, parentState.selectedCIPipeline.dockerConfigOverride)
+                _form.dockerConfigOverride = { ...parentState.selectedCIPipeline.dockerConfigOverride }
             } else if (parentState?.ciConfig) {
-                _form.dockerConfigOverride = Object.assign(
-                    {},
-                    {
-                        dockerRegistry: parentState.ciConfig.dockerRegistry,
-                        dockerRepository: parentState.ciConfig.dockerRepository,
-                        ciBuildConfig: parentState.ciConfig.ciBuildConfig,
-                    },
-                )
+                _form.dockerConfigOverride = {
+                    dockerRegistry: parentState.ciConfig.dockerRegistry,
+                    dockerRepository: parentState.ciConfig.dockerRepository,
+                    ciBuildConfig: parentState.ciConfig.ciBuildConfig,
+                }
             }
         }
 
@@ -179,7 +174,7 @@ export default function AdvancedConfigOptions({
             <div className="ci-advanced-options__wrapper">
                 <CIConfig
                     respondOnSuccess={noop}
-                    configOverrideView={true}
+                    configOverrideView
                     allowOverride={allowOverride}
                     parentState={parentState}
                     setParentState={setParentState}
@@ -198,7 +193,7 @@ export default function AdvancedConfigOptions({
                             setShowCustomPlatformWarning={setShowCustomPlatformWarning}
                             targetPlatformMap={targetPlatformMap}
                             targetPlatform={targetPlatforms}
-                            configOverrideView={true}
+                            configOverrideView
                             updateDockerConfigOverride={updateDockerConfigOverride}
                         />
                     </div>

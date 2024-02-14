@@ -1,26 +1,26 @@
 import React, { useContext } from 'react'
+import { Progressing, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
-import { Progressing,getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
-import YAML from 'yaml'
 import { importComponentFromFELibrary } from '../../common'
-const applyPatches = importComponentFromFELibrary('applyPatches', null, 'function')
 
+const applyPatches = importComponentFromFELibrary('applyPatches', null, 'function')
 
 export default function DeploymentTemplateReadOnlyEditorView({
     value,
     isEnvOverride,
     lockedConfigKeysWithLockType,
     hideLockedKeys,
-    removedPatches
+    removedPatches,
 }: DeploymentTemplateReadOnlyEditorViewProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
 
-    //filtereing the locked keys from the yaml
+    // filtereing the locked keys from the yaml
     if (applyPatches) {
         if (hideLockedKeys) {
             const filteredValue = getUnlockedJSON(YAML.parse(value), lockedConfigKeysWithLockType.config ?? [], false)
@@ -40,7 +40,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                     validatorSchema={state.schema}
                     loading={state.chartConfigLoading || value === undefined || value === null}
                     height={isEnvOverride ? 'calc(100vh - 251px)' : 'calc(100vh - 218px)'}
-                    readOnly={true}
+                    readOnly
                 />
             </div>
         )
@@ -62,6 +62,6 @@ export default function DeploymentTemplateReadOnlyEditorView({
             {renderCodeEditor()}
         </>
     ) : (
-        <DeploymentTemplateGUIView value={value} readOnly={true} />
+        <DeploymentTemplateGUIView value={value} readOnly />
     )
 }

@@ -1,4 +1,4 @@
-import { CDModalTab } from "@devtron-labs/devtron-fe-common-lib"
+import { CDModalTab } from '@devtron-labs/devtron-fe-common-lib'
 
 const materialInfo = {
     author: 'Test User',
@@ -9,31 +9,31 @@ const materialInfo = {
     revision: '7c97426aa9452732efbcecaf0758',
     tag: '',
     url: 'git@github.com:testuser/devtron.git',
-    webhookData: "{\"Id\":0,\"EventActionType\":\"\",\"Data\":null}",
+    webhookData: '{"Id":0,"EventActionType":"","Data":null}',
 }
 
-export const cdTriggerResponse = [{
-    id: '651',
-    deployedTime: 'Wed, 01 Mar 2023, 06:29 PM',
-    deployedBy: '',
-    wfrId: 0,
-    tab: CDModalTab.Changes,
-    image: '7c97426a-355-1147',
-    showChanges: false,
-    vulnerabilities: [],
-    buildTime: '',
-    isSelected: true,
-    showSourceInfo: false,
-    deployed: true,
-    latest: true,
-    vulnerabilitiesLoading: true,
-    scanned: false,
-    scanEnabled: false,
-    vulnerable: false,
-    runningOnParentCd: undefined,
-    artifactStatus: 'Succeeded',
-    materialInfo: [
-        materialInfo,
-    ],
-    lastExecution: undefined
-}]
+export const cdTriggerResponse = [
+    {
+        id: '651',
+        deployedTime: 'Wed, 01 Mar 2023, 06:29 PM',
+        deployedBy: '',
+        wfrId: 0,
+        tab: CDModalTab.Changes,
+        image: '7c97426a-355-1147',
+        showChanges: false,
+        vulnerabilities: [],
+        buildTime: '',
+        isSelected: true,
+        showSourceInfo: false,
+        deployed: true,
+        latest: true,
+        vulnerabilitiesLoading: true,
+        scanned: false,
+        scanEnabled: false,
+        vulnerable: false,
+        runningOnParentCd: undefined,
+        artifactStatus: 'Succeeded',
+        materialInfo: [materialInfo],
+        lastExecution: undefined,
+    },
+]

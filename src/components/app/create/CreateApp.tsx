@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader } from '../../common'
 import {
     ServerErrors,
     showError,
@@ -16,28 +15,33 @@ import {
     noop,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import ReactSelect from 'react-select'
+import AsyncSelect from 'react-select/async'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader } from '../../common'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
 import { ValidationRules } from './validationRules'
 import { getHostURLConfiguration } from '../../../services/service'
 import { createApp } from './service'
-import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import ReactSelect from 'react-select'
-import AsyncSelect from 'react-select/async'
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
+
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
+
     _inputAppName: HTMLInputElement
+
     createAppRef = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -82,7 +86,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.setState({ view: ViewType.ERROR })
             showError(err)
         } finally {
-            if (this._inputAppName) this._inputAppName.focus()
+            if (this._inputAppName) {
+                this._inputAppName.focus()
+            }
         }
         document.addEventListener('keydown', this.escKeyPressHandler)
         document.addEventListener('click', this.outsideClickHandler)
@@ -99,6 +105,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             this.props.close(evt)
         }
     }
+
     outsideClickHandler(evt): void {
         if (
             !this.state.createAppLoader &&
@@ -111,14 +118,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     handleAppname(event: React.ChangeEvent<HTMLInputElement>): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.appName = event.target.value
         isValid.appName = this.rules.appName(event.target.value).isValid
         this.setState({ form, isValid, appNameErrors: true })
     }
 
     handleProject(item: number): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.projectId = item
         isValid.projectId = !!item
         this.setState({ form, isValid })
@@ -155,8 +162,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             }
         }
         this.setState({ showErrors: true, appNameErrors: true })
-        let allKeys = Object.keys(this.state.isValid)
-        let isFormValid = allKeys.reduce((valid, key) => {
+        const allKeys = Object.keys(this.state.isValid)
+        const isFormValid = allKeys.reduce((valid, key) => {
             valid = valid && this.state.isValid[key]
             return valid
         }, true)
@@ -185,7 +192,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             .then((response) => {
                 if (response.result) {
                     this.getHostURLConfig()
-                    let { form, isValid } = { ...this.state }
+                    const { form, isValid } = { ...this.state }
                     form.appId = response.result.id
                     form.appName = response.result.appName
                     isValid.appName = true
@@ -231,7 +238,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     changeTemplate = (appCreationType: string): void => {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.appCreationType = appCreationType
         form.cloneId = appCreationType === AppCreationType.Blank ? 0 : form.cloneId
         isValid.cloneAppId = appCreationType === AppCreationType.Blank
@@ -247,7 +254,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     handleCloneAppChange = ({ value }): void => {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.cloneId = value
         isValid.cloneAppId = !!value
         this.setState({ form, isValid })
@@ -296,14 +303,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     loadAppListOptions = (inputValue: string) => appListOptions(inputValue, this.props.isJobView)
 
     renderBodySection = (): JSX.Element => {
-        let errorObject = [
+        const errorObject = [
             this.rules.appName(this.state.form.appName),
             this.rules.team(this.state.form.projectId),
             this.rules.cloneApp(this.state.form.cloneId),
             this.rules.description(this.state.form.description),
         ]
         const showError = this.state.showErrors
-        const appNameErrors = this.state.appNameErrors
+        const { appNameErrors } = this.state
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
@@ -315,10 +322,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
                             value={this.state.form.appName}
                             placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
-                            autoFocus={true}
+                            autoFocus
                             tabIndex={1}
                             onChange={this.handleAppname}
-                            isRequiredField={true}
+                            isRequiredField
                             error={appNameErrors && !this.state.isValid.appName && errorObject[0].message}
                         />
                     </div>
@@ -328,29 +335,27 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             Apps are NOT env specific and can be used to deploy to multiple environments.
                         </span>
                     )}
-                    <>
-                        <span className="form__label mt-16">Description</span>
-                        <textarea
-                            data-testid="description-textbox"
-                            className="form__textarea dc__resizable-textarea--vertical"
-                            name={this.props.isJobView ? 'job-description' : 'app-description'}
-                            value={this.state.form.description}
-                            placeholder={
-                                this.props.isJobView ? 'Describe this job' : 'Write a description for this application'
-                            }
-                            tabIndex={2}
-                            onChange={this.updateCreateAppFormDescription}
-                            rows={4}
-                        />
-                        <span className="form__error">
-                            {!this.state.isValid.description ? (
-                                <>
-                                    <Error className="form__icon form__icon--error" />
-                                    {errorObject[3].message} <br />
-                                </>
-                            ) : null}
-                        </span>
-                    </>
+                    <span className="form__label mt-16">Description</span>
+                    <textarea
+                        data-testid="description-textbox"
+                        className="form__textarea dc__resizable-textarea--vertical"
+                        name={this.props.isJobView ? 'job-description' : 'app-description'}
+                        value={this.state.form.description}
+                        placeholder={
+                            this.props.isJobView ? 'Describe this job' : 'Write a description for this application'
+                        }
+                        tabIndex={2}
+                        onChange={this.updateCreateAppFormDescription}
+                        rows={4}
+                    />
+                    <span className="form__error">
+                        {!this.state.isValid.description ? (
+                            <>
+                                <Error className="form__icon form__icon--error" />
+                                {errorObject[3].message} <br />
+                            </>
+                        ) : null}
+                    </span>
                 </div>
 
                 <div className="form__row clone-apps dc__inline-block">
@@ -452,7 +457,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     </span>
                 </div>
                 <TagsContainer
-                    isCreateApp={true}
+                    isCreateApp
                     labelTags={this.state.tags}
                     setLabelTags={this.setTags}
                     tabIndex={5}
@@ -486,16 +491,16 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderPageDetails = (): JSX.Element => {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR) {
-            return <Reload />
-        } else {
-            return (
-                <>
-                    {this.renderBodySection()}
-                    {this.renderFooterSection()}
-                </>
-            )
         }
+        if (this.state.view === ViewType.ERROR) {
+            return <Reload />
+        }
+        return (
+            <>
+                {this.renderBodySection()}
+                {this.renderFooterSection()}
+            </>
+        )
     }
 
     render() {

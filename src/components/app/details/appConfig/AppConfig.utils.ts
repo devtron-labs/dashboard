@@ -1,15 +1,12 @@
-import { URLS } from '../../../../config'
-import { DOCUMENTATION } from '../../../../config'
+import { URLS, DOCUMENTATION } from '../../../../config'
 import { AppStageUnlockedType, STAGE_NAME } from './appConfig.type'
 
-//stage: last configured stage
+// stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
     stage === STAGE_NAME.CI_PIPELINE ||
-    (isGitOpsConfigurationRequired
-        ? stage === STAGE_NAME.GITOPS_CONFIG
-        : stage === STAGE_NAME.DEPLOYMENT_TEMPLATE) ||
+    (isGitOpsConfigurationRequired ? stage === STAGE_NAME.GITOPS_CONFIG : stage === STAGE_NAME.DEPLOYMENT_TEMPLATE) ||
     stage === STAGE_NAME.CD_PIPELINE ||
-    stage === STAGE_NAME.CHART_ENV_CONFIG;
+    stage === STAGE_NAME.CHART_ENV_CONFIG
 
 export const isUnlocked = (stage: string, isGitOpsConfigurationRequired?: boolean): AppStageUnlockedType => {
     return {
@@ -43,18 +40,18 @@ export const isUnlocked = (stage: string, isGitOpsConfigurationRequired?: boolea
             stage === STAGE_NAME.GITOPS_CONFIG ||
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
-        workflowEditor:
-            isCommonUnlocked(stage, isGitOpsConfigurationRequired),
-        configmap:
-            isCommonUnlocked(stage, isGitOpsConfigurationRequired),
-        secret:
-            isCommonUnlocked(stage, isGitOpsConfigurationRequired),
-        envOverride:
-            isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+        workflowEditor: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+        configmap: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+        secret: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+        envOverride: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
     }
 }
 
-export const getCompletedStep = (isUnlocked: AppStageUnlockedType, isJobView: boolean,isGitOpsConfigurationRequired:boolean): number => {
+export const getCompletedStep = (
+    isUnlocked: AppStageUnlockedType,
+    isJobView: boolean,
+    isGitOpsConfigurationRequired: boolean,
+): number => {
     if (isJobView) {
         if (isUnlocked.workflowEditor) {
             return 1
@@ -62,11 +59,14 @@ export const getCompletedStep = (isUnlocked: AppStageUnlockedType, isJobView: bo
     } else {
         if (isUnlocked.workflowEditor) {
             return isGitOpsConfigurationRequired ? 4 : 3
-        } else if (isUnlocked.gitOpsConfig) {
+        }
+        if (isUnlocked.gitOpsConfig) {
             return 3
-        } else if (isUnlocked.deploymentTemplate) {
+        }
+        if (isUnlocked.deploymentTemplate) {
             return 2
-        } else if (isUnlocked.dockerBuildConfig) {
+        }
+        if (isUnlocked.dockerBuildConfig) {
             return 1
         }
     }

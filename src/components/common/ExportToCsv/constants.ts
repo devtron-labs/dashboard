@@ -1,4 +1,4 @@
-import { importComponentFromFELibrary } from "../helpers/Helpers"
+import { importComponentFromFELibrary } from '../helpers/Helpers'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
@@ -48,9 +48,11 @@ export const USER_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADER_ROW = {
     emailId: 'Email address',
     userId: 'User ID',
-    ...(showStatus ? {
-        status: 'User status'
-    } : {}),
+    ...(showStatus
+        ? {
+              status: 'User status',
+          }
+        : {}),
     lastLoginTime: 'Last login time',
     superAdmin: 'Super admin',
     groups: 'Group permissions',

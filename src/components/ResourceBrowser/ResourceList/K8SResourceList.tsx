@@ -1,11 +1,13 @@
-import React, {  useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 import { highlightSearchedText } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
-  ALL_NAMESPACE_OPTION,
+    ALL_NAMESPACE_OPTION,
     K8S_EMPTY_GROUP,
     K8S_RESOURCE_LIST,
     RESOURCE_EMPTY_PAGE_STATE,
@@ -15,14 +17,12 @@ import {
 } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
-import { toast } from 'react-toastify'
 import { EventList } from './EventList'
-import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
 import { URLS } from '../../../config'
 
-export function K8SResourceList({
+export const K8SResourceList = ({
     selectedResource,
     resourceList,
     filteredResourceList,
@@ -45,7 +45,7 @@ export function K8SResourceList({
     renderCallBackSync,
     syncError,
     k8SObjectMapRaw,
-}: K8SResourceListType) {
+}: K8SResourceListType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -70,7 +70,7 @@ export function K8SResourceList({
              */
             const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 200
             const windowWidth = window.innerWidth
-            let clientWidth = 0
+            const clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [resourceList?.headers])
@@ -86,7 +86,11 @@ export function K8SResourceList({
 
     const handleResourceClick = (e) => {
         const { name, tab, namespace, origin } = e.currentTarget.dataset
-        let resourceParam, kind, resourceName, _nodeSelectionData, _group
+        let resourceParam
+        let kind
+        let resourceName
+        let _nodeSelectionData
+        let _group
         const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
@@ -95,7 +99,7 @@ export function K8SResourceList({
             resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
-            _nodeSelectionData = { name: kind + '_' + resourceName, namespace, isFromEvent: true }
+            _nodeSelectionData = { name: `${kind}_${resourceName}`, namespace, isFromEvent: true }
         } else {
             resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
             kind = nodeType
@@ -179,7 +183,7 @@ export function K8SResourceList({
                                                     dangerouslySetInnerHTML={{
                                                         __html: highlightSearchedText(searchText, resourceData.name),
                                                     }}
-                                                ></span>
+                                                />
                                             </a>
                                         </Tippy>
                                     </div>
@@ -209,14 +213,16 @@ export function K8SResourceList({
                                         className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                         data-name={resourceData[columnName]}
                                         onClick={handleNodeClick}
-                                    >{children}</a>
+                                    >
+                                        {children}
+                                    </a>
                                 )}
                             >
                                 <span
                                     dangerouslySetInnerHTML={{
                                         __html: highlightSearchedText(searchText, resourceData[columnName]?.toString()),
                                     }}
-                                ></span>
+                                />
                             </ConditionalWrap>
                         </div>
                     ),
@@ -236,15 +242,14 @@ export function K8SResourceList({
                     )}
                 />
             )
-        } else {
-            return (
-                <ResourceListEmptyState
-                    title={RESOURCE_LIST_EMPTY_STATE.title}
-                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
-                    actionHandler={clearSearch}
-                />
-            )
         }
+        return (
+            <ResourceListEmptyState
+                title={RESOURCE_LIST_EMPTY_STATE.title}
+                subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
+                actionHandler={clearSearch}
+            />
+        )
     }
 
     const changePage = (pageNo: number) => {
@@ -295,35 +300,34 @@ export function K8SResourceList({
     const renderList = (): JSX.Element => {
         if (filteredResourceList.length === 0) {
             return renderEmptyPage()
-        } else {
-            return (
-                <>
-                    {selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind ? (
-                        <EventList
-                            listRef={resourceListRef}
-                            filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
-                            handleResourceClick={handleResourceClick}
-                            paginatedView={showPaginatedView}
-                            syncError={syncError}
-                            searchText={searchText}
-                        />
-                    ) : (
-                        renderResourceList()
-                    )}
-                    {showPaginatedView && (
-                        <Pagination
-                            rootClassName="resource-browser-paginator dc__border-top"
-                            size={filteredResourceList.length}
-                            pageSize={pageSize}
-                            offset={resourceListOffset}
-                            changePage={changePage}
-                            changePageSize={changePageSize}
-                            pageSizeOptions={RESOURCE_PAGE_SIZE_OPTIONS}
-                        />
-                    )}
-                </>
-            )
         }
+        return (
+            <>
+                {selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind ? (
+                    <EventList
+                        listRef={resourceListRef}
+                        filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
+                        handleResourceClick={handleResourceClick}
+                        paginatedView={showPaginatedView}
+                        syncError={syncError}
+                        searchText={searchText}
+                    />
+                ) : (
+                    renderResourceList()
+                )}
+                {showPaginatedView && (
+                    <Pagination
+                        rootClassName="resource-browser-paginator dc__border-top"
+                        size={filteredResourceList.length}
+                        pageSize={pageSize}
+                        offset={resourceListOffset}
+                        changePage={changePage}
+                        changePageSize={changePageSize}
+                        pageSizeOptions={RESOURCE_PAGE_SIZE_OPTIONS}
+                    />
+                )}
+            </>
+        )
     }
 
     return (

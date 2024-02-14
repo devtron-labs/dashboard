@@ -84,22 +84,28 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                                 </span>
                                 <span className="flex right">
                                     <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
-                                        <Clone
-                                            className="icon-dim-16 cursor fcn-6 mr-8"
-                                            onClick={() => editPermission(element, 'clone', index)}
-                                        />
+                                        <div className="flex">
+                                            <Clone
+                                                className="icon-dim-16 cursor fcn-6 mr-8"
+                                                onClick={() => editPermission(element, 'clone', index)}
+                                            />
+                                        </div>
                                     </Tippy>
                                     <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                        <Edit
-                                            className="icon-dim-16 cursor scn-6 mr-8"
-                                            onClick={() => editPermission(element, 'edit', index)}
-                                        />
+                                        <div className="flex">
+                                            <Edit
+                                                className="icon-dim-16 cursor scn-6 mr-8"
+                                                onClick={() => editPermission(element, 'edit', index)}
+                                            />
+                                        </div>
                                     </Tippy>
                                     <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                        <Delete
-                                            className="icon-dim-16 fcn-6 cursor"
-                                            onClick={() => deletePermission(index)}
-                                        />
+                                        <div className="flex">
+                                            <Delete
+                                                className="icon-dim-16 fcn-6 cursor"
+                                                onClick={() => deletePermission(index)}
+                                            />
+                                        </div>
                                     </Tippy>
                                 </span>
                             </div>

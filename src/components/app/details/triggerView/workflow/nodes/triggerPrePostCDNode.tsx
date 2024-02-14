@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
-import { TriggerPrePostCDNodeProps ,TriggerPrePostCDNodeState} from '../../types';
-import { TriggerStatus } from '../../../../config';
-import { BUILD_STATUS, URLS } from './../../../../../../config';
-import { Link } from 'react-router-dom';
-import { DEFAULT_STATUS } from '../../../../../../config';
-import { TriggerViewContext } from '../../config';
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import { DeploymentAppTypes, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
+import { TriggerStatus } from '../../../../config'
+import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
+import { TriggerViewContext } from '../../config'
 import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
 
@@ -52,12 +51,12 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                     )}
                 </div>
             )
-        } else
-            return (
-                <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    <span>{this.props.status}</span>
-                </div>
-            )
+        }
+        return (
+            <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                <span>{this.props.status}</span>
+            </div>
+        )
     }
 
     handleShowGitOpsRepoConfiguredWarning = (): void => {
@@ -66,7 +65,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 showGitOpsRepoConfiguredWarning: !prevState.showGitOpsRepoConfiguredWarning,
             }))
     }
-    
+
     handleImageSelection = (event, context): void => {
         event.stopPropagation()
         !this.gitOpsRepoWarningCondition && context.onClickCDMaterial(this.props.id, this.props.type)
@@ -74,9 +73,9 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
     }
 
     renderCardContent() {
-        let status = this.props.status ? this.props.status.toLocaleLowerCase() : ''
-        let stage = this.props.type === 'PRECD' ? 'Pre-deployment' : 'Post-deployment'
-        let isClickable = !(
+        const status = this.props.status ? this.props.status.toLocaleLowerCase() : ''
+        const stage = this.props.type === 'PRECD' ? 'Pre-deployment' : 'Post-deployment'
+        const isClickable = !(
             status === DEFAULT_STATUS.toLowerCase() ||
             status === BUILD_STATUS.NOT_TRIGGERED ||
             status === BUILD_STATUS.NOT_DEPLOYED
@@ -89,7 +88,9 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                             <div
                                 className={isClickable ? 'workflow-node cursor' : 'workflow-node'}
                                 onClick={(e) => {
-                                    if (isClickable) this.redirectToCDDetails(e)
+                                    if (isClickable) {
+                                        this.redirectToCDDetails(e)
+                                    }
                                 }}
                             >
                                 <div className="workflow-node__trigger-type workflow-node__trigger-type--cd">

@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { CardContentDirection, CardLinkIconPlacement, ContentCardProps } from './ContentCard.types'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { CardContentDirection, CardLinkIconPlacement, ContentCardProps } from './ContentCard.types'
 import './ContentCard.scss'
 
 /**
@@ -25,7 +25,12 @@ export default function ContentCard({
     const getContent = () => {
         return (
             <>
-                <img className="content-card-img dc__top-radius-4" src={imgSrc} alt={title} data-testid={datatestid+"-image"} />
+                <img
+                    className="content-card-img dc__top-radius-4"
+                    src={imgSrc}
+                    alt={title}
+                    data-testid={`${datatestid}-image`}
+                />
                 <ConditionalWrap
                     condition={direction === CardContentDirection.Horizontal}
                     wrap={(children) => <div className="flex column left">{children}</div>}
@@ -35,8 +40,7 @@ export default function ContentCard({
                             className={`fw-6 fs-16 cn-9 ${
                                 direction === CardContentDirection.Horizontal ? '' : 'pt-24'
                             } pb-12 pl-24 pr-24 dc__break-word`}
-                            data-testid={datatestid+"-heading"}
-                            
+                            data-testid={`${datatestid}-heading`}
                         >
                             {title}
                         </div>
@@ -47,7 +51,7 @@ export default function ContentCard({
                                     ? 'dc__content-space'
                                     : 'left'
                             } w-100 ${direction === CardContentDirection.Horizontal ? '' : 'pb-24'} pl-24 pr-24`}
-                            data-testid={datatestid+"-link"}
+                            data-testid={`${datatestid}-link`}
                         >
                             {LinkIcon &&
                                 (linkIconPlacement === CardLinkIconPlacement.BeforeLink ||

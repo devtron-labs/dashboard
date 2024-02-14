@@ -1,27 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
-import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg';
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { WebhookSelectorCondition } from './WebhookSelectorCondition';
-import Tippy from '@tippyjs/react';
+import React, { useState, useEffect } from 'react'
+import Tippy from '@tippyjs/react'
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
+import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { WebhookSelectorCondition } from './WebhookSelectorCondition'
 
-export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHost, selectedWebhookEvent, addWebhookCondition, deleteWebhookCondition, onWebhookConditionSelectorChange, onWebhookConditionSelectorValueChange, canEditPipeline }) {
+export const ConfigureWebhook = ({
+    webhookConditionList,
+    copyToClipboard,
+    gitHost,
+    selectedWebhookEvent,
+    addWebhookCondition,
+    deleteWebhookCondition,
+    onWebhookConditionSelectorChange,
+    onWebhookConditionSelectorValueChange,
+    canEditPipeline,
+}) => {
     const [copiedUrl, setCopiedUrl] = useState(false)
     const [copiedKey, setCopiedKey] = useState(false)
 
-    let _allSelectorIdsInConditions = [];
+    const _allSelectorIdsInConditions = []
     webhookConditionList.map((_condition, index) => {
-        _allSelectorIdsInConditions.push(Number(_condition.selectorId));
+        _allSelectorIdsInConditions.push(Number(_condition.selectorId))
     })
 
     useEffect(() => {
-        if (!copiedUrl) return
+        if (!copiedUrl) {
+            return
+        }
         setTimeout(() => setCopiedUrl(false), 2000)
     }, [copiedUrl])
 
     useEffect(() => {
-        if (!copiedKey) return
+        if (!copiedKey) {
+            return
+        }
         setTimeout(() => setCopiedKey(false), 2000)
     }, [copiedKey])
 
@@ -103,10 +117,10 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                     </a>
                 </p>
                 {webhookConditionList.map((_condition, index) => {
-                    let _masterSelectorList = []
+                    const _masterSelectorList = []
                     let _canEditSelectorCondition = canEditPipeline
                     selectedWebhookEvent.selectors.forEach((_selector) => {
-                        let _selectorId = _selector.id
+                        const _selectorId = _selector.id
                         if (
                             _selector.toShowInCiFilter &&
                             (!_allSelectorIdsInConditions.includes(_selectorId) || _condition.selectorId == _selectorId)

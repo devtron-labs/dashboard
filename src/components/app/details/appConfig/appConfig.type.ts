@@ -86,8 +86,8 @@ export interface AppConfigNavigationProps {
     getWorkflows: () => void
     environmentList?: any[]
     isBaseConfigProtected?: boolean
-    reloadEnvironments:()=> void
-    isGitOpsConfigurationRequired: Boolean
+    reloadEnvironments: () => void
+    isGitOpsConfigurationRequired: boolean
 }
 
 export interface AppComposeRouterProps {
@@ -141,7 +141,7 @@ export interface EnvironmentOverrideRouterProps {
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
     allEnvs?: any[]
-    reloadEnvironments: ()=> void
+    reloadEnvironments: () => void
 }
 
 export interface NextButtonProps {

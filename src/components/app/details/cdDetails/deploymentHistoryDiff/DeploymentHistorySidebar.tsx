@@ -4,7 +4,10 @@ import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, URLS } from '../../../../../
 import { DeploymentHistoryParamsType, DeploymentHistorySidebarType } from './types'
 import { getDeploymentHistoryList } from '../service'
 
-function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryList }: DeploymentHistorySidebarType) {
+const DeploymentHistorySidebar = ({
+    deploymentHistoryList,
+    setDeploymentHistoryList,
+}: DeploymentHistorySidebarType) => {
     const match = useRouteMatch()
     const { appId, pipelineId, triggerId } = useParams<DeploymentHistoryParamsType>()
     useEffect(() => {
@@ -17,12 +20,12 @@ function DeploymentHistorySidebar({ deploymentHistoryList, setDeploymentHistoryL
 
     const getNavLink = (componentId: number, componentName: string, key: string, childComponentName?: string) => {
         const currentComponent = DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[componentName]
-        const childComponentDetail = childComponentName ? '/' + childComponentName : ''
+        const childComponentDetail = childComponentName ? `/${childComponentName}` : ''
         const configURL = `${match.url.split(URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS)[0]}${
             URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS
         }/${currentComponent.VALUE}/${componentId}${childComponentDetail}`
         return (
-            <div className={`cursor`} key={key}>
+            <div className="cursor" key={key}>
                 <NavLink
                     to={configURL}
                     activeClassName="active"

@@ -1,36 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { useKeyDown } from '../common';
-import CodeEditor from '../CodeEditor/CodeEditor';
-import checkGreen from '../../assets/icons/misc/checkGreen.svg';
-import arrowSquareout from '../../assets/icons/misc/arrowSquareOut.svg';
-import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
-import './deploymentConfig.scss';
-import { MODES } from '../../../src/config/constants';
+import React, { useEffect, useState } from 'react'
+import { useKeyDown } from '../common'
+import CodeEditor from '../CodeEditor/CodeEditor'
+import checkGreen from '../../assets/icons/misc/checkGreen.svg'
+import arrowSquareout from '../../assets/icons/misc/arrowSquareOut.svg'
+import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
+import './deploymentConfig.scss'
+import { MODES } from '../../config/constants'
 
 interface Readme {
-    readme: any;
-    value: string;
-    handleClose: any;
-    loading: boolean;
-    onChange: any;
-    schema?: any;
-    readOnly?: boolean;
-    defaultValue?: string;
+    readme: any
+    value: string
+    handleClose: any
+    loading: boolean
+    onChange: any
+    schema?: any
+    readOnly?: boolean
+    defaultValue?: string
 }
 
-function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, readOnly, defaultValue }:Readme) {
-    const key = useKeyDown();
-    const [tempForm, setTempForm] = useState();
+const ReadmeConfig = ({ readme, value, handleClose, loading, onChange, schema, readOnly, defaultValue }: Readme) => {
+    const key = useKeyDown()
+    const [tempForm, setTempForm] = useState()
     useEffect(() => {
         if (key.join().includes('Escape')) {
-            handleClose();
+            handleClose()
         }
-    }, [key.join()]);
+    }, [key.join()])
 
     const handleReadmeConfig = () => {
-        handleClose();
-        onChange(tempForm);
-    };
+        handleClose()
+        onChange(tempForm)
+    }
 
     return (
         <div className="advanced-config-readme pt-24 pb-24 pr-24 pl-24 br-8">
@@ -57,7 +57,7 @@ function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, r
                     <CodeEditor
                         value={value}
                         defaultValue={defaultValue}
-                        height={"calc(100% - 42px)"}
+                        height="calc(100% - 42px)"
                         readOnly={readOnly}
                         validatorSchema={schema}
                         onChange={setTempForm}
@@ -72,7 +72,7 @@ function ReadmeConfig({ readme, value, handleClose, loading, onChange, schema, r
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default ReadmeConfig;
+export default ReadmeConfig

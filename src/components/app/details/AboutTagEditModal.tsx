@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import {
     showError,
     Progressing,
@@ -8,9 +7,10 @@ import {
     TagType,
     DEFAULT_TAG_DATA,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { AboutAppInfoModalProps } from '../types'
 import { editApp } from '../service'
-import { toast } from 'react-toastify'
 import { importComponentFromFELibrary } from '../../common'
 import '../create/createApp.scss'
 

@@ -9,7 +9,17 @@ import { ReactComponent as DevtronIcon } from '../../assets/icons/ic-devtron-app
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { getChartList } from './customChart.service'
-import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar, closeOnEscKeyPressed, Host } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    GenericEmptyState,
+    TippyTheme,
+    InfoColourBar,
+    closeOnEscKeyPressed,
+    Host,
+    TippyCustomized,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
@@ -19,7 +29,7 @@ import { processChartData } from './CustomChartList.utils'
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
     const [loader, setLoader] = useState(false)
-    const [downloadInProgress, setDownloadInProgress] = useState<string>("")
+    const [downloadInProgress, setDownloadInProgress] = useState<string>('')
     const [chartList, setChartList] = useState<ChartDetailType[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const tippyRef = useRef(null)
@@ -60,8 +70,6 @@ export default function CustomChartList() {
             })
     }
 
-    
-
     const openUploadPopup = (): void => {
         setShowUploadPopup(true)
     }
@@ -73,8 +81,8 @@ export default function CustomChartList() {
 
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={openUploadPopup}  data-testid="upload-custom-chart-button" className="cta h-32 flex">
-                <Upload className="icon-dim-14 dc__no-svg-fill mr-8"/>
+            <button onClick={openUploadPopup} data-testid="upload-custom-chart-button" className="cta h-32 flex">
+                <Upload className="icon-dim-14 dc__no-svg-fill mr-8" />
                 Upload Chart
             </button>
         )
@@ -82,7 +90,12 @@ export default function CustomChartList() {
 
     const renderLearnMoreLink = (): JSX.Element => {
         return (
-            <a className="dc__no-decor" href={DOCUMENTATION.DEPLOYMENT_TEMPLATE} target="_blank" rel="noreferrer noopener">
+            <a
+                className="dc__no-decor"
+                href={DOCUMENTATION.DEPLOYMENT_TEMPLATE}
+                target="_blank"
+                rel="noreferrer noopener"
+            >
                 Learn more
             </a>
         )
@@ -96,13 +109,10 @@ export default function CustomChartList() {
                 subTitle={
                     <>
                         Import custom charts to use them in apps instead of the default system template.
-                        <div>
-                            {renderLearnMoreLink()}
-                        </div>
-                        
-                    </>    
+                        <div>{renderLearnMoreLink()}</div>
+                    </>
                 }
-                isButtonAvailable={true}
+                isButtonAvailable
                 renderButton={renderUploadButton}
             />
         )
@@ -112,7 +122,7 @@ export default function CustomChartList() {
         return <p className="p-12 fs-13 fw-4 lh-20">{CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.additionalParagraphText}</p>
     }
 
-    const handleCustomChartDownload = async(e: any) => {
+    const handleCustomChartDownload = async (e: any) => {
         const chartRefId = e.currentTarget.dataset.versionid
         const chartVersion = e.currentTarget.dataset.version
         const chartName = e.currentTarget.dataset.name
@@ -127,14 +137,17 @@ export default function CustomChartList() {
         } catch (error) {
             showError(error)
         } finally {
-            setDownloadInProgress("")
+            setDownloadInProgress('')
         }
     }
 
-    const renderChartVersionsModalBody = (chartData: ChartDetailType) : JSX.Element => {
+    const renderChartVersionsModalBody = (chartData: ChartDetailType): JSX.Element => {
         return (
             <>
-                <div className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8 dc__top-radius-4 dc__text-center" data-testid="chart-versions-modal">
+                <div
+                    className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8 dc__top-radius-4 dc__text-center"
+                    data-testid="chart-versions-modal"
+                >
                     Select Version
                 </div>
                 <div className="mb-4 mxh-140 dc__overflow-scroll">
@@ -146,7 +159,8 @@ export default function CustomChartList() {
                             data-version={versionsList.version}
                             data-name={chartData.name}
                             onClick={handleCustomChartDownload}
-                            className="chart-version-row flex left pt-6 pb-6 pl-8 pr-8 lh-20 cn-9 fw-4 fs-13 pointer">
+                            className="chart-version-row flex left pt-6 pb-6 pl-8 pr-8 lh-20 cn-9 fw-4 fs-13 pointer"
+                        >
                             {versionsList.version}
                         </div>
                     ))}
@@ -155,7 +169,7 @@ export default function CustomChartList() {
         )
     }
 
-    const customChartInfoBarMessage = () : JSX.Element => {
+    const customChartInfoBarMessage = (): JSX.Element => {
         return (
             <>
                 <span className="fs-13 fw-6 lh-20">How to use?</span>
@@ -167,7 +181,7 @@ export default function CustomChartList() {
         )
     }
 
-    const renderDevtronChipTag = (chartData: ChartDetailType) : JSX.Element => { 
+    const renderDevtronChipTag = (chartData: ChartDetailType): JSX.Element => {
         return !chartData.isUserUploaded ? (
             <span className="pl-6 pr-6 ml-8 flex bcb-1 h-20 br-6">
                 <DevtronIcon className="icon-dim-20" />
@@ -176,29 +190,36 @@ export default function CustomChartList() {
         ) : null
     }
 
+    const handleQuestion = () => {
+        return (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300 h-100 fcv-5"
+                placement="right"
+                Icon={HelpIcon}
+                heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
+                infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
+                additionalContent={additionalRegistryTitleTippyContent()}
+                showCloseButton
+                trigger="click"
+                interactive
+                documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
+                documentationLink={DOCUMENTATION.CUSTOM_CHART}
+            >
+                <div className="flex">
+                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                </div>
+            </TippyCustomized>
+        )
+    }
+
     const renderChartList = (): JSX.Element => {
         return (
             <div className="chart-list" data-testid="custom-charts-list">
                 <div className="flexbox dc__content-space cn-9 fw-6 fs-16 mb-20">
-                    <div className="flex left">
+                    <div className="flex row ml-0">
                         {CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300"
-                            placement="top"
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
-                            heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
-                            infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
-                            additionalContent={additionalRegistryTitleTippyContent()}
-                            documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
-                            documentationLink={DOCUMENTATION.CUSTOM_CHART}
-                            showCloseButton={true}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </TippyCustomized>
+                        {handleQuestion()}
                     </div>
                     {renderUploadButton()}
                 </div>
@@ -288,7 +309,7 @@ export default function CustomChartList() {
     return (
         <>
             {chartList.length === 0 ? renderEmptyState() : renderChartList()}
-            {showUploadPopup && <UploadChartModal closeUploadPopup={closeUploadPopup}></UploadChartModal>}
+            {showUploadPopup && <UploadChartModal closeUploadPopup={closeUploadPopup} />}
         </>
     )
 }

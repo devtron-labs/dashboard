@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useKeyDown } from '../../../common'
 import { useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
+import { NavLink } from 'react-router-dom'
+import { not, GenericEmptyState, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { useKeyDown } from '../../../common'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg'
@@ -9,9 +11,7 @@ import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from './types'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
-import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
-import { not, GenericEmptyState, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { CIListItem, CopyTippyWithText } from './Artifacts'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -23,7 +23,9 @@ export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResize
     const keys = useKeyDown()
 
     useEffect(() => {
-        if (!pathname.includes('/logs')) return
+        if (!pathname.includes('/logs')) {
+            return
+        }
         switch (keys.join('')) {
             case 'f':
                 toggleFullScreen()
@@ -46,11 +48,13 @@ export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResize
                 className="default-tt"
                 content={fullScreenView ? 'Exit fullscreen (f)' : 'Enter fullscreen (f)'}
             >
-                {fullScreenView ? (
-                    <ZoomOut className="zoom zoom--out pointer" onClick={toggleFullScreen} />
-                ) : (
-                    <ZoomIn className="zoom zoom--in pointer" onClick={toggleFullScreen} />
-                )}
+                <div>
+                    {fullScreenView ? (
+                        <ZoomOut className="zoom zoom--out pointer" onClick={toggleFullScreen} />
+                    ) : (
+                        <ZoomIn className="zoom zoom--in pointer" onClick={toggleFullScreen} />
+                    )}
+                </div>
             </Tippy>
         )
     )
@@ -91,9 +95,9 @@ export const GitChanges = ({
 }: GitChangesType) => {
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
     useEffect(() => {
-        if(artifactId){
+        if (artifactId) {
             initialise()
-        }    
+        }
     }, [artifactId])
     async function initialise() {
         try {
@@ -115,7 +119,7 @@ export const GitChanges = ({
             />
         )
     }
-    
+
     return (
         <div className="flex column left w-100 ">
             {ciMaterials?.map((ciMaterial, index) => {
@@ -130,12 +134,12 @@ export const GitChanges = ({
                         <GitCommitInfoGeneric
                             index={index}
                             materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
-                            showMaterialInfoHeader={true}
+                            showMaterialInfoHeader
                             commitInfo={gitTrigger}
                             materialSourceType={
                                 gitTrigger?.CiConfigureSourceType ? gitTrigger.CiConfigureSourceType : ciMaterial?.type
                             }
-                            selectedCommitInfo={''}
+                            selectedCommitInfo=""
                             materialSourceValue={
                                 gitTrigger?.CiConfigureSourceValue
                                     ? gitTrigger.CiConfigureSourceValue
@@ -183,14 +187,12 @@ export const GitChanges = ({
 
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
     const EmptyViewButton = () => {
-        return (
-            link ? (
-                <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
-                    <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
-                    {linkText}
-                </NavLink>
-            ) : null
-        )
+        return link ? (
+            <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
+                <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
+                {linkText}
+            </NavLink>
+        ) : null
     }
     return (
         <GenericEmptyState
@@ -198,21 +200,22 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
             classname="w-300 dc__text-center lh-1-4 dc__align-reload-center"
             title={title}
             subTitle={subTitle}
-            isButtonAvailable={true}
+            isButtonAvailable
             renderButton={EmptyViewButton}
         />
     )
 }
 
 export const triggerStatus = (triggerDetailStatus: string): string => {
-    let triggerStatus = triggerDetailStatus?.toUpperCase()
+    const triggerStatus = triggerDetailStatus?.toUpperCase()
     if (triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
         return 'Failed'
-    } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
-        return 'Succeeded'
-    } else if (triggerStatus === TIMELINE_STATUS.INPROGRESS) {
-        return 'Inprogress'
-    } else {
-        return triggerDetailStatus
     }
+    if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
+        return 'Succeeded'
+    }
+    if (triggerStatus === TIMELINE_STATUS.INPROGRESS) {
+        return 'Inprogress'
+    }
+    return triggerDetailStatus
 }

@@ -30,7 +30,7 @@ export default function TerminalWrapper({
     }
 
     const renderTerminalView = () => {
-        const terminalData = selectionListData.tabSwitcher.terminalData
+        const { terminalData } = selectionListData.tabSwitcher
 
         return (
             <TerminalView
@@ -67,11 +67,11 @@ export default function TerminalWrapper({
     )
 }
 
-export function RenderConnectionStrip({
+export const RenderConnectionStrip = ({
     renderStripMessage,
     socketConnection,
     setSocketConnection,
-}: ConnectionStripMessageType) {
+}: ConnectionStripMessageType) => {
     const isOnline = useOnline()
 
     const reconnect = () => {
@@ -89,38 +89,35 @@ export function RenderConnectionStrip({
     const renderStrip = () => {
         if (renderStripMessage) {
             return renderStripMessage
-        } else {
-            return (
-                <div
-                    className={`dc__first-letter-capitalize ${
-                        socketConnection !== SocketConnectionType.CONNECTED &&
-                        `${
-                            socketConnection === SocketConnectionType.CONNECTING ? 'bcy-2' : 'bcr-7'
-                        } connection-status-strip pl-20`
-                    } ${socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
-                >
-                    {socketConnection !== SocketConnectionType.CONNECTED && (
-                        <span
-                            className={socketConnection === SocketConnectionType.CONNECTING ? 'dc__loading-dots' : ''}
-                        >
-                            {socketConnection?.toLowerCase()}
-                        </span>
-                    )}
-                    {socketConnection === SocketConnectionType.DISCONNECTED && (
-                        <>
-                            <span>.&nbsp;</span>
-                            <button
-                                type="button"
-                                onClick={reconnect}
-                                className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
-                            >
-                                Resume
-                            </button>
-                        </>
-                    )}
-                </div>
-            )
         }
+        return (
+            <div
+                className={`dc__first-letter-capitalize ${
+                    socketConnection !== SocketConnectionType.CONNECTED &&
+                    `${
+                        socketConnection === SocketConnectionType.CONNECTING ? 'bcy-2' : 'bcr-7'
+                    } connection-status-strip pl-20`
+                } ${socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
+            >
+                {socketConnection !== SocketConnectionType.CONNECTED && (
+                    <span className={socketConnection === SocketConnectionType.CONNECTING ? 'dc__loading-dots' : ''}>
+                        {socketConnection?.toLowerCase()}
+                    </span>
+                )}
+                {socketConnection === SocketConnectionType.DISCONNECTED && (
+                    <>
+                        <span>.&nbsp;</span>
+                        <button
+                            type="button"
+                            onClick={reconnect}
+                            className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                        >
+                            Resume
+                        </button>
+                    </>
+                )}
+            </div>
+        )
     }
 
     return <div data-testid="terminal-strip-message">{renderStrip()}</div>

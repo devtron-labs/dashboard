@@ -27,14 +27,14 @@ export const validScopedVariablesData = {
                 },
             ],
         },
-        jsonSchema: `{}`
+        jsonSchema: `{}`,
     },
 }
 
 export const noScopedVariablesData = {
     result: {
         manifest: null,
-        jsonSchema: '{}'
+        jsonSchema: '{}',
     },
     code: 200,
 }

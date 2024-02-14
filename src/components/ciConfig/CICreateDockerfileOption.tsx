@@ -36,7 +36,7 @@ export default function CICreateDockerfileOption({
     const [editorValue, setEditorValue] = useState<string>('')
     const [copied, setCopied] = useState(false)
     const controller = new AbortController()
-    const signal = controller.signal
+    const { signal } = controller
 
     useEffect(() => {
         if (frameworks.length > 0) {
@@ -121,7 +121,6 @@ export default function CICreateDockerfileOption({
         const _currentData = templateData?.[templateKey]
 
         if (_currentData?.fetching) {
-            return
         } else if (_currentData?.data) {
             setTemplateData({
                 ...templateData,
@@ -147,7 +146,7 @@ export default function CICreateDockerfileOption({
             try {
                 const respData = await fetch(_selectedFramework.templateUrl, {
                     method: 'get',
-                    signal: signal,
+                    signal,
                 }).then((res) => {
                     return res.text()
                 })
@@ -267,7 +266,7 @@ export default function CICreateDockerfileOption({
                     }
                     value={editorValue || editorData?.data}
                     mode={MODES.DOCKERFILE}
-                    noParsing={true}
+                    noParsing
                     height="300px"
                     readOnly={configOverrideView && !allowOverride}
                     onChange={handleEditorValueChange}
@@ -304,9 +303,11 @@ export default function CICreateDockerfileOption({
                                             setCopied(false)
                                         }, 5000)
                                     }}
-                                    interactive={true}
+                                    interactive
                                 >
-                                    <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
+                                    <div className="flex">
+                                        <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
+                                    </div>
                                 </Tippy>
                             )}
                         </div>

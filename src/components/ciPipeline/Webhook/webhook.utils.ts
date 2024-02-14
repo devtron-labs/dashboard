@@ -1,21 +1,21 @@
-import { TabDetailsType } from "./types";
+import { TabDetailsType } from './types'
 
 export const TOKEN_TAB_LIST: TabDetailsType[] = [
-  { key: 'selectToken', value: 'Select API token' },
-  { key: 'autoToken', value: 'Auto-generate token' },
+    { key: 'selectToken', value: 'Select API token' },
+    { key: 'autoToken', value: 'Auto-generate token' },
 ]
 export const PLAYGROUND_TAB_LIST: TabDetailsType[] = [
-  { key: 'webhookURL', value: 'Webhook URL' },
-  { key: 'sampleCurl', value: 'Sample cURL request' },
-  { key: 'try', value: 'Try it out' },
+    { key: 'webhookURL', value: 'Webhook URL' },
+    { key: 'sampleCurl', value: 'Sample cURL request' },
+    { key: 'try', value: 'Try it out' },
 ]
 export const REQUEST_BODY_TAB_LIST: TabDetailsType[] = [
-  { key: 'json', value: 'JSON' },
-  { key: 'schema', value: 'Schema' },
+    { key: 'json', value: 'JSON' },
+    { key: 'schema', value: 'Schema' },
 ]
 export const RESPONSE_TAB_LIST: TabDetailsType[] = [
-  { key: 'example', value: 'Example value' },
-  { key: 'schema', value: 'Schema' },
+    { key: 'example', value: 'Example value' },
+    { key: 'schema', value: 'Schema' },
 ]
 
 export const CURL_PREFIX = `curl --location --request POST \\

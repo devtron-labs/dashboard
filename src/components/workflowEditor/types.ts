@@ -128,7 +128,6 @@ export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
 }
 
-
 export interface NoGitOpsRepoConfiguredWarningType {
     closePopup: () => void
     appId: number
@@ -140,7 +139,7 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     closePopup: () => void
     reload: () => void
 }
-export interface CDNodeProps{
+export interface CDNodeProps {
     id: string
     deploymentStrategy: string
     triggerType: string

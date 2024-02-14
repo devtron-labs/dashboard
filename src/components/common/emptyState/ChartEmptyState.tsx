@@ -12,13 +12,7 @@ interface EmptyChartType {
     children?: React.ReactNode
 }
 
-function ChartEmptyState({
-    title,
-    subTitle,
-    onClickViewChartButton,
-    buttonText,
-    heightToDeduct,
-}: EmptyChartType) {
+const ChartEmptyState = ({ title, subTitle, onClickViewChartButton, buttonText, heightToDeduct }: EmptyChartType) => {
     const renderButton = () => {
         return (
             <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-10">
@@ -35,9 +29,9 @@ function ChartEmptyState({
                 image={emptyImage}
                 title={title || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
                 subTitle={subTitle || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.SUBTITLE}
-                isButtonAvailable={true}
+                isButtonAvailable
                 renderButton={renderButton}
-            ></GenericEmptyState>
+            />
         </span>
     )
 }

@@ -1,52 +1,63 @@
-
-import React, { Component } from 'react';
-import { RouteComponentProps, NavLink } from 'react-router-dom';
-import { SecurityPolicyEdit } from './SecurityPolicyEdit';
-import { getEnvironmentListMinPublic } from '../../services/service';
+import React, { Component } from 'react'
+import { RouteComponentProps, NavLink } from 'react-router-dom'
 import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType } from '../../config';
-import { SecurityPolicyEnvironmentState } from './security.types';
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
+import { SecurityPolicyEdit } from './SecurityPolicyEdit'
+import { getEnvironmentListMinPublic } from '../../services/service'
+import { ViewType } from '../../config'
+import { SecurityPolicyEnvironmentState } from './security.types'
+import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 
-export class SecurityPolicyEnvironment extends Component<RouteComponentProps<{ envId: string }>, SecurityPolicyEnvironmentState> {
-
+export class SecurityPolicyEnvironment extends Component<
+    RouteComponentProps<{ envId: string }>,
+    SecurityPolicyEnvironmentState
+> {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             view: ViewType.LOADING,
-            envSearch: "",
-            envList: []
+            envSearch: '',
+            envList: [],
         }
-        this.handleSearchChange = this.handleSearchChange.bind(this);
+        this.handleSearchChange = this.handleSearchChange.bind(this)
     }
 
     componentDidMount() {
-        getEnvironmentListMinPublic().then((response) => {
-            let list = response.result || [];
-            list = list.map((env) => {
-                return {
-                    id: env.id,
-                    name: env.environment_name,
-                    namespace: env.namespace
-                }
+        getEnvironmentListMinPublic()
+            .then((response) => {
+                let list = response.result || []
+                list = list.map((env) => {
+                    return {
+                        id: env.id,
+                        name: env.environment_name,
+                        namespace: env.namespace,
+                    }
+                })
+                list = list.sort((a, b) => sortCallback('name', a, b))
+                this.setState({ envList: list, view: ViewType.FORM })
             })
-            list = list.sort((a, b) => sortCallback('name', a, b))
-            this.setState({ envList: list, view: ViewType.FORM });
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR });
-        })
+            .catch((error) => {
+                showError(error)
+                this.setState({ view: ViewType.ERROR })
+            })
     }
 
     handleSearchChange(e) {
-        this.setState({ envSearch: e.target.value });
+        this.setState({ envSearch: e.target.value })
     }
 
     renderList() {
-        const url = this.props.match.url;
-        if (this.state.view === ViewType.LOADING) return <div style={{ height: "280px" }}><Progressing pageLoader /></div>
-        else if (this.state.view === ViewType.LOADING) return <Reload />
-        else return (
+        const { url } = this.props.match
+        if (this.state.view === ViewType.LOADING) {
+            return (
+                <div style={{ height: '280px' }}>
+                    <Progressing pageLoader />
+                </div>
+            )
+        }
+        if (this.state.view === ViewType.LOADING) {
+            return <Reload />
+        }
+        return (
             <table className="security-policy-cluster__table">
                 <tbody>
                     <tr>
@@ -86,9 +97,15 @@ export class SecurityPolicyEnvironment extends Component<RouteComponentProps<{ e
 
     renderContent() {
         if (this.props.match.params.envId) {
-            return <SecurityPolicyEdit level="environment" id={Number(`${this.props.match.params.envId}`)} key={`${this.props.match.params.envId}`} />
+            return (
+                <SecurityPolicyEdit
+                    level="environment"
+                    id={Number(`${this.props.match.params.envId}`)}
+                    key={`${this.props.match.params.envId}`}
+                />
+            )
         }
-        else return (
+        return (
             <>
                 <div className="ml-24 mr-24 mt-20 mb-20">
                     <h1 className="form__title" data-testid="environment-security-policy-heading">
@@ -105,8 +122,6 @@ export class SecurityPolicyEnvironment extends Component<RouteComponentProps<{ e
     }
 
     render() {
-        return <>
-            {this.renderContent()}
-        </>
+        return <>{this.renderContent()}</>
     }
 }

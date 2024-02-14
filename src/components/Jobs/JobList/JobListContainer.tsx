@@ -36,7 +36,10 @@ export default function JobListContainer({
 
     const getJobsList = async (request): Promise<void> => {
         const isSearchOrFilterApplied =
-            request.appNameSearch?.length || request.teams?.length || request.appStatuses?.length || request.environments?.length
+            request.appNameSearch?.length ||
+            request.teams?.length ||
+            request.appStatuses?.length ||
+            request.environments?.length
         const updatedState = { ...state }
         updatedState.view = JobListViewType.LOADING
         updatedState.sortRule = {
@@ -69,7 +72,7 @@ export default function JobListContainer({
                         code: response.code,
                         jobs: _jobs,
                         isAllExpandable: _jobs.filter((job) => job.ciPipelines.length > 1).length > 0,
-                        view: view,
+                        view,
                         offset: request.offset,
                         size: response.result.jobCount,
                         pageSize: request.size,

@@ -1,18 +1,25 @@
 import React, { useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
-import { showError, DeleteDialog, PopupMenu, Checkbox, CHECKBOX_VALUE, useSearchString, } from '@devtron-labs/devtron-fe-common-lib'
-import dots from '../../../assets/icons/ic-menu-dot.svg'
+import {
+    showError,
+    DeleteDialog,
+    PopupMenu,
+    Checkbox,
+    CHECKBOX_VALUE,
+    useSearchString,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
+import dots from '../../../assets/icons/ic-menu-dot.svg'
 import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
-import { NodeType } from '../../appDetails.type'
+import { AppType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
 import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
 
-function NodeDeleteComponent({ nodeDetails, appDetails }) {
+const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -21,6 +28,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
     const { queryParams } = useSearchString()
+    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
 
     function describeNodeWrapper(tab) {
         queryParams.set('kind', params.podName)
@@ -58,16 +66,18 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                 ) : (
                     ''
                 )}
-                <span
-                    data-testid="delete-resource-button"
-                    className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                    onClick={(e) => {
-                        setShowDeleteConfirmation(true)
-                    }}
-                >
-                    <span>Delete</span>
-                    <Trash className="icon-dim-20 scr-5" />
-                </span>
+                {!isExternalArgoApp && (
+                    <span
+                        data-testid="delete-resource-button"
+                        className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
+                        onClick={(e) => {
+                            setShowDeleteConfirmation(true)
+                        }}
+                    >
+                        <span>Delete</span>
+                        <Trash className="icon-dim-20 scr-5" />
+                    </span>
+                )}
             </div>
         )
     }
@@ -107,7 +117,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
     return (
         <div style={{ width: '40px' }}>
             <PopupMenu autoClose>
-                <PopupMenu.Button dataTestId="node-resource-dot-button" isKebab={true}>
+                <PopupMenu.Button dataTestId="node-resource-dot-button" isKebab>
                     <img src={dots} className="pod-info__dots" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>

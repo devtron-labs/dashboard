@@ -10,6 +10,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
+import ReactSelect from 'react-select'
+import yamlJsParser from 'yaml'
+import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
@@ -22,7 +25,6 @@ import {
     GroupHeading,
     groupStyle,
 } from '../v2/common/ReactSelect.utils'
-import ReactSelect from 'react-select'
 import { Info } from '../common/icons/Icons'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -30,8 +32,6 @@ import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import yamlJsParser from 'yaml'
-import { toast } from 'react-toastify'
 import { styles, Option } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
@@ -161,11 +161,13 @@ export default function BuildCD({
                 ? GeneratedHelmPush.DO_NOT_PUSH
                 : GeneratedHelmPush.PUSH
             _form.allowedDeploymentTypes = selection.allowedDeploymentTypes
-            _form.isDigestEnforcedForEnv = _form.environments.find((env) => env.id == selection.id)?.isDigestEnforcedForEnv
+            _form.isDigestEnforcedForEnv = _form.environments.find(
+                (env) => env.id == selection.id,
+            )?.isDigestEnforcedForEnv
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
         } else {
-            let list = _form.environments.map((item) => {
+            const list = _form.environments.map((item) => {
                 return {
                     ...item,
                     active: false,
@@ -192,7 +194,7 @@ export default function BuildCD({
                     placeholder="Pipeline name"
                     value={formData.name}
                     onChange={handlePipelineName}
-                    isRequiredField={true}
+                    isRequiredField
                     error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
                 />
             </div>
@@ -229,7 +231,8 @@ export default function BuildCD({
                     </div>
                 </div>
             )
-        } else return null
+        }
+        return null
     }
 
     const checkGitOpsRepoConflict = () => {
@@ -314,13 +317,16 @@ export default function BuildCD({
     }
 
     const selectStrategy = (e): void => {
-        const value = e.target.value
+        const { value } = e.target
         const _form = { ...formData }
-        let selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
-        let strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
+        const selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
+        const strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
 
-        if (_form.savedStrategies.length == 0) selection.default = true
-        else selection.default = false
+        if (_form.savedStrategies.length == 0) {
+            selection.default = true
+        } else {
+            selection.default = false
+        }
 
         selection['defaultConfig'] = allStrategies.current[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(allStrategies.current[selection.deploymentTemplate], null, 4)
@@ -335,9 +341,9 @@ export default function BuildCD({
     }
 
     const renderEnvNamespaceAndTriggerType = () => {
-        let envId = formData.environmentId
-        let selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
-        let namespaceEditable = false
+        const envId = formData.environmentId
+        const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
+        const namespaceEditable = false
         const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
         const groupHeading = (props) => {
@@ -348,12 +354,10 @@ export default function BuildCD({
             if (isVirtualEnvironment) {
                 if (formData.namespace) {
                     return 'Will be auto-populated based on environment'
-                } else {
-                    return 'Not available'
                 }
-            } else {
-                return 'Will be auto-populated based on environment'
+                return 'Not available'
             }
+            return 'Will be auto-populated based on environment'
         }
 
         const renderVirtualEnvironmentInfo = () => {
@@ -387,7 +391,7 @@ export default function BuildCD({
                         <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
                             menuPosition={isAdvanced ? null : 'fixed'}
-                            closeMenuOnScroll={true}
+                            closeMenuOnScroll
                             isDisabled={!!cdPipelineId}
                             classNamePrefix="cd-pipeline-environment-dropdown"
                             placeholder="Select Environment"
@@ -468,13 +472,13 @@ export default function BuildCD({
     const setDefaultStrategy = (selection: string): void => {
         const _form = { ...formData }
 
-        let strategies = _form.strategies.map((strategy) => {
+        const strategies = _form.strategies.map((strategy) => {
             return {
                 ...strategy,
                 default: strategy.deploymentTemplate == selection,
             }
         })
-        let savedStrategies = _form.savedStrategies.map((strategy) => {
+        const savedStrategies = _form.savedStrategies.map((strategy) => {
             return {
                 ...strategy,
                 default: strategy.deploymentTemplate == selection,
@@ -487,14 +491,14 @@ export default function BuildCD({
 
     const deleteStrategy = (selection: string): void => {
         const _form = { ...formData }
-        let removedStrategy = _form.savedStrategies.find(
+        const removedStrategy = _form.savedStrategies.find(
             (savedStrategy) => selection === savedStrategy.deploymentTemplate,
         )
         if (removedStrategy.default) {
             toast.error('Cannot remove default strategy')
             return
         }
-        let savedStrategies = _form.savedStrategies.filter(
+        const savedStrategies = _form.savedStrategies.filter(
             (savedStrategy) => selection !== savedStrategy.deploymentTemplate,
         )
         _form.strategies.push(removedStrategy)
@@ -504,7 +508,7 @@ export default function BuildCD({
 
     const toggleStrategy = (selection: string): void => {
         const _form = { ...formData }
-        let savedStrategies = _form.savedStrategies.map((strategy) => {
+        const savedStrategies = _form.savedStrategies.map((strategy) => {
             return {
                 ...strategy,
                 isCollapsed: strategy.deploymentTemplate === selection ? !strategy.isCollapsed : strategy.isCollapsed,
@@ -516,7 +520,9 @@ export default function BuildCD({
     }
 
     const handleStrategyChange = (value, selection: string, key: 'json' | 'yaml'): void => {
-        let json, jsonStr, yamlStr
+        let json
+        let jsonStr
+        let yamlStr
         if (key === 'json') {
             jsonStr = value
             try {
@@ -531,11 +537,17 @@ export default function BuildCD({
             } catch (error) {}
         }
         const _form = { ...formData }
-        let strategies = _form.savedStrategies.map((strategy) => {
+        const strategies = _form.savedStrategies.map((strategy) => {
             if (strategy.deploymentTemplate === selection) {
-                if (json) strategy['config'] = json
-                if (jsonStr) strategy['jsonStr'] = jsonStr
-                if (yamlStr) strategy['yamlStr'] = yamlStr
+                if (json) {
+                    strategy['config'] = json
+                }
+                if (jsonStr) {
+                    strategy['jsonStr'] = jsonStr
+                }
+                if (yamlStr) {
+                    strategy['yamlStr'] = yamlStr
+                }
             }
             return strategy
         })
@@ -559,7 +571,7 @@ export default function BuildCD({
                     handleOnChange={handleDeploymentAppTypeChange}
                     allowedDeploymentTypes={formData.allowedDeploymentTypes}
                     rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
-                    isFromCDPipeline={true}
+                    isFromCDPipeline
                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                     gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
                 />
@@ -570,7 +582,7 @@ export default function BuildCD({
     const renderStrategyOptions = () => {
         return (
             <Select rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150" onChange={selectStrategy}>
-                <Select.Button rootClassName="right" hideArrow={true}>
+                <Select.Button rootClassName="right" hideArrow>
                     <span className="flex cb-5 fw-6">
                         <Add className="icon-dim-20 mr-8 fcb-5 dc__vertical-align-middle" />
                         Add Strategy
@@ -592,10 +604,10 @@ export default function BuildCD({
     }
 
     const renderBasicDeploymentStartegy = () => {
-        let strategyMenu = Object.keys(allStrategies.current).map((option) => {
+        const strategyMenu = Object.keys(allStrategies.current).map((option) => {
             return { label: option, value: option }
         })
-        let strategy = formData.savedStrategies[0]
+        const strategy = formData.savedStrategies[0]
             ? {
                   label: formData.savedStrategies[0]?.deploymentTemplate,
                   value: formData.savedStrategies[0]?.deploymentTemplate,
@@ -608,7 +620,7 @@ export default function BuildCD({
                 <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                 <ReactSelect
                     menuPosition="fixed"
-                    closeMenuOnScroll={true}
+                    closeMenuOnScroll
                     classNamePrefix="deployment-strategy-dropdown"
                     isSearchable={false}
                     isClearable={false}
@@ -645,9 +657,9 @@ export default function BuildCD({
                     Icon={Help}
                     heading="Deployment strategy"
                     infoText="Add one or more deployment strategies. You can choose from selected strategy while deploying manually to this environment."
-                    showCloseButton={true}
+                    showCloseButton
                     trigger="click"
-                    interactive={true}
+                    interactive
                     documentationLinkText="View Documentation"
                 >
                     <div className="icon-dim-16 fcn-9 ml-8 cursor">
@@ -756,7 +768,7 @@ export default function BuildCD({
                             setFormData={setFormData}
                             formDataErrorObj={formDataErrorObj}
                             setFormDataErrorObj={setFormDataErrorObj}
-                            isCDBuild={true}
+                            isCDBuild
                             savedTagPattern={savedCustomTagPattern}
                             selectedCDStageTypeValue={selectedCDStageTypeValue}
                             setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
