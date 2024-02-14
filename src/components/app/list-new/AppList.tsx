@@ -720,7 +720,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             {isArgoInstalled && (
                                 <>
                                     <Filter
-                                        list={masterFilters.appStatus}
+                                        list={appStatusFilters}
                                         labelKey="label"
                                         buttonText={APP_LIST_HEADERS.AppStatus}
                                         placeholder={APP_LIST_HEADERS.SearchAppStatus}
@@ -737,7 +737,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 </>
                             )}
                             <Filter
-                                list={appStatusFilters}
+                                list={masterFilters.projects}
                                 labelKey="label"
                                 buttonText="Projects"
                                 placeholder="Search Project"
@@ -1083,13 +1083,13 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <>
+        <div>
             <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
             {renderMasterFilters()}
             {renderAppliedFilters()}
             {renderAppTabs()}
             {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
             {renderAppListBody()}
-        </>
+        </div>
     )
 }

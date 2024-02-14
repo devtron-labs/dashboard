@@ -685,15 +685,17 @@ const LogsComponent = ({
                                 />
                             ) : (
                                 <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                    <Download
-                                        className={`icon-dim-16 mr-8 cursor ${
-                                            (podContainerOptions?.containerOptions ?? []).length === 0 ||
-                                            (prevContainer && showNoPrevContainer != '')
-                                                ? 'cursor-not-allowed dc__opacity-0_5'
-                                                : ''
-                                        }`}
-                                        onClick={handleDownloadLogs}
-                                    />
+                                    <span>
+                                        <Download
+                                            className={`icon-dim-16 mr-8 cursor ${
+                                                (podContainerOptions?.containerOptions ?? []).length === 0 ||
+                                                (prevContainer && showNoPrevContainer != '')
+                                                    ? 'cursor-not-allowed dc__opacity-0_5'
+                                                    : ''
+                                            }`}
+                                            onClick={handleDownloadLogs}
+                                        />
+                                    </span>
                                 </Tippy>
                             ))}
                     </div>

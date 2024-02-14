@@ -466,7 +466,9 @@ const DeploymentTemplateEditorView = ({
                     value === null ||
                     fetchingValues ||
                     draftLoading ||
-                    resolveLoading
+                    resolveLoading ||
+                    !rhs ||
+                    (state.openComparison && !lhs)
                 }
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}
