@@ -402,6 +402,6 @@ export interface PreBuildType {
 export enum CIPipelineBuildType {
     CI_JOB = 'CI_JOB',
     CI_BUILD = 'CI_BUILD',
-    CI_EXTERNAL = 'LINKED',
+    CI_LINKED = 'LINKED',
     LINKED_CD = 'LINKED_CD',
 }
