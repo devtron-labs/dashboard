@@ -20,6 +20,8 @@ import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
+import React from 'react'
+import { History as ReactRouterHistory } from 'history'
 
 export interface CDMaterialProps extends RouteComponentProps<{}> {
     material?: CDMaterialType[]
@@ -667,6 +669,7 @@ export interface TriggerViewConfigDiffProps {
     diffOptions: Record<string, boolean>
     isRollbackTriggerSelected: boolean
     isRecentConfigAvailable: boolean
+    history: ReactRouterHistory
 }
 
 export const MATERIAL_TYPE = {
@@ -724,4 +727,11 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
     dimensions: WorkflowDimensions
     startX: number
     startY: number
+}
+
+export interface NewParams {
+    'cd-node': string
+    'node-type': string
+    mode: string
+    search?: string
 }

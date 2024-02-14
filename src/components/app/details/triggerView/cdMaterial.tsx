@@ -87,6 +87,7 @@ import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import AnnouncementBanner from '../../../common/AnnouncementBanner'
+import { useRouteMatch } from 'react-router-dom'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -128,6 +129,7 @@ export default function CDMaterial({
     const { searchParams } = useSearchString()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
+    const match = useRouteMatch()
 
     const searchImageTag = searchParams.search
 
@@ -137,6 +139,7 @@ export default function CDMaterial({
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
+    // const [mode, setMode] = useState<string>(searchParams.mode)
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, materialsResult, materialsError, reloadMaterials] = useAsync(
@@ -183,6 +186,7 @@ export default function CDMaterial({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
+    const showConfigDiffView = searchParams.mode === "review-config"
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -254,6 +258,18 @@ export default function CDMaterial({
             delete newParams.search
         }
 
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
+    }
+
+    const setParamsValue = (modeParamValue: string) => {
+        const newParams = {
+            ...searchParams,
+            mode: modeParamValue,
+            config: 'deploymentTemplate',
+            deploy: 'LAST_SAVED_CONFIG'.toLocaleLowerCase() //LATEST_TRIGGER_CONFIG
+        }
         history.push({
             search: new URLSearchParams(newParams).toString(),
         })
@@ -729,12 +745,10 @@ export default function CDMaterial({
                 isConfigPresent())) ||
         !state.recentDeploymentConfig
 
-    const reviewConfig = () => {
+    const reviewConfig = (modeParamValue: string) => {
+        // setMode(modeParamValue)
         if (canReviewConfig()) {
-            setState((prevState) => ({
-                ...prevState,
-                showConfigDiffView: !prevState.showConfigDiffView,
-            }))
+            setParamsValue(modeParamValue)
         }
     }
 
@@ -765,10 +779,15 @@ export default function CDMaterial({
               : state.specificDeploymentConfig
     }
 
+    const redirectURLToInitial = (urlTo: string = '') => {
+        const urlPrefix = match.url
+        history.push(`${urlPrefix}/${urlTo}`)
+    }
+
     const handleConfigSelection = (selected) => {
         if (selected.value !== state.selectedConfigToDeploy.value) {
             const _diffOptions = checkForDiff(state.recentDeploymentConfig, getBaseTemplateConfiguration(selected))
-
+            redirectURLToInitial(selected.value)
             setState((prevState) => ({
                 ...prevState,
                 selectedConfigToDeploy: selected,
@@ -1007,7 +1026,7 @@ export default function CDMaterial({
     const getTriggerBodyHeight = (isApprovalConfigured: boolean) => {
         const subHeight = window?._env_?.ANNOUNCEMENT_BANNER_MSG ? 37 : 0
 
-        if (state.showConfigDiffView) {
+        if (showConfigDiffView) {
             return `calc(100vh - 141px - ${subHeight}px)`
         }
         if (
@@ -1896,7 +1915,7 @@ export default function CDMaterial({
                     } ${isLastDeployedOption ? 'pt-10 pb-10' : 'pt-7 pb-7'}`}
                     disabled={state.checkingDiff}
                     type="button"
-                    onClick={reviewConfig}
+                    onClick={() => reviewConfig('review-config')}
                 >
                     {!isLastDeployedOption && (state.recentDeploymentConfig !== null || state.checkingDiff) && (
                         <div
@@ -1965,7 +1984,7 @@ export default function CDMaterial({
             <div
                 className={`trigger-modal__trigger ${
                     (!state.isRollbackTrigger && !state.isSelectImageTrigger) ||
-                    state.showConfigDiffView ||
+                    showConfigDiffView ||
                     stageType === DeploymentNodeType.PRECD ||
                     stageType === DeploymentNodeType.POSTCD
                         ? 'flex right'
@@ -1974,7 +1993,7 @@ export default function CDMaterial({
             >
                 {!hideConfigDiffSelector &&
                     (state.isRollbackTrigger || state.isSelectImageTrigger) &&
-                    !state.showConfigDiffView &&
+                    !showConfigDiffView &&
                     stageType === DeploymentNodeType.CD && (
                         <div className="flex left dc__border br-4 h-42">
                             <div className="flex">
@@ -2060,12 +2079,12 @@ export default function CDMaterial({
 
     const renderTriggerBody = (isApprovalConfigured: boolean) => (
         <div
-            className={`trigger-modal__body ${state.showConfigDiffView && canReviewConfig() ? 'p-0' : ''}`}
+            className={`trigger-modal__body ${showConfigDiffView && canReviewConfig() ? 'p-0' : ''}`}
             style={{
                 height: getTriggerBodyHeight(isApprovalConfigured),
             }}
         >
-            {state.showConfigDiffView && canReviewConfig() ? (
+            {showConfigDiffView && canReviewConfig() ? (
                 <TriggerViewConfigDiff
                     currentConfiguration={state.recentDeploymentConfig}
                     baseTemplateConfiguration={getBaseTemplateConfiguration()}
@@ -2075,6 +2094,7 @@ export default function CDMaterial({
                     diffOptions={state.diffOptions}
                     isRollbackTriggerSelected={state.isRollbackTrigger}
                     isRecentConfigAvailable={state.recentDeploymentConfig !== null}
+                    history={history}
                 />
             ) : (
                 renderMaterialList(isApprovalConfigured)
@@ -2085,9 +2105,9 @@ export default function CDMaterial({
     const renderCDModal = (isApprovalConfigured: boolean) => (
         <>
             <div className="trigger-modal__header">
-                {state.showConfigDiffView ? (
+                {showConfigDiffView ? (
                     <div className="flex left">
-                        <button type="button" className="dc__transparent icon-dim-24" onClick={reviewConfig}>
+                        <button type="button" className="dc__transparent icon-dim-24" onClick={() => reviewConfig('list')}>
                             <BackIcon />
                         </button>
                         <div className="flex column left ml-16">
@@ -2107,7 +2127,7 @@ export default function CDMaterial({
                 </button>
             </div>
 
-            {!state.showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
+            {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
                 <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
             )}
 
@@ -2202,7 +2222,7 @@ export default function CDMaterial({
     if (material.length > 0) {
         return isFromBulkCD ? (
             <>
-                {!state.showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
+                {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
                     <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
                 )}
                 {renderTriggerBody(isApprovalConfigured)}

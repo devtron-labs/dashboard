@@ -726,6 +726,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
         }
+        newParams.set('mode', 'list')
         this.props.history.push({
             search: newParams.toString(),
         })
