@@ -36,6 +36,7 @@ import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../../constants'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'
 import { User, UserCreateOrUpdatePayload } from '../../types'
+import { UserPermissionGroupsSelector } from '../../shared/components/UserPermissionGroupsSelector'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -448,6 +449,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                     {!isAutoAssignFlowEnabled && (
                         <>
                             <div className="flex left">
+                                {/* TODO (v3): This can be common out as well */}
                                 <RadioGroup
                                     className="permission-type__radio-group"
                                     value={permissionType}
@@ -477,44 +479,11 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                                 <SuperAdminInfoBar />
                             ) : (
                                 <>
-                                    <div className="flexbox-col dc__gap-8">
-                                        <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Permission Groups</h3>
-                                        <Select
-                                            value={userGroups}
-                                            ref={groupPermissionsRef}
-                                            classNamePrefix="group-permission-dropdown"
-                                            components={{
-                                                MultiValueContainer: ({ ...props }) => (
-                                                    <MultiValueChipContainer {...props} validator={null} />
-                                                ),
-                                                DropdownIndicator: null,
-                                                ClearIndicator,
-                                                MultiValueRemove,
-                                                Option,
-                                            }}
-                                            styles={{
-                                                ...multiSelectStyles,
-                                                multiValue: (base) => ({
-                                                    ...base,
-                                                    border: `1px solid var(--N200)`,
-                                                    borderRadius: `4px`,
-                                                    background: 'white',
-                                                    height: '30px',
-                                                    margin: '0 8px 0 0',
-                                                    padding: '1px',
-                                                }),
-                                            }}
-                                            formatOptionLabel={formatChartGroupOptionLabel}
-                                            closeMenuOnSelect={false}
-                                            isMulti
-                                            autoFocus={isAddMode}
-                                            name="groups"
-                                            options={availableGroups}
-                                            hideSelectedOptions={false}
-                                            onChange={(selected) => setUserGroups((selected || []) as OptionType[])}
-                                            className="basic-multi-select"
-                                        />
-                                    </div>
+                                    <UserPermissionGroupsSelector
+                                        userData={userData}
+                                        userGroups={userGroups}
+                                        setUserGroups={setUserGroups}
+                                    />
                                     <div className="dc__border-top-n1" />
                                     <div className="flexbox-col dc__gap-8">
                                         <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Direct Permissions</h3>

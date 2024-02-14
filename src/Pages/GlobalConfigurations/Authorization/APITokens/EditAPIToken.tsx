@@ -26,7 +26,6 @@ import GenerateActionButton from './GenerateActionButton'
 import { MomentDateFormat } from '../../../../config'
 import { ButtonWithLoader } from '../../../../components/common'
 import { updateGeneratedAPIToken } from './service'
-import GroupPermission from './GroupPermission'
 import {
     ActionTypes,
     ChartGroupPermissionsFilter,
@@ -42,6 +41,8 @@ import SuperAdminInfoBar from '../shared/components/SuperAdminInfoBar'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
 import { User } from '../types'
 import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../constants'
+import AppPermissions from '../shared/components/AppPermissions'
+import { UserPermissionGroupsSelector } from '../shared/components/UserPermissionGroupsSelector'
 
 const EditAPIToken = ({
     setShowRegeneratedModal,
@@ -340,17 +341,23 @@ const EditAPIToken = ({
                         </RadioGroup>
                     </div>
                     {adminPermission === PermissionType.SPECIFIC ? (
-                        <GroupPermission
-                            userData={userData}
-                            userGroups={userGroups}
-                            setUserGroups={setUserGroups}
-                            directPermission={directPermission}
-                            setDirectPermission={setDirectPermission}
-                            chartPermission={chartPermission}
-                            setChartPermission={setChartPermission}
-                            setK8sPermission={setK8sPermission}
-                            k8sPermission={k8sPermission}
-                        />
+                        <>
+                            <UserPermissionGroupsSelector
+                                userData={userData}
+                                userGroups={userGroups}
+                                setUserGroups={setUserGroups}
+                            />
+                            <AppPermissions
+                                data={userData}
+                                directPermission={directPermission}
+                                setDirectPermission={setDirectPermission}
+                                chartPermission={chartPermission}
+                                setChartPermission={setChartPermission}
+                                hideInfoLegend
+                                k8sPermission={k8sPermission}
+                                setK8sPermission={setK8sPermission}
+                            />
+                        </>
                     ) : (
                         <SuperAdminInfoBar />
                     )}

@@ -30,7 +30,6 @@ import {
     DirectPermissionsRoleFilter,
     EntityTypes,
 } from '../shared/components/userGroups/userGroups.types'
-import GroupPermission from './GroupPermission'
 import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { DOCUMENTATION } from '../../../../config'
@@ -38,6 +37,8 @@ import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import SuperAdminInfoBar from '../shared/components/SuperAdminInfoBar'
 import { createOrUpdateUser } from '../authorization.service'
 import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../constants'
+import { UserPermissionGroupsSelector } from '../shared/components/UserPermissionGroupsSelector'
+import AppPermissions from '../shared/components/AppPermissions'
 
 export const renderQuestionwithTippy = () => {
     return (
@@ -329,17 +330,23 @@ const CreateAPIToken = ({
                     </div>
 
                     {adminPermission === PermissionType.SPECIFIC ? (
-                        <GroupPermission
-                            userData={null}
-                            userGroups={userGroups}
-                            setUserGroups={setUserGroups}
-                            directPermission={directPermission}
-                            setDirectPermission={setDirectPermission}
-                            chartPermission={chartPermission}
-                            setChartPermission={setChartPermission}
-                            setK8sPermission={setK8sPermission}
-                            k8sPermission={k8sPermission}
-                        />
+                        <>
+                            <UserPermissionGroupsSelector
+                                userData={null}
+                                userGroups={userGroups}
+                                setUserGroups={setUserGroups}
+                            />
+                            <AppPermissions
+                                data={null}
+                                directPermission={directPermission}
+                                setDirectPermission={setDirectPermission}
+                                chartPermission={chartPermission}
+                                setChartPermission={setChartPermission}
+                                hideInfoLegend
+                                k8sPermission={k8sPermission}
+                                setK8sPermission={setK8sPermission}
+                            />
+                        </>
                     ) : (
                         <SuperAdminInfoBar />
                     )}
