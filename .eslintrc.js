@@ -2,7 +2,6 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint', 'react', 'prettier'],
     env: {
-        commonjs: true,
         browser: true,
         // ESLint 6 supports till ES2020 only
         es2020: true,
@@ -40,6 +39,7 @@ module.exports = {
         // Since we are using typescript, we can disable the no-unused-vars rule for enum,etc
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': 'error',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
         'react/jsx-filename-extension': [
             'error',
             {
@@ -111,5 +111,5 @@ module.exports = {
                 extensions: ['.js', '.jsx', '.ts', '.tsx'],
             },
         },
-    },
+    }
 }

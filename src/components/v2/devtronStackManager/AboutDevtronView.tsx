@@ -7,7 +7,7 @@ import './AboutDevtronView.scss'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
 
-function AboutDevtronView({
+const AboutDevtronView = ({
     parentRef,
     releaseNotes,
     serverInfo,
@@ -21,7 +21,7 @@ function AboutDevtronView({
     setShowPreRequisiteConfirmationModal,
     preRequisiteChecked,
     setPreRequisiteChecked,
-}: AboutDevtronViewType) {
+}: AboutDevtronViewType) => {
     const aboutDevtronTabs: { name: string; link: string }[] = [
         { name: 'About', link: URLS.STACK_MANAGER_ABOUT },
         { name: 'Releases', link: URLS.STACK_MANAGER_ABOUT_RELEASES },
@@ -83,7 +83,7 @@ function AboutDevtronView({
                                 </h2>
                                 <MarkDown
                                     className="about-devtron__release-notes fs-14 fw-4"
-                                    breaks={true}
+                                    breaks
                                     markdown={
                                         releaseNote.body.startsWith('##')
                                             ? releaseNote.body.replace('##', '')
@@ -119,7 +119,7 @@ function AboutDevtronView({
                         installationStatus={serverInfo.status}
                         canViewLogs={canViewLogs}
                         logPodName={logPodName}
-                        isUpgradeView={true}
+                        isUpgradeView
                         serverInfo={serverInfo}
                         upgradeVersion={releaseNotes[0]?.releaseName}
                         isActionTriggered={isActionTriggered}

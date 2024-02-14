@@ -21,19 +21,26 @@ export default function ScopedVariables({ isSuperAdmin }: ScopedVariablesProps) 
             if (!loadingScopedVariables && scopedVariablesData?.result) {
                 const parsedSchema = JSON.parse(scopedVariablesData.result.jsonSchema)
                 setJsonSchema(parsedSchema)
-                if (scopedVariablesData.result.manifest)
+                if (scopedVariablesData.result.manifest) {
                     setScopedVariables(sortVariables(scopedVariablesData.result.manifest))
+                }
             }
         } catch (e) {
             setSchemaError(true)
         }
     }, [scopedVariablesData, loadingScopedVariables])
 
-    if (!isSuperAdmin) return <ErrorScreenNotAuthorized />
-    if (loadingScopedVariables) return <Progressing pageLoader />
-    if (schemaError || (!loadingScopedVariables && !scopedVariablesData) || scopedVariablesError) return <Reload />
+    if (!isSuperAdmin) {
+        return <ErrorScreenNotAuthorized />
+    }
+    if (loadingScopedVariables) {
+        return <Progressing pageLoader />
+    }
+    if (schemaError || (!loadingScopedVariables && !scopedVariablesData) || scopedVariablesError) {
+        return <Reload />
+    }
 
-    if (scopedVariables)
+    if (scopedVariables) {
         return (
             <SavedVariablesView
                 scopedVariablesData={scopedVariables}
@@ -42,6 +49,7 @@ export default function ScopedVariables({ isSuperAdmin }: ScopedVariablesProps) 
                 setScopedVariables={setScopedVariables}
             />
         )
+    }
 
     return (
         <UploadScopedVariables

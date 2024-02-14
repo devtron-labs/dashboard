@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
+import { getTeamListMin, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart, ChartGroup } from './charts.types'
 import {
     getChartVersionsMin,
@@ -7,15 +9,10 @@ import {
     getChartValues,
     getChartGroupDetail,
     createChartValues as createChartValuesService,
+    getChartGroups,
 } from './charts.service'
-import {
-    getAvailableCharts,
-    getChartRepoListMin,
-} from '../../services/service'
-import {getTeamListMin, showError } from '@devtron-labs/devtron-fe-common-lib'
-import {mapByKey, sortOptionsByLabel} from '../common'
-import { toast } from 'react-toastify'
-import { getChartGroups } from './charts.service'
+import { getAvailableCharts, getChartRepoListMin } from '../../services/service'
+import { mapByKey, sortOptionsByLabel } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { SERVER_MODE } from '../../config'
 import { PaginationParams } from './charts.util'
@@ -61,12 +58,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     serverMode == SERVER_MODE.FULL
                         ? getChartGroups()
                         : { value: { status: 'fulfilled', result: undefined } },
-                    getTeamListMin()
+                    getTeamListMin(),
                 ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
-                    const [chartRepoList, chartGroup, projects] =
-                        responses.map((response) => response?.value?.result || [])
+                    const [chartRepoList, chartGroup, projects] = responses.map(
+                        (response) => response?.value?.result || [],
+                    )
 
-                    let chartRepos = chartRepoList
+                    const chartRepos = chartRepoList
                         .filter((chartRepo) => chartRepo.active)
                         .map((chartRepo) => {
                             return {
@@ -94,9 +92,9 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         populateCharts()
     }, [])
 
-    //TODO: use response
+    // TODO: use response
     async function reloadState() {
-        //causes whole state to reset
+        // causes whole state to reset
         await getChartGroupDetails()
     }
 
@@ -127,14 +125,14 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         installedId: id,
                         appStoreValuesVersionId,
                         appStoreApplicationVersionId,
-                        appStoreValuesVersionName: appStoreValuesVersionName,
-                        //TODO: must be in chart metadata
+                        appStoreValuesVersionName,
+                        // TODO: must be in chart metadata
                         appStoreApplicationVersion: chartMetaData.appStoreApplicationVersion,
-                        appStoreValuesChartVersion: appStoreValuesChartVersion,
+                        appStoreValuesChartVersion,
                         chartMetaData,
                         isEnabled: true,
                         kind: referenceType,
-                        //TODO: part of chart metadata
+                        // TODO: part of chart metadata
                         name: { value: chartMetaData.chartName, error: '', suggestedName: '' },
                         availableChartVersions: [],
                         availableChartValues: [],
@@ -157,7 +155,9 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
 
     useEffect(() => {
-        if (!chartGroupId) return
+        if (!chartGroupId) {
+            return
+        }
         getChartGroupDetails()
     }, [chartGroupId])
 
@@ -337,13 +337,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             loading: false,
             appStoreValuesVersionId: appStoreApplicationVersionId,
             kind: 'DEFAULT',
-            appStoreApplicationVersionId: appStoreApplicationVersionId,
+            appStoreApplicationVersionId,
             appStoreValuesChartVersion: version,
             isEnabled: true,
             environment: {},
-            //TODO: must be in chart metadata
+            // TODO: must be in chart metadata
             appStoreApplicationVersion: version,
-            //TODO: part of chart metadata
+            // TODO: part of chart metadata
             name: { value: chartName, error: '', suggestedName: '' },
             isUnsaved: false,
             appStoreValuesVersionName: 'Default',
@@ -379,7 +379,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     }
 
     function removeChart(index: number, removeAll?: boolean): void {
-        let tempCharts = [...state.charts]
+        const tempCharts = [...state.charts]
         if (removeAll) {
             tempCharts.length = 0
         } else {
@@ -395,8 +395,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             tempCharts.length === 0
                 ? null
                 : index >= state.configureChartIndex && state.configureChartIndex !== tempCharts.length
-                ? state.configureChartIndex
-                : state.configureChartIndex - 1
+                  ? state.configureChartIndex
+                  : state.configureChartIndex - 1
 
         setState((state) => ({
             ...state,
@@ -409,7 +409,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     function toggleChart(index: number): void {
         const tempCharts = [...state.charts]
         tempCharts[index].isEnabled = !tempCharts[index].isEnabled
-        //set default values
+        // set default values
         tempCharts[index].isUnsaved = false
         tempCharts[index].name.error = ''
         tempCharts[index].environment.error = ''
@@ -516,7 +516,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         tempCharts[index].name = { value: appName, error: '' }
         setState((state) => ({ ...state, charts: tempCharts }))
     }
-    //TODO: function name must be a verb
+    // TODO: function name must be a verb
     function chartListing() {
         setState((state) => ({ ...state, configureChartIndex: null, advanceVisited: false }))
     }
@@ -559,8 +559,8 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         setState((state) => ({ ...state, noGitOpsConfigAvailable: isGitOpsConfigAvailable }))
     }
 
-    function setEnvironmentList(envList): void{
-        setState((state) => ({...state, environments: envList}))
+    function setEnvironmentList(envList): void {
+        setState((state) => ({ ...state, environments: envList }))
     }
 
     return {

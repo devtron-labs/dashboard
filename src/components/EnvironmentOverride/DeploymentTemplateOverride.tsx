@@ -219,7 +219,7 @@ export default function DeploymentTemplateOverride({
                 namespace,
             },
             isAppMetricsEnabled,
-            latestDraft: latestDraft,
+            latestDraft,
             selectedTabIndex: isApprovalPending ? 2 : 3,
             openComparison: isApprovalPending,
             showReadme: false,
@@ -327,16 +327,15 @@ export default function DeploymentTemplateOverride({
     async function handleOverride(e) {
         e.preventDefault()
         if (state.unableToParseYaml) {
-            return
         } else if (state.duplicate && (!state.latestDraft || state.isDraftOverriden)) {
             const showDeleteModal = state.latestDraft ? state.latestDraft.action !== 3 : state.data.IsOverride
-            //permanent delete
+            // permanent delete
             if (isProtected && showDeleteModal) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
             } else if (showDeleteModal) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
             } else {
-                //remove copy
+                // remove copy
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                     if (state.isBasicLockedInBase !== null && state.isBasicLockedInBase !== undefined) {
                         const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
@@ -369,7 +368,7 @@ export default function DeploymentTemplateOverride({
                 }
             }
         } else {
-            //create copy
+            // create copy
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload: {

@@ -7,6 +7,9 @@ import {
     Drawer,
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { useForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
@@ -25,14 +28,19 @@ import { ReactComponent as VirtualClusterIcon } from '../../assets/icons/ic-virt
 import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environment-temp.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
-import { useHistory } from 'react-router'
-import { toast } from 'react-toastify'
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
+import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
+import {
+    DOCUMENTATION,
+    SERVER_MODE,
+    ViewType,
+    URLS,
+    CONFIGURATION_TYPES,
+    AppCreationType,
+    DEFAULT_SECRET_PLACEHOLDER,
+} from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import Tippy from '@tippyjs/react/headless'
 import ClusterForm from './ClusterForm'
 import Environment from './Environment'
 
@@ -78,7 +86,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     initialise() {
-        if (this.timerRef) clearInterval(this.timerRef)
+        if (this.timerRef) {
+            clearInterval(this.timerRef)
+        }
         Promise.all([
             getClusterList(),
             this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
@@ -86,7 +96,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 : getEnvironmentList(),
         ])
             .then(([clusterRes, envResponse]) => {
-                let environments = envResponse.result || []
+                const environments = envResponse.result || []
                 const clusterEnvMap = environments.reduce((agg, curr, idx) => {
                     agg[curr.cluster_id] = agg[curr.cluster_id] || []
                     agg[curr.cluster_id].push(curr)
@@ -102,12 +112,12 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
                 this.setState(
                     {
-                        clusters: clusters,
+                        clusters,
                         clusterEnvMap,
                         view: ViewType.FORM,
                     },
                     () => {
-                        let cluster = this.state.clusters.find(
+                        const cluster = this.state.clusters.find(
                             (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
                         )
                         if (cluster) {
@@ -129,11 +139,11 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             const { result } = await getClusterList()
             let clusters = result
                 ? result.map((c) => {
-                    return {
-                        ...c,
-                        environments: this.state.clusterEnvMap[c.id],
-                    }
-                })
+                      return {
+                          ...c,
+                          environments: this.state.clusterEnvMap[c.id],
+                      }
+                  })
                 : []
             clusters = clusters.concat({
                 id: null,
@@ -144,7 +154,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     user: '',
                     password: '',
                     authKey: '',
-                    sshServerAddress: ''
+                    sshServerAddress: '',
                 },
                 active: true,
                 config: {},
@@ -153,12 +163,14 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 isVirtualCluster: false,
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
-            this.setState({ clusters: clusters })
-            let cluster = this.state.clusters.find(
+            this.setState({ clusters })
+            const cluster = this.state.clusters.find(
                 (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
             )
-            if (!cluster) clearInterval(this.timerRef)
-        } catch (error) { }
+            if (!cluster) {
+                clearInterval(this.timerRef)
+            }
+        } catch (error) {}
     }
 
     componentWillUnmount() {
@@ -193,7 +205,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ browseFile: !this.state.browseFile })
     }
 
-
     render() {
         if (!this.props.isSuperAdmin) {
             return (
@@ -201,102 +212,109 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     <ErrorScreenNotAuthorized />
                 </div>
             )
-        } else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
-        else {
-            const moduleBasedTitle =
-                'Clusters' +
-                (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments')
-            return (
-                <section className="global-configuration__component flex-1">
-                    <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
-                        <h2 className="form__title">{moduleBasedTitle}</h2>
-                        <button
-                            type="button"
-                            className="flex cta h-32 lh-n fcb-5"
-                            onClick={() =>
-                                this.setState({
-                                    showAddCluster: true,
-                                })
-                            }
-                        >
-                            <Add
-                                data-testid="add_cluster_button"
-                                className="icon-dim-16 mr-8 fcb-5 dc__vertical-align-middle"
-                            />
-                            Add cluster
-                        </button>
-                    </div>
-                    <p className="form__subtitle">
-                        Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
-                        <a
-                            className="dc__link"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
-                            rel="noopener noreferer"
-                            target="_blank"
-                        >
-                            Learn more
-                        </a>
-                    </p>
-                    {this.state.clusters.map(
-                        (cluster) =>
-                            cluster.id && (
-                                <Cluster
-                                    {...cluster}
-                                    reload={this.initialise}
-                                    key={cluster.id || Math.random().toString(36).substr(2, 5)}
-                                    serverMode={this.props.serverMode}
-                                    showEditCluster={this.state.showEditCluster}
-                                    toggleShowAddCluster={this.toggleShowEditCluster}
-                                    toggleCheckTlsConnection={this.toggleCheckTlsConnection}
-                                    setTlsConnectionFalse={this.setTlsConnectionFalse}
-                                    isTlsConnection={this.state.isTlsConnection}
-                                    prometheus_url={cluster.prometheus_url}
+        }
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+        if (this.state.view === ViewType.ERROR) {
+            return <Reload className="dc__align-reload-center" />
+        }
+        if (this.state.view === ViewType.LOADING) {
+            return <Progressing pageLoader />
+        }
+        if (this.state.view === ViewType.ERROR) {
+            return <Reload className="dc__align-reload-center" />
+        }
 
-                                />
-                            ),
-                    )}
-                    {this.state.showAddCluster && (
-                        <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
-                            <ClusterForm
-                                id={null}
-                                cluster_name={this.state.cluster_name}
-                                server_url={this.state.server_url}
-                                active={true}
-                                config={{}}
-                                toggleEditMode={() => { }}
+        const moduleBasedTitle = `Clusters${
+            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments'
+        }`
+        return (
+            <section className="global-configuration__component flex-1">
+                <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
+                    <h2 className="form__title">{moduleBasedTitle}</h2>
+                    <button
+                        type="button"
+                        className="flex cta h-32 lh-n fcb-5"
+                        onClick={() =>
+                            this.setState({
+                                showAddCluster: true,
+                            })
+                        }
+                    >
+                        <Add
+                            data-testid="add_cluster_button"
+                            className="icon-dim-16 mr-8 fcb-5 dc__vertical-align-middle"
+                        />
+                        Add cluster
+                    </button>
+                </div>
+                <p className="form__subtitle">
+                    Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
+                    <a
+                        className="dc__link"
+                        href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                        rel="noopener noreferer noreferrer"
+                        target="_blank"
+                    >
+                        Learn more
+                    </a>
+                </p>
+                {this.state.clusters.map(
+                    (cluster) =>
+                        cluster.id && (
+                            <Cluster
+                                {...cluster}
                                 reload={this.initialise}
-                                prometheus_url=""
-                                prometheusAuth={this.state.prometheus}
-                                defaultClusterComponent={this.state.defaultClusterComponent}
-                                isTlsConnection={this.state.isTlsConnection}
-                                isClusterDetails={this.state.isClusterDetails}
-                                proxyUrl={this.state.proxyUrl}
-                                sshTunnelUser={this.state.sshTunnelUser}
-                                sshTunnelPassword={this.state.sshTunnelPassword}
-                                sshTunnelPrivateKey={this.state.sshTunnelPrivateKey}
-                                sshTunnelUrl={this.state.sshTunnelUrl}
-                                isConnectedViaProxy={this.state.isConnectedViaProxy}
-                                isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
+                                key={cluster.id || Math.random().toString(36).substr(2, 5)}
+                                serverMode={this.props.serverMode}
+                                showEditCluster={this.state.showEditCluster}
+                                toggleShowAddCluster={this.toggleShowEditCluster}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                 setTlsConnectionFalse={this.setTlsConnectionFalse}
-                                toggleShowAddCluster={this.toggleShowAddCluster}
-                                toggleKubeConfigFile={this.toggleKubeConfigFile}
-                                isKubeConfigFile={this.state.isKubeConfigFile}
-                                toggleClusterDetails={this.toggleClusterDetails}
-                                isVirtualCluster={false}
+                                isTlsConnection={this.state.isTlsConnection}
+                                prometheus_url={cluster.prometheus_url}
                             />
-                        </Drawer>
-                    )}
-                </section>
-            )
-        }
+                        ),
+                )}
+                {this.state.showAddCluster && (
+                    <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
+                        <ClusterForm
+                            id={null}
+                            cluster_name={this.state.cluster_name}
+                            server_url={this.state.server_url}
+                            active
+                            config={{}}
+                            toggleEditMode={() => {}}
+                            reload={this.initialise}
+                            prometheus_url=""
+                            prometheusAuth={this.state.prometheus}
+                            defaultClusterComponent={this.state.defaultClusterComponent}
+                            isTlsConnection={this.state.isTlsConnection}
+                            isClusterDetails={this.state.isClusterDetails}
+                            proxyUrl={this.state.proxyUrl}
+                            sshTunnelUser={this.state.sshTunnelUser}
+                            sshTunnelPassword={this.state.sshTunnelPassword}
+                            sshTunnelPrivateKey={this.state.sshTunnelPrivateKey}
+                            sshTunnelUrl={this.state.sshTunnelUrl}
+                            isConnectedViaProxy={this.state.isConnectedViaProxy}
+                            isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
+                            toggleCheckTlsConnection={this.toggleCheckTlsConnection}
+                            setTlsConnectionFalse={this.setTlsConnectionFalse}
+                            toggleShowAddCluster={this.toggleShowAddCluster}
+                            toggleKubeConfigFile={this.toggleKubeConfigFile}
+                            isKubeConfigFile={this.state.isKubeConfigFile}
+                            toggleClusterDetails={this.toggleClusterDetails}
+                            isVirtualCluster={false}
+                        />
+                    </Drawer>
+                )}
+            </section>
+        )
     }
 }
 
-function Cluster({
+const Cluster = ({
     id,
     id: clusterId,
     cluster_name,
@@ -317,8 +335,8 @@ function Cluster({
     toggleShowAddCluster,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
-    isVirtualCluster
-}) {
+    isVirtualCluster,
+}) => {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
     const [config, setConfig] = useState(defaultConfig)
@@ -327,12 +345,12 @@ function Cluster({
     const [showWindow, setShowWindow] = useState(false)
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
-    const [prometheusToggleEnabled] = useState(prometheus_url ? true : false)
+    const [prometheusToggleEnabled] = useState(!!prometheus_url)
 
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
-    let authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+    const authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const editLabelRef = useRef(null)
     const drawerRef = useRef(null)
@@ -354,7 +372,7 @@ function Cluster({
             sshTunnelPassword: { value: sshTunnelConfig?.password, error: '' },
             sshTunnelPrivateKey: { value: sshTunnelConfig?.authKey, error: '' },
             sshTunnelUrl: { value: sshTunnelConfig?.sshServerAddress, error: '' },
-            isConnectedViaProxy: proxyUrl?.length ? true : false,
+            isConnectedViaProxy: !!proxyUrl?.length,
             isConnectedViaSSHTunnel: toConnectWithSSHTunnel,
             tlsClientKey: { value: config.tls_key, error: '' },
             tlsClientCert: { value: config.cert_data, error: '' },
@@ -386,7 +404,10 @@ function Cluster({
             },
             sshTunnelUser: {
                 required: false,
-                validator: { error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -', regex: /^[A-Za-z0-9_-]+$/ },
+                validator: {
+                    error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -',
+                    regex: /^[A-Za-z0-9_-]+$/,
+                },
             },
             sshTunnelPassword: {
                 required: false,
@@ -408,17 +429,11 @@ function Cluster({
                 validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ },
             },
             userName: {
-                required:
-                    prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC
-                        ? true
-                        : false,
+                required: !!(prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
                 validator: { error: 'username is required', regex: /^(?!\s*$).+/ },
             },
             password: {
-                required:
-                    prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC
-                        ? true
-                        : false,
+                required: !!(prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
             tlsClientKey: {
@@ -443,11 +458,11 @@ function Cluster({
                 isDefaultCluster() || id
                     ? {}
                     : {
-                        required: true,
-                        validator: { error: 'token is required', regex: /[^]+/ },
-                    },
+                          required: true,
+                          validator: { error: 'token is required', regex: /[^]+/ },
+                      },
             endpoint: {
-                required: prometheusToggleEnabled ? true : false,
+                required: !!prometheusToggleEnabled,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
             },
         },
@@ -476,9 +491,11 @@ function Cluster({
 
     async function callRetryClusterInstall() {
         try {
-            let payload = {}
+            const payload = {}
             const { result } = await retryClusterInstall(clusterId, payload)
-            if (result) toast.success('Successfully triggered')
+            if (result) {
+                toast.success('Successfully triggered')
+            }
             reload()
         } catch (error) {
             showError(error)
@@ -488,7 +505,9 @@ function Cluster({
     async function clusterInstallStatusOnclick(e) {
         if (agentInstallationStage === 3) {
             callRetryClusterInstall()
-        } else toggleClusterComponentModal(!showClusterComponentModal)
+        } else {
+            toggleClusterComponentModal(!showClusterComponentModal)
+        }
     }
 
     const hideClusterDrawer = (e) => {
@@ -509,7 +528,7 @@ function Cluster({
     }
 
     async function onValidation() {
-        let payload = getClusterPayload()
+        const payload = getClusterPayload()
         const urlValue = state.url.value?.trim() ?? ''
         if (urlValue.endsWith('/')) {
             payload['server_url'] = urlValue.slice(0, -1)
@@ -527,10 +546,9 @@ function Cluster({
         payload.sshTunnelConfig['authKey'] = state.sshTunnelPrivateKey?.value
         payload.sshTunnelConfig['sshServerAddress'] = state.sshTunnelUrl?.value
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
-            let isValid = state.userName?.value && state.password?.value
+            const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
                 toast.error('Please add both username and password')
-                return
             } else {
                 payload.prometheusAuth['userName'] = state.userName.value || ''
                 payload.prometheusAuth['password'] = state.password.value || ''
@@ -578,7 +596,7 @@ function Cluster({
         }
     }, [outsideClickHandler])
 
-    let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
+    const envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
     const renderNoEnvironmentTab = () => {
         return (
@@ -628,17 +646,15 @@ function Cluster({
     const clusterIcon = () => {
         if (isVirtualCluster) {
             return <VirtualClusterIcon className="fcb-5 icon-dim-24 dc__vertical-align-middle mr-16" />
-        } else {
-            return <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
         }
+        return <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
     }
 
     const envIcon = () => {
         if (isVirtualCluster) {
             return <VirtualEnvIcon className="fcb-5 icon-dim-20" />
-        } else {
-            return <Database className="icon-dim-20" />
         }
+        return <Database className="icon-dim-20" />
     }
 
     const DisableEditMode = (): void => {
@@ -650,172 +666,177 @@ function Cluster({
     return (
         <>
             <article
-                className={`cluster-list ${clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
-                    }`}
+                className={`cluster-list ${
+                    clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
+                }`}
             >
-                <>
-                    <List className="dc__border" key={clusterId} onClick={editModeToggle}>
-                        {!clusterId && (
-                            <List.Logo>
-                                <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
-                            </List.Logo>
-                        )}
-                        <div className="flex left">
-                            {clusterId ? clusterIcon() : null}
-                            <List.Title title={cluster_name || 'Add cluster'} subtitle={subTitle} className="fw-6 dc__mxw-400 dc__truncate-text" />
-                            {clusterId && (
-                                <div className="flex dc__align-right">
-                                    <div
-                                        className="flex mr-16"
-                                        data-testid={`add-environment-button-${cluster_name}`}
-                                        onClick={addCluster}
-                                    >
-                                        <List.Logo>
-                                            <Add className="icon-dim-20 fcb-5 mr-8" />
-                                        </List.Logo>
-                                        <div className="fw-6 fs-13 cb-5">Add Environment</div>
-                                    </div>
-                                    <div className="dc__divider" />
-                                </div>
-                            )}
-                        </div>
+                <List className="dc__border" key={clusterId} onClick={editModeToggle}>
+                    {!clusterId && (
+                        <List.Logo>
+                            <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
+                        </List.Logo>
+                    )}
+                    <div className="flex left">
+                        {clusterId ? clusterIcon() : null}
+                        <List.Title
+                            title={cluster_name || 'Add cluster'}
+                            subtitle={subTitle}
+                            className="fw-6 dc__mxw-400 dc__truncate-text"
+                        />
                         {clusterId && (
-                            <Tippy className="default-tt cursor" arrow={false} content="Edit Cluster">
-                                <div data-testid={`edit_cluster_pencil-${cluster_name}`}>
-                                    <PencilEdit onClick={handleEdit} />
+                            <div className="flex dc__align-right">
+                                <div
+                                    className="flex mr-16"
+                                    data-testid={`add-environment-button-${cluster_name}`}
+                                    onClick={addCluster}
+                                >
+                                    <List.Logo>
+                                        <Add className="icon-dim-20 fcb-5 mr-8" />
+                                    </List.Logo>
+                                    <div className="fw-6 fs-13 cb-5">Add Environment</div>
                                 </div>
-                            </Tippy>
-                        )}
-                    </List>
-                    {!isVirtualCluster && serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId && (
-                        <ClusterInstallStatus
-                            agentInstallationStage={agentInstallationStage}
-                            envName={envName}
-                            onClick={clusterInstallStatusOnclick}
-                        />
-                    )}
-                    {showClusterComponentModal && (
-                        <ClusterComponentModal
-                            agentInstallationStage={agentInstallationStage}
-                            components={defaultClusterComponent}
-                            environmentName={envName}
-                            callRetryClusterInstall={callRetryClusterInstall}
-                            redirectToChartDeployment={redirectToChartDeployment}
-                            close={(e) => {
-                                toggleClusterComponentModal(!showClusterComponentModal)
-                            }}
-                        />
-                    )}
-                    {serverMode !== SERVER_MODE.EA_ONLY &&
-                        !window._env_.K8S_CLIENT &&
-                        Array.isArray(newEnvs) &&
-                        newEnvs.length > 1 ? (
-                        <div className="pb-8">
-                            <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
-                                <div></div>
-                                <div>{CONFIGURATION_TYPES.ENVIRONMENT}</div>
-                                <div>{CONFIGURATION_TYPES.NAMESPACE}</div>
-                                <div>{CONFIGURATION_TYPES.DESCRIPTION}</div>
-                                <div></div>
+                                <div className="dc__divider" />
                             </div>
-                            {newEnvs
-                                .sort((a, b) => sortCallback('environment_name', a, b))
-                                .map(
-                                    ({
-                                        id,
-                                        environment_name,
-                                        prometheus_url,
-                                        namespace,
-                                        default: isProduction,
-                                        description,
-                                    }) =>
-                                        environment_name ? (
+                        )}
+                    </div>
+                    {clusterId && (
+                        <Tippy className="default-tt cursor" arrow={false} content="Edit Cluster">
+                            <div data-testid={`edit_cluster_pencil-${cluster_name}`}>
+                                <PencilEdit onClick={handleEdit} />
+                            </div>
+                        </Tippy>
+                    )}
+                </List>
+                {!isVirtualCluster && serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId && (
+                    <ClusterInstallStatus
+                        agentInstallationStage={agentInstallationStage}
+                        envName={envName}
+                        onClick={clusterInstallStatusOnclick}
+                    />
+                )}
+                {showClusterComponentModal && (
+                    <ClusterComponentModal
+                        agentInstallationStage={agentInstallationStage}
+                        components={defaultClusterComponent}
+                        environmentName={envName}
+                        callRetryClusterInstall={callRetryClusterInstall}
+                        redirectToChartDeployment={redirectToChartDeployment}
+                        close={(e) => {
+                            toggleClusterComponentModal(!showClusterComponentModal)
+                        }}
+                    />
+                )}
+                {serverMode !== SERVER_MODE.EA_ONLY &&
+                !window._env_.K8S_CLIENT &&
+                Array.isArray(newEnvs) &&
+                newEnvs.length > 1 ? (
+                    <div className="pb-8">
+                        <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+                            <div />
+                            <div>{CONFIGURATION_TYPES.ENVIRONMENT}</div>
+                            <div>{CONFIGURATION_TYPES.NAMESPACE}</div>
+                            <div>{CONFIGURATION_TYPES.DESCRIPTION}</div>
+                            <div />
+                        </div>
+                        {newEnvs
+                            .sort((a, b) => sortCallback('environment_name', a, b))
+                            .map(
+                                ({
+                                    id,
+                                    environment_name,
+                                    prometheus_url,
+                                    namespace,
+                                    default: isProduction,
+                                    description,
+                                }) =>
+                                    environment_name ? (
+                                        <div
+                                            data-testid={`env-container-${environment_name}`}
+                                            className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
+                                            key={id}
+                                            onClick={() =>
+                                                setEnvironment({
+                                                    id,
+                                                    environment_name,
+                                                    cluster_id: clusterId,
+                                                    namespace,
+                                                    prometheus_url,
+                                                    isProduction,
+                                                    description,
+                                                })
+                                            }
+                                        >
+                                            <span className="cursor flex w-100">{environment_name && envIcon()}</span>
+
                                             <div
-                                                data-testid={`env-container-${environment_name}`}
-                                                className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
-                                                key={id}
-                                                onClick={() =>
-                                                    setEnvironment({
-                                                        id,
-                                                        environment_name,
-                                                        cluster_id: clusterId,
-                                                        namespace,
-                                                        prometheus_url,
-                                                        isProduction,
-                                                        description,
-                                                    })
-                                                }
+                                                className="dc__truncate-text flex left cb-5 cursor"
+                                                onClick={showWindowModal}
+                                                data-testid={`env-${environment_name}`}
                                             >
-                                                <span className="cursor flex w-100">
-                                                    {environment_name && envIcon()}
-                                                </span>
+                                                {environment_name}
 
-                                                <div
-                                                    className="dc__truncate-text flex left cb-5 cursor"
-                                                    onClick={showWindowModal}
-                                                    data-testid={`env-${environment_name}`}
-                                                >
-                                                    {environment_name}
-
-                                                    {isProduction && (
-                                                        <div className="bc-n50 dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
-                                                            Prod
+                                                {isProduction && (
+                                                    <div className="bc-n50 dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
+                                                        Prod
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="dc__truncate-text">{namespace}</div>
+                                            <div className="cluster-list__description dc__truncate-text">
+                                                {description}
+                                            </div>
+                                            <div className="dc__visible-hover--child">
+                                                <div className="flex">
+                                                    <Tippy
+                                                        className="default-tt cursor"
+                                                        arrow={false}
+                                                        content="Edit Environment"
+                                                    >
+                                                        <div className="">
+                                                            <PencilEdit
+                                                                className="icon-dim-20 mr-12"
+                                                                onClick={showWindowModal}
+                                                            />
                                                         </div>
-                                                    )}
-                                                </div>
-                                                <div className="dc__truncate-text">{namespace}</div>
-                                                <div className="cluster-list__description dc__truncate-text">
-                                                    {description}
-                                                </div>
-                                                <div className="dc__visible-hover--child">
-                                                    <div className="flex">
+                                                    </Tippy>
+                                                    {envDelete ? (
+                                                        <Progressing size={20} />
+                                                    ) : (
                                                         <Tippy
                                                             className="default-tt cursor"
                                                             arrow={false}
-                                                            content="Edit Environment"
+                                                            content="Delete Environment"
                                                         >
-                                                            <PencilEdit
-                                                                className="cursor icon-dim-20 mr-12"
-                                                                onClick={showWindowModal}
-                                                            />
-                                                        </Tippy>
-                                                        {envDelete ? (
-                                                            <Progressing size={20} />
-                                                        ) : (
-                                                            <Tippy
-                                                                className="default-tt cursor"
-                                                                arrow={false}
-                                                                content="Delete Environment"
-                                                            >
+                                                            <div className="">
                                                                 <DeleteEnvironment
                                                                     data-testid={`env-delete-button-${environment_name}`}
                                                                     className="icon-dim-20 cursor"
                                                                     onClick={showToggleConfirmation}
                                                                 />
-                                                            </Tippy>
-                                                        )}
-                                                    </div>
+                                                            </div>
+                                                        </Tippy>
+                                                    )}
                                                 </div>
                                             </div>
-                                        ) : null,
-                                )}
-                            {confirmation && (
-                                <DeleteComponent
-                                    setDeleting={clusterDelete}
-                                    deleteComponent={deleteEnvironment}
-                                    payload={getEnvironmentPayload()}
-                                    title={environment.environment_name}
-                                    toggleConfirmation={toggleConfirmation}
-                                    component={DeleteComponentsName.Environment}
-                                    confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
-                                    reload={reload}
-                                />
+                                        </div>
+                                    ) : null,
                             )}
-                        </div>
-                    ) : (
-                        clusterId && renderNoEnvironmentTab()
-                    )}
-                </>
+                        {confirmation && (
+                            <DeleteComponent
+                                setDeleting={clusterDelete}
+                                deleteComponent={deleteEnvironment}
+                                payload={getEnvironmentPayload()}
+                                title={environment.environment_name}
+                                toggleConfirmation={toggleConfirmation}
+                                component={DeleteComponentsName.Environment}
+                                confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
+                                reload={reload}
+                            />
+                        )}
+                    </div>
+                ) : (
+                    clusterId && renderNoEnvironmentTab()
+                )}
                 {editMode && (
                     <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
                         <div className="h-100 bcn-0" ref={drawerRef}>
@@ -823,28 +844,28 @@ function Cluster({
                                 id={clusterId}
                                 cluster_name={cluster_name}
                                 server_url={server_url}
-                                active={true}
+                                active
                                 config={{}}
                                 reload={reload}
                                 prometheus_url={prometheus_url}
-                                prometheusAuth={prometheusAuth} 
+                                prometheusAuth={prometheusAuth}
                                 defaultClusterComponent={state.defaultClusterComponent}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={proxyUrl}
-                                sshTunnelUser={sshTunnelConfig?.user} 
+                                sshTunnelUser={sshTunnelConfig?.user}
                                 sshTunnelPassword={sshTunnelConfig?.password}
                                 sshTunnelPrivateKey={sshTunnelConfig?.authKey}
                                 sshTunnelUrl={sshTunnelConfig?.sshServerAddress}
-                                isConnectedViaProxy={proxyUrl ? true : false}
+                                isConnectedViaProxy={!!proxyUrl}
                                 isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
                                 toggleShowAddCluster={toggleShowAddCluster}
-                                toggleKubeConfigFile={true}
+                                toggleKubeConfigFile
                                 isKubeConfigFile={state.isKubeConfigFile}
                                 toggleEditMode={toggleEditMode}
-                                toggleClusterDetails={true}
+                                toggleClusterDetails
                                 isVirtualCluster={isVirtualCluster}
                             />
                         </div>

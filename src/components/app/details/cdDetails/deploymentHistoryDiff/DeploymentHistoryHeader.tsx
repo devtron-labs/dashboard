@@ -3,13 +3,13 @@ import ReactSelect from 'react-select'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import moment from 'moment'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, Moment12HourFormat, URLS } from '../../../../../config'
 import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow-forward.svg'
 import { CompareWithBaseConfiguration, DeploymentHistoryParamsType, DeploymentTemplateOptions } from './types'
 import { Option, styles } from './utils'
 import { getDeploymentDiffSelector } from '../service'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 
 export default function DeploymentHistoryHeader({
     selectedDeploymentTemplate,
@@ -73,7 +73,7 @@ export default function DeploymentHistoryHeader({
         return (
             <NavLink
                 data-testid="configuration-back-arrow"
-                to={``}
+                to=""
                 className="flex"
                 onClick={(e) => {
                     e.preventDefault()
@@ -107,7 +107,7 @@ export default function DeploymentHistoryHeader({
                             options={deploymentTemplateOption}
                             components={{
                                 IndicatorSeparator: null,
-                                Option: Option,
+                                Option,
                             }}
                             value={selectedDeploymentTemplate || deploymentTemplateOption[0]}
                         />

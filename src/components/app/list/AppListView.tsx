@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { AppStatus, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, Progressing, ErrorScreenManager, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
+import { Link } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import { AppListViewType } from '../config'
 import { Pagination, handleUTCTime } from '../../common'
-import { Link } from 'react-router-dom'
 import { ExpandedRow } from './expandedRow/ExpandedRow'
 import { Empty } from './emptyView/Empty'
 import { AppListViewProps, OrderBy, SortBy } from './types'
@@ -13,14 +14,13 @@ import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtr
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
-import Tippy from '@tippyjs/react'
 import ContentCard from '../../common/ContentCard/ContentCard'
 import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
-import cluster from 'cluster'
+
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -39,9 +39,9 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     renderEnvironmentList(app) {
-        let len = app.environments.length
+        const len = app.environments.length
         if (len) {
-            let isEnvConfigured = app.defaultEnv && app.defaultEnv.name
+            const isEnvConfigured = app.defaultEnv && app.defaultEnv.name
             return (
                 <div className="app-list__cell app-list__cell--env">
                     <p
@@ -51,19 +51,26 @@ export class AppListView extends Component<AppListViewProps> {
                         {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
                     </p>
                     {len > 1 ? (
-                        <button type="button" className="cell__link fs-13 dc__truncate-text mw-18" data-key={app.id} onClick={this.expandEnv}>
+                        <button
+                            type="button"
+                            className="cell__link fs-13 dc__truncate-text mw-18"
+                            data-key={app.id}
+                            onClick={this.expandEnv}
+                        >
                             +{len - 1} more
                         </button>
                     ) : null}
                 </div>
             )
-        } else return <div className="app-list__cell app-list__cell--env"></div>
+        }
+        return <div className="app-list__cell app-list__cell--env" />
     }
 
     sortByAppName = (e) => {
         e.preventDefault()
         this.props.sort('appNameSort')
     }
+
     sortByDeployedTime = (e) => {
         e.preventDefault()
         this.props.sort('lastDeployedSort')
@@ -78,14 +85,13 @@ export class AppListView extends Component<AppListViewProps> {
     arrowIcon = (): string => {
         if (this.props.isAllExpandable) {
             return this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-270'
-        } else {
-            return 'cursor-not-allowed dc__flip-270'
         }
+        return 'cursor-not-allowed dc__flip-270'
     }
 
     renderAppList() {
         if (this.props.apps.length) {
-            let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
+            const icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
                 <div className="app-list" data-testid="app-list-container">
                     <div className="app-list__header dc__position-sticky dc__top-47">
@@ -100,9 +106,9 @@ export class AppListView extends Component<AppListViewProps> {
                             >
                                 {APP_LIST_HEADERS.AppName}
                                 {this.props.sortRule.key === SortBy.APP_NAME ? (
-                                    <span data-testid="sort-app-name-list" className={` sort ${icon} ml-4`}></span>
+                                    <span data-testid="sort-app-name-list" className={` sort ${icon} ml-4`} />
                                 ) : (
-                                    <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                                    <span className="sort-col dc__opacity-0_5 ml-4" />
                                 )}
                             </button>
                         </div>
@@ -120,11 +126,13 @@ export class AppListView extends Component<AppListViewProps> {
                             <Tippy
                                 data-testid="env-tippy"
                                 className="default-tt w-200"
-                                arrow={true}
+                                arrow
                                 placement="top"
                                 content="Environment is a unique combination of cluster and namespace"
                             >
-                                <HelpOutlineIcon className="icon-dim-16" />
+                                <div className="flex">
+                                    <HelpOutlineIcon className="icon-dim-16" />
+                                </div>
                             </Tippy>
                         </div>
                         <div className="app-list__cell app-list__cell--cluster">
@@ -151,13 +159,13 @@ export class AppListView extends Component<AppListViewProps> {
                                         className={` sort ${
                                             this.props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''
                                         } ml-4`}
-                                    ></span>
+                                    />
                                 ) : (
-                                    <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                                    <span className="sort-col dc__opacity-0_5 ml-4" />
                                 )}
                             </button>
                         </div>
-                        <div className="app-list__cell app-list__cell--action"></div>
+                        <div className="app-list__cell app-list__cell--action" />
                     </div>
                     {this.props.apps.map((app) => {
                         const len = app.environments.length > 1
@@ -189,7 +197,10 @@ export class AppListView extends Component<AppListViewProps> {
                                                 className="app-list__cell app-list__cell--app_status"
                                                 data-testid="devtron-app-status"
                                             >
-                                                <AppStatus appStatus={app.defaultEnv.appStatus} isVirtualEnv={app.defaultEnv.isVirtualEnvironment} />
+                                                <AppStatus
+                                                    appStatus={app.defaultEnv.appStatus}
+                                                    isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
+                                                />
                                             </div>
                                         )}
                                         {this.renderEnvironmentList(app)}
@@ -213,16 +224,16 @@ export class AppListView extends Component<AppListViewProps> {
                                             {app.defaultEnv && app.defaultEnv.lastDeployedTime && (
                                                 <Tippy
                                                     className="default-tt"
-                                                    arrow={true}
+                                                    arrow
                                                     placement="top"
                                                     content={app.defaultEnv.lastDeployedTime}
                                                 >
-                                                    <p
+                                                    <div
                                                         className="dc__truncate-text  m-0"
                                                         data-testid="last-deployed-time"
                                                     >
                                                         {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
-                                                    </p>
+                                                    </div>
                                                 </Tippy>
                                             )}
                                         </div>
@@ -257,7 +268,7 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     renderPagination() {
-        if (this.props.size > 20) {
+        if (this.props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={this.props.size}
@@ -278,7 +289,7 @@ export class AppListView extends Component<AppListViewProps> {
                     <ContentCard
                         datatestid="deploy-basic-k8snode"
                         redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
-                        isExternalRedirect={true}
+                        isExternalRedirect
                         imgSrc={NodeAppThumbnail}
                         title={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.title}
                         linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.linkText}
@@ -309,9 +320,11 @@ export class AppListView extends Component<AppListViewProps> {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.props.view === AppListViewType.EMPTY) {
+        }
+        if (this.props.view === AppListViewType.EMPTY) {
             return this.renderGuidedCards()
-        } else if (this.props.view === AppListViewType.NO_RESULT) {
+        }
+        if (this.props.view === AppListViewType.NO_RESULT) {
             return (
                 <Empty
                     view={this.props.view}
@@ -321,20 +334,20 @@ export class AppListView extends Component<AppListViewProps> {
                     clickHandler={this.props.clearAll}
                 />
             )
-        } else if (this.props.view === AppListViewType.ERROR) {
+        }
+        if (this.props.view === AppListViewType.ERROR) {
             return (
                 <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={this.props.code} />
                 </div>
             )
-        } else {
-            return (
-                <>
-                    {this.renderAppList()}
-                    {this.renderPagination()}
-                </>
-            )
         }
+        return (
+            <>
+                {this.renderAppList()}
+                {this.renderPagination()}
+            </>
+        )
     }
 }
 export default AppListView

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
 import { showError, Progressing, ErrorScreenManager, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
-import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { withRouter } from 'react-router'
+import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
+import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { CreateMaterial } from './CreateMaterial'
 import { UpdateMaterial } from './UpdateMaterial'
 import { MaterialListProps, MaterialListState } from './material.types'
@@ -33,13 +33,13 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         ])
             .then(([sourceConfigRes, providersRes]) => {
                 let materials = sourceConfigRes.result.material || []
-                let providers = providersRes.result
+                const providers = providersRes.result
                 materials = materials.map((mat) => {
                     return {
                         ...mat,
                         includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
                         gitProvider: providers.find((p) => mat.gitProviderId === p.id),
-                        isExcludeRepoChecked: !!mat.filterPattern?.length
+                        isExcludeRepoChecked: !!mat.filterPattern?.length,
                     }
                 })
                 this.setState({
@@ -73,7 +73,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             this.props.respondOnSuccess()
         }
         getSourceConfig(this.props.match.params.appId).then((response) => {
-            let materials = response.result.material.map((mat) => {
+            const materials = response.result.material.map((mat) => {
                 return {
                     ...mat,
                     includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
@@ -88,13 +88,12 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
 
     isCheckoutPathValid(checkoutPath: string) {
         if (this.state.materials.length >= 1) {
-            //Multi git
+            // Multi git
             if (!checkoutPath.length) {
                 return 'This is a required field'
-            } else {
-                if (!checkoutPath.startsWith('./')) {
-                    return "Invalid Path. Checkout path should start with './'"
-                } else return
+            }
+            if (!checkoutPath.startsWith('./')) {
+                return "Invalid Path. Checkout path should start with './'"
             }
         } else {
             if (checkoutPath.length && !checkoutPath.startsWith('./')) {
@@ -105,7 +104,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     isGitProviderValid(provider) {
-        if (provider && provider.id) return undefined
+        if (provider && provider.id) {
+            return undefined
+        }
 
         return 'This is required field'
     }
@@ -113,7 +114,10 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return (
             <>
-                <h2 className="form__title form__title--artifacts" data-testid={`${this.props.isJobView ? 'source-code-heading' : 'git-repositories-heading'}`}>
+                <h2
+                    className="form__title form__title--artifacts"
+                    data-testid={`${this.props.isJobView ? 'source-code-heading' : 'git-repositories-heading'}`}
+                >
                     {this.props.isJobView ? 'Source code' : 'Git Repositories'}
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
@@ -165,49 +169,50 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     }
 
     render() {
-        if (this.state.view == ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view == ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.statusCode} />
-        } else {
-            return (
-                <div className="form__app-compose">
-                    {this.renderPageHeader()}
-                    {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
-                    <CreateMaterial
-                        key={this.state.materials.length}
-                        appId={Number(this.props.match.params.appId)}
-                        isMultiGit={this.state.materials.length > 0}
-                        providers={this.state.providers}
-                        refreshMaterials={this.refreshMaterials}
-                        isGitProviderValid={this.isGitProviderValid}
-                        isCheckoutPathValid={this.isCheckoutPathValid}
-                        isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
-                        reload={this.getGitProviderConfig}
-                        isJobView={this.props.isJobView}
-                    />
-                    {this.state.materials.map((mat, index) => {
-                        return (
-                            <UpdateMaterial
-                                key={mat.name}
-                                appId={Number(this.props.match.params.appId)}
-                                isMultiGit={this.state.materials.length > 0}
-                                preventRepoDelete={this.state.materials.length === 1}
-                                providers={this.state.providers}
-                                material={mat}
-                                refreshMaterials={this.refreshMaterials}
-                                isGitProviderValid={this.isGitProviderValid}
-                                isCheckoutPathValid={this.isCheckoutPathValid}
-                                isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
-                                reload={this.getGitProviderConfig}
-                                toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
-                                setRepo={this.props.setRepo}
-                                isJobView={this.props.isJobView}
-                            />
-                        )
-                    })}
-                </div>
-            )
+        if (this.state.view == ViewType.LOADING) {
+            return <Progressing pageLoader />
         }
+        if (this.state.view == ViewType.ERROR) {
+            return <ErrorScreenManager code={this.state.statusCode} />
+        }
+        return (
+            <div className="form__app-compose">
+                {this.renderPageHeader()}
+                {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
+                <CreateMaterial
+                    key={this.state.materials.length}
+                    appId={Number(this.props.match.params.appId)}
+                    isMultiGit={this.state.materials.length > 0}
+                    providers={this.state.providers}
+                    refreshMaterials={this.refreshMaterials}
+                    isGitProviderValid={this.isGitProviderValid}
+                    isCheckoutPathValid={this.isCheckoutPathValid}
+                    isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
+                    reload={this.getGitProviderConfig}
+                    isJobView={this.props.isJobView}
+                />
+                {this.state.materials.map((mat, index) => {
+                    return (
+                        <UpdateMaterial
+                            key={mat.name}
+                            appId={Number(this.props.match.params.appId)}
+                            isMultiGit={this.state.materials.length > 0}
+                            preventRepoDelete={this.state.materials.length === 1}
+                            providers={this.state.providers}
+                            material={mat}
+                            refreshMaterials={this.refreshMaterials}
+                            isGitProviderValid={this.isGitProviderValid}
+                            isCheckoutPathValid={this.isCheckoutPathValid}
+                            isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
+                            reload={this.getGitProviderConfig}
+                            toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
+                            setRepo={this.props.setRepo}
+                            isJobView={this.props.isJobView}
+                        />
+                    )
+                })}
+            </div>
+        )
     }
 }
 

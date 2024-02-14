@@ -1,9 +1,9 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import LoadingCard from './LoadingCard'
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
@@ -37,7 +37,9 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
         )
     }
 
-    if (cardLoading) return <LoadingCard wider={displayMessage} />
+    if (cardLoading) {
+        return <LoadingCard wider={displayMessage} />
+    }
 
     return (
         <div
@@ -57,7 +59,9 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                             placement="top"
                             content="The health status of your app"
                         >
-                            <Question className="icon-dim-16 mt-2" />
+                            <div className="flex">
+                                <Question className="icon-dim-16 mt-2" />
+                            </div>
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">
@@ -70,7 +74,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                     <figure
                         className={`${status.toLowerCase()} h-24 w-24`}
                         style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
-                    ></figure>
+                    />
                 </div>
             </div>
             <div className="app-details-info-card__bottom-container">{renderBottomContainer()}</div>

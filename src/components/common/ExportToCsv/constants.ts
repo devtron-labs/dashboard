@@ -1,3 +1,7 @@
+import { importComponentFromFELibrary } from '../helpers/Helpers'
+
+const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
+
 export enum FILE_NAMES {
     Apps = 'Devtron Apps',
     Users = 'Devtron Apps Users Data',
@@ -10,6 +14,7 @@ export interface ExportToCsvProps {
     fileName: FILE_NAMES
     className?: string
     disabled?: boolean
+    showOnlyIcon?: boolean
 }
 
 export const APPLIST_EXPORT_HEADERS = [
@@ -30,7 +35,9 @@ export const APPLIST_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADERS = [
     { label: 'Email address', key: 'emailId' },
     { label: 'User ID', key: 'userId' },
-    { label: 'Superadmin', key: 'superAdmin' },
+    ...(showStatus ? [{ label: 'User status', key: 'status' }] : []),
+    { label: 'Last login time', key: 'lastLoginTime' },
+    { label: 'Super admin', key: 'superAdmin' },
     { label: 'Group permissions', key: 'groups' },
     { label: 'Project', key: 'project' },
     { label: 'Environment', key: 'environment' },
@@ -41,7 +48,13 @@ export const USER_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADER_ROW = {
     emailId: 'Email address',
     userId: 'User ID',
-    superAdmin: 'Superadmin',
+    ...(showStatus
+        ? {
+              status: 'User status',
+          }
+        : {}),
+    lastLoginTime: 'Last login time',
+    superAdmin: 'Super admin',
     groups: 'Group permissions',
     project: 'Project',
     environment: 'Environment',
@@ -53,6 +66,7 @@ export const GROUP_EXPORT_HEADERS = [
     { label: 'Group Name', key: 'groupName' },
     { label: 'Group ID', key: 'groupId' },
     { label: 'Description', key: 'description' },
+    { label: 'Super admin', key: 'superAdmin' },
     { label: 'Project', key: 'project' },
     { label: 'Environment', key: 'environment' },
     { label: 'Application', key: 'application' },
@@ -63,6 +77,7 @@ export const GROUP_EXPORT_HEADER_ROW = {
     groupName: 'Group Name',
     groupId: 'Group ID',
     description: 'Description',
+    superAdmin: 'Super admin',
     project: 'Project',
     environment: 'Environment',
     application: 'Application',

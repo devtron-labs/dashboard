@@ -1,4 +1,4 @@
-import { DeploymentHistoryDetail, DeploymentTemplateList } from "../cd.type"
+import { DeploymentHistoryDetail, DeploymentTemplateList } from '../cd.type'
 
 export interface DeploymentHistorySingleValue {
     displayName: string

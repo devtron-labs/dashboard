@@ -4,7 +4,7 @@ import './environmentStatus.scss'
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
-import { AppType } from '../../../appDetails/appDetails.type'
+import { AppType } from '../../appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { useRouteMatch, useHistory, useParams } from 'react-router'
 import NotesDrawer from './NotesDrawer'
@@ -24,7 +24,7 @@ import IssuesListingModal from '../../../../app/details/appDetails/IssuesListing
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
-function EnvironmentStatusComponent({
+const EnvironmentStatusComponent = ({
     appStreamData,
     loadingDetails,
     loadingResourceTree,
@@ -32,11 +32,11 @@ function EnvironmentStatusComponent({
     isVirtualEnvironment,
     isHelmApp,
     refetchDeploymentStatus,
-}: EnvironmentStatusComponentType) {
+}: EnvironmentStatusComponentType) => {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
-    const status = appDetails.resourceTree?.status || ''
+    const status = appDetails.resourceTree?.status || appDetails?.appStatus || ''
     const showHibernationStatusMessage =
         status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { url } = useRouteMatch()
@@ -47,7 +47,7 @@ function EnvironmentStatusComponent({
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
 
     const onClickUpgrade = () => {
-        let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
+        const _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
     }
 
@@ -65,7 +65,9 @@ function EnvironmentStatusComponent({
     }
 
     const renderStatusBlock = () => {
-        if (!status) return null
+        if (!status) {
+            return null
+        }
         return (
             <AppStatusCard
                 appDetails={appDetails}
@@ -127,23 +129,24 @@ function EnvironmentStatusComponent({
                         cardLoading={cardLoading}
                     />
                 )
-            } else {
-                return (
-                    <DeploymentStatusCard
-                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                        cardLoading={cardLoading}
-                        hideDetails={false}
-                        refetchDeploymentStatus={refetchDeploymentStatus}
-                        isVirtualEnvironment={isVirtualEnvironment}
-                    />
-                )
             }
+            return (
+                <DeploymentStatusCard
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    cardLoading={cardLoading}
+                    hideDetails={false}
+                    refetchDeploymentStatus={refetchDeploymentStatus}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                />
+            )
         }
         return null
     }
 
     const renderChartUsedBlock = () => {
-        if (!appDetails.appStoreAppName) return null
+        if (!appDetails.appStoreAppName) {
+            return null
+        }
         return (
             <ChartUsedCard
                 appDetails={appDetails}

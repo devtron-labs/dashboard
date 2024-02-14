@@ -1,31 +1,30 @@
-import { ChartValuesType } from '../charts.types';
+import { ChartValuesType } from '../charts.types'
 
-export interface DeployChartProps
-//  extends RouteComponentProps<{ chartId: string }>
- {
-    appStoreVersion: number;
-    chartValuesFromParent: ChartValuesType;
-    installedAppVersion?: number;
-    chartIdFromDeploymentDetail?: number;
-    versions?: Map<number, { id: number, version: string }>;
-    valuesYaml?: string;
-    rawValues?:string;
-    environmentId?: number;
-    teamId?: number;
-    installedAppId?: number;
-    onHide?: any;
-    chartName?: string;
-    name?: string;
-    readme?: string;
-    appName?: string;
-    deprecated?: boolean;
-    appStoreId?: number;
-    installedAppVersionId?: number;
-    deploymentAppType?: string;
+export interface DeployChartProps {
+    //  extends RouteComponentProps<{ chartId: string }>
+    appStoreVersion: number
+    chartValuesFromParent: ChartValuesType
+    installedAppVersion?: number
+    chartIdFromDeploymentDetail?: number
+    versions?: Map<number, { id: number; version: string }>
+    valuesYaml?: string
+    rawValues?: string
+    environmentId?: number
+    teamId?: number
+    installedAppId?: number
+    onHide?: any
+    chartName?: string
+    name?: string
+    readme?: string
+    appName?: string
+    deprecated?: boolean
+    appStoreId?: number
+    installedAppVersionId?: number
+    deploymentAppType?: string
 }
 
 export interface TextAreaProps {
-    val: string;
+    val: string
     onChange?: any
-    callbackRef?: any;
+    callbackRef?: any
 }

@@ -3,13 +3,13 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ErrorInfoStatusBarType } from './appDetails.type'
 import { TIMELINE_STATUS } from '../../../../config'
 
-export function ErrorInfoStatusBar({
+export const ErrorInfoStatusBar = ({
     nonDeploymentError,
     type,
     errorMessage,
     hideVerticalConnector,
-    hideErrorIcon
-}: ErrorInfoStatusBarType) {
+    hideErrorIcon,
+}: ErrorInfoStatusBarType) => {
     return nonDeploymentError === type ? (
         <>
             <div

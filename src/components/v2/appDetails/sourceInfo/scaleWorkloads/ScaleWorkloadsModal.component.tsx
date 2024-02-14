@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, DetailsProgressing, Checkbox, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    VisibleModal,
+    DetailsProgressing,
+    Checkbox,
+    DeploymentAppTypes,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg'
@@ -55,7 +62,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
             appDetails.resourceTree.nodes.forEach((node) => {
                 if (node.canBeHibernated && node.health?.status?.toLowerCase() !== 'missing') {
                     const workloadKey = `${node.kind}/${node.name}`
-                    let _workloadTarget: ScaleWorkloadsType = {
+                    const _workloadTarget: ScaleWorkloadsType = {
                         kind: node.kind,
                         name: node.name,
                         group: node.group,
@@ -219,9 +226,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const _setWorkloadsList = isActiveWorkloadsTab ? setWorkloadsToScaleDown : setWorkloadsToRestore
 
-        for (let [key, value] of _workloadsList) {
+        for (const [key, value] of _workloadsList) {
             value.value = !_nameSelection.isChecked ? 'CHECKED' : 'INTERMEDIATE'
-            value.isChecked = !_nameSelection.isChecked ? true : false
+            value.isChecked = !_nameSelection.isChecked
             _workloadsList.set(key, value)
         }
 
@@ -253,7 +260,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         setNameSelection({
             ...nameSelection,
             [_nameSelectionKey]: {
-                isChecked: areAllSelected || isAnySelected ? true : false,
+                isChecked: !!(areAllSelected || isAnySelected),
                 value: !areAllSelected && isAnySelected ? 'INTERMEDIATE' : 'CHECKED',
             },
         })
@@ -317,24 +324,18 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         let loadingText = ''
         if (isFetchingDetails) {
             loadingText = LoadingText.LOOKING_FOR_SCALABLE_WORKLOADS
-        } else {
-            if (fetchingLatestDetails || scalingInProgress) {
-                if (isActiveWorkloadsTab) {
-                    loadingText = LoadingText.SCALING_DOWN_WORKLOADS
-                } else {
-                    loadingText = LoadingText.RESTORING_WORKLOADS
-                }
+        } else if (fetchingLatestDetails || scalingInProgress) {
+            if (isActiveWorkloadsTab) {
+                loadingText = LoadingText.SCALING_DOWN_WORKLOADS
             } else {
-                if (!canScaleWorkloads) {
-                    loadingText = LoadingText.NO_SCALABLE_WORKLOADS
-                } else {
-                    if (isActiveWorkloadsTab) {
-                        loadingText = LoadingText.NO_ACTIVE_WORKLOADS
-                    } else {
-                        loadingText = LoadingText.NO_SCALED_DOWN_WORKLOADS
-                    }
-                }
+                loadingText = LoadingText.RESTORING_WORKLOADS
             }
+        } else if (!canScaleWorkloads) {
+            loadingText = LoadingText.NO_SCALABLE_WORKLOADS
+        } else if (isActiveWorkloadsTab) {
+            loadingText = LoadingText.NO_ACTIVE_WORKLOADS
+        } else {
+            loadingText = LoadingText.NO_SCALED_DOWN_WORKLOADS
         }
         return loadingText
     }
@@ -354,11 +355,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             flexDirection: 'column',
                         }}
                     >
-                        <DetailsProgressing
-                            pageLoader
-                            fullHeight={true}
-                            loadingText={getLoadingText(isActiveWorkloadsTab)}
-                        />
+                        <DetailsProgressing pageLoader fullHeight loadingText={getLoadingText(isActiveWorkloadsTab)} />
                     </div>
                 ) : (
                     <>
@@ -380,36 +377,34 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                     </Checkbox>
                                 </div>
                                 <div style={{ height: '192px', overflow: 'scroll' }}>
-                                    <>
-                                        {Array.from(_workloadsList.values()).map((item) => (
-                                            <div key={`${item.kind}/${item.name}`} className="check-single-workload">
-                                                <Checkbox
-                                                    rootClassName={`mb-0 fs-13 cursor bcn-0 p${
-                                                        item.errorMessage ? ' dc__align-baseline' : ''
-                                                    }`}
-                                                    isChecked={item.isChecked}
-                                                    value={item.value}
-                                                    onChange={(e) => {
-                                                        e.stopPropagation()
-                                                        handleWorkloadSelection(
-                                                            `${item.kind}/${item.name}`,
-                                                            isActiveWorkloadsTab,
-                                                        )
-                                                    }}
-                                                >
-                                                    <div className="pl-8">
-                                                        <span className="cn-9 fw-6">{item.kind} / </span>
-                                                        <span>{item.name}</span>
+                                    {Array.from(_workloadsList.values()).map((item) => (
+                                        <div key={`${item.kind}/${item.name}`} className="check-single-workload">
+                                            <Checkbox
+                                                rootClassName={`mb-0 fs-13 cursor bcn-0 p${
+                                                    item.errorMessage ? ' dc__align-baseline' : ''
+                                                }`}
+                                                isChecked={item.isChecked}
+                                                value={item.value}
+                                                onChange={(e) => {
+                                                    e.stopPropagation()
+                                                    handleWorkloadSelection(
+                                                        `${item.kind}/${item.name}`,
+                                                        isActiveWorkloadsTab,
+                                                    )
+                                                }}
+                                            >
+                                                <div className="pl-8">
+                                                    <span className="cn-9 fw-6">{item.kind} / </span>
+                                                    <span>{item.name}</span>
+                                                </div>
+                                                {item.errorMessage && (
+                                                    <div className="cr-5 fs-11 fw-4 pl-16 mt-4">
+                                                        {item.errorMessage}
                                                     </div>
-                                                    {item.errorMessage && (
-                                                        <div className="cr-5 fs-11 fw-4 pl-16 mt-4">
-                                                            {item.errorMessage}
-                                                        </div>
-                                                    )}
-                                                </Checkbox>
-                                            </div>
-                                        ))}
-                                    </>
+                                                )}
+                                            </Checkbox>
+                                        </div>
+                                    ))}
                                 </div>
                             </>
                         ) : (
@@ -465,7 +460,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     return (
         <VisibleModal className="scale-workload-modal">
-            <div className={`modal__body br-4`}>
+            <div className="modal__body br-4">
                 {renderScaleModalHeader()}
                 {!isFetchingDetails && canScaleWorkloads && renderScaleWorkloadTabs()}
                 {renderScaleWorkloadsList(selectedDeploymentTabIndex === 0)}

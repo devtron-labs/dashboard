@@ -1,16 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { CSVLink } from 'react-csv'
+import { ConditionalWrap, VisibleModal, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
+import Tippy from '@tippyjs/react'
 import { CSV_HEADERS, ExportToCsvProps, FILE_NAMES } from './constants'
 import { ReactComponent as ExportIcon } from '../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ConditionalWrap, VisibleModal, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
 import { Moment12HourExportFormat } from '../../../config'
-import Tippy from '@tippyjs/react'
 import './exportToCsv.scss'
 
-export default function ExportToCsv({ apiPromise, fileName, className, disabled }: ExportToCsvProps) {
+export default function ExportToCsv({
+    apiPromise,
+    fileName,
+    className,
+    disabled,
+    showOnlyIcon = false,
+}: ExportToCsvProps) {
     const [exportingData, setExportingData] = useState(false)
     const [showExportingModal, setShowExportingModal] = useState(false)
     const [errorExportingData, setErrorExportingData] = useState(false)
@@ -69,11 +75,21 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
     const renderModalCTA = () => {
         return (
             <div className="modal__CTA flex right dc__border-top">
-                <button type="button" className="flex cta cancel h-32" onClick={handleCancelAction} data-testid="close-export-csv-button">
+                <button
+                    type="button"
+                    className="flex cta cancel h-32"
+                    onClick={handleCancelAction}
+                    data-testid="close-export-csv-button"
+                >
                     {exportingData ? 'Cancel' : 'Close'}
                 </button>
                 {!exportingData && errorExportingData && (
-                    <button type="button" className="flex cta ml-12 h-32" onClick={generateDataToExport} data-testid="retry-export-csv-button">
+                    <button
+                        type="button"
+                        className="flex cta ml-12 h-32"
+                        onClick={generateDataToExport}
+                        data-testid="retry-export-csv-button"
+                    >
                         Retry
                     </button>
                 )}
@@ -118,22 +134,24 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
     }
 
     return (
-        <div className={`export-to-csv-button ${className}`}>
+        <div className={`export-to-csv-button ${showOnlyIcon ? 'w-32 h-32' : ''} ${className}`}>
             <ConditionalWrap
                 condition={disabled}
                 wrap={(children) => (
-                    <Tippy className="default-tt" arrow={true} placement="top" content="Nothing to export">
+                    <Tippy className="default-tt" arrow placement="top" content="Nothing to export">
                         {children}
                     </Tippy>
                 )}
             >
                 <button
-                    className={`flex cta ghosted w-100 h-36 ${disabled ? 'nothing-to-export' : ''}`}
+                    className={`flex cta ghosted flex dc__gap-8 ${showOnlyIcon ? 'h-32 w-32 mw-none' : 'w-100 h-36'} ${
+                        disabled ? 'nothing-to-export' : ''
+                    }`}
                     onClick={generateDataToExport}
-                    data-testid={'export-csv-button'}
+                    data-testid="export-csv-button"
                 >
-                    <ExportIcon className="icon-dim-16 mr-8" />
-                    <span>Export CSV</span>
+                    <ExportIcon className="icon-dim-16" />
+                    {!showOnlyIcon && <span>Export CSV</span>}
                 </button>
             </ConditionalWrap>
             <CSVLink

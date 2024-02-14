@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
 import {
     DeploymentAppTypes,
     noop,
@@ -10,13 +8,14 @@ import {
     ServerErrors,
     ForceDeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
-import { ClusterConnectionResponse, ErrorItem } from './appDetails.type'
 import { toast } from 'react-toastify'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
+import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
+import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
 import { TOAST_INFO } from '../../../../config/constantMessaging'
 import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
-import { IssuesCardType } from './appDetails.type'
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -52,15 +51,16 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP && appDetails.resourceTree?.nodes?.length) {
             const hasImagePullBackOff = appDetails.resourceTree.nodes.some((node) => {
-                return node.info?.some((info) =>
-                    info.value &&
-                    (info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
-                        info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF)
-                );
-            });
-    
+                return node.info?.some(
+                    (info) =>
+                        info.value &&
+                        (info.value.toLowerCase() === AppDetailsErrorType.ERRIMAGEPULL ||
+                            info.value.toLowerCase() === AppDetailsErrorType.IMAGEPULLBACKOFF),
+                )
+            })
+
             if (hasImagePullBackOff) {
-                setIsImagePullBackOff(true);
+                setIsImagePullBackOff(true)
             }
         }
     }, [appDetails])
@@ -182,7 +182,9 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         return null
     }
 
-    if (cardLoading) return <LoadingCard />
+    if (cardLoading) {
+        return <LoadingCard />
+    }
 
     return (
         <div
@@ -200,7 +202,9 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
                             placement="top"
                             content="Issues or errors detected in the current deployment"
                         >
-                            <Question className="icon-dim-16 mt-2" />
+                            <div className="flex">
+                                <Question className="icon-dim-16 mt-2" />
+                            </div>
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router-dom'
 import { sortObjectArrayAlphabetically } from '../common'
-import { showError, Progressing} from '@devtron-labs/devtron-fe-common-lib'
 import { getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig } from '../../services/service'
-import { useParams } from 'react-router-dom'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CIConfigProps } from './types'
 import './CIConfig.scss'
@@ -28,7 +28,7 @@ export default function CIConfig({
     const [ciConfig, setCIConfig] = useState(parentState?.ciConfig)
     const [parentReloading, setParentReloading] = useState(false)
     const [loading, setLoading] = useState(
-        configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
+        !(configOverrideView && parentState?.loadingState === ComponentStates.loaded),
     )
     const { appId } = useParams<{ appId: string }>()
 
@@ -41,11 +41,7 @@ export default function CIConfig({
     async function initialise() {
         try {
             setLoading(true)
-            const [
-                { result: dockerRegistries },
-                { result: sourceConfig },
-                { result: ciConfig },
-            ] = await Promise.all([
+            const [{ result: dockerRegistries }, { result: sourceConfig }, { result: ciConfig }] = await Promise.all([
                 getDockerRegistryMinAuth(appId),
                 getSourceConfig(appId),
                 getCIConfig(+appId),
@@ -62,17 +58,14 @@ export default function CIConfig({
                 setParentState({
                     loadingState: ComponentStates.loaded,
                     selectedCIPipeline: parentState.selectedCIPipeline,
-                    dockerRegistries: dockerRegistries,
-                    sourceConfig: sourceConfig,
-                    ciConfig: ciConfig,
-                    defaultDockerConfigs: Object.assign(
-                        {},
-                        {
-                            dockerRegistry: ciConfig.dockerRegistry,
-                            dockerRepository: ciConfig.dockerRepository,
-                            ciBuildConfig: ciConfig.ciBuildConfig,
-                        },
-                    ),
+                    dockerRegistries,
+                    sourceConfig,
+                    ciConfig,
+                    defaultDockerConfigs: {
+                        dockerRegistry: ciConfig.dockerRegistry,
+                        dockerRepository: ciConfig.dockerRepository,
+                        ciBuildConfig: ciConfig.ciBuildConfig,
+                    },
                 })
             }
         } catch (err) {
@@ -112,7 +105,7 @@ export default function CIConfig({
         }
     }
 
-    if (loading)
+    if (loading) {
         return (
             <Progressing
                 size={configOverrideView ? 24 : 48}
@@ -121,7 +114,10 @@ export default function CIConfig({
                 }}
             />
         )
-    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
+    }
+    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) {
+        return null
+    }
 
     return (
         <CIConfigForm

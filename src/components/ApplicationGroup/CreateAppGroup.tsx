@@ -10,6 +10,9 @@ import {
     showError,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
@@ -18,10 +21,7 @@ import Info from '../../assets/icons/ic-info-outline-grey.svg'
 import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
 import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS, FILTER_NAME_REGEX } from './Constants'
-import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
-import { useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 
 export default function CreateAppGroup({
     appList,
@@ -131,7 +131,7 @@ export default function CreateAppGroup({
     }
 
     const appFilterAuthorizedList = () => {
-        let _authorizedApp = []
+        const _authorizedApp = []
         appList.forEach((app) => {
             if (!unAuthorizedApps.get(app.appName)) {
                 _authorizedApp.push({ id: app.id, appName: app.appName })
@@ -156,8 +156,8 @@ export default function CreateAppGroup({
     }
 
     const appFilterList = () => {
-        let _authorizedAppList = []
-        let _unauthorizedAppList = []
+        const _authorizedAppList = []
+        const _unauthorizedAppList = []
         appList.forEach((app) => {
             unAuthorizedApps.get(app.appName)
                 ? _unauthorizedAppList.push({ id: app.id, appName: app.appName })
@@ -277,7 +277,7 @@ export default function CreateAppGroup({
                                       isChecked={unAuthorizedApps.get(app.appName) ? false : selectedAppsMap[app.id]}
                                       value={CHECKBOX_VALUE.CHECKED}
                                       onChange={() => toggleAppSelection(app.id)}
-                                      disabled={unAuthorizedApps.get(app.appName) ? true : false}
+                                      disabled={!!unAuthorizedApps.get(app.appName)}
                                   >
                                       {app.appName}
                                   </Checkbox>
@@ -336,7 +336,7 @@ export default function CreateAppGroup({
                         name="name"
                         onChange={onInputChange}
                         disabled={selectedAppGroup && !!selectedAppGroup.value}
-                        isRequiredField={true}
+                        isRequiredField
                         error={showErrorMsg && nameErrorMessage()}
                     />
                 </div>
@@ -401,7 +401,7 @@ export default function CreateAppGroup({
             _selectedAppIds.push(+_appId)
         }
 
-        let appListIds = []
+        const appListIds = []
         appList.forEach((element) => {
             if (!unAuthorizedApps.get(element.appName)) {
                 appListIds.push(+element.id)

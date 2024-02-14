@@ -15,7 +15,6 @@
 | SENTRY_PERFORMANCE_ENABLED         | false     |  To send persormance sentry      |
 | SENTRY_DSN                         | ''        | SENTRY Data Source Name |
 | SENTRY_TRACES_SAMPLE_RATE          | 0.2       | Rate at which data send to sentry.(min=0 max=1)|
-| USE_V2                             | "true"    | Use the v2 APIs                                 |
 | ENABLE_RESTART_WORKLOAD            | "false"    | Show restart pods option in app details page   |
 | ENABLE_BUILD_CONTEXT               | "true"    | Enable build context in Devtron UI             |
 | FORCE_SECURITY_SCANNING            | "false"   | Force security scanning                         |
@@ -28,9 +27,8 @@
 | LOGIN_PAGE_IMAGE                   | ""         | Login page image url                          |
 | LOGIN_PAGE_IMAGE_BG                | ""         | Login page image background color code        |
 | DEFAULT_CI_TRIGGER_TYPE_MANUAL     | "false"    | Change default trigger behaviour of newly created ci-pipeline to manual |
-| GLOBAL_API_TIMEOUT    |  60000  | Default timeout for all API requests in DASHBOARD  |
-| TRIGGER_API_TIMEOUT   |  60000  | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD  |
+| GLOBAL_API_TIMEOUT                  |  60000  | Default timeout for all API requests in DASHBOARD  |
+| TRIGGER_API_TIMEOUT                 |  60000  | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD  |
 | LOGIN_DT_LOGO                      | ""         | Devtron logo for login page     |
 | SIDEBAR_DT_LOGO                    | ""         | Devtron logo for sidebar        |
-
 # DASHBOARD CONFIG SECRET

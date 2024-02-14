@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router-dom'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { ActionResponse } from '../../external-apps/ExternalAppService'
 import React from 'react'
+import { ActionResponse } from '../../external-apps/ExternalAppService'
 
 export enum ModuleStatus {
     HEALTHY = 'healthy',
@@ -9,7 +9,7 @@ export enum ModuleStatus {
     UNKNOWN = 'unknown',
     UPGRADING = 'upgrading',
     UPGRADE_FAILED = 'upgradeFailed',
-    //Module Status
+    // Module Status
     INSTALLED = 'installed',
     INSTALLING = 'installing',
     INSTALL_FAILED = 'installFailed',

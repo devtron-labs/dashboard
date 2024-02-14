@@ -1,16 +1,16 @@
-import { RouteComponentProps } from 'react-router';
-import { HostURLConfig } from '../../services/service.types';
+import { RouteComponentProps } from 'react-router'
+import { HostURLConfig } from '../../services/service.types'
 
 export interface HostURLConfigState {
-    view: string;
-    statusCode: number;
-    saveLoading: boolean;
-    form: HostURLConfig;
-    isHostUrlValid: boolean;
+    view: string
+    statusCode: number
+    saveLoading: boolean
+    form: HostURLConfig
+    isHostUrlValid: boolean
 }
 
 export interface HostURLConfigProps extends RouteComponentProps<{}> {
-    isSuperAdmin: boolean;
-    refreshGlobalConfig: () => void;
-    handleChecklistUpdate: (hostUrl) => void;
+    isSuperAdmin: boolean
+    refreshGlobalConfig: () => void
+    handleChecklistUpdate: (hostUrl) => void
 }

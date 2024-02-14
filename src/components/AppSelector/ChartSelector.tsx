@@ -1,19 +1,19 @@
-import React from 'react';
-import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router';
-import Select from 'react-select';
-import { useAsync } from '@devtron-labs/devtron-fe-common-lib';
-import { mapByKey } from '../common';
-import { appSelectorStyle, DropdownIndicator } from './AppSelectorUtil';
+import React from 'react'
+import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router'
+import Select from 'react-select'
+import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { mapByKey } from '../common'
+import { appSelectorStyle, DropdownIndicator } from './AppSelectorUtil'
 
 interface ChartSelectorType {
-    primaryKey: string; //url match
-    primaryValue: string;
-    matchedKeys: string[];
-    api: () => Promise<any>;
-    apiPrimaryKey?: string; //primary key to generate map
-    onChange?: ({ label, value }) => void;
-    formatOptionLabel?: ({ label, value, ...rest }) => React.ReactNode;
-    filterOption?: (option: any, searchString: string) => boolean;
+    primaryKey: string // url match
+    primaryValue: string
+    matchedKeys: string[]
+    api: () => Promise<any>
+    apiPrimaryKey?: string // primary key to generate map
+    onChange?: ({ label, value }) => void
+    formatOptionLabel?: ({ label, value, ...rest }) => React.ReactNode
+    filterOption?: (option: any, searchString: string) => boolean
 }
 export default function ChartSelector({
     primaryKey,
@@ -25,21 +25,21 @@ export default function ChartSelector({
     formatOptionLabel = null,
     filterOption = null,
 }: ChartSelectorType) {
-    const [loading, result, error, reload] = useAsync(api, []);
-    const listMap = mapByKey(result?.result || [], apiPrimaryKey || primaryKey);
-    const { path } = useRouteMatch();
-    const params = useParams();
-    const { push } = useHistory();
-    const _primaryKey = Number(params[primaryKey]);
+    const [loading, result, error, reload] = useAsync(api, [])
+    const listMap = mapByKey(result?.result || [], apiPrimaryKey || primaryKey)
+    const { path } = useRouteMatch()
+    const params = useParams()
+    const { push } = useHistory()
+    const _primaryKey = Number(params[primaryKey])
     function selectApp(selected) {
         if (onChange) {
-            onChange(selected);
-            return;
+            onChange(selected)
+            return
         }
-        const keys = listMap.get(selected.value);
-        const replacements = [...matchedKeys].reduce((agg, curr) => ({ ...agg, [curr]: keys[curr] }), {});
-        const newUrl = generatePath(path, { ...replacements, [primaryKey]: selected.value });
-        push(newUrl);
+        const keys = listMap.get(selected.value)
+        const replacements = [...matchedKeys].reduce((agg, curr) => ({ ...agg, [curr]: keys[curr] }), {})
+        const newUrl = generatePath(path, { ...replacements, [primaryKey]: selected.value })
+        push(newUrl)
     }
     return (
         <Select
@@ -61,5 +61,5 @@ export default function ChartSelector({
             }}
             styles={appSelectorStyle}
         />
-    );
+    )
 }

@@ -1,7 +1,7 @@
 import React from 'react'
-import { AppStatus, ErrorScreenManager, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { Pagination } from '../../common'
+import { AppStatus, ErrorScreenManager, Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation } from 'react-router-dom'
+import { Pagination } from '../../common'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
@@ -48,9 +48,8 @@ export default function JobListView(props: JobListViewProps) {
     const arrowIcon = (): string => {
         if (props.isAllExpandable) {
             return props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-270'
-        } else {
-            return 'cursor-not-allowed dc__flip-270'
         }
+        return 'cursor-not-allowed dc__flip-270'
     }
 
     const redirectToJobOverview = (job: Job): string => {
@@ -86,12 +85,14 @@ export default function JobListView(props: JobListViewProps) {
                                 </p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
+                                <AppStatus appStatus={job.defaultPipeline.status} isJobView />
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">
                                     {environmentName(job.defaultPipeline)}
-                                    {environmentName(job.defaultPipeline) === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
+                                    {environmentName(job.defaultPipeline) === DEFAULT_ENV && (
+                                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">(Default)</span>
+                                    )}
                                 </p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
@@ -141,23 +142,31 @@ export default function JobListView(props: JobListViewProps) {
                         >
                             {JOB_LIST_HEADERS.Name}
                             {props.sortRule.key == SortBy.APP_NAME ? (
-                                <span data-testid="sort-job-list" className={`sort ${icon} ml-4`}></span>
+                                <span data-testid="sort-job-list" className={`sort ${icon} ml-4`} />
                             ) : (
-                                <span className="sort-col"></span>
+                                <span className="sort-col" />
                             )}
                         </button>
                     </div>
                     <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="last-run-header">{JOB_LIST_HEADERS.LastJobStatus}</span>
+                        <span className="app-list__cell-header" data-testid="last-run-header">
+                            {JOB_LIST_HEADERS.LastJobStatus}
+                        </span>
                     </div>
                     <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="run-environment-header">{JOB_LIST_HEADERS.RUN_IN_ENVIRONMENT}</span>
+                        <span className="app-list__cell-header" data-testid="run-environment-header">
+                            {JOB_LIST_HEADERS.RUN_IN_ENVIRONMENT}
+                        </span>
                     </div>
                     <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="last-run-at-header">{JOB_LIST_HEADERS.LastRunAt}</span>
+                        <span className="app-list__cell-header" data-testid="last-run-at-header">
+                            {JOB_LIST_HEADERS.LastRunAt}
+                        </span>
                     </div>
                     <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="last-success-at-header">{JOB_LIST_HEADERS.LastSuccessAt}</span>
+                        <span className="app-list__cell-header" data-testid="last-success-at-header">
+                            {JOB_LIST_HEADERS.LastSuccessAt}
+                        </span>
                     </div>
                     <div className="app-list__cell app-list__cell--action" />
                 </div>
@@ -167,7 +176,7 @@ export default function JobListView(props: JobListViewProps) {
     }
 
     const renderPagination = () => {
-        if (props.size > 20) {
+        if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     size={props.size}
@@ -190,25 +199,26 @@ export default function JobListView(props: JobListViewProps) {
                 <Progressing pageLoader />
             </div>
         )
-    } else if (props.view === JobListViewType.EMPTY || props.view === JobListViewType.NO_RESULT) {
+    }
+    if (props.view === JobListViewType.EMPTY || props.view === JobListViewType.NO_RESULT) {
         return (
             <JobsEmptyState
                 view={props.view}
                 clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearAll}
             />
         )
-    } else if (props.view === JobListViewType.ERROR) {
+    }
+    if (props.view === JobListViewType.ERROR) {
         return (
             <div className="dc__loading-wrapper">
                 <ErrorScreenManager code={props.code} />
             </div>
         )
-    } else {
-        return (
-            <>
-                {renderJobList()}
-                {renderPagination()}
-            </>
-        )
     }
+    return (
+        <>
+            {renderJobList()}
+            {renderPagination()}
+        </>
+    )
 }

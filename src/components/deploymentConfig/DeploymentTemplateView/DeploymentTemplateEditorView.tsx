@@ -1,4 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import YAML from 'yaml'
+import { Progressing, showError, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import {
     DeploymentChartOptionType,
     DeploymentConfigContextType,
@@ -7,11 +11,8 @@ import {
     CompareApprovalAndDraftSelectedOption,
 } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
-import { versionComparator } from '../../common'
-import { SortingOrder } from '../../app/types'
+import { importComponentFromFELibrary, versionComparator } from '../../common'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
-import YAML from 'yaml'
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
 import {
@@ -21,12 +22,12 @@ import {
     renderEditorHeading,
 } from './DeploymentTemplateView.component'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
-import { useParams } from 'react-router-dom'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
-import { toast } from 'react-toastify'
 
-export default function DeploymentTemplateEditorView({
+const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTemplate', null, 'function')
+
+const DeploymentTemplateEditorView = ({
     isEnvOverride,
     globalChartRefId,
     readOnly,
@@ -39,7 +40,11 @@ export default function DeploymentTemplateEditorView({
     convertVariables,
     setConvertVariables,
     groupedData,
-}: DeploymentTemplateEditorViewProps) {
+    hideLockedKeys,
+    lockedConfigKeysWithLockType,
+    hideLockKeysToggled,
+    removedPatches,
+}: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
@@ -49,7 +54,6 @@ export default function DeploymentTemplateEditorView({
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
     const baseDeploymentAbortController = useRef(null)
-
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
     const [draftLoading, setDraftLoading] = useState(false)
@@ -86,7 +90,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     useEffect(() => {
-        if (!showDraftData || isValues) return // hit api only when manifest is selected, for values use local states.
+        if (!showDraftData || isValues) {
+            return
+        } // hit api only when manifest is selected, for values use local states.
         setDraftLoading(true)
         getLocalDaftManifest()
             .then((data) => {
@@ -235,7 +241,8 @@ export default function DeploymentTemplateEditorView({
     const processFetchedValues = (result, isChartVersionOption, _isEnvOption) => {
         if (isChartVersionOption) {
             return result.defaultAppOverride
-        } else if (_isEnvOption) {
+        }
+        if (_isEnvOption) {
             setOptionOveriddeStatus((prevStatus) => ({
                 ...prevStatus,
                 [state.selectedCompareOption.id]: result.IsOverride,
@@ -245,7 +252,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
-        if (!isValues) return
+        if (!isValues) {
+            return
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValues,
             payload: fetchedValues,
@@ -253,7 +262,9 @@ export default function DeploymentTemplateEditorView({
     }
 
     const setFetchedValuesManifest = (fetchedValuesManifest: Record<number | string, string>) => {
-        if (isValues) return
+        if (isValues) {
+            return
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
             payload: fetchedValuesManifest,
@@ -266,13 +277,18 @@ export default function DeploymentTemplateEditorView({
                 return 'bcy-1'
             }
             return 'bcb-1'
-        } else {
-            return ''
         }
+        return ''
     }
 
     useEffect(() => {
-        if (!convertVariables) return
+        editorOnChange(rhs)
+    }, [state.selectedTabIndex])
+
+    useEffect(() => {
+        if (!convertVariables) {
+            return
+        }
         setResolveLoading(true)
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {
@@ -301,7 +317,7 @@ export default function DeploymentTemplateEditorView({
     const valueLHS = isIdMatch ? defaultValue : source[selectedOptionId] // fetch LHS data from respective cache store
 
     // final value for LHS
-    const lhs = convertVariables ? resolvedValuesLHS : valueLHS
+    let lhs = (convertVariables ? resolvedValuesLHS : valueLHS) ?? ''
 
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
@@ -309,12 +325,30 @@ export default function DeploymentTemplateEditorView({
     const valueRHS = shouldUseDraftData ? selectedData : value
 
     // final value for RHS
-    const rhs = convertVariables ? resolvedValuesRHS : valueRHS
+    let rhs = (convertVariables ? resolvedValuesRHS : valueRHS) ?? ''
+    if (getLockFilteredTemplate && isValues) {
+        try {
+            const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
+                hideLockedKeys,
+                lhs,
+                rhs,
+                lockedConfigKeysWithLockType,
+                removedPatches,
+                hideLockKeysToggled,
+                unableToParseYaml: state.unableToParseYaml,
+                readOnly,
+            })
+            lhs = updatedLHS
+            rhs = updatedRHS
+        } catch (err) {
+            showError(err)
+        }
+    }
 
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header
             className={`code-editor__header flex left p-0-imp ${getOverrideClass()}`}
-            hideDefaultSplitHeader={true}
+            hideDefaultSplitHeader
         >
             <div className="flex fs-12 fw-6 cn-9 pl-12 pr-12 w-100">
                 {renderEditorHeading(
@@ -334,7 +368,7 @@ export default function DeploymentTemplateEditorView({
     )
 
     const renderCodeEditorCompareMode = () => (
-        <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader={true}>
+        <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader>
             <div className="flex column">
                 <div className="code-editor__header flex left w-100 p-0-imp">
                     <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
@@ -432,7 +466,9 @@ export default function DeploymentTemplateEditorView({
                     value === null ||
                     fetchingValues ||
                     draftLoading ||
-                    resolveLoading
+                    resolveLoading ||
+                    !rhs ||
+                    (state.openComparison && !lhs)
                 }
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}
@@ -476,3 +512,5 @@ export default function DeploymentTemplateEditorView({
         <DeploymentTemplateGUIView fetchingValues={fetchingValues} value={value} readOnly={readOnly} />
     )
 }
+
+export default React.memo(DeploymentTemplateEditorView)

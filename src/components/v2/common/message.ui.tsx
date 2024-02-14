@@ -1,33 +1,33 @@
-import React from 'react';
-import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg';
-import { ReactComponent as FilledInfoIcon } from '../assets/icons/ic-info-filled.svg';
-import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg';
-import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg';
-import { Pod as PodIcon } from '../../common';
+import React from 'react'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg'
+import { ReactComponent as FilledInfoIcon } from '../assets/icons/ic-info-filled.svg'
+import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg'
+import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
+import { Pod as PodIcon } from '../../common'
 
 export enum MsgUIType {
     LOADING = 'loading',
     POD = 'pod',
     MULTI_CONTAINER = 'multi_container',
     ERROR = 'error',
-    INFO = 'info'
+    INFO = 'info',
 }
 
 export interface MsgUIProps {
-    msg: string;
-    dataTestId?: string;
-    icon?: MsgUIType;
-    theme?: 'white' | 'dark' | 'light-gray';
-    iconClassName?: string;
-    bodyStyle?: any;
-    msgStyle?: any;
-    actionButtonStyle?: any;
-    size: number;
-    isShowActionButton?: boolean;
-    actionButtonText?: string;
-    onActionButtonClick?: () => void;
-    minHeight?: string;
+    msg: string
+    dataTestId?: string
+    icon?: MsgUIType
+    theme?: 'white' | 'dark' | 'light-gray'
+    iconClassName?: string
+    bodyStyle?: any
+    msgStyle?: any
+    actionButtonStyle?: any
+    size: number
+    isShowActionButton?: boolean
+    actionButtonText?: string
+    onActionButtonClick?: () => void
+    minHeight?: string
 }
 
 const MessageUI: React.FC<MsgUIProps> = ({
@@ -43,7 +43,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
     isShowActionButton,
     actionButtonText,
     onActionButtonClick,
-    minHeight
+    minHeight,
 }: MsgUIProps) => {
     return (
         <div
@@ -59,22 +59,22 @@ const MessageUI: React.FC<MsgUIProps> = ({
                                 <div className={`fcn-0 ${iconClassName || ''}`}>
                                     <Progressing size={size} />
                                 </div>
-                            );
+                            )
                         case MsgUIType.POD:
                             return (
                                 <PodIcon
                                     color="var(--N400)"
                                     style={{ width: '48px', height: '48px', marginBottom: '12px' }}
                                 />
-                            );
+                            )
                         case MsgUIType.MULTI_CONTAINER:
-                            return <MultipleContainer className={iconClassName || ''} />;
+                            return <MultipleContainer className={iconClassName || ''} />
                         case MsgUIType.ERROR:
-                            return <ErrorIcon className={iconClassName || ''} width={size} height={size} />;
+                            return <ErrorIcon className={iconClassName || ''} width={size} height={size} />
                         case MsgUIType.INFO:
                             return <FilledInfoIcon className={iconClassName || ''} width={size} height={size} />
                         default:
-                            return <InfoIcon className={`fcn-0 ${iconClassName || ''}`} width={size} height={size} />;
+                            return <InfoIcon className={`fcn-0 ${iconClassName || ''}`} width={size} height={size} />
                     }
                 })()}
             </div>
@@ -93,7 +93,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                 </div>
             )}
         </div>
-    );
-};
+    )
+}
 
-export default MessageUI;
+export default MessageUI

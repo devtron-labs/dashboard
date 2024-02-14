@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
+import { NavLink } from 'react-router-dom'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import HelmCluster from '../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
-import { NavLink } from 'react-router-dom'
 import { AppListConstants, ModuleNameMap, SERVER_MODE, URLS } from '../../config'
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { handlePostHogEventUpdate, LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
@@ -124,7 +124,9 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                         >
                             {SKIP_AND_EXPLORE_NOTE}
                         </NavLink>
-                        <div className="cn-7" data-testid="tip-return-from-help-menu">{TIP_RETURN_FROM_HELP_MENU}</div>
+                        <div className="cn-7" data-testid="tip-return-from-help-menu">
+                            {TIP_RETURN_FROM_HELP_MENU}
+                        </div>
                     </div>
                 </div>
             </div>

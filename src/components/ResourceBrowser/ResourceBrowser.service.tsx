@@ -1,5 +1,5 @@
-import { Routes } from '../../config'
 import { get, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import {
     APIResourceResponse,
