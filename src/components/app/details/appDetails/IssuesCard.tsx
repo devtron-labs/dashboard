@@ -30,10 +30,10 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
     const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState('')
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
-
-    const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData])
-
     const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
+
+    const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData]) || appDetails.resourceTree?.conditions || []
+
     const showIssuesListingModal = () => {
         toggleIssuesModal(true)
     }
