@@ -137,7 +137,7 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         }
 
         // Error message For helm apps only
-        if (appDetails.deploymentAppType === DeploymentAppTypes.HELM && releaseStatus) {
+        if (releaseStatus) {
             errorsList.push({
                 error: releaseStatus.status,
                 message: releaseStatus.description,
@@ -145,7 +145,7 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         }
 
         // Error message For Argo apps only
-        if (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && conditions?.length) {
+        if (conditions?.length) {
             conditions.forEach((condition) => {
                 errorsList.push({
                     error: condition.type,
