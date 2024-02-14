@@ -134,6 +134,8 @@ const PermissionGroupForm = ({
         return envList
     }
 
+    const handleGroupNameChange = (e) => setName({ value: e.target.value, error: '' })
+
     const handleSubmit = async () => {
         if (!name.value) {
             setName((_name) => ({ ..._name, error: 'Group name is mandatory' }))
@@ -265,23 +267,24 @@ const PermissionGroupForm = ({
                         disabled={!isAddMode}
                         value={name.value}
                         data-testid="permission-group-name-textbox"
-                        onChange={(e) => setName({ value: e.target.value, error: '' })}
+                        onChange={handleGroupNameChange}
                         isRequiredField
                         error={name.error}
-                        placeholder="Enter group name"
+                        placeholder="Eg. Project managers"
                     />
                     <div>
                         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                        <label htmlFor="" className="form__label">
+                        <label htmlFor="permission-group-description" className="form__label">
                             Description
                         </label>
                         <ResizableTextarea
-                            name=""
+                            name="permission-group-description"
                             maxHeight={300}
                             className="w-100"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             data-testid="permission-group-description-textbox"
+                            placeholder="Enter a description for this group"
                         />
                     </div>
                     <div className="dc__border-top-n1" />
