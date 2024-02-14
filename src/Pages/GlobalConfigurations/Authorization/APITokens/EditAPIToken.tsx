@@ -5,8 +5,6 @@ import {
     showError,
     Progressing,
     InfoColourBar,
-    RadioGroup,
-    RadioGroupItem,
     copyToClipboard,
     CustomInput,
     noop,
@@ -37,12 +35,10 @@ import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { renderQuestionwithTippy } from './CreateAPIToken'
-import SuperAdminInfoBar from '../shared/components/SuperAdminInfoBar'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
 import { User } from '../types'
-import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../constants'
-import AppPermissions from '../shared/components/AppPermissions'
-import { UserPermissionGroupsSelector } from '../shared/components/UserPermissionGroupsSelector'
+import { PermissionType } from '../constants'
+import { PermissionConfigurationForm } from '../shared/components/PermissionConfigurationForm'
 
 const EditAPIToken = ({
     setShowRegeneratedModal,
@@ -59,7 +55,7 @@ const EditAPIToken = ({
     const { serverMode } = useContext(mainContext)
     const [isLoading, setLoading] = useState(true)
     const [loader, setLoader] = useState(false)
-    const [adminPermission, setAdminPermission] = useState('')
+    const [adminPermission, setAdminPermission] = useState<PermissionType>()
     const [userData, setUserData] = useState<User>()
     const [editData, setEditData] = useState<EditDataType>()
     const [userGroups, setUserGroups] = useState<OptionType[]>([])
@@ -314,53 +310,27 @@ const EditAPIToken = ({
                         </div>
                     </label>
                     <div className="dc__border-top-n1" />
-                    <div className="flex left">
-                        <RadioGroup
-                            className="permission-type__radio-group"
-                            value={adminPermission}
-                            name="permission-type"
-                            onChange={handlePermissionType}
-                        >
-                            {Object.entries(PERMISSION_TYPE_LABEL_MAP).map(([value, label]) => (
-                                <RadioGroupItem
-                                    key={value}
-                                    dataTestId={`${
-                                        value === PermissionType.SPECIFIC ? 'specific-user' : 'super-admin'
-                                    }-permission-radio-button`}
-                                    value={value}
-                                >
-                                    <span
-                                        className={`dc__no-text-transform ${
-                                            adminPermission === value ? 'fw-6' : 'fw-4'
-                                        }`}
-                                    >
-                                        {label}
-                                    </span>
-                                </RadioGroupItem>
-                            ))}
-                        </RadioGroup>
-                    </div>
-                    {adminPermission === PermissionType.SPECIFIC ? (
-                        <>
-                            <UserPermissionGroupsSelector
-                                userData={userData}
-                                userGroups={userGroups}
-                                setUserGroups={setUserGroups}
-                            />
-                            <AppPermissions
-                                data={userData}
-                                directPermission={directPermission}
-                                setDirectPermission={setDirectPermission}
-                                chartPermission={chartPermission}
-                                setChartPermission={setChartPermission}
-                                hideInfoLegend
-                                k8sPermission={k8sPermission}
-                                setK8sPermission={setK8sPermission}
-                            />
-                        </>
-                    ) : (
-                        <SuperAdminInfoBar />
-                    )}
+                    <PermissionConfigurationForm
+                        permissionType={adminPermission}
+                        handlePermissionType={handlePermissionType}
+                        showUserPermissionGroupSelector
+                        appPermissionProps={{
+                            directPermission,
+                            setDirectPermission,
+                            chartPermission,
+                            setChartPermission,
+                            k8sPermission,
+                            setK8sPermission,
+                            hideInfoLegend: true,
+                            // TODO (v3): Add ref
+                            // currentK8sPermissionRef,
+                        }}
+                        userPermissionGroupSelectorProps={{
+                            userGroups,
+                            setUserGroups,
+                        }}
+                        data={userData}
+                    />
                 </div>
             </div>
             <GenerateActionButton

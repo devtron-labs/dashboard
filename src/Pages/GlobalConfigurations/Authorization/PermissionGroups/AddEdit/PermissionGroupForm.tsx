@@ -5,8 +5,6 @@ import {
     DeleteDialog,
     ResizableTextarea,
     CustomInput,
-    RadioGroup,
-    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
@@ -18,16 +16,15 @@ import {
     EntityTypes,
     ActionTypes,
 } from '../../shared/components/userGroups/userGroups.types'
-import AppPermissions from '../../shared/components/AppPermissions'
 import { ACCESS_TYPE_MAP, SERVER_MODE, URLS } from '../../../../../config'
 import { ReactComponent as Warning } from '../../../../../assets/icons/ic-warning.svg'
 import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
-import SuperAdminInfoBar from '../../shared/components/SuperAdminInfoBar'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
-import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../../constants'
+import { PermissionType } from '../../constants'
 import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
+import { PermissionConfigurationForm } from '../../shared/components/PermissionConfigurationForm'
 
 const PermissionGroupForm = ({
     isAddMode,
@@ -288,40 +285,20 @@ const PermissionGroupForm = ({
                         />
                     </div>
                     <div className="dc__border-top-n1" />
-                    <RadioGroup
-                        className="permission-type__radio-group"
-                        value={permissionType}
-                        name="permission-type"
-                        onChange={handlePermissionTypeChange}
-                    >
-                        {Object.entries(PERMISSION_TYPE_LABEL_MAP).map(([value, label]) => (
-                            <RadioGroupItem
-                                dataTestId={`${
-                                    value === PermissionType.SPECIFIC ? 'specific-user' : 'super-admin'
-                                }-permission-radio-button`}
-                                value={value}
-                                key={value}
-                            >
-                                <span className={`dc__no-text-transform ${permissionType === value ? 'fw-6' : 'fw-4'}`}>
-                                    {label}
-                                </span>
-                            </RadioGroupItem>
-                        ))}
-                    </RadioGroup>
-                    {isSuperAdminPermission ? (
-                        <SuperAdminInfoBar />
-                    ) : (
-                        <AppPermissions
-                            data={permissionGroup}
-                            directPermission={directPermission}
-                            setDirectPermission={setDirectPermission}
-                            chartPermission={chartPermission}
-                            setChartPermission={setChartPermission}
-                            k8sPermission={k8sPermission}
-                            setK8sPermission={setK8sPermission}
-                            currentK8sPermissionRef={currentK8sPermissionRef}
-                        />
-                    )}
+                    <PermissionConfigurationForm
+                        permissionType={permissionType}
+                        handlePermissionType={handlePermissionTypeChange}
+                        appPermissionProps={{
+                            directPermission,
+                            setDirectPermission,
+                            chartPermission,
+                            setChartPermission,
+                            k8sPermission,
+                            setK8sPermission,
+                            currentK8sPermissionRef,
+                        }}
+                        data={permissionGroup}
+                    />
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
                     <button type="submit" className="cta flex h-32" disabled={submitting} onClick={handleSubmit}>

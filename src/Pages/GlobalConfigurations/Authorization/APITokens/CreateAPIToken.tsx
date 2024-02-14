@@ -8,8 +8,6 @@ import { toast } from 'react-toastify'
 import {
     ServerErrors,
     showError,
-    RadioGroup,
-    RadioGroupItem,
     TippyCustomized,
     TippyTheme,
     CustomInput,
@@ -34,11 +32,9 @@ import { mainContext } from '../../../../components/common/navigation/Navigation
 import ExpirationDate from './ExpirationDate'
 import { DOCUMENTATION } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
-import SuperAdminInfoBar from '../shared/components/SuperAdminInfoBar'
 import { createOrUpdateUser } from '../authorization.service'
-import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../constants'
-import { UserPermissionGroupsSelector } from '../shared/components/UserPermissionGroupsSelector'
-import AppPermissions from '../shared/components/AppPermissions'
+import { PermissionType } from '../constants'
+import { PermissionConfigurationForm } from '../shared/components/PermissionConfigurationForm'
 
 export const renderQuestionwithTippy = () => {
     return (
@@ -302,54 +298,27 @@ const CreateAPIToken = ({
                         )}
                     </label>
                     <div className="dc__border-top-n1" />
-                    <div className="flex left">
-                        <RadioGroup
-                            className="permission-type__radio-group"
-                            value={adminPermission}
-                            name="permission-type"
-                            onChange={handlePermissionType}
-                        >
-                            {Object.entries(PERMISSION_TYPE_LABEL_MAP).map(([value, label]) => (
-                                <RadioGroupItem
-                                    dataTestId={`${
-                                        value === PermissionType.SPECIFIC ? 'specific-user' : 'super-admin'
-                                    }-permission-radio-button`}
-                                    value={value}
-                                    key={value}
-                                >
-                                    <span
-                                        className={`dc__no-text-transform ${
-                                            adminPermission === value ? 'fw-6' : 'fw-4'
-                                        }`}
-                                    >
-                                        {label}
-                                    </span>
-                                </RadioGroupItem>
-                            ))}
-                        </RadioGroup>
-                    </div>
-
-                    {adminPermission === PermissionType.SPECIFIC ? (
-                        <>
-                            <UserPermissionGroupsSelector
-                                userData={null}
-                                userGroups={userGroups}
-                                setUserGroups={setUserGroups}
-                            />
-                            <AppPermissions
-                                data={null}
-                                directPermission={directPermission}
-                                setDirectPermission={setDirectPermission}
-                                chartPermission={chartPermission}
-                                setChartPermission={setChartPermission}
-                                hideInfoLegend
-                                k8sPermission={k8sPermission}
-                                setK8sPermission={setK8sPermission}
-                            />
-                        </>
-                    ) : (
-                        <SuperAdminInfoBar />
-                    )}
+                    <PermissionConfigurationForm
+                        permissionType={adminPermission}
+                        handlePermissionType={handlePermissionType}
+                        showUserPermissionGroupSelector
+                        appPermissionProps={{
+                            directPermission,
+                            setDirectPermission,
+                            chartPermission,
+                            setChartPermission,
+                            k8sPermission,
+                            setK8sPermission,
+                            hideInfoLegend: true,
+                            // TODO (v3): Add ref
+                            // currentK8sPermissionRef,
+                        }}
+                        userPermissionGroupSelectorProps={{
+                            userGroups,
+                            setUserGroups,
+                        }}
+                        data={null}
+                    />
                 </div>
             </div>
             <GenerateActionButton

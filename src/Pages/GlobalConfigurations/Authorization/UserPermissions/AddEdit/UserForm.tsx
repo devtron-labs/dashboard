@@ -3,18 +3,13 @@ import {
     showError,
     Progressing,
     DeleteDialog,
-    Option,
     ClearIndicator,
     MultiValueRemove,
-    multiSelectStyles,
     MultiValueChipContainer,
-    RadioGroup,
-    RadioGroupItem,
     ServerErrors,
     OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Creatable from 'react-select/creatable'
-import Select from 'react-select'
 import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
 import {
@@ -25,18 +20,16 @@ import {
     ViewChartGroupPermission,
 } from '../../shared/components/userGroups/userGroups.types'
 import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
-import AppPermissions from '../../shared/components/AppPermissions'
 import { ACCESS_TYPE_MAP, API_STATUS_CODES, SERVER_MODE, URLS } from '../../../../../config'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
 import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
-import SuperAdminInfoBar from '../../shared/components/SuperAdminInfoBar'
 import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../../constants'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'
 import { User, UserCreateOrUpdatePayload } from '../../types'
-import { UserPermissionGroupsSelector } from '../../shared/components/UserPermissionGroupsSelector'
+import { PermissionConfigurationForm } from '../../shared/components/PermissionConfigurationForm'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -447,60 +440,25 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                         <UserPermissionGroupTable permissionGroups={userData?.roleGroups} />
                     )}
                     {!isAutoAssignFlowEnabled && (
-                        <>
-                            <div className="flex left">
-                                {/* TODO (v3): This can be common out as well */}
-                                <RadioGroup
-                                    className="permission-type__radio-group"
-                                    value={permissionType}
-                                    name="permission-type"
-                                    onChange={handlePermissionType}
-                                >
-                                    {Object.entries(PERMISSION_TYPE_LABEL_MAP).map(([value, label]) => (
-                                        <RadioGroupItem
-                                            dataTestId={`${
-                                                value === PermissionType.SPECIFIC ? 'specific-user' : 'super-admin'
-                                            }-permission-radio-button`}
-                                            value={value}
-                                            key={value}
-                                        >
-                                            <span
-                                                className={`dc__no-text-transform ${
-                                                    permissionType === value ? 'fw-6' : 'fw-4'
-                                                }`}
-                                            >
-                                                {label}
-                                            </span>
-                                        </RadioGroupItem>
-                                    ))}
-                                </RadioGroup>
-                            </div>
-                            {isSuperAdminPermission ? (
-                                <SuperAdminInfoBar />
-                            ) : (
-                                <>
-                                    <UserPermissionGroupsSelector
-                                        userData={userData}
-                                        userGroups={userGroups}
-                                        setUserGroups={setUserGroups}
-                                    />
-                                    <div className="dc__border-top-n1" />
-                                    <div className="flexbox-col dc__gap-8">
-                                        <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Direct Permissions</h3>
-                                        <AppPermissions
-                                            data={userData}
-                                            directPermission={directPermission}
-                                            setDirectPermission={setDirectPermission}
-                                            chartPermission={chartPermission}
-                                            setChartPermission={setChartPermission}
-                                            k8sPermission={k8sPermission}
-                                            setK8sPermission={setK8sPermission}
-                                            currentK8sPermissionRef={currentK8sPermissionRef}
-                                        />
-                                    </div>
-                                </>
-                            )}
-                        </>
+                        <PermissionConfigurationForm
+                            permissionType={permissionType}
+                            handlePermissionType={handlePermissionType}
+                            showUserPermissionGroupSelector
+                            appPermissionProps={{
+                                directPermission,
+                                setDirectPermission,
+                                chartPermission,
+                                setChartPermission,
+                                k8sPermission,
+                                setK8sPermission,
+                                currentK8sPermissionRef,
+                            }}
+                            userPermissionGroupSelectorProps={{
+                                userGroups,
+                                setUserGroups,
+                            }}
+                            data={userData}
+                        />
                     )}
                 </div>
                 {!(isAutoAssignFlowEnabled && !isAddMode) && (
