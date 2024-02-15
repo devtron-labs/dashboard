@@ -85,7 +85,7 @@ const PermissionGroupList = () => {
                 error={error}
                 getPermissionGroupDataForExport={getPermissionGroupDataForExport}
                 showLoadingState={showLoadingState}
-                totalCount={result?.totalCount}
+                totalCount={result?.totalCount ?? 0}
                 permissionGroups={result?.permissionGroups ?? []}
                 refetchPermissionGroupList={reload}
                 urlFilters={urlFilters}

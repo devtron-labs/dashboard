@@ -24,14 +24,14 @@ const PermissionGroupRow = ({
     refetchPermissionGroupList,
     isChecked = false,
     toggleChecked,
-    showCheckbox: _showCheckbox,
+    showCheckbox,
 }: PermissionGroupRowProps) => {
     const { path } = useRouteMatch()
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [isModalLoading, setIsModalLoading] = useState(false)
     const { isBulkSelectionApplied, handleBulkSelection } = useAuthorizationBulkSelection()
 
-    const showCheckbox = _showCheckbox || isChecked
+    const _showCheckbox = showCheckbox || isChecked
 
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen)
@@ -70,7 +70,7 @@ const PermissionGroupRow = ({
                 }`}
             >
                 <div className="flex dc__content-start">
-                    {!showCheckbox && (
+                    {!_showCheckbox && (
                         <span
                             className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4 dc__visible-hover--hide-child"
                             style={{
@@ -83,7 +83,7 @@ const PermissionGroupRow = ({
                     <Checkbox
                         isChecked={isChecked}
                         onChange={handleChecked}
-                        rootClassName={`mb-0 ${showCheckbox ? '' : 'dc__visible-hover--child'}`}
+                        rootClassName={`mb-0 ${_showCheckbox ? '' : 'dc__visible-hover--child'}`}
                         value={CHECKBOX_VALUE.CHECKED}
                     />
                 </div>
