@@ -62,7 +62,7 @@ export default defineConfig(({ mode }) => {
             }),
             VitePWA({
                 srcDir: 'src',
-                filename: 'prompt-sw.ts',
+                filename: 'service-worker.ts',
                 strategies: 'injectManifest',
             }),
         ],
