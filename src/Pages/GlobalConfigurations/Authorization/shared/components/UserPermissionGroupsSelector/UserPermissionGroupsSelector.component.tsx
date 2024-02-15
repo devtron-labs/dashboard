@@ -114,6 +114,7 @@ const UserPermissionGroupsSelector = () => {
                     controlShouldRenderValue={false}
                     isLoading={isLoading}
                     isDisabled={isLoading}
+                    menuPlacement="auto"
                 />
             </div>
             {userGroups.length > 0 && (

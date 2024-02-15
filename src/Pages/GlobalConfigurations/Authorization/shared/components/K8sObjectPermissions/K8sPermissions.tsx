@@ -8,12 +8,9 @@ import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil
 import { HEADER_OPTIONS } from './K8sPermissions.utils'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 
-export default function K8sPermissons() {
-    const {
-        k8sPermission,
-        setK8sPermission,
-    } = usePermissionConfiguration()
-    
+const K8sPermissions = () => {
+    const { k8sPermission, setK8sPermission } = usePermissionConfiguration()
+
     const [togglePermissionModal, setPermissionToggleModal] = useState<boolean>()
     const [tempPermission, setTempPermission] = useState()
     const [selectedPermissionAction, setSelectedPermissionAction] = useState<{
@@ -48,16 +45,19 @@ export default function K8sPermissons() {
 
     return (
         <div className="flexbox-col dc__gap-12">
-            {k8sPermission?.length ? (
+            {k8sPermission?.length > 0 && (
                 <div>
-                    <div className="kubernetes-header dc__border-bottom fw-6 pt-8 pb-8">
-                        {HEADER_OPTIONS.map((header, key) => (
-                            <span key={key}>{header}</span>
+                    <div className="kubernetes-header fw-6 pt-6 pb-6 fs-12 cn-7 lh-20">
+                        {HEADER_OPTIONS.map((header) => (
+                            <span key={header}>{header}</span>
                         ))}
                     </div>
                     {k8sPermission.map((element, index) => {
                         return (
-                            <div key={index} className="kubernetes-header pt-12 pb-12 cn-9 dc__border-bottom-n1">
+                            <div
+                                key={element.key}
+                                className="kubernetes-header pt-16 pb-16 cn-9 fs-13 fw-4 lh-20 dc__border-bottom-n1"
+                            >
                                 <span
                                     data-testid={`k8s-permission-list-${index}-cluster`}
                                     className="dc__truncate-text"
@@ -117,9 +117,10 @@ export default function K8sPermissons() {
                         )
                     })}
                 </div>
-            ) : null}
+            )}
             <div>
                 <button
+                    type="button"
                     data-testid="add-k8s-permisson-link"
                     className="anchor flex left dc__gap-4 fs-13 lh-20 fw-6 p-0"
                     onClick={createPermission}
@@ -138,3 +139,5 @@ export default function K8sPermissons() {
         </div>
     )
 }
+
+export default K8sPermissions

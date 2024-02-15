@@ -26,7 +26,7 @@ import {
 } from './userGroups/userGroups.types'
 import { mapByKey, removeItemsFromArray } from '../../../../../components/common'
 import { mainContext, useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
-import K8sPermissons from './K8sObjectPermissions/K8sPermissons'
+import K8sPermissions from './K8sObjectPermissions/K8sPermissions'
 import { apiGroupAll } from './K8sObjectPermissions/K8sPermissions.utils'
 import {
     getAllWorkflowsForAppNames,
@@ -106,9 +106,9 @@ const AppPermissionDetail = ({
                     (permission, idx) =>
                         permission.accessType === accessType && (
                             <div
-                                className="w-100 dc__gap-14"
+                                className="w-100 dc__gap-14 display-grid"
                                 style={{
-                                    display: 'grid',
+                                    // TODO (v3): Move to CSS
                                     gridTemplateColumns:
                                         accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                                             ? '1fr 1fr 1fr 1fr 24px'
@@ -337,13 +337,13 @@ const AppPermissions = () => {
         }
     }
 
-    function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
-        if (directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
-            const isJobs = directRolefilter.entity === EntityTypes.JOB
+    function setAllApplication(directRoleFilter: APIRoleFilter, projectId) {
+        if (directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
+            const isJobs = directRoleFilter.entity === EntityTypes.JOB
             return [
-                { label: directRolefilter.entity === EntityTypes.JOB ? 'All Jobs' : 'All applications', value: '*' },
+                { label: directRoleFilter.entity === EntityTypes.JOB ? 'All Jobs' : 'All applications', value: '*' },
                 ...(
-                    (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
+                    (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                         ? appsList
                         : isJobs
                           ? jobsList
@@ -414,10 +414,10 @@ const AppPermissions = () => {
     }
 
     // eslint-disable-next-line consistent-return
-    const setAllEnv = (directRolefilter: APIRoleFilter) => {
-        if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-            if (directRolefilter.environment) {
-                return directRolefilter.environment
+    const setAllEnv = (directRoleFilter: APIRoleFilter) => {
+        if (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+            if (directRoleFilter.environment) {
+                return directRoleFilter.environment
                     .split(',')
                     .map((directRole) => ({ value: directRole, label: directRole }))
             }
@@ -429,9 +429,9 @@ const AppPermissions = () => {
                 })),
             ]
         }
-        if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+        if (directRoleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
             const returnArr = []
-            const envArr = directRolefilter.environment.split(',')
+            const envArr = directRoleFilter.environment.split(',')
             const envMap: Map<string, boolean> = new Map()
             envArr.forEach((element) => {
                 const endsWithStar = element.endsWith('*')
@@ -463,9 +463,9 @@ const AppPermissions = () => {
                 })
             return returnArr
         }
-        if (directRolefilter.entity === EntityTypes.JOB) {
-            if (directRolefilter.environment) {
-                return directRolefilter.environment
+        if (directRoleFilter.entity === EntityTypes.JOB) {
+            if (directRoleFilter.environment) {
+                return directRoleFilter.environment
                     .split(',')
                     .map((directRole) => ({ value: directRole, label: directRole }))
             }
@@ -524,22 +524,22 @@ const AppPermissions = () => {
                     (roleFilter: APIRoleFilter) =>
                         roleFilter.entity === EntityTypes.DIRECT || roleFilter.entity === EntityTypes.JOB,
                 )
-                ?.map(async (directRolefilter: APIRoleFilter) => {
+                ?.map(async (directRoleFilter: APIRoleFilter) => {
                     const projectId =
-                        directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
-                        projectsMap.get(directRolefilter.team)?.id
-                    if (!directRolefilter['accessType'] && directRolefilter.entity !== EntityTypes.JOB) {
-                        directRolefilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS
+                        directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
+                        projectsMap.get(directRoleFilter.team)?.id
+                    if (!directRoleFilter['accessType'] && directRoleFilter.entity !== EntityTypes.JOB) {
+                        directRoleFilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS
                     }
-                    if (directRolefilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                    if (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                         foundDevtronApps = true
-                    } else if (directRolefilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+                    } else if (directRoleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                         foundHelmApps = true
-                    } else if (directRolefilter.entity === EntityTypes.JOB) {
+                    } else if (directRoleFilter.entity === EntityTypes.JOB) {
                         foundJobs = true
                     }
                     const jobNameToAppNameMapping = new Map()
-                    if (directRolefilter.entity === EntityTypes.JOB) {
+                    if (directRoleFilter.entity === EntityTypes.JOB) {
                         const {
                             result: { jobContainers },
                         } = await getJobs({ teams: [projectId] })
@@ -547,27 +547,27 @@ const AppPermissions = () => {
                             jobNameToAppNameMapping.set(job.appName, job.jobName)
                         })
                     }
-                    const updatedEntityName = directRolefilter?.entityName
-                        ? directRolefilter.entityName.split(',').map((entity) => ({
+                    const updatedEntityName = directRoleFilter?.entityName
+                        ? directRoleFilter.entityName.split(',').map((entity) => ({
                               value: entity,
                               label:
-                                  directRolefilter.entity === EntityTypes.JOB
+                                  directRoleFilter.entity === EntityTypes.JOB
                                       ? jobNameToAppNameMapping.get(entity)
                                       : entity,
                           }))
-                        : setAllApplication(directRolefilter, projectId)
+                        : setAllApplication(directRoleFilter, projectId)
 
                     return {
-                        ...directRolefilter,
-                        accessType: directRolefilter.accessType,
-                        action: { label: directRolefilter.action, value: directRolefilter.action },
-                        team: { label: directRolefilter.team, value: directRolefilter.team },
-                        entity: directRolefilter.entity,
+                        ...directRoleFilter,
+                        accessType: directRoleFilter.accessType,
+                        action: { label: directRoleFilter.action, value: directRoleFilter.action },
+                        team: { label: directRoleFilter.team, value: directRoleFilter.team },
+                        entity: directRoleFilter.entity,
                         entityName: updatedEntityName,
-                        environment: setAllEnv(directRolefilter),
-                        ...(directRolefilter.entity === EntityTypes.JOB && {
-                            workflow: directRolefilter.workflow
-                                ? directRolefilter.workflow
+                        environment: setAllEnv(directRoleFilter),
+                        ...(directRoleFilter.entity === EntityTypes.JOB && {
+                            workflow: directRoleFilter.workflow
+                                ? directRoleFilter.workflow
                                       .split(',')
                                       .map((workflow) => ({ value: workflow, label: workflow }))
                                 : await setAllWorkflows(updatedEntityName),
@@ -853,27 +853,17 @@ const AppPermissions = () => {
     }, [data, isDataLoading])
 
     if (isDataLoading || isLoading) {
-        // TODO (v3): Use shimmer loader instead
         return (
-            <div className="show-shimmer-loading">
+            <div className="show-shimmer-loading flexbox-col dc__gap-8 w-50">
                 <div className="child child-shimmer-loading" />
+                <div className="child child-shimmer-loading w-80" />
                 <div className="child child-shimmer-loading w-90" />
-                <div className="child child-shimmer-loading" />
             </div>
         )
     }
 
     if (error) {
-        // TODO (v3): Check if permission denied handling is required
-        // if (error.code === API_STATUS_CODE.PERMISSION_DENIED) {
-        //     return (
-        //         <ErrorScreenNotAuthorized
-        //             subtitle={ERROR_EMPTY_SCREEN.REQUIRED_MANAGER_ACCESS}
-        //             title={TOAST_ACCESS_DENIED.TITLE}
-        //         />
-        //     )
-        // }
-        return <GenericSectionErrorState reload={reload} />
+        return <GenericSectionErrorState withBorder reload={reload} />
     }
 
     return (
@@ -989,7 +979,7 @@ const AppPermissions = () => {
                     )}
                     {superAdmin && (
                         <Route path={`${path}/kubernetes-objects`}>
-                            <K8sPermissons />
+                            <K8sPermissions />
                         </Route>
                     )}
                     {serverMode !== SERVER_MODE.EA_ONLY && (

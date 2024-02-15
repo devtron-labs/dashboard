@@ -22,6 +22,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
+import { isFormComplete } from '../../APITokens/authorization.utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -71,37 +72,6 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         setDeleteConfirmationModal(!deleteConfirmationModal)
     }
 
-    function isFormComplete(): boolean {
-        let isComplete = true
-
-        // Validation for super admin permission on the group
-        if (isSuperAdminPermission) {
-            return isComplete
-        }
-
-        // Validation for specific permissions on the group
-        const tempPermissions = directPermission.reduce((agg, curr) => {
-            if (curr.team && curr.entityName.length === 0) {
-                isComplete = false
-                // eslint-disable-next-line no-param-reassign
-                curr.entityNameError = 'Applications are mandatory'
-            }
-            if (curr.team && curr.environment.length === 0) {
-                isComplete = false
-                // eslint-disable-next-line no-param-reassign
-                curr.environmentError = 'Environments are mandatory'
-            }
-            agg.push(curr)
-            return agg
-        }, [])
-
-        if (!isComplete) {
-            setDirectPermission(tempPermissions)
-        }
-
-        return isComplete
-    }
-
     function getSelectedEnvironments(permission) {
         if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
             return permission.environment.find((env) => env.value === '*')
@@ -129,7 +99,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             setName((_name) => ({ ..._name, error: 'Group name is mandatory' }))
             return
         }
-        if (!isFormComplete()) {
+        if (!isSuperAdminPermission && !isFormComplete(directPermission, setDirectPermission)) {
             return
         }
         setSubmitting(true)

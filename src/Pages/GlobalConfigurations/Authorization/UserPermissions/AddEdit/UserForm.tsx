@@ -31,6 +31,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
+import { isFormComplete } from '../../APITokens/authorization.utils'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -129,35 +130,6 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         return true
     }
 
-    const isFormComplete = (): boolean => {
-        let isComplete = true
-        const tempPermissions = directPermission.reduce((agg, curr) => {
-            if (curr.team && curr.entityName.length === 0) {
-                isComplete = false
-                // eslint-disable-next-line no-param-reassign
-                curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
-            }
-            if (curr.team && curr.environment.length === 0) {
-                isComplete = false
-                // eslint-disable-next-line no-param-reassign
-                curr.environmentError = 'Environments are mandatory'
-            }
-            if (curr.team && curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
-                isComplete = false
-                // eslint-disable-next-line no-param-reassign
-                curr.workflowError = 'Workflows are mandatory'
-            }
-            agg.push(curr)
-            return agg
-        }, [])
-
-        if (!isComplete) {
-            setDirectPermission(tempPermissions)
-        }
-
-        return isComplete
-    }
-
     const getSelectedEnvironments = (permission) => {
         if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
             return permission.environment.find((env) => env.value === '*')
@@ -179,7 +151,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const handleSubmit = async () => {
-        if (!validateForm() || !isFormComplete()) {
+        if (!validateForm() || !isFormComplete(directPermission, setDirectPermission)) {
             return
         }
         setSubmitting(true)

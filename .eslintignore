@@ -26,7 +26,6 @@ src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissi
 src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sPermission.component.tsx
 src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sPermissionModal.tsx
 src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sPermissions.utils.ts
-src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sPermissons.tsx
 src/Pages/GlobalConfigurations/Authorization/shared/components/SuperAdminInfoBar/index.ts
 src/Pages/GlobalConfigurations/Authorization/shared/components/userGroups/UserGroup.tsx
 src/Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types.ts

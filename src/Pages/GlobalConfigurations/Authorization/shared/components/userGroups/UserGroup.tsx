@@ -187,7 +187,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         )
 
         if (permission.entity === EntityTypes.JOB) {
-            const deafultEnv = {
+            const defaultEnv = {
                 label: '',
                 options: [
                     {
@@ -203,7 +203,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 }
                 return filteredOptions.length > 0
             })
-            setEnvironments([deafultEnv, ...filteredEnvOptions])
+            setEnvironments([defaultEnv, ...filteredEnvOptions])
         } else {
             setEnvironments(envOptions)
         }
@@ -975,10 +975,8 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
             return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
 
         case EntityTypes.CLUSTER:
-            return dataList.filter((role) => role.entity === EntityTypes.CLUSTER)
         case EntityTypes.CHART_GROUP:
-            return dataList.filter((role) => role.entity === EntityTypes.CHART_GROUP)
         case EntityTypes.JOB:
-            return dataList.filter((role) => role.entity === EntityTypes.JOB)
+            return dataList.filter((role) => role.entity === entity)
     }
 }
