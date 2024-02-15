@@ -22,7 +22,7 @@ import IndexStore from '../../../v2/appDetails/index.store'
 import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 import LoadingCard from './LoadingCard'
 
-const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesModal, setDetailed, releaseStatus, errorList }: IssuesCardType) => {
+const IssuesCard = ({cardLoading, setErrorsList, toggleIssuesModal, setDetailed, releaseStatus, errorList }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState(false)
@@ -32,7 +32,7 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
     const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
 
-    const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData]) || appDetails.resourceTree?.conditions || []
+    const conditions = appDetails.resourceTree?.conditions || []
 
     const showIssuesListingModal = () => {
         toggleIssuesModal(true)
