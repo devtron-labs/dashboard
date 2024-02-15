@@ -36,12 +36,16 @@ export const getUserById = async (userId: User['id']): Promise<User> => {
     }
 }
 
-export const createOrUpdateUser = (data: UserCreateOrUpdatePayload) => {
-    const isUpdate = !!data.id
+export const createOrUpdateUser = ({ emailId, ...data }: UserCreateOrUpdatePayload) => {
+    const _data: UserDto = {
+        ...data,
+        email_id: emailId,
+    }
+    const isUpdate = !!_data.id
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
-    return isUpdate ? put(Routes.USER, data, options) : post(Routes.USER, data, options)
+    return isUpdate ? put(Routes.USER, _data, options) : post(Routes.USER, _data, options)
 }
 
 export const deleteUser = (userId: User['id']) => trash(`${Routes.USER}/${userId}`)
