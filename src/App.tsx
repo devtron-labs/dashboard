@@ -188,18 +188,18 @@ export default function App() {
     })
 
     function update() {
-        //updateServiceWorker(true)
+        updateServiceWorker(true)
         // Trigger page reload
-        //window.location.reload()
-        if (!navigator.serviceWorker) return
-        try {
-            navigator.serviceWorker.getRegistration().then((reg) => {
-                if (reg.waiting) {
-                    reg.waiting.postMessage({ type: 'SKIP_WAITING' })
-                    window.location.reload()
-                }
-            })
-        } catch (err) {}
+        window.location.reload()
+        // if (!navigator.serviceWorker) return
+        // try {
+        //     navigator.serviceWorker.getRegistration().then((reg) => {
+        //         if (reg.waiting) {
+        //             reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+        //             window.location.reload()
+        //         }
+        //     })
+        // } catch (err) {}
     }
 
     useEffect(() => {
