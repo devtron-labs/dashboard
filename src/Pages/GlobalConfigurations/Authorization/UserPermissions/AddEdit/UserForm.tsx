@@ -27,7 +27,10 @@ import { PermissionType } from '../../constants'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'
 import { User, UserCreateOrUpdatePayload } from '../../types'
-import { PermissionConfigurationForm, usePermissionConfiguration } from '../../shared/components/PermissionConfigurationForm'
+import {
+    PermissionConfigurationForm,
+    usePermissionConfiguration,
+} from '../../shared/components/PermissionConfigurationForm'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -67,9 +70,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
         directPermission,
         setDirectPermission,
         chartPermission,
-        setChartPermission,
         k8sPermission,
-        setK8sPermission,
         currentK8sPermissionRef,
         userGroups,
         setUserGroups,
@@ -429,27 +430,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                     {!isAddMode && isAutoAssignFlowEnabled && (
                         <UserPermissionGroupTable permissionGroups={userData?.roleGroups} />
                     )}
-                    {!isAutoAssignFlowEnabled && (
-                        <PermissionConfigurationForm
-                            permissionType={permissionType}
-                            handlePermissionType={handlePermissionType}
-                            showUserPermissionGroupSelector
-                            appPermissionProps={{
-                                directPermission,
-                                setDirectPermission,
-                                chartPermission,
-                                setChartPermission,
-                                k8sPermission,
-                                setK8sPermission,
-                                currentK8sPermissionRef,
-                            }}
-                            userPermissionGroupSelectorProps={{
-                                userGroups,
-                                setUserGroups,
-                            }}
-                            data={userData}
-                        />
-                    )}
+                    {!isAutoAssignFlowEnabled && <PermissionConfigurationForm showUserPermissionGroupSelector />}
                 </div>
                 {!(isAutoAssignFlowEnabled && !isAddMode) && (
                     <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
@@ -472,7 +453,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                                 currentK8sPermissionRef.current,
                                 // TODO (v3): Fix
                                 // k8sPermission.map(excludeKeyAndClusterValue),
-                                {}
+                                {},
                             ) && (
                                 <span className="flex dc__gap-4 cy-7">
                                     <Error className="icon-dim-20 warning-icon-y7" />

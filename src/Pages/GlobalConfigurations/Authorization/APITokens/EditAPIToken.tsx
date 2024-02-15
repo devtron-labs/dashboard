@@ -58,12 +58,8 @@ const EditAPIToken = ({
         directPermission,
         setDirectPermission,
         chartPermission,
-        setChartPermission,
         k8sPermission,
-        setK8sPermission,
-        // currentK8sPermissionRef,
         userGroups,
-        setUserGroups,
         data: userData,
     } = usePermissionConfiguration()
 
@@ -167,10 +163,6 @@ const EditAPIToken = ({
         const _editData = { ...editData }
         _editData[event.target.name] = event.target.value
         setEditData(_editData)
-    }
-
-    const handlePermissionType = (e) => {
-        setPermissionType(e.target.value)
     }
 
     const getExpirationText = () => {
@@ -298,26 +290,7 @@ const EditAPIToken = ({
                         </div>
                     </label>
                     <div className="dc__border-top-n1" />
-                    <PermissionConfigurationForm
-                        permissionType={permissionType}
-                        handlePermissionType={handlePermissionType}
-                        showUserPermissionGroupSelector
-                        appPermissionProps={{
-                            directPermission,
-                            setDirectPermission,
-                            chartPermission,
-                            setChartPermission,
-                            k8sPermission,
-                            setK8sPermission,
-                            // TODO (v3): Add ref
-                            // currentK8sPermissionRef,
-                        }}
-                        userPermissionGroupSelectorProps={{
-                            userGroups,
-                            setUserGroups,
-                        }}
-                        data={_userData}
-                    />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector />
                 </div>
             </div>
             <GenerateActionButton

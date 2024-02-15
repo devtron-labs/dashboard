@@ -5,18 +5,13 @@ import { User } from '../../../types'
 import AppPermissions from '../AppPermissions'
 import SuperAdminInfoBar from '../SuperAdminInfoBar'
 import { UserPermissionGroupsSelector } from '../UserPermissionGroupsSelector'
+import { usePermissionConfiguration } from './PermissionConfigurationFormProvider'
 import { PermissionConfigurationFormProps } from './types'
 
-const PermissionConfigurationForm = ({
-    permissionType,
-    // TODO (v3): Instead add the setter
-    handlePermissionType,
-    showUserPermissionGroupSelector = false,
-    appPermissionProps,
-    data,
-    userPermissionGroupSelectorProps = {} as PermissionConfigurationFormProps['userPermissionGroupSelectorProps'],
-}: PermissionConfigurationFormProps) => {
+const PermissionConfigurationForm = ({ showUserPermissionGroupSelector = false }: PermissionConfigurationFormProps) => {
     const {
+        permissionType,
+        setPermissionType,
         directPermission,
         setDirectPermission,
         chartPermission,
@@ -24,9 +19,15 @@ const PermissionConfigurationForm = ({
         k8sPermission,
         setK8sPermission,
         currentK8sPermissionRef,
-    } = appPermissionProps
-    const { userGroups, setUserGroups } = userPermissionGroupSelectorProps
+        userGroups,
+        setUserGroups,
+        data,
+    } = usePermissionConfiguration()
     const isSuperAdminPermission = permissionType === PermissionType.SUPER_ADMIN
+
+    const handlePermissionType = (e) => {
+        setPermissionType(e.target.value)
+    }
 
     return (
         <>

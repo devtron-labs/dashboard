@@ -81,19 +81,8 @@ const CreateAPIToken = ({
         invalidDescription: false,
         invalidDescriptionMessage: '',
     })
-    const {
-        permissionType,
-        setPermissionType,
-        directPermission,
-        setDirectPermission,
-        chartPermission,
-        setChartPermission,
-        k8sPermission,
-        setK8sPermission,
-        // currentK8sPermissionRef,
-        userGroups,
-        setUserGroups,
-    } = usePermissionConfiguration()
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+        usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
 
@@ -227,10 +216,6 @@ const CreateAPIToken = ({
         }
     }
 
-    const handlePermissionType = (e) => {
-        setPermissionType(e.target.value)
-    }
-
     return (
         <div className="w-100 flexbox-col flex-grow-1 dc__content-space pb-16">
             <div className="pl-20 pr-20 pb-20">
@@ -293,26 +278,7 @@ const CreateAPIToken = ({
                         )}
                     </label>
                     <div className="dc__border-top-n1" />
-                    <PermissionConfigurationForm
-                        permissionType={permissionType}
-                        handlePermissionType={handlePermissionType}
-                        showUserPermissionGroupSelector
-                        appPermissionProps={{
-                            directPermission,
-                            setDirectPermission,
-                            chartPermission,
-                            setChartPermission,
-                            k8sPermission,
-                            setK8sPermission,
-                            // TODO (v3): Add ref
-                            // currentK8sPermissionRef,
-                        }}
-                        userPermissionGroupSelectorProps={{
-                            userGroups,
-                            setUserGroups,
-                        }}
-                        data={null}
-                    />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector />
                 </div>
             </div>
             <GenerateActionButton

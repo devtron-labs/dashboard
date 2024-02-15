@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     showError,
     Progressing,
@@ -39,9 +39,7 @@ const PermissionGroupForm = ({
         directPermission,
         setDirectPermission,
         chartPermission,
-        setChartPermission,
         k8sPermission,
-        setK8sPermission,
         currentK8sPermissionRef,
     } = usePermissionConfiguration()
     const [name, setName] = useState({ value: '', error: '' })
@@ -74,10 +72,6 @@ const PermissionGroupForm = ({
 
     const toggleDeleteConfirmationModal = () => {
         setDeleteConfirmationModal(!deleteConfirmationModal)
-    }
-
-    const handlePermissionTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setPermissionType(e.target.value as PermissionType)
     }
 
     function isFormComplete(): boolean {
@@ -285,20 +279,7 @@ const PermissionGroupForm = ({
                         />
                     </div>
                     <div className="dc__border-top-n1" />
-                    <PermissionConfigurationForm
-                        permissionType={permissionType}
-                        handlePermissionType={handlePermissionTypeChange}
-                        appPermissionProps={{
-                            directPermission,
-                            setDirectPermission,
-                            chartPermission,
-                            setChartPermission,
-                            k8sPermission,
-                            setK8sPermission,
-                            currentK8sPermissionRef,
-                        }}
-                        data={permissionGroup}
-                    />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector={false} />
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
                     <button type="submit" className="cta flex h-32" disabled={submitting} onClick={handleSubmit}>
