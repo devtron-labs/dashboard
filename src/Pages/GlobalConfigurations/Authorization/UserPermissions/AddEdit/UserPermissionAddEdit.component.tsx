@@ -55,7 +55,7 @@ const UserPermissionAddEdit = () => {
 
     return (
         <PermissionConfigurationFormProvider data={user}>
-            <UserForm isAddMode={isAddMode} userData={user} />
+            <UserForm isAddMode={isAddMode} />
         </PermissionConfigurationFormProvider>
     )
 }

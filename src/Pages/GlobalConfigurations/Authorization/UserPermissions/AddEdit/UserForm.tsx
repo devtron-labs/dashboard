@@ -58,7 +58,7 @@ const CreatableChipStyle = {
     }),
 }
 
-const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData: User }) => {
+const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
 
     const { isAutoAssignFlowEnabled } = useAuthorizationContext()
@@ -74,7 +74,10 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
         currentK8sPermissionRef,
         userGroups,
         setUserGroups,
+        data: userData
     } = usePermissionConfiguration()
+    const _userData = userData as User
+
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
     )
@@ -182,7 +185,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
         setSubmitting(true)
 
         const payload: UserCreateOrUpdatePayload = {
-            id: userData?.id || 0,
+            id: _userData?.id || 0,
             emailId: emailState.emails.map((email) => email.value).join(','),
             groups: userGroups.map((group) => group.value),
             roleFilters: [
@@ -270,11 +273,11 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
     }
 
     useEffect(() => {
-        if (userData) {
+        if (_userData) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            populateDataFromAPI(userData)
+            populateDataFromAPI(_userData)
         }
-    }, [userData])
+    }, [_userData])
 
     const handleInputChange = (inputEmailValue) => {
         setEmailState((prevEmailState) => ({ ...prevEmailState, inputEmailValue, emailError: '' }))
@@ -292,7 +295,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
     const handleDelete = async () => {
         setSubmitting(true)
         try {
-            await deleteUser(userData.id)
+            await deleteUser(_userData.id)
             toast.success('User deleted')
             setDeleteConfirmationModal(false)
             _redirectToUserPermissionList()
@@ -358,10 +361,6 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
         [],
     )
 
-    const handlePermissionType = (e) => {
-        setPermissionType(e.target.value)
-    }
-
     return (
         <div className="flexbox-col dc__align-start dc__align-self-stretch flex-grow-1 dc__gap-24 pb-16">
             <div className="flex pr-20 pl-20 dc__content-space dc__gap-8 w-100">
@@ -370,7 +369,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                         User Permissions
                     </Link>
                     <span className="cn-5">/</span>
-                    <span className="cn-9 fw-6 dc__ellipsis-right">{isAddMode ? 'Add User' : userData.emailId}</span>
+                    <span className="cn-9 fw-6 dc__ellipsis-right">{isAddMode ? 'Add User' : _userData.emailId}</span>
                 </div>
                 {!isAddMode && (
                     <div className="flex dc__content-start dc__gap-12">
@@ -428,7 +427,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                         </>
                     )}
                     {!isAddMode && isAutoAssignFlowEnabled && (
-                        <UserPermissionGroupTable permissionGroups={userData?.roleGroups} />
+                        <UserPermissionGroupTable permissionGroups={_userData?.roleGroups} />
                     )}
                     {!isAutoAssignFlowEnabled && <PermissionConfigurationForm showUserPermissionGroupSelector />}
                 </div>

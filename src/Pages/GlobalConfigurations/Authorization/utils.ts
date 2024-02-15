@@ -22,20 +22,45 @@ export const transformUserResponse = (_user: UserDto): User => {
     }
 }
 
-export const getMetaPossibleRoles = (customRoles: CustomRoles[], entity: string, accessType?: string) => {
+const getUpdatedMetaPossibleRoles = (possibleMetaRoles, role) => ({
+    ...possibleMetaRoles,
+    [role.roleName]: {
+        value: role.roleDisplayName,
+        description: role.roleDescription,
+    },
+})
+
+export const getMetaPossibleRoles = (customRoles: CustomRoles[]) => {
     let possibleRolesMeta = {}
+    let possibleRolesMetaForHelm = {}
+    let possibleRolesMetaForCluster = {}
+    let possibleRolesMetaForJob = {}
+
     customRoles.forEach((role) => {
-        if (role.entity === entity && (entity !== EntityTypes.DIRECT || role.accessType === accessType)) {
-            possibleRolesMeta = {
-                ...possibleRolesMeta,
-                [role.roleName]: {
-                    value: role.roleDisplayName,
-                    description: role.roleDescription,
-                },
-            }
+        switch (role.entity) {
+            case EntityTypes.DIRECT:
+                if (role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                    possibleRolesMeta = getUpdatedMetaPossibleRoles(possibleRolesMeta, role)
+                } else if (role.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+                    possibleRolesMetaForHelm = getUpdatedMetaPossibleRoles(possibleRolesMetaForHelm, role)
+                }
+                break
+            case EntityTypes.CLUSTER:
+                possibleRolesMetaForCluster = getUpdatedMetaPossibleRoles(possibleRolesMetaForCluster, role)
+                break
+            case EntityTypes.JOB:
+                possibleRolesMetaForJob = getUpdatedMetaPossibleRoles(possibleRolesMetaForJob, role)
+                break
+            default:
         }
     })
-    return possibleRolesMeta
+    return {
+        customRoles,
+        possibleRolesMeta,
+        possibleRolesMetaForHelm,
+        possibleRolesMetaForCluster,
+        possibleRolesMetaForJob,
+    }
 }
 
 /**

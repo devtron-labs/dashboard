@@ -3,7 +3,6 @@
 import React from 'react'
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
-import { PermissionGroup, User } from '../../../types'
 import { Nodes } from '../../../../../../components/app/types'
 import { ChartGroup } from '../../../../../../components/charts/charts.types'
 
@@ -126,16 +125,6 @@ export interface K8sListItemCardType {
     }
 }
 export interface UserGroup {
-    appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
-    environmentsList: any[]
-    projectsList: any[]
-    chartGroupsList: ChartGroup[]
-    fetchAppList: (projectId: number[]) => void
-    envClustersList: any[]
-    fetchAppListHelmApps: (projectId: number[]) => void
-    fetchJobsList: (projectId: number[]) => void
-    jobsList: Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: any }>
-    appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
     customRoles: CustomRoleAndMeta
     isAutoAssignFlowEnabled: boolean
 }
@@ -149,16 +138,6 @@ export interface K8sPermissionModalType {
     close: () => void
 }
 
-export interface AppPermissionsType {
-    data: PermissionGroup | User
-    directPermission: DirectPermissionsRoleFilter[]
-    setDirectPermission: (...rest) => void
-    chartPermission: ChartGroupPermissionsFilter
-    setChartPermission: React.Dispatch<React.SetStateAction<ChartGroupPermissionsFilter>>
-    k8sPermission?: K8sPermissionFilter[]
-    setK8sPermission?: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
-    currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
-}
 export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     handleDirectPermissionChange: (...rest) => void
@@ -167,6 +146,12 @@ export interface AppPermissionsDetailType {
         accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
     ) => void
     selectedJobs?: string[]
+    appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
+    jobsList: Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: any }>
+    appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
+    environmentsList: any[]
+    projectsList: any[]
+    envClustersList: any[]
 }
 
 export const K8S_PERMISSION_INFO_MESSAGE = {
@@ -202,9 +187,17 @@ export const ViewChartGroupPermission: APIRoleFilter = {
     action: ActionTypes.VIEW,
 }
 
-export interface DirectPermissionRow {
+export interface DirectPermissionRow
+    extends Pick<
+        AppPermissionsDetailType,
+        'appsList' | 'jobsList' | 'appsListHelmApps' | 'projectsList' | 'environmentsList' | 'envClustersList'
+    > {
     permission: DirectPermissionsRoleFilter
     handleDirectPermissionChange: (...rest) => void
     index: number
     removeRow: (index: number) => void
+}
+
+export interface ChartPermissionRow {
+    chartGroupsList: ChartGroup[]
 }

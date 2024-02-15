@@ -23,13 +23,7 @@ import {
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
 
-const PermissionGroupForm = ({
-    isAddMode,
-    permissionGroup = null,
-}: {
-    isAddMode: boolean
-    permissionGroup: PermissionGroup
-}) => {
+const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
 
     // Form States
@@ -41,7 +35,10 @@ const PermissionGroupForm = ({
         chartPermission,
         k8sPermission,
         currentK8sPermissionRef,
+        data: permissionGroup,
     } = usePermissionConfiguration()
+    const _permissionGroup = permissionGroup as PermissionGroup
+
     const [name, setName] = useState({ value: '', error: '' })
     const [description, setDescription] = useState('')
 
@@ -60,11 +57,11 @@ const PermissionGroupForm = ({
     }
 
     useEffect(() => {
-        if (permissionGroup) {
+        if (_permissionGroup) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            populateDataFromAPI(permissionGroup)
+            populateDataFromAPI(_permissionGroup)
         }
-    }, [permissionGroup])
+    }, [_permissionGroup])
 
     const _redirectToPermissionGroupList = () => {
         push(URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS)
@@ -138,7 +135,7 @@ const PermissionGroupForm = ({
         setSubmitting(true)
 
         const payload: PermissionGroupCreateOrUpdatePayload = {
-            id: permissionGroup?.id || 0,
+            id: _permissionGroup?.id || 0,
             name: name.value,
             description,
             roleFilters: [
@@ -213,7 +210,7 @@ const PermissionGroupForm = ({
     const handleDelete = async () => {
         setSubmitting(true)
         try {
-            await deletePermissionGroup(permissionGroup.id)
+            await deletePermissionGroup(_permissionGroup.id)
             toast.success('Group deleted')
             setDeleteConfirmationModal(false)
             _redirectToPermissionGroupList()
@@ -233,7 +230,7 @@ const PermissionGroupForm = ({
                     </Link>
                     <span className="cn-5">/</span>
                     <span className="cn-9 fw-6 dc__ellipsis-right">
-                        {isAddMode ? 'Add Group' : permissionGroup.name}
+                        {isAddMode ? 'Add Group' : _permissionGroup.name}
                     </span>
                 </div>
                 {!isAddMode && (

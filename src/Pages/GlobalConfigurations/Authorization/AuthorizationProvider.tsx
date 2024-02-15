@@ -1,18 +1,7 @@
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext } from 'react'
 import { UserGroup } from './shared/components/userGroups/userGroups.types'
 
 const AuthorizationContext = createContext<UserGroup>({
-    appsList: new Map(),
-    environmentsList: [],
-    projectsList: [],
-    chartGroupsList: [],
-    fetchAppList: noop,
-    envClustersList: [],
-    fetchAppListHelmApps: noop,
-    fetchJobsList: noop,
-    jobsList: new Map(),
-    appsListHelmApps: new Map(),
     customRoles: {
         customRoles: [],
         possibleRolesMeta: {},

@@ -16,7 +16,7 @@ import {
     createClusterEnvGroup,
 } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
-import { ActionTypes, EntityTypes, DirectPermissionRow } from './userGroups.types'
+import { ActionTypes, EntityTypes, DirectPermissionRow, ChartPermissionRow } from './userGroups.types'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
 import { ReactComponent as CloseIcon } from '../../../../../../assets/icons/ic-close.svg'
 import {
@@ -57,7 +57,9 @@ const allEnvironmentsOption = {
     value: '*',
 }
 
+// TODO (v3): This should be from fe-lib
 export const APPROVER_ACTION = { label: 'approver', value: 'approver' }
+// TODO (v3): This should be from fe-lib
 export const CONFIG_APPROVER_ACTION = { label: 'configApprover', value: 'configApprover' }
 
 export const DirectPermission: React.FC<DirectPermissionRow> = ({
@@ -65,9 +67,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     handleDirectPermissionChange,
     index,
     removeRow,
+    appsList,
+    jobsList,
+    appsListHelmApps,
+    projectsList,
+    environmentsList,
+    envClustersList,
 }) => {
-    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles, jobsList } =
-        useAuthorizationContext()
+    const { customRoles } = useAuthorizationContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
@@ -719,149 +726,146 @@ const AppOption = ({ props, permission }) => {
     )
 }
 
-export const ChartPermission: React.FC = React.memo(
-    () => {
-        const {
-            chartPermission,
-            setChartPermission,
-        } = usePermissionConfiguration()
-        const { chartGroupsList } = useAuthorizationContext()
-        function handleChartCreateChange(event) {
-            if (event.target.checked) {
-                // set admin
-                setChartPermission((chartPermission) => ({
-                    ...chartPermission,
-                    action: ActionTypes.ADMIN,
-                    entityName: [],
-                }))
-            } else {
-                // set view or update
-                setChartPermission((chartPermission) => ({
-                    ...chartPermission,
-                    action: ActionTypes.VIEW,
-                    entityName: [],
-                }))
-            }
+export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(({ chartGroupsList }) => {
+    const { chartPermission, setChartPermission } = usePermissionConfiguration()
+    function handleChartCreateChange(event) {
+        if (event.target.checked) {
+            // set admin
+            setChartPermission((chartPermission) => ({
+                ...chartPermission,
+                action: ActionTypes.ADMIN,
+                entityName: [],
+            }))
+        } else {
+            // set view or update
+            setChartPermission((chartPermission) => ({
+                ...chartPermission,
+                action: ActionTypes.VIEW,
+                entityName: [],
+            }))
         }
+    }
 
-        function handleChartEditChange(selected, actionMeta) {
-            const { label, value } = selected
-            if (value === 'Deny') {
-                setChartPermission((chartPermission) => ({
-                    ...chartPermission,
-                    action: ActionTypes.VIEW,
-                    entityName: [],
-                }))
-            } else {
-                setChartPermission((chartPermission) => ({
-                    ...chartPermission,
-                    action: ActionTypes.UPDATE,
-                    entityName: [],
-                }))
-            }
+    function handleChartEditChange(selected, actionMeta) {
+        const { label, value } = selected
+        if (value === 'Deny') {
+            setChartPermission((chartPermission) => ({
+                ...chartPermission,
+                action: ActionTypes.VIEW,
+                entityName: [],
+            }))
+        } else {
+            setChartPermission((chartPermission) => ({
+                ...chartPermission,
+                action: ActionTypes.UPDATE,
+                entityName: [],
+            }))
         }
+    }
 
-        const chartGroupEditOptions: OptionType[] = useMemo(() => {
-            if (chartPermission.action === ActionTypes.ADMIN) {
-                return [{ label: 'All Chart Groups', value: 'All charts' }]
-            }
-            return [
-                { label: 'Deny', value: 'Deny' },
-                { label: 'Specific Chart Groups', value: 'Specific Charts' },
-            ]
-        }, [chartPermission.action])
+    const chartGroupEditOptions: OptionType[] = useMemo(() => {
+        if (chartPermission.action === ActionTypes.ADMIN) {
+            return [{ label: 'All Chart Groups', value: 'All charts' }]
+        }
+        return [
+            { label: 'Deny', value: 'Deny' },
+            { label: 'Specific Chart Groups', value: 'Specific Charts' },
+        ]
+    }, [chartPermission.action])
 
-        return (
-            <>
-                <div
-                    className="w-100 display-grid dc__align-items-center"
-                    style={{ gridTemplateColumns: '80px 80px 200px', rowGap: '5px' }}
-                >
-                    <label className={PERMISSION_LABEL_CLASS}>View</label>
-                    <label className={PERMISSION_LABEL_CLASS}>Create</label>
-                    <label className={PERMISSION_LABEL_CLASS}>Edit</label>
-                    <div>
-                        <input type="checkbox" checked disabled className="h-16 w-16" />
-                    </div>
-                    <div>
-                        <input
-                            data-testid="chart-group-create-permission-checkbox"
-                            type="checkbox"
-                            checked={chartPermission.action === ActionTypes.ADMIN}
-                            onChange={handleChartCreateChange}
-                            className="h-16 w-16"
-                        />
-                    </div>
-                    <Select
-                        value={
-                            chartPermission.action === ActionTypes.ADMIN
-                                ? chartGroupEditOptions[0]
-                                : chartPermission.action === ActionTypes.VIEW
-                                  ? { label: 'Deny', value: 'Deny' }
-                                  : { label: 'Specific Chart Groups', value: 'Specific Charts' }
-                        }
-                        isDisabled={chartPermission.action === ActionTypes.ADMIN}
-                        options={chartGroupEditOptions}
-                        className="basic-multi-select"
-                        classNamePrefix="select"
-                        onChange={handleChartEditChange}
-                        menuPlacement="auto"
-                        components={{
-                            ClearIndicator: null,
-                            IndicatorSeparator: null,
-                            Option,
-                        }}
-                        styles={{ ...tempMultiSelectStyles }}
+    return (
+        <>
+            <div
+                className="w-100 display-grid dc__align-items-center"
+                style={{ gridTemplateColumns: '80px 80px 200px', rowGap: '5px' }}
+            >
+                <label className={PERMISSION_LABEL_CLASS}>View</label>
+                <label className={PERMISSION_LABEL_CLASS}>Create</label>
+                <label className={PERMISSION_LABEL_CLASS}>Edit</label>
+                <div>
+                    <input type="checkbox" checked disabled className="h-16 w-16" />
+                </div>
+                <div>
+                    <input
+                        data-testid="chart-group-create-permission-checkbox"
+                        type="checkbox"
+                        checked={chartPermission.action === ActionTypes.ADMIN}
+                        onChange={handleChartCreateChange}
+                        className="h-16 w-16"
                     />
                 </div>
-                {chartPermission.action === ActionTypes.UPDATE && (
-                    <Select
-                        value={chartPermission.entityName}
-                        placeholder="Select Chart Group"
-                        isMulti
-                        styles={{
-                            ...tempMultiSelectStyles,
-                            multiValue: (base) => ({
-                                ...base,
-                                border: `1px solid var(--N200)`,
-                                borderRadius: `4px`,
-                                background: 'white',
-                                height: '30px',
-                                margin: '0 8px 0 0',
-                                padding: '1px',
-                            }),
-                            menu: (base, state) => ({
-                                ...base,
-                                top: 'auto',
-                                width: '100%',
-                            }),
-                        }}
-                        closeMenuOnSelect={false}
-                        name="entityName"
-                        options={chartGroupsList?.map((chartGroup) => ({
-                            label: chartGroup.name,
-                            value: chartGroup.name,
-                        }))}
-                        onChange={(selected, actionMeta) =>
-                            setChartPermission((_chartPermission) => ({ ..._chartPermission, entityName: selected as OptionType[] }))
-                        }
-                        className="mt-8 mb-8"
-                        classNamePrefix="select"
-                        hideSelectedOptions={false}
-                        menuPlacement="auto"
-                        components={{
-                            ClearIndicator: null,
-                            IndicatorSeparator: null,
-                            MultiValueRemove,
-                            MultiValueContainer,
-                            Option,
-                        }}
-                    />
-                )}
-            </>
-        )
-    },
-)
+                <Select
+                    value={
+                        chartPermission.action === ActionTypes.ADMIN
+                            ? chartGroupEditOptions[0]
+                            : chartPermission.action === ActionTypes.VIEW
+                              ? { label: 'Deny', value: 'Deny' }
+                              : { label: 'Specific Chart Groups', value: 'Specific Charts' }
+                    }
+                    isDisabled={chartPermission.action === ActionTypes.ADMIN}
+                    options={chartGroupEditOptions}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    onChange={handleChartEditChange}
+                    menuPlacement="auto"
+                    components={{
+                        ClearIndicator: null,
+                        IndicatorSeparator: null,
+                        Option,
+                    }}
+                    styles={{ ...tempMultiSelectStyles }}
+                />
+            </div>
+            {chartPermission.action === ActionTypes.UPDATE && (
+                <Select
+                    value={chartPermission.entityName}
+                    placeholder="Select Chart Group"
+                    isMulti
+                    styles={{
+                        ...tempMultiSelectStyles,
+                        multiValue: (base) => ({
+                            ...base,
+                            border: `1px solid var(--N200)`,
+                            borderRadius: `4px`,
+                            background: 'white',
+                            height: '30px',
+                            margin: '0 8px 0 0',
+                            padding: '1px',
+                        }),
+                        menu: (base, state) => ({
+                            ...base,
+                            top: 'auto',
+                            width: '100%',
+                        }),
+                    }}
+                    closeMenuOnSelect={false}
+                    name="entityName"
+                    options={chartGroupsList?.map((chartGroup) => ({
+                        label: chartGroup.name,
+                        value: chartGroup.name,
+                    }))}
+                    onChange={(selected, actionMeta) =>
+                        setChartPermission((_chartPermission) => ({
+                            ..._chartPermission,
+                            entityName: selected as OptionType[],
+                        }))
+                    }
+                    className="mt-8 mb-8"
+                    classNamePrefix="select"
+                    hideSelectedOptions={false}
+                    menuPlacement="auto"
+                    components={{
+                        ClearIndicator: null,
+                        IndicatorSeparator: null,
+                        MultiValueRemove,
+                        MultiValueContainer,
+                        Option,
+                    }}
+                />
+            )}
+        </>
+    )
+})
 
 const ValueContainer = (props) => {
     const { length } = props.getValue()

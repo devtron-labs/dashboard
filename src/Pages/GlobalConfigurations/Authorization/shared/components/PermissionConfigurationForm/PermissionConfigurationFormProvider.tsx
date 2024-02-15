@@ -4,10 +4,10 @@ import { PermissionType } from '../../../constants'
 import { PermissionGroup, User } from '../../../types'
 import {
     ActionTypes,
-    AppPermissionsType,
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
     EntityTypes,
+    K8sPermissionFilter,
 } from '../userGroups/userGroups.types'
 
 const context = createContext<
@@ -17,7 +17,18 @@ const context = createContext<
         data: User | PermissionGroup
         userGroups: OptionType[]
         setUserGroups: React.Dispatch<React.SetStateAction<OptionType[]>>
-    } & Omit<AppPermissionsType, 'data'>
+    } & Omit<
+        {
+            directPermission: DirectPermissionsRoleFilter[]
+            setDirectPermission: (...rest) => void
+            chartPermission: ChartGroupPermissionsFilter
+            setChartPermission: React.Dispatch<React.SetStateAction<ChartGroupPermissionsFilter>>
+            k8sPermission?: K8sPermissionFilter[]
+            setK8sPermission?: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
+            currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
+        },
+        'data'
+    >
 >(null)
 
 export const PermissionConfigurationFormProvider = ({
