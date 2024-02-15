@@ -12,15 +12,6 @@ self.addEventListener('message', (event) => {
     }
 })
 
-// // self.__WB_MANIFEST is default injection point
-// precacheAndRoute(self.__WB_MANIFEST)
-
-// // clean old assets
-// cleanupOutdatedCaches()
-
-// // to allow work offline
-// registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')))
-
 // Precache the manifest
 precacheAndRoute(self.__WB_MANIFEST)
 

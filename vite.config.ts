@@ -95,11 +95,6 @@ export default defineConfig(({ mode }) => {
         baseConfig['define'] = {
             global: 'globalThis',
         }
-    } else {
-        baseConfig['define'] = {
-            __BASE_URL__: '/dashboard/',
-            __ORCHESTRATOR_ROOT__: '/orchestrator',
-        }
     }
 
     return baseConfig
