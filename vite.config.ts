@@ -63,6 +63,7 @@ export default defineConfig(({ mode }) => {
             VitePWA({
                 srcDir: 'src',
                 filename: 'service-worker.ts',
+                strategies: 'injectManifest',
             }),
         ],
         // test: {
@@ -94,11 +95,11 @@ export default defineConfig(({ mode }) => {
         baseConfig['define'] = {
             global: 'globalThis',
         }
-        // } else {
-        //     baseConfig['define'] = {
-        //         __BASE_URL__: '/dashboard/',
-        //         __ORCHESTRATOR_ROOT__: '/orchestrator',
-        //     }
+    } else {
+        baseConfig['define'] = {
+            __BASE_URL__: '/dashboard/',
+            __ORCHESTRATOR_ROOT__: '/orchestrator',
+        }
     }
 
     return baseConfig
