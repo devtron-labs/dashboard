@@ -63,18 +63,18 @@ export default defineConfig(({ mode }) => {
                 strategies: 'injectManifest',
             }),
         ],
-        // test: {
-        //     globals: true,
-        //     environment: 'jsdom',
-        //     setupFiles: './src/setupTests.ts',
-        //     css: true,
-        //     reporters: ['verbose'],
-        //     coverage: {
-        //         reporter: ['text', 'json', 'html'],
-        //         include: ['src/**/*'],
-        //         exclude: [],
-        //     },
-        // },
+        test: {
+            globals: true,
+            environment: 'jsdom',
+            setupFiles: '',
+            css: true,
+            reporters: ['verbose'],
+            coverage: {
+                reporter: ['text', 'json', 'html'],
+                include: ['src/**/*'],
+                exclude: [],
+            },
+        },
         server: {
             port: 3000,
             proxy: {

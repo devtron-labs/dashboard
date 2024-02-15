@@ -1,8 +1,7 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { render } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import TerminalWrapper from '../TerminalWrapper.component'
-import { BrowserRouter } from 'react-router-dom'
 import {
     mockUseHeightObserver,
     selectionListData,
@@ -23,8 +22,10 @@ describe('TerminalWrapper', () => {
                     selectionListData={selectionListData}
                     socketConnection={SocketConnectionType.CONNECTING}
                     setSocketConnection={jest.fn()}
+                    className=""
+                    dataTestId="testTerm"
                 />,
-            )
+            ),
         )
 
         expect(container).toBeInTheDocument()
@@ -41,8 +42,10 @@ describe('TerminalWrapper', () => {
                     selectionListData={selectionListData}
                     socketConnection={SocketConnectionType.CONNECTING}
                     setSocketConnection={jest.fn()}
+                    className=""
+                    dataTestId="testTerm"
                 />,
-            )
+            ),
         )
 
         expect(container).toBeInTheDocument()
@@ -65,8 +68,10 @@ describe('TerminalWrapper', () => {
                     selectionListData={selectionListDataWithSecondStrip}
                     socketConnection={SocketConnectionType.CONNECTING}
                     setSocketConnection={jest.fn()}
+                    className=""
+                    dataTestId="testTerm"
                 />,
-            )
+            ),
         )
 
         expect(container).toBeInTheDocument()
@@ -89,8 +94,10 @@ describe('TerminalWrapper', () => {
                     selectionListData={selectionListDataWithTerminalWrapper}
                     socketConnection={SocketConnectionType.CONNECTING}
                     setSocketConnection={jest.fn()}
+                    className=""
+                    dataTestId="testTerm"
                 />,
-            )
+            ),
         )
 
         expect(container).toBeInTheDocument()
