@@ -31,7 +31,7 @@ const getModalConfig = ({ selectedIdentifiersCount }: Pick<BulkDeleteModalProps,
             successToastText: 'Selected group(s) deleted successfully',
             confirmationText: `delete ${selectedIdentifiersCount} ${selectedIdentifiersCount > 1 ? 'groups' : 'group'}`,
         },
-    } as const)
+    }) as const
 
 const BulkDeleteModal = ({
     entityType,
