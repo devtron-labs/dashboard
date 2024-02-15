@@ -13,23 +13,21 @@ import Creatable from 'react-select/creatable'
 import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
 import {
-    DirectPermissionsRoleFilter,
-    ChartGroupPermissionsFilter,
     EntityTypes,
     ActionTypes,
     ViewChartGroupPermission,
+    APIRoleFilter,
 } from '../../shared/components/userGroups/userGroups.types'
-import { mapByKey, validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
+import { validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
 import { ACCESS_TYPE_MAP, API_STATUS_CODES, SERVER_MODE, URLS } from '../../../../../config'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
-import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
-import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../../constants'
+import { PermissionType } from '../../constants'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'
 import { User, UserCreateOrUpdatePayload } from '../../types'
-import { PermissionConfigurationForm } from '../../shared/components/PermissionConfigurationForm'
+import { PermissionConfigurationForm, usePermissionConfiguration } from '../../shared/components/PermissionConfigurationForm'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -63,19 +61,22 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
     const { isAutoAssignFlowEnabled } = useAuthorizationContext()
 
     // Form States
-    const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
+    const {
+        permissionType,
+        setPermissionType,
+        directPermission,
+        setDirectPermission,
+        chartPermission,
+        setChartPermission,
+        k8sPermission,
+        setK8sPermission,
+        currentK8sPermissionRef,
+        userGroups,
+        setUserGroups,
+    } = usePermissionConfiguration()
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
     )
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
-    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
-        entity: EntityTypes.CHART_GROUP,
-        action: ActionTypes.VIEW,
-        entityName: [],
-    })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [k8sPermission, setK8sPermission] = useState<any[]>([])
-    const [userGroups, setUserGroups] = useState<OptionType[]>([])
 
     // UI States
     const [submitting, setSubmitting] = useState(false)
@@ -83,8 +84,6 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
 
     const creatableRef = useRef(null)
     const groupPermissionsRef = useRef(null)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const currentK8sPermissionRef = useRef<any[]>([])
     const { push } = useHistory()
 
     const isSuperAdminPermission = permissionType === PermissionType.SUPER_ADMIN
@@ -212,7 +211,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                     })),
                 ...k8sPermission.map((permission) => ({
                     ...permission,
-                    entity: EntityTypes.CLUSTER,
+                    entity: EntityTypes.CLUSTER as APIRoleFilter['entity'],
                     action: permission.action.value,
                     cluster: permission.cluster.label,
                     group: permission.group.value === '*' ? '' : permission.group.value,
@@ -245,7 +244,7 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
             if (isAddMode) {
                 toast.success('User(s) added')
             } else {
-                currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
+                // currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 toast.success('User updated')
             }
             _redirectToUserPermissionList()
@@ -471,7 +470,9 @@ const UserForm = ({ isAddMode, userData = null }: { isAddMode: boolean; userData
                         {!isAddMode &&
                             !deepEqual(
                                 currentK8sPermissionRef.current,
-                                k8sPermission.map(excludeKeyAndClusterValue),
+                                // TODO (v3): Fix
+                                // k8sPermission.map(excludeKeyAndClusterValue),
+                                {}
                             ) && (
                                 <span className="flex dc__gap-4 cy-7">
                                     <Error className="icon-dim-20 warning-icon-y7" />

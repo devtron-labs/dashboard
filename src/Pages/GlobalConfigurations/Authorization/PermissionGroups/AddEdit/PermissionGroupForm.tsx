@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ChangeEvent } from 'react'
+import React, { useState, useEffect, ChangeEvent } from 'react'
 import {
     showError,
     Progressing,
@@ -10,21 +10,18 @@ import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
 import { deepEqual } from '../../../../../components/common'
 
-import {
-    DirectPermissionsRoleFilter,
-    ChartGroupPermissionsFilter,
-    EntityTypes,
-    ActionTypes,
-} from '../../shared/components/userGroups/userGroups.types'
+import { EntityTypes, APIRoleFilter } from '../../shared/components/userGroups/userGroups.types'
 import { ACCESS_TYPE_MAP, SERVER_MODE, URLS } from '../../../../../config'
 import { ReactComponent as Warning } from '../../../../../assets/icons/ic-warning.svg'
-import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import { PermissionType } from '../../constants'
 import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
-import { PermissionConfigurationForm } from '../../shared/components/PermissionConfigurationForm'
+import {
+    PermissionConfigurationForm,
+    usePermissionConfiguration,
+} from '../../shared/components/PermissionConfigurationForm'
 
 const PermissionGroupForm = ({
     isAddMode,
@@ -36,23 +33,23 @@ const PermissionGroupForm = ({
     const { serverMode } = useMainContext()
 
     // Form States
-    const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
-    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
-        entity: EntityTypes.CHART_GROUP,
-        action: ActionTypes.VIEW,
-        entityName: [],
-    })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [k8sPermission, setK8sPermission] = useState<any[]>([])
+    const {
+        permissionType,
+        setPermissionType,
+        directPermission,
+        setDirectPermission,
+        chartPermission,
+        setChartPermission,
+        k8sPermission,
+        setK8sPermission,
+        currentK8sPermissionRef,
+    } = usePermissionConfiguration()
     const [name, setName] = useState({ value: '', error: '' })
     const [description, setDescription] = useState('')
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
 
     const [submitting, setSubmitting] = useState(false)
     const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const currentK8sPermissionRef = useRef<any[]>([])
     const { push } = useHistory()
 
     const isSuperAdminPermission = permissionType === PermissionType.SUPER_ADMIN
@@ -181,7 +178,7 @@ const PermissionGroupForm = ({
                     }),
                 ...k8sPermission.map((permission) => ({
                     ...permission,
-                    entity: EntityTypes.CLUSTER,
+                    entity: EntityTypes.CLUSTER as APIRoleFilter['entity'],
                     action: permission.action.value,
                     cluster: permission.cluster.label,
                     group: permission.group.value === '*' ? '' : permission.group.value,
@@ -208,7 +205,7 @@ const PermissionGroupForm = ({
             if (isAddMode) {
                 toast.success('Group created')
             } else {
-                currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
+                // currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 toast.success('Group updated')
             }
             _redirectToPermissionGroupList()
@@ -318,7 +315,12 @@ const PermissionGroupForm = ({
                         Cancel
                     </Link>
                     {!isAddMode &&
-                        !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
+                        !deepEqual(
+                            currentK8sPermissionRef.current,
+                            {},
+                            // TODO (v3): Fix
+                            // k8sPermission.map(excludeKeyAndClusterValue)
+                        ) && (
                             <span className="flex cy-7 dc__gap-4">
                                 <Warning className="icon-dim-20 warning-icon-y7" />
                                 Unsaved changes

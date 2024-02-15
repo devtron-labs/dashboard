@@ -79,7 +79,7 @@ export interface APIRoleFilter {
     entityName?: string
     environment?: string
     action: string
-    accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+    accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     cluster?: any
     namespace?: any
     group?: any
@@ -161,7 +161,6 @@ export interface AppPermissionsType {
     setDirectPermission: (...rest) => void
     chartPermission: ChartGroupPermissionsFilter
     setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void
-    hideInfoLegend?: boolean
     k8sPermission?: K8sPermissionFilter[]
     setK8sPermission?: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
     currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
@@ -174,7 +173,6 @@ export interface AppPermissionsDetailType {
         accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
     ) => void
     directPermission: DirectPermissionsRoleFilter[]
-    hideInfoLegend?: boolean
     selectedJobs?: string[]
 }
 
@@ -221,5 +219,4 @@ export interface DirectPermissionRow {
 export interface ChartPermissionRow {
     chartPermission: ChartGroupPermissionsFilter
     setChartPermission: any
-    hideInfoLegend?: boolean
 }

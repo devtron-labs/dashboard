@@ -8,7 +8,6 @@ import {
     copyToClipboard,
     CustomInput,
     noop,
-    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
@@ -24,12 +23,6 @@ import GenerateActionButton from './GenerateActionButton'
 import { MomentDateFormat } from '../../../../config'
 import { ButtonWithLoader } from '../../../../components/common'
 import { updateGeneratedAPIToken } from './service'
-import {
-    ActionTypes,
-    ChartGroupPermissionsFilter,
-    DirectPermissionsRoleFilter,
-    EntityTypes,
-} from '../shared/components/userGroups/userGroups.types'
 import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
@@ -38,61 +31,56 @@ import { renderQuestionwithTippy } from './CreateAPIToken'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
 import { User } from '../types'
 import { PermissionType } from '../constants'
-import { PermissionConfigurationForm } from '../shared/components/PermissionConfigurationForm'
+import {
+    PermissionConfigurationForm,
+    PermissionConfigurationFormProvider,
+    usePermissionConfiguration,
+} from '../shared/components/PermissionConfigurationForm'
 
 const EditAPIToken = ({
     setShowRegeneratedModal,
     showRegeneratedModal,
     handleRegenerateActionButton,
-    tokenList,
     copied,
     setCopied,
     reload,
-}: EditTokenType) => {
+    editData,
+    setEditData,
+    isLoading,
+}: Omit<EditTokenType, 'tokenList'> & {
+    editData: EditDataType
+    isLoading: boolean
+    setEditData: (editData: EditDataType) => void
+}) => {
+    const {
+        permissionType,
+        setPermissionType,
+        directPermission,
+        setDirectPermission,
+        chartPermission,
+        setChartPermission,
+        k8sPermission,
+        setK8sPermission,
+        // currentK8sPermissionRef,
+        userGroups,
+        setUserGroups,
+        data: userData,
+    } = usePermissionConfiguration()
+
+    const _userData = userData as User
+
     const history = useHistory()
     const match = useRouteMatch()
-    const params = useParams<{ id: string }>()
     const { serverMode } = useContext(mainContext)
-    const [isLoading, setLoading] = useState(true)
     const [loader, setLoader] = useState(false)
-    const [adminPermission, setAdminPermission] = useState<PermissionType>()
-    const [userData, setUserData] = useState<User>()
-    const [editData, setEditData] = useState<EditDataType>()
-    const [userGroups, setUserGroups] = useState<OptionType[]>([])
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
-    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
-        entity: EntityTypes.CHART_GROUP,
-        action: ActionTypes.VIEW,
-        entityName: [],
-    })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [k8sPermission, setK8sPermission] = useState<any[]>([])
+
     const [customDate, setCustomDate] = useState<number>(undefined)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
-    const getUserData = async (userId: number) => {
-        try {
-            const user = await getUserById(userId)
-            setUserData(user)
-            setAdminPermission(user.superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
-        } catch (err) {
-            showError(err)
-        } finally {
-            setLoading(false)
-        }
-    }
-
     useEffect(() => {
-        // eslint-disable-next-line radix
-        const _editData = tokenList?.find((list) => list.id === parseInt(params.id))
-
-        if (_editData) {
-            setEditData(_editData)
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            getUserData(_editData.userId)
-        }
-    }, [])
+        setPermissionType(_userData.superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
+    }, [_userData])
 
     const renderActionButton = () => {
         return (
@@ -150,7 +138,7 @@ const EditAPIToken = ({
                     directPermission,
                     chartPermission,
                     k8sPermission,
-                    adminPermission === PermissionType.SUPER_ADMIN,
+                    permissionType === PermissionType.SUPER_ADMIN,
                 )
 
                 const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)
@@ -182,7 +170,7 @@ const EditAPIToken = ({
     }
 
     const handlePermissionType = (e) => {
-        setAdminPermission(e.target.value)
+        setPermissionType(e.target.value)
     }
 
     const getExpirationText = () => {
@@ -311,7 +299,7 @@ const EditAPIToken = ({
                     </label>
                     <div className="dc__border-top-n1" />
                     <PermissionConfigurationForm
-                        permissionType={adminPermission}
+                        permissionType={permissionType}
                         handlePermissionType={handlePermissionType}
                         showUserPermissionGroupSelector
                         appPermissionProps={{
@@ -321,7 +309,6 @@ const EditAPIToken = ({
                             setChartPermission,
                             k8sPermission,
                             setK8sPermission,
-                            hideInfoLegend: true,
                             // TODO (v3): Add ref
                             // currentK8sPermissionRef,
                         }}
@@ -329,7 +316,7 @@ const EditAPIToken = ({
                             userGroups,
                             setUserGroups,
                         }}
-                        data={userData}
+                        data={_userData}
                     />
                 </div>
             </div>
@@ -362,4 +349,40 @@ const EditAPIToken = ({
     )
 }
 
-export default EditAPIToken
+const EditAPITokenContainer = ({ tokenList, ...props }: EditTokenType) => {
+    const params = useParams<{ id: string }>()
+    const [isLoading, setLoading] = useState(true)
+    const [userData, setUserData] = useState<User>()
+    const [editData, setEditData] = useState<EditDataType>()
+
+    // TODO (v3): Use useAsync and fix multiple error toast
+    const getUserData = async (userId: number) => {
+        try {
+            const user = await getUserById(userId)
+            setUserData(user)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line radix
+        const _editData = tokenList?.find((list) => list.id === parseInt(params.id))
+
+        if (_editData) {
+            setEditData(_editData)
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            getUserData(_editData.userId)
+        }
+    }, [])
+
+    return (
+        <PermissionConfigurationFormProvider data={userData}>
+            <EditAPIToken {...props} editData={editData} setEditData={setEditData} isLoading={isLoading} />
+        </PermissionConfigurationFormProvider>
+    )
+}
+
+export default EditAPITokenContainer

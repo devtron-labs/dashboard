@@ -719,7 +719,7 @@ const AppOption = ({ props, permission }) => {
 }
 
 export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
-    ({ chartPermission, setChartPermission, hideInfoLegend }) => {
+    ({ chartPermission, setChartPermission }) => {
         const { chartGroupsList } = useAuthorizationContext()
         function handleChartCreateChange(event) {
             if (event.target.checked) {

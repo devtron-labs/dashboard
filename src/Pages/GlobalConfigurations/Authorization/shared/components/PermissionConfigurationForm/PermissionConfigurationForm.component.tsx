@@ -9,6 +9,7 @@ import { PermissionConfigurationFormProps } from './types'
 
 const PermissionConfigurationForm = ({
     permissionType,
+    // TODO (v3): Instead add the setter
     handlePermissionType,
     showUserPermissionGroupSelector = false,
     appPermissionProps,

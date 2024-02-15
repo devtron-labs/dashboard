@@ -83,7 +83,8 @@
     }
 
     .anchor {
-        font-weight: 600;
+        // TODO (v3): Check where this is being used
+        // font-weight: 600;
 
         .add-svg path {
             fill: var(--B500);

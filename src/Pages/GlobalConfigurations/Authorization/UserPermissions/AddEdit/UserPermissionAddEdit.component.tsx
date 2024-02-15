@@ -13,6 +13,7 @@ import { API_STATUS_CODES, URLS } from '../../../../../config'
 import { getUserById } from '../../authorization.service'
 import UserForm from './UserForm'
 import { getIsAdminOrSystemUser } from '../utils'
+import { PermissionConfigurationFormProvider } from '../../shared/components/PermissionConfigurationForm'
 
 const UserPermissionAddEdit = () => {
     const { userId: _userId } = useParams<{ userId: string }>()
@@ -52,7 +53,11 @@ const UserPermissionAddEdit = () => {
         return <Reload reload={reload} />
     }
 
-    return <UserForm isAddMode={isAddMode} userData={user} />
+    return (
+        <PermissionConfigurationFormProvider data={user}>
+            <UserForm isAddMode={isAddMode} userData={user} />
+        </PermissionConfigurationFormProvider>
+    )
 }
 
 export default UserPermissionAddEdit

@@ -5,14 +5,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import {
-    ServerErrors,
-    showError,
-    TippyCustomized,
-    TippyTheme,
-    CustomInput,
-    OptionType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
@@ -22,19 +15,17 @@ import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as QuestionFilled } from '../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import {
-    ActionTypes,
-    ChartGroupPermissionsFilter,
-    DirectPermissionsRoleFilter,
-    EntityTypes,
-} from '../shared/components/userGroups/userGroups.types'
 import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { DOCUMENTATION } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { createOrUpdateUser } from '../authorization.service'
 import { PermissionType } from '../constants'
-import { PermissionConfigurationForm } from '../shared/components/PermissionConfigurationForm'
+import {
+    PermissionConfigurationForm,
+    PermissionConfigurationFormProvider,
+    usePermissionConfiguration,
+} from '../shared/components/PermissionConfigurationForm'
 
 export const renderQuestionwithTippy = () => {
     return (
@@ -72,7 +63,6 @@ const CreateAPIToken = ({
     const match = useRouteMatch()
     const { serverMode } = useContext(mainContext)
     const [loader, setLoader] = useState(false)
-    const [adminPermission, setAdminPermission] = useState<PermissionType>(PermissionType.SUPER_ADMIN)
     const [formData, setFormData] = useState<FormType>({
         name: '',
         description: '',
@@ -91,14 +81,19 @@ const CreateAPIToken = ({
         invalidDescription: false,
         invalidDescriptionMessage: '',
     })
-    const [userGroups, setUserGroups] = useState<OptionType[]>([])
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
-    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
-        entity: EntityTypes.CHART_GROUP,
-        action: ActionTypes.VIEW,
-        entityName: [],
-    })
-    const [k8sPermission, setK8sPermission] = useState<any[]>([])
+    const {
+        permissionType,
+        setPermissionType,
+        directPermission,
+        setDirectPermission,
+        chartPermission,
+        setChartPermission,
+        k8sPermission,
+        setK8sPermission,
+        // currentK8sPermissionRef,
+        userGroups,
+        setUserGroups,
+    } = usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
 
@@ -206,7 +201,7 @@ const CreateAPIToken = ({
                     directPermission,
                     chartPermission,
                     k8sPermission,
-                    adminPermission === PermissionType.SUPER_ADMIN,
+                    permissionType === PermissionType.SUPER_ADMIN,
                 )
 
                 const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)
@@ -233,7 +228,7 @@ const CreateAPIToken = ({
     }
 
     const handlePermissionType = (e) => {
-        setAdminPermission(e.target.value)
+        setPermissionType(e.target.value)
     }
 
     return (
@@ -299,7 +294,7 @@ const CreateAPIToken = ({
                     </label>
                     <div className="dc__border-top-n1" />
                     <PermissionConfigurationForm
-                        permissionType={adminPermission}
+                        permissionType={permissionType}
                         handlePermissionType={handlePermissionType}
                         showUserPermissionGroupSelector
                         appPermissionProps={{
@@ -309,7 +304,6 @@ const CreateAPIToken = ({
                             setChartPermission,
                             k8sPermission,
                             setK8sPermission,
-                            hideInfoLegend: true,
                             // TODO (v3): Add ref
                             // currentK8sPermissionRef,
                         }}
@@ -342,4 +336,10 @@ const CreateAPIToken = ({
     )
 }
 
-export default CreateAPIToken
+const CreateAPITokenContainer = (props: GenerateTokenType) => (
+    <PermissionConfigurationFormProvider data={null}>
+        <CreateAPIToken {...props} />
+    </PermissionConfigurationFormProvider>
+)
+
+export default CreateAPITokenContainer
