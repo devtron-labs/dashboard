@@ -187,11 +187,11 @@ export default function App() {
         },
     })
 
-    function update() {
-        updateServiceWorker(true)
-        // Trigger page reload
-        window.location.reload()
-    }
+    // function update() {
+    //     updateServiceWorker(true)
+    //     // Trigger page reload
+    //     //window.location.reload()
+    // }
 
     useEffect(() => {
         if (window.isSecureContext && navigator.serviceWorker) {
@@ -203,7 +203,7 @@ export default function App() {
     function onUpdate() {
         const updateToastBody = (
             <UpdateToast
-                onClick={update}
+                onClick={() => updateServiceWorker(true)}
                 text="You are viewing an outdated version of Devtron UI."
                 buttonText="Reload"
             />
@@ -230,7 +230,7 @@ export default function App() {
         }
         const bgUpdatedToastBody = (
             <UpdateToast
-                onClick={update}
+                onClick={() => window.location.reload()}
                 text="This page has been updated. Please save any unsaved changes and refresh."
                 buttonText="Reload"
             />
