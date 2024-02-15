@@ -47,6 +47,8 @@ export default function App() {
     const updateToastRef = useRef(null)
     const [errorPage, setErrorPage] = useState<boolean>(false)
     const isOnline = useOnline()
+    const refreshing = useRef(false)
+    const [bgUpdated, setBGUpdated] = useState(false)
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
@@ -144,15 +146,45 @@ export default function App() {
         }
     }, [])
 
+    function handleControllerChange() {
+        if (refreshing.current) {
+            return
+        }
+        if (document.visibilityState === 'visible') {
+            window.location.reload()
+            refreshing.current = true
+        } else {
+            setBGUpdated(true)
+        }
+    }
+
+    useEffect(() => {
+        if (!navigator.serviceWorker) {
+            return
+        }
+        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+    }, [])
+
     const {
         needRefresh: [needRefresh],
         updateServiceWorker,
     } = useRegisterSW({
         onRegisteredSW(swUrl, r) {
             console.log(`Service Worker at: ${swUrl}`)
-            if (r) {
-                r.update()
-            }
+            r &&
+                setInterval(async () => {
+                    if (!(!r.installing && navigator)) return
+                    if ('connection' in navigator && !navigator.onLine) return
+                    const resp = await fetch(swUrl, {
+                        cache: 'no-store',
+                        headers: {
+                            cache: 'no-store',
+                            'cache-control': 'no-cache',
+                        },
+                    })
+
+                    if (resp?.status === 200) await r.update()
+                }, 1000 * 60)
         },
         onRegisterError(error) {
             console.log('SW registration error', error)
@@ -199,6 +231,24 @@ export default function App() {
             onUpdate()
         }
     }, [needRefresh])
+
+    useEffect(() => {
+        if (!bgUpdated) {
+            return
+        }
+        const bgUpdatedToastBody = (
+            <UpdateToast
+                onClick={update}
+                text="This page has been updated. Please save any unsaved changes and refresh."
+                buttonText="Reload"
+            />
+        )
+        if (toast.isActive(updateToastRef.current)) {
+            toast.update(updateToastRef.current, { render: bgUpdatedToastBody })
+        } else {
+            updateToastRef.current = toast.info(bgUpdatedToastBody, { autoClose: false, closeButton: false })
+        }
+    }, [bgUpdated])
 
     return (
         <Suspense fallback={null}>
