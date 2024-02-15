@@ -29,24 +29,24 @@ const UserPermissionList = () => {
         type: null,
     })
 
-    const { status, ..._urlFilters } = useUrlFilters<UserListSortableKeys, UserListFilter>({
+    const { status, ...urlFilters } = useUrlFilters<UserListSortableKeys, UserListFilter>({
         initialSortKey: UserListSortableKeys.email,
         parseSearchParams,
     })
 
     const updateStatusFilter = (_status: UserStatus[]) => {
-        _urlFilters.updateSearchParams({
+        urlFilters.updateSearchParams({
             status: _status,
         })
     }
 
-    const urlFilters = {
-        ..._urlFilters,
+    const _urlFilters = {
+        ...urlFilters,
         status,
         updateStatusFilter,
     }
 
-    const { pageSize, offset, searchKey, sortBy, sortOrder } = urlFilters
+    const { pageSize, offset, searchKey, sortBy, sortOrder } = _urlFilters
     const filterConfig = useMemo(
         () => ({
             size: pageSize,
@@ -116,10 +116,10 @@ const UserPermissionList = () => {
                 error={error}
                 getUserDataForExport={getUserDataForExport}
                 showLoadingState={showLoadingState}
-                totalCount={result?.totalCount}
+                totalCount={result?.totalCount ?? 0}
                 users={result?.users ?? []}
                 refetchUserPermissionList={reload}
-                urlFilters={urlFilters}
+                urlFilters={_urlFilters}
                 bulkSelectionModalConfig={bulkSelectionModalConfig}
                 setBulkSelectionModalConfig={setBulkSelectionModalConfig}
             />

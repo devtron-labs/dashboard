@@ -39,7 +39,7 @@ const UserPermissionRow = ({
     refetchUserPermissionList,
     isChecked = false,
     toggleChecked,
-    showCheckbox: _showCheckbox,
+    showCheckbox,
 }: UserPermissionRowProps) => {
     const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
@@ -47,7 +47,7 @@ const UserPermissionRow = ({
     const [isModalLoading, setIsModalLoading] = useState(false)
     const { handleBulkSelection, isBulkSelectionApplied } = useAuthorizationBulkSelection()
 
-    const showCheckbox = _showCheckbox || isChecked
+    const _showCheckbox = showCheckbox || isChecked
 
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen)
@@ -89,7 +89,7 @@ const UserPermissionRow = ({
             >
                 {/* Note (v2): no checkbox for admin/system */}
                 <div className="flex dc__content-start">
-                    {(!showCheckbox || isAdminOrSystemUser) && (
+                    {(!_showCheckbox || isAdminOrSystemUser) && (
                         <span
                             className={`icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4 ${
                                 isAdminOrSystemUser ? '' : 'dc__visible-hover--hide-child'
@@ -105,7 +105,7 @@ const UserPermissionRow = ({
                         <Checkbox
                             isChecked={isChecked}
                             onChange={handleChecked}
-                            rootClassName={`mb-0 ${showCheckbox ? '' : 'dc__visible-hover--child'}`}
+                            rootClassName={`mb-0 ${_showCheckbox ? '' : 'dc__visible-hover--child'}`}
                             value={CHECKBOX_VALUE.CHECKED}
                         />
                     )}
