@@ -187,11 +187,20 @@ export default function App() {
         },
     })
 
-    // function update() {
-    //     updateServiceWorker(true)
-    //     // Trigger page reload
-    //     //window.location.reload()
-    // }
+    function update() {
+        //updateServiceWorker(true)
+        // Trigger page reload
+        //window.location.reload()
+        if (!navigator.serviceWorker) return
+        try {
+            navigator.serviceWorker.getRegistration().then((reg) => {
+                if (reg.waiting) {
+                    reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+                    window.location.reload()
+                }
+            })
+        } catch (err) {}
+    }
 
     useEffect(() => {
         if (window.isSecureContext && navigator.serviceWorker) {
@@ -203,7 +212,7 @@ export default function App() {
     function onUpdate() {
         const updateToastBody = (
             <UpdateToast
-                onClick={() => updateServiceWorker(true)}
+                onClick={update}
                 text="You are viewing an outdated version of Devtron UI."
                 buttonText="Reload"
             />
