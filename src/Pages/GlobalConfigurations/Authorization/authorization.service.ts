@@ -56,7 +56,9 @@ export const getUserList = async (
     try {
         const {
             result: { users, totalCount },
-        } = (await get(getUrlWithSearchParams(Routes.USER, queryParams ?? {}), { signal })) as ResponseType<{
+        } = (await get(getUrlWithSearchParams(`${Routes.USER}/${Routes.API_VERSION_V2}`, queryParams ?? {}), {
+            signal,
+        })) as ResponseType<{
             users: UserDto[]
             totalCount: number
         }>
@@ -103,7 +105,10 @@ export const getPermissionGroupList = async (
     try {
         const {
             result: { roleGroups: permissionGroups, totalCount },
-        } = (await get(getUrlWithSearchParams(Routes.USER_ROLE_GROUP, queryParams ?? {}), { signal })) as ResponseType<{
+        } = (await get(
+            getUrlWithSearchParams(`${Routes.USER_ROLE_GROUP}/${Routes.API_VERSION_V2}`, queryParams ?? {}),
+            { signal },
+        )) as ResponseType<{
             roleGroups: PermissionGroupDto[]
             totalCount: number
         }>
