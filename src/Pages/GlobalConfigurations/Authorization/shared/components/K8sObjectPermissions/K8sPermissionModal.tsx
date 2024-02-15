@@ -7,13 +7,15 @@ import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add
 import K8sListItemCard from './K8sListItemCard'
 import { getPermissionObject } from './K8sPermissions.utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 
 export default function K8sPermissionModal({
     selectedPermissionAction,
-    k8sPermission,
-    setK8sPermission,
+    // Different from the k8sPermission in the context
+    updatedK8sPermission: k8sPermission,
     close,
 }: K8sPermissionModalType) {
+    const { setK8sPermission } = usePermissionConfiguration()
     const [k8PermissionList, setPermissionList] = useState([getPermissionObject(0, k8sPermission)])
     const [namespaceMapping, setNamespaceMapping] = useState<Record<string, OptionType[]>>()
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
@@ -145,7 +147,7 @@ export default function K8sPermissionModal({
                                 objectMapping={objectMapping}
                                 setObjectMapping={setObjectMapping}
                                 selectedPermissionAction={selectedPermissionAction}
-                                customRoles={customRoles}
+                                key={_k8sPermission.key}
                             />
                         )
                     })}

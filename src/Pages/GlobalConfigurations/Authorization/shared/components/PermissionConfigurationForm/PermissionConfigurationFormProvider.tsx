@@ -9,15 +9,15 @@ import {
     DirectPermissionsRoleFilter,
     EntityTypes,
 } from '../userGroups/userGroups.types'
-import { UserPermissionGroupsSelectorProps } from '../UserPermissionGroupsSelector/types'
 
 const context = createContext<
     {
         permissionType: PermissionType
         setPermissionType: (permissionType: PermissionType) => void
         data: User | PermissionGroup
-    } & Omit<AppPermissionsType, 'data'> &
-        Omit<UserPermissionGroupsSelectorProps, 'userData'>
+        userGroups: OptionType[]
+        setUserGroups: React.Dispatch<React.SetStateAction<OptionType[]>>
+    } & Omit<AppPermissionsType, 'data'>
 >(null)
 
 export const PermissionConfigurationFormProvider = ({

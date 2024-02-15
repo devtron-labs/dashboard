@@ -98,10 +98,6 @@ export interface K8sPermissionFilter {
     resource: any
     key?: number
 }
-export interface K8sPermission {
-    k8sPermission: any[]
-    setK8sPermission: (any) => void
-}
 
 export enum UserRoleType {
     SuperAdmin = 'SuperAdmin',
@@ -128,7 +124,6 @@ export interface K8sListItemCardType {
         action: string
         index: number
     }
-    customRoles: CustomRoleAndMeta
 }
 export interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -150,8 +145,7 @@ export interface K8sPermissionModalType {
         action: string
         index: number
     }
-    k8sPermission: K8sPermissionFilter
-    setK8sPermission: (...rest) => void
+    updatedK8sPermission: K8sPermissionFilter
     close: () => void
 }
 
@@ -160,7 +154,7 @@ export interface AppPermissionsType {
     directPermission: DirectPermissionsRoleFilter[]
     setDirectPermission: (...rest) => void
     chartPermission: ChartGroupPermissionsFilter
-    setChartPermission: (ChartGroupPermissionsFilter: ChartGroupPermissionsFilter) => void
+    setChartPermission: React.Dispatch<React.SetStateAction<ChartGroupPermissionsFilter>>
     k8sPermission?: K8sPermissionFilter[]
     setK8sPermission?: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
     currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
@@ -172,7 +166,6 @@ export interface AppPermissionsDetailType {
     AddNewPermissionRow: (
         accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
     ) => void
-    directPermission: DirectPermissionsRoleFilter[]
     selectedJobs?: string[]
 }
 
@@ -214,9 +207,4 @@ export interface DirectPermissionRow {
     handleDirectPermissionChange: (...rest) => void
     index: number
     removeRow: (index: number) => void
-}
-
-export interface ChartPermissionRow {
-    chartPermission: ChartGroupPermissionsFilter
-    setChartPermission: any
 }

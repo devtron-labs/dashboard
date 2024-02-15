@@ -20,22 +20,22 @@ import { getAllWorkflowsForAppNames } from '../../../../../services/service'
 import { DEFAULT_ENV } from '../../../../../components/app/details/triggerView/Constants'
 import { getJobs } from '../../../../../components/Jobs/Service'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
+import { usePermissionConfiguration } from './PermissionConfigurationForm'
 
 // TODO (v4): Remove these once the code is refactored
 const NAV_LINK_CLASS = 'tab-list__tab-link pt-8 pb-6 pl-0 pr-0 fs-13 lh-20 cn-9 dc__capitalize'
 const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase mb-0'
 
-export default function AppPermissions({
-    data = null,
-    directPermission,
-    setDirectPermission,
-    chartPermission,
-    setChartPermission,
-    k8sPermission,
-    setK8sPermission,
-    currentK8sPermissionRef,
-}: AppPermissionsType) {
+export default function AppPermissions() {
     const { serverMode } = useContext(mainContext)
+    const {
+        directPermission,
+        setDirectPermission,
+        setChartPermission,
+        setK8sPermission,
+        currentK8sPermissionRef,
+        data,
+    } = usePermissionConfiguration()
     const {
         appsList,
         fetchAppList,
@@ -46,6 +46,7 @@ export default function AppPermissions({
         appsListHelmApps,
         fetchJobsList,
         jobsList,
+        customRoles,
     } = useAuthorizationContext()
     const { isSuperAdmin: superAdmin } = useMainContext()
     const { url, path } = useRouteMatch()
@@ -83,7 +84,7 @@ export default function AppPermissions({
         }
         populateDataFromAPI(data.roleFilters ?? [])
     }, [data])
-    const { customRoles } = useAuthorizationContext()
+
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
         if (directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             const isJobs = directRolefilter.entity === EntityTypes.JOB
@@ -648,7 +649,6 @@ export default function AppPermissions({
                                 removeDirectPermissionRow={removeDirectPermissionRow}
                                 handleDirectPermissionChange={handleDirectPermissionChange}
                                 AddNewPermissionRow={AddNewPermissionRowLocal}
-                                directPermission={directPermission}
                             />
                         </Route>
                     )}
@@ -658,7 +658,6 @@ export default function AppPermissions({
                             removeDirectPermissionRow={removeDirectPermissionRow}
                             handleDirectPermissionChange={handleDirectPermissionChange}
                             AddNewPermissionRow={AddNewPermissionRowLocal}
-                            directPermission={directPermission}
                         />
                     </Route>
                     {serverMode !== SERVER_MODE.EA_ONLY && (
@@ -668,21 +667,17 @@ export default function AppPermissions({
                                 removeDirectPermissionRow={removeDirectPermissionRow}
                                 handleDirectPermissionChange={handleDirectPermissionChange}
                                 AddNewPermissionRow={AddNewPermissionRowLocal}
-                                directPermission={directPermission}
                             />
                         </Route>
                     )}
                     {superAdmin && (
                         <Route path={`${path}/kubernetes-objects`}>
-                            <K8sPermissons k8sPermission={k8sPermission} setK8sPermission={setK8sPermission} />
+                            <K8sPermissons />
                         </Route>
                     )}
                     {serverMode !== SERVER_MODE.EA_ONLY && (
                         <Route path={`${path}/chart-groups`}>
-                            <ChartPermission
-                                chartPermission={chartPermission}
-                                setChartPermission={setChartPermission}
-                            />
+                            <ChartPermission />
                         </Route>
                     )}
                     <Redirect
@@ -703,8 +698,9 @@ const AppPermissionDetail = ({
     handleDirectPermissionChange,
     removeDirectPermissionRow,
     AddNewPermissionRow,
-    directPermission,
 }: AppPermissionsDetailType) => {
+    const { directPermission } = usePermissionConfiguration()
+
     return (
         <>
             <div

@@ -12,8 +12,8 @@ import {
 import Select from 'react-select'
 import { User } from '../../../types'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
-import { UserPermissionGroupsSelectorProps } from './types'
 import { getPermissionGroupList } from '../../../authorization.service'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
@@ -31,7 +31,10 @@ const MultiValueContainer = (props) => <MultiValueChipContainer {...props} valid
 
 const LoadingIndicator = () => <Progressing />
 
-const UserPermissionGroupsSelector = ({ userData, userGroups, setUserGroups }: UserPermissionGroupsSelectorProps) => {
+const UserPermissionGroupsSelector = () => {
+    const { userGroups, setUserGroups, data: userData } = usePermissionConfiguration()
+    // Casting as if showUserPermissionGroupSelector is true than type for data is User
+    const _userData = userData as User
     const [isLoading, result, error, reloadGroupList] = useAsync(() =>
         getPermissionGroupList({
             showAll: true,
@@ -45,7 +48,7 @@ const UserPermissionGroupsSelector = ({ userData, userGroups, setUserGroups }: U
 
     useEffect(() => {
         if (userData) {
-            populateDataFromAPI(userData)
+            populateDataFromAPI(_userData)
         }
     }, [userData])
 

@@ -16,7 +16,7 @@ import {
     createClusterEnvGroup,
 } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
-import { ActionTypes, EntityTypes, DirectPermissionRow, ChartPermissionRow } from './userGroups.types'
+import { ActionTypes, EntityTypes, DirectPermissionRow } from './userGroups.types'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
 import { ReactComponent as CloseIcon } from '../../../../../../assets/icons/ic-close.svg'
 import {
@@ -26,6 +26,7 @@ import {
 } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
@@ -718,8 +719,12 @@ const AppOption = ({ props, permission }) => {
     )
 }
 
-export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
-    ({ chartPermission, setChartPermission }) => {
+export const ChartPermission: React.FC = React.memo(
+    () => {
+        const {
+            chartPermission,
+            setChartPermission,
+        } = usePermissionConfiguration()
         const { chartGroupsList } = useAuthorizationContext()
         function handleChartCreateChange(event) {
             if (event.target.checked) {
@@ -838,7 +843,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                             value: chartGroup.name,
                         }))}
                         onChange={(selected, actionMeta) =>
-                            setChartPermission((chartPermission) => ({ ...chartPermission, entityName: selected }))
+                            setChartPermission((_chartPermission) => ({ ..._chartPermission, entityName: selected as OptionType[] }))
                         }
                         className="mt-8 mb-8"
                         classNamePrefix="select"

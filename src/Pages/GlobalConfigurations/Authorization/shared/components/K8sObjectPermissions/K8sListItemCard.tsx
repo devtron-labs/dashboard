@@ -47,6 +47,7 @@ import {
 } from './K8sPermissions.utils'
 import { resourceKindOptionLabel } from './K8sPermission.component'
 import { ParseData } from '../userGroups/UserGroup'
+import { useAuthorizationContext } from '../../../AuthorizationProvider'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -61,8 +62,8 @@ export default function K8sListItemCard({
     objectMapping,
     setObjectMapping,
     selectedPermissionAction,
-    customRoles,
 }: K8sListItemCardType) {
+    const { customRoles } = useAuthorizationContext()
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
     const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()

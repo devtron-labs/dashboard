@@ -6,9 +6,14 @@ import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
 import { HEADER_OPTIONS } from './K8sPermissions.utils'
-import { K8sPermission } from '../userGroups/userGroups.types'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 
-export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPermission) {
+export default function K8sPermissons() {
+    const {
+        k8sPermission,
+        setK8sPermission,
+    } = usePermissionConfiguration()
+    
     const [togglePermissionModal, setPermissionToggleModal] = useState<boolean>()
     const [tempPermission, setTempPermission] = useState()
     const [selectedPermissionAction, setSelectedPermissionAction] = useState<{
@@ -126,8 +131,7 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
             {togglePermissionModal && (
                 <K8sPermissionModal
                     selectedPermissionAction={selectedPermissionAction}
-                    k8sPermission={tempPermission}
-                    setK8sPermission={setK8sPermission}
+                    updatedK8sPermission={tempPermission}
                     close={closeModal}
                 />
             )}
