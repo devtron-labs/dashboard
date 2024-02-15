@@ -915,7 +915,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             Helm Apps
                         </a>
                     </li>
-                    {window?._env_?.ENABLE_EXTERNAL_ARGO_CD && (
+                    {window._env_?.ENABLE_EXTERNAL_ARGO_CD && (
                         <li className="tab-list__tab">
                             <a
                                 className={`tab-list__tab-link ${
