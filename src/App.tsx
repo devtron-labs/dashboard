@@ -131,21 +131,6 @@ export default function App() {
         }
     }
 
-    useEffect(() => {
-        // If not K8S_CLIENT then validateToken otherwise directly redirect
-        if (!window._env_.K8S_CLIENT) {
-            // By Passing validations for direct email approval notifications
-            if (isDirectApprovalNotification) {
-                redirectToDirectApprovalNotification()
-            } else {
-                validation()
-            }
-        } else {
-            setValidating(false)
-            defaultRedirection()
-        }
-    }, [])
-
     function handleControllerChange() {
         if (refreshing.current) {
             return
@@ -159,10 +144,21 @@ export default function App() {
     }
 
     useEffect(() => {
-        if (!navigator.serviceWorker) {
-            return
+        if (navigator.serviceWorker) {
+            navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         }
-        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+        // If not K8S_CLIENT then validateToken otherwise directly redirect
+        if (!window._env_.K8S_CLIENT) {
+            // By Passing validations for direct email approval notifications
+            if (isDirectApprovalNotification) {
+                redirectToDirectApprovalNotification()
+            } else {
+                validation()
+            }
+        } else {
+            setValidating(false)
+            defaultRedirection()
+        }
     }, [])
 
     const {
@@ -200,11 +196,7 @@ export default function App() {
     useEffect(() => {
         if (window.isSecureContext && navigator.serviceWorker) {
             // check for sw updates on page change
-            navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
-            if (!needRefresh) {
-                return
-            }
-            update()
+            navigator.serviceWorker.getRegistrations().then((regs) => regs?.forEach((reg) => reg.update()))
         }
     }, [location])
 
