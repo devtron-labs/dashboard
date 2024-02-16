@@ -188,25 +188,10 @@ export default function App() {
     })
 
     function update() {
-        //updateServiceWorker(true)
+        updateServiceWorker(true)
         // Trigger page reload
-        //window.location.reload()
-        if (!navigator.serviceWorker) return
-        try {
-            navigator.serviceWorker.getRegistration().then((reg) => {
-                if (reg.waiting) {
-                    reg.waiting.postMessage({ type: 'SKIP_WAITING' })
-                }
-            })
-        } catch (err) {}
+        window.location.reload()
     }
-
-    useEffect(() => {
-        if (window.isSecureContext && navigator.serviceWorker) {
-            // check for sw updates on page change
-            navigator.serviceWorker.getRegistrations().then((regs) => regs?.forEach((reg) => reg.update()))
-        }
-    }, [location])
 
     function onUpdate() {
         const updateToastBody = (
