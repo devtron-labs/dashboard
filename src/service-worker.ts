@@ -1,7 +1,5 @@
-import { precacheAndRoute } from 'workbox-precaching'
-import { NavigationRoute, registerRoute, Route } from 'workbox-routing'
-import * as navigationPreload from 'workbox-navigation-preload'
-import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
+import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
+import { NavigationRoute, registerRoute } from 'workbox-routing'
 import { clientsClaim } from 'workbox-core'
 
 declare let self: ServiceWorkerGlobalScope
@@ -15,35 +13,11 @@ self.addEventListener('message', (event) => {
 
 clientsClaim()
 
-// Precache the manifest
+// self.__WB_MANIFEST is default injection point
 precacheAndRoute(self.__WB_MANIFEST)
 
-// Enable navigation preload
-navigationPreload.enable()
+// clean old assets
+// cleanupOutdatedCaches()
 
-// Create a new navigation route that uses the Network-first, falling back to
-// cache strategy for navigation requests with its own cache. This route will be
-// handled by navigation preload. The NetworkOnly strategy will work as well.
-const navigationRoute = new NavigationRoute(
-    new NetworkFirst({
-        cacheName: 'navigations',
-    }),
-)
-
-// Register the navigation route
-registerRoute(navigationRoute)
-
-// Create a route for image, script, or style requests that use a
-// stale-while-revalidate strategy. This route will be unaffected
-// by navigation preload.
-const staticAssetsRoute = new Route(
-    ({ request }) => {
-        return ['image', 'script', 'style'].includes(request.destination)
-    },
-    new StaleWhileRevalidate({
-        cacheName: 'static-assets',
-    }),
-)
-
-// Register the route handling static assets
-registerRoute(staticAssetsRoute)
+// to allow work offline
+registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')))
