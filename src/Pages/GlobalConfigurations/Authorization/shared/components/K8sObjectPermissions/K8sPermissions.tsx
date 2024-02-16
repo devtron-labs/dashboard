@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import K8sPermissionModal from './K8sPermissionModal'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-close.svg'
+import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
 import { HEADER_OPTIONS } from './K8sPermissions.utils'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
@@ -105,12 +105,14 @@ const K8sPermissions = () => {
                                         </div>
                                     </Tippy>
                                     <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                        <div className="flex">
-                                            <Delete
-                                                className="icon-dim-16 fcn-6 cursor"
-                                                onClick={() => deletePermission(index)}
-                                            />
-                                        </div>
+                                        <button
+                                            type="button"
+                                            className="dc__transparent flex"
+                                            onClick={() => deletePermission(index)}
+                                            aria-label="Delete row"
+                                        >
+                                            <TrashIcon className="scn-6 icon-dim-16 icon-delete" />
+                                        </button>
                                     </Tippy>
                                 </span>
                             </div>

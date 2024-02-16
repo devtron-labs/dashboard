@@ -12,7 +12,7 @@ import {
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
 import { EntityTypes, DirectPermissionRow } from '../userGroups/userGroups.types'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
-import { ReactComponent as CloseIcon } from '../../../../../../assets/icons/ic-close.svg'
+import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
@@ -611,7 +611,15 @@ const DirectPermission = ({
                     }}
                 />
             </div>
-            <CloseIcon className="pointer mt-6" onClick={() => removeRow(index)} style={{ order: 5 }} />
+            <button
+                type="button"
+                className="dc__transparent flex"
+                onClick={() => removeRow(index)}
+                aria-label="Delete row"
+                style={{ order: 5 }}
+            >
+                <TrashIcon className="scn-6 icon-dim-16 icon-delete" />
+            </button>
         </>
     )
 }
