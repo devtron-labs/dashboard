@@ -309,7 +309,7 @@ const DirectPermission = ({
     const formatOptionLabelClusterEnv = (option, { inputValue }) => (
         <div
             className={`flex left column ${
-                option.value && (option.value.startsWith('#') || option.value.startsWith('*')) && 'cluster-label-all'
+                option.value && (option.value.startsWith('#') || option.value.startsWith('*')) && 'fs-13 fw-6 cn-9'
             }`}
         >
             {!inputValue ? (

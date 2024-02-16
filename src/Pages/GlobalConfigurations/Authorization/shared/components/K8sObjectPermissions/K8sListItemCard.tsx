@@ -314,7 +314,7 @@ export default function K8sListItemCard({
 
     return (
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
-            <div className="cn-6 mb-6 flex dc__content-space">
+            <div className="cn-7 fs-13 fw-4 lh-20 mb-6 flex dc__content-space">
                 <span>Cluster</span>
                 {!selectedPermissionAction && (
                     <span className="flex">
@@ -337,7 +337,6 @@ export default function K8sListItemCard({
             <div className="mb-16">
                 <ReactSelect
                     placeholder="Select cluster"
-                    classNamePrefix="k8s-permission-select-cluster-dropdown"
                     options={clusterOptions}
                     value={k8sPermission?.cluster}
                     onChange={onClusterChange}
@@ -351,11 +350,10 @@ export default function K8sListItemCard({
             </div>
             {k8sPermission?.cluster && (
                 <>
-                    <div className="cn-6 mb-6">Namespace</div>
+                    <div className="cn-7 fs-13 fw-4 lh-20 mb-6">Namespace</div>
                     <div className="mb-16">
                         <CreatableSelect
                             placeholder="Select namespace"
-                            classNamePrefix="k8s-permission-select-namespace-dropdown"
                             options={namespaceMapping?.[k8sPermission?.cluster?.value]}
                             value={k8sPermission.namespace}
                             name="namespace"
@@ -371,11 +369,10 @@ export default function K8sListItemCard({
                     </div>
                     <div className="flexbox w-100">
                         <div className="w-100 mr-6">
-                            <div className="cn-6 mb-6">API Group</div>
+                            <div className="cn-7 fs-13 fw-4 lh-20 mb-6">API Group</div>
                             <div className="mb-16">
                                 <ReactSelect
                                     placeholder="Select API group"
-                                    classNamePrefix="k8s-permission-select-api-group-dropdown"
                                     options={apiGroupMapping?.[k8sPermission.key]}
                                     name="Api group"
                                     isDisabled={!k8sPermission.namespace}
@@ -390,11 +387,10 @@ export default function K8sListItemCard({
                             </div>
                         </div>
                         <div className="w-100 ml-6">
-                            <div className="cn-6 mb-6">Kind</div>
+                            <div className="cn-7 fs-13 fw-4 lh-20 mb-6">Kind</div>
                             <div className="mb-16">
                                 <ReactSelect
                                     placeholder="Select kind"
-                                    classNamePrefix="k8s-permission-select-kind-dropdown"
                                     options={kindMapping?.[k8sPermission.key]}
                                     isDisabled={!k8sPermission.group}
                                     value={k8sPermission.kind}
@@ -411,7 +407,7 @@ export default function K8sListItemCard({
                             </div>
                         </div>
                     </div>
-                    <div className="cn-6 mb-6">Resource name</div>
+                    <div className="cn-7 fs-13 fw-4 lh-20 mb-6">Resource name</div>
                     <div className="mb-16">
                         <CreatableSelect
                             placeholder="Select resource"
@@ -476,11 +472,9 @@ export default function K8sListItemCard({
                             iconClass="icon-dim-20"
                         />
                     )}
-                    <div className="cn-6 mb-6">Role</div>
+                    <div className="cn-7 fs-13 fw-4 lh-20 mb-6">Role</div>
                     <div className="mb-16 w-300">
                         <ReactSelect
-                            className="basic-multi-select"
-                            classNamePrefix="k8s-permission-select-role-dropdown"
                             placeholder="Select role"
                             options={k8sOptions}
                             value={k8sPermission.action}

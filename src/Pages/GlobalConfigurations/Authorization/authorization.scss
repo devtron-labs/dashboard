@@ -1,11 +1,3 @@
-.Select-menu-outer {
-    z-index: 999 !important;
-}
-
-.Select__menu-list {
-    min-height: 200px !important;
-}
-
 .unassigned-project-border {
     height: 3px;
     width: 100%;
@@ -36,16 +28,6 @@
         background-color: #ffd597;
         font-weight: 600;
     }
-}
-
-.select--is-disabled {
-    pointer-events: auto !important;
-}
-
-.cluster-label-all {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--N900);
 }
 
 .kubernetes-header {
