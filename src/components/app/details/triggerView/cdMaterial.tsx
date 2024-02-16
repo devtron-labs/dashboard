@@ -186,7 +186,7 @@ export default function CDMaterial({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === "review-config"
+    const showConfigDiffView = searchParams.mode === "review-config" && searchParams.deploy && searchParams.config
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -201,7 +201,7 @@ export default function CDMaterial({
     }
 
     const getWfrId = (initSelectedMaterial?: CDMaterialType) => {
-        if (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
+        if (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
             return state.recentDeploymentConfig.wfrId
         }
 
@@ -406,7 +406,10 @@ export default function CDMaterial({
     }, [material])
 
 const getInitialSelectedConfigToDeploy = () => {
-    if (searchParams.deploy === DeploymentWithConfigType.LAST_SAVED_CONFIG) {
+    if (
+        searchParams.deploy === DeploymentWithConfigType.LAST_SAVED_CONFIG ||
+        (materialType === MATERIAL_TYPE.inputMaterialList && !searchParams.deploy)
+    ) {
         return LAST_SAVED_CONFIG_OPTION
     }
     if (
@@ -415,10 +418,7 @@ const getInitialSelectedConfigToDeploy = () => {
     ) {
         return SPECIFIC_TRIGGER_CONFIG_OPTION
     }
-    if (
-        searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG ||
-        (materialType === MATERIAL_TYPE.inputMaterialList && !searchParams.deploy)
-    ) {
+    if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
         return LATEST_TRIGGER_CONFIG_OPTION
     }
 }
@@ -431,6 +431,15 @@ const getInitialSelectedConfigToDeploy = () => {
                 getInitialSelectedConfigToDeploy(),
         }))
     }, [materialType])
+
+    useEffect(() => {
+        if (searchParams.deploy) {
+            setState((prevState) => ({
+                ...prevState,
+                selectedConfigToDeploy: getInitialSelectedConfigToDeploy(),
+            }))
+        }
+    }, [searchParams.deploy])
 
     useEffect(() => {
         setState((prevState) => ({
@@ -454,7 +463,7 @@ const getInitialSelectedConfigToDeploy = () => {
     const checkForConfigDiff = async (selectedMaterial: CDMaterialType) => {
         if (state.isRollbackTrigger && state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
-                state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+                state.selectedConfigToDeploy?.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
 
             setState((prevState) => ({
                 ...prevState,
@@ -740,17 +749,17 @@ const getInitialSelectedConfigToDeploy = () => {
     ]
 
     const isConfigPresent = () =>
-        (state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+        (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
             state.specificDeploymentConfig?.deploymentTemplate &&
             state.specificDeploymentConfig.pipelineStrategy) ||
-        (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LAST_SAVED_CONFIG &&
+        (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LAST_SAVED_CONFIG &&
             state.latestDeploymentConfig?.deploymentTemplate &&
             state.latestDeploymentConfig.pipelineStrategy)
 
     const canReviewConfig = () =>
         (state.recentDeploymentConfig?.deploymentTemplate &&
             state.recentDeploymentConfig.pipelineStrategy &&
-            (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG ||
+            (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG ||
                 isConfigPresent())) ||
         !state.recentDeploymentConfig
 
@@ -774,7 +783,7 @@ const getInitialSelectedConfigToDeploy = () => {
     }
 
     const canDeployWithConfig = () =>
-        (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+        (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
             state.recentDeploymentConfig?.deploymentTemplate &&
             state.recentDeploymentConfig.pipelineStrategy) ||
         isConfigPresent()
@@ -786,13 +795,13 @@ const getInitialSelectedConfigToDeploy = () => {
             !selectedImage ||
             !state.areMaterialsPassingFilters ||
             (state.isRollbackTrigger && (state.checkingDiff || !canDeployWithConfig())) ||
-            (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+            (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
                 !state.recentDeploymentConfig)
         )
     }
 
     const getBaseTemplateConfiguration = (selected = null) => {
-        const selectedConfig = selected?.value || state.selectedConfigToDeploy.value
+        const selectedConfig = selected?.value || state.selectedConfigToDeploy?.value
         return selectedConfig === DeploymentWithConfigType.LAST_SAVED_CONFIG
             ? state.latestDeploymentConfig
             : selectedConfig === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
@@ -810,21 +819,8 @@ const getInitialSelectedConfigToDeploy = () => {
         })
     }
 
-    const getDeploymentConfigSelectedValue = () => {
-        if (searchParams.deploy === DeploymentWithConfigType.LAST_SAVED_CONFIG) {
-            return getDeployConfigOptions(state.isRollbackTrigger, state.recentDeploymentConfig !== null)[0].options[0]
-        }
-        if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
-            return getDeployConfigOptions(state.isRollbackTrigger, state.recentDeploymentConfig !== null)[0].options[1]
-        }
-
-        if( searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG){
-            return getDeployConfigOptions(state.isRollbackTrigger, state.recentDeploymentConfig !== null)[0].options[2]
-        }
-    }
-
     const handleConfigSelection = (selected) => {
-        if (selected?.value !== state.selectedConfigToDeploy.value) {
+        if (selected?.value !== state.selectedConfigToDeploy?.value) {
             const _diffOptions = checkForDiff(state.recentDeploymentConfig, getBaseTemplateConfiguration(selected))
             setState((prevState) => ({
                 ...prevState,
@@ -1901,7 +1897,7 @@ const getInitialSelectedConfigToDeploy = () => {
     const renderConfigDiffStatus = () => {
         const _canReviewConfig = canReviewConfig() && state.recentDeploymentConfig !== null
         const isLastDeployedOption =
-            state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
+            state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
         const statusColorClasses = state.checkingDiff
             ? 'cn-0 bcb-5'
             : !_canReviewConfig
@@ -1994,7 +1990,7 @@ const getInitialSelectedConfigToDeploy = () => {
             <>
                 <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
                 <p className="fs-12 fw-4 lh-18 m-0">
-                    {state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+                    {state.selectedConfigToDeploy?.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
                     (!state.specificDeploymentConfig ||
                         !state.specificDeploymentConfig.deploymentTemplate ||
                         !state.specificDeploymentConfig.pipelineStrategy)
@@ -2268,7 +2264,7 @@ const getInitialSelectedConfigToDeploy = () => {
                 {renderTriggerBody(isApprovalConfigured)}
             </>
         ) : (
-            renderCDModal(isApprovalConfigured)
+           renderCDModal(isApprovalConfigured)
         )
     }
 
