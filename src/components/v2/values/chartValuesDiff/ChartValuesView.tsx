@@ -1498,6 +1498,13 @@ const ChartValuesView = ({
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
         const wrapperClassName = getDynamicWrapperClassName()
+        const showDeploymentTools =
+            !isExternalApp &&
+            !isCreateValueView &&
+            !isVirtualEnvironmentOnSelector &&
+            (isDeployChartView || allowedDeploymentTypes.length > 0) &&
+            !appDetails?.isVirtualEnvironment &&
+            !commonState.installedConfig?.isOCICompliantChart
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
@@ -1587,42 +1594,30 @@ const ChartValuesView = ({
                                 isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-                            !isExternalApp &&
-                            !isCreateValueView &&
-                            !isVirtualEnvironmentOnSelector &&
-                            (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment &&
-                            !commonState.installedConfig?.isOCICompliantChart && (
-                                <DeploymentAppSelector
-                                    commonState={commonState}
-                                    isUpdate={isUpdate}
-                                    handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
-                                    isDeployChartView={isDeployChartView}
-                                    allowedDeploymentTypes={allowedDeploymentTypes}
-                                    gitRepoURL={installedConfigFromParent['gitRepoURL']}
-                                />
-                            )}
-                        {allowedCustomBool &&
-                            !isExternalApp &&
-                            !isCreateValueView &&
-                            !isVirtualEnvironmentOnSelector &&
-                            (isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment &&
-                            !commonState.installedConfig?.isOCICompliantChart && (
-                                <GitOpsDrawer
-                                    commonState={commonState}
-                                    deploymentAppType={commonState.deploymentAppType}
-                                    allowedDeploymentTypes={allowedDeploymentTypes}
-                                    staleData={staleData}
-                                    setStaleData={setStaleData}
-                                    dispatch={dispatch}
-                                    isDrawerOpen={isDrawerOpen}
-                                    handleDrawerState={handleDrawerState}
-                                    showRepoSelector={showRepoSelector}
-                                    allowedCustomBool={allowedCustomBool}
-                                />
-                            )}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
+                            <DeploymentAppSelector
+                                commonState={commonState}
+                                isUpdate={isUpdate}
+                                handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                isDeployChartView={isDeployChartView}
+                                allowedDeploymentTypes={allowedDeploymentTypes}
+                                gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                            />
+                        )}
+                        {allowedCustomBool && showDeploymentTools && (
+                            <GitOpsDrawer
+                                commonState={commonState}
+                                deploymentAppType={commonState.deploymentAppType}
+                                allowedDeploymentTypes={allowedDeploymentTypes}
+                                staleData={staleData}
+                                setStaleData={setStaleData}
+                                dispatch={dispatch}
+                                isDrawerOpen={isDrawerOpen}
+                                handleDrawerState={handleDrawerState}
+                                showRepoSelector={showRepoSelector}
+                                allowedCustomBool={allowedCustomBool}
+                            />
+                        )}
                         {/**
                          * ChartRepoSelector will be displayed only when,
                          * - It's not a deploy chart view
