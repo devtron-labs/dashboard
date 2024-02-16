@@ -12,7 +12,6 @@ export const allEnvironmentsOption = {
 }
 
 // TODO (v4): Remove these once the code is refactored
-export const NAV_LINK_CLASS = 'tab-list__tab-link pt-8 pb-6 pl-0 pr-0 fs-13 lh-20 cn-9 dc__capitalize'
 export const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase mb-0'
 
 export const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {

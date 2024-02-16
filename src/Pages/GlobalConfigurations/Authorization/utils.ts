@@ -15,6 +15,7 @@ import { ACCESS_TYPE_MAP, Moment12HourFormat, SERVER_MODE, ZERO_TIME_STRING } fr
 import { PermissionGroup, User, UserCreateOrUpdatePayload, UserDto } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 import { useAuthorizationBulkSelection } from './shared/components/BulkSelection'
+import { CONFIG_APPROVER_ACTION } from './shared/components/userGroups/UserGroup'
 
 export const transformUserResponse = (_user: UserDto): User => {
     const { lastLoginTime, timeoutWindowExpression, ...user } = _user
@@ -254,4 +255,25 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
     }
 
     return isComplete
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parseData(dataList: any[], entity: string, accessType?: string) {
+    switch (entity) {
+        case EntityTypes.DIRECT:
+            if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                return dataList.filter(
+                    (role) =>
+                        role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
+                )
+            }
+            return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
+
+        case EntityTypes.CLUSTER:
+        case EntityTypes.CHART_GROUP:
+        case EntityTypes.JOB:
+            return dataList.filter((role) => role.entity === entity)
+        default:
+            throw new Error(`Unknown entity ${entity}`)
+    }
 }

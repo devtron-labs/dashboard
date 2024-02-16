@@ -46,8 +46,8 @@ import {
     resourceMultiSelectstyles,
 } from './K8sPermissions.utils'
 import { resourceKindOptionLabel } from './K8sPermission.component'
-import { ParseData } from '../userGroups/UserGroup'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
+import { parseData } from '../../../utils'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -310,7 +310,7 @@ export default function K8sListItemCard({
 
     const k8sMultiValueContainer = (): boolean =>  k8sPermission.resource.some((item) => item.value === '*')
 
-    const k8sOptions = ParseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
+    const k8sOptions = parseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
         label: role.roleDisplayName,
         value: role.roleName,
         infoText: role.roleDescription,

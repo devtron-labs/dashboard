@@ -109,3 +109,19 @@ export const clusterValueContainer = (props) => {
         </components.ValueContainer>
     )
 }
+
+export const ProjectValueContainer = (props) => {
+    const value = props.getValue()
+    return (
+        <components.ValueContainer {...props}>
+            {value[0] ? (
+                <>
+                    {!props.selectProps.menuIsOpen && value[0].value}
+                    {React.cloneElement(props.children[1])}
+                </>
+            ) : (
+                props.children
+            )}
+        </components.ValueContainer>
+    )
+}

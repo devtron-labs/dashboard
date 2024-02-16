@@ -16,14 +16,10 @@ import { ReactComponent as CloseIcon } from '../../../../../../assets/icons/ic-c
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import {
-    CONFIG_APPROVER_ACTION,
-    ParseData,
-    projectValueContainer,
-    tempMultiSelectStyles,
-} from '../userGroups/UserGroup'
-import { AppOption, clusterValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
+import { CONFIG_APPROVER_ACTION, tempMultiSelectStyles } from '../userGroups/UserGroup'
+import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import { allApplicationsOption, allEnvironmentsOption } from './constants'
+import { parseData } from '../../../utils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 // TODO (v3): Move the type to the immediate file + AppPermission
@@ -395,7 +391,7 @@ const DirectPermission = ({
                     ClearIndicator: null,
                     IndicatorSeparator: null,
                     Option: singleOption,
-                    ValueContainer: projectValueContainer,
+                    ValueContainer: ProjectValueContainer,
                 }}
                 menuPlacement="auto"
                 styles={{
@@ -609,7 +605,7 @@ const DirectPermission = ({
                     value={primaryActionRole}
                     name="action"
                     placeholder="Select role"
-                    options={ParseData(possibleRoles, permission.entity, permission.accessType)}
+                    options={parseData(possibleRoles, permission.entity, permission.accessType)}
                     className="basic-multi-select"
                     classNamePrefix="select-user-role-dropdown"
                     formatOptionLabel={formatOptionLabel}

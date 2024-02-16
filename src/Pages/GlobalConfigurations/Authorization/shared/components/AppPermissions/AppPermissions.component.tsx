@@ -3,7 +3,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import { GenericSectionErrorState, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { APPROVER_ACTION, CONFIG_APPROVER_ACTION, ChartPermission } from '../userGroups/UserGroup'
+import { APPROVER_ACTION, CONFIG_APPROVER_ACTION } from '../userGroups/UserGroup'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../../../../../config'
 import {
     ActionTypes,
@@ -29,13 +29,10 @@ import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { getProjectList } from '../../../../../../components/project/service'
 import { getChartGroups } from '../../../../../../components/charts/charts.service'
-import {
-    emptyDirectPermissionDevtronApps,
-    emptyDirectPermissionHelmApps,
-    emptyDirectPermissionJobs,
-    NAV_LINK_CLASS,
-} from './constants'
+import { emptyDirectPermissionDevtronApps, emptyDirectPermissionHelmApps, emptyDirectPermissionJobs } from './constants'
 import AppPermissionDetail from './AppPermissionDetail'
+import { ChartPermission } from '../ChartPermission'
+import { getAppPermissionDetailConfig, getNavLinksConfig } from './utils'
 
 const AppPermissions = () => {
     const { serverMode } = useContext(mainContext)
@@ -71,6 +68,9 @@ const AppPermissions = () => {
     const environmentsList = configData?.[1]?.result ?? []
     const chartGroupsList = configData?.[2]?.result?.groups ?? []
     const envClustersList = configData?.[3]?.result ?? []
+
+    const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
+    const navLinksConfig = getNavLinksConfig(serverMode, superAdmin)
 
     async function fetchJobsList(projectIds: number[]) {
         const missingProjects = projectIds.filter((projectId) => !jobsList.has(projectId))
@@ -744,114 +744,42 @@ const AppPermissions = () => {
     return (
         <div className="flexbox-col dc__gap-12">
             <ul role="tablist" className="tab-list dc__border-bottom">
-                {serverMode !== SERVER_MODE.EA_ONLY && (
-                    // TODO (v3): Use array based map
-                    <li className="tab-list__tab">
-                        <NavLink
-                            to={_getNavLinkUrl('devtron-apps')}
-                            data-testid="devtron-app-permission-tab"
-                            className={NAV_LINK_CLASS}
-                            activeClassName="active"
-                        >
-                            Devtron Apps
-                        </NavLink>
-                    </li>
-                )}
-                <li className="tab-list__tab">
-                    <NavLink
-                        to={_getNavLinkUrl('helm-apps')}
-                        data-testid="helm-app-permission-tab"
-                        className={NAV_LINK_CLASS}
-                        activeClassName="active"
-                    >
-                        Helm Apps
-                    </NavLink>
-                </li>
-                {serverMode !== SERVER_MODE.EA_ONLY && (
-                    <li className="tab-list__tab">
-                        <NavLink
-                            to={_getNavLinkUrl('jobs')}
-                            data-testid="jobs-permission-tab"
-                            className={NAV_LINK_CLASS}
-                            activeClassName="active"
-                        >
-                            Jobs
-                        </NavLink>
-                    </li>
-                )}
-
-                {superAdmin && (
-                    <li className="tab-list__tab">
-                        <NavLink
-                            to={_getNavLinkUrl('kubernetes-objects')}
-                            data-testid="kube-resource-permission-tab"
-                            className={NAV_LINK_CLASS}
-                            activeClassName="active"
-                        >
-                            Kubernetes Resources
-                        </NavLink>
-                    </li>
-                )}
-                {serverMode !== SERVER_MODE.EA_ONLY && (
-                    <li className="tab-list__tab">
-                        <NavLink
-                            to={_getNavLinkUrl('chart-groups')}
-                            data-testid="chart-group-permission-tab"
-                            className={NAV_LINK_CLASS}
-                            activeClassName="active"
-                        >
-                            Chart Groups
-                        </NavLink>
-                    </li>
+                {navLinksConfig.map(
+                    ({ isHidden, label, tabName }) =>
+                        !isHidden && (
+                            <li className="tab-list__tab" key={tabName}>
+                                <NavLink
+                                    to={_getNavLinkUrl(tabName)}
+                                    data-testid={tabName}
+                                    className="tab-list__tab-link pt-8 pb-6 pl-0 pr-0 fs-13 lh-20 cn-9 dc__capitalize"
+                                    activeClassName="active"
+                                >
+                                    {label}
+                                </NavLink>
+                            </li>
+                        ),
                 )}
             </ul>
             <div>
                 <Switch>
-                    {serverMode !== SERVER_MODE.EA_ONLY && (
-                        <Route path={`${path}/devtron-apps`}>
-                            <AppPermissionDetail
-                                accessType={ACCESS_TYPE_MAP.DEVTRON_APPS}
-                                removeDirectPermissionRow={removeDirectPermissionRow}
-                                handleDirectPermissionChange={handleDirectPermissionChange}
-                                AddNewPermissionRow={addNewPermissionRowLocal}
-                                appsListHelmApps={appsListHelmApps}
-                                jobsList={jobsList}
-                                appsList={appsList}
-                                projectsList={projectsList}
-                                environmentsList={environmentsList}
-                                envClustersList={envClustersList}
-                            />
-                        </Route>
-                    )}
-                    <Route path={`${path}/helm-apps`}>
-                        <AppPermissionDetail
-                            accessType={ACCESS_TYPE_MAP.HELM_APPS}
-                            removeDirectPermissionRow={removeDirectPermissionRow}
-                            handleDirectPermissionChange={handleDirectPermissionChange}
-                            AddNewPermissionRow={addNewPermissionRowLocal}
-                            appsListHelmApps={appsListHelmApps}
-                            jobsList={jobsList}
-                            appsList={appsList}
-                            projectsList={projectsList}
-                            environmentsList={environmentsList}
-                            envClustersList={envClustersList}
-                        />
-                    </Route>
-                    {serverMode !== SERVER_MODE.EA_ONLY && (
-                        <Route path={`${path}/jobs`}>
-                            <AppPermissionDetail
-                                accessType={ACCESS_TYPE_MAP.JOBS}
-                                removeDirectPermissionRow={removeDirectPermissionRow}
-                                handleDirectPermissionChange={handleDirectPermissionChange}
-                                AddNewPermissionRow={addNewPermissionRowLocal}
-                                appsListHelmApps={appsListHelmApps}
-                                jobsList={jobsList}
-                                appsList={appsList}
-                                projectsList={projectsList}
-                                environmentsList={environmentsList}
-                                envClustersList={envClustersList}
-                            />
-                        </Route>
+                    {appPermissionDetailConfig.map(
+                        ({ shouldRender = true, accessType, url: _url, id }) =>
+                            shouldRender && (
+                                <Route path={_url} key={id}>
+                                    <AppPermissionDetail
+                                        accessType={accessType}
+                                        removeDirectPermissionRow={removeDirectPermissionRow}
+                                        handleDirectPermissionChange={handleDirectPermissionChange}
+                                        AddNewPermissionRow={addNewPermissionRowLocal}
+                                        appsListHelmApps={appsListHelmApps}
+                                        jobsList={jobsList}
+                                        appsList={appsList}
+                                        projectsList={projectsList}
+                                        environmentsList={environmentsList}
+                                        envClustersList={envClustersList}
+                                    />
+                                </Route>
+                            ),
                     )}
                     {superAdmin && (
                         <Route path={`${path}/kubernetes-objects`}>
