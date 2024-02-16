@@ -1,5 +1,5 @@
 import React from 'react'
-import { multiSelectStyles } from '../../../../../../components/v2/common/ReactSelectCustomization'
+import { authorizationSelectStyles } from '../userGroups/UserGroup'
 import { ActionTypes, ACTION_LABEL, EntityTypes, K8sPermissionFilter } from '../userGroups/userGroups.types'
 
 export const apiGroupAll = (permission, isLabel = false) => {
@@ -56,74 +56,16 @@ export const getPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter
     }
 }
 
-export const k8sPermissionStyle = {
-    ...multiSelectStyles,
-    control: (base, state) => ({
-        ...base,
-        minHeight: '36px',
-        border: state.isDisabled ? '1px solid #d6dbdf' : state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
-        fontWeight: '400',
-        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N000)',
-        pointerEvents: 'auto',
-        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: '0 8px',
-    }),
-}
-
 export const k8sRoleSelectionStyle = {
-    ...multiSelectStyles,
+    ...authorizationSelectStyles,
     option: (base, state) => ({
-        ...base,
-        borderRadius: '4px',
-        color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
-        fontWeight: state.isSelected ? 600 : 'normal',
+        ...authorizationSelectStyles.option(base, state),
         marginRight: '8px',
     }),
-    control: (base, state) => ({
-        ...base,
-        minHeight: '36px',
-        fontWeight: '400',
-        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
-        pointerEvents: 'auto',
-        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: '0 8px',
-    }),
     valueContainer: (base, state) => ({
-        ...base,
+        ...authorizationSelectStyles.valueContainer(base),
         display: 'flex',
         color: state.selectProps.menuIsOpen ? 'var(--N500)' : base.color,
-    }),
-}
-
-export const resourceMultiSelectstyles = {
-    ...multiSelectStyles,
-    control: (base, state) => ({
-        ...base,
-        fontWeight: '400',
-        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N00)',
-        pointerEvents: 'auto',
-        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-    }),
-    dropdownIndicator: (base, state) => ({
-        ...base,
-        transition: 'all .2s ease',
-        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-    }),
-    multiValue: (base) => ({
-        ...base,
-        border: '1px solid var(--N200)',
-        borderRadius: '4px',
-        background: 'white',
-        height: '30px',
-        margin: '4px 8px 4px 0',
-        padding: '1px',
     }),
 }
 

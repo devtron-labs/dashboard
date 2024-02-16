@@ -39,15 +39,11 @@ import {
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/info-filled.svg'
-import {
-    k8sPermissionStyle,
-    k8sRoleSelectionStyle,
-    multiSelectAllState,
-    resourceMultiSelectstyles,
-} from './K8sPermissions.utils'
+import { k8sRoleSelectionStyle, multiSelectAllState } from './K8sPermissions.utils'
 import { resourceKindOptionLabel } from './K8sPermission.component'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { parseData } from '../../../utils'
+import { authorizationSelectStyles } from '../userGroups/UserGroup'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -308,7 +304,7 @@ export default function K8sListItemCard({
         handleK8sPermission(action, index)
     }
 
-    const k8sMultiValueContainer = (): boolean =>  k8sPermission.resource.some((item) => item.value === '*')
+    const k8sMultiValueContainer = (): boolean => k8sPermission.resource.some((item) => item.value === '*')
 
     const k8sOptions = parseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
         label: role.roleDisplayName,
@@ -350,7 +346,7 @@ export default function K8sListItemCard({
                         IndicatorSeparator: null,
                         Option: SingleSelectOption,
                     }}
-                    styles={k8sPermissionStyle}
+                    styles={authorizationSelectStyles}
                 />
             </div>
             {k8sPermission?.cluster && (
@@ -370,7 +366,7 @@ export default function K8sListItemCard({
                                 Option: SingleSelectOption,
                                 MenuList: (props) => menuComponent(props, 'namespaces'),
                             }}
-                            styles={k8sPermissionStyle}
+                            styles={authorizationSelectStyles}
                         />
                     </div>
                     <div className="flexbox w-100">
@@ -389,7 +385,7 @@ export default function K8sListItemCard({
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
                                     }}
-                                    styles={k8sPermissionStyle}
+                                    styles={authorizationSelectStyles}
                                 />
                             </div>
                         </div>
@@ -442,7 +438,34 @@ export default function K8sListItemCard({
                             closeMenuOnSelect={false}
                             isMulti
                             hideSelectedOptions={false}
-                            styles={resourceMultiSelectstyles}
+                            styles={{
+                                ...authorizationSelectStyles,
+                                control: (base, state) => ({
+                                    ...authorizationSelectStyles.control(base, state),
+                                    height: 'auto',
+                                    minHeight: '36px',
+                                }),
+                                valueContainer: (base) => ({
+                                    ...authorizationSelectStyles.valueContainer(base),
+                                    display: 'flex',
+                                    columnGap: '8px',
+                                    rowGap: '4px',
+                                }),
+                                multiValue: (base) => ({
+                                    ...base,
+                                    border: '1px solid var(--N200)',
+                                    borderRadius: '4px',
+                                    background: 'white',
+                                    height: '24px',
+                                    padding: '2px 6px',
+                                    fontSize: '12px',
+                                    lineHeight: '20px',
+                                }),
+                                clearIndicator: (base) => ({
+                                    ...base,
+                                    padding: 0,
+                                }),
+                            }}
                         />
                     </div>
                     {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (
