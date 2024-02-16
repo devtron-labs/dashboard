@@ -1,7 +1,15 @@
 /* eslint-disable no-nested-ternary */
 
 import React, { useMemo } from 'react'
-import { Option, MultiValueContainer, MultiValueRemove, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Option,
+    MultiValueContainer,
+    MultiValueRemove,
+    OptionType,
+    Checkbox,
+    noop,
+    CHECKBOX_VALUE,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import { ActionTypes, ChartPermissionRow } from '../userGroups/userGroups.types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
@@ -67,19 +75,13 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
                 <div className={PERMISSION_LABEL_CLASS}>View</div>
                 <div className={PERMISSION_LABEL_CLASS}>Create</div>
                 <div className={PERMISSION_LABEL_CLASS}>Edit</div>
-                <div>
-                    {/* TODO (v3): Use checkbox instead  */}
-                    <input type="checkbox" checked disabled className="h-16 w-16" />
-                </div>
-                <div>
-                    <input
-                        data-testid="chart-group-create-permission-checkbox"
-                        type="checkbox"
-                        checked={chartPermission.action === ActionTypes.ADMIN}
-                        onChange={handleChartCreateChange}
-                        className="h-16 w-16"
-                    />
-                </div>
+                <Checkbox isChecked disabled onChange={noop} rootClassName="mb-0" value={CHECKBOX_VALUE.CHECKED} />
+                <Checkbox
+                    isChecked={chartPermission.action === ActionTypes.ADMIN}
+                    onChange={handleChartCreateChange}
+                    rootClassName="mb-0"
+                    value={CHECKBOX_VALUE.CHECKED}
+                />
                 <Select
                     value={
                         chartPermission.action === ActionTypes.ADMIN
