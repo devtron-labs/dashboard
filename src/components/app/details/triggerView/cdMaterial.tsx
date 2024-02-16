@@ -2095,6 +2095,7 @@ export default function CDMaterial({
                     isRollbackTriggerSelected={state.isRollbackTrigger}
                     isRecentConfigAvailable={state.recentDeploymentConfig !== null}
                     history={history}
+                    canReviewConfig={canReviewConfig}
                 />
             ) : (
                 renderMaterialList(isApprovalConfigured)

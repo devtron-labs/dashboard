@@ -670,6 +670,7 @@ export interface TriggerViewConfigDiffProps {
     isRollbackTriggerSelected: boolean
     isRecentConfigAvailable: boolean
     history: ReactRouterHistory
+    canReviewConfig
 }
 
 export const MATERIAL_TYPE = {

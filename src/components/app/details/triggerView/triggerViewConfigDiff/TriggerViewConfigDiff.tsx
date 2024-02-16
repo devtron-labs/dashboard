@@ -25,10 +25,13 @@ export default function TriggerViewConfigDiff({
     diffOptions,
     isRollbackTriggerSelected,
     isRecentConfigAvailable,
-    history
+    history,
+    canReviewConfig
 }: TriggerViewConfigDiffProps) {
+    const { searchParams } = useSearchString()
+
     const [activeSideNavOption, setActiveSideNavOption] = useState(
-        DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
+        searchParams.config,
     )
     const [convertVariables, setConvertVariables] = useState<boolean>(false) // toggle to show/hide variable values
     const [isVariableAvailable, setIsVariableAvailable] = useState<boolean>(false) // check if variable snapshot is {} or not
@@ -50,36 +53,17 @@ export default function TriggerViewConfigDiff({
     const [configMapOptionCollapsed, setConfigMapOptionCollapsed] = useState<boolean>(false)
     const [secretOptionCollapsed, setSecretOptionCollapsed] = useState<boolean>(false)
     const [currentData, setCurrentData] = useState<any>({}) // store codeEditorValue of current(lhs) and base(rhs) config
-    const { searchParams } = useSearchString()
+
 
     useEffect(() => {
-        const dataValue = searchParams.config?.replace('-', '/')
-        setParamsValue(dataValue.replace('/', '-'))
-        if (dataValue) {
-            setConvertVariables(false)
-            setActiveSideNavOption(dataValue)
-
-            const { rhsData, lhsData } = getCurrentConfiguration(dataValue)
-            setCurrentData({
-                rhsData,
-                lhsData,
-            })
-
-            const _isVariableAvailable =
-                Object.keys(rhsData?.variableSnapshot || {}).length !== 0 ||
-                Object.keys(lhsData?.variableSnapshot || {}).length !== 0
-            setIsVariableAvailable(_isVariableAvailable)
-
-            const editorValuesRHS = convertVariables ? rhsData?.resolvedValue : rhsData?.value
-            const editorValuesLHS = convertVariables ? lhsData?.resolvedValue : lhsData?.value
-            setEditorValues({
-                displayName: rhsData?.displayName || lhsData?.displayName,
-                value: editorValuesRHS ? YAML.stringify(JSON.parse(editorValuesRHS)) : '',
-                defaultValue: editorValuesLHS ? YAML.stringify(JSON.parse(editorValuesLHS)) : '',
-            })
+        if(canReviewConfig() && baseTemplateConfiguration && currentConfiguration){
+            const dataValue = searchParams.config?.replace('-', '/')
+            setParamsValue(dataValue.replace('/', '-'))
+            handleNavOptionSelection(null, dataValue)
         }
+    
 
-    }, [])
+    }, [canReviewConfig(), baseTemplateConfiguration , currentConfiguration])
     
     useEffect(() => {
         handleConfigToDeploySelection()
@@ -105,8 +89,8 @@ export default function TriggerViewConfigDiff({
 
             if (!getNavOptions(navParentChildKeys[0]).includes(navParentChildKeys[1])) {
                 setConvertVariables(false)
-                setActiveSideNavOption(DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
-                handleNavOptionSelection(null, DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
+                setActiveSideNavOption(searchParams.config)
+                handleNavOptionSelection(null, searchParams.config)
                 return
             }
         }
