@@ -190,8 +190,9 @@ export default function App() {
     function update() {
         updateServiceWorker(true)
         // Trigger page reload
-        window.location.reload()
-        setTimeout(() => {}, 500)
+        setTimeout(() => {
+            window.location.reload()
+        }, 500)
     }
 
     function onUpdate() {
