@@ -179,7 +179,7 @@ export default function CDMaterial({
     const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
     const [deploymentLoading, setDeploymentLoading] = useState<boolean>(false)
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
-
+    
     const resourceFilters = materialsResult?.resourceFilters ?? []
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
     const requestedUserId = materialsResult?.requestedUserId ?? ''
@@ -779,15 +779,10 @@ export default function CDMaterial({
               : state.specificDeploymentConfig
     }
 
-    const redirectURLToInitial = (urlTo: string = '') => {
-        const urlPrefix = match.url
-        history.push(`${urlPrefix}/${urlTo}`)
-    }
 
     const handleConfigSelection = (selected) => {
-        if (selected.value !== state.selectedConfigToDeploy.value) {
+        if (selected?.value !== state.selectedConfigToDeploy.value) {
             const _diffOptions = checkForDiff(state.recentDeploymentConfig, getBaseTemplateConfiguration(selected))
-            redirectURLToInitial(selected.value)
             setState((prevState) => ({
                 ...prevState,
                 selectedConfigToDeploy: selected,
@@ -2084,7 +2079,7 @@ export default function CDMaterial({
                 height: getTriggerBodyHeight(isApprovalConfigured),
             }}
         >
-            {showConfigDiffView && canReviewConfig() ? (
+            {state.checkingDiff ? <Progressing pageLoader /> : showConfigDiffView && canReviewConfig() ? (
                 <TriggerViewConfigDiff
                     currentConfiguration={state.recentDeploymentConfig}
                     baseTemplateConfiguration={getBaseTemplateConfiguration()}

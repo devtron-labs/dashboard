@@ -57,12 +57,12 @@ export default function TriggerViewConfigDiff({
 
     useEffect(() => {
         if(canReviewConfig() && baseTemplateConfiguration && currentConfiguration){
-            const dataValue = searchParams.config?.replace('-', '/')
-            setParamsValue(dataValue.replace('/', '-'))
-            handleNavOptionSelection(null, dataValue)
+            const configParamValue = searchParams.config?.replace('-', '/')
+            setParamsValue(configParamValue.replace('/', '-'))
+            //handling the case when the user directly lands on the deployment history page
+            handleNavOptionSelection(null, configParamValue) 
+            handleConfigSelection({value: searchParams.deploy.toLocaleUpperCase()})
         }
-    
-
     }, [canReviewConfig(), baseTemplateConfiguration , currentConfiguration])
     
     useEffect(() => {
