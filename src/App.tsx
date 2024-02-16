@@ -190,9 +190,7 @@ export default function App() {
     function update() {
         updateServiceWorker(true)
         // Trigger page reload
-        setTimeout(() => {
-            window.location.reload()
-        }, 300)
+        window.location.reload()
     }
 
     useEffect(() => {
