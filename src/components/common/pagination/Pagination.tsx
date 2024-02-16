@@ -12,7 +12,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
 
     constructor(props) {
         super(props)
-        let pages = this.createPageArr(this.props.size, this.props.pageSize, 1)
+        const pages = this.createPageArr(this.props.size, this.props.pageSize, 1)
         let options =
             props.pageSizeOptions?.length > 0
                 ? props.pageSizeOptions
@@ -29,35 +29,36 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
         })
         this.state = {
             show: false,
-            options: options,
-            pages: pages,
+            options,
+            pages,
         }
     }
 
     componentDidMount() {
         window.addEventListener('mousedown', this.handleClick)
-        let pageNo = 1 + Math.floor(this.props.offset / this.props.pageSize)
-        let pages = this.createPageArr(this.props.size, this.props.pageSize, pageNo)
+        const pageNo = 1 + Math.floor(this.props.offset / this.props.pageSize)
+        const pages = this.createPageArr(this.props.size, this.props.pageSize, pageNo)
         this.setState({ pages })
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.size !== this.props.size || prevProps.pageSize !== this.props.pageSize) {
-            let pages = this.createPageArr(this.props.size, this.props.pageSize, 1)
-            this.setState({ pages: pages })
+            const pages = this.createPageArr(this.props.size, this.props.pageSize, 1)
+            this.setState({ pages })
         }
         if (prevProps.offset !== this.props.offset) {
-            let pageNo = 1 + Math.floor(this.props.offset / this.props.pageSize)
-            let pages = this.createPageArr(this.props.size, this.props.pageSize, pageNo)
-            this.setState({ pages: pages })
+            const pageNo = 1 + Math.floor(this.props.offset / this.props.pageSize)
+            const pages = this.createPageArr(this.props.size, this.props.pageSize, pageNo)
+            this.setState({ pages })
         }
     }
+
     componentWillUnmount() {
         window.removeEventListener('mousedown', this.handleClick)
     }
 
     selectPageSize(size: number) {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.options = state.options.map((option) => {
             return {
                 value: option.value,
@@ -70,28 +71,28 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
     }
 
     selectPrevPage(): void {
-        let currPage = this.state.pages.find((page) => page.selected)
-        let pageNo = currPage.value - 1
+        const currPage = this.state.pages.find((page) => page.selected)
+        const pageNo = currPage.value - 1
         this.selectPage(pageNo)
     }
 
     selectPage(pageNo: number): void {
-        let pages = this.createPageArr(this.props.size, this.props.pageSize, pageNo)
+        const pages = this.createPageArr(this.props.size, this.props.pageSize, pageNo)
         this.setState({ pages })
         this.props.changePage(pageNo)
     }
 
     selectNextPage(): void {
-        let currPage = this.state.pages.find((page) => page.selected)
-        let pageNo = currPage.value + 1
+        const currPage = this.state.pages.find((page) => page.selected)
+        const pageNo = currPage.value + 1
         this.selectPage(pageNo)
     }
 
     createPageArr(size: number, pageSize: number, selectedPageNo: number): Page[] {
-        let arr = []
-        let numberOfPages = Math.ceil(size / pageSize)
-        let lowerBound = selectedPageNo - 2 < 1 ? 1 : selectedPageNo - 2
-        let upperBound = selectedPageNo + 2 > numberOfPages ? numberOfPages : selectedPageNo + 2
+        const arr = []
+        const numberOfPages = Math.ceil(size / pageSize)
+        const lowerBound = selectedPageNo - 2 < 1 ? 1 : selectedPageNo - 2
+        const upperBound = selectedPageNo + 2 > numberOfPages ? numberOfPages : selectedPageNo + 2
         for (let i = 1; i <= numberOfPages; i++) {
             arr.push({
                 value: i,
@@ -111,8 +112,8 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
     }
 
     renderPages() {
-        let pageNoIndex = this.state.pages.findIndex((page) => page.selected)
-        let visiblePages = this.state.pages.filter((page) => page.isVisible)
+        const pageNoIndex = this.state.pages.findIndex((page) => page.selected)
+        const visiblePages = this.state.pages.filter((page) => page.isVisible)
 
         return (
             <ul className="pagination">
@@ -125,12 +126,12 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
                         }}
                     >
                         <span className="left-icon">
-                            <i className="fa fa-chevron-left"></i>
+                            <i className="fa fa-chevron-left" />
                         </span>
                     </button>
                 </li>
                 {visiblePages.map((page, index) => {
-                    let classes = page.selected ? 'page__button page__button--selected' : 'page__button'
+                    const classes = page.selected ? 'page__button page__button--selected' : 'page__button'
                     return (
                         <li key={index} className="page">
                             <button
@@ -153,7 +154,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
                         }}
                     >
                         <span className="left-icon">
-                            <i className="fa fa-chevron-right"></i>
+                            <i className="fa fa-chevron-right" />
                         </span>
                     </button>
                 </li>
@@ -162,8 +163,8 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
     }
 
     renderDropdown() {
-        let pageSize = this.state.options.find((option) => option.selected)
-        let font = this.state.show ? 'fa fa-caret-up' : 'fa fa-caret-down'
+        const pageSize = this.state.options.find((option) => option.selected)
+        const font = this.state.show ? 'fa fa-caret-up' : 'fa fa-caret-down'
         return (
             <div className="select">
                 <span className="select__placeholder">Rows per page</span>
@@ -195,7 +196,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
                     >
                         <span>{pageSize ? pageSize.value : ''}</span>
                         <span className="select__icon">
-                            <i className={font}></i>
+                            <i className={font} />
                         </span>
                     </button>
                 </div>
@@ -204,7 +205,7 @@ export class Pagination extends Component<PaginationProps, PaginationState> {
     }
 
     renderPageInfo() {
-        let end =
+        const end =
             this.props.offset + this.props.pageSize < this.props.size
                 ? this.props.offset + this.props.pageSize
                 : this.props.size

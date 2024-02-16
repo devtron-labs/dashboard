@@ -69,7 +69,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     }
 
     componentDidMount() {
-        let params = {
+        const params = {
             envId: this.props.envId,
             ciArtifactId: this.props.ciArtifactId,
         }
@@ -88,17 +88,19 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     }
 
     selectMaterial(materialId: string): void {
-        let materials = this.state.materials.map((material) => {
+        const materials = this.state.materials.map((material) => {
             if (String(material.id) === materialId) {
                 material.isSelected = true
-            } else material.isSelected = false
+            } else {
+                material.isSelected = false
+            }
             return material
         })
-        this.setState({ materials: materials })
+        this.setState({ materials })
     }
 
     toggleChanges(materialId: string, commit: string): void {
-        let materials = this.state.materials.map((material) => {
+        const materials = this.state.materials.map((material) => {
             if (String(material.id) === materialId) {
                 material.history = material.history.map((hist) => {
                     if (hist.commit === commit) {
@@ -109,7 +111,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             }
             return material
         })
-        this.setState({ materials: materials })
+        this.setState({ materials })
     }
 
     renderWithBackDrop(headerDescription: string, body) {
@@ -137,7 +139,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     }
 
     render() {
-        let headerDescription, body
+        let headerDescription
+        let body
         if (this.state.view === ViewType.LOADING) {
             headerDescription = null
             body = (
@@ -176,7 +179,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                         <Artifacts
                             status=""
                             artifact={this.state.image}
-                            blobStorageEnabled={true}
+                            blobStorageEnabled
                             isArtifactUploaded={false}
                             isJobView={false}
                             type={HistoryComponentType.CI}

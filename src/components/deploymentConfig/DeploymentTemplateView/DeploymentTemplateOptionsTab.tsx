@@ -1,4 +1,6 @@
 import React, { useContext } from 'react'
+import { ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { RadioGroup } from '../../common'
 import { BASIC_VIEW_TIPPY_CONTENT } from '../constants'
@@ -8,8 +10,6 @@ import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as RestoreIcon } from '../../../assets/icons/ic-arrow-anticlockwise.svg'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
@@ -29,7 +29,9 @@ export default function DeploymentTemplateOptionsTab({
     const currentStateValues =
         state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state
 
-    if (state.openComparison || state.showReadme) return null
+    if (state.openComparison || state.showReadme) {
+        return null
+    }
 
     const selectChart = (selectedChart: DeploymentChartVersionType) => {
         dispatch({
@@ -43,14 +45,15 @@ export default function DeploymentTemplateOptionsTab({
 
     const onChangeEditorMode = (e) => {
         if ((e.target.value === 'yaml' && state.yamlMode) || (e.target.value === 'gui' && !state.yamlMode)) {
-            return
         } else {
             changeEditorMode()
         }
     }
 
     const restoreLastSaved = () => {
-        if (!isValues) return
+        if (!isValues) {
+            return
+        }
         if (isEnvOverride) {
             const overriddenValues = state.latestDraft
                 ? state.draftValues
@@ -64,11 +67,12 @@ export default function DeploymentTemplateOptionsTab({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: _envValues,
             })
-        } else
+        } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
             })
+        }
     }
 
     const getRestoreLastSavedCTA = () => (
@@ -90,8 +94,8 @@ export default function DeploymentTemplateOptionsTab({
             infoText="The provided YAML is invalid. Basic (GUI) view can only be generated for a valid YAML."
             additionalContent={getRestoreLastSavedCTA()}
             trigger="mouseenter click"
-            interactive={true}
-            showCloseButton={true}
+            interactive
+            showCloseButton
         >
             <span>{children}</span>
         </TippyCustomized>

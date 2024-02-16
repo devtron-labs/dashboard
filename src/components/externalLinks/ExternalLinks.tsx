@@ -1,5 +1,4 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { sortOptionsByLabel, sortOptionsByValue } from '../common'
 import {
     showError,
     Progressing,
@@ -7,8 +6,10 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { sortOptionsByLabel, sortOptionsByValue } from '../common'
+import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
 import { getAllApps, getExternalLinks } from './ExternalLinks.service'
 import {
     ExternalLink,
@@ -28,11 +29,10 @@ import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
-import Tippy from '@tippyjs/react'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import './externalLinks.scss'
 
-function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
+const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const { appId } = useParams<{ appId: string }>()
     const history = useHistory()
     const location = useLocation()
@@ -164,7 +164,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
         if (_appliedClusterIds) {
             if (_appliedClusterIds.length === 1 && !_appliedClusterIds[0]) {
                 return defaultToAll ? externalLinks : []
-            } else if (_appliedClusterIds.length > 0) {
+            }
+            if (_appliedClusterIds.length > 0) {
                 return externalLinks.filter(
                     (link) =>
                         link.identifiers.length === 0 ||
@@ -192,7 +193,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                 // If contains any link then return empty as it'll be the same array
                 // Else return all external links as default
                 return filteredByClusterIds.length > 0 ? [] : externalLinks
-            } else if (_appliedAppIds.length > 0) {
+            }
+            if (_appliedAppIds.length > 0) {
                 const filteredByAppIds = externalLinks.filter(
                     (link) =>
                         link.identifiers.length === 0 ||
@@ -299,7 +301,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                     isAppConfigView ? 'app-config-view' : ''
                 }`}
             >
-                <div className="external-links__cell--icon"></div>
+                <div className="external-links__cell--icon" />
                 <div className="external-links__cell--tool__name">
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Name</span>
                 </div>
@@ -418,11 +420,13 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                             infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page."
                             documentationLink={DOCUMENTATION.EXTERNAL_LINKS}
-                            showCloseButton={true}
+                            showCloseButton
                             trigger="click"
-                            interactive={true}
+                            interactive
                         >
-                            <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
+                            <div className="flex">
+                                <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
+                            </div>
                         </TippyCustomized>
                     </h3>
                     <div className="cta-search-filter-container flex">
@@ -431,7 +435,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                         <AddLinkButton handleOnClick={handleAddLinkClick} />
                     </div>
                 </div>
-                {isAppConfigView && <RoleBasedInfoNote userRole={userRole} listingView={true} />}
+                {isAppConfigView && <RoleBasedInfoNote userRole={userRole} listingView />}
                 {!isAppConfigView && (appliedClusters.length > 0 || appliedApps.length > 0) && (
                     <AppliedFilterChips
                         appliedClusters={appliedClusters}
@@ -480,7 +484,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                     />
                 </div>
             )
-        } else if (!externalLinks || externalLinks.length === 0) {
+        }
+        if (!externalLinks || externalLinks.length === 0) {
             return (
                 <NoExternalLinksView
                     isAppConfigView={isAppConfigView}
@@ -489,9 +494,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                     history={history}
                 />
             )
-        } else {
-            return renderExternalLinksView()
         }
+        return renderExternalLinksView()
     }
 
     return isLoading ? (

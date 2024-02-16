@@ -1,10 +1,10 @@
+import React from 'react'
 import { SCAN_TOOL_ID_TRIVY } from '../../../config'
 import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
 import { ReactComponent as Clair } from '../../../assets/icons/ic-clair.svg'
 import { ReactComponent as Trivy } from '../../../assets/icons/ic-trivy.svg'
-import React from 'react'
 
-export function ScannedByToolModal({ scanToolId }: { scanToolId?: number }) {
+export const ScannedByToolModal = ({ scanToolId }: { scanToolId?: number }) => {
     const isTrivy = scanToolId === SCAN_TOOL_ID_TRIVY
     return (
         <>

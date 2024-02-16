@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { showError, Progressing, Drawer, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -6,13 +7,12 @@ import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as MechanicalOperation } from '../../../assets/img/ic-mechanical-operation.svg'
-import { showError, Progressing, Drawer, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 
-export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
+export const CreateResource = ({ closePopup, clusterId }: CreateResourceType) => {
     const [showCodeEditorView, toggleCodeEditorView] = useState(true)
     const [loader, setLoader] = useState(false)
     const [resourceYAML, setResourceYAML] = useState('')
@@ -92,24 +92,23 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                     </button>
                 </div>
             )
-        } else {
-            return (
-                <div className="dc__border-top flexbox dc__content-space right p-16">
-                    <button className="flex cta h-36 lh-36" onClick={showCodeEditor}>
-                        <Edit className="icon-dim-16 mr-4" />
-                        {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.editYAML}
-                    </button>
-                    <button
-                        className="cta cancel h-36 lh-36 mr-12"
-                        type="button"
-                        onClick={onClose}
-                        data-testid="close-after-resource-creation"
-                    >
-                        {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.close}
-                    </button>
-                </div>
-            )
         }
+        return (
+            <div className="dc__border-top flexbox dc__content-space right p-16">
+                <button className="flex cta h-36 lh-36" onClick={showCodeEditor}>
+                    <Edit className="icon-dim-16 mr-4" />
+                    {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.editYAML}
+                </button>
+                <button
+                    className="cta cancel h-36 lh-36 mr-12"
+                    type="button"
+                    onClick={onClose}
+                    data-testid="close-after-resource-creation"
+                >
+                    {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.close}
+                </button>
+            </div>
+        )
     }
 
     const renderPageContent = (): JSX.Element => {
@@ -121,7 +120,8 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                     subTitle={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.subTitle}
                 />
             )
-        } else if (showCodeEditorView) {
+        }
+        if (showCodeEditorView) {
             return (
                 <>
                     <InfoColourBar
@@ -134,53 +134,52 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                         value={resourceYAML}
                         mode={MODES.YAML}
                         noParsing
-                        height={'calc(100vh - 165px)'}
+                        height="calc(100vh - 165px)"
                         onChange={handleEditorValueChange}
                         loading={loader}
-                        focus={true}
+                        focus
                     />
                 </>
             )
-        } else {
-            return (
-                <div>
-                    <div className="created-resource-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
-                        {APP_STATUS_HEADERS.map((headerKey, index) => (
-                            <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
-                                {headerKey}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="created-resource-list fs-13">
-                        {resourceResponse?.map((resource) => (
-                            <div
-                                className="created-resource-row pt-8 pr-20 pb-8 pl-20"
-                                key={`${resource.kind}/${resource.name}`}
-                            >
-                                <div className="dc__ellipsis-right">{resource.kind}</div>
-                                <div className="dc__word-break">{resource.name}</div>
-                                <div className="flexbox">
-                                    {resource.error ? (
-                                        <>
-                                            <Error className="icon-dim-16 mt-3 mr-8" />
-                                            {CreateResourceStatus.failed}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Success className="icon-dim-16 mt-3 mr-8" />
-                                            {resource.isUpdate
-                                                ? CreateResourceStatus.updated
-                                                : CreateResourceStatus.created}
-                                        </>
-                                    )}
-                                </div>
-                                <div className="dc__word-break">{resource.error}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )
         }
+        return (
+            <div>
+                <div className="created-resource-row dc__border-bottom pt-8 pr-20 pb-8 pl-20">
+                    {APP_STATUS_HEADERS.map((headerKey, index) => (
+                        <div className="fs-13 fw-6 cn-7" key={`header_${index}`}>
+                            {headerKey}
+                        </div>
+                    ))}
+                </div>
+                <div className="created-resource-list fs-13">
+                    {resourceResponse?.map((resource) => (
+                        <div
+                            className="created-resource-row pt-8 pr-20 pb-8 pl-20"
+                            key={`${resource.kind}/${resource.name}`}
+                        >
+                            <div className="dc__ellipsis-right">{resource.kind}</div>
+                            <div className="dc__word-break">{resource.name}</div>
+                            <div className="flexbox">
+                                {resource.error ? (
+                                    <>
+                                        <Error className="icon-dim-16 mt-3 mr-8" />
+                                        {CreateResourceStatus.failed}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Success className="icon-dim-16 mt-3 mr-8" />
+                                        {resource.isUpdate
+                                            ? CreateResourceStatus.updated
+                                            : CreateResourceStatus.created}
+                                    </>
+                                )}
+                            </div>
+                            <div className="dc__word-break">{resource.error}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
     }
 
     return (

@@ -1,21 +1,21 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
+import { useHistory } from 'react-router'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
-import { useHistory } from 'react-router'
 import { DeploymentStatusCardType } from './appDetails.type'
 import { validateMomentDate } from './utils'
 import LoadingCard from './LoadingCard'
 
-function DeploymentStatusCard({
+const DeploymentStatusCard = ({
     deploymentStatusDetailsBreakdownData,
     cardLoading,
     hideDetails,
     isVirtualEnvironment,
     refetchDeploymentStatus,
-}: DeploymentStatusCardType) {
+}: DeploymentStatusCardType) => {
     const history = useHistory()
 
     const showDeploymentDetailedStatus = (e): void => {
@@ -46,7 +46,9 @@ function DeploymentStatusCard({
                                 placement="top"
                                 content="Status of last triggered deployment"
                             >
-                                <Question className="icon-dim-16 mt-2" />
+                                <div className="flex">
+                                    <Question className="icon-dim-16 mt-2" />
+                                </div>
                             </Tippy>
                         </div>
                         <div className="flex fs-12 fw-4">
@@ -94,15 +96,15 @@ function DeploymentStatusCard({
         }
     }
 
-    if (cardLoading) return <LoadingCard wider />
+    if (cardLoading) {
+        return <LoadingCard wider />
+    }
 
     return (
         <div
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}
-            className={`app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-250 ${
-                hideDetails ? '' : 'cursor'
-            }`}
+            className={`app-details-info-card flex left bcn-0 br-8 mr-12 lh-20 w-250 ${hideDetails ? '' : 'cursor'}`}
         >
             {renderDeploymentStatus()}
         </div>

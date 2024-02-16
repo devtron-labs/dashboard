@@ -8,7 +8,7 @@ import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
 import { ClusterStepModal } from './cluster.type'
 import { DOCUMENTATION } from '../../config'
 
-function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
+const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
@@ -27,7 +27,10 @@ function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
             info: 'Run below command on terminal to get server URI & bearer token',
             additionalInfo: (
                 <div className="dc__position-rel cluster-modal-container dc__align-left bcn-1 lh-20 mt-2 br-4">
-                    <div className="fs-13 fw-4 h-100 dc__overflow-scroll dc__ff-monospace pl-10 pt-10 pb-10 pr-36" id="command-code">
+                    <div
+                        className="fs-13 fw-4 h-100 dc__overflow-scroll dc__ff-monospace pl-10 pt-10 pb-10 pr-36"
+                        id="command-code"
+                    >
                         {command}
                     </div>
                     <Tippy
@@ -42,7 +45,7 @@ function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
                                 setCopied(false)
                             }, 5000)
                         }}
-                        interactive={true}
+                        interactive
                     >
                         <div className="cluster-clipboard dc__position-abs cursor" onClick={copyClipboard}>
                             <ClipboardIcon className="icon-dim-16" />
@@ -64,9 +67,7 @@ function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
             {infoItems.map((item, key) => (
                 <div className="cluster-modal-wrapper ">
                     <div className="cluster-modal-number flex mr-16 bw-1 bcn-0 en-2 icon-dim-24">{key + 1}</div>
-                    <div
-                        className="cluster-inner-container flexbox-col dc__border-left pt-2 pr-44 pb-20 pl-28 lh-20 dc__align-start dc__content-start"
-                    >
+                    <div className="cluster-inner-container flexbox-col dc__border-left pt-2 pr-44 pb-20 pl-28 lh-20 dc__align-start dc__content-start">
                         {item.info && <div>{item.info}</div>}
                         {item.additionalInfo && item.additionalInfo}
                     </div>
@@ -86,7 +87,7 @@ export default function ClusterInfoStepsModal({ subTitle, command, clusterName }
             {subTitle && <p className="bcn-1 pt-8 pb-8 pl-12 pr-12 m-0">{subTitle}</p>}
             <ClusterInfoSteps subTitle={subTitle} command={command} clusterName={clusterName} />
             <div className="p-12">
-                <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} target="_blank">
+                <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} target="_blank" rel="noreferrer">
                     View documentation
                 </a>
             </div>

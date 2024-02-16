@@ -1,11 +1,11 @@
 // TODO (v3): Remove this file
 
 import React from 'react'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { PermissionGroup, User } from '../../../types'
 import { Nodes } from '../../../../../../components/app/types'
 import { ChartGroup } from '../../../../../../components/charts/charts.types'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
@@ -24,7 +24,7 @@ export enum ActionTypes {
     VIEW = 'view',
     UPDATE = 'update',
     EDIT = 'edit',
-    APPROVER = 'approver'
+    APPROVER = 'approver',
 }
 
 export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN
@@ -128,7 +128,7 @@ export interface K8sListItemCardType {
         action: string
         index: number
     }
-    customRoles:CustomRoleAndMeta
+    customRoles: CustomRoleAndMeta
 }
 export interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -207,7 +207,7 @@ export interface CustomRoleAndMeta {
     possibleRolesMetaForJob: {}
 }
 
-export const ViewChartGroupPermission:APIRoleFilter = {
+export const ViewChartGroupPermission: APIRoleFilter = {
     entity: EntityTypes.CHART_GROUP,
     action: ActionTypes.VIEW,
 }

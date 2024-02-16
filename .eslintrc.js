@@ -2,7 +2,6 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint', 'react', 'prettier'],
     env: {
-        commonjs: true,
         browser: true,
         // ESLint 6 supports till ES2020 only
         es2020: true,
@@ -112,5 +111,5 @@ module.exports = {
                 extensions: ['.js', '.jsx', '.ts', '.tsx'],
             },
         },
-    },
+    }
 }

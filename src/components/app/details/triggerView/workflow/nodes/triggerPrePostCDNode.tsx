@@ -1,17 +1,15 @@
-import React, { Component } from 'react';
-import { TriggerPrePostCDNodeProps } from '../../types';
-import { TriggerStatus } from '../../../../config';
-import { URLS } from './../../../../../../config';
-import { Link } from 'react-router-dom';
-import { DEFAULT_STATUS } from '../../../../../../config';
-import { TriggerViewContext } from '../../config';
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib';
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerPrePostCDNodeProps } from '../../types'
+import { TriggerStatus } from '../../../../config'
+import { URLS, DEFAULT_STATUS } from '../../../../../../config'
+import { TriggerViewContext } from '../../config'
 
-export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
-
+export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps> {
     constructor(props) {
-        super(props);
-        this.redirectToCDDetails = this.redirectToCDDetails.bind(this);
+        super(props)
+        this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
     }
 
     getCDDetailsURL(): string {
@@ -25,12 +23,14 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
         this.props.history.push(this.getCDDetailsURL())
     }
 
-    renderStatus(isClickable: boolean, status: string,) {
-        const url = this.getCDDetailsURL();
+    renderStatus(isClickable: boolean, status: string) {
+        const url = this.getCDDetailsURL()
         if (isClickable) {
             return (
                 <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`} >{this.props.status}</span>
+                    <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`}>
+                        {this.props.status}
+                    </span>
                     {!this.props.fromAppGrouping && (
                         <>
                             {this.props.status && <span className="mr-5 ml-5">/</span>}
@@ -42,38 +42,75 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
                 </div>
             )
         }
-        else return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-            <span>{this.props.status}</span>
-        </div>
+        return (
+            <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                <span>{this.props.status}</span>
+            </div>
+        )
     }
 
     renderCardContent() {
-        let status = this.props.status ? this.props.status.toLocaleLowerCase() : "";
-        let stage = this.props.type === "PRECD" ? "Pre-deployment" : "Post-deployment";
-        let isClickable = !(status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed");
-        return <TriggerViewContext.Consumer>
-            {(context) => {
-                return <div className={isClickable ? "workflow-node cursor" : "workflow-node"} onClick={(e) => { if (isClickable) this.redirectToCDDetails(e) }}>
-                    <div className="workflow-node__trigger-type workflow-node__trigger-type--cd">{this.props.triggerType}</div>
-                    <div className="workflow-node__title flex">
-                        <div className="workflow-node__full-width-minus-Icon">
-                            <span className="workflow-node__text-light">Stage</span>
-                            <span className="">{stage}</span>
+        const status = this.props.status ? this.props.status.toLocaleLowerCase() : ''
+        const stage = this.props.type === 'PRECD' ? 'Pre-deployment' : 'Post-deployment'
+        const isClickable = !(
+            status === DEFAULT_STATUS.toLowerCase() ||
+            status === 'not triggered' ||
+            status === 'not deployed'
+        )
+        return (
+            <TriggerViewContext.Consumer>
+                {(context) => {
+                    return (
+                        <div
+                            className={isClickable ? 'workflow-node cursor' : 'workflow-node'}
+                            onClick={(e) => {
+                                if (isClickable) {
+                                    this.redirectToCDDetails(e)
+                                }
+                            }}
+                        >
+                            <div className="workflow-node__trigger-type workflow-node__trigger-type--cd">
+                                {this.props.triggerType}
+                            </div>
+                            <div className="workflow-node__title flex">
+                                <div className="workflow-node__full-width-minus-Icon">
+                                    <span className="workflow-node__text-light">Stage</span>
+                                    <span className="">{stage}</span>
+                                </div>
+                                <div className="workflow-node__icon-common ml-8 workflow-node__CD-pre-post-icon" />
+                            </div>
+                            {this.renderStatus(isClickable, status)}
+                            <div className="workflow-node__btn-grp">
+                                <button
+                                    className="workflow-node__deploy-btn"
+                                    data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
+                                    onClick={(event) => {
+                                        event.stopPropagation()
+                                        context.onClickCDMaterial(this.props.id, this.props.type)
+                                    }}
+                                >
+                                    Select Image
+                                </button>
+                            </div>
                         </div>
-                        <div className="workflow-node__icon-common ml-8 workflow-node__CD-pre-post-icon" />
-                    </div>
-                    {this.renderStatus(isClickable, status)}
-                    <div className="workflow-node__btn-grp">
-                        <button className="workflow-node__deploy-btn" data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`} onClick={(event) => { event.stopPropagation(); context.onClickCDMaterial(this.props.id, this.props.type) }}>Select Image</button>
-                    </div>
-                </div>
-            }}
-        </TriggerViewContext.Consumer>
+                    )
+                }}
+            </TriggerViewContext.Consumer>
+        )
     }
 
     render() {
-        return <foreignObject className="data-hj-whitelist" x={this.props.x} y={this.props.y} width={this.props.width} height={this.props.height} style={{ overflow: 'visible' }}>
-            {this.renderCardContent()}
-        </foreignObject>
+        return (
+            <foreignObject
+                className="data-hj-whitelist"
+                x={this.props.x}
+                y={this.props.y}
+                width={this.props.width}
+                height={this.props.height}
+                style={{ overflow: 'visible' }}
+            >
+                {this.renderCardContent()}
+            </foreignObject>
+        )
     }
 }

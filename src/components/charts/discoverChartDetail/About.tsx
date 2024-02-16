@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { DropdownIcon } from '../../common'
 import moment from 'moment'
+import { DropdownIcon } from '../../common'
 
-export function About({
+export const About = ({
     description = '',
     home = '',
     chartYaml,
@@ -12,7 +12,7 @@ export function About({
     source = '',
     isOCICompliantChart = false,
     ...rest
-}) {
+}) => {
     return (
         <div className="flex column left about white-card white-card--no-padding">
             <div className="chart-store-card__header" data-testid="single-chart-about-heading">
@@ -20,7 +20,7 @@ export function About({
             </div>
             <div className="chart-store-card__body">
                 <span className="chart-store-card__subtitle">Description</span>
-                <div className="chart-store-card__text">{description ? description : '-'}</div>
+                <div className="chart-store-card__text">{description || '-'}</div>
                 <span className="chart-store-card__subtitle">Home</span>
                 <div className="mb-16">
                     <a
@@ -30,7 +30,7 @@ export function About({
                         target="_blank"
                         data-testid="home-chart-deploy-link"
                     >
-                        {home ? home : '-'}
+                        {home || '-'}
                     </a>
                 </div>
                 <Detailed {...{ appVersion, created, digest, home, source, chartYaml, isOCICompliantChart }} />
@@ -39,7 +39,7 @@ export function About({
     )
 }
 
-function Detailed({
+const Detailed = ({
     appVersion = '',
     created = '',
     digest = '',
@@ -48,20 +48,20 @@ function Detailed({
     chartYaml,
     isOCICompliantChart,
     ...rest
-}) {
+}) => {
     const [detailed, toggleDetailed] = useState(false)
     return (
         <div className="detailed-container flex column left detailed">
             {detailed && (
                 <>
                     <span className="chart-store-card__subtitle">Application version</span>
-                    <div className="chart-store-card__text dc__ellipsis-right">{appVersion ? appVersion : '-'}</div>
+                    <div className="chart-store-card__text dc__ellipsis-right">{appVersion || '-'}</div>
                     <span className="chart-store-card__subtitle">Created</span>
                     <div className="chart-store-card__text dc__ellipsis-right">
                         {isOCICompliantChart ? '-' : moment(created).fromNow()}
                     </div>
                     <span className="chart-store-card__subtitle">Digest</span>
-                    <div className="chart-store-card__text digest">{digest ? digest : '-'}</div>
+                    <div className="chart-store-card__text digest">{digest || '-'}</div>
                     {chartYaml && (
                         <>
                             <span className="chart-store-card__subtitle">Source</span>

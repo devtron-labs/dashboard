@@ -20,8 +20,10 @@ export function getChartValuesURL(chartId: number | string, chartValueId?: numbe
 }
 
 export function getChartGroupURL(chartGroupId: number | string | null) {
-    if (chartGroupId) return `${URLS.CHARTS}/discover/group/${chartGroupId}`
-    else return `${URLS.CHARTS}/group`
+    if (chartGroupId) {
+        return `${URLS.CHARTS}/discover/group/${chartGroupId}`
+    }
+    return `${URLS.CHARTS}/group`
 }
 
 export function getChartGroupEditURL(chartGroupId: number | string) {
@@ -34,17 +36,22 @@ export function getChartValuesFiltered(chartValuesList: ChartValuesType[]): {
     defaultChartValues: ChartValuesType[]
     existingChartValues: ChartValuesType[]
 } {
-    let chartValues = {
+    const chartValues = {
         savedChartValues: [],
         deployedChartValues: [],
         defaultChartValues: [],
         existingChartValues: [],
     }
     for (let i = 0; i < chartValuesList.length; i++) {
-        if (chartValuesList[i].kind === 'TEMPLATE') chartValues.savedChartValues.push(chartValuesList[i])
-        else if (chartValuesList[i].kind === 'DEPLOYED') chartValues.deployedChartValues.push(chartValuesList[i])
-        else if (chartValuesList[i].kind === 'DEFAULT') chartValues.defaultChartValues.push(chartValuesList[i])
-        else if (chartValuesList[i].kind === 'EXISTING') chartValues.existingChartValues.push(chartValuesList[i])
+        if (chartValuesList[i].kind === 'TEMPLATE') {
+            chartValues.savedChartValues.push(chartValuesList[i])
+        } else if (chartValuesList[i].kind === 'DEPLOYED') {
+            chartValues.deployedChartValues.push(chartValuesList[i])
+        } else if (chartValuesList[i].kind === 'DEFAULT') {
+            chartValues.defaultChartValues.push(chartValuesList[i])
+        } else if (chartValuesList[i].kind === 'EXISTING') {
+            chartValues.existingChartValues.push(chartValuesList[i])
+        }
     }
     return chartValues
 }
@@ -54,15 +61,17 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
     arr = arr.filter((str) => str.length)
     let crumbs = arr.map((ele, itemIndex) => {
         let subArr = arr.slice(0, itemIndex + 1)
-        if ((arr[itemIndex + 1], parseInt(arr[itemIndex + 1]))) subArr = subArr.concat([arr[itemIndex + 1]])
+        if ((arr[itemIndex + 1], parseInt(arr[itemIndex + 1]))) {
+            subArr = subArr.concat([arr[itemIndex + 1]])
+        }
         return {
             label: ele,
             url: subArr.join('/'),
         }
     })
-    //filter if label is a number
+    // filter if label is a number
     crumbs = crumbs.filter((crumb) => !parseInt(crumb.label))
-    //last element not required
+    // last element not required
     crumbs.pop()
     return crumbs
 }

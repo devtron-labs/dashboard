@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import Tippy from '@tippyjs/react'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { Chart } from '../charts.types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { LazyImage, ConditionalWrap } from '../../common'
@@ -8,7 +9,6 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { SERVER_MODE } from '../../../config'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
 interface AllChartSelectProps {
     chart: Chart
@@ -19,7 +19,7 @@ interface AllChartSelectProps {
     subtractChart?: (chartId: number) => void
     selectChart?: (chartId: number) => void
     showDescription?: boolean
-    datatestid ?:string
+    datatestid?: string
 }
 
 interface Stepper extends AllChartSelectProps {
@@ -55,7 +55,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
         target.src = placeHolder
     }
 
-    let classes = `chart-grid-item ${showDescription ? '' : 'chart-grid-item--discover'} white-card dc__position-rel`
+    const classes = `chart-grid-item ${showDescription ? '' : 'chart-grid-item--discover'} white-card dc__position-rel`
 
     const addchartTab = (e): void => {
         e.stopPropagation()
@@ -85,7 +85,9 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
             onClick={onClick ? onClickChartSelect : noop}
             data-testid={`chart-card-${datatestid}`}
         >
-            <div className={`${showDescription ? 'dc__chart-list-item__icon-wrapper' : 'dc__chart-grid-item__icon-wrapper'}`}>
+            <div
+                className={`${showDescription ? 'dc__chart-list-item__icon-wrapper' : 'dc__chart-grid-item__icon-wrapper'}`}
+            >
                 <LazyImage
                     className={`${showDescription ? 'dc__list-icon' : ''} dc__chart-grid-item__icon`}
                     src={chart.icon}
@@ -105,14 +107,14 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                                 className="default-tt"
                                 arrow={false}
                                 placement="top"
-                                content={'Remove charts from selection'}
+                                content="Remove charts from selection"
                             >
                                 {children}
                             </Tippy>
                         )}
                     >
                         <button
-                            className={'devtron-stepper__item dc__transparent p-0 cursor'}
+                            className="devtron-stepper__item dc__transparent p-0 cursor"
                             disabled={selectedCount <= 0}
                             onClick={removeChartTab}
                             data-testid={`chart-remove-${datatestid}`}
@@ -124,19 +126,18 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                         <span>{selectedCount}</span>
                     </div>
                     <ConditionalWrap
-                        condition={true}
+                        condition
                         wrap={(children) => (
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={'Add charts to deploy'}
-                            >
+                            <Tippy className="default-tt" arrow={false} placement="top" content="Add charts to deploy">
                                 {children}
                             </Tippy>
                         )}
                     >
-                        <button className={'devtron-stepper__item dc__transparent p-0 cursor'} onClick={addchartTab} data-testid={`chart-add-${datatestid}`}>
+                        <button
+                            className="devtron-stepper__item dc__transparent p-0 cursor"
+                            onClick={addchartTab}
+                            data-testid={`chart-add-${datatestid}`}
+                        >
                             <Add className="icon-dim-14" />
                         </button>
                     </ConditionalWrap>
@@ -153,8 +154,9 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
             )}
             <div>
                 <div className="chart-grid-item__title dc__ellipsis-right mb-4">
-                    <span className="chart-grid-item__title-repo">{chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id
-}</span>
+                    <span className="chart-grid-item__title-repo">
+                        {chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id}
+                    </span>
                     <span>/{chart.name}</span>
                 </div>
                 <div className="flex left">

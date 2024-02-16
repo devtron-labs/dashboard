@@ -560,12 +560,38 @@ export interface EnvironmentListMinType {
     allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
+export interface PayloadParsedFromURL {
+    appNameSearch?: string
+    appStatuses?
+    environments?
+    hOffset?: number
+    namespaces?
+    offset?: number
+    size?: number
+    sortBy?: string
+    sortOrder?: string
+    teams?
+}
+
+export interface ExternalArgoListType {
+    serverMode?: string
+    payloadParsedFromUrl: PayloadParsedFromURL
+    sortApplicationList
+    clearAllFilters
+    fetchingExternalApps
+    setFetchingExternalAppsState
+    updateDataSyncing
+    setShowPulsatingDotState
+    masterFilters
+    syncListData
+    isArgoInstalled: boolean
+}
 export interface EditDescRequest {
-    id: number,
-    environment_name: string,
-    cluster_id: number,
-    namespace: string,
-    active: boolean,
-    default: boolean,
-    description: string,
+    id: number
+    environment_name: string
+    cluster_id: number
+    namespace: string
+    active: boolean
+    default: boolean
+    description: string
 }

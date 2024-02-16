@@ -6,14 +6,14 @@ export const multiSelectStyles = {
         boxShadow: 'none',
     }),
     option: (base, state) => {
-        return ({
+        return {
             ...base,
             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
             color: 'var(--N900)',
-        })
+        }
     },
-    container: (base, state)=>({
+    container: (base, state) => ({
         ...base,
-        cursor: state.isDisabled ? 'not-allowed' : 'normal'
-    })
+        cursor: state.isDisabled ? 'not-allowed' : 'normal',
+    }),
 }

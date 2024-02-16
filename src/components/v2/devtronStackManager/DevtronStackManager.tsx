@@ -1,11 +1,8 @@
 import React, { Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
-import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
-import {
-    ErrorBoundary,
-    useInterval,
-} from '../../common'
 import { showError, Progressing, ErrorScreenManager, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
+import { ErrorBoundary, useInterval } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
@@ -35,11 +32,11 @@ import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackMana
 export default function DevtronStackManager({
     serverInfo,
     getCurrentServerInfo,
-    isSuperAdmin
+    isSuperAdmin,
 }: {
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
-    isSuperAdmin:boolean
+    isSuperAdmin: boolean
 }) {
     const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
         useContext(mainContext)
@@ -69,7 +66,7 @@ export default function DevtronStackManager({
     const [showResourceStatusModal, setShowResourceStatusModal] = useState(false)
     const [dialog, setDialog] = useState<boolean>(false)
     const [retryState, setRetryState] = useState<boolean>(false)
-    const [successState, setSuccessState] = useState<boolean>(false) 
+    const [successState, setSuccessState] = useState<boolean>(false)
     const [toggled, setToggled] = useState<boolean>(false)
     useEffect(() => {
         getModuleDetails()
@@ -156,8 +153,10 @@ export default function DevtronStackManager({
     }, [stackDetails.discoverModulesList])
 
     useEffect(() => {
-        if (serverMode === SERVER_MODE.FULL) return
-        //Check for CICD status to update SERVER_MODE on every route change if Current SERVER_MODE is EA_ONLY
+        if (serverMode === SERVER_MODE.FULL) {
+            return
+        }
+        // Check for CICD status to update SERVER_MODE on every route change if Current SERVER_MODE is EA_ONLY
         getModuleInfo(ModuleNameMap.CICD)
     }, [location])
 
@@ -408,7 +407,7 @@ export default function DevtronStackManager({
                         serverInfo={serverInfo}
                         upgradeVersion={stackDetails.releaseNotes[0]?.releaseName}
                         logPodName={logPodName}
-                        fromDiscoverModules={true}
+                        fromDiscoverModules
                         isActionTriggered={actionTriggered[`moduleAction-${selectedModule?.name?.toLowerCase()}`]}
                         handleActionTrigger={handleActionTrigger}
                         history={history}
@@ -426,7 +425,6 @@ export default function DevtronStackManager({
                         setSuccessState={setSuccessState}
                         setToggled={setToggled}
                         toggled={toggled}
-                        
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
@@ -459,7 +457,7 @@ export default function DevtronStackManager({
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>
                     <ModulesListingView
                         modulesList={stackDetails.discoverModulesList}
-                        isDiscoverModulesView={true}
+                        isDiscoverModulesView
                         handleModuleCardClick={handleModuleSelection}
                     />
                 </Route>
@@ -523,7 +521,7 @@ export default function DevtronStackManager({
                 handleBreadcrumbClick={handleBreadcrumbClick}
             />
             {stackDetails.isLoading ? (
-                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80"/>
+                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
             ) : stackDetails.errorStatusCode > 0 ? (
                 <div className="flex">
                     <ErrorScreenManager code={stackDetails.errorStatusCode} />
@@ -560,11 +558,11 @@ export default function DevtronStackManager({
                                         appStreamData={buildResourceStatusModalData(
                                             selectedModule.moduleResourcesStatus,
                                         )}
-                                        showAppStatusMessage={true}
+                                        showAppStatusMessage
                                         title="Integration installation status"
                                         appStatusText={selectedModule.installationStatus}
                                         appStatus={AppStatusClass[selectedModule.installationStatus] || ''}
-                                        showFooter={true}
+                                        showFooter
                                     />
                                 )}
                             </ErrorBoundary>

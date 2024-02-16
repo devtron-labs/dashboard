@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { showError, Progressing, VisibleModal, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'
@@ -7,8 +9,6 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { updateNotificationRecipients } from './notifications.service'
 import { multiSelectStyles, DropdownIndicator, MultiValueLabel, Option } from './notifications.util'
-import { toast } from 'react-toastify'
-import CreatableSelect from 'react-select/creatable'
 import './notifications.scss'
 import { EMAIL_AGENT } from './types'
 
@@ -71,11 +71,13 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
             }
             oldRecipientList = oldRecipientList.concat(this.props.notificationListFromParent[i].providers)
         }
-        let set = new Set()
-        let arrayWithouDuplicates = []
+        const set = new Set()
+        const arrayWithouDuplicates = []
         for (let i = 0; i < oldRecipientList.length; i++) {
-            let uniqueValue = `${oldRecipientList[i].configId}_${oldRecipientList[i].name}_${oldRecipientList[i].recipient}`
-            if (set.has(uniqueValue)) continue
+            const uniqueValue = `${oldRecipientList[i].configId}_${oldRecipientList[i].name}_${oldRecipientList[i].recipient}`
+            if (set.has(uniqueValue)) {
+                continue
+            }
             set.add(uniqueValue)
             arrayWithouDuplicates.push(oldRecipientList[i])
         }
@@ -86,22 +88,27 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     }
 
     addRecipient = (selectedProviders): void => {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.selectedRecipient = selectedProviders || []
         state.recipientWithoutEmailAgent = selectedProviders.some(
             (item) => item.data.dest === 'ses' || item.data.dest === 'smtp',
         )
         state.selectedRecipient = state.selectedRecipient.map((p) => {
-            if (p.__isNew__) return { ...p, data: { dest: '', configId: 0, recipient: p.value } }
+            if (p.__isNew__) {
+                return { ...p, data: { dest: '', configId: 0, recipient: p.value } }
+            }
             return p
         })
         this.setState(state)
     }
 
     removeRecipient(provider): void {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.savedRecipients = state.savedRecipients.filter((p) => {
-            if ((provider.configId && (p.configId !== provider.configId || ( p.dest!==provider.dest))) || !(provider.recipient === p.recipient)) {
+            if (
+                (provider.configId && (p.configId !== provider.configId || p.dest !== provider.dest)) ||
+                !(provider.recipient === p.recipient)
+            ) {
                 return p
             }
         })
@@ -136,7 +143,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     }
 
     changeEmailAgent(event: any): void {
-        let state = { ...this.state }
+        const state = { ...this.state }
         state.selectedEmailAgent = event.target.value
         this.setState(state)
     }
@@ -144,28 +151,26 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     renderEmailAgentSelector() {
         if (this.state.selectedRecipient.length > 0 && this.state.recipientWithoutEmailAgent) {
             return (
-                <>
-                    <div className="form__row">
-                        <div className="bcy-1 ey-2 pt-8 pb-8 br-4 flexbox pl-4 cn-9 fs-13">
-                            <AlertTriangle className="mr-8 ml-14 icon-dim-20 no-email-channel-warning" />
-                            <span className="lh-20">
-                                Email agent (SES/SMTP) is not configured for some selected notifications.
-                            </span>
-                        </div>
-                        <div className="mt-20 mb-6 cn-9 fw-6 fs-14">Send email using*</div>
-                        <div className="flexbox mb-20">
-                            <RadioGroup
-                                className="no-border"
-                                value={this.state.selectedEmailAgent}
-                                name="trigger-type"
-                                onChange={this.changeEmailAgent}
-                            >
-                                <RadioGroupItem value={EMAIL_AGENT.SES}>{EMAIL_AGENT.SES}</RadioGroupItem>
-                                <RadioGroupItem value={EMAIL_AGENT.SMTP}>{EMAIL_AGENT.SMTP}</RadioGroupItem>
-                            </RadioGroup>
-                        </div>
+                <div className="form__row">
+                    <div className="bcy-1 ey-2 pt-8 pb-8 br-4 flexbox pl-4 cn-9 fs-13">
+                        <AlertTriangle className="mr-8 ml-14 icon-dim-20 no-email-channel-warning" />
+                        <span className="lh-20">
+                            Email agent (SES/SMTP) is not configured for some selected notifications.
+                        </span>
                     </div>
-                </>
+                    <div className="mt-20 mb-6 cn-9 fw-6 fs-14">Send email using*</div>
+                    <div className="flexbox mb-20">
+                        <RadioGroup
+                            className="no-border"
+                            value={this.state.selectedEmailAgent}
+                            name="trigger-type"
+                            onChange={this.changeEmailAgent}
+                        >
+                            <RadioGroupItem value={EMAIL_AGENT.SES}>{EMAIL_AGENT.SES}</RadioGroupItem>
+                            <RadioGroupItem value={EMAIL_AGENT.SMTP}>{EMAIL_AGENT.SMTP}</RadioGroupItem>
+                        </RadioGroup>
+                    </div>
+                </div>
             )
         }
     }
@@ -197,7 +202,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     }
 
     render() {
-        let body = (
+        const body = (
             <>
                 <div className="m-24">
                     <div className="form__row">
@@ -213,7 +218,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                                             <Email className="icon-dim-20 mr-5" />
                                         ) : null}
                                         {p.dest === 'slack' ? <Slack className="icon-dim-20 mr-5" /> : null}
-                                        {p.dest === 'webhook' ? <Webhook className="icon-dim-20 mr-5" /> : null }
+                                        {p.dest === 'webhook' ? <Webhook className="icon-dim-20 mr-5" /> : null}
                                         {p.recipient ? p.recipient : p.name}
                                         <button
                                             type="button"
@@ -222,7 +227,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                                                 this.removeRecipient(p)
                                             }}
                                         >
-                                            <i className="fa fa-close ml-5"></i>
+                                            <i className="fa fa-close ml-5" />
                                         </button>
                                     </div>
                                 )
@@ -255,7 +260,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                             }}
                         />
                         {(this.state.selectedRecipient.length === 0 || !this.state.recipientWithoutEmailAgent) && (
-                            <div style={{ marginBottom: '60px' }}></div>
+                            <div style={{ marginBottom: '60px' }} />
                         )}
                     </div>
                     <div>{this.renderEmailAgentSelector()}</div>

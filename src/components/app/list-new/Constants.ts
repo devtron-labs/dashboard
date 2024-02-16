@@ -6,13 +6,13 @@ export const APP_LIST_HEADERS = {
     Cluster: 'Cluster',
     Namespace: 'Namespace',
     LastDeployedAt: 'Last deployed at',
-    SearchAppStatus: 'Search app status'
+    SearchAppStatus: 'Search app status',
 }
 export const appListLoading = Array.from(Array(3).keys()).map((index) => ({
     id: index,
     appName: '',
     appStatus: '',
-    environment:'',
+    environment: '',
     cluster: '',
     namespace: '',
     lastDeployedAt: '',
@@ -43,34 +43,33 @@ export const DefaultAppNote = `## Describe this application\n\nDescribe this app
 export const DefaultHelmChartNote = `## Describe this helm chart\n\nDescribe this helm chart in a few words. The description could include the purpose, features, benefits, and target audience of your application. A well-written description will help users know about this helm chart and how it works. Keep it concise and informative!\n`
 export const DefaultJobNote = `## Describe this job\n\nDescribe this job in a few words. The description could include the purpose, features, benefits, and target audience of your job. A well-written description will help users know about this job and how it works. Keep it concise and informative!\n`
 
-
 export const StatusConstants = {
     NOT_DEPLOYED: {
         noSpaceLower: 'notdeployed',
         normalCase: 'Not deployed',
-        lowerCase: 'not-deployed'
+        lowerCase: 'not-deployed',
     },
     APP_STATUS: {
         noSpaceLower: 'appStatus',
-        normalText: 'App status'
+        normalText: 'App status',
     },
     PROJECT: {
         pluralLower: 'projects',
-        lowerCase: 'project'
+        lowerCase: 'project',
     },
     CLUSTER: {
         pluralLower: 'clusters',
-        lowerCase: 'cluster'
+        lowerCase: 'cluster',
     },
     NAMESPACE: {
         pluralLower: 'namespaces',
-        lowerCase: 'namespace'
+        lowerCase: 'namespace',
     },
     ENVIRONMENT: {
         pluralLower: 'environments',
-        lowerCase: 'environment'
+        lowerCase: 'environment',
     },
     NOT_AVILABLE: {
         normalCase: 'Not available',
-    }
+    },
 }

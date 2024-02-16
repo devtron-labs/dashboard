@@ -1,6 +1,6 @@
 import React from 'react'
-import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
 import { TagChipsContainerType } from '../types'
 
 export default function TagChipsContainer({
@@ -28,7 +28,7 @@ export default function TagChipsContainer({
                                 placement="bottom"
                                 content={tag.key}
                                 trigger="mouseenter"
-                                interactive={true}
+                                interactive
                             >
                                 <div className="dc__ellipsis-right" data-testid={`tag-key-overview-${index}`}>
                                     {tag.key}
@@ -42,7 +42,7 @@ export default function TagChipsContainer({
                                 placement="bottom"
                                 content={tag.value}
                                 trigger="mouseenter"
-                                interactive={true}
+                                interactive
                             >
                                 <div
                                     className="bcn-0 cn-9 fw-4 fs-12 lh-16 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border dc__mxw-400 dc__ellipsis-right"

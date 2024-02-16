@@ -71,7 +71,6 @@ export interface ResponsePayload {
     }
 }
 
-
 interface ManagedFields {
     [key: string]: any
 }
@@ -87,9 +86,7 @@ export interface ManifestData {
 }
 
 export interface CustomLogsModalProps {
-    setSelectedCustomLogFilter: React.Dispatch<
-        React.SetStateAction<SelectedCustomLogFilterType>
-    >
+    setSelectedCustomLogFilter: React.Dispatch<React.SetStateAction<SelectedCustomLogFilterType>>
     selectedCustomLogFilter: SelectedCustomLogFilterType
     setNewFilteredLogs: React.Dispatch<React.SetStateAction<boolean>>
     setLogsShownOption: React.Dispatch<

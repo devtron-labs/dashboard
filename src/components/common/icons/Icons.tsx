@@ -1,6 +1,6 @@
 import React from 'react'
 
-export function NavigationArrow({ color = '#06c', style = {}, ...props }) {
+export const NavigationArrow = ({ color = '#06c', style = {}, ...props }) => {
     return (
         <svg
             {...props}
@@ -16,7 +16,7 @@ export function NavigationArrow({ color = '#06c', style = {}, ...props }) {
     )
 }
 
-export function Pod({ color = '#06c', style = {}, onClick = null }) {
+export const Pod = ({ color = '#06c', style = {}, onClick = null }) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '24px', height: '24px', ...style }} viewBox="0 0 24 24">
             <g fill="none" fillRule="evenodd">
@@ -31,7 +31,7 @@ export function Pod({ color = '#06c', style = {}, onClick = null }) {
     )
 }
 
-export function Clipboard({ color = 'black', rootClassName = '', style = {}, onClick = null }) {
+export const Clipboard = ({ color = 'black', rootClassName = '', style = {}, onClick = null }) => {
     return (
         <svg
             onClick={onClick}
@@ -52,15 +52,15 @@ export function Clipboard({ color = 'black', rootClassName = '', style = {}, onC
     )
 }
 
-export function Trash({ color = '#F32E2E', style = {}, onClick = null, ...rest }) {
+export const Trash = ({ color = '#F32E2E', style = {}, onClick = null, ...rest }) => {
     return (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
                 d="M2.5 5.00001H4.16667M4.16667 5.00001H17.5M4.16667 5.00001L4.16667 16.6667C4.16667 17.5872 4.91286 18.3333 5.83333 18.3333H14.1667C15.0871 18.3333 15.8333 17.5872 15.8333 16.6667V5.00001M6.66667 5.00001V3.33334C6.66667 2.41286 7.41286 1.66667 8.33334 1.66667H11.6667C12.5871 1.66667 13.3333 2.41286 13.3333 3.33334V5.00001M8.33333 9.16667V14.1667M11.6667 9.16667V14.1667"
                 stroke="#596168"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
             />
         </svg>
     )
@@ -86,7 +86,7 @@ export const Branch: React.SFC<{ color: string; style?: any; onClick?: () => {} 
     )
 }
 
-export function Redirect({ color = 'var(--N700)', style = {}, onClick = null }) {
+export const Redirect = ({ color = 'var(--N700)', style = {}, onClick = null }) => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -106,14 +106,14 @@ export function Redirect({ color = 'var(--N700)', style = {}, onClick = null }) 
     )
 }
 
-export function Pencil({ color = 'var(--N700)', style = {}, ...props }) {
+export const Pencil = ({ color = 'var(--N700)', style = {}, ...props }) => {
     return (
         <svg
             {...props}
             xmlns="http://www.w3.org/2000/svg"
             style={{ width: '24px', height: '24px', ...style }}
             viewBox="0 0 24 24"
-            data-testid='group-name-edit-icon'
+            data-testid="group-name-edit-icon"
         >
             <g fill="none" fillRule="evenodd">
                 <path
@@ -125,7 +125,7 @@ export function Pencil({ color = 'var(--N700)', style = {}, ...props }) {
         </svg>
     )
 }
-export function Page({ style = {}, color = '#06c', ...props }) {
+export const Page = ({ style = {}, color = '#06c', ...props }) => {
     return (
         <svg
             {...props}
@@ -153,7 +153,7 @@ export function Page({ style = {}, color = '#06c', ...props }) {
         </svg>
     )
 }
-export function DropdownIcon({ style = {}, color = '#06c', ...props }) {
+export const DropdownIcon = ({ style = {}, color = '#06c', ...props }) => {
     return (
         <svg
             {...props}
@@ -175,7 +175,7 @@ export function DropdownIcon({ style = {}, color = '#06c', ...props }) {
     )
 }
 
-export function Info({ color = '#06c', style = {}, ...rest }) {
+export const Info = ({ color = '#06c', style = {}, ...rest }) => {
     return (
         <svg
             {...rest}

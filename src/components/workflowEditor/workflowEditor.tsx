@@ -1,7 +1,5 @@
 import React, { Component, createContext } from 'react'
-import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
-import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import {
     showError,
     Progressing,
@@ -16,10 +14,17 @@ import {
     AddPipelineType,
     SelectedNode,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '../common'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import { ChangeCIPayloadType, PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
+import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
+import { importComponentFromFELibrary } from '../common'
 import { Workflow } from './Workflow'
-import { getAllChildDownstreams, getCreateWorkflows, getMaxYFromFirstLevelDownstream } from '../app/details/triggerView/workflow.service'
+import {
+    getAllChildDownstreams,
+    getCreateWorkflows,
+    getMaxYFromFirstLevelDownstream,
+} from '../app/details/triggerView/workflow.service'
 import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
 import CIPipeline from '../CIPipelineN/CIPipeline'
@@ -41,7 +46,6 @@ import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
-import Tippy from '@tippyjs/react'
 import EmptyWorkflow from './EmptyWorkflow'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
@@ -153,8 +157,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 this.setState({
                     appName: result.appName,
                     workflows: result.workflows,
-                    allCINodeMap: allCINodeMap,
-                    allDeploymentNodeMap: allDeploymentNodeMap,
+                    allCINodeMap,
+                    allDeploymentNodeMap,
                     view: ViewType.FORM,
                     envToShowWebhookTippy: -1,
                     filteredCIPipelines: result.filteredCIPipelines,
@@ -216,10 +220,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     deleteWorkflow = (appId?: string, workflowId?: number) => {
         deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
             .then((response) => {
-
-                if(response.errors){
-                    const {errors} = response
-                    const {userMessage} = errors[0]
+                if (response.errors) {
+                    const { errors } = response
+                    const { userMessage } = errors[0]
                     toast.error(userMessage)
                     return
                 }
@@ -348,14 +351,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             setTimeout(() => {
                 this.setState({
                     showSuccessScreen: true,
-                    environmentId: environmentId,
-                    environmentName: environmentName,
-                    successTitle: successTitle,
+                    environmentId,
+                    environmentName,
+                    successTitle,
                 })
             }, 700)
         }
 
-        //update isCDpipeline in AppCompose
+        // update isCDpipeline in AppCompose
         if (!this.props.isCDPipeline) {
             this.props.respondOnSuccess()
         }
@@ -481,7 +484,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
     }
 
-    //TODO: dynamic routes for ci-pipeline
+    // TODO: dynamic routes for ci-pipeline
     renderRouter() {
         return (
             <Switch>

@@ -3,11 +3,15 @@ import { Routes } from '../../config'
 import { getEnvironmentConfigs, getEnvironmentSecrets } from '../../services/service'
 
 export function updateConfig(id, appId, configData, signal?) {
-    return post(`${Routes.APP_CREATE_CONFIG_MAP}`, {
-        ...(id && { id }),
-        appId,
-        configData: [configData],
-    }, {signal})
+    return post(
+        `${Routes.APP_CREATE_CONFIG_MAP}`,
+        {
+            ...(id && { id }),
+            appId,
+            configData: [configData],
+        },
+        { signal },
+    )
 }
 
 export function deleteConfig(id, appId, name) {
@@ -19,28 +23,35 @@ export function deleteEnvConfigMap(id, appId, envId, name) {
 }
 
 export function overRideConfigMap(id, appId, environmentId, configData, signal?) {
-    return post(`${Routes.APP_CREATE_ENV_CONFIG_MAP}`, {
-        id,
-        appId,
-        environmentId,
-        configData,
-    }, {signal})
+    return post(
+        `${Routes.APP_CREATE_ENV_CONFIG_MAP}`,
+        {
+            id,
+            appId,
+            environmentId,
+            configData,
+        },
+        { signal },
+    )
 }
 
 export function getConfigMapList(appId, envId?, signal?) {
     if (envId) {
         return getEnvironmentConfigs(appId, envId, { signal })
-    } else {
-        return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`, { signal })
     }
+    return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`, { signal })
 }
 
 export function updateSecret(id, appId, configData, signal?) {
-    return post(`${Routes.APP_CREATE_SECRET}`, {
-        ...(id && { id }),
-        appId,
-        configData: [configData],
-    }, {signal})
+    return post(
+        `${Routes.APP_CREATE_SECRET}`,
+        {
+            ...(id && { id }),
+            appId,
+            configData: [configData],
+        },
+        { signal },
+    )
 }
 
 export function deleteSecret(id, appId, name) {
@@ -66,16 +77,19 @@ export function getCMSecret(componentType, id, appId, name, envId?, signal?) {
 export function getSecretList(appId, envId?, signal?) {
     if (envId) {
         return getEnvironmentSecrets(appId, envId)
-    } else {
-        return get(`${Routes.APP_CREATE_SECRET}/${appId}`, { signal })
     }
+    return get(`${Routes.APP_CREATE_SECRET}/${appId}`, { signal })
 }
 
 export function overRideSecret(id, appId, environmentId, configData, signal?) {
-    return post(`${Routes.APP_CREATE_ENV_SECRET}`, {
-        id,
-        appId,
-        environmentId,
-        configData
-    },{signal})
+    return post(
+        `${Routes.APP_CREATE_ENV_SECRET}`,
+        {
+            id,
+            appId,
+            environmentId,
+            configData,
+        },
+        { signal },
+    )
 }

@@ -7,22 +7,25 @@ export class ValidationRules {
 
         if (!key) {
             return { message: 'Key is required', isValid: false }
-        } else {
-            if (key.length > 253) {
-                return { message: 'Maximum 253 chars are allowed', isValid: false }
-            } else if (key.indexOf('/') !== -1) {
-                const keyArr = key.split('/')
-                if (keyArr.length > 2) {
-                    return { message: 'Maximum one ( / ) allowed', isValid: false }
-                } else if (!keyPrefixRegex.test(keyArr[0])) {
-                    return { message: 'Invalid prefix in key', isValid: false }
-                } else if (!keyNameRegex.test(keyArr[1])) {
-                    return { message: 'Invalid name in key', isValid: false }
-                }
-            } else if (!keyNameRegex.test(key)) {
-                return { message: 'Invalid key', isValid: false }
-            }
         }
+        if (key.length > 253) {
+            return { message: 'Maximum 253 chars are allowed', isValid: false }
+        }
+        if (key.indexOf('/') !== -1) {
+            const keyArr = key.split('/')
+            if (keyArr.length > 2) {
+                return { message: 'Maximum one ( / ) allowed', isValid: false }
+            }
+            if (!keyPrefixRegex.test(keyArr[0])) {
+                return { message: 'Invalid prefix in key', isValid: false }
+            }
+            if (!keyNameRegex.test(keyArr[1])) {
+                return { message: 'Invalid name in key', isValid: false }
+            }
+        } else if (!keyNameRegex.test(key)) {
+            return { message: 'Invalid key', isValid: false }
+        }
+
         return { message: null, isValid: true }
     }
 
@@ -31,7 +34,8 @@ export class ValidationRules {
         if (value) {
             if (value.length > 63) {
                 return { message: 'Maximum 63 chars are allowed', isValid: false }
-            } else if (!valueRegex.test(value)) {
+            }
+            if (!valueRegex.test(value)) {
                 return { message: 'Invalid value', isValid: false }
             }
         }

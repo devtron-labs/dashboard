@@ -1,10 +1,10 @@
+import moment from 'moment'
 import { handleUTCTime } from '../../common'
 import { Environment } from './types'
-import moment from 'moment'
 
 export const buildInitState = (appListPayload): Promise<any> => {
     return new Promise((resolve) => {
-        let parsedResponse = {
+        const parsedResponse = {
             apps: [],
             offset: appListPayload?.offset,
             size: 0,
@@ -46,7 +46,7 @@ export const createAppListPayload = (payloadParsedFromUrl, environmentClusterLis
             environments = [...environments, ...envList]
         }
     })
-    
+
     return { ...payloadParsedFromUrl, environments: [...new Set(environments)] }
 }
 
@@ -62,11 +62,11 @@ export const appListModal = (appList) => {
 }
 
 const environmentModal = (env) => {
-    let status = env.status
+    let { status } = env
     if (env.status.toLocaleLowerCase() == 'deployment initiated') {
         status = 'Progressing'
     }
-    let appStatus = env.appStatus
+    let { appStatus } = env
     if (!env.appStatus) {
         if (env.lastDeployedTime) {
             appStatus = ''
@@ -85,18 +85,18 @@ const environmentModal = (env) => {
         ciArtifactId: env.ciArtifactId || 0,
         clusterName: env?.clusterName || '',
         namespace: env?.namespace || '',
-        appStatus: appStatus,
-        isVirtualEnvironment: env?.isVirtualEnvironment
+        appStatus,
+        isVirtualEnvironment: env?.isVirtualEnvironment,
     }
 }
 
 const getDefaultEnvironment = (envList): Environment => {
-    let env = envList[0]
-    let status = env.status
+    const env = envList[0]
+    let { status } = env
     if (env.status.toLowerCase() === 'deployment initiated') {
         status = 'Progressing'
     }
-    let appStatus = env.appStatus || (env.lastDeployedTime ? '' : 'notdeployed')
+    const appStatus = env.appStatus || (env.lastDeployedTime ? '' : 'notdeployed')
     return {
         id: env.environmentId as number,
         name: env?.environmentName,
@@ -107,7 +107,7 @@ const getDefaultEnvironment = (envList): Environment => {
         clusterName: env?.clusterName || '',
         namespace: env?.namespace || '',
         appStatus,
-        isVirtualEnvironment: env?.isVirtualEnvironment
+        isVirtualEnvironment: env?.isVirtualEnvironment,
     }
 }
 
@@ -115,11 +115,11 @@ const getLastDeployedEnv = (envList: Array<Environment>): Environment => {
     let env = envList[0]
     let ms = moment(new Date(0)).valueOf()
     for (let i = 0; i < envList.length; i++) {
-        let time =
+        const time =
             envList[i].lastDeployedTime && envList[i].lastDeployedTime.length
                 ? envList[i].lastDeployedTime
                 : new Date(0)
-        let tmp = moment(time).utc(true).subtract(5, 'hours').subtract(30, 'minutes').valueOf()
+        const tmp = moment(time).utc(true).subtract(5, 'hours').subtract(30, 'minutes').valueOf()
         if (tmp > ms) {
             ms = tmp
             env = envList[i]
@@ -143,6 +143,8 @@ const getStatus = () => {
 }
 
 const handleDeploymentInitiatedStatus = (status: string): string => {
-    if (status.replace(/\s/g, '').toLowerCase() == 'deploymentinitiated') return 'progressing'
-    else return status
+    if (status.replace(/\s/g, '').toLowerCase() == 'deploymentinitiated') {
+        return 'progressing'
+    }
+    return status
 }

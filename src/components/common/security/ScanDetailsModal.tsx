@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
     showError,
     Progressing,
@@ -7,47 +7,47 @@ import {
     VulnerabilityType,
     Drawer,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
-import { ViewType, URLS } from '../../../config';
-import { getLastExecutionByImageScanDeploy } from '../../../services/service';
-import { Link } from 'react-router-dom';
-import { ScannedByToolModal } from './ScannedByToolModal';
-import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails';
+import { Link } from 'react-router-dom'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { ViewType, URLS } from '../../../config'
+import { getLastExecutionByImageScanDeploy } from '../../../services/service'
+import { ScannedByToolModal } from './ScannedByToolModal'
+import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails'
 
 interface ScanDetailsModalProps {
-    uniqueId: ExecutionId;
-    showAppInfo: boolean;
-    name?: string;
-    close: () => void;
+    uniqueId: ExecutionId
+    showAppInfo: boolean
+    name?: string
+    close: () => void
 }
 
 interface ExecutionId {
-    appId: number | string;
-    envId: number | string;
-    imageScanDeployInfoId: number;
+    appId: number | string
+    envId: number | string
+    imageScanDeployInfoId: number
 }
 
 interface ScanDetailsModalState {
-    view: string;
-    lastExecution: string;
-    scanExecutionId?: number;
-    scanEnabled: boolean;
-    scanned: boolean;
-    appId?: number;
-    appName?: string;
-    envId?: number;
-    envName?: string;
-    pod?: string;
-    replicaSet?: string;
-    image?: string;
-    objectType: 'app' | 'chart';
+    view: string
+    lastExecution: string
+    scanExecutionId?: number
+    scanEnabled: boolean
+    scanned: boolean
+    appId?: number
+    appName?: string
+    envId?: number
+    envName?: string
+    pod?: string
+    replicaSet?: string
+    image?: string
+    objectType: 'app' | 'chart'
     severityCount: {
-        critical: number;
-        moderate: number;
-        low: number;
-    },
-    vulnerabilities: VulnerabilityType[];
-    scanToolId?:number
+        critical: number
+        moderate: number
+        low: number
+    }
+    vulnerabilities: VulnerabilityType[]
+    scanToolId?: number
 }
 
 export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetailsModalState> {
@@ -94,31 +94,39 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     }
 
     callGetAPI() {
-        let promise = getLastExecutionByImageScanDeploy(this.props.uniqueId.imageScanDeployInfoId, this.props.uniqueId.appId, this.props.uniqueId.envId)
-        promise.then((response) => {
-            this.setState({
-                ...response.result,
-                view: ViewType.FORM,
-            });
-        }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR });
-        })
+        const promise = getLastExecutionByImageScanDeploy(
+            this.props.uniqueId.imageScanDeployInfoId,
+            this.props.uniqueId.appId,
+            this.props.uniqueId.envId,
+        )
+        promise
+            .then((response) => {
+                this.setState({
+                    ...response.result,
+                    view: ViewType.FORM,
+                })
+            })
+            .catch((error) => {
+                showError(error)
+                this.setState({ view: ViewType.ERROR })
+            })
     }
 
     renderHeader() {
-        return <div className="trigger-modal__header">
-            <h1 className="modal__title">{this.props.name ? this.props.name : `Security Vulnerabilities`}</h1>
-            <button type="button" className="dc__transparent " onClick={this.props.close}>
-                <Close className="icon-dim-20" />
-            </button>
-        </div>
+        return (
+            <div className="trigger-modal__header">
+                <h1 className="modal__title">{this.props.name ? this.props.name : `Security Vulnerabilities`}</h1>
+                <button type="button" className="dc__transparent " onClick={this.props.close}>
+                    <Close className="icon-dim-20" />
+                </button>
+            </div>
+        )
     }
 
     renderScannedObjectInfo() {
-        let link = `/app/${this.state.appId}/details/${this.state.envId}`;
+        let link = `/app/${this.state.appId}/details/${this.state.envId}`
         if (this.state.objectType === 'chart') {
-            link = `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${this.state.appId}/env/${this.state.envId}`;
+            link = `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${this.state.appId}/env/${this.state.envId}`
         }
         return (
             <div className="scanned-object">
@@ -159,10 +167,10 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                     ) : null}
                     {this.props.showAppInfo && this.state.objectType !== 'chart' ? (
                         <div className="flexbox dc__content-space pt-3">
-                            <div className='flex top'>
-                            <span className="flex">
-                                <ScannedByToolModal scanToolId={this.state.scanToolId} />
-                            </span>
+                            <div className="flex top">
+                                <span className="flex">
+                                    <ScannedByToolModal scanToolId={this.state.scanToolId} />
+                                </span>
                             </div>
                         </div>
                     ) : null}
@@ -218,6 +226,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
             </>
         )
     }
+
     renderTable() {
         return (
             <div className="scanned-object__results">

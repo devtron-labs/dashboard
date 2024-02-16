@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { showError, DeleteDialog, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { NodeActionModalPropType } from '../types'
-import { useParams } from 'react-router-dom'
 import { deleteNodeCapacity } from '../clusterNodes.service'
-import { toast } from 'react-toastify'
 import { DELETE_NODE_MODAL_MESSAGING } from '../constants'
 
 export default function DeleteNodeModal({ name, version, kind, closePopup }: NodeActionModalPropType) {
@@ -20,9 +20,9 @@ export default function DeleteNodeModal({ name, version, kind, closePopup }: Nod
             setAPICallInProgress(true)
             const payload = {
                 clusterId: Number(clusterId),
-                name: name,
-                version: version,
-                kind: kind,
+                name,
+                version,
+                kind,
             }
             await deleteNodeCapacity(payload)
             toast.success(DELETE_NODE_MODAL_MESSAGING.initiated)

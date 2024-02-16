@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useRouteMatch, NavLink, Link } from 'react-router-dom'
-import { URLS } from '../../../../config'
-import { usePrevious, createClusterEnvGroup } from '../../../common'
 import {
     showError,
     DeleteDialog,
@@ -10,6 +8,10 @@ import {
     PopupMenu,
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import ReactSelect, { components } from 'react-select'
+import { URLS, DOCUMENTATION } from '../../../../config'
+import { usePrevious, createClusterEnvGroup } from '../../../common'
 import {
     addJobEnvironment,
     deleteJobEnvironment,
@@ -25,10 +27,7 @@ import { ReactComponent as More } from '../../../../assets/icons/ic-more-option.
 import { ReactComponent as DeleteIcon } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ProtectedIcon } from '../../../../assets/icons/ic-shield-protect-fill.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
-import { toast } from 'react-toastify'
-import { DOCUMENTATION } from '../../../../config'
 import { EnvironmentOverrideRouteProps, EnvironmentOverrideRouterProps } from './appConfig.type'
-import ReactSelect, { components } from 'react-select'
 import { groupHeading } from '../../../CIPipelineN/Constants'
 import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
 import { groupStyle } from '../../../v2/common/ReactSelect.utils'
@@ -63,7 +62,7 @@ const EnvOverrideRoute = ({
     const { url } = useRouteMatch()
     const location = useLocation()
     const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}`
-    const [collapsed, toggleCollapsed] = useState(location.pathname.includes(`${LINK}/`) ? false : true)
+    const [collapsed, toggleCollapsed] = useState(!location.pathname.includes(`${LINK}/`))
     const [showConfirmationDialog, setConfirmationDialog] = useState(false)
     const [showDelete, setDeleteView] = useState(false)
     const [deletePipeline, setDeletePipeline] = useState()
@@ -87,7 +86,7 @@ const EnvOverrideRoute = ({
     }
 
     const deleteEnvHandler = () => {
-        let requestBody = { envId: envOverride.environmentId, appId: appId }
+        const requestBody = { envId: envOverride.environmentId, appId }
         deleteJobEnvironment(requestBody)
             .then((response) => {
                 toast.success('Deleted Successfully')
@@ -168,7 +167,7 @@ const EnvOverrideRoute = ({
     const deletePopUpMenu = (): JSX.Element => {
         return (
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto" isKebab={true}>
+                <PopupMenu.Button rootClassName="flex ml-auto" isKebab>
                     <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
@@ -291,7 +290,7 @@ export default function EnvironmentOverrideRouter({
                 getCIConfig(Number(appId)),
                 getJobOtherEnvironmentMin(appId),
             ])
-            let list = []
+            const list = []
             envListMinRes?.forEach((env) => {
                 if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
                     list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
@@ -310,7 +309,7 @@ export default function EnvironmentOverrideRouter({
         try {
             setIsEnvLoading(true)
             setEnvironmentView(!addEnvironment)
-            let requestBody = { envId: selection.id, appId: appId }
+            const requestBody = { envId: selection.id, appId }
             await addJobEnvironment(requestBody)
             toast.success('Saved Successfully')
             getJobOtherEnvironment()
@@ -356,7 +355,7 @@ export default function EnvironmentOverrideRouter({
                 menuIsOpen
                 isSearchable
                 menuPlacement="auto"
-                closeMenuOnScroll={true}
+                closeMenuOnScroll
                 placeholder="Select Environment"
                 classNamePrefix="job-pipeline-environment-dropdown"
                 options={environmentOptions}
@@ -370,7 +369,7 @@ export default function EnvironmentOverrideRouter({
                     IndicatorSeparator: null,
                     DropdownIndicator: null,
                     GroupHeading: groupHeading,
-                    ValueContainer: ValueContainer,
+                    ValueContainer,
                 }}
                 styles={{
                     ...groupStyle(),
@@ -414,7 +413,8 @@ export default function EnvironmentOverrideRouter({
                     })}
                 </div>
             )
-        } else if (!isJobView) {
+        }
+        if (!isJobView) {
             return (
                 <InfoColourBar
                     classname="question-bar no-env-overrides"
@@ -424,9 +424,8 @@ export default function EnvironmentOverrideRouter({
                     iconSize={16}
                 />
             )
-        } else {
-            return null
         }
+        return null
     }
 
     return (

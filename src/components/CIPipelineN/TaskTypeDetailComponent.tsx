@@ -1,10 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
-import OutputDirectoryPath from './OutputDirectoryPath'
-import MultiplePort from './MultiplsPort'
 import Tippy from '@tippyjs/react'
-import TaskFieldTippyDescription from './TaskFieldTippyDescription'
-import MountFromHost from './MountFromHost'
 import {
     Checkbox,
     CHECKBOX_VALUE,
@@ -14,10 +9,15 @@ import {
     ScriptType,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CustomScript from './CustomScript'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
+import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
+import OutputDirectoryPath from './OutputDirectoryPath'
+import MultiplePort from './MultiplsPort'
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
+import MountFromHost from './MountFromHost'
+import CustomScript from './CustomScript'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
 import { containerImageSelectStyles } from './ciPipeline.utils'
@@ -27,7 +27,7 @@ import { CopyToClipboardTextWithTippy } from '../app/list/TriggerUrl'
 import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-export function TaskTypeDetailComponent() {
+export const TaskTypeDetailComponent = () => {
     const {
         selectedTaskIndex,
         formData,
@@ -58,18 +58,16 @@ export function TaskTypeDetailComponent() {
             if (!formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) {
                 const _formData = { ...formData }
                 _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script =
-                    '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n' //default value for shell
+                    '#!/bin/sh \nset -eo pipefail \n#set -v  ## uncomment this to debug the script \n' // default value for shell
                 setFormData(_formData)
             }
-        } else {
-            if (
-                JSON.stringify(formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) ===
-                '"#!/bin/sh \\nset -eo pipefail \\n#set -v  ## uncomment this to debug the script \\n"'
-            ) {
-                const _formData = { ...formData }
-                _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = '' //default value for container image
-                setFormData(_formData)
-            }
+        } else if (
+            JSON.stringify(formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script) ===
+            '"#!/bin/sh \\nset -eo pipefail \\n#set -v  ## uncomment this to debug the script \\n"'
+        ) {
+            const _formData = { ...formData }
+            _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script = '' // default value for container image
+            setFormData(_formData)
         }
     }, [formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType])
 
@@ -147,7 +145,7 @@ export function TaskTypeDetailComponent() {
         )
     }
 
-    function Option(_props) {
+    const Option = (_props) => {
         const { selectProps, data } = _props
         selectProps.styles.option = getCustomOptionSelectionStyle({ padding: '4px 10px' })
         if (data.description) {
@@ -158,13 +156,12 @@ export function TaskTypeDetailComponent() {
                     </div>
                 </Tippy>
             )
-        } else {
-            return (
-                <div className="flex left">
-                    <components.Option {..._props}>{_props.children}</components.Option>
-                </div>
-            )
         }
+        return (
+            <div className="flex left">
+                <components.Option {..._props}>{_props.children}</components.Option>
+            </div>
+        )
     }
 
     const handleContainerImageSelector = (selectedValue: OptionType) => {
@@ -262,7 +259,7 @@ export function TaskTypeDetailComponent() {
                     </div>
                 </div>
                 <div className="row-container mb-12 fs-13 fw-6">
-                    <div></div>
+                    <div />
                     <Checkbox
                         isChecked={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.isMountCustomScript
@@ -315,10 +312,7 @@ export function TaskTypeDetailComponent() {
                     </>
                 )}
                 <div className="row-container mb-12">
-                    <TaskFieldTippyDescription
-                        taskField={'Command'}
-                        contentDescription={TaskFieldDescription.COMMAND}
-                    />
+                    <TaskFieldTippyDescription taskField="Command" contentDescription={TaskFieldDescription.COMMAND} />
                     <CustomInput
                         data-testid="custom-script-container-image-command-textbox"
                         rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
@@ -333,7 +327,7 @@ export function TaskTypeDetailComponent() {
                     />
                 </div>
                 <div className="row-container mb-12">
-                    <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
+                    <TaskFieldTippyDescription taskField="Args" contentDescription={TaskFieldDescription.ARGS} />
                     <CustomInput
                         name="args"
                         data-testid="custom-script-container-image-args-textbox"
@@ -377,7 +371,7 @@ export function TaskTypeDetailComponent() {
                 {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
                     <div className="mb-12">
                         <div className="row-container">
-                            <div className="fw-6 fs-13 lh-32 cn-7 "></div>
+                            <div className="fw-6 fs-13 lh-32 cn-7 " />
                             <CustomInput
                                 name="mountCodeToContainerPath"
                                 rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
@@ -433,11 +427,9 @@ export function TaskTypeDetailComponent() {
 
     if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.SHELL) {
         return renderShellScript()
-    } else if (
-        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE
-    ) {
-        return renderContainerScript()
-    } else {
-        return <></>
     }
+    if (formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE) {
+        return renderContainerScript()
+    }
+    return <></>
 }

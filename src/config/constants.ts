@@ -68,6 +68,8 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
+    ARGO_APPLICATION: 'argo-application/detail',
+    EPHEMERAL_CONTAINERS: 'k8s/resources/ephemeralContainers',
     APP_EDIT: 'app/edit',
 
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
@@ -87,7 +89,7 @@ export const Routes = {
     PROJECT: 'team',
     PROJECT_LIST: 'team',
     PROJECT_LIST_MIN: 'team/autocomplete',
-    TEAM_USER: 'team/app/user', //TODO: PROJECT_USER
+    TEAM_USER: 'team/app/user', // TODO: PROJECT_USER
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
@@ -129,6 +131,7 @@ export const Routes = {
     PIPELINE_CONFIG_MAP_SAVE: 'configmap/create/pipelinelevel',
     PIPELINE_CONFIG_MAP_UPDATE: 'configmap/update/pipelinelevel',
     CHART_INSTALLED: 'app-store/installed-app',
+    ARGO_APPS: 'argo-application',
     CHART_AVAILABLE: 'app-store',
     CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
@@ -246,7 +249,7 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
-    USER: 'user'
+    USER: 'user',
 }
 
 export const ViewType = {
@@ -289,7 +292,7 @@ export const PATTERNS = {
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
-    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, //Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
+    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
     ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
     ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
 }
@@ -390,10 +393,12 @@ export const AppListConstants = {
     AppTabs: {
         DEVTRON_APPS: 'Devtron Apps',
         HELM_APPS: 'Helm Apps',
+        ARGO_APPS: 'ArgoCD Apps',
     },
     AppType: {
         DEVTRON_APPS: 'd',
         HELM_APPS: 'h',
+        ARGO_APPS: 'a',
     },
     FilterType: {
         PROJECT: 'team',
@@ -414,8 +419,8 @@ export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = 'devtron-app', // devtron app work flow
-    HELM_APPS = 'helm-app', //helm app work flow
-    JOBS = '', //Empty string is intentional since there is no bifurcation in jobs as of now
+    HELM_APPS = 'helm-app', // helm app work flow
+    JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
 }
 
 export enum MODES {
@@ -894,18 +899,20 @@ export const ALLOW_UNTIL_TIME = {
 
 export const ALLOW_UNTIL_TIME_OPTIONS: any[] = Object.entries(ALLOW_UNTIL_TIME).map(([key, value]) => ({
     label: key,
-    value: value,
+    value,
 }))
 
-export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY= "Enforced from Global Configurations. Go to Global Configurations to change."
-export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE= "Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here."
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
+    'Enforced from Global Configurations. Go to Global Configurations to change.'
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
+    'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export const API_STATUS_CODES = {
     UNAUTHORIZED: 401,
     PERMISSION_DENIED: 403,
     NOT_FOUND: 404,
-    EXPECTATION_FAILED: 417
+    EXPECTATION_FAILED: 417,
 }
 
 export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
+import { PopupMenu, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
 import { ReactComponent as UncordonIcon } from '../../../assets/icons/ic-play-medium.svg'
@@ -8,7 +9,6 @@ import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spray
 import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { PopupMenu, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
 import { NodeActionsMenuProps } from '../types'
 import CordonNodeModal from './CordonNodeModal'
 import DrainNodeModal from './DrainNodeModal'
@@ -22,7 +22,7 @@ export default function NodeActionsMenu({
     openTerminal,
     getNodeListData,
     isSuperAdmin,
-    addTab
+    addTab,
 }: NodeActionsMenuProps) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -110,7 +110,7 @@ export default function NodeActionsMenu({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex" isKebab={true}>
+                <PopupMenu.Button rootClassName="flex" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>
