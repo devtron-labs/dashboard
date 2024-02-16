@@ -159,6 +159,9 @@ export default function App() {
             setValidating(false)
             defaultRedirection()
         }
+        return () => {
+          navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+        }
     }, [])
 
     const {
