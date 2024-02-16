@@ -190,7 +190,7 @@ export default function App() {
     function update() {
         updateServiceWorker(true)
         // Trigger page reload
-        window.location.reload()
+        //window.location.reload()
     }
 
     function onUpdate() {
