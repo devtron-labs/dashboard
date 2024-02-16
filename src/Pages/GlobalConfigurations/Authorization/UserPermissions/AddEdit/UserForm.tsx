@@ -25,7 +25,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, isFormComplete } from '../../APITokens/authorization.utils'
+import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -130,7 +130,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const handleSubmit = async () => {
-        if (!validateForm() || !isFormComplete(directPermission, setDirectPermission)) {
+        if (!validateForm() || !isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
             return
         }
         setSubmitting(true)

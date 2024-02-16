@@ -9,7 +9,7 @@ import { ServerErrors, showError, TippyCustomized, TippyTheme, CustomInput } fro
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
-import { createUserPermissionPayload, getDateInMilliseconds, isFormComplete } from './authorization.utils'
+import { getDateInMilliseconds } from './authorization.utils'
 import GenerateActionButton from './GenerateActionButton'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -26,6 +26,7 @@ import {
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
 } from '../shared/components/PermissionConfigurationForm'
+import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
 
 export const renderQuestionwithTippy = () => {
     return (
@@ -149,7 +150,7 @@ const CreateAPIToken = ({
     }
 
     const handleGenerateAPIToken = async () => {
-        if (!isFormComplete(directPermission, setDirectPermission)) {
+        if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
             toast.error('Some required fields are missing')
             return
         }

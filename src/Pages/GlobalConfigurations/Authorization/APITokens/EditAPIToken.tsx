@@ -16,7 +16,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
-import { createUserPermissionPayload, isFormComplete, isTokenExpired } from './authorization.utils'
+import { isTokenExpired } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
@@ -36,6 +36,7 @@ import {
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
 } from '../shared/components/PermissionConfigurationForm'
+import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
 
 const EditAPIToken = ({
     setShowRegeneratedModal,
@@ -107,7 +108,7 @@ const EditAPIToken = ({
     }
 
     const handleUpdatedToken = async (tokenId) => {
-        if (!isFormComplete(directPermission, setDirectPermission)) {
+        if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
             toast.error('Some required fields are missing')
             return
         }

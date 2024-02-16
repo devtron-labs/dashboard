@@ -45,6 +45,28 @@ import { getChartGroups } from '../../../../../components/charts/charts.service'
 const NAV_LINK_CLASS = 'tab-list__tab-link pt-8 pb-6 pl-0 pr-0 fs-13 lh-20 cn-9 dc__capitalize'
 const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase mb-0'
 
+const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
+    entity: EntityTypes.DIRECT,
+    entityName: [],
+    environment: [],
+    team: null,
+    action: {
+        label: '',
+        value: ActionTypes.VIEW,
+    },
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
+}
+const emptyDirectPermissionHelmApps = {
+    ...emptyDirectPermissionDevtronApps,
+    accessType: ACCESS_TYPE_MAP.HELM_APPS,
+}
+const emptyDirectPermissionJobs: DirectPermissionsRoleFilter = {
+    ...emptyDirectPermissionDevtronApps,
+    accessType: ACCESS_TYPE_MAP.JOBS,
+    workflow: [],
+    entity: EntityTypes.JOB,
+}
+
 const AppPermissionDetail = ({
     accessType,
     handleDirectPermissionChange,
@@ -179,27 +201,6 @@ const AppPermissions = () => {
         ]),
     )
 
-    const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
-        entity: EntityTypes.DIRECT,
-        entityName: [],
-        environment: [],
-        team: null,
-        action: {
-            label: '',
-            value: ActionTypes.VIEW,
-        },
-        accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
-    }
-    const emptyDirectPermissionHelmApps = {
-        ...emptyDirectPermissionDevtronApps,
-        accessType: ACCESS_TYPE_MAP.HELM_APPS,
-    }
-    const emptyDirectPermissionJobs: DirectPermissionsRoleFilter = {
-        ...emptyDirectPermissionDevtronApps,
-        accessType: ACCESS_TYPE_MAP.JOBS,
-        workflow: [],
-        entity: EntityTypes.JOB,
-    }
     const projectsList = configData?.[0]?.result ?? []
     const environmentsList = configData?.[1]?.result ?? []
     const chartGroupsList = configData?.[2]?.result?.groups ?? []

@@ -46,7 +46,7 @@ import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, W
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
-import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/authorization.utils'
+import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 
 export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{

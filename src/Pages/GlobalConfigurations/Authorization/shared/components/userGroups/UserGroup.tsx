@@ -158,25 +158,23 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         )
     }
 
-    const RoleMenuList = (props) => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                {ApproverPermission && permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
-                    <ApproverPermission
-                        optionProps={props}
-                        approver={permission.approver}
-                        configApprover={primaryActionRole.configApprover}
-                        handleDirectPermissionChange={(...rest: any[]) => {
-                            props.selectOption(props.selectProps.value)
-                            handleDirectPermissionChange(...rest)
-                        }}
-                        formatOptionLabel={formatOptionLabel}
-                    />
-                )}
-            </components.MenuList>
-        )
-    }
+    const RoleMenuList = (props) => (
+        <components.MenuList {...props}>
+            {props.children}
+            {ApproverPermission && permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
+                <ApproverPermission
+                    optionProps={props}
+                    approver={permission.approver}
+                    configApprover={primaryActionRole.configApprover}
+                    handleDirectPermissionChange={(...rest: any[]) => {
+                        props.selectOption(props.selectProps.value)
+                        handleDirectPermissionChange(...rest)
+                    }}
+                    formatOptionLabel={formatOptionLabel}
+                />
+            )}
+        </components.MenuList>
+    )
 
     useEffect(() => {
         const envOptions = createClusterEnvGroup(
@@ -403,16 +401,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         )
     }
 
-    function customFilter(option, searchText) {
-        if (
-            option.data.label?.toLowerCase().includes(searchText?.toLowerCase()) ||
-            option.data.clusterName?.toLowerCase().includes(searchText?.toLowerCase()) ||
-            option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
-        ) {
-            return true
-        }
-        return false
-    }
+    const customFilter = (option, searchText) =>
+        option.data.label?.toLowerCase().includes(searchText?.toLowerCase()) ||
+        option.data.clusterName?.toLowerCase().includes(searchText?.toLowerCase()) ||
+        option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
 
     function onFocus(name: 'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow') {
         changeOpenMenu(name)

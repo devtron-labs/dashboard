@@ -21,7 +21,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, isFormComplete } from '../../APITokens/authorization.utils'
+import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -79,7 +79,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             setName((_name) => ({ ..._name, error: 'Group name is mandatory' }))
             return
         }
-        if (!isSuperAdminPermission && !isFormComplete(directPermission, setDirectPermission)) {
+        if (!isSuperAdminPermission && !isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
             return
         }
         setSubmitting(true)
