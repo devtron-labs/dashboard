@@ -212,6 +212,12 @@ export default function App() {
     }
 
     useEffect(() => {
+        if (!needRefresh) {
+            update()
+        }
+    }, [location])
+
+    useEffect(() => {
         if (needRefresh) {
             onUpdate()
         }
