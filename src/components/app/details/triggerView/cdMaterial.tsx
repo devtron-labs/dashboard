@@ -90,7 +90,6 @@ import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import AnnouncementBanner from '../../../common/AnnouncementBanner'
 import { useRouteMatch } from 'react-router-dom'
-import { get } from 'http'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -132,7 +131,6 @@ export default function CDMaterial({
     const { searchParams } = useSearchString()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
-    const match = useRouteMatch()
 
     const searchImageTag = searchParams.search
 
@@ -266,18 +264,6 @@ export default function CDMaterial({
             delete newParams.search
         }
 
-        history.push({
-            search: new URLSearchParams(newParams).toString(),
-        })
-    }
-
-    const setInitialModeParams = (modeParamValue: string) => {
-        const newParams = {
-            ...searchParams,
-            mode: modeParamValue,
-            config: DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
-            deploy: searchParams.deploy ? searchParams.deploy : DeploymentWithConfigType.LAST_SAVED_CONFIG
-        }
         history.push({
             search: new URLSearchParams(newParams).toString(),
         })
@@ -768,9 +754,22 @@ const getInitialSelectedConfigToDeploy = () => {
                 isConfigPresent())) ||
         !state.recentDeploymentConfig
 
-    const reviewConfig = (modeParamValue: string) => {
+    const onClickSetInitialParams = (modeParamValue: string) => {
         if (canReviewConfig()) {
-            setInitialModeParams(modeParamValue)
+            const newParams = {
+                ...searchParams,
+                mode: modeParamValue,
+                config: DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
+                deploy: searchParams.deploy
+                    ? searchParams.deploy
+                    : materialType === MATERIAL_TYPE.rollbackMaterialList
+                      ? DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+                      : DeploymentWithConfigType.LAST_SAVED_CONFIG,
+            }
+            
+            history.push({
+                search: new URLSearchParams(newParams).toString(),
+            })
         }
     }
 
@@ -1955,7 +1954,7 @@ const getInitialSelectedConfigToDeploy = () => {
                     } ${isLastDeployedOption ? 'pt-10 pb-10' : 'pt-7 pb-7'}`}
                     disabled={state.checkingDiff}
                     type="button"
-                    onClick={() => reviewConfig('review-config')}
+                    onClick={() => onClickSetInitialParams('review-config')}
                 >
                     {!isLastDeployedOption && (state.recentDeploymentConfig !== null || state.checkingDiff) && (
                         <div
@@ -2148,7 +2147,7 @@ const getInitialSelectedConfigToDeploy = () => {
             <div className="trigger-modal__header">
                 {showConfigDiffView ? (
                     <div className="flex left">
-                        <button type="button" className="dc__transparent icon-dim-24" onClick={() => reviewConfig('list')}>
+                        <button type="button" className="dc__transparent icon-dim-24" onClick={() => onClickSetInitialParams('list')}>
                             <BackIcon />
                         </button>
                         <div className="flex column left ml-16">
