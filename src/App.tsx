@@ -195,6 +195,18 @@ export default function App() {
         }, 500)
     }
 
+    useEffect(() => {
+        if (window.isSecureContext && navigator.serviceWorker) {
+            // check for sw updates on page change
+            navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((reg) => reg.update()))
+            if (needRefresh) {
+                update()
+            } else if (toast.isActive(updateToastRef.current)) {
+                toast.dismiss(updateToastRef.current)
+            }
+        }
+    }, [location])
+
     function onUpdate() {
         const updateToastBody = (
             <UpdateToast
@@ -212,16 +224,6 @@ export default function App() {
             localStorage.removeItem('serverInfo')
         }
     }
-
-    useEffect(() => {
-        if (needRefresh) {
-            update()
-        } else {
-            if (toast.isActive(updateToastRef.current)) {
-                toast.dismiss(updateToastRef.current)
-            }
-        }
-    }, [location])
 
     useEffect(() => {
         if (needRefresh) {
