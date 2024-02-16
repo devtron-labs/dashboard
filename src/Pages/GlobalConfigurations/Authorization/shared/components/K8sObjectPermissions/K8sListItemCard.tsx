@@ -308,19 +308,14 @@ export default function K8sListItemCard({
         handleK8sPermission(action, index)
     }
 
-    const k8sMultiValueContainer = (): boolean => {
-        let isAllSelected = false
-        k8sPermission.resource.forEach((item) => {
-            if (item.value === '*') {
-                isAllSelected = true
-            }
-        })
-        return isAllSelected
-    }
+    const k8sMultiValueContainer = (): boolean =>  k8sPermission.resource.some((item) => item.value === '*')
 
-    const k8sOptions = ParseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => {
-        return { label: role.roleDisplayName, value: role.roleName, infoText: role.roleDescription }
-    })
+    const k8sOptions = ParseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
+        label: role.roleDisplayName,
+        value: role.roleName,
+        infoText: role.roleDescription,
+    }))
+
     return (
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
             <div className="cn-6 mb-6 flex dc__content-space">

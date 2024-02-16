@@ -1,7 +1,7 @@
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../../../constants'
-import AppPermissions from '../AppPermissions'
+import { AppPermissions } from '../AppPermissions'
 import SuperAdminInfoBar from '../SuperAdminInfoBar'
 import { UserPermissionGroupsSelector } from '../UserPermissionGroupsSelector'
 import { usePermissionConfiguration } from './PermissionConfigurationFormProvider'

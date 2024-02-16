@@ -1,21 +1,10 @@
-/* eslint-disable react/jsx-no-bind */
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable react/button-has-type */
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable array-callback-return */
-/* eslint-disable guard-for-in */
-/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-nested-ternary */
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import { GenericSectionErrorState, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { APPROVER_ACTION, CONFIG_APPROVER_ACTION, ChartPermission, DirectPermission } from './userGroups/UserGroup'
-import { ReactComponent as AddIcon } from '../../../../../assets/icons/ic-add.svg'
-import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../../../../config'
+import { APPROVER_ACTION, CONFIG_APPROVER_ACTION, ChartPermission } from '../userGroups/UserGroup'
+import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../../../../../config'
 import {
     ActionTypes,
     APIRoleFilter,
@@ -23,153 +12,30 @@ import {
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
     EntityTypes,
-} from './userGroups/userGroups.types'
-import { mapByKey, removeItemsFromArray } from '../../../../../components/common'
-import { mainContext, useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
-import K8sPermissions from './K8sObjectPermissions/K8sPermissions'
-import { apiGroupAll } from './K8sObjectPermissions/K8sPermissions.utils'
+} from '../userGroups/userGroups.types'
+import { mapByKey, removeItemsFromArray } from '../../../../../../components/common'
+import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
+import K8sPermissions from '../K8sObjectPermissions/K8sPermissions'
+import { apiGroupAll } from '../K8sObjectPermissions/K8sPermissions.utils'
 import {
     getAllWorkflowsForAppNames,
     getEnvironmentListHelmApps,
     getEnvironmentListMin,
     getProjectFilteredApps,
-} from '../../../../../services/service'
-import { DEFAULT_ENV } from '../../../../../components/app/details/triggerView/Constants'
-import { getJobs } from '../../../../../components/Jobs/Service'
-import { useAuthorizationContext } from '../../AuthorizationProvider'
-import { usePermissionConfiguration } from './PermissionConfigurationForm'
-import { getProjectList } from '../../../../../components/project/service'
-import { getChartGroups } from '../../../../../components/charts/charts.service'
-
-// TODO (v4): Remove these once the code is refactored
-const NAV_LINK_CLASS = 'tab-list__tab-link pt-8 pb-6 pl-0 pr-0 fs-13 lh-20 cn-9 dc__capitalize'
-const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase mb-0'
-
-const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
-    entity: EntityTypes.DIRECT,
-    entityName: [],
-    environment: [],
-    team: null,
-    action: {
-        label: '',
-        value: ActionTypes.VIEW,
-    },
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
-}
-const emptyDirectPermissionHelmApps = {
-    ...emptyDirectPermissionDevtronApps,
-    accessType: ACCESS_TYPE_MAP.HELM_APPS,
-}
-const emptyDirectPermissionJobs: DirectPermissionsRoleFilter = {
-    ...emptyDirectPermissionDevtronApps,
-    accessType: ACCESS_TYPE_MAP.JOBS,
-    workflow: [],
-    entity: EntityTypes.JOB,
-}
-
-const AppPermissionDetail = ({
-    accessType,
-    handleDirectPermissionChange,
-    removeDirectPermissionRow,
-    AddNewPermissionRow,
-    appsListHelmApps,
-    appsList,
-    jobsList,
-    projectsList,
-    environmentsList,
-    envClustersList,
-}: AppPermissionsDetailType) => {
-    const { directPermission } = usePermissionConfiguration()
-    return (
-        <>
-            <div
-                className="w-100 pt-6 pb-6 display-grid"
-                style={{
-                    gridTemplateColumns:
-                        accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                            ? '1fr 1fr 1fr 1fr 24px'
-                            : accessType === ACCESS_TYPE_MAP.HELM_APPS
-                              ? '1fr 2fr 1fr 1fr 24px'
-                              : '1fr 1fr 1fr 1fr 1fr 24px',
-                }}
-            >
-                <label className={PERMISSION_LABEL_CLASS}>Project</label>
-                <label
-                    className={PERMISSION_LABEL_CLASS}
-                    style={{ order: accessType === ACCESS_TYPE_MAP.JOBS ? 3 : 0 }}
-                >
-                    Environment{accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'or cluster/namespace' : ''}
-                </label>
-                <label
-                    className={PERMISSION_LABEL_CLASS}
-                    style={{ order: accessType === ACCESS_TYPE_MAP.JOBS ? 1 : 0 }}
-                >
-                    {accessType === ACCESS_TYPE_MAP.JOBS ? 'Job Name' : 'Application'}
-                </label>
-                {accessType === ACCESS_TYPE_MAP.JOBS && (
-                    <label
-                        className={PERMISSION_LABEL_CLASS}
-                        style={{ order: accessType === ACCESS_TYPE_MAP.JOBS ? 2 : 0 }}
-                    >
-                        Workflow
-                    </label>
-                )}
-                <label
-                    className={PERMISSION_LABEL_CLASS}
-                    style={{ order: accessType === ACCESS_TYPE_MAP.JOBS ? 4 : 0 }}
-                >
-                    {accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'Permission' : 'Role'}
-                </label>
-                <span style={{ order: 5 }} />
-            </div>
-
-            <div className="flexbox-col dc__gap-12">
-                {directPermission.map(
-                    (permission, idx) =>
-                        permission.accessType === accessType && (
-                            <div
-                                className="w-100 dc__gap-14 display-grid"
-                                style={{
-                                    // TODO (v3): Move to CSS
-                                    gridTemplateColumns:
-                                        accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                                            ? '1fr 1fr 1fr 1fr 24px'
-                                            : accessType === ACCESS_TYPE_MAP.HELM_APPS
-                                              ? '1fr 2fr 1fr 1fr 24px'
-                                              : '1fr 1fr 1fr 1fr 1fr 24px',
-                                }}
-                            >
-                                <DirectPermission
-                                    index={idx}
-                                    key={idx}
-                                    permission={permission}
-                                    removeRow={removeDirectPermissionRow}
-                                    handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
-                                        handleDirectPermissionChange(idx, value, actionMeta, workflowList)
-                                    }
-                                    appsListHelmApps={appsListHelmApps}
-                                    jobsList={jobsList}
-                                    appsList={appsList}
-                                    projectsList={projectsList}
-                                    environmentsList={environmentsList}
-                                    envClustersList={envClustersList}
-                                />
-                            </div>
-                        ),
-                )}
-                <div>
-                    <button
-                        className="anchor flex left dc__gap-4 fs-13 lh-20 fw-6 p-0"
-                        onClick={() => AddNewPermissionRow(accessType)}
-                    >
-                        <AddIcon className="icon-dim-20 fcb-5" />
-                        Add Permission
-                    </button>
-                </div>
-            </div>
-        </>
-    )
-}
+} from '../../../../../../services/service'
+import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
+import { getJobs } from '../../../../../../components/Jobs/Service'
+import { useAuthorizationContext } from '../../../AuthorizationProvider'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { getProjectList } from '../../../../../../components/project/service'
+import { getChartGroups } from '../../../../../../components/charts/charts.service'
+import {
+    emptyDirectPermissionDevtronApps,
+    emptyDirectPermissionHelmApps,
+    emptyDirectPermissionJobs,
+    NAV_LINK_CLASS,
+} from './constants'
+import AppPermissionDetail from './AppPermissionDetail'
 
 const AppPermissions = () => {
     const { serverMode } = useContext(mainContext)
@@ -338,7 +204,7 @@ const AppPermissions = () => {
         }
     }
 
-    function setAllApplication(directRoleFilter: APIRoleFilter, projectId) {
+    const setAllApplication = (directRoleFilter: APIRoleFilter, projectId) => {
         if (directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             const isJobs = directRoleFilter.entity === EntityTypes.JOB
             return [
@@ -366,6 +232,7 @@ const AppPermissions = () => {
         const jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
         const { result } = await getAllWorkflowsForAppNames(jobNames)
         const { appIdWorkflowNamesMapping } = result
+        // eslint-disable-next-line no-restricted-syntax, guard-for-in
         for (const jobName in appIdWorkflowNamesMapping) {
             workflowOptions.push({
                 label: jobName,
@@ -443,10 +310,13 @@ const AppPermissions = () => {
                     envMap.set(element, true)
                 }
             })
+            // eslint-disable-next-line no-unused-expressions
             envMap.size !== 0 &&
+                // eslint-disable-next-line array-callback-return
                 envClustersList.some((element) => {
+                    // eslint-disable-next-line no-unused-expressions
                     envMap.size !== 0 &&
-                        // eslint-disable-next-line consistent-return
+                        // eslint-disable-next-line consistent-return, array-callback-return
                         element.environments.some((env) => {
                             if (envMap.get(env.environmentIdentifier)) {
                                 returnArr.push({
@@ -495,6 +365,7 @@ const AppPermissions = () => {
         const uniqueProjectIdsDevtronApps = []
         const uniqueProjectIdsHelmApps = []
         const uniqueProjectIdsJobs = []
+        // eslint-disable-next-line no-restricted-syntax
         for (const element of roleFilters || []) {
             if (element.entity === EntityTypes.DIRECT) {
                 const projectId = projectsMap.get(element.team)?.id
@@ -530,6 +401,7 @@ const AppPermissions = () => {
                         directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
                         projectsMap.get(directRoleFilter.team)?.id
                     if (!directRoleFilter['accessType'] && directRoleFilter.entity !== EntityTypes.JOB) {
+                        // eslint-disable-next-line no-param-reassign
                         directRoleFilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS
                     }
                     if (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
@@ -639,19 +511,19 @@ const AppPermissions = () => {
         const startsWithHash = value && value.startsWith('#')
         if ((value && value.startsWith('*')) || startsWithHash) {
             if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
-                const clusterName = value.substring(1)
+                const _clusterName = value.substring(1)
                 // uncheck all environments
                 tempPermissions[index][name] = tempPermissions[index][name]?.filter(
                     (env) =>
-                        env.clusterName !== clusterName &&
-                        env.value !== `#${clusterName}` &&
-                        env.value !== `*${clusterName}`,
+                        env.clusterName !== _clusterName &&
+                        env.value !== `#${_clusterName}` &&
+                        env.value !== `*${_clusterName}`,
                 )
                 if (action === 'select-option') {
                     // check all environments
                     tempPermissions[index][name] = [
                         ...tempPermissions[index][name],
-                        ...setClusterValues(startsWithHash, clusterName),
+                        ...setClusterValues(startsWithHash, _clusterName),
                     ]
                     tempPermissions[index]['environmentError'] = null
                 }
@@ -695,7 +567,7 @@ const AppPermissions = () => {
     }
 
     // TODO (v3): Use the Approver permission component from fe-lib and remove the redundant if(s)
-    async function handleDirectPermissionChange(index, selectedValue, actionMeta, workflowList?) {
+    const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
         const { action, option, name } = actionMeta
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {
@@ -731,7 +603,7 @@ const AppPermissions = () => {
                     tempPermissions[index]['entityName'] = []
                 }
             } else {
-                const selectedOptions = selectedValue.filter(({ value }) => value !== '*')
+                const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== '*')
                 tempPermissions[index]['entityName'] = selectedOptions
                 tempPermissions[index]['entityNameError'] = null
             }
@@ -744,8 +616,8 @@ const AppPermissions = () => {
             const { value } = option || { value: '' }
             if (value === '*') {
                 if (action === 'select-option') {
-                    const allWorkflowOptions = workflowList?.options?.reduce((acc, option) => {
-                        return [...acc, ...option.options]
+                    const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
+                        return [...acc, ..._option.options]
                     }, [])
                     tempPermissions[index]['workflow'] = [
                         { label: 'Select all', value: '*' },
@@ -756,7 +628,7 @@ const AppPermissions = () => {
                     tempPermissions[index]['workflow'] = []
                 }
             } else {
-                const selectedOptions = selectedValue.filter(({ value }) => value !== '*')
+                const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== '*')
                 tempPermissions[index][name] = selectedOptions
                 tempPermissions[index]['workflowError'] = null
             }
@@ -771,6 +643,7 @@ const AppPermissions = () => {
                 const projectId = projectsList.find(
                     (project) => project.name === tempPermissions[index]['team'].value,
                 ).id
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises, no-unused-expressions
                 tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                     ? fetchAppList([projectId])
                     : tempPermissions[index].accessType === ACCESS_TYPE_MAP.JOBS
@@ -793,7 +666,7 @@ const AppPermissions = () => {
         setDirectPermission(tempPermissions)
     }
 
-    function removeDirectPermissionRow(index) {
+    const removeDirectPermissionRow = (index) => {
         setDirectPermission((permission) => {
             let foundDevtronApps = false
             let foundHelmApps = false
@@ -822,7 +695,7 @@ const AppPermissions = () => {
         })
     }
 
-    function AddNewPermissionRowLocal(accessType) {
+    const addNewPermissionRowLocal = (accessType) => {
         if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
             setDirectPermission((permission) => [...permission, emptyDirectPermissionDevtronApps])
         } else if (accessType === ACCESS_TYPE_MAP.HELM_APPS) {
@@ -833,8 +706,8 @@ const AppPermissions = () => {
     }
 
     // To persist the search params
-    const _getNavLinkUrl = (tabName) => (location) => ({
-        ...location,
+    const _getNavLinkUrl = (tabName) => (_location) => ({
+        ..._location,
         pathname: `${url}/${tabName}`,
     })
 
@@ -849,6 +722,7 @@ const AppPermissions = () => {
                 setDirectPermission(emptyPermissionArr)
                 return
             }
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             populateDataFromAPI(data?.roleFilters ?? [])
         }
     }, [data, isDataLoading])
@@ -871,6 +745,7 @@ const AppPermissions = () => {
         <div className="flexbox-col dc__gap-12">
             <ul role="tablist" className="tab-list dc__border-bottom">
                 {serverMode !== SERVER_MODE.EA_ONLY && (
+                    // TODO (v3): Use array based map
                     <li className="tab-list__tab">
                         <NavLink
                             to={_getNavLinkUrl('devtron-apps')}
@@ -938,7 +813,7 @@ const AppPermissions = () => {
                                 accessType={ACCESS_TYPE_MAP.DEVTRON_APPS}
                                 removeDirectPermissionRow={removeDirectPermissionRow}
                                 handleDirectPermissionChange={handleDirectPermissionChange}
-                                AddNewPermissionRow={AddNewPermissionRowLocal}
+                                AddNewPermissionRow={addNewPermissionRowLocal}
                                 appsListHelmApps={appsListHelmApps}
                                 jobsList={jobsList}
                                 appsList={appsList}
@@ -953,7 +828,7 @@ const AppPermissions = () => {
                             accessType={ACCESS_TYPE_MAP.HELM_APPS}
                             removeDirectPermissionRow={removeDirectPermissionRow}
                             handleDirectPermissionChange={handleDirectPermissionChange}
-                            AddNewPermissionRow={AddNewPermissionRowLocal}
+                            AddNewPermissionRow={addNewPermissionRowLocal}
                             appsListHelmApps={appsListHelmApps}
                             jobsList={jobsList}
                             appsList={appsList}
@@ -968,7 +843,7 @@ const AppPermissions = () => {
                                 accessType={ACCESS_TYPE_MAP.JOBS}
                                 removeDirectPermissionRow={removeDirectPermissionRow}
                                 handleDirectPermissionChange={handleDirectPermissionChange}
-                                AddNewPermissionRow={AddNewPermissionRowLocal}
+                                AddNewPermissionRow={addNewPermissionRowLocal}
                                 appsListHelmApps={appsListHelmApps}
                                 jobsList={jobsList}
                                 appsList={appsList}
