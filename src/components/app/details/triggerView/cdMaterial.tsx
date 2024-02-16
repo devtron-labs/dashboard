@@ -73,8 +73,10 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
+    DEPLOYMENT_CONFIGURATION_NAV_MAP,
     LAST_SAVED_CONFIG_OPTION,
     SPECIFIC_TRIGGER_CONFIG_OPTION,
+    LATEST_TRIGGER_CONFIG_OPTION,
     checkForDiff,
     getDeployConfigOptions,
     processResolvedPromise,
@@ -88,6 +90,7 @@ import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import AnnouncementBanner from '../../../common/AnnouncementBanner'
 import { useRouteMatch } from 'react-router-dom'
+import { get } from 'http'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -139,7 +142,6 @@ export default function CDMaterial({
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
-    // const [mode, setMode] = useState<string>(searchParams.mode)
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, materialsResult, materialsError, reloadMaterials] = useAsync(
@@ -179,7 +181,7 @@ export default function CDMaterial({
     const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
     const [deploymentLoading, setDeploymentLoading] = useState<boolean>(false)
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
-    
+
     const resourceFilters = materialsResult?.resourceFilters ?? []
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
     const requestedUserId = materialsResult?.requestedUserId ?? ''
@@ -245,7 +247,13 @@ export default function CDMaterial({
                     checkingDiff: false,
                 }))
             },
-        )
+        ).catch(err => {
+            showError(err)
+            setState((prevState) => ({ ...prevState, checkingDiff: false }))
+        
+        }).finally(() => {
+            setState((prevState) => ({ ...prevState, checkingDiff: false }))
+        })
     }
 
     const setSearchValue = (searchValue: string) => {
@@ -263,12 +271,12 @@ export default function CDMaterial({
         })
     }
 
-    const setParamsValue = (modeParamValue: string) => {
+    const setInitialModeParams = (modeParamValue: string) => {
         const newParams = {
             ...searchParams,
             mode: modeParamValue,
-            config: 'deploymentTemplate',
-            deploy: 'LAST_SAVED_CONFIG'.toLocaleLowerCase() //LATEST_TRIGGER_CONFIG
+            config: DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
+            deploy: searchParams.deploy ? searchParams.deploy : DeploymentWithConfigType.LAST_SAVED_CONFIG
         }
         history.push({
             search: new URLSearchParams(newParams).toString(),
@@ -411,15 +419,30 @@ export default function CDMaterial({
         // The above states are derived from material so no need to make a state for them and shift the config diff here
     }, [material])
 
+const getInitialSelectedConfigToDeploy = () => {
+    if (searchParams.deploy === DeploymentWithConfigType.LAST_SAVED_CONFIG) {
+        return LAST_SAVED_CONFIG_OPTION
+    }
+    if (
+        searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG ||
+        (materialType === MATERIAL_TYPE.rollbackMaterialList && !searchParams.deploy)
+    ) {
+        return SPECIFIC_TRIGGER_CONFIG_OPTION
+    }
+    if (
+        searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG ||
+        (materialType === MATERIAL_TYPE.inputMaterialList && !searchParams.deploy)
+    ) {
+        return LATEST_TRIGGER_CONFIG_OPTION
+    }
+}
     useEffect(() => {
         setState((prevState) => ({
             ...prevState,
             isRollbackTrigger: materialType === MATERIAL_TYPE.rollbackMaterialList,
             isSelectImageTrigger: materialType === MATERIAL_TYPE.inputMaterialList,
             selectedConfigToDeploy:
-                materialType === MATERIAL_TYPE.rollbackMaterialList
-                    ? SPECIFIC_TRIGGER_CONFIG_OPTION
-                    : LAST_SAVED_CONFIG_OPTION,
+                getInitialSelectedConfigToDeploy(),
         }))
     }, [materialType])
 
@@ -746,9 +769,8 @@ export default function CDMaterial({
         !state.recentDeploymentConfig
 
     const reviewConfig = (modeParamValue: string) => {
-        // setMode(modeParamValue)
         if (canReviewConfig()) {
-            setParamsValue(modeParamValue)
+            setInitialModeParams(modeParamValue)
         }
     }
 
@@ -779,16 +801,39 @@ export default function CDMaterial({
               : state.specificDeploymentConfig
     }
 
+    const setConfigParams = (deploy: string) => {
+        const newParams = {
+            ...searchParams,
+            deploy,
+        }
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
+    }
+
+    const getDeploymentConfigSelectedValue = () => {
+        if (searchParams.deploy === DeploymentWithConfigType.LAST_SAVED_CONFIG) {
+            return getDeployConfigOptions(state.isRollbackTrigger, state.recentDeploymentConfig !== null)[0].options[0]
+        }
+        if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
+            return getDeployConfigOptions(state.isRollbackTrigger, state.recentDeploymentConfig !== null)[0].options[1]
+        }
+
+        if( searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG){
+            return getDeployConfigOptions(state.isRollbackTrigger, state.recentDeploymentConfig !== null)[0].options[2]
+        }
+    }
 
     const handleConfigSelection = (selected) => {
         if (selected?.value !== state.selectedConfigToDeploy.value) {
             const _diffOptions = checkForDiff(state.recentDeploymentConfig, getBaseTemplateConfiguration(selected))
             setState((prevState) => ({
                 ...prevState,
-                selectedConfigToDeploy: selected,
+                selectedConfigToDeploy: selected? selected : getInitialSelectedConfigToDeploy(),
                 diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
                 diffOptions: _diffOptions,
             }))
+            setConfigParams(selected.value)
         }
     }
 

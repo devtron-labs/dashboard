@@ -54,20 +54,25 @@ export default function TriggerViewConfigDiff({
     const [secretOptionCollapsed, setSecretOptionCollapsed] = useState<boolean>(false)
     const [currentData, setCurrentData] = useState<any>({}) // store codeEditorValue of current(lhs) and base(rhs) config
 
+    useEffect(() => {
+        const newSearchParams = {
+            ...searchParams,
+            config: searchParams.config?.replace('-', '/'),
+            deploy: searchParams.deploy,
+        }
+        if (canReviewConfig() && baseTemplateConfiguration && currentConfiguration) {
+            const configParamValue = searchParams.config?.replace('-', '/')
+            history.push({
+                search: new URLSearchParams(newSearchParams).toString(),
+            })
+            //handling the case when the user directly lands on the deployment history page
+            handleNavOptionSelection(null, configParamValue)
+        }
+    }, [canReviewConfig(), baseTemplateConfiguration, currentConfiguration])
 
     useEffect(() => {
-        if(canReviewConfig() && baseTemplateConfiguration && currentConfiguration){
-            const configParamValue = searchParams.config?.replace('-', '/')
-            setParamsValue(configParamValue.replace('/', '-'))
-            //handling the case when the user directly lands on the deployment history page
-            handleNavOptionSelection(null, configParamValue) 
-            handleConfigSelection({value: searchParams.deploy.toLocaleUpperCase()})
-        }
-    }, [canReviewConfig(), baseTemplateConfiguration , currentConfiguration])
-    
-    useEffect(() => {
         handleConfigToDeploySelection()
-    }, [selectedConfigToDeploy])
+    }, [selectedConfigToDeploy, searchParams.deploy])
 
     useEffect(() => {
         if (Object.keys(currentData).length === 0) {
