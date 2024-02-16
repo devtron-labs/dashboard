@@ -153,7 +153,6 @@ const ChartValuesView = ({
     const [allowedCustomBool, setAllowedCustomBool] = useState<boolean>()
     const [staleData, setStaleData] = useState<boolean>(false)
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
-    const [visibleRepoURL, setVisibleRepoURL] = useState<string>('')
     const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
 
     const [commonState, dispatch] = useReducer(
@@ -176,6 +175,10 @@ const ChartValuesView = ({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
+    
+    const handleDrawerState = (state: boolean) => {
+        setIsDrawerOpen(state)
+    }
 
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
@@ -898,12 +901,7 @@ const ChartValuesView = ({
                     deploymentAppType: isVirtualEnvironmentOnSelector
                         ? DeploymentAppTypes.MANIFEST_DOWNLOAD
                         : commonState.deploymentAppType,
-                    gitRepoURL:
-                        staleData || !commonState.gitRepoURL?.gitRepoURL
-                            ? allowedCustomBool
-                                ? 'Default'
-                                : ''
-                            : commonState.gitRepoURL.gitRepoURL,
+                    gitRepoURL: commonState.gitRepoURL,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -966,13 +964,17 @@ const ChartValuesView = ({
             }
         } catch (err) {
             if (err['code'] === 409) {
-                setIsDrawerOpen(true)
+                handleDrawerState(true)
                 toast.error('Some global configurations for GitOps has changed')
                 setStaleData(true)
-                setIsDrawerOpen(true)
+                dispatch({
+                    type: ChartValuesViewActionTypes.setGitRepoURL,
+                    payload: 'Default',
+                })
+                handleDrawerState(true)
             } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900') {
                 setAllowedCustomBool(true)
-                setIsDrawerOpen(true)
+                handleDrawerState(true)
             } else {
                 showError(err)
             }
@@ -1609,16 +1611,16 @@ const ChartValuesView = ({
                             !appDetails?.isVirtualEnvironment &&
                             !commonState.installedConfig?.isOCICompliantChart && (
                                 <GitOpsDrawer
+                                    commonState={commonState}
                                     deploymentAppType={commonState.deploymentAppType}
                                     allowedDeploymentTypes={allowedDeploymentTypes}
                                     staleData={staleData}
                                     setStaleData={setStaleData}
                                     dispatch={dispatch}
                                     isDrawerOpen={isDrawerOpen}
-                                    setIsDrawerOpen={setIsDrawerOpen}
-                                    setVisibleRepoURL={setVisibleRepoURL}
-                                    visibleRepoURL={visibleRepoURL}
+                                    handleDrawerState={handleDrawerState}
                                     showRepoSelector={showRepoSelector}
+                                    allowedCustomBool={allowedCustomBool}
                                 />
                             )}
                         {/**
