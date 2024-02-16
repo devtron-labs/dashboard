@@ -296,11 +296,9 @@ export const DeploymentAppRadioGroup = ({
                     </RadioGroupItem>
                 </ConditionalWrap>
             </RadioGroup>
-            {deploymentAppType === DeploymentAppTypes.GITOPS &&
-                isGitOpsRepoNotConfigured &&
-                !window._env_.HIDE_GITOPS_OR_HELM_OPTION && (
-                    <div className="mt-16">{gitOpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
-                )}
+            {deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsRepoNotConfigured && (
+                <div className="mt-16">{gitOpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
+            )}
         </>
     )
 }
@@ -328,7 +326,7 @@ export const GitOpsDrawer = ({
         } else {
             setGitOpsState(false)
         }
-    }, [deploymentAppType, allowedDeploymentTypes, window._env_.HIDE_GITOPS_OR_HELM_OPTION])
+    }, [deploymentAppType, allowedDeploymentTypes])
 
     const handleRepoTypeChange = (newRepoType: string) => {
         setSelectedRepoType(newRepoType)

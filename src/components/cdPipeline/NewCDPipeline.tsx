@@ -69,7 +69,6 @@ export default function NewCDPipeline({
     getWorkflows,
     refreshParentWorkflows,
     envIds,
-    isLastNode,
     noGitOpsModuleInstalledAndConfigured,
     changeCIPayload,
     isGitOpsRepoNotConfigured,

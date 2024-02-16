@@ -443,7 +443,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                         filteredEnvIds={filteredEnvIds}
                         isGitOpsConfigurationRequired={isGitOpsConfigurationRequired}
                         reloadAppConfig={reloadAppConfig}
-                        maximumAllowedUrl={state.maximumAllowedUrl}
+                        lastUnlockedStage={state.maximumAllowedUrl}
                     />
                 </div>
             </div>

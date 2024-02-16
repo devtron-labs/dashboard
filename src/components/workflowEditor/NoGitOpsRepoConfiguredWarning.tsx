@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
@@ -15,7 +15,7 @@ export const ReloadNoGitOpsRepoConfiguredModal: FunctionComponent<ReloadNoGitOps
     reload,
 }: ReloadNoGitOpsRepoConfiguredModalType) => {
     return (
-        <VisibleModal2 className="confirmation-dialog">
+        <VisibleModal className="confirmation-dialog">
             <div className="confirmation-dialog__body ">
                 <div className="flexbox dc__content-space mb-20">
                     <WarningIcon className="h-48 mw-48" />
@@ -37,7 +37,7 @@ export const ReloadNoGitOpsRepoConfiguredModal: FunctionComponent<ReloadNoGitOps
                     </button>
                 </div>
             </div>
-        </VisibleModal2>
+        </VisibleModal>
     )
 }
 
@@ -78,7 +78,7 @@ const NoGitOpsRepoConfiguredWarning: FunctionComponent<NoGitOpsRepoConfiguredWar
                     reload={reload}
                 />
             ) : (
-                <VisibleModal2 className="confirmation-dialog">
+                <VisibleModal className="confirmation-dialog">
                     <div className="confirmation-dialog__body ">
                         <div className="flexbox dc__content-space mb-20">
                             <WarningIcon className="h-48 mw-48" />
@@ -106,7 +106,7 @@ const NoGitOpsRepoConfiguredWarning: FunctionComponent<NoGitOpsRepoConfiguredWar
                             </ButtonWithLoader>
                         </div>
                     </div>
-                </VisibleModal2>
+                </VisibleModal>
             )}
         </>
     )

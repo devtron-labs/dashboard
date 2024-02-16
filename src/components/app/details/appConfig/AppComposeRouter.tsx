@@ -63,7 +63,7 @@ export default function AppComposeRouter({
     filteredEnvIds,
     isGitOpsConfigurationRequired,
     reloadAppConfig,
-    maximumAllowedUrl,
+    lastUnlockedStage,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -227,7 +227,7 @@ export default function AppComposeRouter({
                         )}
                     />,
                 ]}
-                <Redirect to={`${maximumAllowedUrl}`} />
+                <Redirect to={lastUnlockedStage} />
             </Switch>
         )
     }
