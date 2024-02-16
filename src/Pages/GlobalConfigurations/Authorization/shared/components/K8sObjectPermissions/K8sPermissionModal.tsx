@@ -6,33 +6,32 @@ import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
 import { getPermissionObject } from './K8sPermissions.utils'
-import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { K8sPermissionActionType } from './constants'
 
 export default function K8sPermissionModal({
     selectedPermissionAction,
-    // Different from the k8sPermission in the context
+    // This is different from the k8sPermission in the context
     updatedK8sPermission: k8sPermission,
     close,
 }: K8sPermissionModalType) {
     const { setK8sPermission } = usePermissionConfiguration()
-    const [k8PermissionList, setPermissionList] = useState([getPermissionObject(0, k8sPermission)])
+    const [k8PermissionList, setK8sPermissionList] = useState([getPermissionObject(0, k8sPermission)])
     const [namespaceMapping, setNamespaceMapping] = useState<Record<string, OptionType[]>>()
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
-    const { customRoles } = useAuthorizationContext()
 
-    const handleK8sPermission = (action: string, key?: number, data?: any) => {
+    const handleK8sPermission = (action: K8sPermissionActionType, key?: number, data?: any) => {
         const _k8sPermissionList = [...k8PermissionList]
         switch (action) {
-            case 'add':
+            case K8sPermissionActionType.add:
                 _k8sPermissionList.splice(0, 0, getPermissionObject(_k8sPermissionList.length))
                 break
-            case 'delete':
+            case K8sPermissionActionType.delete:
                 _k8sPermissionList.splice(key, 1)
                 break
-            case 'clone':
+            case K8sPermissionActionType.clone: {
                 const currentLen = _k8sPermissionList.length
                 _k8sPermissionList.splice(0, 0, getPermissionObject(currentLen, _k8sPermissionList[key]))
                 setApiGroupMapping((prevMapping) => ({ ...prevMapping, [currentLen]: apiGroupMapping?.[key] }))
@@ -45,45 +44,46 @@ export default function K8sPermissionModal({
                     [currentLen]: objectMapping?.[key],
                 }))
                 break
-            case 'edit':
+            }
+            case K8sPermissionActionType.edit:
                 _k8sPermissionList[key].cluster = data
                 break
-            case 'onClusterChange':
+            case K8sPermissionActionType.onClusterChange:
                 _k8sPermissionList[key].cluster = data
                 _k8sPermissionList[key].namespace = null
                 _k8sPermissionList[key].group = null
                 _k8sPermissionList[key].kind = null
                 _k8sPermissionList[key].resource = null
                 break
-            case 'onNamespaceChange':
+            case K8sPermissionActionType.onNamespaceChange:
                 _k8sPermissionList[key].namespace = data
                 _k8sPermissionList[key].group = null
                 _k8sPermissionList[key].kind = null
                 _k8sPermissionList[key].resource = null
                 break
-            case 'onApiGroupChange':
+            case K8sPermissionActionType.onApiGroupChange:
                 _k8sPermissionList[key].group = data
                 _k8sPermissionList[key].kind = null
                 _k8sPermissionList[key].resource = null
                 break
-            case 'onKindChange':
+            case K8sPermissionActionType.onKindChange:
                 _k8sPermissionList[key].kind = data
                 _k8sPermissionList[key].resource = null
                 break
-            case 'onObjectChange':
+            case K8sPermissionActionType.onObjectChange:
                 _k8sPermissionList[key].resource = data
                 break
-            case 'onRoleChange':
+            case K8sPermissionActionType.onRoleChange:
                 _k8sPermissionList[key].action = data
                 break
             default:
                 break
         }
-        setPermissionList(_k8sPermissionList)
+        setK8sPermissionList(_k8sPermissionList)
     }
 
     const addNewPermissionCard = () => {
-        handleK8sPermission('add')
+        handleK8sPermission(K8sPermissionActionType.add)
     }
 
     const savePermission = () => {

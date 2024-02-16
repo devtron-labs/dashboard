@@ -5,6 +5,7 @@ import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { Nodes } from '../../../../../../components/app/types'
 import { ChartGroup } from '../../../../../../components/charts/charts.types'
+import { K8sPermissionActionType } from '../K8sObjectPermissions/constants'
 
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
@@ -109,7 +110,7 @@ export enum UserRoleType {
 export interface K8sListItemCardType {
     key?: number
     k8sPermission: K8sPermissionFilter
-    handleK8sPermission: (action: string, key?: number, data?: any) => void
+    handleK8sPermission: (action: K8sPermissionActionType, key?: number, data?: any) => void
     index: number
     namespaceMapping: Record<string, OptionType[]>
     setNamespaceMapping: React.Dispatch<React.SetStateAction<Record<number, OptionType[]>>>

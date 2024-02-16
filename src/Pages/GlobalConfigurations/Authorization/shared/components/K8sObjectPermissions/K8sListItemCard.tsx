@@ -44,6 +44,7 @@ import { resourceKindOptionLabel } from './K8sPermission.component'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { parseData } from '../../../utils'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
+import { K8sPermissionActionType } from './constants'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -87,7 +88,7 @@ export default function K8sListItemCard({
                 setClusterOptions(_clusterOptions)
                 if (k8sPermission?.cluster) {
                     const selectedCluster = _clusterOptions?.find((ele) => ele.label === k8sPermission.cluster.label)
-                    handleK8sPermission('edit', index, selectedCluster)
+                    handleK8sPermission(K8sPermissionActionType.edit, index, selectedCluster)
                     getNamespaceList(selectedCluster.value)
                     getGroupKindData(selectedCluster.value)
                 }
@@ -226,7 +227,7 @@ export default function K8sListItemCard({
                     [k8sPermission.key]: _optionList,
                 }))
                 if (k8sPermission.resource?.[0]?.value === '*') {
-                    handleK8sPermission('onObjectChange', index, _optionList)
+                    handleK8sPermission(K8sPermissionActionType.onObjectChange, index, _optionList)
                 }
             }
         } catch (err) {
@@ -242,7 +243,7 @@ export default function K8sListItemCard({
                 ...prevMapping,
                 [k8sPermission.key]: [{ label: 'All API groups', value: '*' }],
             }))
-            handleK8sPermission('onClusterChange', index, selected)
+            handleK8sPermission(K8sPermissionActionType.onClusterChange, index, selected)
             getNamespaceList(selected.value)
             getGroupKindData(selected.value)
         }
@@ -250,7 +251,7 @@ export default function K8sListItemCard({
 
     const onNameSpaceSelection = (selected) => {
         if (selected.value !== k8sPermission?.namespace?.value) {
-            handleK8sPermission('onNamespaceChange', index, selected)
+            handleK8sPermission(K8sPermissionActionType.onNamespaceChange, index, selected)
             const _GvkObjectList: OptionType[] = []
             if (processedGvkData) {
                 for (const [key] of processedGvkData.entries()) {
@@ -268,14 +269,14 @@ export default function K8sListItemCard({
 
     const onApiGroupSelect = (selected) => {
         if (selected.value !== k8sPermission?.group?.value) {
-            handleK8sPermission('onApiGroupChange', index, selected)
+            handleK8sPermission(K8sPermissionActionType.onApiGroupChange, index, selected)
             createKindData(selected, allInKindMapping)
         }
     }
 
     const onKindSelect = (selected) => {
         if (selected.value !== k8sPermission?.kind?.value) {
-            handleK8sPermission('onKindChange', index, selected)
+            handleK8sPermission(K8sPermissionActionType.onKindChange, index, selected)
             if (selected.value !== '*' && selected.value !== 'Event') {
                 getResourceListData(selected)
             } else {
@@ -287,7 +288,7 @@ export default function K8sListItemCard({
         }
     }
     const setK8sPermission = (options): void => {
-        handleK8sPermission('onObjectChange', index, options)
+        handleK8sPermission(K8sPermissionActionType.onObjectChange, index, options)
     }
 
     const onResourceObjectChange = (selected, actionMeta) => {
@@ -296,7 +297,7 @@ export default function K8sListItemCard({
 
     const setRoleSelection = (selected) => {
         if (selected.value !== k8sPermission.action?.value) {
-            handleK8sPermission('onRoleChange', index, selected)
+            handleK8sPermission(K8sPermissionActionType.onRoleChange, index, selected)
         }
     }
 

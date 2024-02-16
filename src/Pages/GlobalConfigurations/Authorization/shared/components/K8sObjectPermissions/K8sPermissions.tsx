@@ -11,7 +11,7 @@ import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 const K8sPermissions = () => {
     const { k8sPermission, setK8sPermission } = usePermissionConfiguration()
 
-    const [togglePermissionModal, setPermissionToggleModal] = useState<boolean>()
+    const [togglePermissionModal, setTogglePermissionModal] = useState<boolean>()
     const [tempPermission, setTempPermission] = useState()
     const [selectedPermissionAction, setSelectedPermissionAction] = useState<{
         action: string
@@ -19,7 +19,7 @@ const K8sPermissions = () => {
     }>()
 
     const editPermission = (permissions, action, index) => {
-        setPermissionToggleModal(true)
+        setTogglePermissionModal(true)
         setTempPermission(permissions)
         setSelectedPermissionAction({
             action,
@@ -28,7 +28,7 @@ const K8sPermissions = () => {
     }
 
     const createPermission = () => {
-        setPermissionToggleModal(true)
+        setTogglePermissionModal(true)
         setTempPermission(null)
     }
 
@@ -39,7 +39,7 @@ const K8sPermissions = () => {
     }
 
     const closeModal = () => {
-        setPermissionToggleModal(false)
+        setTogglePermissionModal(false)
         setSelectedPermissionAction(null)
     }
 
