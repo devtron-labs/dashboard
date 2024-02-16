@@ -190,7 +190,8 @@ export default function App() {
     function update() {
         updateServiceWorker(true)
         // Trigger page reload
-        //window.location.reload()
+        window.location.reload()
+        setTimeout(() => {}, 500)
     }
 
     function onUpdate() {
@@ -214,6 +215,10 @@ export default function App() {
     useEffect(() => {
         if (needRefresh) {
             update()
+        } else {
+            if (toast.isActive(updateToastRef.current)) {
+                toast.dismiss(updateToastRef.current)
+            }
         }
     }, [location])
 
