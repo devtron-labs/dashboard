@@ -47,3 +47,4 @@ const staticAssetsRoute = new Route(
 
 // Register the route handling static assets
 registerRoute(staticAssetsRoute)
+
