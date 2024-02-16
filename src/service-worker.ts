@@ -10,9 +10,10 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         // eslint-disable-next-line no-void
         void self.skipWaiting()
-        clientsClaim()
     }
 })
+
+clientsClaim()
 
 // Precache the manifest
 precacheAndRoute(self.__WB_MANIFEST)
