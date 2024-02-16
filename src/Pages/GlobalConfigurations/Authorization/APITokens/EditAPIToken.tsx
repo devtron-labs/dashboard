@@ -8,6 +8,7 @@ import {
     copyToClipboard,
     CustomInput,
     noop,
+    ResizableTextarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
@@ -237,14 +238,14 @@ const EditAPIToken = ({
                     </label>
                     <label className="form__row">
                         <span className="form__label">Description</span>
-                        <textarea
-                            tabIndex={1}
+                        <ResizableTextarea
+                            name="api-token-description"
+                            maxHeight={300}
+                            className="w-100"
+                            value={editData.description}
+                            onChange={onChangeEditData}
                             data-testid="api-token-description-textbox"
                             placeholder="Enter a description to remember where you have used this token"
-                            className="form__textarea"
-                            value={editData.description}
-                            name="description"
-                            onChange={onChangeEditData}
                         />
                         {invalidDescription && (
                             <span className="form__error flexbox-imp flex-align-center">

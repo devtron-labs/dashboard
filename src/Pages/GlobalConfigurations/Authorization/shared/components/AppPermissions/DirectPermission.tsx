@@ -16,7 +16,7 @@ import { ReactComponent as CloseIcon } from '../../../../../../assets/icons/ic-c
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { CONFIG_APPROVER_ACTION, tempMultiSelectStyles } from '../userGroups/UserGroup'
+import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups/UserGroup'
 import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import { allApplicationsOption, allEnvironmentsOption } from './constants'
 import { parseData } from '../../../utils'
@@ -384,8 +384,6 @@ const DirectPermission = ({
                     ? [{ name: HELM_APP_UNASSIGNED_PROJECT }, ...(projectsList || [])]
                     : projectsList
                 )?.map((project) => ({ label: project.name, value: project.name }))}
-                className="basic-multi-select"
-                classNamePrefix="select-project-dropdown"
                 onChange={handleDirectPermissionChange}
                 components={{
                     ClearIndicator: null,
@@ -395,14 +393,9 @@ const DirectPermission = ({
                 }}
                 menuPlacement="auto"
                 styles={{
-                    ...tempMultiSelectStyles,
-                    control: (base, state) => ({
-                        ...base,
-                        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf',
-                        boxShadow: 'none',
-                    }),
+                    ...authorizationSelectStyles,
                     valueContainer: (base) => ({
-                        ...base,
+                        ...authorizationSelectStyles.valueContainer(base),
                         display: 'flex',
                     }),
                 }}
@@ -430,19 +423,9 @@ const DirectPermission = ({
                         options={envClusters}
                         formatOptionLabel={formatOptionLabelClusterEnv}
                         filterOption={customFilter}
-                        className="basic-multi-select cluster-select"
-                        classNamePrefix="select-helm-app-environment-dropdown"
                         hideSelectedOptions={false}
                         menuPlacement="auto"
-                        styles={{
-                            ...tempMultiSelectStyles,
-                            option: (base, state) => ({
-                                ...base,
-                                padding: '4px 12px',
-                                backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                color: 'var(--N900)',
-                            }),
-                        }}
+                        styles={authorizationSelectStyles}
                         components={{
                             ClearIndicator: null,
                             ValueContainer: clusterValueContainer,
@@ -476,11 +459,9 @@ const DirectPermission = ({
                         onMenuClose={onMenuClose}
                         placeholder="Select environments"
                         options={[{ label: '', options: [allEnvironmentsOption] }, ...environments]}
-                        className="basic-multi-select"
                         menuPlacement="auto"
-                        classNamePrefix="select-devtron-app-environment-dropdown"
                         hideSelectedOptions={false}
-                        styles={tempMultiSelectStyles}
+                        styles={authorizationSelectStyles}
                         components={{
                             ClearIndicator: null,
                             ValueContainer,
@@ -526,18 +507,14 @@ const DirectPermission = ({
                             : false
                     }
                     isDisabled={!permission.team}
-                    styles={tempMultiSelectStyles}
+                    styles={authorizationSelectStyles}
                     closeMenuOnSelect={false}
                     name={`entityName/${permission.entity}`}
                     onFocus={() => onFocus(`entityName/${permission.entity}`)}
                     onMenuClose={onMenuClose}
                     placeholder={permission.accessType === '' ? 'Select Job' : 'Select applications'}
                     options={[allApplicationsOption(permission.entity), ...applications]}
-                    className="basic-multi-select"
-                    classNamePrefix="select-application-dropdown"
-                    onChange={(value, actionMeta) => {
-                        handleDirectPermissionChange(value, actionMeta)
-                    }}
+                    onChange={handleDirectPermissionChange}
                     hideSelectedOptions={false}
                     inputValue={appInput}
                     menuPlacement="auto"
@@ -572,9 +549,8 @@ const DirectPermission = ({
                         ]}
                         className="basic-multi-select"
                         menuPlacement="auto"
-                        classNamePrefix="select-devtron-app-workflow-dropdown"
                         hideSelectedOptions={false}
-                        styles={tempMultiSelectStyles}
+                        styles={authorizationSelectStyles}
                         isLoading={workflowList.loading}
                         components={{
                             ClearIndicator: null,
@@ -606,30 +582,20 @@ const DirectPermission = ({
                     name="action"
                     placeholder="Select role"
                     options={parseData(possibleRoles, permission.entity, permission.accessType)}
-                    className="basic-multi-select"
-                    classNamePrefix="select-user-role-dropdown"
                     formatOptionLabel={formatOptionLabel}
                     onChange={handleDirectPermissionChange}
                     isDisabled={!permission.team}
                     menuPlacement="auto"
                     blurInputOnSelect
                     styles={{
-                        ...tempMultiSelectStyles,
+                        ...authorizationSelectStyles,
                         option: (base, state) => ({
-                            ...base,
-                            borderRadius: '4px',
-                            color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
-                            backgroundColor: state.isSelected
-                                ? 'var(--B100)'
-                                : state.isFocused
-                                  ? 'var(--N100)'
-                                  : 'white',
-                            fontWeight: state.isSelected ? 600 : 'normal',
+                            ...authorizationSelectStyles.option(base, state),
                             cursor: state.isDisabled ? 'not-allowed' : 'pointer',
                             marginRight: '8px',
                         }),
                         valueContainer: (base) => ({
-                            ...base,
+                            ...authorizationSelectStyles.valueContainer(base),
                             display: 'flex',
                             flexWrap: 'nowrap',
                             textOverflow: 'ellipsis',

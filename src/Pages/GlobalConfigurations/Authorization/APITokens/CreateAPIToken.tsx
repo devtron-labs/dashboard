@@ -5,7 +5,14 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import { ServerErrors, showError, TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerErrors,
+    showError,
+    TippyCustomized,
+    TippyTheme,
+    CustomInput,
+    ResizableTextarea,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
@@ -245,14 +252,14 @@ const CreateAPIToken = ({
                     />
                     <label className="form__row">
                         <span className="form__label">Description</span>
-                        <textarea
-                            tabIndex={1}
-                            placeholder="Enter a description to remember where you have used this token"
-                            data-testid="api-token-description-textbox"
-                            className="form__textarea"
+                        <ResizableTextarea
+                            name="api-token-description"
+                            maxHeight={300}
+                            className="w-100"
                             value={formData.description}
-                            name="description"
                             onChange={onChangeHandler}
+                            data-testid="api-token-description-textbox"
+                            placeholder="Enter a description to remember where you have used this token"
                         />
                         {formDataErrorObj.invalidDescription && (
                             <span className="form__error">

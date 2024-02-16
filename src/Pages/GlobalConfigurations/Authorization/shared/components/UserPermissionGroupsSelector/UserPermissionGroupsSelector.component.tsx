@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import {
-    getCommonSelectStyle,
     MultiValueChipContainer,
     Option,
     OptionType,
@@ -14,18 +13,9 @@ import { User } from '../../../types'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import { getPermissionGroupList } from '../../../authorization.service'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { authorizationSelectStyles } from '../userGroups/UserGroup'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
-
-const _selectStyles = getCommonSelectStyle()
-
-const selectStyles = {
-    ..._selectStyles,
-    control: (base, state) => ({
-        ..._selectStyles.control(base, state),
-        height: '36px',
-    }),
-}
 
 const MultiValueContainer = (props) => <MultiValueChipContainer {...props} validator={null} />
 
@@ -102,7 +92,7 @@ const UserPermissionGroupsSelector = () => {
                               }
                             : {}),
                     }}
-                    styles={selectStyles}
+                    styles={authorizationSelectStyles}
                     formatOptionLabel={formatChartGroupOptionLabel}
                     closeMenuOnSelect={false}
                     isMulti
