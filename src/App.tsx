@@ -26,6 +26,7 @@ import {
 import { URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
+import { cleanupOutdatedCaches } from 'workbox-precaching'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
@@ -135,6 +136,7 @@ export default function App() {
         if (refreshing.current) {
             return
         }
+        cleanupOutdatedCaches()
         if (document.visibilityState === 'visible') {
             window.location.reload()
             refreshing.current = true

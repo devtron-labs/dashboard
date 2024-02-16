@@ -4,7 +4,7 @@
 // import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
 // import { clientsClaim } from 'workbox-core'
 
-import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
+import { createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
 import { clientsClaim } from 'workbox-core'
 
@@ -21,7 +21,7 @@ self.addEventListener('message', (event) => {
 precacheAndRoute(self.__WB_MANIFEST)
 
 // clean old assets
-cleanupOutdatedCaches()
+// cleanupOutdatedCaches()
 
 // to allow work offline
 registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')))
