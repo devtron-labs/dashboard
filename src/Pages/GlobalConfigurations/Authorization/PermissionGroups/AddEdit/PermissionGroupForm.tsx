@@ -10,19 +10,18 @@ import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
 import { deepEqual } from '../../../../../components/common'
 
-import { EntityTypes, APIRoleFilter } from '../../shared/components/userGroups/userGroups.types'
-import { ACCESS_TYPE_MAP, SERVER_MODE, URLS } from '../../../../../config'
+import { URLS } from '../../../../../config'
 import { ReactComponent as Warning } from '../../../../../assets/icons/ic-warning.svg'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import { PermissionType } from '../../constants'
-import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
+import { PermissionGroup } from '../../types'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
 import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
-import { isFormComplete } from '../../APITokens/authorization.utils'
+import { createUserPermissionPayload, isFormComplete } from '../../APITokens/authorization.utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -72,26 +71,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         setDeleteConfirmationModal(!deleteConfirmationModal)
     }
 
-    function getSelectedEnvironments(permission) {
-        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
-            return permission.environment.find((env) => env.value === '*')
-                ? ''
-                : permission.environment.map((env) => env.value).join(',')
-        }
-        const allFutureCluster = {}
-        let envList = ''
-        permission.environment.forEach((element) => {
-            if (element.clusterName === '' && element.value.startsWith('#')) {
-                const clusterName = element.value.substring(1)
-                allFutureCluster[clusterName] = true
-                envList += `${(envList !== '' ? ',' : '') + clusterName}__*`
-            } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                envList += (envList !== '' ? ',' : '') + element.value
-            }
-        })
-        return envList
-    }
-
+    // TODO (v3): Check for trimming at service layer
     const handleGroupNameChange = (e) => setName({ value: e.target.value, error: '' })
 
     const handleSubmit = async () => {
@@ -104,65 +84,26 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         }
         setSubmitting(true)
 
-        const payload: PermissionGroupCreateOrUpdatePayload = {
-            id: _permissionGroup?.id || 0,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { emailId, groups, ...payload } = createUserPermissionPayload({
+            id: _permissionGroup?.id,
+            userIdentifier: '',
+            userGroups: [],
+            serverMode,
+            directPermission,
+            chartPermission,
+            k8sPermission,
+            isSuperAdminPermission,
+        })
+
+        const _payload = {
+            ...payload,
             name: name.value,
             description,
-            roleFilters: [
-                ...directPermission
-                    .filter(
-                        (permission) =>
-                            permission.team?.value && permission.environment.length && permission.entityName.length,
-                    )
-                    .map((permission) => {
-                        const _payload = {
-                            ...permission,
-                            action: permission.action.configApprover
-                                ? `${permission.action.value},configApprover`
-                                : permission.action.value,
-                            team: permission.team.value,
-                            environment: getSelectedEnvironments(permission),
-                            entityName: permission.entityName.find((entity) => entity.value === '*')
-                                ? ''
-                                : permission.entityName.map((entity) => entity.value).join(','),
-                            entity: permission.entity,
-                            ...(permission.entity === EntityTypes.JOB && {
-                                // eslint-disable-next-line no-nested-ternary
-                                workflow: permission.workflow?.length
-                                    ? permission.workflow.find((workflow) => workflow.value === '*')
-                                        ? ''
-                                        : permission.workflow.map((workflow) => workflow.value).join(',')
-                                    : '',
-                            }),
-                        }
-                        return _payload
-                    }),
-                ...k8sPermission.map((permission) => ({
-                    ...permission,
-                    entity: EntityTypes.CLUSTER as APIRoleFilter['entity'],
-                    action: permission.action.value,
-                    cluster: permission.cluster.label,
-                    group: permission.group.value === '*' ? '' : permission.group.value,
-                    kind: permission.kind.value === '*' ? '' : permission.kind.label,
-                    namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
-                    resource: permission.resource.find((entity) => entity.value === '*')
-                        ? ''
-                        : permission.resource.map((entity) => entity.value).join(','),
-                })),
-            ],
-            superAdmin: isSuperAdminPermission,
-        }
-        if (serverMode !== SERVER_MODE.EA_ONLY) {
-            payload.roleFilters.push({
-                ...chartPermission,
-                team: '',
-                environment: '',
-                entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
-            })
         }
 
         try {
-            await createOrUpdatePermissionGroup(payload)
+            await createOrUpdatePermissionGroup(_payload)
             if (isAddMode) {
                 toast.success('Group created')
             } else {

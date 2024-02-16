@@ -855,9 +855,9 @@ const AppPermissions = () => {
     if (isDataLoading || isLoading) {
         return (
             <div className="show-shimmer-loading flexbox-col dc__gap-8 w-50">
-                <div className="child child-shimmer-loading" />
-                <div className="child child-shimmer-loading w-80" />
-                <div className="child child-shimmer-loading w-90" />
+                <div className="child child-shimmer-loading h-20" />
+                <div className="child child-shimmer-loading w-80 h-20" />
+                <div className="child child-shimmer-loading w-90 h-20" />
             </div>
         )
     }

@@ -126,16 +126,16 @@ const EditAPIToken = ({
             const { result } = await updateGeneratedAPIToken(payload, tokenId)
 
             if (result) {
-                const userPermissionPayload = createUserPermissionPayload(
-                    editData.userId,
-                    editData.userIdentifier,
-                    serverMode,
+                const userPermissionPayload = createUserPermissionPayload({
+                    id: editData.userId,
+                    userIdentifier: editData.userIdentifier,
                     userGroups,
+                    serverMode,
                     directPermission,
                     chartPermission,
                     k8sPermission,
-                    permissionType === PermissionType.SUPER_ADMIN,
-                )
+                    isSuperAdminPermission: permissionType === PermissionType.SUPER_ADMIN,
+                })
 
                 const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)
                 if (userPermissionResponse) {
