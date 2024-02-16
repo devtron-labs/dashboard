@@ -1,4 +1,4 @@
-import { precacheAndRoute } from 'workbox-precaching'
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching'
 import { NavigationRoute, registerRoute, Route } from 'workbox-routing'
 import * as navigationPreload from 'workbox-navigation-preload'
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies'
@@ -19,7 +19,7 @@ clientsClaim()
 precacheAndRoute(self.__WB_MANIFEST)
 
 // clean old assets
-// cleanupOutdatedCaches()
+cleanupOutdatedCaches()
 
 // Enable navigation preload
 navigationPreload.enable()
