@@ -51,78 +51,67 @@ const K8sPermissions = () => {
                             <span key={header}>{header}</span>
                         ))}
                     </div>
-                    {k8sPermission.map((element, index) => {
-                        return (
-                            <div
-                                key={element.key}
-                                className="kubernetes-header pt-16 pb-16 cn-9 fs-13 fw-4 lh-20 dc__border-bottom-n1"
-                            >
-                                <span
-                                    data-testid={`k8s-permission-list-${index}-cluster`}
-                                    className="dc__truncate-text"
-                                >
-                                    {element.cluster.label}
-                                </span>
-                                <span data-testid={`k8s-permission-list-${index}-group`} className="dc__truncate-text">
-                                    {element.group.label}
-                                </span>
-                                <span data-testid={`k8s-permission-list-${index}-kind`} className="dc__truncate-text">
-                                    {element.kind.label}
-                                </span>
-                                <span
-                                    data-testid={`k8s-permission-list-${index}-namespace`}
-                                    className="dc__truncate-text"
-                                >
-                                    {element.namespace.label}
-                                </span>
-                                <span
-                                    data-testid={`k8s-permission-list-${index}-resource`}
-                                    className="dc__truncate-text"
-                                >
-                                    {element.resource.length > 1
-                                        ? `${element.resource.length} objects`
-                                        : element.resource[0].label}
-                                </span>
-                                <span data-testid={`k8s-permission-list-${index}-action`} className="dc__truncate-text">
-                                    {element.action?.label}
-                                </span>
-                                <span className="flex right">
-                                    <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
-                                        <div className="flex">
-                                            <Clone
-                                                className="icon-dim-16 cursor fcn-6 mr-8"
-                                                onClick={() => editPermission(element, 'clone', index)}
-                                            />
-                                        </div>
-                                    </Tippy>
-                                    <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                        <div className="flex">
-                                            <Edit
-                                                className="icon-dim-16 cursor scn-6 mr-8"
-                                                onClick={() => editPermission(element, 'edit', index)}
-                                            />
-                                        </div>
-                                    </Tippy>
-                                    <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                        <button
-                                            type="button"
-                                            className="dc__transparent flex"
-                                            onClick={() => deletePermission(index)}
-                                            aria-label="Delete row"
-                                        >
-                                            <TrashIcon className="scn-6 icon-dim-16 icon-delete" />
-                                        </button>
-                                    </Tippy>
-                                </span>
-                            </div>
-                        )
-                    })}
+                    {k8sPermission.map((element, index) => (
+                        <div
+                            key={element.key}
+                            className="kubernetes-header pt-16 pb-16 cn-9 fs-13 fw-4 lh-20 dc__border-bottom-n1"
+                        >
+                            <span data-testid={`k8s-permission-list-${index}-cluster`} className="dc__truncate-text">
+                                {element.cluster.label}
+                            </span>
+                            <span data-testid={`k8s-permission-list-${index}-group`} className="dc__truncate-text">
+                                {element.group.label}
+                            </span>
+                            <span data-testid={`k8s-permission-list-${index}-kind`} className="dc__truncate-text">
+                                {element.kind.label}
+                            </span>
+                            <span data-testid={`k8s-permission-list-${index}-namespace`} className="dc__truncate-text">
+                                {element.namespace.label}
+                            </span>
+                            <span data-testid={`k8s-permission-list-${index}-resource`} className="dc__truncate-text">
+                                {element.resource.length > 1
+                                    ? `${element.resource.length} objects`
+                                    : element.resource[0].label}
+                            </span>
+                            <span data-testid={`k8s-permission-list-${index}-action`} className="dc__truncate-text">
+                                {element.action?.label}
+                            </span>
+                            <span className="flex right">
+                                <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
+                                    <div className="flex">
+                                        <Clone
+                                            className="icon-dim-16 cursor fcn-6 mr-8"
+                                            onClick={() => editPermission(element, 'clone', index)}
+                                        />
+                                    </div>
+                                </Tippy>
+                                <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                    <div className="flex">
+                                        <Edit
+                                            className="icon-dim-16 cursor scn-6 mr-8"
+                                            onClick={() => editPermission(element, 'edit', index)}
+                                        />
+                                    </div>
+                                </Tippy>
+                                <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                                    <button
+                                        type="button"
+                                        className="dc__transparent flex"
+                                        onClick={() => deletePermission(index)}
+                                        aria-label="Delete row"
+                                    >
+                                        <TrashIcon className="scn-6 icon-dim-16 icon-delete" />
+                                    </button>
+                                </Tippy>
+                            </span>
+                        </div>
+                    ))}
                 </div>
             )}
             <div>
                 <button
                     type="button"
-                    data-testid="add-k8s-permisson-link"
+                    data-testid="add-k8s-permission-link"
                     className="anchor flex left dc__gap-4 fs-13 lh-20 fw-6 p-0"
                     onClick={createPermission}
                 >

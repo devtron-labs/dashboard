@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { showError, Option } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 import {
     sortBySelected,
     importComponentFromFELibrary,
@@ -603,15 +604,17 @@ const DirectPermission = ({
                     }}
                 />
             </div>
-            <button
-                type="button"
-                className="dc__transparent flex"
-                onClick={() => removeRow(index)}
-                aria-label="Delete row"
-                style={{ order: 5 }}
-            >
-                <TrashIcon className="scn-6 icon-dim-16 icon-delete" />
-            </button>
+            <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
+                <button
+                    type="button"
+                    className="dc__transparent flex"
+                    onClick={() => removeRow(index)}
+                    aria-label="Delete row"
+                    style={{ order: 5 }}
+                >
+                    <TrashIcon className="scn-6 icon-dim-16 icon-delete" />
+                </button>
+            </Tippy>
         </>
     )
 }
