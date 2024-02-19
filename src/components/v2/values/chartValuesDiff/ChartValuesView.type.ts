@@ -105,14 +105,14 @@ export interface DeploymentAppRadioGroupType {
 }
 
 export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
+    commonState: ChartValuesViewState
     dispatch: React.Dispatch<ChartValuesViewAction>
-    visibleRepoURL: string
-    setVisibleRepoURL: React.Dispatch<React.SetStateAction<string>>
     staleData?: boolean
     setStaleData?: (boolean) => void
     isDrawerOpen?: boolean
-    setIsDrawerOpen?: (boolean) => void
+    handleDrawerState?: (boolean) => void
     showRepoSelector?: boolean
+    allowedCustomBool: boolean
 }
 
 export interface ChartProjectSelectorType {

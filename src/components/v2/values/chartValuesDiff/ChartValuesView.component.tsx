@@ -26,7 +26,7 @@ import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
-import { GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
+import { AUTO_GENERATE_GITOPS_REPO, GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
 import './ChartValuesView.scss'
 
 import {
@@ -304,25 +304,24 @@ export const DeploymentAppRadioGroup = ({
 }
 
 export const GitOpsDrawer = ({
+    commonState,
     deploymentAppType,
     allowedDeploymentTypes,
     staleData,
     dispatch,
-    visibleRepoURL,
-    setVisibleRepoURL,
     isDrawerOpen,
-    setIsDrawerOpen,
+    handleDrawerState,
     showRepoSelector,
+    allowedCustomBool
 }: gitOpsDrawerType): JSX.Element => {
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
-    const [repoURL, setRepoURL] = useState('')
+    const [repoURL, setRepoURL] = useState(commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL)
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
             setIsDeploymentAllowed(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1)
-            setRepoURL('')
         } else {
             setGitOpsState(false)
         }
@@ -335,31 +334,32 @@ export const GitOpsDrawer = ({
     const handleCloseButton = () => {
         setIsDeploymentAllowed(false)
         setGitOpsState(true)
-        setIsDrawerOpen(false)
-        if (selectedRepoType !== repoType.CONFIGURE) {
-            setSelectedRepoType(repoType.DEFAULT)
-        }
+        handleDrawerState(false)
     }
 
     const handleRepoTextChange = (newRepoText: string) => {
         setRepoURL(newRepoText)
-        dispatch({
-            type: ChartValuesViewActionTypes.setGitRepoURL,
-            payload: { gitRepoURL: newRepoText },
-        })
     }
 
     const handleSaveButton = () => {
         if (selectedRepoType === repoType.CONFIGURE && repoURL.length === 0) {
             return
         }
+        if (selectedRepoType === repoType.DEFAULT) {
+            dispatch({
+                type: ChartValuesViewActionTypes.setGitRepoURL,
+                payload: AUTO_GENERATE_GITOPS_REPO,
+            })
+        } else {
+            dispatch({
+                type: ChartValuesViewActionTypes.setGitRepoURL,
+                payload: repoURL,
+            })
+        }
+
         setGitOpsState(true)
         setIsDeploymentAllowed(false)
-        setIsDrawerOpen(false)
-        setVisibleRepoURL(selectedRepoType === repoType.DEFAULT ? repoType.DEFAULT : repoURL)
-        if (selectedRepoType === repoType.DEFAULT) {
-            setRepoURL('')
-        }
+        handleDrawerState(false)
     }
 
     const toggleDrawer = () => {
@@ -376,7 +376,8 @@ export const GitOpsDrawer = ({
             </div>
         )
     }
-
+    const deploymentManifestGitRepo =
+        commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? 'Auto-create repository' : commonState.gitRepoURL
     return (
         <>
             {(isDeploymentAllowed || isDrawerOpen) && (
@@ -419,7 +420,7 @@ export const GitOpsDrawer = ({
                                 data-testid="save_cluster_list_button_after_selection"
                                 className="cta h-36 lh-36"
                                 type="button"
-                                disabled={selectedRepoType === repoType.CONFIGURE && !repoURL}
+                                disabled={selectedRepoType === repoType.CONFIGURE && !repoURL.trim()}
                                 onClick={handleSaveButton}
                             >
                                 Save
@@ -436,15 +437,14 @@ export const GitOpsDrawer = ({
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="repo-url-link" onClick={toggleDrawer}>{`${
-                            visibleRepoURL.length > 0
-                                ? visibleRepoURL === repoType.DEFAULT || staleData
-                                    ? 'Auto-create repository'
-                                    : visibleRepoURL
-                                : 'Set GitOps repository'
-                        }`}</a>
+                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-right pb-4" onClick={toggleDrawer}>
+                            {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
+                        </a>
                     </div>
-                    {visibleRepoURL.length === 0 && visibleRepoURL !== repoType.DEFAULT && renderValidationErrorLabel()}
+                    {commonState.deploymentAppType === DeploymentAppTypes.GITOPS &&
+                        allowedCustomBool &&
+                        commonState.gitRepoURL.length === 0 &&
+                        renderValidationErrorLabel()}
                 </div>
             ) : null}
             <hr />
