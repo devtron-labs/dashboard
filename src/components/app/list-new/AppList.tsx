@@ -720,7 +720,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             {isArgoInstalled && (
                                 <>
                                     <Filter
-                                        list={masterFilters.appStatus}
+                                        list={appStatusFilters}
                                         labelKey="label"
                                         buttonText={APP_LIST_HEADERS.AppStatus}
                                         placeholder={APP_LIST_HEADERS.SearchAppStatus}
@@ -737,7 +737,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 </>
                             )}
                             <Filter
-                                list={appStatusFilters}
+                                list={masterFilters.projects}
                                 labelKey="label"
                                 buttonText="Projects"
                                 placeholder="Search Project"
@@ -915,17 +915,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             Helm Apps
                         </a>
                     </li>
-                    <li className="tab-list__tab">
-                        <a
-                            className={`tab-list__tab-link ${
-                                currentTab === AppListConstants.AppTabs.ARGO_APPS ? 'active' : ''
-                            }`}
-                            onClick={() => changeAppTab(AppListConstants.AppTabs.ARGO_APPS)}
-                            data-testid="helm-app-list-button"
-                        >
-                            {AppListConstants.AppTabs.ARGO_APPS}
-                        </a>
-                    </li>
+                    {window._env_?.ENABLE_EXTERNAL_ARGO_CD && (
+                        <li className="tab-list__tab">
+                            <a
+                                className={`tab-list__tab-link ${
+                                    currentTab === AppListConstants.AppTabs.ARGO_APPS ? 'active' : ''
+                                }`}
+                                onClick={() => changeAppTab(AppListConstants.AppTabs.ARGO_APPS)}
+                                data-testid="helm-app-list-button"
+                            >
+                                {AppListConstants.AppTabs.ARGO_APPS}
+                            </a>
+                        </li>
+                    )}
                 </ul>
                 <div className="app-tabs-sync fs-13">
                     {lastDataSyncTimeString &&
@@ -1048,7 +1050,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 </>
             )
         }
-        if (params.appType === AppListConstants.AppType.ARGO_APPS) {
+        if (params.appType === AppListConstants.AppType.ARGO_APPS && window?._env_?.ENABLE_EXTERNAL_ARGO_CD) {
             return (
                 <>
                     <ExternalArgoList
@@ -1083,13 +1085,13 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <>
+        <div>
             <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
             {renderMasterFilters()}
             {renderAppliedFilters()}
             {renderAppTabs()}
             {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
             {renderAppListBody()}
-        </>
+        </div>
     )
 }
