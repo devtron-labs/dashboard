@@ -56,7 +56,7 @@ export default function TriggerViewConfigDiff({
     const [currentData, setCurrentData] = useState<any>({}) // store codeEditorValue of current(lhs) and base(rhs) config
 
     useEffect(() => {
-        if (canReviewConfig() && searchParams.config && searchParams.deploy) {
+        if (canReviewConfig) {
             const newSearchParams = {
                 ...searchParams,
                 config: searchParams.config?.replace('-', '/'),
@@ -69,7 +69,7 @@ export default function TriggerViewConfigDiff({
             //handling the case when the user directly lands on the deployment history page
             handleNavOptionSelection(null, configParamValue)
         }
-    }, [canReviewConfig(), searchParams.config , searchParams.deploy])
+    }, [canReviewConfig])
 
     useEffect(() => {
         handleConfigToDeploySelection()

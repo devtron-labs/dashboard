@@ -667,7 +667,7 @@ export interface TriggerViewConfigDiffProps {
     diffOptions: Record<string, boolean>
     isRollbackTriggerSelected: boolean
     isRecentConfigAvailable: boolean
-    canReviewConfig: () => boolean
+    canReviewConfig: boolean
 }
 
 export const MATERIAL_TYPE = {

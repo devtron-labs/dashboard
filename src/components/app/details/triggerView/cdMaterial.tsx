@@ -2126,7 +2126,7 @@ const getInitialSelectedConfigToDeploy = () => {
                 diffOptions={state.diffOptions}
                 isRollbackTriggerSelected={state.isRollbackTrigger}
                 isRecentConfigAvailable={state.recentDeploymentConfig !== null}
-                canReviewConfig={canReviewConfig}
+                canReviewConfig={showConfigDiffView && canReviewConfig()}
             />
         )
     }
