@@ -50,7 +50,7 @@ export interface UserDto {
     /**
      * Email of the user
      */
-    emailId: string
+    email_id: string
     /**
      * Status of the user
      *
@@ -87,7 +87,7 @@ export interface UserDto {
     roleGroups?: Pick<PermissionGroup, 'id' | 'name' | 'description'>
 }
 
-export interface User extends Omit<UserDto, 'timeoutWindowExpression'> {
+export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id'> {
     /**
      * Time until which the user is active
      * Note: Only a user with status 'active' can have 'timeToLive'
@@ -95,6 +95,7 @@ export interface User extends Omit<UserDto, 'timeoutWindowExpression'> {
      * @default ''
      */
     timeToLive?: string
+    emailId: UserDto['email_id']
 }
 
 export type UserCreateOrUpdatePayload = Pick<
