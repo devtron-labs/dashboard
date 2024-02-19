@@ -675,6 +675,7 @@ export const MATERIAL_TYPE = {
     none: 'none',
 }
 
+// TODO: Remove
 export const STAGE_TYPE = {
     CD: 'CD',
     CI: 'CI',
@@ -724,4 +725,9 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
     dimensions: WorkflowDimensions
     startX: number
     startY: number
+}
+
+export interface RenderCTAType {
+    material: CDMaterialType
+    disableSelection: boolean
 }
