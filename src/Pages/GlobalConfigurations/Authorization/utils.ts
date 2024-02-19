@@ -19,10 +19,11 @@ import { useAuthorizationBulkSelection } from './shared/components/BulkSelection
 import { CONFIG_APPROVER_ACTION } from './shared/components/userGroups/UserGroup'
 
 export const transformUserResponse = (_user: UserDto): User => {
-    const { lastLoginTime, timeoutWindowExpression, ...user } = _user
+    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, ...user } = _user
 
     return {
         ...user,
+        emailId,
         lastLoginTime:
             lastLoginTime === ZERO_TIME_STRING || !lastLoginTime
                 ? LAST_LOGIN_TIME_NULL_STATE
