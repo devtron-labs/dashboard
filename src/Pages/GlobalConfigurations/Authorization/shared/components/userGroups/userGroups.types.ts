@@ -182,7 +182,6 @@ export interface AppPermissionsDetailType {
     AddNewPermissionRow: (
         accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
     ) => void
-    selectedJobs?: string[]
     appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
     jobsList: Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: ServerError }>
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>

@@ -72,6 +72,22 @@
     }
 }
 
+.app-permission-detail {
+    &__row {
+        &--devtron-apps {
+            grid-template-columns: 1fr 1fr 1fr 1fr 24px;
+        }
+
+        &--helm-apps {
+            grid-template-columns: 1fr 2fr 1fr 1fr 24px;
+        }
+
+        &--jobs {
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 24px;
+        }
+    }
+}
+
 // Override the styling for the radio group
 .form__radio-group {
     &.permission-type__radio-group {

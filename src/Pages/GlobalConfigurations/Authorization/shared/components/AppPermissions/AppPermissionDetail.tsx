@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable no-nested-ternary */
 import React from 'react'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
@@ -7,99 +6,59 @@ import { AppPermissionsDetailType } from '../userGroups/userGroups.types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import DirectPermission from './DirectPermission'
 import { PERMISSION_LABEL_CLASS } from './constants'
+import { getPermissionDetailRowClass } from './utils'
 
 const AppPermissionDetail = ({
     accessType,
     handleDirectPermissionChange,
     removeDirectPermissionRow,
     AddNewPermissionRow,
-    appsListHelmApps,
-    appsList,
-    jobsList,
-    projectsList,
-    environmentsList,
-    envClustersList,
+    ...props
 }: AppPermissionsDetailType) => {
     const { directPermission } = usePermissionConfiguration()
+    const isAccessTypeJob = accessType === ACCESS_TYPE_MAP.JOBS
+    const directPermissionForAccessType = directPermission.filter((permission) => permission.accessType === accessType)
+    const rowClass = getPermissionDetailRowClass(accessType)
+
     return (
         <>
-            {/* TODO (v3): Use array based map */}
-            <div
-                className="w-100 pt-6 pb-6 display-grid"
-                style={{
-                    gridTemplateColumns:
-                        accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                            ? '1fr 1fr 1fr 1fr 24px'
-                            : accessType === ACCESS_TYPE_MAP.HELM_APPS
-                              ? '1fr 2fr 1fr 1fr 24px'
-                              : '1fr 1fr 1fr 1fr 1fr 24px',
-                }}
-            >
+            <div className={`w-100 pt-6 pb-6 display-grid ${rowClass}`}>
                 <label className={PERMISSION_LABEL_CLASS}>Project</label>
-                <label
-                    className={PERMISSION_LABEL_CLASS}
-                    style={{ order: accessType === ACCESS_TYPE_MAP.JOBS ? 3 : 0 }}
-                >
+                <label className={PERMISSION_LABEL_CLASS} style={{ order: isAccessTypeJob ? 3 : 0 }}>
                     Environment{accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'or cluster/namespace' : ''}
                 </label>
-                <label
-                    className={PERMISSION_LABEL_CLASS}
-                    style={{ order: accessType === ACCESS_TYPE_MAP.JOBS ? 1 : 0 }}
-                >
-                    {accessType === ACCESS_TYPE_MAP.JOBS ? 'Job Name' : 'Application'}
+                <label className={PERMISSION_LABEL_CLASS} style={{ order: isAccessTypeJob ? 1 : 0 }}>
+                    {isAccessTypeJob ? 'Job Name' : 'Application'}
                 </label>
-                {accessType === ACCESS_TYPE_MAP.JOBS && (
-                    <label
-                        className={PERMISSION_LABEL_CLASS}
-                        style={{ order: accessType === ACCESS_TYPE_MAP.JOBS ? 2 : 0 }}
-                    >
+                {isAccessTypeJob && (
+                    <label className={PERMISSION_LABEL_CLASS} style={{ order: isAccessTypeJob ? 2 : 0 }}>
                         Workflow
                     </label>
                 )}
-                <label
-                    className={PERMISSION_LABEL_CLASS}
-                    style={{ order: accessType === ACCESS_TYPE_MAP.JOBS ? 4 : 0 }}
-                >
+                <label className={PERMISSION_LABEL_CLASS} style={{ order: isAccessTypeJob ? 4 : 0 }}>
                     {accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'Permission' : 'Role'}
                 </label>
                 <span style={{ order: 5 }} />
             </div>
 
             <div className="flexbox-col dc__gap-12">
-                {directPermission.map(
-                    (permission, idx) =>
-                        permission.accessType === accessType && (
-                            <div
-                                className="w-100 dc__gap-14 display-grid"
-                                style={{
-                                    // TODO (v3): Move to CSS
-                                    gridTemplateColumns:
-                                        accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                                            ? '1fr 1fr 1fr 1fr 24px'
-                                            : accessType === ACCESS_TYPE_MAP.HELM_APPS
-                                              ? '1fr 2fr 1fr 1fr 24px'
-                                              : '1fr 1fr 1fr 1fr 1fr 24px',
-                                }}
-                            >
-                                <DirectPermission
-                                    index={idx}
-                                    // eslint-disable-next-line react/no-array-index-key
-                                    key={idx}
-                                    permission={permission}
-                                    removeRow={removeDirectPermissionRow}
-                                    handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
-                                        handleDirectPermissionChange(idx, value, actionMeta, workflowList)
-                                    }
-                                    appsListHelmApps={appsListHelmApps}
-                                    jobsList={jobsList}
-                                    appsList={appsList}
-                                    projectsList={projectsList}
-                                    environmentsList={environmentsList}
-                                    envClustersList={envClustersList}
-                                />
-                            </div>
-                        ),
-                )}
+                {directPermissionForAccessType.map((permission, idx) => (
+                    <div
+                        className={`w-100 dc__gap-14 display-grid ${rowClass}`}
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={idx}
+                    >
+                        <DirectPermission
+                            index={idx}
+                            permission={permission}
+                            removeRow={removeDirectPermissionRow}
+                            handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
+                                handleDirectPermissionChange(idx, value, actionMeta, workflowList)
+                            }
+                            {...props}
+                        />
+                    </div>
+                ))}
                 <div>
                     <button
                         type="button"
