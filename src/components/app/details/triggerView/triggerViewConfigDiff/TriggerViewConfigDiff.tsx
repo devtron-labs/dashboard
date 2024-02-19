@@ -15,6 +15,7 @@ import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
+import { useHistory } from 'react-router-dom'
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -25,10 +26,10 @@ export default function TriggerViewConfigDiff({
     diffOptions,
     isRollbackTriggerSelected,
     isRecentConfigAvailable,
-    history,
     canReviewConfig
 }: TriggerViewConfigDiffProps) {
     const { searchParams } = useSearchString()
+    const history = useHistory()
 
     const [activeSideNavOption, setActiveSideNavOption] = useState(
         searchParams.config,
@@ -55,12 +56,12 @@ export default function TriggerViewConfigDiff({
     const [currentData, setCurrentData] = useState<any>({}) // store codeEditorValue of current(lhs) and base(rhs) config
 
     useEffect(() => {
-        const newSearchParams = {
-            ...searchParams,
-            config: searchParams.config?.replace('-', '/'),
-            deploy: searchParams.deploy,
-        }
-        if (canReviewConfig() && baseTemplateConfiguration && currentConfiguration) {
+        if (canReviewConfig() && searchParams.config && searchParams.deploy) {
+            const newSearchParams = {
+                ...searchParams,
+                config: searchParams.config?.replace('-', '/'),
+                deploy: searchParams.deploy,
+            }
             const configParamValue = searchParams.config?.replace('-', '/')
             history.push({
                 search: new URLSearchParams(newSearchParams).toString(),
@@ -68,7 +69,7 @@ export default function TriggerViewConfigDiff({
             //handling the case when the user directly lands on the deployment history page
             handleNavOptionSelection(null, configParamValue)
         }
-    }, [canReviewConfig(), baseTemplateConfiguration, currentConfiguration])
+    }, [canReviewConfig(), searchParams.config , searchParams.deploy])
 
     useEffect(() => {
         handleConfigToDeploySelection()
