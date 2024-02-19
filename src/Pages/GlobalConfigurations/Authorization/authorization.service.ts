@@ -38,12 +38,16 @@ export const getUserById = async (userId: User['id']): Promise<User> => {
     }
 }
 
-export const createOrUpdateUser = (data: UserCreateOrUpdatePayload) => {
-    const isUpdate = !!data.id
+export const createOrUpdateUser = ({ emailId, ...data }: UserCreateOrUpdatePayload) => {
+    const _data: UserDto = {
+        ...data,
+        email_id: emailId,
+    }
+    const isUpdate = !!_data.id
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
-    return isUpdate ? put(Routes.USER, data, options) : post(Routes.USER, data, options)
+    return isUpdate ? put(Routes.USER, _data, options) : post(Routes.USER, _data, options)
 }
 
 export const deleteUser = (userId: User['id']) => trash(`${Routes.USER}/${userId}`)
@@ -58,7 +62,9 @@ export const getUserList = async (
     try {
         const {
             result: { users, totalCount },
-        } = (await get(getUrlWithSearchParams(Routes.USER, queryParams ?? {}), { signal })) as ResponseType<{
+        } = (await get(getUrlWithSearchParams(`${Routes.USER}/${Routes.API_VERSION_V2}`, queryParams ?? {}), {
+            signal,
+        })) as ResponseType<{
             users: UserDto[]
             totalCount: number
         }>
@@ -115,7 +121,10 @@ export const getPermissionGroupList = async (
     try {
         const {
             result: { roleGroups: permissionGroups, totalCount },
-        } = (await get(getUrlWithSearchParams(Routes.USER_ROLE_GROUP, queryParams ?? {}), { signal })) as ResponseType<{
+        } = (await get(
+            getUrlWithSearchParams(`${Routes.USER_ROLE_GROUP}/${Routes.API_VERSION_V2}`, queryParams ?? {}),
+            { signal },
+        )) as ResponseType<{
             roleGroups: PermissionGroupDto[]
             totalCount: number
         }>
