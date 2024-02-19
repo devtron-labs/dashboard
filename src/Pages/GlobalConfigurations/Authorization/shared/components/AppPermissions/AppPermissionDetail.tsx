@@ -17,7 +17,6 @@ const AppPermissionDetail = ({
 }: AppPermissionsDetailType) => {
     const { directPermission } = usePermissionConfiguration()
     const isAccessTypeJob = accessType === ACCESS_TYPE_MAP.JOBS
-    const directPermissionForAccessType = directPermission.filter((permission) => permission.accessType === accessType)
     const rowClass = getPermissionDetailRowClass(accessType)
 
     return (
@@ -42,23 +41,26 @@ const AppPermissionDetail = ({
             </div>
 
             <div className="flexbox-col dc__gap-12">
-                {directPermissionForAccessType.map((permission, idx) => (
-                    <div
-                        className={`w-100 dc__gap-14 display-grid ${rowClass}`}
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={idx}
-                    >
-                        <DirectPermission
-                            index={idx}
-                            permission={permission}
-                            removeRow={removeDirectPermissionRow}
-                            handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
-                                handleDirectPermissionChange(idx, value, actionMeta, workflowList)
-                            }
-                            {...props}
-                        />
-                    </div>
-                ))}
+                {directPermission.map(
+                    (permission, idx) =>
+                        permission.accessType === accessType && (
+                            <div
+                                className={`w-100 dc__gap-14 display-grid ${rowClass}`}
+                                // eslint-disable-next-line react/no-array-index-key
+                                key={idx}
+                            >
+                                <DirectPermission
+                                    index={idx}
+                                    permission={permission}
+                                    removeRow={removeDirectPermissionRow}
+                                    handleDirectPermissionChange={(value, actionMeta, workflowList?) =>
+                                        handleDirectPermissionChange(idx, value, actionMeta, workflowList)
+                                    }
+                                    {...props}
+                                />
+                            </div>
+                        ),
+                )}
                 <div>
                     <button
                         type="button"
