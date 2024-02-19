@@ -726,10 +726,3 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
     startX: number
     startY: number
 }
-
-export interface NewParams {
-    'cd-node': string
-    'node-type': string
-    mode: string
-    search?: string
-}

@@ -826,7 +826,7 @@ const getInitialSelectedConfigToDeploy = () => {
             const _diffOptions = checkForDiff(state.recentDeploymentConfig, getBaseTemplateConfiguration(selected))
             setState((prevState) => ({
                 ...prevState,
-                selectedConfigToDeploy: selected? selected : getInitialSelectedConfigToDeploy(),
+                selectedConfigToDeploy: selected ? selected : getInitialSelectedConfigToDeploy(),
                 diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
                 diffOptions: _diffOptions,
             }))

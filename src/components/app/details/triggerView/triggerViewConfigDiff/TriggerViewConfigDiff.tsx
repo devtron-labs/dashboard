@@ -60,7 +60,6 @@ export default function TriggerViewConfigDiff({
             const newSearchParams = {
                 ...searchParams,
                 config: searchParams.config?.replace('-', '/'),
-                deploy: searchParams.deploy,
             }
             history.push({
                 search: new URLSearchParams(newSearchParams).toString(),
