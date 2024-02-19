@@ -376,7 +376,8 @@ export const GitOpsDrawer = ({
             </div>
         )
     }
-
+    const deploymentManifestGitRepo =
+        commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? 'Auto-create repository' : commonState.gitRepoURL
     return (
         <>
             {(isDeploymentAllowed || isDrawerOpen) && (
@@ -437,11 +438,7 @@ export const GitOpsDrawer = ({
                             <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
                         <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-right pb-4" onClick={toggleDrawer}>
-                            {commonState.gitRepoURL.length > 0
-                                ? commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO
-                                    ? 'Auto-create repository'
-                                    : commonState.gitRepoURL
-                                : 'Set GitOps repository'}
+                            {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
                         </a>
                     </div>
                     {commonState.deploymentAppType === DeploymentAppTypes.GITOPS &&
