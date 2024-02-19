@@ -31,6 +31,8 @@ import {
     ImageCardAccordion,
     ArtifactInfo,
     ArtifactInfoProps,
+    EXCLUDED_IMAGE_TOOLTIP,
+    STAGE_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -39,7 +41,6 @@ import {
     DeploymentWithConfigType,
     FilterConditionViews,
     MATERIAL_TYPE,
-    STAGE_TYPE,
     TriggerViewContextType,
     BulkSelectionEvents,
     RenderCTAType,
@@ -76,7 +77,7 @@ import {
     processResolvedPromise,
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
-import { EXCLUDED_IMAGE_TOOLTIP, TRIGGER_VIEW_GA_EVENTS } from './Constants'
+import { TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'

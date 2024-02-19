@@ -675,16 +675,6 @@ export const MATERIAL_TYPE = {
     none: 'none',
 }
 
-// TODO: Remove
-export const STAGE_TYPE = {
-    CD: 'CD',
-    CI: 'CI',
-    GIT: 'GIT',
-    PRECD: 'PRECD',
-    POSTCD: 'POSTCD',
-    ROLLBACK: 'ROLLBACK',
-}
-
 export interface EmptyStateCIMaterialProps {
     isRepoError: boolean
     isBranchError: boolean

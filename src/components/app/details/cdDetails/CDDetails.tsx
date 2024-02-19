@@ -7,6 +7,7 @@ import {
     GenericEmptyState,
     DeploymentAppTypes,
     useAsync,
+    STAGE_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -36,7 +37,6 @@ import {
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { STAGE_TYPE } from '../triggerView/types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 const statusSet = new Set(['starting', 'running', 'pending'])
