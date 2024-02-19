@@ -62,12 +62,11 @@ export default function TriggerViewConfigDiff({
                 config: searchParams.config?.replace('-', '/'),
                 deploy: searchParams.deploy,
             }
-            const configParamValue = searchParams.config?.replace('-', '/')
             history.push({
                 search: new URLSearchParams(newSearchParams).toString(),
             })
             //handling the case when the user directly lands on the deployment history page
-            handleNavOptionSelection(null, configParamValue)
+            handleNavOptionSelection(null, newSearchParams.config)
         }
     }, [canReviewConfig])
 

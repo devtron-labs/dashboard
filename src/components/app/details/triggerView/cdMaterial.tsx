@@ -245,7 +245,10 @@ export default function CDMaterial({
                     checkingDiff: false,
                 }))
             },
-        ).finally(() => {
+        ).catch((error) => {
+            showError(error)
+        })
+        .finally(() => {
             setState((prevState) => ({ ...prevState, checkingDiff: false }))
         })
     }
@@ -819,7 +822,7 @@ const getInitialSelectedConfigToDeploy = () => {
     }
 
     const handleConfigSelection = (selected) => {
-        if (selected?.value !== state.selectedConfigToDeploy.value) {
+        if (selected.value !== state.selectedConfigToDeploy.value) {
             const _diffOptions = checkForDiff(state.recentDeploymentConfig, getBaseTemplateConfiguration(selected))
             setState((prevState) => ({
                 ...prevState,
