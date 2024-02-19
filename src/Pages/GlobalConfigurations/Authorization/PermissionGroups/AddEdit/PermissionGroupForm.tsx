@@ -22,6 +22,7 @@ import {
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
+import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -107,7 +108,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             if (isAddMode) {
                 toast.success('Group created')
             } else {
-                // currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
+                currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 toast.success('Group updated')
             }
             _redirectToPermissionGroupList()
@@ -204,12 +205,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         Cancel
                     </Link>
                     {!isAddMode &&
-                        !deepEqual(
-                            currentK8sPermissionRef.current,
-                            {},
-                            // TODO (v3): Fix
-                            // k8sPermission.map(excludeKeyAndClusterValue)
-                        ) && (
+                        !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
                             <span className="flex cy-7 dc__gap-4">
                                 <Warning className="icon-dim-20 warning-icon-y7" />
                                 Unsaved changes

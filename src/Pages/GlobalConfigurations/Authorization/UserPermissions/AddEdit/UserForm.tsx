@@ -26,6 +26,7 @@ import {
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
+import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -151,7 +152,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             if (isAddMode) {
                 toast.success('User(s) added')
             } else {
-                // currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
+                currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
                 toast.success('User updated')
             }
             _redirectToUserPermissionList()
@@ -349,9 +350,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         {!isAddMode &&
                             !deepEqual(
                                 currentK8sPermissionRef.current,
-                                // TODO (v3): Fix
-                                // k8sPermission.map(excludeKeyAndClusterValue),
-                                {},
+                                k8sPermission.map(excludeKeyAndClusterValue),
                             ) && (
                                 <span className="flex dc__gap-4 cy-7">
                                     <Error className="icon-dim-20 warning-icon-y7" />

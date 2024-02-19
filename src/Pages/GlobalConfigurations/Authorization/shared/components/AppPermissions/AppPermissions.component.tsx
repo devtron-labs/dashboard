@@ -310,8 +310,8 @@ const AppPermissions = () => {
                     envMap.set(element, true)
                 }
             })
-            // eslint-disable-next-line no-unused-expressions
-            envMap.size !== 0 &&
+            // TODO (v3): Potential bug as nothing is returned from some
+            if (envMap.size !== 0) {
                 // eslint-disable-next-line array-callback-return
                 envClustersList.some((element) => {
                     // eslint-disable-next-line no-unused-expressions
@@ -332,6 +332,7 @@ const AppPermissions = () => {
                             }
                         })
                 })
+            }
             return returnArr
         }
         if (directRoleFilter.entity === EntityTypes.JOB) {

@@ -313,7 +313,7 @@ const K8sListItemCard = ({
         handleK8sPermission(action, index)
     }
 
-    const isK8sMultiValueContainer = k8sPermission.resource.some((item) => item.value === '*')
+    const getIsK8sMultiValueContainer = () => k8sPermission.resource.some((item) => item.value === '*')
 
     const k8sOptions = parseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
         label: role.roleDisplayName,
@@ -433,7 +433,7 @@ const K8sListItemCard = ({
                                     <MultiValueChipContainer
                                         {...props}
                                         validator={null}
-                                        isAllSelected={isK8sMultiValueContainer}
+                                        isAllSelected={getIsK8sMultiValueContainer()}
                                     />
                                 ),
                                 ClearIndicator,
