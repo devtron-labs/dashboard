@@ -147,16 +147,16 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                           </>
                                       )}
                                   </div>
-                                  <div className="api__row-actions flex right">
+                                  <div className="api__row-actions flex right dc__gap-12">
                                       <button
                                           type="button"
-                                          className="dc__transparent mr-12"
+                                          className="dc__transparent"
                                           data-index={index}
                                           data-testid="api-token-edit-button"
                                           onClick={handleEditRowAction}
                                           aria-label="Edit api token"
                                       >
-                                          <Edit className="icon-dim-20" />
+                                          <Edit className="scn-6 icon-dim-16" />
                                       </button>
                                       <button
                                           type="button"
@@ -166,7 +166,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                           onClick={handleDelete}
                                           aria-label="Delete api token"
                                       >
-                                          <Trash className="scn-6 icon-dim-20" />
+                                          <Trash className="scn-6 icon-dim-16" />
                                       </button>
                                   </div>
                               </div>
