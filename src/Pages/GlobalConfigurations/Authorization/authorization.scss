@@ -88,6 +88,13 @@
     }
 }
 
+.chart-permission {
+    &__row {
+        grid-template-columns: 80px 80px 200px;
+        row-gap: 5px;
+    }
+}
+
 // Override the styling for the radio group
 .form__radio-group {
     &.permission-type__radio-group {

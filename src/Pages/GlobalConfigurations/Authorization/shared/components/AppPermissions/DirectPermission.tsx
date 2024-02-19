@@ -22,6 +22,7 @@ import { allApplicationsOption, allEnvironmentsOption } from './constants'
 import { parseData } from '../../../utils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
+
 // TODO (v3): Move the type to the immediate file + AppPermission
 const DirectPermission = ({
     permission,
@@ -66,6 +67,8 @@ const DirectPermission = ({
     const [workflowList, setWorkflowList] = useState({ loading: false, options: [] })
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
+
+    const isAccessTypeJob = permission.accessType === ACCESS_TYPE_MAP.JOBS
 
     // eslint-disable-next-line react/no-unstable-nested-components
     const RoleValueContainer = ({
@@ -163,7 +166,7 @@ const DirectPermission = ({
         </components.MenuList>
     )
 
-    const setWorkflowsForJobs = async (perimssion) => {
+    const setWorkflowsForJobs = async (_permission) => {
         if (abortControllerRef.current) {
             abortControllerRef.current.abort()
             abortControllerRef.current = null
@@ -172,7 +175,7 @@ const DirectPermission = ({
         setWorkflowList({ loading: true, options: [] })
         try {
             setWorkflowList({ loading: true, options: [] })
-            const jobNames = perimssion.entityName.filter((option) => option.value !== '*').map((app) => app.label)
+            const jobNames = _permission.entityName.filter((option) => option.value !== '*').map((app) => app.label)
             const {
                 result: { appIdWorkflowNamesMapping },
             } = await getAllWorkflowsForAppNames(jobNames, abortControllerRef.current.signal)
@@ -449,7 +452,7 @@ const DirectPermission = ({
                     {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
                 </div>
             ) : (
-                <div style={{ order: permission.accessType === '' ? 3 : 0 }}>
+                <div style={{ order: isAccessTypeJob ? 3 : 0 }}>
                     <Select
                         value={permission.environment}
                         isMulti
@@ -484,7 +487,7 @@ const DirectPermission = ({
                     {permission.environmentError && <span className="form__error">{permission.environmentError}</span>}
                 </div>
             )}
-            <div style={{ order: permission.accessType === '' ? 1 : 0 }}>
+            <div style={{ order: isAccessTypeJob ? 1 : 0 }}>
                 <Select
                     value={permission.entityName}
                     isMulti
@@ -512,7 +515,7 @@ const DirectPermission = ({
                     name={`entityName/${permission.entity}`}
                     onFocus={() => onFocus(`entityName/${permission.entity}`)}
                     onMenuClose={onMenuClose}
-                    placeholder={permission.accessType === '' ? 'Select Job' : 'Select applications'}
+                    placeholder={isAccessTypeJob ? 'Select Job' : 'Select applications'}
                     options={[allApplicationsOption(permission.entity), ...applications]}
                     onChange={handleDirectPermissionChange}
                     hideSelectedOptions={false}
@@ -576,7 +579,7 @@ const DirectPermission = ({
                     {permission.workflowError && <span className="form__error">{permission.workflowError}</span>}
                 </div>
             )}
-            <div style={{ order: permission.accessType === '' ? 4 : 0 }}>
+            <div style={{ order: isAccessTypeJob ? 4 : 0 }}>
                 <Select
                     value={primaryActionRole}
                     name="action"

@@ -569,6 +569,7 @@ const AppPermissions = () => {
 
     // TODO (v3): Use the Approver permission component from fe-lib and remove the redundant if(s)
     const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
+        console.log('HA')
         const { action, option, name } = actionMeta
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {

@@ -78,11 +78,7 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
 
     return (
         <>
-            <div
-                className="w-100 display-grid dc__align-items-center"
-                // TODO (v3): use classes
-                style={{ gridTemplateColumns: '80px 80px 200px', rowGap: '5px' }}
-            >
+            <div className="w-100 display-grid dc__align-items-center chart-permission__row">
                 <div className={PERMISSION_LABEL_CLASS}>View</div>
                 <div className={PERMISSION_LABEL_CLASS}>Create</div>
                 <div className={PERMISSION_LABEL_CLASS}>Edit</div>
