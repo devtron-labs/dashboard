@@ -1,4 +1,4 @@
-import { defineConfig, PluginOption, loadEnv } from 'vite'
+import { defineConfig, PluginOption, loadEnv, splitVendorChunkPlugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 import fs from 'node:fs/promises'
@@ -8,7 +8,6 @@ import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
-import replace from '@rollup/plugin-replace'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 
@@ -44,7 +43,28 @@ export default defineConfig(({ mode }) => {
             port: 3000,
         },
         build: {
-            sourcemap: true,
+          sourcemap: true,
+          rollupOptions: {
+            output: {
+              manualChunks(id: string) {
+                // separating the common lib chunk
+                if (id.includes('devtron-fe-common-lib')) {
+                  return 'devtron-fe-common-lib';
+                }
+                if (id.includes('@devtron')) {
+                  return '@devtron';
+                }
+                // creating a chunk to react routes deps. Reducing the vendor chunk size
+                if (
+                  id.includes('react-router-dom') ||
+                  id.includes('@react') ||
+                  id.includes('react-router')
+                ) {
+                  return '@react-router';
+                }
+              },
+            },
+          },
         },
         plugins: [
             // @TODO: Check if we can remove the config object inside the react plugin
@@ -52,6 +72,7 @@ export default defineConfig(({ mode }) => {
                 // Use React plugin in all *.jsx and *.tsx files
                 include: '**/*.{jsx,tsx}',
             }),
+            splitVendorChunkPlugin(),
             svgr({
                 svgrOptions: {},
             }),
