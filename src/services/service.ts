@@ -307,17 +307,6 @@ export function getLastExecutionByArtifactId(
     })
 }
 
-export function getLastExecutionByArtifactAppEnv(
-    artifact: string | number,
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionResponseType> {
-    const queryString = `artifactId=${artifact}&appId=${appId}&envId=${envId}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
 export function getLastExecutionByImageScanDeploy(
     imageScanDeployInfoId: string | number,
     appId: number | string,
