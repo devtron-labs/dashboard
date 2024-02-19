@@ -108,7 +108,7 @@ export const SourceInfo = ({
             loadingCards.push(<LoadingCard key={i} />)
         }
 
-        return <div className="flex left ml-20 mb-16">{loadingCards}</div>
+        return <div className="flex left mb-16">{loadingCards}</div>
     }
 
     const conditionalScalePodsButton = (children) => {
@@ -126,7 +126,7 @@ export const SourceInfo = ({
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
-            <div className="flex left w-100 mb-16">
+            <div className="flex left w-100">
                 <EnvSelector
                     environments={environments}
                     disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
@@ -226,7 +226,7 @@ export const SourceInfo = ({
     }
 
     return (
-        <div className="flex left w-100 column source-info-container">
+        <div className="flex left w-100 column source-info-container dc__gap-16">
             {renderDevtronAppsEnvironmentSelector(environment)}
             {loadingDetails
                 ? shimmerLoaderBlocks()

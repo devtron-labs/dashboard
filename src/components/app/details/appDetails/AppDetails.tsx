@@ -621,7 +621,7 @@ export const Details: React.FC<DetailsType> = ({
 
     return (
         <>
-            <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg-gradient">
+            <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg dc__gap-16">
                 <SourceInfo
                     appDetails={appDetails}
                     appStreamData={streamData}
@@ -645,7 +645,7 @@ export const Details: React.FC<DetailsType> = ({
                     setErrorsList={setErrorsList}
                 />
             </div>
-            {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest ? (
+            {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
                 <>
                     {environment && !isVirtualEnvRef.current && (
                         <AppMetrics
@@ -664,8 +664,6 @@ export const Details: React.FC<DetailsType> = ({
                         />
                     )}
                 </>
-            ) : (
-                <div className="mb-9" />
             )}
             {loadingResourceTree ? (
                 <div className="bcn-0 h-100">

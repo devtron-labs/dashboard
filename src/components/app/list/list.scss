@@ -81,7 +81,7 @@
 
 .app-list__header {
     display: grid;
-    grid-template-columns: 20px 1.5fr repeat(4, 1fr) 1.5fr 76px;
+    grid-template-columns: 24px 1.5fr repeat(4, 1fr) 1.5fr 76px;
     align-items: center;
     grid-template-rows: 36px;
     grid-column-gap: 16px;
@@ -104,7 +104,7 @@
 .app-list__row {
     min-height: 48px;
     display: grid;
-    grid-template-columns: 20px 1.5fr repeat(4, 1fr) 1.5fr 76px;
+    grid-template-columns: 24px 1.5fr repeat(4, 1fr) 1.5fr 76px;
     align-items: center;
     grid-column-gap: 16px;
     font-size: 13px;
@@ -482,7 +482,7 @@
     &__table-row {
         display: grid;
         align-items: center;
-        grid-template-columns: 20px 1.5fr repeat(4, 1fr) 1.5fr 76px;
+        grid-template-columns: 24px 1.5fr repeat(4, 1fr) 1.5fr 76px;
         column-gap: 16px;
         grid-template-rows: 40px;
     }
