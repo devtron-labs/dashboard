@@ -96,11 +96,11 @@ const K8sPermissions = () => {
                                 <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
                                     <button
                                         type="button"
-                                        className="dc__transparent flex"
+                                        className="dc__transparent flex icon-delete"
                                         onClick={() => deletePermission(index)}
                                         aria-label="Delete row"
                                     >
-                                        <TrashIcon className="scn-6 icon-dim-16 icon-delete" />
+                                        <TrashIcon className="scn-6 icon-dim-16" />
                                     </button>
                                 </Tippy>
                             </span>

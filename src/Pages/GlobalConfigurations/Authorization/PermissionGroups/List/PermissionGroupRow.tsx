@@ -105,12 +105,12 @@ const PermissionGroupRow = ({
                     </Link>
                     <button
                         type="button"
-                        className="dc__visible-hover--child dc__transparent"
+                        className="dc__visible-hover--child dc__transparent icon-delete"
                         data-testid={`permission-group__delete-button-${index}`}
                         onClick={toggleDeleteModal}
                         aria-label="Delete permission group"
                     >
-                        <Trash className="scn-6 icon-dim-16 mw-16 icon-delete" />
+                        <Trash className="scn-6 icon-dim-16 mw-16" />
                     </button>
                 </div>
             </div>

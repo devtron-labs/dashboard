@@ -160,7 +160,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                       </button>
                                       <button
                                           type="button"
-                                          className="dc__transparent"
+                                          className="dc__transparent icon-delete"
                                           data-index={index}
                                           data-testid="api-token-delete-button"
                                           onClick={handleDelete}

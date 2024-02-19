@@ -177,12 +177,12 @@ const UserPermissionRow = ({
                         </Link>
                         <button
                             type="button"
-                            className="dc__visible-hover--child dc__transparent"
+                            className="dc__visible-hover--child dc__transparent icon-delete"
                             data-testid={`user-permission__delete-button-${index}`}
                             onClick={toggleDeleteModal}
                             aria-label="Delete user"
                         >
-                            <Trash className="scn-6 icon-dim-16 mw-16 icon-delete" />
+                            <Trash className="scn-6 icon-dim-16 mw-16" />
                         </button>
                     </div>
                 )}
