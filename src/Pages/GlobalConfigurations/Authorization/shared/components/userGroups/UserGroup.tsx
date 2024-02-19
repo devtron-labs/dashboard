@@ -16,7 +16,7 @@ export const authorizationSelectStyles = {
         ..._selectStyles.option(base, state),
         ...(state.isSelected && {
             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-        })
+        }),
     }),
 }
 

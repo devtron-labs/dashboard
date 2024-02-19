@@ -1,7 +1,7 @@
 // TODO (v3): Remove this file
 
 import React from 'react'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { Nodes } from '../../../../../../components/app/types'
 import { ChartGroup } from '../../../../../../components/charts/charts.types'
@@ -40,11 +40,13 @@ interface RoleFilter {
     team?: OptionType
     entityName?: OptionType[]
     environment?: OptionType[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     action?: any
     cluster?: OptionType
     namespace?: OptionType
     group?: OptionType
     kind?: OptionType
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resource?: any
 }
 
@@ -80,10 +82,15 @@ export interface APIRoleFilter {
     environment?: string
     action: string
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cluster?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     namespace?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     group?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     kind?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resource?: any
     workflow?: string
 }
@@ -95,6 +102,7 @@ export interface K8sPermissionFilter {
     group: OptionType
     action: OptionType
     kind: OptionType
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resource: any
     key?: number
 }
@@ -110,6 +118,7 @@ export enum UserRoleType {
 export interface K8sListItemCardType {
     key?: number
     k8sPermission: K8sPermissionFilter
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleK8sPermission: (action: K8sPermissionActionType, key?: number, data?: any) => void
     index: number
     namespaceMapping: Record<string, OptionType[]>
@@ -125,6 +134,32 @@ export interface K8sListItemCardType {
         index: number
     }
 }
+
+export interface CustomRoles {
+    id: number
+    roleName: string
+    roleDisplayName: string
+    roleDescription: string
+    entity: EntityTypes
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+}
+
+export type MetaPossibleRoles = Record<
+    CustomRoles['roleName'],
+    {
+        value: CustomRoles['roleDisplayName']
+        description: CustomRoles['roleDescription']
+    }
+>
+
+export interface CustomRoleAndMeta {
+    customRoles: CustomRoles[]
+    possibleRolesMeta: MetaPossibleRoles
+    possibleRolesMetaForHelm: MetaPossibleRoles
+    possibleRolesMetaForCluster: MetaPossibleRoles
+    possibleRolesMetaForJob: MetaPossibleRoles
+}
+
 export interface UserGroup {
     customRoles: CustomRoleAndMeta
     isAutoAssignFlowEnabled: boolean
@@ -148,11 +183,14 @@ export interface AppPermissionsDetailType {
         accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
     ) => void
     selectedJobs?: string[]
-    appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
-    jobsList: Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: any }>
-    appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
+    appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
+    jobsList: Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: ServerError }>
+    appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     environmentsList: any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     projectsList: any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     envClustersList: any[]
 }
 
@@ -167,22 +205,6 @@ export const K8S_PERMISSION_INFO_MESSAGE = {
 }
 
 export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: '*' }
-
-export interface CustomRoles {
-    id: number
-    roleName: string
-    roleDisplayName: string
-    roleDescription: string
-    entity: EntityTypes
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
-}
-export interface CustomRoleAndMeta {
-    customRoles: CustomRoles[]
-    possibleRolesMeta: {}
-    possibleRolesMetaForHelm: {}
-    possibleRolesMetaForCluster: {}
-    possibleRolesMetaForJob: {}
-}
 
 export const ViewChartGroupPermission: APIRoleFilter = {
     entity: EntityTypes.CHART_GROUP,

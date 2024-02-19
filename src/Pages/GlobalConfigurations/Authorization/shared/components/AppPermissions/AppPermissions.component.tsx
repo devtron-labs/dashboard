@@ -2,7 +2,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
-import { GenericSectionErrorState, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericSectionErrorState, OptionType, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { APPROVER_ACTION, CONFIG_APPROVER_ACTION } from '../userGroups/UserGroup'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../../../../../config'
 import {
@@ -78,18 +78,18 @@ const AppPermissions = () => {
             return
         }
         // eslint-disable-next-line @typescript-eslint/no-shadow
-        setJobsList((jobsList) => {
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            return missingProjects.reduce((jobsList, projectId) => {
-                jobsList.set(projectId, { loading: true, result: [], error: null })
-                return jobsList
-            }, jobsList)
-        })
+        setJobsList((jobsList) =>
+            missingProjects.reduce((_jobsList, projectId) => {
+                _jobsList.set(projectId, { loading: true, result: [], error: null })
+                return _jobsList
+            }, jobsList),
+        )
         try {
             const {
                 result: { jobContainers },
             } = await getJobs({ teams: missingProjects })
 
+            // TODO (v3): Why are we setting only projectIds[0] here
             const jobs = [{ projectId: projectIds[0], jobsList: jobContainers }]
             const projectsMap = mapByKey(jobs || [], 'projectId')
             setJobsList(
@@ -139,19 +139,20 @@ const AppPermissions = () => {
         try {
             const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
-            setAppsList((appList) => {
-                return new Map(
-                    // eslint-disable-next-line @typescript-eslint/no-shadow
-                    missingProjects.reduce((appList, projectId) => {
-                        appList.set(projectId, {
-                            loading: false,
-                            result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
-                            error: null,
-                        })
-                        return appList
-                    }, appList),
-                )
-            })
+            setAppsList(
+                (appList) =>
+                    new Map(
+                        // eslint-disable-next-line @typescript-eslint/no-shadow
+                        missingProjects.reduce((appList, projectId) => {
+                            appList.set(projectId, {
+                                loading: false,
+                                result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
+                                error: null,
+                            })
+                            return appList
+                        }, appList),
+                    ),
+            )
         } catch (_error) {
             showError(_error)
             setAppsList((appList) => {
@@ -180,19 +181,21 @@ const AppPermissions = () => {
             const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.HELM_APPS)
 
             const projectsMap = mapByKey(result || [], 'projectId')
-            setAppsListHelmApps((appListHelmApps) => {
-                return new Map(
-                    // eslint-disable-next-line @typescript-eslint/no-shadow
-                    missingProjects.reduce((appListHelmApps, projectId) => {
-                        appListHelmApps.set(projectId, {
-                            loading: false,
-                            result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
-                            error: null,
-                        })
-                        return appListHelmApps
-                    }, appListHelmApps),
-                )
-            })
+            setAppsListHelmApps(
+                // TODO (v3): Common out
+                (appListHelmApps) =>
+                    new Map(
+                        // eslint-disable-next-line @typescript-eslint/no-shadow
+                        missingProjects.reduce((appListHelmApps, projectId) => {
+                            appListHelmApps.set(projectId, {
+                                loading: false,
+                                result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
+                                error: null,
+                            })
+                            return appListHelmApps
+                        }, appListHelmApps),
+                    ),
+            )
         } catch (_error) {
             showError(_error)
             setAppsListHelmApps((appListHelmApps) => {
@@ -208,7 +211,7 @@ const AppPermissions = () => {
         if (directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             const isJobs = directRoleFilter.entity === EntityTypes.JOB
             return [
-                { label: directRoleFilter.entity === EntityTypes.JOB ? 'All Jobs' : 'All applications', value: '*' },
+                { label: isJobs ? 'All Jobs' : 'All applications', value: '*' },
                 ...(
                     (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
                         ? appsList
@@ -216,38 +219,34 @@ const AppPermissions = () => {
                           ? jobsList
                           : appsListHelmApps
                     ).get(projectId)?.result || []
-                ).map((app) => {
-                    return {
-                        label: isJobs ? app.jobName : app.name,
-                        value: isJobs ? app.appName : app.name,
-                    }
-                }),
+                ).map((app) => ({
+                    label: isJobs ? app.jobName : app.name,
+                    value: isJobs ? app.appName : app.name,
+                })),
             ]
         }
         return [{ label: 'All applications', value: '*' }]
     }
 
     async function setAllWorkflows(jobOptions) {
-        const workflowOptions = []
         const jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
         const { result } = await getAllWorkflowsForAppNames(jobNames)
         const { appIdWorkflowNamesMapping } = result
-        // eslint-disable-next-line no-restricted-syntax, guard-for-in
-        for (const jobName in appIdWorkflowNamesMapping) {
-            workflowOptions.push({
-                label: jobName,
-                options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
-                    label: workflow,
-                    value: workflow,
-                })),
-            })
-        }
+
+        const workflowOptions = Object.entries(appIdWorkflowNamesMapping).map(([jobName, jobWorkflows]) => ({
+            label: jobName,
+            options: jobWorkflows.map((workflow) => ({
+                label: workflow,
+                value: workflow,
+            })),
+        }))
 
         return [
             { label: 'All Workflows', value: '*' },
             ...workflowOptions.reduce((acc, option) => {
-                return [...acc, ...option.options]
-            }, []),
+                acc.push(...option.options)
+                return acc
+            }, [] as OptionType[]),
         ]
     }
 
@@ -284,6 +283,7 @@ const AppPermissions = () => {
     // eslint-disable-next-line consistent-return
     const setAllEnv = (directRoleFilter: APIRoleFilter) => {
         if (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+            // TODO (v3): Check if util can be used
             if (directRoleFilter.environment) {
                 return directRoleFilter.environment
                     .split(',')
@@ -696,12 +696,18 @@ const AppPermissions = () => {
     }
 
     const addNewPermissionRowLocal = (accessType) => {
-        if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-            setDirectPermission((permission) => [...permission, emptyDirectPermissionDevtronApps])
-        } else if (accessType === ACCESS_TYPE_MAP.HELM_APPS) {
-            setDirectPermission((permission) => [...permission, emptyDirectPermissionHelmApps])
-        } else if (accessType === ACCESS_TYPE_MAP.JOBS) {
-            setDirectPermission((permission) => [...permission, emptyDirectPermissionJobs])
+        switch (accessType) {
+            case ACCESS_TYPE_MAP.DEVTRON_APPS:
+                setDirectPermission((permission) => [...permission, emptyDirectPermissionDevtronApps])
+                break
+            case ACCESS_TYPE_MAP.HELM_APPS:
+                setDirectPermission((permission) => [...permission, emptyDirectPermissionHelmApps])
+                break
+            case ACCESS_TYPE_MAP.JOBS:
+                setDirectPermission((permission) => [...permission, emptyDirectPermissionJobs])
+                break
+            default:
+                throw new Error(`Unsupported access type ${accessType}`)
         }
     }
 

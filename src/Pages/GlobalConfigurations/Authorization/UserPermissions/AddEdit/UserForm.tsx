@@ -74,7 +74,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         currentK8sPermissionRef,
         userGroups,
         setUserGroups,
-        data: userData
+        data: userData,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
@@ -188,7 +188,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     const handleEmailChange = (newValue) => {
         setEmailState((prevEmailState) => ({ ...prevEmailState, emails: newValue || [], emailError: '' }))
-    }    
+    }
 
     const handleDelete = async () => {
         setSubmitting(true)
@@ -252,6 +252,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             DropdownIndicator: () => null,
             ClearIndicator,
             MultiValueRemove,
+            // eslint-disable-next-line react/no-unstable-nested-components
             MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={validateEmail} />,
             IndicatorSeparator: () => null,
             Menu: () => null,

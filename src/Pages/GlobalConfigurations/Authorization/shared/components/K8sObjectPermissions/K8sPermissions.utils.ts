@@ -1,4 +1,3 @@
-import React from 'react'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
 import { ActionTypes, ACTION_LABEL, EntityTypes, K8sPermissionFilter } from '../userGroups/userGroups.types'
 
@@ -31,6 +30,7 @@ export const multiSelectAllState = (selected, actionMeta, setState, options) => 
     }
 }
 
+// eslint-disable-next-line default-param-last
 export const getPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter) => {
     if (k8sPermission) {
         return {
@@ -69,9 +69,9 @@ export const k8sRoleSelectionStyle = {
     }),
 }
 
-export const excludeKeyAndClusterValue = ({ key, cluster, ...rest }) => {
+export const excludeKeyAndClusterValue = ({ cluster, ...rest }) => {
     return {
         cluster: { label: cluster.label, value: cluster.label },
         ...rest,
     }
-} 
+}

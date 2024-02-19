@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { PATTERNS } from '../../../../config'
 
 // eslint-disable-next-line import/prefer-default-export

@@ -133,6 +133,7 @@ const UserPermissionRow = ({
                 )}
                 <ConditionalWrap
                     condition={lastLoginTime !== LAST_LOGIN_TIME_NULL_STATE}
+                    // eslint-disable-next-line react/no-unstable-nested-components
                     wrap={(child) => (
                         <Tippy
                             content={moment(lastLoginTime).format(Moment12HourFormat)}

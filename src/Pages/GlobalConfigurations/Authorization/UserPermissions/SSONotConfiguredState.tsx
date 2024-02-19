@@ -23,6 +23,7 @@ const SSONotConfiguredState = () => (
                     linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
                     redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
                     internalLink
+                    // eslint-disable-next-line react/no-unstable-nested-components
                     Icon={() => <ErrorIcon className="h-20" />}
                 />
             </>

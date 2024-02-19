@@ -9,12 +9,12 @@ import { getPermissionObject } from './K8sPermissions.utils'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { K8sPermissionActionType } from './constants'
 
-export default function K8sPermissionModal({
+const K8sPermissionModal = ({
     selectedPermissionAction,
     // This is different from the k8sPermission in the context
     updatedK8sPermission: k8sPermission,
     close,
-}: K8sPermissionModalType) {
+}: K8sPermissionModalType) => {
     const { setK8sPermission } = usePermissionConfiguration()
     const [k8sPermissionList, setK8sPermissionList] = useState([getPermissionObject(0, k8sPermission)])
     const [namespaceMapping, setNamespaceMapping] = useState<Record<string, OptionType[]>>()
@@ -22,14 +22,14 @@ export default function K8sPermissionModal({
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
 
-    const handleK8sPermission = (action: K8sPermissionActionType, key?: number, data?: any) => {
+    const handleK8sPermission = (action: K8sPermissionActionType, key?: number, data?) => {
         let _k8sPermissionList = [...k8sPermissionList]
         switch (action) {
             case K8sPermissionActionType.add:
                 _k8sPermissionList = [getPermissionObject(_k8sPermissionList.length), ..._k8sPermissionList]
                 break
             case K8sPermissionActionType.delete:
-                _k8sPermissionList.filter(permission => permission.key !== key)
+                _k8sPermissionList.filter((permission) => permission.key !== key)
                 break
             case K8sPermissionActionType.clone: {
                 const currentLen = _k8sPermissionList.length
@@ -87,15 +87,13 @@ export default function K8sPermissionModal({
     }
 
     const savePermission = () => {
-        const isPermissionValid = k8sPermissionList.reduce((valid, permission) => {
-            valid = valid && !!permission.resource?.length
-            return valid
-        }, true)
+        const isPermissionValid = k8sPermissionList.every((permission) => !!permission.resource?.length)
 
         if (isPermissionValid) {
             setK8sPermission((prev) => {
                 if (selectedPermissionAction?.action === K8sPermissionActionType.edit) {
                     if (k8sPermissionList?.length) {
+                        // eslint-disable-next-line no-param-reassign
                         prev[selectedPermissionAction.index] = k8sPermissionList[k8sPermissionList.length - 1]
                         return [...prev]
                     }
@@ -131,24 +129,23 @@ export default function K8sPermissionModal({
                             </span>
                         </div>
                     )}
-                    {k8sPermissionList?.map((_k8sPermission, index) =>  (
-                            <K8sListItemCard
-                                k8sPermission={_k8sPermission}
-                                handleK8sPermission={handleK8sPermission}
-                                index={index}
-                                namespaceMapping={namespaceMapping}
-                                setNamespaceMapping={setNamespaceMapping}
-                                apiGroupMapping={apiGroupMapping}
-                                setApiGroupMapping={setApiGroupMapping}
-                                kindMapping={kindMapping}
-                                setKindMapping={setKindMapping}
-                                objectMapping={objectMapping}
-                                setObjectMapping={setObjectMapping}
-                                selectedPermissionAction={selectedPermissionAction}
-                                key={_k8sPermission.key}
-                            />
-                        )
-                    )}
+                    {k8sPermissionList?.map((_k8sPermission, index) => (
+                        <K8sListItemCard
+                            k8sPermission={_k8sPermission}
+                            handleK8sPermission={handleK8sPermission}
+                            index={index}
+                            namespaceMapping={namespaceMapping}
+                            setNamespaceMapping={setNamespaceMapping}
+                            apiGroupMapping={apiGroupMapping}
+                            setApiGroupMapping={setApiGroupMapping}
+                            kindMapping={kindMapping}
+                            setKindMapping={setKindMapping}
+                            objectMapping={objectMapping}
+                            setObjectMapping={setObjectMapping}
+                            selectedPermissionAction={selectedPermissionAction}
+                            key={_k8sPermission.key}
+                        />
+                    ))}
                 </div>
                 <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right bcn-0 dc__border-top">
                     <button
@@ -172,3 +169,5 @@ export default function K8sPermissionModal({
         </Drawer>
     )
 }
+
+export default K8sPermissionModal

@@ -9,6 +9,7 @@ import {
     DirectPermissionsRoleFilter,
     EntityTypes,
     K8sPermissionFilter,
+    MetaPossibleRoles,
     ViewChartGroupPermission,
 } from './shared/components/userGroups/userGroups.types'
 import { ACCESS_TYPE_MAP, Moment12HourFormat, SERVER_MODE, ZERO_TIME_STRING } from '../../../config'
@@ -33,7 +34,7 @@ export const transformUserResponse = (_user: UserDto): User => {
     }
 }
 
-const getUpdatedMetaPossibleRoles = (possibleMetaRoles, role) => ({
+const getUpdatedMetaPossibleRoles = (possibleMetaRoles: MetaPossibleRoles, role: CustomRoles) => ({
     ...possibleMetaRoles,
     [role.roleName]: {
         value: role.roleDisplayName,
@@ -41,11 +42,11 @@ const getUpdatedMetaPossibleRoles = (possibleMetaRoles, role) => ({
     },
 })
 
-export const getMetaPossibleRoles = (customRoles: CustomRoles[]) => {
-    let possibleRolesMeta = {}
-    let possibleRolesMetaForHelm = {}
-    let possibleRolesMetaForCluster = {}
-    let possibleRolesMetaForJob = {}
+export const getMetaPossibleRoles = (customRoles: CustomRoles[]): CustomRoleAndMeta => {
+    let possibleRolesMeta: MetaPossibleRoles = {}
+    let possibleRolesMetaForHelm: MetaPossibleRoles = {}
+    let possibleRolesMetaForCluster: MetaPossibleRoles = {}
+    let possibleRolesMetaForJob: MetaPossibleRoles = {}
 
     customRoles.forEach((role) => {
         switch (role.entity) {

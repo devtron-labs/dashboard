@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import {
@@ -46,7 +48,7 @@ import { parseData } from '../../../utils'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
 import { K8sPermissionActionType } from './constants'
 
-export default function K8sListItemCard({
+const K8sListItemCard = ({
     k8sPermission,
     handleK8sPermission,
     index,
@@ -59,7 +61,7 @@ export default function K8sListItemCard({
     objectMapping,
     setObjectMapping,
     selectedPermissionAction,
-}: K8sListItemCardType) {
+}: K8sListItemCardType) => {
     const { customRoles } = useAuthorizationContext()
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
@@ -68,6 +70,7 @@ export default function K8sListItemCard({
     const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
 
     useEffect(() => {
+        // eslint-disable-next-line no-use-before-define
         getClusterListData()
         setApiGroupMapping((prevMapping) => ({
             ...prevMapping,
@@ -89,7 +92,9 @@ export default function K8sListItemCard({
                 if (k8sPermission?.cluster) {
                     const selectedCluster = _clusterOptions?.find((ele) => ele.label === k8sPermission.cluster.label)
                     handleK8sPermission(K8sPermissionActionType.edit, index, selectedCluster)
+                    // eslint-disable-next-line no-use-before-define
                     getNamespaceList(selectedCluster.value)
+                    // eslint-disable-next-line no-use-before-define
                     getGroupKindData(selectedCluster.value)
                 }
             }
@@ -121,7 +126,8 @@ export default function K8sListItemCard({
                 const _processedData = processK8SObjects(resourceGroupList.apiResources, '', true)
                 const _k8SObjectMap = _processedData.k8SObjectMap
                 const _k8SObjectList: OptionType[] = []
-                for (const [key, value] of _k8SObjectMap.entries()) {
+                // eslint-disable-next-line no-restricted-syntax
+                for (const [key] of _k8SObjectMap.entries()) {
                     if (key) {
                         _k8SObjectList.push({ label: key, value: key })
                     }
@@ -146,6 +152,7 @@ export default function K8sListItemCard({
                     [k8sPermission.key]: [..._allApiGroupMapping, ..._k8SObjectList.sort(sortOptionsByLabel)],
                 }))
                 if (k8sPermission?.kind) {
+                    // eslint-disable-next-line no-use-before-define
                     createKindData(
                         k8sPermission.group,
                         _allKindMapping,
@@ -159,12 +166,14 @@ export default function K8sListItemCard({
     }
 
     const createKindData = (selected, _allKindMapping, _k8SObjectMap = null) => {
-        const kind: any[] = []
+        const kind = []
         let selectedGvk: GVKType
         if (_k8SObjectMap ?? processedData) {
             if (selected.value === '*') {
+                // eslint-disable-next-line no-restricted-syntax
                 for (const value of (_k8SObjectMap ?? processedData).values()) {
-                    value?.child.forEach((ele) => {
+                    // eslint-disable-next-line no-loop-func
+                    value?.child.forEach((ele: { gvk: GVKType }) => {
                         kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'], gvk: ele.gvk })
                         if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
                             selectedGvk = ele.gvk
@@ -192,6 +201,7 @@ export default function K8sListItemCard({
         }))
         if (k8sPermission?.resource) {
             if (k8sPermission.kind.value !== '*' && k8sPermission.kind.value !== 'Event') {
+                // eslint-disable-next-line no-use-before-define
                 getResourceListData({ ...k8sPermission.kind, gvk: selectedGvk }, _k8SObjectMap)
             } else {
                 setObjectMapping((prevMapping) => ({
@@ -202,6 +212,7 @@ export default function K8sListItemCard({
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const getResourceListData = async (selected, _k8SObjectMap = null): Promise<void> => {
         try {
             const resourceListPayload: ResourceListPayloadType = {
@@ -250,6 +261,7 @@ export default function K8sListItemCard({
             handleK8sPermission(K8sPermissionActionType.onNamespaceChange, index, selected)
             const _GvkObjectList: OptionType[] = []
             if (processedGvkData) {
+                // eslint-disable-next-line no-restricted-syntax
                 for (const [key] of processedGvkData.entries()) {
                     if (key) {
                         _GvkObjectList.push({ label: key, value: key })
@@ -416,6 +428,7 @@ export default function K8sListItemCard({
                             onChange={onResourceObjectChange}
                             components={{
                                 IndicatorSeparator: () => null,
+                                // eslint-disable-next-line react/no-unstable-nested-components
                                 MultiValueContainer: ({ ...props }) => (
                                     <MultiValueChipContainer
                                         {...props}
@@ -493,3 +506,5 @@ export default function K8sListItemCard({
         </div>
     )
 }
+
+export default K8sListItemCard
