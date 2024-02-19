@@ -115,6 +115,7 @@ import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog
 import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
+import { AUTO_GENERATE_GITOPS_REPO } from './constant'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -969,7 +970,7 @@ const ChartValuesView = ({
                 setStaleData(true)
                 dispatch({
                     type: ChartValuesViewActionTypes.setGitRepoURL,
-                    payload: 'Default',
+                    payload: AUTO_GENERATE_GITOPS_REPO,
                 })
                 handleDrawerState(true)
             } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900') {

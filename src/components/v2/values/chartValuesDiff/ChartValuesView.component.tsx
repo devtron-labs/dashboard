@@ -26,7 +26,7 @@ import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
-import { GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
+import { AUTO_GENERATE_GITOPS_REPO, GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
 import './ChartValuesView.scss'
 
 import {
@@ -317,7 +317,7 @@ export const GitOpsDrawer = ({
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
-    const [repoURL, setRepoURL] = useState(commonState.gitRepoURL === 'Default' ? '' : commonState.gitRepoURL)
+    const [repoURL, setRepoURL] = useState(commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL)
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -348,7 +348,7 @@ export const GitOpsDrawer = ({
         if (selectedRepoType === repoType.DEFAULT) {
             dispatch({
                 type: ChartValuesViewActionTypes.setGitRepoURL,
-                payload: 'Default',
+                payload: AUTO_GENERATE_GITOPS_REPO,
             })
         } else {
             dispatch({
@@ -438,7 +438,7 @@ export const GitOpsDrawer = ({
                         </span>
                         <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-right pb-4" onClick={toggleDrawer}>
                             {commonState.gitRepoURL.length > 0
-                                ? commonState.gitRepoURL === 'Default'
+                                ? commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO
                                     ? 'Auto-create repository'
                                     : commonState.gitRepoURL
                                 : 'Set GitOps repository'}
