@@ -24,7 +24,7 @@ import { ReactComponent as QuestionFilled } from '../../../../assets/icons/ic-he
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
-import { DOCUMENTATION } from '../../../../config'
+import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { createOrUpdateUser } from '../authorization.service'
 import { PermissionType } from '../constants'
@@ -78,13 +78,13 @@ const CreateAPIToken = ({
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<{
         invalidName: boolean
-        invalidaNameMessage: string
+        invalidNameMessage: string
         invalidCustomDate: boolean
         invalidDescription: boolean
         invalidDescriptionMessage: string
     }>({
         invalidName: false,
-        invalidaNameMessage: '',
+        invalidNameMessage: '',
         invalidCustomDate: false,
         invalidDescription: false,
         invalidDescriptionMessage: '',
@@ -115,7 +115,7 @@ const CreateAPIToken = ({
             setFormDataErrorObj({
                 ...formDataErrorObj,
                 invalidName: !nameValidation.isValid,
-                invalidaNameMessage: nameValidation.message,
+                invalidNameMessage: nameValidation.message,
             })
         } else if (event.target.name === 'description') {
             const descriptionValidation = validationRules.description(event.target.value)
@@ -158,7 +158,6 @@ const CreateAPIToken = ({
 
     const handleGenerateAPIToken = async () => {
         if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
-            toast.error('Some required fields are missing')
             return
         }
 
@@ -168,12 +167,12 @@ const CreateAPIToken = ({
         if (!nameValidation.isValid || noCustomDate || !descriptionValidation.isValid) {
             setFormDataErrorObj({
                 invalidName: !nameValidation.isValid,
-                invalidaNameMessage: nameValidation.message,
+                invalidNameMessage: nameValidation.message,
                 invalidCustomDate: noCustomDate,
                 invalidDescription: !descriptionValidation.isValid,
                 invalidDescriptionMessage: descriptionValidation.message,
             })
-            toast.error('Some required fields are missing')
+            toast.error(REQUIRED_FIELDS_MISSING)
 
             return
         }
@@ -215,7 +214,7 @@ const CreateAPIToken = ({
                     setFormDataErrorObj({
                         ...formDataErrorObj,
                         invalidName: true,
-                        invalidaNameMessage: _invalidNameErr.userMessage,
+                        invalidNameMessage: _invalidNameErr.userMessage,
                     })
                 }
             }
@@ -246,7 +245,7 @@ const CreateAPIToken = ({
                         name="name"
                         value={formData.name}
                         onChange={onChangeHandler}
-                        error={formDataErrorObj.invalidName && formDataErrorObj.invalidaNameMessage}
+                        error={formDataErrorObj.invalidName && formDataErrorObj.invalidNameMessage}
                         label="Name"
                         isRequiredField
                     />

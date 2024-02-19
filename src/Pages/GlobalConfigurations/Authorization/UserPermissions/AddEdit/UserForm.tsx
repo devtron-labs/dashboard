@@ -13,7 +13,7 @@ import Creatable from 'react-select/creatable'
 import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
 import { validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
-import { API_STATUS_CODES, URLS } from '../../../../../config'
+import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING, URLS } from '../../../../../config'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
@@ -112,7 +112,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const validateForm = (): boolean => {
         if (emailState.emails.length === 0) {
             setEmailState((prevEmailState) => ({ ...prevEmailState, emailError: 'Emails are mandatory.' }))
-            toast.error('Some required fields are missing')
+            toast.error(REQUIRED_FIELDS_MISSING)
             return false
         }
 

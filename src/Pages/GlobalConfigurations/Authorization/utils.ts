@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { BulkSelectionEvents, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import {
     ActionTypes,
     APIRoleFilter,
@@ -12,11 +13,18 @@ import {
     MetaPossibleRoles,
     ViewChartGroupPermission,
 } from './shared/components/userGroups/userGroups.types'
-import { ACCESS_TYPE_MAP, Moment12HourFormat, SERVER_MODE, ZERO_TIME_STRING } from '../../../config'
+import {
+    ACCESS_TYPE_MAP,
+    Moment12HourFormat,
+    REQUIRED_FIELDS_MISSING,
+    SERVER_MODE,
+    ZERO_TIME_STRING,
+} from '../../../config'
 import { PermissionGroup, User, UserCreateOrUpdatePayload, UserDto } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 import { useAuthorizationBulkSelection } from './shared/components/BulkSelection'
 import { CONFIG_APPROVER_ACTION } from './shared/components/userGroups/UserGroup'
+import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 
 export const transformUserResponse = (_user: UserDto): User => {
     const { lastLoginTime, timeoutWindowExpression, email_id: emailId, ...user } = _user
@@ -253,6 +261,7 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
     }, [])
 
     if (!isComplete) {
+        toast.error(REQUIRED_FIELDS_MISSING)
         setDirectPermission(tempPermissions)
     }
 
@@ -279,3 +288,12 @@ export function parseData(dataList: any[], entity: string, accessType?: string) 
             throw new Error(`Unknown entity ${entity}`)
     }
 }
+
+export const getWorkflowOptions = (appIdWorkflowNamesMapping: AppIdWorkflowNamesMapping['appIdWorkflowNamesMapping']) =>
+    Object.entries(appIdWorkflowNamesMapping).map(([jobName, jobWorkflows]) => ({
+        label: jobName,
+        options: jobWorkflows.map((workflow) => ({
+            label: workflow,
+            value: workflow,
+        })),
+    }))

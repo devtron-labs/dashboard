@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-nested-ternary */
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { showError, Option } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import {
@@ -19,7 +19,7 @@ import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups/UserGroup'
 import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import { allApplicationsOption, allEnvironmentsOption } from './constants'
-import { parseData } from '../../../utils'
+import { getWorkflowOptions, parseData } from '../../../utils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
@@ -52,7 +52,6 @@ const DirectPermission = ({
             : permission.action.configApprover,
     }
 
-    const [possibleRoles, setPossibleRoles] = useState([])
     const [openMenu, changeOpenMenu] = useState<
         'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow' | ''
     >('')
@@ -69,6 +68,17 @@ const DirectPermission = ({
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const isAccessTypeJob = permission.accessType === ACCESS_TYPE_MAP.JOBS
+    const possibleRoles = useMemo(
+        () =>
+            customRoles.customRoles.map(({ roleDisplayName, roleName, roleDescription, entity, accessType }) => ({
+                label: roleDisplayName,
+                value: roleName,
+                description: roleDescription,
+                entity,
+                accessType,
+            })),
+        [customRoles],
+    )
 
     // eslint-disable-next-line react/no-unstable-nested-components
     const RoleValueContainer = ({
@@ -179,17 +189,7 @@ const DirectPermission = ({
             const {
                 result: { appIdWorkflowNamesMapping },
             } = await getAllWorkflowsForAppNames(jobNames, abortControllerRef.current.signal)
-            const workflowOptions = []
-            // eslint-disable-next-line no-restricted-syntax, guard-for-in
-            for (const jobName in appIdWorkflowNamesMapping) {
-                workflowOptions.push({
-                    label: jobName,
-                    options: appIdWorkflowNamesMapping[jobName].map((workflow) => ({
-                        label: workflow,
-                        value: workflow,
-                    })),
-                })
-            }
+            const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)
             abortControllerRef.current = null
             setWorkflowList({ loading: false, options: workflowOptions })
         } catch (err) {
@@ -231,17 +231,6 @@ const DirectPermission = ({
             setEnvironments(envOptions)
         }
     }, [environmentsList])
-
-    useEffect(() => {
-        const customRoleOptions = customRoles.customRoles.map((role) => ({
-            label: role.roleDisplayName,
-            value: role.roleName,
-            description: role.roleDescription,
-            entity: role.entity,
-            accessType: role.accessType,
-        }))
-        setPossibleRoles(customRoleOptions)
-    }, [customRoles])
 
     useEffect(() => {
         const envOptions = envClustersList?.map((cluster) => ({

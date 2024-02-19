@@ -110,7 +110,6 @@ const EditAPIToken = ({
 
     const handleUpdatedToken = async (tokenId) => {
         if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
-            toast.error('Some required fields are missing')
             return
         }
 

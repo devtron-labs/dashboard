@@ -33,6 +33,7 @@ import { emptyDirectPermissionDevtronApps, emptyDirectPermissionHelmApps, emptyD
 import AppPermissionDetail from './AppPermissionDetail'
 import { ChartPermission } from '../ChartPermission'
 import { getAppPermissionDetailConfig, getNavLinksConfig } from './utils'
+import { getWorkflowOptions } from '../../../utils'
 
 const AppPermissions = () => {
     const { serverMode } = useContext(mainContext)
@@ -233,13 +234,7 @@ const AppPermissions = () => {
         const { result } = await getAllWorkflowsForAppNames(jobNames)
         const { appIdWorkflowNamesMapping } = result
 
-        const workflowOptions = Object.entries(appIdWorkflowNamesMapping).map(([jobName, jobWorkflows]) => ({
-            label: jobName,
-            options: jobWorkflows.map((workflow) => ({
-                label: workflow,
-                value: workflow,
-            })),
-        }))
+        const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)
 
         return [
             { label: 'All Workflows', value: '*' },
@@ -283,7 +278,6 @@ const AppPermissions = () => {
     // eslint-disable-next-line consistent-return
     const setAllEnv = (directRoleFilter: APIRoleFilter) => {
         if (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-            // TODO (v3): Check if util can be used
             if (directRoleFilter.environment) {
                 return directRoleFilter.environment
                     .split(',')
@@ -569,7 +563,6 @@ const AppPermissions = () => {
 
     // TODO (v3): Use the Approver permission component from fe-lib and remove the redundant if(s)
     const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
-        console.log('HA')
         const { action, option, name } = actionMeta
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {
@@ -751,7 +744,7 @@ const AppPermissions = () => {
 
     return (
         <div className="flexbox-col dc__gap-12">
-            <ul role="tablist" className="tab-list dc__border-bottom">
+            <ul className="tab-list dc__border-bottom">
                 {navLinksConfig.map(
                     ({ isHidden, label, tabName }) =>
                         !isHidden && (
