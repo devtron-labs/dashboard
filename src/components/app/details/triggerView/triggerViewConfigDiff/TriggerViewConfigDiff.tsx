@@ -56,10 +56,10 @@ export default function TriggerViewConfigDiff({
     const [currentData, setCurrentData] = useState<any>({}) // store codeEditorValue of current(lhs) and base(rhs) config
 
     useEffect(() => {
-        if (canReviewConfig) {
+        if (canReviewConfig && searchParams.config) {
             const newSearchParams = {
                 ...searchParams,
-                config: searchParams.config?.replace('-', '/'),
+                config: searchParams.config,
             }
             history.push({
                 search: new URLSearchParams(newSearchParams).toString(),
@@ -67,7 +67,7 @@ export default function TriggerViewConfigDiff({
             //handling the case when the user directly lands on the deployment history page
             handleNavOptionSelection(null, newSearchParams.config)
         }
-    }, [canReviewConfig])
+    }, [canReviewConfig, searchParams.config])
 
     useEffect(() => {
         handleConfigToDeploySelection()
@@ -171,7 +171,7 @@ export default function TriggerViewConfigDiff({
 
     const handleNavOptionSelection = (e, navConfigKey?: string) => {
         const dataValue = navConfigKey || e?.target?.dataset?.value
-        setParamsValue(dataValue.replace('/', '-'))
+        setParamsValue(dataValue)
         if (dataValue) {
             setConvertVariables(false)
             setActiveSideNavOption(dataValue)
