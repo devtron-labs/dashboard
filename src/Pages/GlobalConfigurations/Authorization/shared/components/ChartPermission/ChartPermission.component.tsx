@@ -1,5 +1,3 @@
-/* eslint-disable no-nested-ternary */
-
 import React, { useMemo } from 'react'
 import {
     Option,
@@ -76,6 +74,16 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
             entityName: selected as OptionType[],
         }))
 
+    const getSelectedValueForChartGroupEditSelect = () => {
+        if (chartPermission.action === ActionTypes.ADMIN) {
+            return chartGroupEditOptions[0]
+        }
+        if (chartPermission.action === ActionTypes.VIEW) {
+            return { label: 'Deny', value: 'Deny' }
+        }
+        return { label: 'Specific Chart Groups', value: 'Specific Charts' }
+    }
+
     return (
         <>
             <div className="w-100 display-grid dc__align-items-center chart-permission__row">
@@ -90,13 +98,7 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
                     value={CHECKBOX_VALUE.CHECKED}
                 />
                 <Select
-                    value={
-                        chartPermission.action === ActionTypes.ADMIN
-                            ? chartGroupEditOptions[0]
-                            : chartPermission.action === ActionTypes.VIEW
-                              ? { label: 'Deny', value: 'Deny' }
-                              : { label: 'Specific Chart Groups', value: 'Specific Charts' }
-                    }
+                    value={getSelectedValueForChartGroupEditSelect()}
                     isDisabled={chartPermission.action === ActionTypes.ADMIN}
                     options={chartGroupEditOptions}
                     onChange={handleChartEditChange}

@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-nested-ternary */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { showError, Option } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
@@ -36,6 +35,7 @@ const DirectPermission = ({
     projectsList,
     environmentsList,
     envClustersList,
+    getListForAccessType,
 }: DirectPermissionRow) => {
     const { customRoles } = useAuthorizationContext()
     const projectId =
@@ -53,9 +53,9 @@ const DirectPermission = ({
             : permission.action.configApprover,
     }
 
-    const [openMenu, changeOpenMenu] = useState<
-        'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow' | ''
-    >('')
+    const [openMenu, setOpenMenu] = useState<'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow' | ''>(
+        '',
+    )
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
     const [envClusters, setEnvClusters] = useState([])
@@ -80,6 +80,22 @@ const DirectPermission = ({
             })),
         [customRoles],
     )
+
+    const _getMetaRolesForAccessType = () => {
+        switch (permission.accessType) {
+            case ACCESS_TYPE_MAP.DEVTRON_APPS:
+                return customRoles.possibleRolesMeta
+            case ACCESS_TYPE_MAP.HELM_APPS:
+                return customRoles.possibleRolesMetaForHelm
+            case ACCESS_TYPE_MAP.JOBS:
+                return customRoles.possibleRolesMetaForJob
+            default:
+                throw new Error(`Unknown access type ${permission.accessType}`)
+        }
+    }
+
+    const metaRolesForAccessType = _getMetaRolesForAccessType()
+    const listForAccessType = getListForAccessType(permission.accessType)
 
     // eslint-disable-next-line react/no-unstable-nested-components
     const RoleValueContainer = ({
@@ -122,13 +138,7 @@ const DirectPermission = ({
                     ...props,
                 }}
             >
-                {value === '*'
-                    ? 'Admin'
-                    : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                      ? customRoles.possibleRolesMetaForHelm[value].value
-                      : permission.entity === EntityTypes.JOB
-                        ? customRoles.possibleRolesMetaForJob[value].value
-                        : customRoles.possibleRolesMeta[value].value}
+                {value === '*' ? 'Admin' : metaRolesForAccessType[value].value}
                 {ApproverPermission && (permission.approver || primaryActionRole.configApprover) && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
@@ -137,24 +147,8 @@ const DirectPermission = ({
 
     const formatOptionLabel = ({ value }) => (
         <div className="flex left column">
-            <span>
-                {
-                    (permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                        ? customRoles.possibleRolesMetaForHelm
-                        : permission.accessType === ACCESS_TYPE_MAP.JOBS
-                          ? customRoles.possibleRolesMetaForJob
-                          : customRoles.possibleRolesMeta)[value]?.value
-                }
-            </span>
-            <small className="light-color">
-                {
-                    (permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                        ? customRoles.possibleRolesMetaForHelm
-                        : permission.accessType === ACCESS_TYPE_MAP.JOBS
-                          ? customRoles.possibleRolesMetaForJob
-                          : customRoles.possibleRolesMeta)[value]?.description
-                }
-            </small>
+            <span>{metaRolesForAccessType[value]?.value}</span>
+            <small className="light-color">{metaRolesForAccessType[value]?.description}</small>
         </div>
     )
 
@@ -263,16 +257,7 @@ const DirectPermission = ({
     }, [envClustersList])
     useEffect(() => {
         const isJobs = permission.entity === EntityTypes.JOB
-        const appOptions = (
-            (projectId &&
-                (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                    ? appsList
-                    : isJobs
-                      ? jobsList
-                      : appsListHelmApps
-                ).get(projectId)?.result) ||
-            []
-        )?.map((app) => ({
+        const appOptions = ((projectId && listForAccessType.get(projectId)?.result) || [])?.map((app) => ({
             label: isJobs ? app.jobName : app.name,
             value: isJobs ? app.appName : app.name,
         }))
@@ -360,11 +345,11 @@ const DirectPermission = ({
         option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
 
     const onFocus = (name: 'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow') => {
-        changeOpenMenu(name)
+        setOpenMenu(name)
     }
 
     const onMenuClose = () => {
-        changeOpenMenu('')
+        setOpenMenu('')
     }
     return (
         <>
@@ -489,16 +474,7 @@ const DirectPermission = ({
                         Option: (props) => <AppOption props={props} permission={permission} />,
                         GroupHeading,
                     }}
-                    isLoading={
-                        projectId
-                            ? (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                                  ? appsList
-                                  : permission.entity === EntityTypes.JOB
-                                    ? jobsList
-                                    : appsListHelmApps
-                              ).get(projectId)?.loading
-                            : false
-                    }
+                    isLoading={projectId ? listForAccessType.get(projectId)?.loading : false}
                     isDisabled={!permission.team}
                     styles={authorizationSelectStyles}
                     closeMenuOnSelect={false}

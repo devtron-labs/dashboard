@@ -175,6 +175,9 @@ export interface K8sPermissionModalType {
     close: () => void
 }
 
+type AppsList = Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
+type JobsList = Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: ServerError }>
+
 export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     handleDirectPermissionChange: (...rest) => void
@@ -182,15 +185,16 @@ export interface AppPermissionsDetailType {
     AddNewPermissionRow: (
         accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
     ) => void
-    appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
-    jobsList: Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: ServerError }>
-    appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
+    appsListHelmApps: AppsList
+    jobsList: JobsList
+    appsList: AppsList
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     environmentsList: any[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     projectsList: any[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     envClustersList: any[]
+    getListForAccessType: (accessType: ACCESS_TYPE_MAP) => AppsList | JobsList
 }
 
 export const K8S_PERMISSION_INFO_MESSAGE = {
@@ -213,7 +217,13 @@ export const ViewChartGroupPermission: APIRoleFilter = {
 export interface DirectPermissionRow
     extends Pick<
         AppPermissionsDetailType,
-        'appsList' | 'jobsList' | 'appsListHelmApps' | 'projectsList' | 'environmentsList' | 'envClustersList'
+        | 'appsList'
+        | 'jobsList'
+        | 'appsListHelmApps'
+        | 'projectsList'
+        | 'environmentsList'
+        | 'envClustersList'
+        | 'getListForAccessType'
     > {
     permission: DirectPermissionsRoleFilter
     handleDirectPermissionChange: (...rest) => void

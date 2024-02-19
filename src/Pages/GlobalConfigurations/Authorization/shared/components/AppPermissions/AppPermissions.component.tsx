@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-nested-ternary */
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import { GenericSectionErrorState, OptionType, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
@@ -208,19 +207,25 @@ const AppPermissions = () => {
         }
     }
 
+    const getListForAccessType = (accessType: ACCESS_TYPE_MAP) => {
+        switch (accessType) {
+            case ACCESS_TYPE_MAP.DEVTRON_APPS:
+                return appsList
+            case ACCESS_TYPE_MAP.HELM_APPS:
+                return appsListHelmApps
+            case ACCESS_TYPE_MAP.JOBS:
+                return jobsList
+            default:
+                throw new Error(`Unknown access type ${accessType}`)
+        }
+    }
+
     const setAllApplication = (directRoleFilter: APIRoleFilter, projectId) => {
         if (directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             const isJobs = directRoleFilter.entity === EntityTypes.JOB
             return [
                 { label: isJobs ? 'All Jobs' : 'All applications', value: '*' },
-                ...(
-                    (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                        ? appsList
-                        : isJobs
-                          ? jobsList
-                          : appsListHelmApps
-                    ).get(projectId)?.result || []
-                ).map((app) => ({
+                ...(getListForAccessType(directRoleFilter.accessType).get(projectId)?.result || []).map((app) => ({
                     label: isJobs ? app.jobName : app.name,
                     value: isJobs ? app.appName : app.name,
                 })),
@@ -266,12 +271,12 @@ const AppPermissions = () => {
         return [
             ...defaultValueArr,
             // eslint-disable-next-line no-unsafe-optional-chaining
-            ...selectedCluster['environments']?.map((env) => ({
+            ...(selectedCluster['environments']?.map((env) => ({
                 label: env.environmentName,
                 value: env.environmentIdentifier,
                 namespace: env.namespace,
                 clusterName,
-            })),
+            })) ?? []),
         ]
     }
 
@@ -503,8 +508,8 @@ const AppPermissions = () => {
     function setEnvValues(index, selectedValue, actionMeta, tempPermissions) {
         const { action, option, name } = actionMeta
         const { value, clusterName } = option || { value: '', clusterName: '' }
-        const startsWithHash = value && value.startsWith('#')
-        if ((value && value.startsWith('*')) || startsWithHash) {
+        const startsWithHash = value?.startsWith('#')
+        if (value?.startsWith('*') || startsWithHash) {
             if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                 const _clusterName = value.substring(1)
                 // uncheck all environments
@@ -561,6 +566,25 @@ const AppPermissions = () => {
         }
     }
 
+    const _fetchListForAccessType = (accessType: ACCESS_TYPE_MAP, projectId: number) => {
+        switch (accessType) {
+            case ACCESS_TYPE_MAP.DEVTRON_APPS:
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                fetchAppList([projectId])
+                break
+            case ACCESS_TYPE_MAP.HELM_APPS:
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                fetchAppListHelmApps([projectId])
+                break
+            case ACCESS_TYPE_MAP.JOBS:
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                fetchJobsList([projectId])
+                break
+            default:
+                throw new Error(`Unknown access type ${accessType}`)
+        }
+    }
+
     // TODO (v3): Use the Approver permission component from fe-lib and remove the redundant if(s)
     const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
         const { action, option, name } = actionMeta
@@ -575,12 +599,7 @@ const AppPermissions = () => {
                         ).id
                         tempPermissions[index]['entityName'] = [
                             { label: 'Select all', value: '*' },
-                            ...(tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                                ? appsList
-                                : tempPermissions[index].accessType === ACCESS_TYPE_MAP.JOBS
-                                  ? jobsList
-                                  : appsListHelmApps
-                            )
+                            ...getListForAccessType(tempPermissions[index].accessType)
                                 .get(projectId)
                                 .result.map((app) => {
                                     const isJobs = tempPermissions[index].entity === EntityTypes.JOB
@@ -638,12 +657,7 @@ const AppPermissions = () => {
                 const projectId = projectsList.find(
                     (project) => project.name === tempPermissions[index]['team'].value,
                 ).id
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises, no-unused-expressions
-                tempPermissions[index].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS
-                    ? fetchAppList([projectId])
-                    : tempPermissions[index].accessType === ACCESS_TYPE_MAP.JOBS
-                      ? fetchJobsList([projectId])
-                      : fetchAppListHelmApps([projectId])
+                _fetchListForAccessType(tempPermissions[index].accessType, projectId)
             }
         } else if (name === APPROVER_ACTION.label) {
             tempPermissions[index][name] = !tempPermissions[index][name]
@@ -778,6 +792,7 @@ const AppPermissions = () => {
                                         projectsList={projectsList}
                                         environmentsList={environmentsList}
                                         envClustersList={envClustersList}
+                                        getListForAccessType={getListForAccessType}
                                     />
                                 </Route>
                             ),
