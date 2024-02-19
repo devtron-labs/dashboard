@@ -189,11 +189,11 @@ export interface AppPermissionsDetailType {
     jobsList: JobsList
     appsList: AppsList
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    environmentsList: any[]
+    getEnvironmentOptions: any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     projectsList: any[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    envClustersList: any[]
+    environmentClusterOptions: any
     getListForAccessType: (accessType: ACCESS_TYPE_MAP) => AppsList | JobsList
 }
 
@@ -221,8 +221,8 @@ export interface DirectPermissionRow
         | 'jobsList'
         | 'appsListHelmApps'
         | 'projectsList'
-        | 'environmentsList'
-        | 'envClustersList'
+        | 'getEnvironmentOptions'
+        | 'environmentClusterOptions'
         | 'getListForAccessType'
     > {
     permission: DirectPermissionsRoleFilter

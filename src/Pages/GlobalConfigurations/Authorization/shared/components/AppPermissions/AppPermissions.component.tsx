@@ -9,6 +9,7 @@ import {
     APIRoleFilter,
     AppPermissionsDetailType,
     ChartGroupPermissionsFilter,
+    DirectPermissionRow,
     DirectPermissionsRoleFilter,
     EntityTypes,
 } from '../userGroups/userGroups.types'
@@ -31,7 +32,12 @@ import { getChartGroups } from '../../../../../../components/charts/charts.servi
 import { emptyDirectPermissionDevtronApps, emptyDirectPermissionHelmApps, emptyDirectPermissionJobs } from './constants'
 import AppPermissionDetail from './AppPermissionDetail'
 import { ChartPermission } from '../ChartPermission'
-import { getAppPermissionDetailConfig, getNavLinksConfig } from './utils'
+import {
+    getAppPermissionDetailConfig,
+    getEnvironmentClusterOptions,
+    getEnvironmentOptions,
+    getNavLinksConfig,
+} from './utils'
 import { getWorkflowOptions } from '../../../utils'
 
 const AppPermissions = () => {
@@ -68,6 +74,11 @@ const AppPermissions = () => {
     const environmentsList = configData?.[1]?.result ?? []
     const chartGroupsList = configData?.[2]?.result?.groups ?? []
     const envClustersList = configData?.[3]?.result ?? []
+
+    const environmentClusterOptions = getEnvironmentClusterOptions(envClustersList)
+
+    const _getEnvironmentOptions = (entity: DirectPermissionRow['permission']['entity']) =>
+        getEnvironmentOptions(environmentsList, entity)
 
     const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
     const navLinksConfig = getNavLinksConfig(serverMode, superAdmin)
@@ -597,17 +608,15 @@ const AppPermissions = () => {
                         const projectId = projectsList.find(
                             (project) => project.name === tempPermissions[index]['team'].value,
                         ).id
+                        const isJobs = tempPermissions[index].entity === EntityTypes.JOB
                         tempPermissions[index]['entityName'] = [
                             { label: 'Select all', value: '*' },
                             ...getListForAccessType(tempPermissions[index].accessType)
                                 .get(projectId)
-                                .result.map((app) => {
-                                    const isJobs = tempPermissions[index].entity === EntityTypes.JOB
-                                    return {
-                                        label: isJobs ? app.jobName : app.name,
-                                        value: isJobs ? app.appName : app.name,
-                                    }
-                                }),
+                                .result.map((app) => ({
+                                    label: isJobs ? app.jobName : app.name,
+                                    value: isJobs ? app.appName : app.name,
+                                })),
                         ]
                     } else {
                         tempPermissions[index]['entityName'] = [{ label: 'Select all', value: '*' }]
@@ -790,8 +799,8 @@ const AppPermissions = () => {
                                         jobsList={jobsList}
                                         appsList={appsList}
                                         projectsList={projectsList}
-                                        environmentsList={environmentsList}
-                                        envClustersList={envClustersList}
+                                        getEnvironmentOptions={_getEnvironmentOptions}
+                                        environmentClusterOptions={environmentClusterOptions}
                                         getListForAccessType={getListForAccessType}
                                     />
                                 </Route>

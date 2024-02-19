@@ -1,20 +1,15 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { showError, Option } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Option, getIsRequestAborted } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import {
-    sortBySelected,
-    importComponentFromFELibrary,
-    createClusterEnvGroup,
-} from '../../../../../../components/common'
+import { sortBySelected, importComponentFromFELibrary } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
 import { EntityTypes, DirectPermissionRow } from '../userGroups/userGroups.types'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
-import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups/UserGroup'
 import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
@@ -33,8 +28,8 @@ const DirectPermission = ({
     jobsList,
     appsListHelmApps,
     projectsList,
-    environmentsList,
-    envClustersList,
+    getEnvironmentOptions,
+    environmentClusterOptions: envClusters,
     getListForAccessType,
 }: DirectPermissionRow) => {
     const { customRoles } = useAuthorizationContext()
@@ -56,9 +51,7 @@ const DirectPermission = ({
     const [openMenu, setOpenMenu] = useState<'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow' | ''>(
         '',
     )
-    const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
-    const [envClusters, setEnvClusters] = useState([])
     const [projectInput, setProjectInput] = useState('')
     const [clusterInput, setClusterInput] = useState('')
     const [envInput, setEnvInput] = useState('')
@@ -68,6 +61,7 @@ const DirectPermission = ({
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
+    const environments = getEnvironmentOptions(permission.entity)
     const isAccessTypeJob = permission.accessType === ACCESS_TYPE_MAP.JOBS
     const possibleRoles = useMemo(
         () =>
@@ -188,7 +182,7 @@ const DirectPermission = ({
             abortControllerRef.current = null
             setWorkflowList({ loading: false, options: workflowOptions })
         } catch (err) {
-            if (err.errors && err.errors[0].code !== 0) {
+            if (!getIsRequestAborted(err)) {
                 showError(err)
             }
             setWorkflowList({ loading: false, options: [] })
@@ -196,68 +190,8 @@ const DirectPermission = ({
     }
 
     useEffect(() => {
-        const envOptions = createClusterEnvGroup(
-            environmentsList,
-            'cluster_name',
-            'environment_name',
-            'environmentIdentifier',
-        )
-
-        if (permission.entity === EntityTypes.JOB) {
-            const defaultEnv = {
-                label: '',
-                options: [
-                    {
-                        label: DEFAULT_ENV,
-                        value: DEFAULT_ENV,
-                    },
-                ],
-            }
-            const filteredEnvOptions = envOptions.filter((_envOptions) => {
-                const filteredOptions = _envOptions.options.filter((option) => option.isClusterCdActive)
-                if (filteredOptions.length > 0) {
-                    // eslint-disable-next-line no-param-reassign
-                    _envOptions.options = filteredOptions
-                }
-                return filteredOptions.length > 0
-            })
-            setEnvironments([defaultEnv, ...filteredEnvOptions])
-        } else {
-            setEnvironments(envOptions)
-        }
-    }, [environmentsList])
-
-    useEffect(() => {
-        const envOptions = envClustersList?.map((cluster) => ({
-            label: cluster.clusterName,
-            options: [
-                {
-                    label: `All existing + future environments in ${cluster.clusterName}`,
-                    value: `#${cluster.clusterName}`,
-                    namespace: '',
-                    clusterName: '',
-                },
-                {
-                    label: `All existing environments in ${cluster.clusterName}`,
-                    value: `*${cluster.clusterName}`,
-                    namespace: '',
-                    clusterName: '',
-                },
-                ...(cluster.environments?.map((env) => ({
-                    label: env.environmentName,
-                    value: env.environmentIdentifier,
-                    namespace: env.namespace,
-                    clusterName: cluster.clusterName,
-                })) ?? {}),
-            ],
-            isVirtualEnvironment: cluster?.isVirtualCluster,
-        }))
-
-        setEnvClusters(envOptions)
-    }, [envClustersList])
-    useEffect(() => {
         const isJobs = permission.entity === EntityTypes.JOB
-        const appOptions = ((projectId && listForAccessType.get(projectId)?.result) || [])?.map((app) => ({
+        const appOptions = ((projectId && listForAccessType.get(projectId)?.result) || []).map((app) => ({
             label: isJobs ? app.jobName : app.name,
             value: isJobs ? app.appName : app.name,
         }))
@@ -275,13 +209,11 @@ const DirectPermission = ({
         if ((environments && environments.length === 0) || applications.length === 0) {
             return
         }
-        setApplications((_applications) => {
-            const sortedApplications =
-                openMenu === 'entityName/apps' || openMenu === 'entityName/jobs'
-                    ? _applications
-                    : sortBySelected(permission.entityName, _applications, 'value')
-            return sortedApplications
-        })
+        setApplications((_applications) =>
+            openMenu === 'entityName/apps' || openMenu === 'entityName/jobs'
+                ? _applications
+                : sortBySelected(permission.entityName, _applications, 'value'),
+        )
     }, [openMenu, permission.environment, permission.entityName, projectId])
 
     const formatOptionLabelClusterEnv = (option, { inputValue }) => (
