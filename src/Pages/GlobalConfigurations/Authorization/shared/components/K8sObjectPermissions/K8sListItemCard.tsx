@@ -216,11 +216,7 @@ export default function K8sListItemCard({
             const { result } = await getResourceList(resourceListPayload)
             if (result) {
                 const _data =
-                    result.data
-                        ?.map((ele) => {
-                            return { label: ele['name'], value: ele['name'] }
-                        })
-                        .sort(sortOptionsByLabel) ?? []
+                    result.data?.map((ele) => ({ label: ele.name, value: ele.name })).sort(sortOptionsByLabel) ?? []
                 const _optionList = [{ label: 'All resources', value: '*' }, ..._data]
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
@@ -305,7 +301,7 @@ export default function K8sListItemCard({
         handleK8sPermission(action, index)
     }
 
-    const k8sMultiValueContainer = (): boolean => k8sPermission.resource.some((item) => item.value === '*')
+    const isK8sMultiValueContainer = k8sPermission.resource.some((item) => item.value === '*')
 
     const k8sOptions = parseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
         label: role.roleDisplayName,
@@ -424,7 +420,7 @@ export default function K8sListItemCard({
                                     <MultiValueChipContainer
                                         {...props}
                                         validator={null}
-                                        isAllSelected={k8sMultiValueContainer()}
+                                        isAllSelected={isK8sMultiValueContainer}
                                     />
                                 ),
                                 ClearIndicator,

@@ -121,7 +121,7 @@ export interface K8sListItemCardType {
     objectMapping: Record<number, OptionType[]>
     setObjectMapping: React.Dispatch<React.SetStateAction<Record<number, OptionType[]>>>
     selectedPermissionAction: {
-        action: string
+        action: K8sPermissionActionType
         index: number
     }
 }
@@ -132,7 +132,8 @@ export interface UserGroup {
 
 export interface K8sPermissionModalType {
     selectedPermissionAction: {
-        action: string
+        // TODO: Review: should be clone, edit, delete and add probably
+        action: K8sPermissionActionType
         index: number
     }
     updatedK8sPermission: K8sPermissionFilter

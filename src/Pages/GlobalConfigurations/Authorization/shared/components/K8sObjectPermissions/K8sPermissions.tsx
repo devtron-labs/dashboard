@@ -7,16 +7,15 @@ import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-d
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
 import { HEADER_OPTIONS } from './K8sPermissions.utils'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { K8sPermissionModalType } from '../userGroups/userGroups.types'
 
 const K8sPermissions = () => {
     const { k8sPermission, setK8sPermission } = usePermissionConfiguration()
 
     const [togglePermissionModal, setTogglePermissionModal] = useState<boolean>()
     const [tempPermission, setTempPermission] = useState()
-    const [selectedPermissionAction, setSelectedPermissionAction] = useState<{
-        action: string
-        index: number
-    }>()
+    const [selectedPermissionAction, setSelectedPermissionAction] =
+        useState<K8sPermissionModalType['selectedPermissionAction']>()
 
     const editPermission = (permissions, action, index) => {
         setTogglePermissionModal(true)
