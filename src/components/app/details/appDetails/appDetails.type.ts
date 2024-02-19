@@ -100,7 +100,6 @@ export interface DeploymentStatusDetailsBreakdownDataType {
 
 export interface DeploymentStatusDetailBreakdownType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    streamData?: AppStreamData
     isVirtualEnvironment?: boolean
 }
 
@@ -108,7 +107,6 @@ export interface DeploymentStatusDetailModalType {
     appName: string
     environmentName: string
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    streamData: AppStreamData
     isVirtualEnvironment: boolean
     /**
      * Loading state for the timeline data
@@ -139,7 +137,7 @@ export interface DeploymentStatusDetailRowType {
     type: string
     hideVerticalConnector?: boolean
     deploymentDetailedData: DeploymentStatusDetailsBreakdownDataType
-    streamData?: AppStreamData
+    resourcesSyncResult?: Object
 }
 
 export interface ErrorInfoStatusBarType {
@@ -213,7 +211,7 @@ export interface DeploymentStatusCardType {
 }
 
 export interface IssuesCardType {
-    appStreamData?: AppStreamData
+    appConditions?: Array<any>,
     cardLoading?: boolean
     setErrorsList: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>

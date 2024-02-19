@@ -39,7 +39,6 @@ const AppDetailsComponent = ({
     loadingResourceTree,
 }: AppDetailsComponentType) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const [streamData] = useState<AppStreamData>(null)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
@@ -174,7 +173,7 @@ const AppDetailsComponent = ({
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
-                        appStreamData={streamData}
+                        resourcesSyncResult={appDetails.resourceTree.resourcesSyncResult}
                         loadingDetails={loadingDetails || !appDetails?.appType}
                         loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
@@ -204,7 +203,6 @@ const AppDetailsComponent = ({
                 <DeploymentStatusDetailModal
                     appName={appDetails.appName}
                     environmentName={appDetails.environmentName}
-                    streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnv.current}
                     isLoading={isInitialTimelineDataLoading}

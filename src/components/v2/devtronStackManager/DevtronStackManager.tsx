@@ -555,7 +555,7 @@ export default function DevtronStackManager({
                                 {showResourceStatusModal && selectedModule && (
                                     <AppStatusDetailModal
                                         close={closeCheckResourceStatusModal}
-                                        appStreamData={buildResourceStatusModalData(
+                                        resourcesSyncResult={buildResourceStatusModalData(
                                             selectedModule.moduleResourcesStatus,
                                         )}
                                         showAppStatusMessage

@@ -228,7 +228,6 @@ export const Details: React.FC<DetailsType> = ({
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
     // fixme: the state is not being set anywhere and just being drilled down
-    const [streamData] = useState<AppStreamData>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
@@ -579,7 +578,7 @@ export const Details: React.FC<DetailsType> = ({
                     <DeletedAppComponent
                         resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
                         showApplicationDetailedModal={showApplicationDetailedModal}
-                        appStreamData={streamData}
+                        appConditions={appDetails.resourceTree?.conditions}
                     />
                 ) : (
                     <AppNotConfigured
@@ -622,7 +621,6 @@ export const Details: React.FC<DetailsType> = ({
             <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg-gradient">
                 <SourceInfo
                     appDetails={appDetails}
-                    appStreamData={streamData}
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
                     environments={environments}
@@ -676,7 +674,7 @@ export const Details: React.FC<DetailsType> = ({
             {detailedStatus && (
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
-                    appStreamData={streamData}
+                    resourcesSyncResult={appDetails.resourceTree.resourcesSyncResult}
                     showAppStatusMessage={false}
                 />
             )}
@@ -684,7 +682,6 @@ export const Details: React.FC<DetailsType> = ({
                 <DeploymentStatusDetailModal
                     appName={appDetails?.appName}
                     environmentName={appDetails?.environmentName}
-                    streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     isLoading={isInitialTimelineDataLoading}
@@ -776,7 +773,7 @@ export const Details: React.FC<DetailsType> = ({
 const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
     resourceTreeFetchTimeOut,
     showApplicationDetailedModal,
-    appStreamData,
+    appConditions,
 }) => {
     if (resourceTreeFetchTimeOut) {
         return (
@@ -784,7 +781,7 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
                 <div className="mt-16 mb-9">
                     <SyncErrorComponent
                         showApplicationDetailedModal={showApplicationDetailedModal}
-                        appStreamData={appStreamData}
+                        appConditions={appConditions}
                     />
                 </div>
                 <EmptyK8sResourceComponent emptyStateMessage={RESOURCES_NOT_FOUND} />

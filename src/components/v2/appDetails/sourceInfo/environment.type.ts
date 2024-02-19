@@ -3,7 +3,7 @@ import { HelmReleaseStatus } from '../../../external-apps/ExternalAppService'
 import { AppDetails, AppStreamData } from '../appDetails.type'
 
 export interface EnvironmentStatusComponentType {
-    appStreamData: any
+    resourcesSyncResult: Object
     loadingDetails: boolean
     loadingResourceTree: boolean
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
@@ -32,7 +32,7 @@ export interface NodeStreamMap {
 }
 
 export interface AppStatusDetailsChartType {
-    appStreamData: AppStreamData
+    resourcesSyncResult: Object
     filterRemoveHealth?: boolean
     showFooter: boolean
 }

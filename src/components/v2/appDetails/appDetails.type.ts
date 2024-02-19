@@ -223,6 +223,8 @@ export interface ResourceTree {
     nodes: Array<Node>
     podMetadata: Array<PodMetaData>
     status: string
+    resourcesSyncResult?: Object
+
 }
 
 export interface PodMetaData {
@@ -467,7 +469,7 @@ export interface LogState {
 
 export interface AppStatusDetailType {
     close: () => void
-    appStreamData: any
+    resourcesSyncResult: Object
     showAppStatusMessage?: boolean
     title?: string
     appStatus?: string
@@ -481,7 +483,7 @@ export interface StatusFilterButtonType {
 }
 
 export interface SyncErrorType {
-    appStreamData: AppStreamData
+    appConditions: Array<any>
     showApplicationDetailedModal?: () => void
 }
 

@@ -28,7 +28,7 @@ export const DeploymentStatusDetailRow = ({
     type,
     hideVerticalConnector,
     deploymentDetailedData,
-    streamData,
+    resourcesSyncResult,
 }: DeploymentStatusDetailRowType) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
@@ -49,7 +49,6 @@ export const DeploymentStatusDetailRow = ({
             showError(error)
         }
     }
-
     const toggleDropdown = () => {
         toggleCollapsed(!collapsed)
     }
@@ -145,7 +144,11 @@ export const DeploymentStatusDetailRow = ({
                         </div>
                     )}
                     <div>
-                        <AppStatusDetailsChart appStreamData={streamData} filterRemoveHealth showFooter={false} />
+                        <AppStatusDetailsChart
+                            resourcesSyncResult={resourcesSyncResult}
+                            filterRemoveHealth
+                            showFooter={false}
+                        />
                     </div>
                 </div>
             )

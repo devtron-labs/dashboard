@@ -10,26 +10,12 @@ import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import { STATUS_SORTING_ORDER } from './constants'
 
 export default function AppStatusDetailsChart({
-    appStreamData,
+    resourcesSyncResult,
     filterRemoveHealth = false,
     showFooter,
 }: AppStatusDetailsChartType) {
     const _appDetails = IndexStore.getAppDetails()
-    const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [currentFilter, setCurrentFilter] = useState('')
-
-    useEffect(() => {
-        try {
-            const stats = appStreamData.result.application.status.operationState.syncResult.resources.reduce(
-                (agg, curr) => {
-                    agg.set(`${curr.kind}/${curr.name}`, curr)
-                    return agg
-                },
-                new Map(),
-            )
-            setNodeStatusMap(stats)
-        } catch (error) {}
-    }, [appStreamData])
 
     const nodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(_appDetails.resourceTree?.nodes || [], _appDetails.resourceTree?.podMetadata || [])
@@ -58,9 +44,8 @@ export default function AppStatusDetailsChart({
     }
 
     function getNodeMessage(kind: string, name: string) {
-        if (nodeStatusMap && nodeStatusMap.has(`${kind}/${name}`)) {
-            const { message } = nodeStatusMap.get(`${kind}/${name}`)
-            return message
+        if (resourcesSyncResult && resourcesSyncResult.hasOwnProperty(`${kind}/${name}`)) {
+            return resourcesSyncResult[`${kind}/${name}`]
         }
         return ''
     }

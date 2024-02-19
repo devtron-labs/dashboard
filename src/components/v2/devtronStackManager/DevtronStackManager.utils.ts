@@ -157,6 +157,7 @@ export const MODULE_CONFIGURATION_DETAIL_MAP = {
 export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResourceStatus[]): any => {
     const _nodes = []
     const _resources = []
+    const resourceStatusDetails = {}
     moduleResourcesStatus?.forEach((moduleResourceStatus) => {
         const _resource = {
             group: moduleResourceStatus.group,
@@ -170,20 +171,9 @@ export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResour
         }
         _nodes.push(_resource)
         _resources.push(_resource)
+        resourceStatusDetails[`${moduleResourceStatus.kind}/${moduleResourceStatus.name}`] =
+            moduleResourceStatus.healthMessage
     })
-    const _appStreamData = {
-        result: {
-            application: {
-                status: {
-                    operationState: {
-                        syncResult: {
-                            resources: _resources,
-                        },
-                    },
-                },
-            },
-        },
-    }
     const _appDetail: AppDetails = JSON.parse(
         JSON.stringify({
             resourceTree: {
@@ -193,7 +183,7 @@ export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResour
         }),
     )
     IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
-    return _appStreamData
+    return resourceStatusDetails
 }
 
 export const AppStatusClass = {
