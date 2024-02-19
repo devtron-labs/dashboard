@@ -1207,7 +1207,7 @@ const CDMaterial = ({
             return (
                 <Check
                     className={`${
-                        materialType !== 'none' && isApprovalRequester && !isImageApprover && !disableSelection
+                        materialType !== MATERIAL_TYPE.none && isApprovalRequester && !isImageApprover && !disableSelection
                             ? ''
                             : 'dc__align-right'
                     } icon-dim-24 cursor`}
@@ -1238,7 +1238,7 @@ const CDMaterial = ({
 
         return (
             <>
-                {materialType !== 'none' &&
+                {materialType !== MATERIAL_TYPE.none &&
                     isApprovalRequester &&
                     !isImageApprover &&
                     !disableSelection &&
