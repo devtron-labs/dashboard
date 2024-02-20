@@ -1503,7 +1503,7 @@ const ChartValuesView = ({
             !isExternalApp &&
             !isCreateValueView &&
             !isVirtualEnvironmentOnSelector &&
-            (isDeployChartView || allowedDeploymentTypes.length > 0) &&
+            (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
             !appDetails?.isVirtualEnvironment &&
             !commonState.installedConfig?.isOCICompliantChart
         return (
