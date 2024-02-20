@@ -1268,6 +1268,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             height={workflow.height}
                             width={workflow.width}
                             nodes={workflow.nodes}
+                            artifactPromotionMetaData={workflow.artifactPromotionMetaData}
                             history={this.props.history}
                             location={this.props.location}
                             match={this.props.match}
