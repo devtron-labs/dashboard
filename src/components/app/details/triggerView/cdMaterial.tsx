@@ -1232,9 +1232,9 @@ const CDMaterial = ({
         )
     }
 
-    const renderCTA = ({ material, disableSelection }: RenderCTAType) => {
-        const isApprovalRequester = getIsApprovalRequester(material.userApprovalMetadata)
-        const isImageApprover = getIsImageApprover(material.userApprovalMetadata)
+    const renderCTA = ({ mat, disableSelection }: RenderCTAType) => {
+        const isApprovalRequester = getIsApprovalRequester(mat.userApprovalMetadata)
+        const isImageApprover = getIsImageApprover(mat.userApprovalMetadata)
 
         return (
             <>
@@ -1245,21 +1245,21 @@ const CDMaterial = ({
                     ExpireApproval && (
                         <>
                             <ExpireApproval
-                                matId={material.id}
+                                matId={mat.id}
                                 appId={appId}
                                 pipelineId={pipelineId}
-                                userApprovalMetadata={material.userApprovalMetadata}
+                                userApprovalMetadata={mat.userApprovalMetadata}
                                 reloadMaterials={reloadMaterials}
                             />
 
-                            {material.filterState !== FilterStates.ALLOWED && (
+                            {mat.filterState !== FilterStates.ALLOWED && (
                                 <div className="flex dc__gap-12 mr-12">
                                     <div className="h-12 dc__border-left" />
                                 </div>
                             )}
                         </>
                     )}
-                {renderMaterialCTA(material, isApprovalRequester, isImageApprover, disableSelection)}
+                {renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
             </>
         )
     }
@@ -1305,7 +1305,7 @@ const CDMaterial = ({
                 <ImageCard
                     testIdLocator={String(mat.index)}
                     cta={renderCTA({
-                        material: mat,
+                        mat,
                         disableSelection,
                     })}
                     sequentialCDCardTitleProps={{

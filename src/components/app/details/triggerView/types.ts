@@ -718,6 +718,6 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
 }
 
 export interface RenderCTAType {
-    material: CDMaterialType
+    mat: CDMaterialType
     disableSelection: boolean
 }
