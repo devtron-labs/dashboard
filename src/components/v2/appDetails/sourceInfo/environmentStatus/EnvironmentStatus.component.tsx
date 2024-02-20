@@ -25,7 +25,6 @@ import IssuesListingModal from '../../../../app/details/appDetails/IssuesListing
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
 const EnvironmentStatusComponent = ({
-    resourcesSyncResult,
     loadingDetails,
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
@@ -193,7 +192,7 @@ const EnvironmentStatusComponent = ({
                     close={() => {
                         setShowAppStatusDetail(false)
                     }}
-                    resourcesSyncResult={resourcesSyncResult}
+                    resourcesSyncResult={appDetails.resourceTree?.resourcesSyncResult}
                     showAppStatusMessage={showHibernationStatusMessage}
                 />
             )}

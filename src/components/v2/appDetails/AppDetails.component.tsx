@@ -173,7 +173,6 @@ const AppDetailsComponent = ({
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
-                        resourcesSyncResult={appDetails.resourceTree.resourcesSyncResult}
                         loadingDetails={loadingDetails || !appDetails?.appType}
                         loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}

@@ -674,7 +674,7 @@ export const Details: React.FC<DetailsType> = ({
             {detailedStatus && (
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
-                    resourcesSyncResult={appDetails.resourceTree.resourcesSyncResult}
+                    resourcesSyncResult={appDetails.resourceTree?.resourcesSyncResult}
                     showAppStatusMessage={false}
                 />
             )}
