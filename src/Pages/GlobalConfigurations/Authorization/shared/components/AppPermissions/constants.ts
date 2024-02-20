@@ -1,14 +1,16 @@
-import { ACCESS_TYPE_MAP } from '../../../../../../config'
+import { ACCESS_TYPE_MAP, SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, DirectPermissionsRoleFilter, EntityTypes } from '../userGroups/userGroups.types'
+
+export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
 
 export const allApplicationsOption = (entity) => ({
     label: entity === EntityTypes.JOB ? 'All Jobs' : 'All applications',
-    value: '*',
+    value: SELECT_ALL_VALUE,
 })
 
 export const allEnvironmentsOption = {
     label: 'All environments',
-    value: '*',
+    value: SELECT_ALL_VALUE,
 }
 
 // TODO (v4): Remove these once the code is refactored

@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import { GenericSectionErrorState, OptionType, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { APPROVER_ACTION, CONFIG_APPROVER_ACTION } from '../userGroups/UserGroup'
-import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../../../../../config'
+import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import {
     ActionTypes,
     APIRoleFilter,
@@ -29,7 +29,12 @@ import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { getProjectList } from '../../../../../../components/project/service'
 import { getChartGroups } from '../../../../../../components/charts/charts.service'
-import { emptyDirectPermissionDevtronApps, emptyDirectPermissionHelmApps, emptyDirectPermissionJobs } from './constants'
+import {
+    ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
+    emptyDirectPermissionDevtronApps,
+    emptyDirectPermissionHelmApps,
+    emptyDirectPermissionJobs,
+} from './constants'
 import AppPermissionDetail from './AppPermissionDetail'
 import { ChartPermission } from '../ChartPermission'
 import {
@@ -235,25 +240,25 @@ const AppPermissions = () => {
         if (directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             const isJobs = directRoleFilter.entity === EntityTypes.JOB
             return [
-                { label: isJobs ? 'All Jobs' : 'All applications', value: '*' },
+                { label: isJobs ? 'All Jobs' : 'All applications', value: SELECT_ALL_VALUE },
                 ...(getListForAccessType(directRoleFilter.accessType).get(projectId)?.result || []).map((app) => ({
                     label: isJobs ? app.jobName : app.name,
                     value: isJobs ? app.appName : app.name,
                 })),
             ]
         }
-        return [{ label: 'All applications', value: '*' }]
+        return [{ label: 'All applications', value: SELECT_ALL_VALUE }]
     }
 
     async function setAllWorkflows(jobOptions) {
-        const jobNames = jobOptions.filter((job) => job.value !== '*').map((job) => job.label)
+        const jobNames = jobOptions.filter((job) => job.value !== SELECT_ALL_VALUE).map((job) => job.label)
         const { result } = await getAllWorkflowsForAppNames(jobNames)
         const { appIdWorkflowNamesMapping } = result
 
         const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)
 
         return [
-            { label: 'All Workflows', value: '*' },
+            { label: 'All Workflows', value: SELECT_ALL_VALUE },
             ...workflowOptions.reduce((acc, option) => {
                 acc.push(...option.options)
                 return acc
@@ -266,14 +271,14 @@ const AppPermissions = () => {
         if (startsWithHash) {
             defaultValueArr.push({
                 label: `All existing + future environments in ${clusterName}`,
-                value: `#${clusterName}`,
+                value: `${ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE}${clusterName}`,
                 namespace: '',
                 clusterName: '',
             })
         }
         defaultValueArr.push({
             label: `All existing environments in ${clusterName}`,
-            value: `*${clusterName}`,
+            value: `${SELECT_ALL_VALUE}${clusterName}`,
             namespace: '',
             clusterName: '',
         })
@@ -300,7 +305,7 @@ const AppPermissions = () => {
                     .map((directRole) => ({ value: directRole, label: directRole }))
             }
             return [
-                { label: 'All environments', value: '*' },
+                { label: 'All environments', value: SELECT_ALL_VALUE },
                 ...environmentsList.map((env) => ({
                     label: env.environment_name,
                     value: env.environmentIdentifier,
@@ -312,7 +317,7 @@ const AppPermissions = () => {
             const envArr = directRoleFilter.environment.split(',')
             const envMap: Map<string, boolean> = new Map()
             envArr.forEach((element) => {
-                const endsWithStar = element.endsWith('*')
+                const endsWithStar = element.endsWith(SELECT_ALL_VALUE)
                 if (endsWithStar) {
                     const clusterName = element.slice(0, -3)
                     returnArr.push(...setClusterValues(endsWithStar, clusterName))
@@ -353,7 +358,7 @@ const AppPermissions = () => {
             }
             const environmentListWithClusterCdActive = environmentsList.filter((env) => env.isClusterCdActive)
             return [
-                { label: 'All environments', value: '*' },
+                { label: 'All environments', value: SELECT_ALL_VALUE },
                 {
                     label: DEFAULT_ENV,
                     value: DEFAULT_ENV,
@@ -480,7 +485,8 @@ const AppPermissions = () => {
                 entityName:
                     tempChartPermission?.entityName.split(',')?.map((entity) => ({ value: entity, label: entity })) ||
                     [],
-                action: tempChartPermission.action === '*' ? ActionTypes.ADMIN : tempChartPermission.action,
+                action:
+                    tempChartPermission.action === SELECT_ALL_VALUE ? ActionTypes.ADMIN : tempChartPermission.action,
             }
 
             setChartPermission(chartPermission)
@@ -496,14 +502,17 @@ const AppPermissions = () => {
                     cluster: { label: k8s.cluster, value: k8s.cluster },
                     namespace: {
                         label: k8s.namespace === '' ? 'All Namespaces / Cluster' : k8s.namespace,
-                        value: k8s.namespace === '' ? '*' : k8s.namespace,
+                        value: k8s.namespace === '' ? SELECT_ALL_VALUE : k8s.namespace,
                     },
                     group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
                     action: { label: customRoles.possibleRolesMetaForCluster[k8s.action].value, value: k8s.action },
-                    kind: { label: k8s.kind === '' ? 'All Kinds' : k8s.kind, value: k8s.kind === '' ? '*' : k8s.kind },
+                    kind: {
+                        label: k8s.kind === '' ? 'All Kinds' : k8s.kind,
+                        value: k8s.kind === '' ? SELECT_ALL_VALUE : k8s.kind,
+                    },
                     resource: k8s.resource
                         .split(',')
-                        ?.map((entity) => ({ value: entity || '*', label: entity || 'All resources' })),
+                        ?.map((entity) => ({ value: entity || SELECT_ALL_VALUE, label: entity || 'All resources' })),
                 }
             })
 
@@ -519,16 +528,16 @@ const AppPermissions = () => {
     function setEnvValues(index, selectedValue, actionMeta, tempPermissions) {
         const { action, option, name } = actionMeta
         const { value, clusterName } = option || { value: '', clusterName: '' }
-        const startsWithHash = value?.startsWith('#')
-        if (value?.startsWith('*') || startsWithHash) {
+        const startsWithHash = value?.startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE)
+        if (value?.startsWith(SELECT_ALL_VALUE) || startsWithHash) {
             if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                 const _clusterName = value.substring(1)
                 // uncheck all environments
                 tempPermissions[index][name] = tempPermissions[index][name]?.filter(
                     (env) =>
                         env.clusterName !== _clusterName &&
-                        env.value !== `#${_clusterName}` &&
-                        env.value !== `*${_clusterName}`,
+                        env.value !== `${ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE}${_clusterName}` &&
+                        env.value !== `${SELECT_ALL_VALUE}${_clusterName}`,
                 )
                 if (action === 'select-option') {
                     // check all environments
@@ -542,7 +551,7 @@ const AppPermissions = () => {
                 // check all environments
                 const environmentListWithClusterCdActive = environmentsList.filter((env) => env.isClusterCdActive)
                 tempPermissions[index][name] = [
-                    { label: 'All environments', value: '*' },
+                    { label: 'All environments', value: SELECT_ALL_VALUE },
                     ...(tempPermissions[index].entity === EntityTypes.JOB
                         ? environmentListWithClusterCdActive
                         : environmentsList
@@ -566,11 +575,13 @@ const AppPermissions = () => {
             if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                 tempPermissions[index][name] = selectedValue.filter(
                     // eslint-disable-next-line @typescript-eslint/no-shadow
-                    ({ value }) => value !== `*${clusterName}` && value !== `#${clusterName}`,
+                    ({ value }) =>
+                        value !== `${SELECT_ALL_VALUE}${clusterName}` &&
+                        value !== `${ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE}${clusterName}`,
                 )
             } else {
                 // eslint-disable-next-line @typescript-eslint/no-shadow
-                tempPermissions[index][name] = selectedValue.filter(({ value }) => value !== '*')
+                tempPermissions[index][name] = selectedValue.filter(({ value }) => value !== SELECT_ALL_VALUE)
             }
 
             tempPermissions[index]['environmentError'] = null
@@ -602,7 +613,7 @@ const AppPermissions = () => {
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {
             const { value } = option || { value: '' }
-            if (value === '*') {
+            if (value === SELECT_ALL_VALUE) {
                 if (action === 'select-option') {
                     if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {
                         const projectId = projectsList.find(
@@ -610,7 +621,7 @@ const AppPermissions = () => {
                         ).id
                         const isJobs = tempPermissions[index].entity === EntityTypes.JOB
                         tempPermissions[index]['entityName'] = [
-                            { label: 'Select all', value: '*' },
+                            { label: 'Select all', value: SELECT_ALL_VALUE },
                             ...getListForAccessType(tempPermissions[index].accessType)
                                 .get(projectId)
                                 .result.map((app) => ({
@@ -619,14 +630,14 @@ const AppPermissions = () => {
                                 })),
                         ]
                     } else {
-                        tempPermissions[index]['entityName'] = [{ label: 'Select all', value: '*' }]
+                        tempPermissions[index]['entityName'] = [{ label: 'Select all', value: SELECT_ALL_VALUE }]
                     }
                     tempPermissions[index]['entityNameError'] = null
                 } else {
                     tempPermissions[index]['entityName'] = []
                 }
             } else {
-                const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== '*')
+                const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== SELECT_ALL_VALUE)
                 tempPermissions[index]['entityName'] = selectedOptions
                 tempPermissions[index]['entityNameError'] = null
             }
@@ -637,13 +648,13 @@ const AppPermissions = () => {
             setEnvValues(index, selectedValue, actionMeta, tempPermissions)
         } else if (name === 'workflow') {
             const { value } = option || { value: '' }
-            if (value === '*') {
+            if (value === SELECT_ALL_VALUE) {
                 if (action === 'select-option') {
                     const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
                         return [...acc, ..._option.options]
                     }, [])
                     tempPermissions[index]['workflow'] = [
-                        { label: 'Select all', value: '*' },
+                        { label: 'Select all', value: SELECT_ALL_VALUE },
                         ...(allWorkflowOptions || []),
                     ]
                     tempPermissions[index].workflowError = null
@@ -651,7 +662,7 @@ const AppPermissions = () => {
                     tempPermissions[index]['workflow'] = []
                 }
             } else {
-                const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== '*')
+                const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== SELECT_ALL_VALUE)
                 tempPermissions[index][name] = selectedOptions
                 tempPermissions[index]['workflowError'] = null
             }

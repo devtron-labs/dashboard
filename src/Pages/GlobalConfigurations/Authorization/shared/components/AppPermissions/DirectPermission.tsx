@@ -7,13 +7,13 @@ import Tippy from '@tippyjs/react'
 import { sortBySelected, importComponentFromFELibrary } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
 import { EntityTypes, DirectPermissionRow } from '../userGroups/userGroups.types'
-import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT } from '../../../../../../config'
+import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups/UserGroup'
 import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
-import { allApplicationsOption, allEnvironmentsOption } from './constants'
+import { allApplicationsOption, allEnvironmentsOption, ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
 import { getWorkflowOptions, parseData } from '../../../utils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
@@ -132,7 +132,7 @@ const DirectPermission = ({
                     ...props,
                 }}
             >
-                {value === '*' ? 'Admin' : metaRolesForAccessType[value].value}
+                {value === SELECT_ALL_VALUE ? 'Admin' : metaRolesForAccessType[value].value}
                 {ApproverPermission && (permission.approver || primaryActionRole.configApprover) && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
@@ -174,7 +174,9 @@ const DirectPermission = ({
         setWorkflowList({ loading: true, options: [] })
         try {
             setWorkflowList({ loading: true, options: [] })
-            const jobNames = _permission.entityName.filter((option) => option.value !== '*').map((app) => app.label)
+            const jobNames = _permission.entityName
+                .filter((option) => option.value !== SELECT_ALL_VALUE)
+                .map((app) => app.label)
             const {
                 result: { appIdWorkflowNamesMapping },
             } = await getAllWorkflowsForAppNames(jobNames, abortControllerRef.current.signal)
@@ -219,7 +221,10 @@ const DirectPermission = ({
     const formatOptionLabelClusterEnv = (option, { inputValue }) => (
         <div
             className={`flex left column ${
-                option.value && (option.value.startsWith('#') || option.value.startsWith('*')) && 'fs-13 fw-6 cn-9'
+                option.value &&
+                (option.value.startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE) ||
+                    option.value.startsWith(SELECT_ALL_VALUE)) &&
+                'fs-13 fw-6 cn-9'
             }`}
         >
             {!inputValue ? (
@@ -445,7 +450,7 @@ const DirectPermission = ({
                         onMenuClose={onMenuClose}
                         placeholder="Select workflow"
                         options={[
-                            { label: '', options: [{ label: 'All Workflows', value: '*' }] },
+                            { label: '', options: [{ label: 'All Workflows', value: SELECT_ALL_VALUE }] },
                             ...workflowList.options,
                         ]}
                         className="basic-multi-select"

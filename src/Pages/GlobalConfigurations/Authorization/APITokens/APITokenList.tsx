@@ -24,9 +24,8 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
         history.push(id ? `${key}/${id}` : key)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const handleDeleteButton = (tokenList) => {
-        setSelectedToken(tokenList)
+    const handleDeleteButton = (_tokenList) => {
+        setSelectedToken(_tokenList)
         setDeleteConfirmation(true)
     }
 

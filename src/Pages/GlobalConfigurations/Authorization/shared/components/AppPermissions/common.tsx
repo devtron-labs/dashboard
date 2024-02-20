@@ -4,6 +4,8 @@ import React from 'react'
 import { components } from 'react-select'
 import { EntityTypes } from '../userGroups/userGroups.types'
 import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect.utils'
+import { SELECT_ALL_VALUE } from '../../../../../../config'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
 
 export const WorkflowGroupHeading = (props) => {
     return <GroupHeading {...props} hideClusterName />
@@ -24,7 +26,7 @@ export const AppOption = ({ props, permission }) => {
             />
             <div className="flex left column w-100">
                 <components.Option className="w-100 option-label-padding" {...props} />
-                {data.value === '*' && (
+                {data.value === SELECT_ALL_VALUE && (
                     <span className="fs-12 cn-6 ml-8 mb-4 mr-4">
                         {`Allow access to existing and new ${
                             permission.entity === EntityTypes.JOB ? 'jobs' : 'apps'
@@ -83,7 +85,12 @@ export const ValueContainer = (props) => {
 export const clusterValueContainer = (props) => {
     const { length } = props
         .getValue()
-        .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*'))
+        .filter(
+            (opt) =>
+                opt.value &&
+                !opt.value.startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE) &&
+                !opt.value.startsWith(SELECT_ALL_VALUE),
+        )
     let count = ''
     const totalEnv = props.options.reduce((len, cluster) => {
         // eslint-disable-next-line no-param-reassign

@@ -917,3 +917,8 @@ export const API_STATUS_CODES = {
 export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3
 
 export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
+
+/**
+ * Value for select all identifier
+ */
+export const SELECT_ALL_VALUE = '*'

@@ -17,6 +17,7 @@ import {
     ACCESS_TYPE_MAP,
     Moment12HourFormat,
     REQUIRED_FIELDS_MISSING,
+    SELECT_ALL_VALUE,
     SERVER_MODE,
     ZERO_TIME_STRING,
 } from '../../../config'
@@ -25,6 +26,7 @@ import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 import { useAuthorizationBulkSelection } from './shared/components/BulkSelection'
 import { CONFIG_APPROVER_ACTION } from './shared/components/userGroups/UserGroup'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './shared/components/AppPermissions/constants'
 
 export const transformUserResponse = (_user: UserDto): User => {
     const { lastLoginTime, timeoutWindowExpression, email_id: emailId, ...user } = _user
@@ -141,7 +143,9 @@ export const handleToggleCheckForBulkSelection =
     }
 
 const getSelectedPermissionValues = (options: OptionType[]) => {
-    return options.some((option) => option.value === '*') ? '' : options.map((option) => option.value).join(',')
+    return options.some((option) => option.value === SELECT_ALL_VALUE)
+        ? ''
+        : options.map((option) => option.value).join(',')
 }
 
 const getSelectedEnvironments = (permission) => {
@@ -151,10 +155,10 @@ const getSelectedEnvironments = (permission) => {
     const allFutureCluster = {}
     let envList = ''
     permission.environment.forEach((element) => {
-        if (element.clusterName === '' && element.value.startsWith('#')) {
+        if (element.clusterName === '' && element.value.startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE)) {
             const clusterName = element.value.substring(1)
             allFutureCluster[clusterName] = true
-            envList += `${(envList !== '' ? ',' : '') + clusterName}__*`
+            envList += `${(envList !== '' ? ',' : '') + clusterName}__${SELECT_ALL_VALUE}`
         } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
             envList += (envList !== '' ? ',' : '') + element.value
         }
@@ -211,9 +215,9 @@ export const createUserPermissionPayload = ({
                 entity: EntityTypes.CLUSTER as APIRoleFilter['entity'],
                 action: permission.action.value,
                 cluster: permission.cluster.label,
-                group: permission.group.value === '*' ? '' : permission.group.value,
-                kind: permission.kind.value === '*' ? '' : permission.kind.label,
-                namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                group: permission.group.value === SELECT_ALL_VALUE ? '' : permission.group.value,
+                kind: permission.kind.value === SELECT_ALL_VALUE ? '' : permission.kind.label,
+                namespace: permission.namespace.value === SELECT_ALL_VALUE ? '' : permission.namespace.value,
                 resource: getSelectedPermissionValues(permission.resource),
             })),
         ],

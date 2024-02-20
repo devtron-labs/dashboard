@@ -1,8 +1,9 @@
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_ENV } from '../../../../../../components/app/details/triggerView/Constants'
 import { createClusterEnvGroup } from '../../../../../../components/common'
-import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../../../../config'
+import { ACCESS_TYPE_MAP, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { DirectPermissionRow, EntityTypes } from '../userGroups/userGroups.types'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
 
 export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean) =>
     [
@@ -74,13 +75,13 @@ export const getEnvironmentClusterOptions = (envClustersList) =>
         options: [
             {
                 label: `All existing + future environments in ${cluster.clusterName}`,
-                value: `#${cluster.clusterName}`,
+                value: `${ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE}${cluster.clusterName}`,
                 namespace: '',
                 clusterName: '',
             },
             {
                 label: `All existing environments in ${cluster.clusterName}`,
-                value: `*${cluster.clusterName}`,
+                value: `${SELECT_ALL_VALUE}${cluster.clusterName}`,
                 namespace: '',
                 clusterName: '',
             },

@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { OptionType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
-import { ACCESS_TYPE_MAP } from '../../../../../../config'
+import { ACCESS_TYPE_MAP, SELECT_ALL_VALUE } from '../../../../../../config'
 import { Nodes } from '../../../../../../components/app/types'
 import { ChartGroup } from '../../../../../../components/charts/charts.types'
 import { K8sPermissionActionType } from '../K8sObjectPermissions/constants'
@@ -207,7 +207,7 @@ export const K8S_PERMISSION_INFO_MESSAGE = {
     [Nodes.DaemonSet]: 'Specified role will be provided for child Pod(s) of selected DaemonSet(s).',
 }
 
-export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: '*' }
+export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: SELECT_ALL_VALUE }
 
 export const ViewChartGroupPermission: APIRoleFilter = {
     entity: EntityTypes.CHART_GROUP,

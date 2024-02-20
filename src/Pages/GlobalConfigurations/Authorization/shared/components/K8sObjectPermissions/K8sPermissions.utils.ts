@@ -1,9 +1,10 @@
+import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
 import { ActionTypes, ACTION_LABEL, EntityTypes, K8sPermissionFilter } from '../userGroups/userGroups.types'
 
 export const apiGroupAll = (permission, isLabel = false) => {
     if (permission === '') {
-        return isLabel ? 'All API groups' : '*'
+        return isLabel ? 'All API groups' : SELECT_ALL_VALUE
     }
     if (permission === 'k8sempty') {
         return isLabel ? 'K8s core groups (eg. service, pod, etc.)' : 'k8sempty'
@@ -14,15 +15,15 @@ export const apiGroupAll = (permission, isLabel = false) => {
 export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'RESOURCE', 'ROLE']
 
 export const multiSelectAllState = (selected, actionMeta, setState, options) => {
-    if (actionMeta.action === 'select-option' && actionMeta.option.value === '*') {
+    if (actionMeta.action === 'select-option' && actionMeta.option.value === SELECT_ALL_VALUE) {
         setState(options)
     } else if (
-        (actionMeta.action === 'deselect-option' && actionMeta.option.value === '*') ||
-        (actionMeta.action === 'remove-value' && actionMeta.removedValue.value === '*')
+        (actionMeta.action === 'deselect-option' && actionMeta.option.value === SELECT_ALL_VALUE) ||
+        (actionMeta.action === 'remove-value' && actionMeta.removedValue.value === SELECT_ALL_VALUE)
     ) {
         setState([])
     } else if (actionMeta.action === 'deselect-option' || actionMeta.action === 'remove-value') {
-        setState(selected.filter((o) => o.value !== '*'))
+        setState(selected.filter((o) => o.value !== SELECT_ALL_VALUE))
     } else if (selected.length === options.length - 1) {
         setState(options)
     } else {
