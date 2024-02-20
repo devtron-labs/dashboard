@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { showError, Option, getIsRequestAborted } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Option, getIsRequestAborted, LoadingIndicator } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { sortBySelected, importComponentFromFELibrary } from '../../../../../../components/common'
@@ -411,9 +411,10 @@ const DirectPermission = ({
                         // eslint-disable-next-line react/no-unstable-nested-components
                         Option: (props) => <AppOption props={props} permission={permission} />,
                         GroupHeading,
+                        LoadingIndicator,
                     }}
-                    isLoading={projectId ? listForAccessType.get(projectId)?.loading : false}
-                    isDisabled={!permission.team}
+                    isLoading={projectId && listForAccessType.get(projectId)?.loading}
+                    isDisabled={!permission.team || (projectId && listForAccessType.get(projectId)?.loading)}
                     styles={authorizationSelectStyles}
                     closeMenuOnSelect={false}
                     name={`entityName/${permission.entity}`}
@@ -459,14 +460,15 @@ const DirectPermission = ({
                         hideSelectedOptions={false}
                         styles={authorizationSelectStyles}
                         isLoading={workflowList.loading}
+                        isDisabled={!permission.team || workflowList.loading}
                         components={{
                             ClearIndicator: null,
                             ValueContainer,
                             IndicatorSeparator: null,
                             Option,
                             GroupHeading: WorkflowGroupHeading,
+                            LoadingIndicator,
                         }}
-                        isDisabled={!permission.team}
                         onChange={(value, actionMeta) => {
                             handleDirectPermissionChange(value, actionMeta, workflowList)
                         }}
