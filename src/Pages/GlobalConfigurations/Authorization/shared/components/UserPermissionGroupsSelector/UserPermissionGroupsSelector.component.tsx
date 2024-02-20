@@ -5,8 +5,8 @@ import {
     OptionType,
     useAsync,
     UserRoleGroupsTable,
-    Progressing,
     GenericSectionErrorState,
+    LoadingIndicator,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import { User } from '../../../types'
@@ -18,8 +18,6 @@ import { authorizationSelectStyles } from '../userGroups/UserGroup'
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const MultiValueContainer = (props) => <MultiValueChipContainer {...props} validator={null} />
-
-const LoadingIndicator = () => <Progressing />
 
 const UserPermissionGroupsSelector = () => {
     const { userGroups, setUserGroups, data: userData } = usePermissionConfiguration()

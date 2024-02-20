@@ -10,6 +10,7 @@ import {
     MultiValueRemove,
     MultiValueChipContainer,
     OptionType,
+    LoadingIndicator,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
@@ -42,7 +43,7 @@ import { parseData } from '../../../utils'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
 import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE } from './constants'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
-import { K8sListItemCardType } from './types'
+import { K8sItemCardLoadingState, K8sListItemCardType } from './types'
 import { ALL_NAMESPACE, EntityTypes } from '../../../constants'
 
 // TODO (v3): Minor refactoring
@@ -66,8 +67,27 @@ const K8sListItemCard = ({
     const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()
     const [allInApiGroupMapping, setAllInApiGroupMapping] = useState<OptionType[]>([])
     const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
+    const [
+        { isClusterListLoading, isNamespaceListLoading, isApiGroupListLoading, isResourceListLoading },
+        setLoadingState,
+    ] = useState<K8sItemCardLoadingState>({
+        isClusterListLoading: false,
+        isNamespaceListLoading: false,
+        isApiGroupListLoading: false,
+        isResourceListLoading: false,
+    })
+
+    const handleLoadingStateChange = (updatedLoadingState: Partial<K8sItemCardLoadingState>) => {
+        setLoadingState((prevLoadingState) => ({
+            ...prevLoadingState,
+            ...updatedLoadingState,
+        }))
+    }
 
     const getNamespaceList = async (clusterId: string) => {
+        handleLoadingStateChange({
+            isNamespaceListLoading: true,
+        })
         try {
             const { result } = await namespaceListByClusterId(clusterId)
             if (result) {
@@ -80,6 +100,10 @@ const K8sListItemCard = ({
             }
         } catch (err) {
             showError(err)
+        } finally {
+            handleLoadingStateChange({
+                isNamespaceListLoading: false,
+            })
         }
     }
 
@@ -131,6 +155,9 @@ const K8sListItemCard = ({
     }
 
     const getGroupKindData = async (clusterId): Promise<void> => {
+        handleLoadingStateChange({
+            isApiGroupListLoading: true,
+        })
         try {
             const { result: resourceGroupList } = await getResourceGroupList(clusterId)
             if (resourceGroupList.apiResources) {
@@ -174,10 +201,17 @@ const K8sListItemCard = ({
             }
         } catch (err) {
             showError(err)
+        } finally {
+            handleLoadingStateChange({
+                isApiGroupListLoading: false,
+            })
         }
     }
 
     const getClusterListData = async () => {
+        handleLoadingStateChange({
+            isClusterListLoading: true,
+        })
         try {
             const { result } = await getClusterList()
             if (result) {
@@ -197,6 +231,10 @@ const K8sListItemCard = ({
             }
         } catch (err) {
             showError(err)
+        } finally {
+            handleLoadingStateChange({
+                isClusterListLoading: false,
+            })
         }
     }
 
@@ -209,6 +247,9 @@ const K8sListItemCard = ({
     }, [])
 
     const getResourceListData = async (selected): Promise<void> => {
+        handleLoadingStateChange({
+            isResourceListLoading: true,
+        })
         try {
             const resourceListPayload: ResourceListPayloadType = {
                 clusterId: Number(k8sPermission?.cluster?.value),
@@ -235,6 +276,10 @@ const K8sListItemCard = ({
             }
         } catch (err) {
             showError(err)
+        } finally {
+            handleLoadingStateChange({
+                isResourceListLoading: false,
+            })
         }
     }
 
@@ -349,8 +394,11 @@ const K8sListItemCard = ({
                     components={{
                         IndicatorSeparator: null,
                         Option: SingleSelectOption,
+                        LoadingIndicator,
                     }}
                     styles={authorizationSelectStyles}
+                    isLoading={isClusterListLoading}
+                    isDisabled={isClusterListLoading}
                 />
             </div>
             {k8sPermission?.cluster && (
@@ -362,14 +410,16 @@ const K8sListItemCard = ({
                             options={namespaceMapping?.[k8sPermission?.cluster?.value]}
                             value={k8sPermission.namespace}
                             name="namespace"
-                            isDisabled={!k8sPermission.cluster}
+                            isDisabled={!k8sPermission.cluster || isNamespaceListLoading}
                             onChange={onNameSpaceSelection}
                             components={{
                                 IndicatorSeparator: null,
                                 Option: SingleSelectOption,
                                 MenuList: (props) => menuComponent(props, 'namespaces'),
+                                LoadingIndicator,
                             }}
                             styles={authorizationSelectStyles}
+                            isLoading={isNamespaceListLoading}
                         />
                     </div>
                     <div className="flexbox w-100">
@@ -380,14 +430,16 @@ const K8sListItemCard = ({
                                     placeholder="Select API group"
                                     options={apiGroupMapping?.[k8sPermission.key]}
                                     name="Api group"
-                                    isDisabled={!k8sPermission.namespace}
+                                    isDisabled={!k8sPermission.namespace || isApiGroupListLoading}
                                     value={k8sPermission.group}
                                     onChange={onApiGroupSelect}
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
+                                        LoadingIndicator,
                                     }}
                                     styles={authorizationSelectStyles}
+                                    isLoading={isApiGroupListLoading}
                                 />
                             </div>
                         </div>
@@ -406,6 +458,7 @@ const K8sListItemCard = ({
                                         IndicatorSeparator: null,
                                         Option: SingleSelectOption,
                                         ValueContainer: CustomValueContainer,
+                                        LoadingIndicator,
                                     }}
                                     styles={k8sRoleSelectionStyle}
                                 />
@@ -418,7 +471,7 @@ const K8sListItemCard = ({
                             placeholder="Select resource"
                             classNamePrefix="k8s-permission-select-resource-dropdown"
                             options={objectMapping?.[k8sPermission.key]}
-                            isDisabled={!k8sPermission.kind}
+                            isDisabled={!k8sPermission.kind || isResourceListLoading}
                             value={k8sPermission.resource}
                             name="Resource name"
                             onChange={onResourceObjectChange}
@@ -436,6 +489,7 @@ const K8sListItemCard = ({
                                 MultiValueRemove,
                                 Option,
                                 MenuList: (props) => menuComponent(props, 'resource name'),
+                                LoadingIndicator,
                             }}
                             closeMenuOnSelect={false}
                             isMulti
@@ -468,6 +522,7 @@ const K8sListItemCard = ({
                                     padding: 0,
                                 }),
                             }}
+                            isLoading={isResourceListLoading}
                         />
                     </div>
                     {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (

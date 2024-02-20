@@ -22,6 +22,13 @@ export interface K8sListItemCardType {
     }
 }
 
+export interface K8sItemCardLoadingState {
+    isClusterListLoading: boolean
+    isNamespaceListLoading: boolean
+    isApiGroupListLoading: boolean
+    isResourceListLoading: boolean
+}
+
 export interface K8sPermissionModalType {
     selectedPermissionAction: {
         // TODO: Review: should be clone, edit, delete and add probably
