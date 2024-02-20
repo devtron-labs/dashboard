@@ -18,7 +18,7 @@ import { getWorkflowOptions, parseData } from '../../../utils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
-// TODO (v3): Move the type to the immediate file + AppPermission
+// TODO (v3): Move the type to the immediate file + AppPermission + refactoring
 const DirectPermission = ({
     permission,
     handleDirectPermissionChange,

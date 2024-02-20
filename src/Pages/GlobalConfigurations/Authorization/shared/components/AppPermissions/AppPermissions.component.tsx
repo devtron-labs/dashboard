@@ -88,6 +88,7 @@ const AppPermissions = () => {
     const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
     const navLinksConfig = getNavLinksConfig(serverMode, superAdmin)
 
+    // TODO (v3): Checkout the scope for common out
     async function fetchJobsList(projectIds: number[]) {
         const missingProjects = projectIds.filter((projectId) => !jobsList.has(projectId))
         if (missingProjects.length === 0) {
@@ -381,24 +382,26 @@ const AppPermissions = () => {
         const uniqueProjectIdsDevtronApps = []
         const uniqueProjectIdsHelmApps = []
         const uniqueProjectIdsJobs = []
-        // eslint-disable-next-line no-restricted-syntax
-        for (const element of roleFilters || []) {
-            if (element.entity === EntityTypes.DIRECT) {
-                const projectId = projectsMap.get(element.team)?.id
-                if (typeof projectId !== 'undefined' && projectId != null) {
-                    if (element['accessType'] === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-                        uniqueProjectIdsDevtronApps.push(projectId)
-                    } else if (element['accessType'] === ACCESS_TYPE_MAP.HELM_APPS) {
-                        uniqueProjectIdsHelmApps.push(projectId)
-                    }
-                }
-            } else if (element.entity === EntityTypes.JOB) {
-                const projectId = projectsMap.get(element.team)?.id
-                if (typeof projectId !== 'undefined' && projectId != null) {
-                    uniqueProjectIdsJobs.push(projectId)
+
+        // Devtron apps, helm apps and jobs
+        roleFilters?.forEach((roleFilter) => {
+            const projectId = projectsMap.get(roleFilter.team)?.id
+            if (projectId) {
+                switch (roleFilter.entity) {
+                    case EntityTypes.DIRECT:
+                        if (roleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                            uniqueProjectIdsDevtronApps.push(projectId)
+                        } else if (roleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+                            uniqueProjectIdsHelmApps.push(projectId)
+                        }
+                        break
+                    case EntityTypes.JOB:
+                        uniqueProjectIdsJobs.push(projectId)
+                        break
+                    default:
                 }
             }
-        }
+        })
 
         await Promise.all([
             fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
@@ -416,10 +419,13 @@ const AppPermissions = () => {
                     const projectId =
                         directRoleFilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
                         projectsMap.get(directRoleFilter.team)?.id
-                    if (!directRoleFilter['accessType'] && directRoleFilter.entity !== EntityTypes.JOB) {
+
+                    // Fallback for access type
+                    if (!directRoleFilter.accessType && directRoleFilter.entity !== EntityTypes.JOB) {
                         // eslint-disable-next-line no-param-reassign
-                        directRoleFilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS
+                        directRoleFilter.accessType = ACCESS_TYPE_MAP.DEVTRON_APPS
                     }
+
                     if (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                         foundDevtronApps = true
                     } else if (directRoleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
@@ -427,15 +433,17 @@ const AppPermissions = () => {
                     } else if (directRoleFilter.entity === EntityTypes.JOB) {
                         foundJobs = true
                     }
-                    const jobNameToAppNameMapping = new Map()
+
+                    let jobNameToAppNameMapping = new Map()
+
                     if (directRoleFilter.entity === EntityTypes.JOB) {
                         const {
                             result: { jobContainers },
                         } = await getJobs({ teams: [projectId] })
-                        jobContainers.forEach((job) => {
-                            jobNameToAppNameMapping.set(job.appName, job.jobName)
-                        })
+
+                        jobNameToAppNameMapping = new Map(jobContainers.map((job) => [job.appName, job.jobName]))
                     }
+
                     const updatedEntityName = directRoleFilter?.entityName
                         ? directRoleFilter.entityName.split(',').map((entity) => ({
                               value: entity,
@@ -471,11 +479,12 @@ const AppPermissions = () => {
         if (!foundHelmApps) {
             directPermissions.push(emptyDirectPermissionHelmApps)
         }
-        if (!foundJobs) {
+        if (!foundJobs && serverMode !== SERVER_MODE.EA_ONLY) {
             directPermissions.push(emptyDirectPermissionJobs)
         }
         setDirectPermission(directPermissions)
 
+        // Chart Permissions
         const tempChartPermission: APIRoleFilter = roleFilters?.find(
             (roleFilter) => roleFilter.entity === EntityTypes.CHART_GROUP,
         )
@@ -492,29 +501,28 @@ const AppPermissions = () => {
             setChartPermission(chartPermission)
         }
 
+        // K8s Permissions
         const _assignedRoleFilters: APIRoleFilter[] = roleFilters?.filter(
             (roleFilter) => roleFilter.entity === EntityTypes.CLUSTER,
         )
         if (_assignedRoleFilters) {
-            const _k8sPermission = _assignedRoleFilters.map((k8s) => {
-                return {
-                    entity: EntityTypes.CLUSTER,
-                    cluster: { label: k8s.cluster, value: k8s.cluster },
-                    namespace: {
-                        label: k8s.namespace === '' ? 'All Namespaces / Cluster' : k8s.namespace,
-                        value: k8s.namespace === '' ? SELECT_ALL_VALUE : k8s.namespace,
-                    },
-                    group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
-                    action: { label: customRoles.possibleRolesMetaForCluster[k8s.action].value, value: k8s.action },
-                    kind: {
-                        label: k8s.kind === '' ? 'All Kinds' : k8s.kind,
-                        value: k8s.kind === '' ? SELECT_ALL_VALUE : k8s.kind,
-                    },
-                    resource: k8s.resource
-                        .split(',')
-                        ?.map((entity) => ({ value: entity || SELECT_ALL_VALUE, label: entity || 'All resources' })),
-                }
-            })
+            const _k8sPermission = _assignedRoleFilters.map((k8s) => ({
+                entity: EntityTypes.CLUSTER,
+                cluster: { label: k8s.cluster, value: k8s.cluster },
+                namespace: {
+                    label: k8s.namespace === '' ? 'All Namespaces / Cluster' : k8s.namespace,
+                    value: k8s.namespace === '' ? SELECT_ALL_VALUE : k8s.namespace,
+                },
+                group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
+                action: { label: customRoles.possibleRolesMetaForCluster[k8s.action].value, value: k8s.action },
+                kind: {
+                    label: k8s.kind === '' ? 'All Kinds' : k8s.kind,
+                    value: k8s.kind === '' ? SELECT_ALL_VALUE : k8s.kind,
+                },
+                resource: k8s.resource
+                    .split(',')
+                    ?.map((entity) => ({ value: entity || SELECT_ALL_VALUE, label: entity || 'All resources' })),
+            }))
 
             if (currentK8sPermissionRef?.current) {
                 currentK8sPermissionRef.current = [..._k8sPermission]
@@ -525,6 +533,7 @@ const AppPermissions = () => {
         setIsLoading(false)
     }
 
+    // TODO (v3): Refactoring
     function setEnvValues(index, selectedValue, actionMeta, tempPermissions) {
         const { action, option, name } = actionMeta
         const { value, clusterName } = option || { value: '', clusterName: '' }
@@ -607,6 +616,7 @@ const AppPermissions = () => {
         }
     }
 
+    // TODO (v3): Refactoring
     // TODO (v3): Use the Approver permission component from fe-lib and remove the redundant if(s)
     const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
         const { action, option, name } = actionMeta
@@ -717,7 +727,7 @@ const AppPermissions = () => {
             if (!foundHelmApps) {
                 permissionArr.push(emptyDirectPermissionHelmApps)
             }
-            if (!foundJobs) {
+            if (!foundJobs && serverMode !== SERVER_MODE.EA_ONLY) {
                 permissionArr.push(emptyDirectPermissionJobs)
             }
             return permissionArr

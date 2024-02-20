@@ -49,6 +49,7 @@ import { authorizationSelectStyles } from '../userGroups/UserGroup'
 import { K8sPermissionActionType } from './constants'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 
+// TODO (v3): Minor refactoring
 const K8sListItemCard = ({
     k8sPermission,
     handleK8sPermission,
