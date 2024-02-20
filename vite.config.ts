@@ -44,7 +44,7 @@ const jsToBottomNoModule = () => {
             html = html.replace(scriptTag, '')
             customInjection += scriptTag
 
-            const linkTagModulePreloadList=[...html.matchAll(/<link rel="modulepreload"[^>]*>/g)]
+            const linkTagModulePreloadList = [...html.matchAll(/<link rel="modulepreload"[^>]*>/g)]
             console.log('------------------------------------------------------------')
             linkTagModulePreloadList.forEach((linkData) => {
                 console.log('\n modulepreload', linkData[0], '\n')
@@ -52,13 +52,16 @@ const jsToBottomNoModule = () => {
                 customInjection += linkData[0]
             })
 
-            let linkTagStyleSheetList = [...html.matchAll(/<link rel="stylesheet"[^>]*>/g)]
-            console.log('------------------------------------------------------------')
-            linkTagStyleSheetList.forEach((linkData) => {
-                console.log('\n stylesheet', linkData[0], '\n')
-                html = html.replace(linkData[0], '')
-                customInjection += linkData[0]
-            })
+            /*
+             * uncomment bellow after CSS fix on pull image digest cluster env and others wherever order is giving issues
+             */
+            // let linkTagStyleSheetList = [...html.matchAll(/<link rel="stylesheet"[^>]*>/g)]
+            // console.log('------------------------------------------------------------')
+            // linkTagStyleSheetList.forEach((linkData) => {
+            //     console.log('\n stylesheet', linkData[0], '\n')
+            //     html = html.replace(linkData[0], '')
+            //     customInjection += linkData[0]
+            // })
 
             html = html.replace('<!-- # INSERT SCRIPT HERE -->', customInjection)
             console.log('------------------------------------------------------------')
