@@ -27,32 +27,12 @@ import {
 } from '../../shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
+import { getCreatableChipStyle } from '../utils'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
 
-const CreatableChipStyle = {
-    multiValue: (base, state) => {
-        return {
-            ...base,
-            border: validateEmail(state.data.value) ? `1px solid var(--N200)` : `1px solid var(--R500)`,
-            borderRadius: `4px`,
-            background: validateEmail(state.data.value) ? 'white' : 'var(--R100)',
-            height: '28px',
-            margin: '8px 8px 4px 0px',
-            paddingLeft: '4px',
-            fontSize: '12px',
-        }
-    },
-    control: (base, state) => ({
-        ...base,
-        border: state.isFocused ? '1px solid #06c' : '1px solid #d6dbdf', // default border color
-        boxShadow: 'none', // no box-shadow
-    }),
-    indicatorsContainer: () => ({
-        height: '38px',
-    }),
-}
+const creatableChipStyle = getCreatableChipStyle()
 
 const createOption = (label: string) => ({
     label,
@@ -64,7 +44,6 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     const { isAutoAssignFlowEnabled } = useAuthorizationContext()
 
-    // Form States
     const {
         permissionType,
         setPermissionType,
@@ -250,12 +229,12 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     const CreatableComponents = useMemo(
         () => ({
-            DropdownIndicator: () => null,
+            DropdownIndicator: null,
             ClearIndicator,
             MultiValueRemove,
             // eslint-disable-next-line react/no-unstable-nested-components
             MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={validateEmail} />,
-            IndicatorSeparator: () => null,
+            IndicatorSeparator: null,
             Menu: () => null,
         }),
         [],
@@ -297,16 +276,15 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                                     <span className="cr-5">&nbsp;*</span>
                                 </label>
                                 <Creatable
-                                    classNamePrefix="email-address-dropdown"
                                     ref={creatableRef}
                                     options={[]}
                                     components={CreatableComponents}
-                                    styles={CreatableChipStyle}
+                                    styles={creatableChipStyle}
                                     autoFocus
                                     isMulti
                                     isClearable
                                     inputValue={emailState.inputEmailValue}
-                                    placeholder="Type email and press enter..."
+                                    placeholder="Type email and press enter"
                                     isValidNewOption={() => false}
                                     backspaceRemovesValue
                                     value={emailState.emails}
