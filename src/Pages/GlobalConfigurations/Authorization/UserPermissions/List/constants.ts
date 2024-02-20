@@ -15,8 +15,3 @@ export const DEFAULT_USER_TOOLTIP_CONTENT: Record<DefaultUserKey, string> = {
         'Actions performed by the administrator user are logged under the ‘admin’ user for auditing.',
     [DefaultUserKey.system]: 'Automated actions performed in Devtron are logged under the ‘system’ user for auditing.',
 }
-
-export enum SortableKeys {
-    email = 'email_id',
-    lastLogin = 'last_login',
-}

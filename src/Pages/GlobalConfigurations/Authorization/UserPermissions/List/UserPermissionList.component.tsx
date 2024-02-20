@@ -1,45 +1,52 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import {
     SortingOrder,
-    SortableTableHeaderCell,
-    ErrorScreenNotAuthorized,
-    ERROR_EMPTY_SCREEN,
-    Pagination,
-    Reload,
-    TOAST_ACCESS_DENIED,
     useAsync,
-    DEFAULT_BASE_PAGE_SIZE,
     useUrlFilters,
     abortPreviousRequests,
     getIsRequestAborted,
+    SelectAllDialogStatus,
+    BulkSelectionProvider,
+    BulkSelectionIdentifiersType,
+    UserStatus,
+    UserListSortableKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { API_STATUS_CODES } from '../../../../../config'
 
 import { getUserList } from '../../authorization.service'
-import { SortableKeys, userListLoading } from './constants'
-import UserPermissionListHeader from './UserPermissionListHeader'
-import UserPermissionRow from './UserPermissionRow'
-import FiltersEmptyState from '../../shared/components/FilterEmptyState/FilterEmptyState.component'
-import NoUsers from './NoUsers'
 import { importComponentFromFELibrary } from '../../../../../components/common'
+import { User } from '../../types'
+import { getIsAdminOrSystemUser, parseSearchParams } from '../utils'
+import UserPermissionContainer from './UserPermissionContainer'
+import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../shared/components/BulkSelection'
+import { UserListFilter } from './types'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const showStatus = !!StatusHeaderCell
 
 const UserPermissionList = () => {
-    const {
-        pageSize,
-        offset,
-        changePage,
-        changePageSize,
-        searchKey,
-        handleSearch,
-        sortBy,
-        handleSorting,
-        sortOrder,
-        clearFilters,
-    } = useUrlFilters<SortableKeys>({ initialSortKey: SortableKeys.email })
+    const [bulkSelectionModalConfig, setBulkSelectionModalConfig] = useState<BulkSelectionModalConfig>({
+        type: null,
+    })
+
+    const { status, ...urlFilters } = useUrlFilters<UserListSortableKeys, UserListFilter>({
+        initialSortKey: UserListSortableKeys.email,
+        parseSearchParams,
+    })
+
+    const updateStatusFilter = (_status: UserStatus[]) => {
+        urlFilters.updateSearchParams({
+            status: _status,
+        })
+    }
+
+    const _urlFilters = {
+        ...urlFilters,
+        status,
+        updateStatusFilter,
+    }
+
+    const { pageSize, offset, searchKey, sortBy, sortOrder } = _urlFilters
     const filterConfig = useMemo(
         () => ({
             size: pageSize,
@@ -47,8 +54,10 @@ const UserPermissionList = () => {
             searchKey,
             sortBy,
             sortOrder,
+            status,
         }),
-        [pageSize, offset, searchKey, sortBy, sortOrder],
+        // Using stringify as the status is a array to avoid infinite re-renders
+        [pageSize, offset, searchKey, sortBy, sortOrder, JSON.stringify(status)],
     )
 
     const abortControllerRef = useRef(new AbortController())
@@ -59,6 +68,20 @@ const UserPermissionList = () => {
                 abortControllerRef,
             ),
         [filterConfig],
+        true,
+        {
+            resetOnChange: false,
+        },
+    )
+    const allOnThisPageIdentifiers = useMemo(
+        () =>
+            result?.users.reduce((acc, user) => {
+                if (!getIsAdminOrSystemUser(user.emailId)) {
+                    acc[user.id] = true
+                }
+                return acc
+            }, {}) ?? {},
+        [result],
     )
 
     const showLoadingState = isLoading || getIsRequestAborted(error)
@@ -69,118 +92,38 @@ const UserPermissionList = () => {
             showAll: true,
             offset: null,
             size: null,
-            sortBy: SortableKeys.email,
+            sortBy: UserListSortableKeys.email,
             sortOrder: SortingOrder.ASC,
         })
 
-    if (!showLoadingState) {
-        if (error) {
-            if (error.code === API_STATUS_CODES.PERMISSION_DENIED) {
-                return (
-                    <ErrorScreenNotAuthorized
-                        subtitle={ERROR_EMPTY_SCREEN.REQUIRED_MANAGER_ACCESS}
-                        title={TOAST_ACCESS_DENIED.TITLE}
-                    />
-                )
-            }
-            return <Reload reload={reload} className="flex-grow-1" />
-        }
+    const getSelectAllDialogStatus = () => {
+        // Set to show the modal, the function is called only if there is an existing selection,
+        // so the modal won't open if there is no selection
+        setBulkSelectionModalConfig({
+            type: BulkSelectionModalTypes.selectAllAcrossPages,
+        })
 
-        // The null state is shown only when filters are not applied
-        if (result.totalCount === 0 && !searchKey) {
-            return <NoUsers />
-        }
-    }
-
-    // Disable the filter actions
-    const isActionsDisabled = showLoadingState || !(result.totalCount && result.users.length)
-
-    const sortByEmail = () => {
-        handleSorting(SortableKeys.email)
-    }
-
-    const sortByLastLogin = () => {
-        handleSorting(SortableKeys.lastLogin)
+        return SelectAllDialogStatus.OPEN
     }
 
     return (
-        <div className="flexbox-col dc__gap-8 flex-grow-1">
-            <UserPermissionListHeader
-                disabled={isActionsDisabled}
+        <BulkSelectionProvider<BulkSelectionIdentifiersType<Record<User['id'], boolean>>>
+            identifiers={allOnThisPageIdentifiers}
+            getSelectAllDialogStatus={getSelectAllDialogStatus}
+        >
+            <UserPermissionContainer
                 showStatus={showStatus}
-                handleSearch={handleSearch}
-                initialSearchText={searchKey}
-                getDataToExport={getUserDataForExport}
+                error={error}
+                getUserDataForExport={getUserDataForExport}
+                showLoadingState={showLoadingState}
+                totalCount={result?.totalCount ?? 0}
+                users={result?.users ?? []}
+                refetchUserPermissionList={reload}
+                urlFilters={_urlFilters}
+                bulkSelectionModalConfig={bulkSelectionModalConfig}
+                setBulkSelectionModalConfig={setBulkSelectionModalConfig}
             />
-            {showLoadingState || (result.totalCount && result.users.length) ? (
-                <div className="flexbox-col flex-grow-1">
-                    <div
-                        className={`user-permission__header ${
-                            showStatus ? 'user-permission__header--with-status' : ''
-                        } cn-7 fs-12 fw-6 lh-20 dc__uppercase pl-20 pr-20 dc__border-bottom dc__position-sticky dc__top-0 bcn-0 dc__zi-1`}
-                    >
-                        <span />
-                        <SortableTableHeaderCell
-                            title="Email"
-                            triggerSorting={sortByEmail}
-                            isSorted={sortBy === SortableKeys.email}
-                            sortOrder={sortOrder}
-                            disabled={isActionsDisabled}
-                        />
-                        <SortableTableHeaderCell
-                            title="Last Login"
-                            triggerSorting={sortByLastLogin}
-                            isSorted={sortBy === SortableKeys.lastLogin}
-                            sortOrder={sortOrder}
-                            disabled={isActionsDisabled}
-                        />
-                        {showStatus && <StatusHeaderCell />}
-                        <span />
-                    </div>
-                    {showLoadingState ? (
-                        userListLoading.map((user) => (
-                            <div
-                                className={`user-permission__row ${
-                                    showStatus ? 'user-permission__row--with-status' : ''
-                                } pl-20 pr-20 show-shimmer-loading`}
-                                key={`user-list-${user.id}`}
-                            >
-                                <span className="child child-shimmer-loading" />
-                                <span className="child child-shimmer-loading" />
-                                <span className="child child-shimmer-loading" />
-                                {showStatus && <span className="child child-shimmer-loading" />}
-                            </div>
-                        ))
-                    ) : (
-                        <>
-                            <div className="fs-13 fw-4 lh-20 cn-9 flex-grow-1" id="user-permissions-list">
-                                {result.users.map((user, index) => (
-                                    <UserPermissionRow
-                                        {...user}
-                                        index={index}
-                                        key={`user-${user.id}`}
-                                        showStatus={showStatus}
-                                        refetchUserPermissionList={reload}
-                                    />
-                                ))}
-                            </div>
-                            {result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
-                                <Pagination
-                                    rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
-                                    size={result.totalCount}
-                                    offset={offset}
-                                    pageSize={pageSize}
-                                    changePage={changePage}
-                                    changePageSize={changePageSize}
-                                />
-                            )}
-                        </>
-                    )}
-                </div>
-            ) : (
-                <FiltersEmptyState clearFilters={clearFilters} />
-            )}
-        </div>
+        </BulkSelectionProvider>
     )
 }
 
