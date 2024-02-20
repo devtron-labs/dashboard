@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { SortingParams, UserStatusDto } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatusDto, UserListFilterParams, BaseFilterQueryParams } from '@devtron-labs/devtron-fe-common-lib'
 import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
 
 export interface UserAndGroupPermissionsWrapProps {
@@ -103,25 +103,6 @@ export type UserCreateOrUpdatePayload = Pick<
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'groups'
 >
 
-export type BaseFilterQueryParams<T> = {
-    /**
-     * Offset for the list result
-     */
-    offset?: number
-    /**
-     * Number of items required in the list
-     */
-    size?: number
-    /**
-     * Search string (if any)
-     */
-    searchKey?: string
-    /**
-     * If true, all items are returned with any search / filtering applied without pagination
-     */
-    showAll?: boolean
-} & SortingParams<T>
-
 // Others
 export interface UserRole {
     /**
@@ -133,3 +114,19 @@ export interface UserRole {
      */
     superAdmin: boolean
 }
+
+export type UserBulkDeletePayload =
+    | {
+          ids: User['id'][]
+      }
+    | {
+          filterConfig: Pick<UserListFilterParams, 'searchKey' | 'status'>
+      }
+
+export type PermissionGroupBulkDeletePayload =
+    | {
+          ids: PermissionGroup['id'][]
+      }
+    | {
+          filterConfig: Pick<BaseFilterQueryParams<unknown>, 'searchKey'>
+      }
