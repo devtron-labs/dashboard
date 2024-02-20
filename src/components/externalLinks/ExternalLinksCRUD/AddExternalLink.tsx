@@ -1,8 +1,8 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey } from '../../common'
-import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
 import {
@@ -223,7 +223,8 @@ export default function AddExternalLink({
     const getSelectedIdentifiers = (link: LinkAction) => {
         if (!Array.isArray(link.identifiers)) {
             return []
-        } else if (link.identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
+        }
+        if (link.identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
             return link.identifiers
         }
 
@@ -346,15 +347,16 @@ export default function AddExternalLink({
                           clusterId: 0,
                       },
                   ]
-        } else if (identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
+        }
+        if (identifiers.findIndex((_identifier) => _identifier.value === '*') === -1) {
             return identifiers.map((identifier) => ({
                 type: identifier.type,
                 identifier:
                     identifier.type === ExternalLinkIdentifierType.Cluster
                         ? ''
                         : identifier.type === ExternalLinkIdentifierType.ExternalHelmApp
-                        ? identifier.value
-                        : identifier.value.split('|')[0],
+                          ? identifier.value
+                          : identifier.value.split('|')[0],
                 clusterId: identifier.type === ExternalLinkIdentifierType.Cluster ? +identifier.value : 0,
             }))
         }
@@ -461,7 +463,12 @@ export default function AddExternalLink({
                 </div>
                 <hr className="modal__divider mt-0 mb-0" />
                 <div className="modal__buttons">
-                    <button className="cta lh-36 h-36" onClick={saveLinks} disabled={savingLinks} data-testid="save-link-button">
+                    <button
+                        className="cta lh-36 h-36"
+                        onClick={saveLinks}
+                        disabled={savingLinks}
+                        data-testid="save-link-button"
+                    >
                         {savingLinks ? <Progressing /> : 'Save'}
                     </button>
                 </div>

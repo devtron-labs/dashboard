@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
-import { URLS } from '../../config';
-import img from '../../assets/img/ic-checklist-chart@2x.png';
-import './checklist.scss';
+import React, { Component } from 'react'
+import { NavLink } from 'react-router-dom'
+import { URLS } from '../../config'
+import img from '../../assets/img/ic-checklist-chart@2x.png'
+import './checklist.scss'
 
 export class AllChartsCheck extends Component<{}, {}> {
     render() {
@@ -16,6 +16,6 @@ export class AllChartsCheck extends Component<{}, {}> {
                     </NavLink>
                 </div>
             </div>
-        );
+        )
     }
 }

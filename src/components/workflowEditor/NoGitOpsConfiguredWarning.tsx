@@ -1,10 +1,10 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { NoGitOpsConfiguredWarningType } from './types'
-import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfiguredWarningType) {
     const closePopupContinueWithHelm = (): void => {
@@ -21,7 +21,9 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
                     <Close className="icon-dim-24 cursor" onClick={closePopupDoNothing} />
                 </div>
                 <div className="flex left column ">
-                    <h3 className="confirmation-dialog__title lh-1-25 dc__break-word w-100">GitOps is not configured</h3>
+                    <h3 className="confirmation-dialog__title lh-1-25 dc__break-word w-100">
+                        GitOps is not configured
+                    </h3>
                     <p className="fs-14 fw-4">
                         Since GitOps is not configured, the deployment pipeline will use helm to create deployments.
                     </p>

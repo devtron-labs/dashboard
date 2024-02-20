@@ -1,8 +1,7 @@
-import { URLS } from '../../../../config'
-import { DOCUMENTATION } from '../../../../config'
+import { URLS, DOCUMENTATION } from '../../../../config'
 import { AppStageUnlockedType, STAGE_NAME } from './appConfig.type'
 
-//stage: last configured stage
+// stage: last configured stage
 export const isUnlocked = (stage: string): AppStageUnlockedType => {
     return {
         material:
@@ -57,9 +56,11 @@ export const getCompletedStep = (isUnlocked: AppStageUnlockedType, isJobView: bo
     } else {
         if (isUnlocked.workflowEditor) {
             return 3
-        } else if (isUnlocked.deploymentTemplate) {
+        }
+        if (isUnlocked.deploymentTemplate) {
             return 2
-        } else if (isUnlocked.dockerBuildConfig) {
+        }
+        if (isUnlocked.dockerBuildConfig) {
             return 1
         }
     }

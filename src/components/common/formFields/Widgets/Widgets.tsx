@@ -267,7 +267,7 @@ export const CheckboxWithTippy = (props: CheckboxWithTippyProps) => {
                     </Tippy>
                 )}
             >
-                <span className={`fs-13 cn-9 ${!!props.description ? 'text-underline-dashed-300' : ''}`}>
+                <span className={`fs-13 cn-9 ${props.description ? 'text-underline-dashed-300' : ''}`}>
                     {props.title}
                 </span>
             </ConditionalWrap>

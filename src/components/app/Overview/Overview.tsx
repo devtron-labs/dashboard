@@ -14,6 +14,7 @@ import {
     noop,
     StyledRadioGroup as RadioGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
+import ReactGA from 'react-ga4'
 import { EditableTextArea, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
@@ -36,12 +37,12 @@ import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
-import ReactGA from 'react-ga4'
+
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog')
 const DependencyList = importComponentFromFELibrary('DependencyList')
 
-type AvailableTabs = typeof OVERVIEW_TABS[keyof typeof OVERVIEW_TABS]
+type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEnvIds, appType }: AppOverviewProps) {
     const { appId: appIdFromParams } = useParams<{ appId: string }>()
@@ -70,7 +71,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const [isEditDependencyButtonDisabled, setIsEditDependencyButtonDisabled] = useState(false)
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
     const [, isArgoInstalled] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD), [])
-    const resourceName = config.resourceName
+    const { resourceName } = config
 
     let _moment: moment.Moment
     let _date: string
@@ -294,7 +295,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                         className="flexbox dc__gap-8"
                                         href={codeSource.redirectionUrl}
                                         target="_blank"
-                                        rel="external no-referrer"
+                                        rel="external no-referrer noreferrer"
                                         key={`${codeSource.displayName}-${index}`}
                                     >
                                         {getGitProviderIcon(codeSource.redirectionUrl)}
@@ -414,7 +415,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             >
                                 {environmentName(jobPipeline)}
                                 {environmentName(jobPipeline) === DEFAULT_ENV && (
-                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">(Default)</span>
                                 )}
                             </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
@@ -439,13 +440,13 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                 {Catalog && <Catalog resourceId={appId} resourceType={appType} />}
                 <GenericDescription
                     isClusterTerminal={false}
-                    isSuperAdmin={true}
+                    isSuperAdmin
                     appId={Number(appId)}
                     descriptionId={descriptionId}
                     initialDescriptionText={newDescription}
                     initialDescriptionUpdatedBy={newUpdatedBy}
                     initialDescriptionUpdatedOn={newUpdatedOn}
-                    initialEditDescriptionView={true}
+                    initialEditDescriptionView
                     appMetaInfo={appMetaInfo}
                 />
             </div>
@@ -476,60 +477,60 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>
                 </div>
             )
-        } else if (isHelmChart) {
-            return <div className="app-overview-wrapper flexbox-col dc__gap-12">{renderAppDescription()}</div>
-        } else {
-            const contentToRender = {
-                [OVERVIEW_TABS.ABOUT]: renderAppDescription,
-                [OVERVIEW_TABS.ENVIRONMENTS]: () => <EnvironmentList appId={+appId} filteredEnvIds={filteredEnvIds} />,
-                [OVERVIEW_TABS.DEPENDENCIES]: () =>
-                    DependencyList ? (
-                        <DependencyList
-                            resourceId={+appId}
-                            resourceType={appType}
-                            isArgoInstalled={isArgoInstalled}
-                            resourceName={appMetaInfo.appName}
-                            isUpdateModalOpen={isUpdateDependencyModalOpen}
-                            toggleUpdateModalOpen={toggleUpdateDependencyModal}
-                            toggleButtonDisabledState={setIsEditDependencyButtonDisabled}
-                            filteredEnvIds={filteredEnvIds}
-                        />
-                    ) : null,
-            }
-
-            return (
-                <div className="app-overview-wrapper flexbox-col dc__gap-12">
-                    <div className="flex flex-justify dc__gap-8">
-                        <RadioGroup
-                            className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
-                            name="overview-tabs"
-                            initialTab={activeTab}
-                            disabled={false}
-                            onChange={(e) => {
-                                setActiveTab(e.target.value)
-                            }}
-                        >
-                            <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
-                            <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
-                            {DependencyList && (
-                                <RadioGroup.Radio value={OVERVIEW_TABS.DEPENDENCIES}>Dependencies</RadioGroup.Radio>
-                            )}
-                        </RadioGroup>
-                        {activeTab === OVERVIEW_TABS.DEPENDENCIES && (
-                            <button
-                                type="button"
-                                className={`cta flex h-28 dc__gap-4 ${isEditDependencyButtonDisabled ? 'disabled-opacity' : ''}`}
-                                onClick={isEditDependencyButtonDisabled ? noop : handleEditDependencyClick}
-                            >
-                                <EditIcon className="mw-14 icon-dim-14 scn-0 dc__no-svg-fill" />
-                                Edit Dependency
-                            </button>
-                        )}
-                    </div>
-                    <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>
-                </div>
-            )
         }
+        if (isHelmChart) {
+            return <div className="app-overview-wrapper flexbox-col dc__gap-12">{renderAppDescription()}</div>
+        }
+        const contentToRender = {
+            [OVERVIEW_TABS.ABOUT]: renderAppDescription,
+            [OVERVIEW_TABS.ENVIRONMENTS]: () => <EnvironmentList appId={+appId} filteredEnvIds={filteredEnvIds} />,
+            [OVERVIEW_TABS.DEPENDENCIES]: () =>
+                DependencyList ? (
+                    <DependencyList
+                        resourceId={+appId}
+                        resourceType={appType}
+                        isArgoInstalled={isArgoInstalled}
+                        resourceName={appMetaInfo.appName}
+                        isUpdateModalOpen={isUpdateDependencyModalOpen}
+                        toggleUpdateModalOpen={toggleUpdateDependencyModal}
+                        toggleButtonDisabledState={setIsEditDependencyButtonDisabled}
+                        filteredEnvIds={filteredEnvIds}
+                    />
+                ) : null,
+        }
+
+        return (
+            <div className="app-overview-wrapper flexbox-col dc__gap-12">
+                <div className="flex flex-justify dc__gap-8">
+                    <RadioGroup
+                        className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
+                        name="overview-tabs"
+                        initialTab={activeTab}
+                        disabled={false}
+                        onChange={(e) => {
+                            setActiveTab(e.target.value)
+                        }}
+                    >
+                        <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
+                        <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
+                        {DependencyList && (
+                            <RadioGroup.Radio value={OVERVIEW_TABS.DEPENDENCIES}>Dependencies</RadioGroup.Radio>
+                        )}
+                    </RadioGroup>
+                    {activeTab === OVERVIEW_TABS.DEPENDENCIES && (
+                        <button
+                            type="button"
+                            className={`cta flex h-28 dc__gap-4 ${isEditDependencyButtonDisabled ? 'disabled-opacity' : ''}`}
+                            onClick={isEditDependencyButtonDisabled ? noop : handleEditDependencyClick}
+                        >
+                            <EditIcon className="mw-14 icon-dim-14 scn-0 dc__no-svg-fill" />
+                            Edit Dependency
+                        </button>
+                    )}
+                </div>
+                <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>
+            </div>
+        )
     }
 
     if (!appMetaInfo || fetchingProjects) {

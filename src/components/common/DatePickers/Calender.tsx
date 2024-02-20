@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import 'react-dates/initialize'
 import 'react-dates/lib/css/_datepicker.css'
-import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCalendarDay.js'
+import CustomizableCalendarDay from 'react-dates/esm/components/CustomizableCalendarDay.js'
 import ReactGA from 'react-ga4'
 import moment, { Moment } from 'moment'
 import { isInclusivelyBeforeDay, DateRangePicker, SingleDatePicker } from 'react-dates'
@@ -43,7 +43,7 @@ const selectedSpanStyles = {
 export const customDayStyles = {
     selectedStartStyles: selectedStyles,
     selectedEndStyles: selectedStyles,
-    hoveredSpanStyles: hoveredSpanStyles,
+    hoveredSpanStyles,
     selectedSpanStyles,
     selectedStyles,
     border: 'none',
@@ -114,12 +114,13 @@ export class DatePicker extends Component<DatePickerProps> {
                     let buttonStyles = {
                         ...styless.PresetDateRangePicker_button,
                     }
-                    if (isSelected)
+                    if (isSelected) {
                         buttonStyles = {
                             ...buttonStyles,
                             ...styless.PresetDateRangePicker_button__selected,
                             ...styless.DayPicker_portal__horizontal,
                         }
+                    }
                     return (
                         <button
                             type="button"
@@ -161,19 +162,19 @@ export class DatePicker extends Component<DatePickerProps> {
                 }} // PropTypes.func.isRequired,
                 focusedInput={this.props.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
                 onFocusChange={this.props.handleFocusChange} // PropTypes.func.isRequired,
-                displayFormat={'DD-MM-YYYY'}
-                isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())} //enable past dates
+                displayFormat="DD-MM-YYYY"
+                isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())} // enable past dates
                 renderCalendarInfo={this.renderDatePresets}
                 calendarInfoPosition="before"
                 initialVisibleMonth={this.getInitialVisibleMonth}
                 renderCalendarDay={(props) => <CustomizableCalendarDay {...props} {...customDayStyles} />}
-                hideKeyboardShortcutsPanel={true}
+                hideKeyboardShortcutsPanel
                 numberOfMonths={1}
                 block={false}
-                small={true}
+                small
                 withFullScreenPortal={false}
-                anchorDirection={'right'}
-                orientation={'horizontal'}
+                anchorDirection="right"
+                orientation="horizontal"
                 minimumNights={1}
                 isDayBlocked={this.handleIsDayBlocked}
             />
@@ -213,11 +214,11 @@ export const SingleDatePickerComponent = ({
             focused={focused}
             onFocusChange={handleFocusChange}
             numberOfMonths={1}
-            openDirection={'down'}
+            openDirection="down"
             renderCalendarDay={(props) => <CustomizableCalendarDay {...props} {...customDayStyles} />}
-            hideKeyboardShortcutsPanel={true}
+            hideKeyboardShortcutsPanel
             withFullScreenPortal={false}
-            orientation={'horizontal'}
+            orientation="horizontal"
             readOnly={readOnly || false}
             isDayBlocked={isTodayBlocked ? blockToday : noop}
         />

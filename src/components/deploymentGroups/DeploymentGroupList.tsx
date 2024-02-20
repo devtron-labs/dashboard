@@ -9,6 +9,9 @@ import {
     DeploymentNodeType,
     CDMaterialType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 import { ViewType, SourceTypeMap, URLS } from '../../config'
 import { deploymentGroupList, triggerGroupDeploy, getCDMaterialList, deleteDeploymentGroup } from './service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -17,9 +20,6 @@ import { ReactComponent as Deploy } from '../../assets/icons/ic-deploy.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import CDMaterial from '../app/details/triggerView/cdMaterial'
 import noGroups from '../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import PageHeader from '../common/header/PageHeader'
 
@@ -65,9 +65,11 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
         deploymentGroupList()
             .then((response) => {
                 let view = ViewType.FORM
-                if (response.result.length === 0) view = ViewType.EMPTY
+                if (response.result.length === 0) {
+                    view = ViewType.EMPTY
+                }
                 this.setState({
-                    view: view,
+                    view,
                     list: response.result,
                     deploymentGroupId: 0,
                     showGroupDeleteModal: false,
@@ -99,8 +101,8 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
     triggerDeploy() {
         this.setState({ isLoading: true })
-        let material = this.state.materials.find((mat) => mat.isSelected)
-        let request = {
+        const material = this.state.materials.find((mat) => mat.isSelected)
+        const request = {
             DeploymentGroupId: this.state.deploymentGroupId,
             CiArtifactId: material.id,
         }
@@ -131,7 +133,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     }
 
     toggleSourceInfo(index: number) {
-        let { materials } = { ...this.state }
+        const { materials } = { ...this.state }
         materials[index].showSourceInfo = !materials[index].showSourceInfo
         this.setState({ materials })
     }
@@ -158,13 +160,11 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
     renderListHeader() {
         return (
-            <>
-                <div className="bulk-action-list__row bulk-action-list__row--header">
-                    <div className="bulk-action-list__cell bulk-action-list__cell--name">Name</div>
-                    <div className="bulk-action-list__cell bulk-action-list__cell--source">Source</div>
-                    <div className="bulk-action-list__cell bulk-action-list__cell--action">Actions</div>
-                </div>
-            </>
+            <div className="bulk-action-list__row bulk-action-list__row--header">
+                <div className="bulk-action-list__cell bulk-action-list__cell--name">Name</div>
+                <div className="bulk-action-list__cell bulk-action-list__cell--source">Source</div>
+                <div className="bulk-action-list__cell bulk-action-list__cell--action">Actions</div>
+            </div>
         )
     }
 
@@ -199,7 +199,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                 {materials?.map((mat, idx) => {
                     return (
                         <p key={idx} className="deployment-group__repo-list">
-                            <span className="icon-dim-18 git dc__inline-block mr-5"></span>
+                            <span className="icon-dim-18 git dc__inline-block mr-5" />
                             <span className="deployment-group__repo-name mr-5"> {mat.name}/</span>
                             <span className="icon-dim-16 dc__inline-block mr-5">
                                 {mat.type === SourceTypeMap.BranchFixed ? <Branch className="hw-100" /> : null}
@@ -229,7 +229,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                         </button>
                     </Tippy>
                     <PopupMenu autoClose>
-                        <PopupMenu.Button rootClassName="dc__inline-block" isKebab={true}>
+                        <PopupMenu.Button rootClassName="dc__inline-block" isKebab>
                             <Dots className="bulk-action__action" />
                         </PopupMenu.Button>
                         <PopupMenu.Body>
@@ -286,7 +286,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     toggleSourceInfo={this.toggleSourceInfo}
                     selectImage={this.selectImage}
                     closeCDModal={this.closeCDModal}
-                    hideInfoTabsContainer={true}
+                    hideInfoTabsContainer
                     history={this.props.history}
                     location={this.props.location}
                     match={this.props.match}
@@ -296,8 +296,8 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     }
 
     renderDeleteDialog() {
-        let group = this.state.list.find((grp) => grp.id === this.state.deploymentGroupId)
-        if (this.state.showGroupDeleteModal)
+        const group = this.state.list.find((grp) => grp.id === this.state.deploymentGroupId)
+        if (this.state.showGroupDeleteModal) {
             return (
                 <DeleteDialog
                     title={group.name}
@@ -310,6 +310,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     }}
                 />
             )
+        }
     }
 
     redirectToCreateGroup = () => {
@@ -339,11 +340,11 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     {this.state.view === ViewType.EMPTY && <NoDeploymentGroups />}
                     {this.state.view === ViewType.ERROR && <ErrorScreenManager code={this.state.code} />}
                     {![ViewType.EMPTY, ViewType.ERROR, ViewType.LOADING].includes(this.state.view) && (
-                        <React.Fragment>
+                        <>
                             {this.renderList()}
                             {this.renderCDMaterial()}
                             {this.renderDeleteDialog()}
-                        </React.Fragment>
+                        </>
                     )}
                 </div>
             </div>
@@ -351,11 +352,11 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
     }
 }
 
-function NoDeploymentGroups() {
+const NoDeploymentGroups = () => {
     return (
         <div className="dc__no-apps dc__empty-state__no-deploymentgroup">
             <div className="empty">
-                <img src={noGroups} width="250" height="200" className="dc__empty__img" alt="no apps found"></img>
+                <img src={noGroups} width="250" height="200" className="dc__empty__img" alt="no apps found" />
                 <h1 className="dc__empty-title" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
                     No Deployment Groups
                 </h1>

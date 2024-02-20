@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
+import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-errorInfo.svg'
-import ReactSelect from 'react-select'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
 import { NumberOptionType } from '../../../app/types'
-import { toast } from 'react-toastify'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
 import { ProjectChangeMessageList } from './constant'
@@ -79,10 +79,10 @@ export default function ProjectUpdateModal({
         setSubmitting(true)
 
         const payload = {
-            appId: appId,
+            appId,
             appName: appMetaInfo.appName,
             teamId: selectedProject.value,
-            installedAppId: installedAppId ? installedAppId : 0,
+            installedAppId: installedAppId || 0,
         }
 
         try {

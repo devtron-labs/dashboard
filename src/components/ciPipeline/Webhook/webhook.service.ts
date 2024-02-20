@@ -1,5 +1,5 @@
-import { Routes } from '../../../config'
 import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../../config'
 import { WebhookDetailsResponse, WebhookDetailsType, WebhookListResponse } from './types'
 
 export function getExternalCIList(appId: number | string): Promise<WebhookListResponse> {
@@ -24,7 +24,7 @@ export function getWebhookAPITokenList(
 }
 
 export async function executeWebhookAPI(webhookUrl: string, token: string, data?: object): Promise<any> {
-    let options = {
+    const options = {
         method: 'POST',
         headers: {
             Accept: 'application/json',

@@ -1,51 +1,51 @@
-import React from 'react';
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib';
-import { RouteComponentProps } from 'react-router';
+import React from 'react'
+import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { RouteComponentProps } from 'react-router'
 
 export interface AppListState {
-    code: number;
-    view: string;
-    errors: ServerError[];
-    apps: App[];
-    showCommandBar: boolean;
+    code: number
+    view: string
+    errors: ServerError[]
+    apps: App[]
+    showCommandBar: boolean
     sortRule: {
-        key: string;
-        order: string;
-    },
-    size: number;
-    offset: number;
-    pageSize: number;
-    expandedRow: Record<number,boolean>;
+        key: string
+        order: string
+    }
+    size: number
+    offset: number
+    pageSize: number
+    expandedRow: Record<number, boolean>
     isAllExpanded: boolean
     isAllExpandable: boolean
 }
 
 export interface App {
-    id: number;
-    name: string;
-    environments: Array<Environment & { default: boolean }>;
-    defaultEnv: Environment | null;
+    id: number
+    name: string
+    environments: Array<Environment & { default: boolean }>
+    defaultEnv: Environment | null
 }
 
 export interface Environment {
-    id: number;
-    name: string;
-    status: string;
+    id: number
+    name: string
+    status: string
     appStatus: string
-    lastDeployedTime: string;
+    lastDeployedTime: string
     materialInfo: {
-        author: string;
-        branch: string;
-        message: string;
-        modifiedTime: string;
-        revision: string;
-        url: string;
-        gitMaterialName: string;
-        webhookData: string;
-    }[];
-    ciArtifactId: number;
-    clusterName: string;
-    namespace: string;
+        author: string
+        branch: string
+        message: string
+        modifiedTime: string
+        revision: string
+        url: string
+        gitMaterialName: string
+        webhookData: string
+    }[]
+    ciArtifactId: number
+    clusterName: string
+    namespace: string
     isVirtualEnvironment?: boolean
 }
 
@@ -54,10 +54,10 @@ export interface EnvironmentClusterList {
 }
 
 export interface AppListProps extends RouteComponentProps<{ route: string }> {
-    payloadParsedFromUrl?: any;
-    serverMode? : string;
-    clearAllFilters: () => void;
-    sortApplicationList : (key: string) => void;
+    payloadParsedFromUrl?: any
+    serverMode?: string
+    clearAllFilters: () => void
+    sortApplicationList: (key: string) => void
     appListCount: number
     isSuperAdmin: boolean
     openDevtronAppCreateModel: (event) => void
@@ -68,20 +68,20 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
 }
 
 export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
-  expandRow: (id: number | null) => void;
-  closeExpandedRow: (id: number | null) => void;
-  sort: (key: string) => void;
-  handleEditApp: (appId: number) => void;
-  redirectToAppDetails: (app, envId: number) => string;
-  clearAll: () => void;
-  changePage: (pageNo: number) => void;
-  changePageSize: (size: number) => void;
-  appListCount: number
-  isSuperAdmin: boolean
-  openDevtronAppCreateModel: (event) => void
-  updateDataSyncing: (loading: boolean) => void
-  toggleExpandAllRow: () => void
-  isArgoInstalled: boolean
+    expandRow: (id: number | null) => void
+    closeExpandedRow: (id: number | null) => void
+    sort: (key: string) => void
+    handleEditApp: (appId: number) => void
+    redirectToAppDetails: (app, envId: number) => string
+    clearAll: () => void
+    changePage: (pageNo: number) => void
+    changePageSize: (size: number) => void
+    appListCount: number
+    isSuperAdmin: boolean
+    openDevtronAppCreateModel: (event) => void
+    updateDataSyncing: (loading: boolean) => void
+    toggleExpandAllRow: () => void
+    isArgoInstalled: boolean
 }
 
 export interface AppListResponse {
@@ -123,23 +123,22 @@ export interface DeploymentDetailContainerResponse {
     lastDeployedPipeline?: string
 }
 
-
 export const OrderBy = {
     ASC: 'ASC',
-    DESC: 'DESC'
+    DESC: 'DESC',
 }
 
 export const SortBy = {
-    APP_NAME: "appNameSort",
-    LAST_DEPLOYED: "lastDeployedSort",
-    STATUS: "statusSort",
-    ENVIRONMENT: "environmentSort",
+    APP_NAME: 'appNameSort',
+    LAST_DEPLOYED: 'lastDeployedSort',
+    STATUS: 'statusSort',
+    ENVIRONMENT: 'environmentSort',
 }
 
 export interface AppListPropType {
-  isSuperAdmin: boolean
-  appListCount: number
-  isArgoInstalled: boolean
+    isSuperAdmin: boolean
+    appListCount: number
+    isArgoInstalled: boolean
 }
 
 export interface TriggerURL {

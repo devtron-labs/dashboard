@@ -1,5 +1,10 @@
-export async function fetchWithFullRoute(fullRoute: string, type: string, data?: object, signal?: AbortSignal): Promise<any> {
-    let options = {
+export async function fetchWithFullRoute(
+    fullRoute: string,
+    type: string,
+    data?: object,
+    signal?: AbortSignal,
+): Promise<any> {
+    const options = {
         method: type,
         headers: {
             Accept: 'application/json',
@@ -8,9 +13,9 @@ export async function fetchWithFullRoute(fullRoute: string, type: string, data?:
         },
         signal,
         body: data ? JSON.stringify(data) : undefined,
-    };
-    options['credentials'] = 'include' as RequestCredentials;
+    }
+    options['credentials'] = 'include' as RequestCredentials
     return fetch(fullRoute, options).then((response) => {
-        return response.json();
+        return response.json()
     })
-};
+}

@@ -73,7 +73,9 @@ export default function SavedVariablesView({
 
     const rendeDropdownItems = (item) => {
         const handleDownloadFileClick = () => {
-            if (!scopedVariablesYAML) return
+            if (!scopedVariablesYAML) {
+                return
+            }
             switch (item) {
                 case DROPDOWN_ITEMS[0]:
                     downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, DOWNLOAD_FILES_AS)

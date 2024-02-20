@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { patchApplicationNote, patchClusterNote } from '../../ClusterNodes/clusterNodes.service'
 import ReactMde from 'react-mde'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
+import moment from 'moment'
+import { patchApplicationNote, patchClusterNote } from '../../ClusterNodes/clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { showError, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
 import { MDEditorSelectedTabType } from '../../ClusterNodes/types'
@@ -16,10 +19,7 @@ import { ReactComponent as OrderedListIcon } from '../../../assets/icons/mdedito
 import { ReactComponent as UnorderedListIcon } from '../../../assets/icons/mdeditor/ic-unordered-list.svg'
 import { ReactComponent as CheckedListIcon } from '../../../assets/icons/mdeditor/ic-checked-list.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import Tippy from '@tippyjs/react'
 import { deepEqual } from '..'
-import { toast } from 'react-toastify'
-import moment from 'moment'
 import { Moment12HourFormat } from '../../../config'
 import {
     DEFAULT_MARKDOWN_EDITOR_PREVIEW_MESSAGE,
@@ -137,7 +137,7 @@ export default function GenericDescription({
                 if (response.result) {
                     setDescriptionText(response.result.description)
                     setDescriptionUpdatedBy(response.result.updatedBy)
-                    let _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+                    const _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
                     const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updatedOn
                     setDescriptionUpdatedOn(_date)
                     setModifiedDescriptionText(response.result.description)
@@ -166,7 +166,7 @@ export default function GenericDescription({
                 if (response.result) {
                     setDescriptionText(response.result.description)
                     setDescriptionUpdatedBy(response.result.updatedBy)
-                    let _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+                    const _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
                     const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updatedOn
                     setDescriptionUpdatedOn(_date)
                     setModifiedDescriptionText(response.result.description)
@@ -189,7 +189,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <HeaderIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <HeaderIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.BOLD:
@@ -200,7 +202,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <BoldIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <BoldIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.ITALIC:
@@ -211,7 +215,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <ItalicIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <ItalicIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.STRIKETHROUGH:
@@ -222,7 +228,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <StrikethroughIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <StrikethroughIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.LINK:
@@ -233,7 +241,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <LinkIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <LinkIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.QUOTE:
@@ -244,7 +254,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <QuoteIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <QuoteIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.CODE:
@@ -255,7 +267,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <CodeIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <CodeIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.IMAGE:
@@ -266,7 +280,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <ImageIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <ImageIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.UNORDERED_LIST:
@@ -277,7 +293,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <UnorderedListIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <UnorderedListIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.ORDERED_LIST:
@@ -288,7 +306,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <OrderedListIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <OrderedListIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
             case MARKDOWN_EDITOR_COMMAND_TITLE.CHECKED_LIST:
@@ -299,7 +319,9 @@ export default function GenericDescription({
                         placement="bottom"
                         content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}
                     >
-                        <CheckedListIcon className="icon-dim-16 flex" />
+                        <div className="flex">
+                            <CheckedListIcon className="icon-dim-16 flex" />
+                        </div>
                     </Tippy>
                 )
         }
@@ -383,7 +405,7 @@ export default function GenericDescription({
                                     }`,
                                 },
                                 textArea: {
-                                    tabIndex: tabIndex,
+                                    tabIndex,
                                 },
                             }}
                         />

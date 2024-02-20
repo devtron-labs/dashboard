@@ -2,12 +2,6 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
 import {
-    ButtonWithLoader,
-    FloatingVariablesSuggestions,
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-} from '../common'
-import {
     ServerErrors,
     showError,
     ConditionalWrap,
@@ -20,6 +14,14 @@ import {
     MandatoryPluginDetailType,
     PluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import {
+    ButtonWithLoader,
+    FloatingVariablesSuggestions,
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import {
     BuildStageVariable,
     BuildTabText,
@@ -38,11 +40,9 @@ import {
     getPluginsData,
     saveCIPipeline,
 } from '../ciPipeline/ciPipeline.service'
-import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
@@ -134,7 +134,7 @@ export default function CIPipeline({
             counterX: '0',
         },
         defaultTag: [],
-        enableCustomTag: false
+        enableCustomTag: false,
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
@@ -149,14 +149,14 @@ export default function CIPipeline({
             steps: [],
             isValid: true,
         },
-        customTag:{
-            message: [], 
-            isValid: true
+        customTag: {
+            message: [],
+            isValid: true,
         },
-        counterX:{
-            message: '', 
-            isValid: true
-        }
+        counterX: {
+            message: '',
+            isValid: true,
+        },
     })
 
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
@@ -171,7 +171,7 @@ export default function CIPipeline({
         linkedCount: 0,
         scanEnabled: false,
         environmentId: 0,
-        pipelineType: "",
+        pipelineType: '',
         customTag: {
             tagPattern: '',
             counterX: '',
@@ -218,11 +218,16 @@ export default function CIPipeline({
             if (selectedBranchRef.current !== branchName) {
                 selectedBranchRef.current = branchName
                 try {
-                    const processedPluginData = await processPluginData(_formData, pluginList, appId, ciPipelineId, branchName)
+                    const processedPluginData = await processPluginData(
+                        _formData,
+                        pluginList,
+                        appId,
+                        ciPipelineId,
+                        branchName,
+                    )
                     setMandatoryPluginData(processedPluginData)
                     setFormData((prevForm) => prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? []))
-                }
-                catch (error) {
+                } catch (error) {
                     showError(error)
                 }
             }
@@ -238,8 +243,7 @@ export default function CIPipeline({
             setPresetPlugins(_presetPlugin)
             setSharedPlugins(_sharedPlugin)
             await getMandatoryPluginData(_formData, [..._presetPlugin, ..._sharedPlugin])
-        }
-        catch (error) {
+        } catch (error) {
             showError(error)
         }
     }
@@ -276,8 +280,7 @@ export default function CIPipeline({
             setSelectedEnv(_selectedEnv)
             sortObjectArrayAlphabetically(list, 'name')
             setEnvironments(list)
-        }
-        catch (error) {
+        } catch (error) {
             showError(error)
         }
     }
@@ -295,8 +298,7 @@ export default function CIPipeline({
                 return variable
             })
             setGlobalVariables(_globalVariableOptions || [])
-        }
-        catch (error) {
+        } catch (error) {
             if (error instanceof ServerErrors && error.code !== 403) {
                 showError(error)
             }
@@ -363,7 +365,9 @@ export default function CIPipeline({
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
             for (let i = 0; i < stepsLength; i++) {
-                if (!_formDataErrorObj[stageName].steps[i]) _formDataErrorObj[stageName].steps.push({ isValid: true })
+                if (!_formDataErrorObj[stageName].steps[i]) {
+                    _formDataErrorObj[stageName].steps.push({ isValid: true })
+                }
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
@@ -412,8 +416,7 @@ export default function CIPipeline({
                     await getEnvironments(ciPipelineResponse.ciPipeline.environmentId)
                     setIsAdvanced(true)
                 }
-            }
-            else {
+            } else {
                 const ciPipelineResponse = await getInitData(appId, true, !isJobCard)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
@@ -424,8 +427,7 @@ export default function CIPipeline({
             }
             await getGlobalVariables()
             setPageState(ViewType.FORM)
-        }
-        catch (error) {
+        } catch (error) {
             setPageState(ViewType.ERROR)
             showError(error)
         }
@@ -448,9 +450,12 @@ export default function CIPipeline({
         if (
             location.pathname.includes(`/${URLS.APP_CI_CONFIG}/`) &&
             ciPipelineId &&
-            ciPipeline.pipelineType === CIPipelineBuildType.CI_JOB 
+            ciPipeline.pipelineType === CIPipelineBuildType.CI_JOB
         ) {
-            const editCIPipelineURL: string = location.pathname.replace(`/${URLS.APP_CI_CONFIG}/`, `/${URLS.APP_JOB_CI_CONFIG}/`)
+            const editCIPipelineURL: string = location.pathname.replace(
+                `/${URLS.APP_CI_CONFIG}/`,
+                `/${URLS.APP_JOB_CI_CONFIG}/`,
+            )
             history.push(editCIPipelineURL)
         }
     }, [location.pathname, ciPipeline.pipelineType])
@@ -513,7 +518,7 @@ export default function CIPipeline({
                     <button
                         data-testid="ci-delete-pipeline-button"
                         type="button"
-                        className={`cta cta--workflow delete mr-16`}
+                        className="cta cta--workflow delete mr-16"
                         disabled={!canDeletePipeline}
                         onClick={() => {
                             setShowDeleteModal(true)
@@ -523,7 +528,8 @@ export default function CIPipeline({
                     </button>
                 </ConditionalWrap>
             )
-        } else if (!isAdvanced) {
+        }
+        if (!isAdvanced) {
             return (
                 <button
                     type="button"
@@ -575,11 +581,11 @@ export default function CIPipeline({
 
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
 
-        //here we check for the case where the pipeline is multigit and user selects pullrequest or tag creation(webhook)
-        //in that case we only send the webhook data not the other one.
+        // here we check for the case where the pipeline is multigit and user selects pullrequest or tag creation(webhook)
+        // in that case we only send the webhook data not the other one.
         let _materials = formData.materials
         if (formData.materials.length > 1) {
-            for (let material of formData.materials) {
+            for (const material of formData.materials) {
                 if (material.type === SourceTypeMap.WEBHOOK) {
                     _materials = [material]
                     break
@@ -587,7 +593,7 @@ export default function CIPipeline({
             }
         }
 
-        let _ciPipeline = ciPipeline
+        const _ciPipeline = ciPipeline
         if (selectedEnv && selectedEnv.id !== 0) {
             _ciPipeline.environmentId = selectedEnv.id
         } else {
@@ -811,36 +817,34 @@ export default function CIPipeline({
                     </div>
                 </pipelineContext.Provider>
                 {pageState !== ViewType.LOADING && (
-                    <>
-                        <div
-                            className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                                ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
-                            } `}
-                        >
-                            {renderSecondaryButton()}
-                            {formData.ciPipelineEditable && (
-                                <ButtonWithLoader
-                                    rootClassName="cta cta--workflow"
-                                    loaderColor="white"
-                                    dataTestId="build-pipeline-button"
-                                    onClick={savePipeline}
-                                    disabled={
-                                        apiInProgress ||
-                                        (formData.isDockerConfigOverridden &&
-                                            formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
-                                            formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
-                                                CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
-                                            (loadingState.loading || loadingState.failed)) ||
-                                        formDataErrorObj.customTag.message.length > 0 ||
-                                        formDataErrorObj.counterX?.message.length > 0
-                                    }
-                                    isLoading={apiInProgress}
-                                >
-                                    {saveOrUpdateButtonTitle}
-                                </ButtonWithLoader>
-                            )}
-                        </div>
-                    </>
+                    <div
+                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                            ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
+                        } `}
+                    >
+                        {renderSecondaryButton()}
+                        {formData.ciPipelineEditable && (
+                            <ButtonWithLoader
+                                rootClassName="cta cta--workflow"
+                                loaderColor="white"
+                                dataTestId="build-pipeline-button"
+                                onClick={savePipeline}
+                                disabled={
+                                    apiInProgress ||
+                                    (formData.isDockerConfigOverridden &&
+                                        formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
+                                        formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
+                                            CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
+                                        (loadingState.loading || loadingState.failed)) ||
+                                    formDataErrorObj.customTag.message.length > 0 ||
+                                    formDataErrorObj.counterX?.message.length > 0
+                                }
+                                isLoading={apiInProgress}
+                            >
+                                {saveOrUpdateButtonTitle}
+                            </ButtonWithLoader>
+                        )}
+                    </div>
                 )}
                 {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
             </div>
@@ -848,7 +852,9 @@ export default function CIPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+            return <></>
+        }
 
         return (
             <div className="flexbox">

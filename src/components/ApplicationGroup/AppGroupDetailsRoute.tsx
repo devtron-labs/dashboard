@@ -11,9 +11,11 @@ import {
     ToastBody,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ErrorBoundary, sortOptionsByLabel } from '../common'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
+import { MultiValue } from 'react-select'
+import { toast } from 'react-toastify'
+import { ErrorBoundary, sortOptionsByLabel } from '../common'
 import { URLS } from '../../config'
 import PageHeader from '../common/header/PageHeader'
 import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
@@ -42,14 +44,12 @@ import {
     FilterParentType,
     GroupOptionType,
 } from './AppGroup.types'
-import { MultiValue } from 'react-select'
 import { EditDescRequest, OptionType } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
-import { toast } from 'react-toastify'
 import CreateAppGroup from './CreateAppGroup'
 
 export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
@@ -211,7 +211,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 setShowDeleteGroup(true)
             }
         } catch (err) {
-            let _map = new Map<string, boolean>()
+            const _map = new Map<string, boolean>()
             if (err['code'] === 403) {
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
@@ -221,7 +221,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                         if (!_map.get(element)) {
                             _map.set(element, true)
                         }
-                        for (let idx in selectedAppList) {
+                        for (const idx in selectedAppList) {
                             if (element === selectedAppList[idx].label) {
                                 unauthorizedCount++
                             }
@@ -244,7 +244,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             } else {
                 setShowCreateGroup(true)
                 setShowDeleteGroup(false)
-                if (_delete) setIsPopupBox(true)
+                if (_delete) {
+                    setIsPopupBox(true)
+                }
             }
             showError(err)
         }
@@ -274,10 +276,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
         const _allAppLists: number[] = []
-        for (let app of _allAppList) {
+        for (const app of _allAppList) {
             _allAppLists.push(+app.id)
         }
-        let _permissionData = {
+        const _permissionData = {
             id: +envId,
             appIds: _allAppLists,
             envId: +envId,
@@ -360,48 +362,47 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const renderRoute = () => {
         if (loading || appListLoading) {
             return <Progressing pageLoader />
-        } else if (showEmpty) {
-            return <div className="env-empty-state flex w-100">{renderEmpty()}</div>
-        } else {
-            const _filteredAppsIds =
-                selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
-            return (
-                <ErrorBoundary>
-                    <Suspense fallback={<Progressing pageLoader />}>
-                        <Switch>
-                            <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                                <div>Env detail</div>
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                                <EnvironmentOverview
-                                    filteredAppIds={_filteredAppsIds}
-                                    appGroupListData={filteredAppListData}
-                                    isVirtualEnv={isVirtualEnv}
-                                    getAppListData={getAppListData}
-                                    handleSaveDescription={handleSaveDescription}
-                                    description={description}
-                                />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                                <EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                                <EnvCIDetails filteredAppIds={_filteredAppsIds} />
-                            </Route>
-                            <Route
-                                path={`${path}/${URLS.APP_CD_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
-                            >
-                                <EnvCDDetails filteredAppIds={_filteredAppsIds} />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
-                                <EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />
-                            </Route>
-                            <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
-                        </Switch>
-                    </Suspense>
-                </ErrorBoundary>
-            )
         }
+        if (showEmpty) {
+            return <div className="env-empty-state flex w-100">{renderEmpty()}</div>
+        }
+        const _filteredAppsIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
+        return (
+            <ErrorBoundary>
+                <Suspense fallback={<Progressing pageLoader />}>
+                    <Switch>
+                        <Route path={`${path}/${URLS.APP_DETAILS}`}>
+                            <div>Env detail</div>
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
+                            <EnvironmentOverview
+                                filteredAppIds={_filteredAppsIds}
+                                appGroupListData={filteredAppListData}
+                                isVirtualEnv={isVirtualEnv}
+                                getAppListData={getAppListData}
+                                handleSaveDescription={handleSaveDescription}
+                                description={description}
+                            />
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_TRIGGER}`}>
+                            <EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
+                            <EnvCIDetails filteredAppIds={_filteredAppsIds} />
+                        </Route>
+                        <Route
+                            path={`${path}/${URLS.APP_CD_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
+                        >
+                            <EnvCDDetails filteredAppIds={_filteredAppsIds} />
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
+                            <EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />
+                        </Route>
+                        <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
+                    </Switch>
+                </Suspense>
+            </ErrorBoundary>
+        )
     }
 
     return (
@@ -445,7 +446,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     )
 }
 
-export function EnvHeader({
+export const EnvHeader = ({
     envName,
     setEnvName,
     setShowEmpty,
@@ -461,7 +462,7 @@ export function EnvHeader({
     openCreateGroup,
     openDeleteGroup,
     isSuperAdmin,
-}: EnvHeaderType) {
+}: EnvHeaderType) => {
     const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -512,7 +513,7 @@ export function EnvHeader({
                 ReactGA.event({
                     category: 'Env Selector',
                     action: 'Env Selection Changed',
-                    label: label,
+                    label,
                 })
             }
         },
@@ -641,7 +642,7 @@ export function EnvHeader({
     return (
         <PageHeader
             breadCrumbs={renderBreadcrumbs}
-            isBreadcrumbs={true}
+            isBreadcrumbs
             showTabs={!showEmpty}
             renderHeaderTabs={renderEnvDetailsTabs}
         />

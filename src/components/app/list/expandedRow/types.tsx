@@ -1,9 +1,9 @@
-import { App } from "../types";
+import { App } from '../types'
 
 export interface ExpandedRowProps {
-    app: App;
-    handleEdit: (appId: number) => void;
-    redirect: (app, envId: number) => string;
-    close: (event) => void;
+    app: App
+    handleEdit: (appId: number) => void
+    redirect: (app, envId: number) => string
+    close: (event) => void
     isArgoInstalled: boolean
 }

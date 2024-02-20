@@ -746,7 +746,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     <label className="form__row mr-24 ml-24 mb-24">
                         <CustomInput
-                            value={this.state.ssoConfig.url || process.env.REACT_APP_ORCHESTRATOR_ROOT}
+                            value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}
                             onChange={this.handleURLChange}
                             data-testid="sso-url-input"
                             name="sso-url"

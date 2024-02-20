@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { SortingParams, UserStatusDto } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatusDto, UserListFilterParams, BaseFilterQueryParams } from '@devtron-labs/devtron-fe-common-lib'
 import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
 
 export interface UserAndGroupPermissionsWrapProps {
@@ -50,7 +50,7 @@ export interface UserDto {
     /**
      * Email of the user
      */
-    emailId: string
+    email_id: string
     /**
      * Status of the user
      *
@@ -87,7 +87,7 @@ export interface UserDto {
     roleGroups?: Pick<PermissionGroup, 'id' | 'name' | 'description'>
 }
 
-export interface User extends Omit<UserDto, 'timeoutWindowExpression'> {
+export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id'> {
     /**
      * Time until which the user is active
      * Note: Only a user with status 'active' can have 'timeToLive'
@@ -95,31 +95,13 @@ export interface User extends Omit<UserDto, 'timeoutWindowExpression'> {
      * @default ''
      */
     timeToLive?: string
+    emailId: UserDto['email_id']
 }
 
 export type UserCreateOrUpdatePayload = Pick<
     User,
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'groups'
 >
-
-export type BaseFilterQueryParams<T> = {
-    /**
-     * Offset for the list result
-     */
-    offset?: number
-    /**
-     * Number of items required in the list
-     */
-    size?: number
-    /**
-     * Search string (if any)
-     */
-    searchKey?: string
-    /**
-     * If true, all items are returned with any search / filtering applied without pagination
-     */
-    showAll?: boolean
-} & SortingParams<T>
 
 // Others
 export interface UserRole {
@@ -132,3 +114,19 @@ export interface UserRole {
      */
     superAdmin: boolean
 }
+
+export type UserBulkDeletePayload =
+    | {
+          ids: User['id'][]
+      }
+    | {
+          filterConfig: Pick<UserListFilterParams, 'searchKey' | 'status'>
+      }
+
+export type PermissionGroupBulkDeletePayload =
+    | {
+          ids: PermissionGroup['id'][]
+      }
+    | {
+          filterConfig: Pick<BaseFilterQueryParams<unknown>, 'searchKey'>
+      }

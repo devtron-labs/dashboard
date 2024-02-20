@@ -7,15 +7,21 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     useAsync,
-    RadioGroup, 
+    RadioGroup,
     RadioGroupItem,
     CustomInput,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useForm, getNonEditableChartRepoText } from '../common'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import { NavLink } from 'react-router-dom'
+import { useForm, getNonEditableChartRepoText } from '../common'
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import Tippy from '@tippyjs/react';
-import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, deleteChartRepo } from './chartRepo.service';
+import {
+    saveChartProviderConfig,
+    updateChartProviderConfig,
+    validateChartRepoConfiguration,
+    deleteChartRepo,
+} from './chartRepo.service'
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
@@ -23,18 +29,21 @@ import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_R
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import DeleteComponent from '../../util/DeleteComponent'
-import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName} from '../../config/constantMessaging'
+import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
-import {ChartRepoType} from "./chartRepo.types";
-import { NavLink } from 'react-router-dom'
+import { ChartRepoType } from './chartRepo.types'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
-    if (loading && !result) return <Progressing pageLoader />
+    if (loading && !result) {
+        return <Progressing pageLoader />
+    }
     if (error) {
         showError(error)
-        if (!result) return null
+        if (!result) {
+            return null
+        }
     }
 
     function getRandomInt(): number {
@@ -50,55 +59,67 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
 
     if (!isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
-    } else {
-        return (
-            <section className="global-configuration__component" data-testid="chart-repository-wrapper">
-                <h2 className="form__title" data-testid="chart-repository-heading">
-                    Chart Repository
-                </h2>
-                <p className="form__subtitle">
-                    Manage your organization’s chart repositories.
-                    <span>
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className="dc__link"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
-                        >
-                            LEARN_MORE
-                        </a>
-                    </span>
-                </p>
-                <CollapsedList
-                    id={null}
-                    default={true}
-                    url={''}
-                    name={''}
-                    active={true}
-                    authMode={'ANONYMOUS'}
-                    key={getRandomInt().toString()}
-                    reload={reload}
-                    isEditable={true}
-                />
-                <div className="chartRepo_form__subtitle dc__float-left dc__bold">
-                    Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
-                </div>
-                {[]
-                    .concat(result && Array.isArray(result.result) ? result.result : [])
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((chart) => (
-                        (chart.id != 1) && <CollapsedList {...chart} key={chart.id || getRandomInt()} reload={reload} />
-                    ))}
-            </section>
-        )
     }
+    return (
+        <section className="global-configuration__component" data-testid="chart-repository-wrapper">
+            <h2 className="form__title" data-testid="chart-repository-heading">
+                Chart Repository
+            </h2>
+            <p className="form__subtitle">
+                Manage your organization’s chart repositories.
+                <span>
+                    <a
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="dc__link"
+                        href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
+                    >
+                        LEARN_MORE
+                    </a>
+                </span>
+            </p>
+            <CollapsedList
+                id={null}
+                default
+                url=""
+                name=""
+                active
+                authMode="ANONYMOUS"
+                key={getRandomInt().toString()}
+                reload={reload}
+                isEditable
+            />
+            <div className="chartRepo_form__subtitle dc__float-left dc__bold">
+                Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
+            </div>
+            {[]
+                .concat(result && Array.isArray(result.result) ? result.result : [])
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(
+                    (chart) =>
+                        chart.id != 1 && <CollapsedList {...chart} key={chart.id || getRandomInt()} reload={reload} />,
+                )}
+        </section>
+    )
 }
 
-function CollapsedList({ id, name, active, url, authMode, isEditable, accessToken = "", userName = "", password = "", reload, ...props }) {
-    const [collapsed, toggleCollapse] = useState(true);
+const CollapsedList = ({
+    id,
+    name,
+    active,
+    url,
+    authMode,
+    isEditable,
+    accessToken = '',
+    userName = '',
+    password = '',
+    reload,
+    ...props
+}) => {
+    const [collapsed, toggleCollapse] = useState(true)
 
     const setToggleCollapse = () => {
-        if (!id){
+        if (!id) {
             toggleCollapse(false)
         }
     }
@@ -108,9 +129,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
             e.stopPropagation()
             toggleCollapse((t) => !t)
         } else {
-            toast.info(
-                getNonEditableChartRepoText(name),
-            )
+            toast.info(getNonEditableChartRepoText(name))
         }
     }
 
@@ -172,7 +191,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
     )
 }
 
-function ChartForm({
+const ChartForm = ({
     id = null,
     name = '',
     active = false,
@@ -186,7 +205,7 @@ function ChartForm({
     collapsed,
     isEditable,
     ...props
-}) {
+}) => {
     const [validationError, setValidationError] = useState({ errtitle: '', errMessage: '' })
     const [validationStatus, setValidationStatus] = useState(
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
@@ -200,41 +219,44 @@ function ChartForm({
     const [secureWithTls, setSecureWithTls] = useState(false)
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
-            name: { value: name, error: "" },
-            url: { value: url, error: "" },
-            auth: { value: authMode, error: "" }
+            name: { value: name, error: '' },
+            url: { value: url, error: '' },
+            auth: { value: authMode, error: '' },
         },
         {
             name: {
                 required: true,
                 validators: [
-                  { error: 'Name is required', regex: /^.*$/ },
-                  {error:"Min 3 chars, spaces not allowed ",regex:/^.\S{2,}$/}
-              ]
+                    { error: 'Name is required', regex: /^.*$/ },
+                    { error: 'Min 3 chars, spaces not allowed ', regex: /^.\S{2,}$/ },
+                ],
             },
             url: {
                 required: true,
                 validators: [
-                  { error: 'URL is required', regex: /^.*$/ },
-                  { error: 'Invalid URL', regex: PATTERNS.URL },
-              ]
+                    { error: 'URL is required', regex: /^.*$/ },
+                    { error: 'Invalid URL', regex: PATTERNS.URL },
+                ],
             },
             auth: {
                 required: true,
-                validator: { error: 'Mode is required', regex: /^.*$/ }
-            }
-        }, onClickSave);
+                validator: { error: 'Mode is required', regex: /^.*$/ },
+            },
+        },
+        onClickSave,
+    )
 
-    const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
+    const customHandleChange = (e) =>
+        setCustomState((state) => ({ ...state, [e.target.name]: { value: e.target.value, error: '' } }))
 
-    const [deleting, setDeleting] = useState(false);
-    const [confirmation, toggleConfirmation] = useState(false);
+    const [deleting, setDeleting] = useState(false)
+    const [confirmation, toggleConfirmation] = useState(false)
     const [chartRepoType, setChartRepoType] = useState<string>(CHART_REPO_TYPE.PUBLIC)
 
-    if(chartRepoType===CHART_REPO_TYPE.PUBLIC){
-        state.auth.value= CHART_REPO_AUTH_TYPE.ANONYMOUS
-    }else{
-        state.auth.value= CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
+    if (chartRepoType === CHART_REPO_TYPE.PUBLIC) {
+        state.auth.value = CHART_REPO_AUTH_TYPE.ANONYMOUS
+    } else {
+        state.auth.value = CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
     }
 
     const chartRepoPayload = {
@@ -246,16 +268,20 @@ function ChartForm({
                 ? CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
                 : CHART_REPO_AUTH_TYPE.ANONYMOUS
             : chartRepoType === CHART_REPO_TYPE.PUBLIC
-            ? CHART_REPO_AUTH_TYPE.ANONYMOUS
-            : CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD,
+              ? CHART_REPO_AUTH_TYPE.ANONYMOUS
+              : CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD,
         active: true,
-        ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD || authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
+        ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ||
+        authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
             ? { allow_insecure_connection: !secureWithTls }
             : {}),
-        ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD || authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
+        ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ||
+        authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
             ? { username: customState.username.value, password: customState.password.value }
             : {}),
-        ...(state.auth.value === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN ? { accessToken: customState.accessToken.value } : {}),
+        ...(state.auth.value === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN
+            ? { accessToken: customState.accessToken.value }
+            : {}),
     }
 
     const isFormInvalid = () => {
@@ -267,13 +293,16 @@ function ChartForm({
 
         if (state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD) {
             if (!customState.password.value || !customState.username.value) {
-                setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
+                setCustomState((state) => ({
+                    ...state,
+                    password: { value: state.password.value, error: 'Required' },
+                    username: { value: state.username.value, error: 'Required' },
+                }))
                 isValid = false
             }
-        }
-        else if (state.auth.value === "ACCESS_TOKEN") {
+        } else if (state.auth.value === 'ACCESS_TOKEN') {
             if (!customState.accessToken.value) {
-                setCustomState(state => ({ ...state, accessToken: { value: '', error: 'Required' } }))
+                setCustomState((state) => ({ ...state, accessToken: { value: '', error: 'Required' } }))
                 isValid = false
             }
         }
@@ -282,42 +311,44 @@ function ChartForm({
 
     async function onClickValidate() {
         setValidationStatus(VALIDATION_STATUS.LOADER)
-        let isInvalid = isFormInvalid();
+        const isInvalid = isFormInvalid()
         if (!isInvalid) {
-            toast.error("Some Required Fields are missing");
+            toast.error('Some Required Fields are missing')
             return
         }
 
-        let promise = validateChartRepoConfiguration(chartRepoPayload)
-        await promise.then((response) => {
-            let validateResp = response?.result
-            if (!validateResp.actualErrMsg.length) {
-                setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                toast.success("Configuration validated");
-            } else if (validateResp.actualErrMsg.length > 0) {
-                setValidationStatus(VALIDATION_STATUS.FAILURE)
-                setValidationError({ errtitle: validateResp?.customErrMsg, errMessage: validateResp.actualErrMsg })
-                toast.error("Configuration validation failed");
-            }
-        }).catch((error) => {
-            showError(error);
-            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
-            setLoading(false);
-        })
+        const promise = validateChartRepoConfiguration(chartRepoPayload)
+        await promise
+            .then((response) => {
+                const validateResp = response?.result
+                if (!validateResp.actualErrMsg.length) {
+                    setValidationStatus(VALIDATION_STATUS.SUCCESS)
+                    toast.success('Configuration validated')
+                } else if (validateResp.actualErrMsg.length > 0) {
+                    setValidationStatus(VALIDATION_STATUS.FAILURE)
+                    setValidationError({ errtitle: validateResp?.customErrMsg, errMessage: validateResp.actualErrMsg })
+                    toast.error('Configuration validation failed')
+                }
+            })
+            .catch((error) => {
+                showError(error)
+                setValidationStatus(VALIDATION_STATUS.DRY_RUN)
+                setLoading(false)
+            })
     }
 
     async function onClickSave(e) {
         setValidationStatus(VALIDATION_STATUS.LOADER)
-        let isInvalid = isFormInvalid();
+        const isInvalid = isFormInvalid()
         if (!isInvalid) {
-            toast.error("Some Required Fields are missing");
+            toast.error('Some Required Fields are missing')
             return
         }
         const api = id ? updateChartProviderConfig : saveChartProviderConfig
 
         try {
-            setLoading(true);
-            const { result } = await api(chartRepoPayload, id);
+            setLoading(true)
+            const { result } = await api(chartRepoPayload, id)
 
             if (result && !result?.actualErrMsg) {
                 setValidationStatus(VALIDATION_STATUS.SUCCESS)
@@ -328,25 +359,27 @@ function ChartForm({
                         subtitle="It may take upto 5 mins for the charts to be listed in the chart store."
                     />,
                 )
-                await reload();
+                await reload()
             } else {
                 setValidationStatus(VALIDATION_STATUS.FAILURE)
-                setLoading(false);
+                setLoading(false)
                 setValidationError({ errtitle: result?.customErrMsg, errMessage: result.actualErrMsg })
-                toast.error("Configuration validation failed");
+                toast.error('Configuration validation failed')
             }
-        }
-        catch (err) {
+        } catch (err) {
             showError(err)
             setValidationStatus(VALIDATION_STATUS.DRY_RUN)
-        }
-        finally {
-            setLoading(false);
+        } finally {
+            setLoading(false)
         }
     }
 
     function toggleIsPublicChartType(e) {
-        setCustomState(state => ({ ...state, password: { value: '', error: '' }, username: { value: '', error: '' } }))
+        setCustomState((state) => ({
+            ...state,
+            password: { value: '', error: '' },
+            username: { value: '', error: '' },
+        }))
 
         if (chartRepoType === CHART_REPO_TYPE.PUBLIC) {
             setChartRepoType(CHART_REPO_TYPE.PRIVATE)
@@ -373,25 +406,23 @@ function ChartForm({
                 label={isNameField ? 'Name' : 'URL'}
                 placeholder={isNameField ? 'Enter Repository name' : 'Enter repo URL'}
                 disabled={!isEditable}
-                isRequiredField={true}
+                isRequiredField
             />
         )
     }
 
     const renderModifiedChartInputElement = (field: string, isEditable: boolean) => {
-        return (
-            !isEditable ? (
-                <Tippy
-                    className="default-tt w-200"
-                    arrow={false}
-                    placement="bottom"
-                    content={`Cannot edit ${field}. Some charts from this repository are being used by helm apps.`}
-                >
-                    <div>{renderChartInputElement(field)}</div>
-                </Tippy>
-            ) : (
-                renderChartInputElement(field)
-            )
+        return !isEditable ? (
+            <Tippy
+                className="default-tt w-200"
+                arrow={false}
+                placement="bottom"
+                content={`Cannot edit ${field}. Some charts from this repository are being used by helm apps.`}
+            >
+                <div>{renderChartInputElement(field)}</div>
+            </Tippy>
+        ) : (
+            renderChartInputElement(field)
         )
     }
 
@@ -417,7 +448,7 @@ function ChartForm({
                 id={id}
                 onClickValidate={onClickValidate}
                 validationError={validationError}
-                isChartRepo={true}
+                isChartRepo
                 validationStatus={validationStatus}
                 configName="chart repo"
             />
@@ -436,7 +467,7 @@ function ChartForm({
                             error={customState.username.error}
                             label="Username"
                             labelClassName="mt-12"
-                            isRequiredField={true}
+                            isRequiredField
                         />
                         <ProtectedInput
                             dataTestid="add-chart-repo-password"
@@ -446,7 +477,7 @@ function ChartForm({
                             error={customState.password.error}
                             label="Password"
                             labelClassName="mt-12"
-                            isRequiredField={true}
+                            isRequiredField
                         />
                         <Checkbox
                             rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
@@ -462,7 +493,7 @@ function ChartForm({
             <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
                 {!id && (
                     <div className="form-row flex left fs-13">
-                         <Question className="icon-dim-16 mr-8" />
+                        <Question className="icon-dim-16 mr-8" />
                         Looking to add OCI-based registry?
                         <NavLink
                             className="dc__no-decor pl-8 pr-8 flex left cb-5"
@@ -511,4 +542,4 @@ function ChartForm({
             )}
         </form>
     )
-} 
+}

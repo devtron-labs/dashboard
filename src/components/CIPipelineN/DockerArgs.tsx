@@ -105,7 +105,9 @@ const DockerArgs: FunctionComponent<DockerArgsProps> = ({ args, handleDockerArgs
                     trigger="click"
                     interactive
                 >
-                    <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    <div className="flex">
+                        <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    </div>
                 </TippyCustomized>
             </h3>
 

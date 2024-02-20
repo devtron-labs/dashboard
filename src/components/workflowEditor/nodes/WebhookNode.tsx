@@ -5,7 +5,7 @@ import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
 import { WebhookNodeProps } from '../types'
 
-export function WebhookNode({
+export const WebhookNode = ({
     x,
     y,
     width,
@@ -18,7 +18,7 @@ export function WebhookNode({
     handleSelectedNodeChange,
     selectedNode,
     isLastNode,
-}: WebhookNodeProps) {
+}: WebhookNodeProps) => {
     const selectedNodeKey = `${selectedNode?.nodeType}-${selectedNode?.id}`
     const currentNodeKey = `${WorkflowNodeType.WEBHOOK}-${id ?? ''}`
 

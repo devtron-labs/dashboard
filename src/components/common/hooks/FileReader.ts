@@ -19,10 +19,14 @@ export const useFileReader = () => {
 
     useEffect(() => {
         // doing == since we want to check for null and undefined
-        if (!fileData || fileData.data == null || !validator) return
+        if (!fileData || fileData.data == null || !validator) {
+            return
+        }
         const { status, message } = validator(fileData)
         setStatus({ message, status })
-        if (status === FileReaderStatus.SUCCESS) setProgress(100)
+        if (status === FileReaderStatus.SUCCESS) {
+            setProgress(100)
+        }
     }, [fileData, validator])
 
     const handleFileRead = (e: any) => {

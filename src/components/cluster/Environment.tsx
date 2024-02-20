@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { CustomInput, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
-import { toast } from 'react-toastify'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
+
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 
 export default function Environment({
@@ -89,11 +90,11 @@ export default function Environment({
         let api
         if (isVirtual) {
             payload = {
-                id: id,
+                id,
                 environment_name: state.environment_name.value,
                 namespace: state.namespace.value || '',
                 IsVirtualEnvironment: true,
-                cluster_id: cluster_id,
+                cluster_id,
                 description: state.description.value || '',
             }
             api = renderVirtualClusterSaveUpdate(id)
@@ -166,34 +167,36 @@ export default function Environment({
                             label="Namespace"
                         />
                     </div>
-                    {!isVirtual && <div className="mb-16 flex left">
-                        <label className="pr-16 flex cursor">
-                            <input
-                                data-testid="production"
-                                type="radio"
-                                name="isProduction"
-                                checked={state.isProduction.value === 'true'}
-                                value="true"
-                                onChange={handleOnChange}
-                            />
-                            <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
-                        </label>
-                        <label className="flex cursor">
-                            <input
-                                data-testid="nonProduction"
-                                type="radio"
-                                name="isProduction"
-                                checked={state.isProduction.value === 'false'}
-                                value="false"
-                                onChange={handleOnChange}
-                            />
-                            <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
-                        </label>
-                    </div>}
+                    {!isVirtual && (
+                        <div className="mb-16 flex left">
+                            <label className="pr-16 flex cursor">
+                                <input
+                                    data-testid="production"
+                                    type="radio"
+                                    name="isProduction"
+                                    checked={state.isProduction.value === 'true'}
+                                    value="true"
+                                    onChange={handleOnChange}
+                                />
+                                <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
+                            </label>
+                            <label className="flex cursor">
+                                <input
+                                    data-testid="nonProduction"
+                                    type="radio"
+                                    name="isProduction"
+                                    checked={state.isProduction.value === 'false'}
+                                    value="false"
+                                    onChange={handleOnChange}
+                                />
+                                <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
+                            </label>
+                        </div>
+                    )}
                     <div className="mb-16">
                         <CustomInput
                             name="description"
-                            placeholder={'Add a description for this environment'}
+                            placeholder="Add a description for this environment"
                             value={state.description.value}
                             error={state.description.error}
                             onChange={handleOnChange}

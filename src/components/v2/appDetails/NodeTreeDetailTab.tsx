@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
-import K8ResourceComponent from './k8Resource/K8Resource.component';
-import './appDetails.scss';
-import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
-import { Route, Switch, useLocation } from 'react-router-dom';
-import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
-import { URLS } from '../../../config';
-import AppDetailsStore from './appDetails.store';
-import { NodeType, NodeTreeDetailTabProps } from './appDetails.type';
-import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component';
-import IndexStore from './index.store';
-import NodeTreeTabList from './k8Resource/NodeTreeTabList';
+import React, { useState, useEffect, useRef } from 'react'
+import K8ResourceComponent from './k8Resource/K8Resource.component'
+import './appDetails.scss'
+import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
+import { Route, Switch } from 'react-router-dom'
+import { useRouteMatch, Redirect, useParams } from 'react-router'
+import { URLS } from '../../../config'
+import AppDetailsStore from './appDetails.store'
+import { NodeType, NodeTreeDetailTabProps } from './appDetails.type'
+import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
+import IndexStore from './index.store'
+import NodeTreeTabList from './k8Resource/NodeTreeTabList'
 
-function NodeTreeDetailTab({
+const NodeTreeDetailTab = ({
     appDetails,
     externalLinks,
     monitoringTools,
     isDevtronApp = false,
-}: NodeTreeDetailTabProps) {
+    isExternalApp,
+}: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const location = useLocation()
     const { path, url } = useRouteMatch()
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
     const tabRef = useRef<HTMLDivElement>(null)
@@ -27,7 +27,7 @@ function NodeTreeDetailTab({
     useEffect(() => {
         const _pods = IndexStore.getNodesByKind(NodeType.Pod)
         const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0
-        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL)
+        AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL, isExternalApp)
     }, [params.appId, params.envId])
 
     const handleFocusTabs = () => {
@@ -44,6 +44,8 @@ function NodeTreeDetailTab({
                         logSearchTerms={logSearchTerms}
                         setLogSearchTerms={setLogSearchTerms}
                         tabRef={tabRef}
+                        appType={appDetails.appType}
+                        isExternalApp={isExternalApp}
                     />
                     <Switch>
                         <Route
@@ -57,6 +59,7 @@ function NodeTreeDetailTab({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
@@ -68,6 +71,7 @@ function NodeTreeDetailTab({
                                     <NodeDetailComponent
                                         logSearchTerms={logSearchTerms}
                                         setLogSearchTerms={setLogSearchTerms}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
@@ -83,6 +87,7 @@ function NodeTreeDetailTab({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
@@ -110,6 +115,7 @@ function NodeTreeDetailTab({
                                     <LogAnalyzerComponent
                                         logSearchTerms={logSearchTerms}
                                         setLogSearchTerms={setLogSearchTerms}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}

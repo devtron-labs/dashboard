@@ -5,14 +5,14 @@ import { EventListType } from '../Types'
 import { getScrollableResourceClass } from '../Utils'
 import { highlightSearchedText } from '../../common'
 
-export function EventList({
+export const EventList = ({
     listRef,
     filteredData,
     handleResourceClick,
     paginatedView,
     syncError,
     searchText,
-}: EventListType) {
+}: EventListType) => {
     return (
         <div>
             <div className="event-list-row fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
@@ -30,27 +30,32 @@ export function EventList({
                 className={getScrollableResourceClass('scrollable-event-list', paginatedView, syncError)}
             >
                 {filteredData?.map((eventData, index) => (
-                    <div key={`${eventData.type}_${eventData[EVENT_LIST.dataKeys.involvedObject]}_${index}`} className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12 hover-class">
-                        <div className={` app-summary__status-name dc__highlight-text f-${eventData.type?.toLowerCase()}`}>
+                    <div
+                        key={`${eventData.type}_${eventData[EVENT_LIST.dataKeys.involvedObject]}_${index}`}
+                        className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12 hover-class"
+                    >
+                        <div
+                            className={` app-summary__status-name dc__highlight-text f-${eventData.type?.toLowerCase()}`}
+                        >
                             <span
                                 dangerouslySetInnerHTML={{
                                     __html: highlightSearchedText(searchText, eventData.type),
                                 }}
-                            ></span>
+                            />
                         </div>
                         <div className="dc__highlight-text dc__break-word">
                             <span
                                 dangerouslySetInnerHTML={{
                                     __html: highlightSearchedText(searchText, eventData.message),
                                 }}
-                            ></span>
+                            />
                         </div>
                         <div className="dc__ellipsis-right dc__highlight-text">
                             <span
                                 dangerouslySetInnerHTML={{
                                     __html: highlightSearchedText(searchText, eventData.namespace),
                                 }}
-                            ></span>
+                            />
                         </div>
                         <div className="dc__ellipsis-right dc__highlight-text">
                             <Tippy
@@ -73,7 +78,7 @@ export function EventList({
                                                 eventData[EVENT_LIST.dataKeys.involvedObject],
                                             ),
                                         }}
-                                    ></span>
+                                    />
                                 </a>
                             </Tippy>
                         </div>
@@ -83,7 +88,7 @@ export function EventList({
                                 dangerouslySetInnerHTML={{
                                     __html: highlightSearchedText(searchText, eventData.source),
                                 }}
-                            ></span>
+                            />
                         </div>
                         <div>{eventData.count}</div>
                         <div className="dc__highlight-text">
@@ -91,7 +96,7 @@ export function EventList({
                                 dangerouslySetInnerHTML={{
                                     __html: highlightSearchedText(searchText, eventData.age),
                                 }}
-                            ></span>
+                            />
                         </div>
                         <div>{eventData[EVENT_LIST.dataKeys.lastSeen]}</div>
                     </div>

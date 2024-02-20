@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { showError, Progressing, ConfirmationDialog, not, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import { createGitCommitUrl, asyncWrap } from '../../../common'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
+import moment from 'moment'
+import { Link, NavLink } from 'react-router-dom'
+import { createGitCommitUrl, asyncWrap } from '../../../common'
 import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
-import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
@@ -22,8 +23,7 @@ import {
     TriggerDetailsStatusIconType,
     TriggerDetailsType,
     WorkerStatusType,
-} from '../cicdHistory/types'
-import { Link, NavLink } from 'react-router-dom'
+} from './types'
 import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
 import { DEFAULT_ENV } from '../triggerView/Constants'
 import { TIMEOUT_VALUE, WORKER_POD_BASE_URL } from './Constants'
@@ -129,7 +129,9 @@ const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedTyp
 
 const WorkerStatus = React.memo(
     ({ message, podStatus, stage, workerPodName, finishedOn }: WorkerStatusType): JSX.Element | null => {
-        if (!message && !podStatus) return null
+        if (!message && !podStatus) {
+            return null
+        }
         // check if finishedOn time is timed out or not
         const isTimedOut = moment(finishedOn).isBefore(moment().subtract(TIMEOUT_VALUE, 'hours'))
         // finishedOn is 0001-01-01T00:00:00Z when the worker is still running
@@ -143,7 +145,11 @@ const WorkerStatus = React.memo(
                         {stage === 'DEPLOY' ? (
                             <div className="mr-10">Message</div>
                         ) : showLink ? (
-                            <NavLink to={`${WORKER_POD_BASE_URL}/${workerPodName}/logs`} target="_blank" className="anchor">
+                            <NavLink
+                                to={`${WORKER_POD_BASE_URL}/${workerPodName}/logs`}
+                                target="_blank"
+                                className="anchor"
+                            >
                                 <div className="mr-10">View worker pod</div>
                             </NavLink>
                         ) : (
@@ -329,20 +335,19 @@ const CurrentStatus = React.memo(
                     workerPodName={workerPodName}
                 />
             )
-        } else {
-            return (
-                <div className={`flex left ${isJobView ? 'mb-24' : ''}`}>
-                    <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
-                    <WorkerStatus
-                        message={message}
-                        podStatus={podStatus}
-                        stage={stage}
-                        finishedOn={finishedOn}
-                        workerPodName={workerPodName}
-                    />
-                </div>
-            )
         }
+        return (
+            <div className={`flex left ${isJobView ? 'mb-24' : ''}`}>
+                <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
+                <WorkerStatus
+                    message={message}
+                    podStatus={podStatus}
+                    stage={stage}
+                    finishedOn={finishedOn}
+                    workerPodName={workerPodName}
+                />
+            </div>
+        )
     },
 )
 
@@ -368,7 +373,7 @@ const StartDetails = ({
                 <time className="cn-7 fs-12">
                     {moment(startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                 </time>
-                <div className="dc__bullet mr-6 ml-6"></div>
+                <div className="dc__bullet mr-6 ml-6" />
                 <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
                     {triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}
                 </div>
@@ -390,7 +395,7 @@ const StartDetails = ({
                                 {ciMaterial.type != 'WEBHOOK' && (
                                     <a
                                         target="_blank"
-                                        rel="noopener noreferer"
+                                        rel="noopener noreferer noreferrer"
                                         href={createGitCommitUrl(ciMaterial.url, gitDetail.Commit)}
                                         className="dc__app-commit__hash mr-12 bcn-1 cn-7"
                                     >
@@ -420,9 +425,7 @@ const StartDetails = ({
                 <div className="pt-4 pb-4 pr-0 pl-0">
                     <span className="fw-6 fs-14">Env</span>
                     <span className="fs-12 mb-4 ml-8">{environmentName !== '' ? environmentName : DEFAULT_ENV}</span>
-                    {environmentName === '' && (
-                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>
-                    )}
+                    {environmentName === '' && <span className="fw-4 fs-11 ml-4 dc__italic-font-style">(Default)</span>}
                 </div>
             )}
         </div>

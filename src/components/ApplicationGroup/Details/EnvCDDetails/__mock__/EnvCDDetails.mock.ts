@@ -1,5 +1,5 @@
-import { ModuleConfigResponse } from '../../../../app/details/appDetails/appDetails.type'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ModuleConfigResponse } from '../../../../app/details/appDetails/appDetails.type'
 
 export async function mockCDList(): Promise<ResponseType> {
     const response = {

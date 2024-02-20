@@ -1,38 +1,27 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "downlevelIteration": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "checkJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "noFallthroughCasesInSwitch": true,
-  },
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "build"
-  ],
-  "include": [
-    "src"
-  ]
+    "compilerOptions": {
+        "target": "ES2020",
+        "lib": ["dom", "dom.iterable", "esnext", "WebWorker"],
+        "types": ["vite/client", "vite-plugin-svgr/client", "node", "vite-plugin-pwa/react", "vite-plugin-pwa/info"],
+        "typeRoots": ["./types", "./node_modules/@types"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": false,
+        "allowSyntheticDefaultImports": true,
+        // @TODO: Enable strict when we have a better solution for the type issues
+        "strict": false,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react",
+        "paths": {
+            "react": ["./node_modules/react", "./node_modules/@types/react/index.d.ts",]
+        }
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "**/*.test.tsx", "dist"]
 }

@@ -1,4 +1,4 @@
-import { TippyCustomizedProps } from "@devtron-labs/devtron-fe-common-lib"
+import { TippyCustomizedProps } from '@devtron-labs/devtron-fe-common-lib'
 
 export type TippyConfig =
     | (Omit<TippyCustomizedProps, 'theme' | 'children' | 'placement'> & {

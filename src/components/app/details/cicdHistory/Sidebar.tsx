@@ -2,8 +2,11 @@ import React, { useEffect, useRef } from 'react'
 import { createGitCommitUrl } from '../../../common'
 import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 'react-router'
 import ReactSelect, { components } from 'react-select'
-import { DropdownIndicator, getCustomOptionSelectionStyle } from '../../../v2/common/ReactSelect.utils'
 import moment from 'moment'
+import TippyHeadless from '@tippyjs/react/headless'
+import { NavLink } from 'react-router-dom'
+import ReactGA from 'react-ga4'
+import { DropdownIndicator, getCustomOptionSelectionStyle } from '../../../v2/common/ReactSelect.utils'
 import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import {
@@ -15,12 +18,9 @@ import {
     SummaryTooltipCardType,
     FetchIdDataStatus,
 } from './types'
-import TippyHeadless from '@tippyjs/react/headless'
-import { NavLink } from 'react-router-dom'
 import { statusColor as colorMap } from '../../config'
 import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
 import { ReactComponent as ICArrowBackward } from '../../../../assets/icons/ic-arrow-backward.svg'
-import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
 import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
 import { triggerStatus } from './History.components'
@@ -68,11 +68,11 @@ const Sidebar = React.memo(
         const filterOptionType = () => {
             if (type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI) {
                 return pipelineId
-            } else if (type === HistoryComponentType.GROUP_CD) {
-                return appId
-            } else {
-                return envId
             }
+            if (type === HistoryComponentType.GROUP_CD) {
+                return appId
+            }
+            return envId
         }
 
         const selectedFilter = filterOptions?.find((filterOption) => filterOption.value === filterOptionType()) ?? null
@@ -82,11 +82,11 @@ const Sidebar = React.memo(
         const selectLabel = () => {
             if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD) {
                 return HISTORY_LABEL.APPLICATION
-            } else if (type === HistoryComponentType.CI) {
-                return HISTORY_LABEL.PIPELINE
-            } else {
-                return HISTORY_LABEL.ENVIRONMENT
             }
+            if (type === HistoryComponentType.CI) {
+                return HISTORY_LABEL.PIPELINE
+            }
+            return HISTORY_LABEL.ENVIRONMENT
         }
 
         const ciPipelineBuildTypeOption = (props): JSX.Element => {
@@ -97,10 +97,9 @@ const Sidebar = React.memo(
                         {(type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI) && (
                             <div
                                 className={
-                                    'dc__ci-pipeline-type-icon mr-5 ' +
-                                        props.data.pipelineType?.toLowerCase() || ''
+                                    `dc__ci-pipeline-type-icon mr-5 ${props.data.pipelineType?.toLowerCase()}` || ''
                                 }
-                            ></div>
+                            />
                         )}
                         {props.label}
                     </div>
@@ -263,7 +262,7 @@ const HistorySummaryCard = React.memo(
                                         <div className="dc__capitalize">
                                             {['pre', 'post'].includes(stage?.toLowerCase()) ? `${stage}-deploy` : stage}
                                         </div>
-                                        <span className="dc__bullet dc__bullet--d2 ml-4 mr-4"></span>
+                                        <span className="dc__bullet dc__bullet--d2 ml-4 mr-4" />
 
                                         {artifact && (
                                             <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
@@ -271,7 +270,7 @@ const HistorySummaryCard = React.memo(
                                                 {artifact.split(':')[1].slice(-12)}
                                             </div>
                                         )}
-                                        <span className="dc__bullet dc__bullet--d2 ml-4 mr-4"></span>
+                                        <span className="dc__bullet dc__bullet--d2 ml-4 mr-4" />
                                     </>
                                 )}
                                 <div className="cn-7 fs-12">
@@ -303,7 +302,7 @@ const SummaryTooltipCard = React.memo(
                 <div className="flex column left">
                     <div className="flex left fs-12 cn-7">
                         <div>{moment(startedOn).format(Moment12HourFormat)}</div>
-                        <div className="dc__bullet ml-6 mr-6"></div>
+                        <div className="dc__bullet ml-6 mr-6" />
                         <div>{triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}</div>
                     </div>
                     {Object.keys(gitTriggers ?? {}).length > 0 &&
@@ -336,7 +335,7 @@ const SummaryTooltipCard = React.memo(
                                                 <a
                                                     href={createGitCommitUrl(gitMaterialUrl, gitDetail.Commit)}
                                                     target="_blank"
-                                                    rel="noopener noreferer"
+                                                    rel="noopener noreferer noreferrer"
                                                     className="fs-12 fw-6 cn-9 pointer"
                                                 >
                                                     /{sourceValue}

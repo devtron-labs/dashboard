@@ -8,7 +8,7 @@ import { useColumnFilterContext } from './NodeListSearchFilter'
 import { COLUMN_METADATA } from './constants'
 
 const ValueContainer = (props: any): JSX.Element => {
-    const length = props.getValue().length
+    const { length } = props.getValue()
 
     return (
         <components.ValueContainer {...props}>
@@ -48,8 +48,8 @@ const MenuList = (props: any): JSX.Element => {
             localStorage.appliedColumns = JSON.stringify(_appliedColumns)
         }
         if (props.selectRef.current) {
-            props.selectRef.current.blur();
-          }
+            props.selectRef.current.blur()
+        }
         setAppliedColumns(_appliedColumns)
     }
     return (
@@ -79,7 +79,7 @@ export default function ColumnSelector() {
     } = useColumnFilterContext()
     const [columnOptions, setColumnOptions] = useState<MultiValue<ColumnMetadataType>>([])
     const [columnFilterInput, setColumnFilterInput] = useState('')
-    const selectRef = useRef(null);
+    const selectRef = useRef(null)
 
     useEffect(() => {
         setColumnOptions(COLUMN_METADATA.filter((columnData) => !columnData.isDisabled))
@@ -106,7 +106,7 @@ export default function ColumnSelector() {
             value={selectedColumns}
             options={columnOptions}
             onChange={setSelectedColumns}
-            isMulti={true}
+            isMulti
             autoFocus={false}
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
@@ -118,10 +118,12 @@ export default function ColumnSelector() {
                 setColumnFilterInput('')
             }}
             onInputChange={(value, action) => {
-                if (action.action === 'input-change') setColumnFilterInput(value)
+                if (action.action === 'input-change') {
+                    setColumnFilterInput(value)
+                }
             }}
             components={{
-                Option: Option,
+                Option,
                 ValueContainer,
                 IndicatorSeparator: null,
                 ClearIndicator: null,

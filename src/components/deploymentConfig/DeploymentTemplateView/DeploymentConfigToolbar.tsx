@@ -22,7 +22,6 @@ export default function DeploymentConfigToolbar({
     convertVariables,
     setConvertVariables,
 }: DeploymentConfigToolbarProps) {
-
     const getTabClassName = (index: number) =>
         `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
 
@@ -86,18 +85,18 @@ export default function DeploymentConfigToolbar({
                             onClick={changeTab}
                         >
                             <CompareIcon className={getTabIconClass(2)} />
-                            Compare&nbsp;  
-                                <PopupMenu autoClose>
-                                    <PopupMenu.Button rootClassName="flexbox flex-align-center" isKebab>
-                                        <span style={{ color: 'black' }}>
-                                            &nbsp;
-                                            {`${isValues ? 'Values' : 'Manifest'}`}
-                                        </span>
+                            Compare&nbsp;
+                            <PopupMenu autoClose>
+                                <PopupMenu.Button rootClassName="flexbox flex-align-center" isKebab>
+                                    <span style={{ color: 'black' }}>
+                                        &nbsp;
+                                        {`${isValues ? 'Values' : 'Manifest'}`}
+                                    </span>
 
-                                        <Dropdown className="icon-dim-16 ml-4 cursor" data-testid="dropdown-icon" />
-                                    </PopupMenu.Button>
-                                    <PopupMenu.Body autoWidth>{renderDropdownContainer()}</PopupMenu.Body>
-                                </PopupMenu>
+                                    <Dropdown className="icon-dim-16 ml-4 cursor" data-testid="dropdown-icon" />
+                                </PopupMenu.Button>
+                                <PopupMenu.Body autoWidth>{renderDropdownContainer()}</PopupMenu.Body>
+                            </PopupMenu>
                         </li>
                     </ol>
                 </div>

@@ -6,7 +6,7 @@ import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { TARGET_PLATFORM_LIST, tempMultiSelectStyles } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
 import { TargetPlatformSelectorType } from './types'
-import { noMatchingPlatformOptions } from "../v2/common/ReactSelect.utils";
+import { noMatchingPlatformOptions } from '../v2/common/ReactSelect.utils'
 
 const platformMenuList = (props): JSX.Element => {
     return (
@@ -17,7 +17,7 @@ const platformMenuList = (props): JSX.Element => {
     )
 }
 
-function TargetPlatformSelector({
+const TargetPlatformSelector = ({
     allowOverride,
     selectedTargetPlatforms,
     setSelectedTargetPlatforms,
@@ -27,8 +27,7 @@ function TargetPlatformSelector({
     targetPlatform,
     configOverrideView,
     updateDockerConfigOverride,
-}: TargetPlatformSelectorType) {
-
+}: TargetPlatformSelectorType) => {
     const handlePlatformChange = (selectedValue): void => {
         setSelectedTargetPlatforms(selectedValue)
 
@@ -94,33 +93,31 @@ function TargetPlatformSelector({
                     {SelectorMessaging.PALTFORM_DESCRIPTION_WITH_NO_TARGET}
                 </div>
             )
-        } else {
-            if (!targetPlatform.includes(',')) {
-                return (
-                    <div
-                        className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
-                        style={{ maxWidth: '100px' }}
-                    >
-                        {targetPlatform}
-                    </div>
-                )
-            } else {
-                return (
-                    <div className="flex left ">
-                        {targetPlatform.split(',').map((val) => {
-                            return (
-                                <div
-                                    className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
-                                    style={{ maxWidth: '100px' }}
-                                >
-                                    {val}
-                                </div>
-                            )
-                        })}
-                    </div>
-                )
-            }
         }
+        if (!targetPlatform.includes(',')) {
+            return (
+                <div
+                    className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
+                    style={{ maxWidth: '100px' }}
+                >
+                    {targetPlatform}
+                </div>
+            )
+        }
+        return (
+            <div className="flex left ">
+                {targetPlatform.split(',').map((val) => {
+                    return (
+                        <div
+                            className="en-2 bw-1 br-4 dc__w-fit-content pl-8 pr-8 pt-2 pb-2 mr-8 dc__truncate-text "
+                            style={{ maxWidth: '100px' }}
+                        >
+                            {val}
+                        </div>
+                    )
+                })}
+            </div>
+        )
     }
 
     return (
@@ -134,7 +131,7 @@ function TargetPlatformSelector({
             ) : (
                 <CreatableSelect
                     value={selectedTargetPlatforms}
-                    isMulti={true}
+                    isMulti
                     components={{
                         ClearIndicator: null,
                         IndicatorSeparator: null,
@@ -160,7 +157,11 @@ function TargetPlatformSelector({
             {showCustomPlatformWarning && (
                 <span className="flexbox cy-7 mt-2">
                     <WarningIcon className="warning-icon-y7 icon-dim-16 mr-5 mt-2" />
-                    {allowOverride ? SelectorMessaging.WARNING_WITH_NO_TARGET : configOverrideView ? SelectorMessaging.WARNING_WITH_USING_NO_TARGET : SelectorMessaging.WARNING_WITH_NO_TARGET }
+                    {allowOverride
+                        ? SelectorMessaging.WARNING_WITH_NO_TARGET
+                        : configOverrideView
+                          ? SelectorMessaging.WARNING_WITH_USING_NO_TARGET
+                          : SelectorMessaging.WARNING_WITH_NO_TARGET}
                 </span>
             )}
         </div>
