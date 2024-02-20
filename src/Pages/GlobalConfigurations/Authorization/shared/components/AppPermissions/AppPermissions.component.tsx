@@ -70,6 +70,7 @@ const AppPermissions = () => {
         ]),
     )
 
+    const isNonEAMode = serverMode !== SERVER_MODE.EA_ONLY
     const projectsList = configData?.[0]?.result ?? []
     const environmentsList = configData?.[1]?.result ?? []
     const chartGroupsList = configData?.[2]?.result?.groups ?? []
@@ -464,14 +465,17 @@ const AppPermissions = () => {
                 }),
         )
 
-        if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
-            directPermissions.push(emptyDirectPermissionDevtronApps)
+        if (isNonEAMode) {
+            if (!foundDevtronApps) {
+                directPermissions.push(emptyDirectPermissionDevtronApps)
+            }
+
+            if (!foundJobs) {
+                directPermissions.push(emptyDirectPermissionJobs)
+            }
         }
         if (!foundHelmApps) {
             directPermissions.push(emptyDirectPermissionHelmApps)
-        }
-        if (!foundJobs && serverMode !== SERVER_MODE.EA_ONLY) {
-            directPermissions.push(emptyDirectPermissionJobs)
         }
         setDirectPermission(directPermissions)
 
@@ -607,76 +611,95 @@ const AppPermissions = () => {
         }
     }
 
+    const _handleEntityNameChange = (index, selectedValue, actionMeta, tempPermissions) => {
+        const { action, option } = actionMeta
+
+        const { value } = option || { value: '' }
+        if (value === SELECT_ALL_VALUE) {
+            if (action === 'select-option') {
+                if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {
+                    const projectId = projectsList.find(
+                        (project) => project.name === tempPermissions[index]['team'].value,
+                    ).id
+                    const isJobs = tempPermissions[index].entity === EntityTypes.JOB
+                    tempPermissions[index]['entityName'] = [
+                        SELECT_ALL_OPTION,
+                        ...getListForAccessType(tempPermissions[index].accessType)
+                            .get(projectId)
+                            .result.map((app) => ({
+                                label: isJobs ? app.jobName : app.name,
+                                value: isJobs ? app.appName : app.name,
+                            })),
+                    ]
+                } else {
+                    tempPermissions[index]['entityName'] = [SELECT_ALL_OPTION]
+                }
+                tempPermissions[index]['entityNameError'] = null
+            } else {
+                tempPermissions[index]['entityName'] = []
+            }
+        } else {
+            const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== SELECT_ALL_VALUE)
+            tempPermissions[index]['entityName'] = selectedOptions
+            tempPermissions[index]['entityNameError'] = null
+        }
+        if (tempPermissions[index].entity === EntityTypes.JOB) {
+            tempPermissions[index]['workflow'] = []
+        }
+    }
+
+    const _handleWorkflowChange = (index, selectedValue, actionMeta, workflowList, tempPermissions) => {
+        const { action, option, name } = actionMeta
+        const { value } = option || { value: '' }
+        if (value === SELECT_ALL_VALUE) {
+            if (action === 'select-option') {
+                const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
+                    return [...acc, ..._option.options]
+                }, [])
+                tempPermissions[index]['workflow'] = [SELECT_ALL_OPTION, ...(allWorkflowOptions || [])]
+                tempPermissions[index].workflowError = null
+            } else {
+                tempPermissions[index]['workflow'] = []
+            }
+        } else {
+            const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== SELECT_ALL_VALUE)
+            tempPermissions[index][name] = selectedOptions
+            tempPermissions[index]['workflowError'] = null
+        }
+    }
+
+    const _handleTeamChange = (index, selectedValue, actionMeta, tempPermissions) => {
+        const { name } = actionMeta
+
+        tempPermissions[index] = {
+            ...tempPermissions[index],
+            [name]: selectedValue,
+            entityName: [],
+            environment: [],
+        }
+
+        if (tempPermissions[index].workflow) {
+            tempPermissions[index].workflow = []
+        }
+        if (tempPermissions[index].team.value !== HELM_APP_UNASSIGNED_PROJECT) {
+            const projectId = projectsList.find((project) => project.name === tempPermissions[index].team.value).id
+            _fetchListForAccessType(tempPermissions[index].accessType, projectId)
+        }
+    }
+
     // TODO (v3): Refactoring
     // TODO (v3): Use the Approver permission component from fe-lib and remove the redundant if(s)
     const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
-        const { action, option, name } = actionMeta
+        const { name } = actionMeta
         const tempPermissions = [...directPermission]
         if (name.includes('entityName')) {
-            const { value } = option || { value: '' }
-            if (value === SELECT_ALL_VALUE) {
-                if (action === 'select-option') {
-                    if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {
-                        const projectId = projectsList.find(
-                            (project) => project.name === tempPermissions[index]['team'].value,
-                        ).id
-                        const isJobs = tempPermissions[index].entity === EntityTypes.JOB
-                        tempPermissions[index]['entityName'] = [
-                            SELECT_ALL_OPTION,
-                            ...getListForAccessType(tempPermissions[index].accessType)
-                                .get(projectId)
-                                .result.map((app) => ({
-                                    label: isJobs ? app.jobName : app.name,
-                                    value: isJobs ? app.appName : app.name,
-                                })),
-                        ]
-                    } else {
-                        tempPermissions[index]['entityName'] = [SELECT_ALL_OPTION]
-                    }
-                    tempPermissions[index]['entityNameError'] = null
-                } else {
-                    tempPermissions[index]['entityName'] = []
-                }
-            } else {
-                const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== SELECT_ALL_VALUE)
-                tempPermissions[index]['entityName'] = selectedOptions
-                tempPermissions[index]['entityNameError'] = null
-            }
-            if (tempPermissions[index].entity === EntityTypes.JOB) {
-                tempPermissions[index]['workflow'] = []
-            }
+            _handleEntityNameChange(index, selectedValue, actionMeta, tempPermissions)
         } else if (name === 'environment') {
             setEnvValues(index, selectedValue, actionMeta, tempPermissions)
         } else if (name === 'workflow') {
-            const { value } = option || { value: '' }
-            if (value === SELECT_ALL_VALUE) {
-                if (action === 'select-option') {
-                    const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
-                        return [...acc, ..._option.options]
-                    }, [])
-                    tempPermissions[index]['workflow'] = [SELECT_ALL_OPTION, ...(allWorkflowOptions || [])]
-                    tempPermissions[index].workflowError = null
-                } else {
-                    tempPermissions[index]['workflow'] = []
-                }
-            } else {
-                const selectedOptions = selectedValue.filter(({ value: _value }) => _value !== SELECT_ALL_VALUE)
-                tempPermissions[index][name] = selectedOptions
-                tempPermissions[index]['workflowError'] = null
-            }
+            _handleWorkflowChange(index, selectedValue, actionMeta, workflowList, tempPermissions)
         } else if (name === 'team') {
-            tempPermissions[index][name] = selectedValue
-            tempPermissions[index]['entityName'] = []
-            tempPermissions[index]['environment'] = []
-            if (tempPermissions[index]['workflow']) {
-                tempPermissions[index]['workflow'] = []
-            }
-            if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {
-                const projectId = projectsList.find(
-                    (project) => project.name === tempPermissions[index]['team'].value,
-                ).id
-                _fetchListForAccessType(tempPermissions[index].accessType, projectId)
-            }
+            _handleTeamChange(index, selectedValue, actionMeta, tempPermissions)
         } else if (name === APPROVER_ACTION.label) {
             tempPermissions[index][name] = !tempPermissions[index][name]
         } else if (name === CONFIG_APPROVER_ACTION.label) {
@@ -710,14 +733,17 @@ const AppPermissions = () => {
                     foundJobs = true
                 }
             }
-            if (!foundDevtronApps && serverMode !== SERVER_MODE.EA_ONLY) {
-                permissionArr.push(emptyDirectPermissionDevtronApps)
+
+            if (isNonEAMode) {
+                if (!foundDevtronApps) {
+                    permissionArr.push(emptyDirectPermissionDevtronApps)
+                }
+                if (!foundJobs) {
+                    permissionArr.push(emptyDirectPermissionJobs)
+                }
             }
             if (!foundHelmApps) {
                 permissionArr.push(emptyDirectPermissionHelmApps)
-            }
-            if (!foundJobs && serverMode !== SERVER_MODE.EA_ONLY) {
-                permissionArr.push(emptyDirectPermissionJobs)
             }
             return permissionArr
         })
@@ -821,7 +847,7 @@ const AppPermissions = () => {
                             <K8sPermissions />
                         </Route>
                     )}
-                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                    {isNonEAMode && (
                         <Route path={`${path}/chart-groups`}>
                             <ChartPermission chartGroupsList={chartGroupsList} />
                         </Route>
@@ -830,7 +856,7 @@ const AppPermissions = () => {
                         // Preserving the search params
                         to={{
                             ...location,
-                            pathname: serverMode !== SERVER_MODE.EA_ONLY ? `${path}/devtron-apps` : `${path}/helm-apps`,
+                            pathname: isNonEAMode ? `${path}/devtron-apps` : `${path}/helm-apps`,
                         }}
                     />
                 </Switch>
