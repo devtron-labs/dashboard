@@ -25,6 +25,7 @@ import {
     emptyDirectPermissionDevtronApps,
     emptyDirectPermissionHelmApps,
     emptyDirectPermissionJobs,
+    SELECT_ALL_OPTION,
 } from './constants'
 import AppPermissionDetail from './AppPermissionDetail'
 import { ChartPermission } from '../ChartPermission'
@@ -621,7 +622,7 @@ const AppPermissions = () => {
                         ).id
                         const isJobs = tempPermissions[index].entity === EntityTypes.JOB
                         tempPermissions[index]['entityName'] = [
-                            { label: 'Select all', value: SELECT_ALL_VALUE },
+                            SELECT_ALL_OPTION,
                             ...getListForAccessType(tempPermissions[index].accessType)
                                 .get(projectId)
                                 .result.map((app) => ({
@@ -630,7 +631,7 @@ const AppPermissions = () => {
                                 })),
                         ]
                     } else {
-                        tempPermissions[index]['entityName'] = [{ label: 'Select all', value: SELECT_ALL_VALUE }]
+                        tempPermissions[index]['entityName'] = [SELECT_ALL_OPTION]
                     }
                     tempPermissions[index]['entityNameError'] = null
                 } else {
@@ -653,10 +654,7 @@ const AppPermissions = () => {
                     const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
                         return [...acc, ..._option.options]
                     }, [])
-                    tempPermissions[index]['workflow'] = [
-                        { label: 'Select all', value: SELECT_ALL_VALUE },
-                        ...(allWorkflowOptions || []),
-                    ]
+                    tempPermissions[index]['workflow'] = [SELECT_ALL_OPTION, ...(allWorkflowOptions || [])]
                     tempPermissions[index].workflowError = null
                 } else {
                     tempPermissions[index]['workflow'] = []

@@ -12,7 +12,7 @@ import { GroupHeading, Option as singleOption } from '../../../../../../componen
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups/UserGroup'
 import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
-import { allApplicationsOption, allEnvironmentsOption, ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
+import { allApplicationsOption, ALL_ENVIRONMENTS_OPTION, ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
 import { getWorkflowOptions, parseData } from '../../../utils'
 import { EntityTypes } from '../../../constants'
 import { DirectPermissionRow } from './types'
@@ -374,7 +374,7 @@ const DirectPermission = ({
                         onFocus={() => onFocus('environment')}
                         onMenuClose={onMenuClose}
                         placeholder="Select environments"
-                        options={[{ label: '', options: [allEnvironmentsOption] }, ...environments]}
+                        options={[{ label: '', options: [ALL_ENVIRONMENTS_OPTION] }, ...environments]}
                         menuPlacement="auto"
                         hideSelectedOptions={false}
                         styles={authorizationSelectStyles}

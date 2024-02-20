@@ -9,10 +9,15 @@ export const allApplicationsOption = (entity) => ({
     value: SELECT_ALL_VALUE,
 })
 
-export const allEnvironmentsOption = {
+export const SELECT_ALL_OPTION = {
+    label: 'Select all',
+    value: SELECT_ALL_VALUE,
+} as const
+
+export const ALL_ENVIRONMENTS_OPTION = {
     label: 'All environments',
     value: SELECT_ALL_VALUE,
-}
+} as const
 
 // TODO (v4): Remove these once the code is refactored
 export const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase mb-0'
