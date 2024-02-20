@@ -198,7 +198,7 @@ export const DeploymentAppSelector = ({
                                 animation="shift-toward-subtle"
                                 content={gitRepoURL}
                             >
-                                <a className="dc__block dc__ellipsis-right cursor" href={gitRepoURL}>
+                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL}>
                                     {gitRepoURL}
                                 </a>
                             </Tippy>
@@ -437,7 +437,7 @@ export const GitOpsDrawer = ({
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-right pb-4" onClick={toggleDrawer}>
+                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4" onClick={toggleDrawer}>
                             {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
                         </a>
                     </div>
