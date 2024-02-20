@@ -33,6 +33,39 @@ function reactVirtualized(): PluginOption {
         },
     }
 }
+// this method is used to move all the script and styles to bottom after body
+const jsToBottomNoModule = () => {
+    return {
+        name: 'no-attribute',
+        transformIndexHtml(html) {
+            let customInjection = ''
+            const scriptTag = html.match(/<script type="module"[^>]*>(.*?)<\/script[^>]*>/)[0]
+            console.log('\n SCRIPT TAG', scriptTag, '\n')
+            html = html.replace(scriptTag, '')
+            customInjection += scriptTag
+
+            const linkTagModulePreloadList=[...html.matchAll(/<link rel="modulepreload"[^>]*>/g)]
+            console.log('------------------------------------------------------------')
+            linkTagModulePreloadList.forEach((linkData) => {
+                console.log('\n modulepreload', linkData[0], '\n')
+                html = html.replace(linkData[0], '')
+                customInjection += linkData[0]
+            })
+
+            let linkTagStyleSheetList = [...html.matchAll(/<link rel="stylesheet"[^>]*>/g)]
+            console.log('------------------------------------------------------------')
+            linkTagStyleSheetList.forEach((linkData) => {
+                console.log('\n stylesheet', linkData[0], '\n')
+                html = html.replace(linkData[0], '')
+                customInjection += linkData[0]
+            })
+
+            html = html.replace('<!-- # INSERT SCRIPT HERE -->', customInjection)
+            console.log('------------------------------------------------------------')
+            return html
+        },
+    }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -43,20 +76,20 @@ export default defineConfig(({ mode }) => {
             port: 3000,
         },
         build: {
-          sourcemap: true,
-          rollupOptions: {
-            output: {
-              manualChunks(id: string) {
-                // separating the common lib chunk
-                if (id.includes('devtron-fe-common-lib')) {
-                  return '@devtron-common';
-                }
-                if (id.includes('@devtron')) {
-                  return '@devtron';
-                }
-              },
+            sourcemap: true,
+            rollupOptions: {
+                output: {
+                    manualChunks(id: string) {
+                        // separating the common lib chunk
+                        if (id.includes('devtron-fe-common-lib')) {
+                            return '@devtron-common'
+                        }
+                        if (id.includes('@devtron')) {
+                            return '@devtron'
+                        }
+                    },
+                },
             },
-          },
         },
         plugins: [
             // @TODO: Check if we can remove the config object inside the react plugin
@@ -78,6 +111,7 @@ export default defineConfig(({ mode }) => {
                 filename: 'service-worker.ts',
                 strategies: 'injectManifest',
             }),
+            jsToBottomNoModule(),
         ],
         // test: {
         //     globals: true,
@@ -95,10 +129,10 @@ export default defineConfig(({ mode }) => {
             port: 3000,
             proxy: {
                 '/orchestrator': {
-                    target: 'https://preview.devtron.ai/',
+                    target: 'https://devtron-4.devtron.info/',
                     changeOrigin: true,
                 },
-                '/grafana': 'https://preview.devtron.ai/',
+                '/grafana': 'https://devtron-4.devtron.info/',
             },
         },
     }

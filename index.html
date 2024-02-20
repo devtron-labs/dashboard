@@ -150,6 +150,10 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     --></body>
+
+    <!-- # INSERT SCRIPT HERE -->
+    <script type="module" src="/src/index.tsx"></script>
+
     <!-- Discord widget -->
     <script type="text/javascript">
         if (!window._env_.HIDE_DISCORD) {
@@ -162,5 +166,4 @@
         let title_el = document.querySelector('title')
         if (window.location.origin === 'https://preview.devtron.ai') title_el.innerHTML = 'Devtron Sandbox'
     </script>
-    <script type="module" src="/src/index.tsx"></script>
 </html>
