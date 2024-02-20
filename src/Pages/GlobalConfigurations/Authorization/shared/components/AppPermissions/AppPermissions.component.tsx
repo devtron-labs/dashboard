@@ -1,7 +1,13 @@
 /* eslint-disable no-param-reassign */
 import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
-import { GenericSectionErrorState, OptionType, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    GenericSectionErrorState,
+    OptionType,
+    ReactSelectInputAction,
+    showError,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { APPROVER_ACTION, CONFIG_APPROVER_ACTION } from '../userGroups/UserGroup'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { mapByKey } from '../../../../../../components/common'
@@ -22,6 +28,7 @@ import { getProjectList } from '../../../../../../components/project/service'
 import { getChartGroups } from '../../../../../../components/charts/charts.service'
 import {
     ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
+    DirectPermissionFieldName,
     emptyDirectPermissionDevtronApps,
     emptyDirectPermissionHelmApps,
     emptyDirectPermissionJobs,
@@ -56,7 +63,6 @@ const AppPermissions = () => {
     const location = useLocation()
 
     const [isLoading, setIsLoading] = useState(false)
-    // TODO (v3): use object instead
     const [appsList, setAppsList] = useState<AppPermissionsDetailType['appsList']>(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState<AppPermissionsDetailType['appsListHelmApps']>(new Map())
     const [jobsList, setJobsList] = useState<AppPermissionsDetailType['jobsList']>(new Map())
@@ -289,8 +295,7 @@ const AppPermissions = () => {
         ]
     }
 
-    // eslint-disable-next-line consistent-return
-    const setAllEnv = (directRoleFilter: APIRoleFilter) => {
+    const _getEnvironmentForRoleFiler = (directRoleFilter: APIRoleFilter) => {
         if (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
             if (directRoleFilter.environment) {
                 return directRoleFilter.environment
@@ -362,6 +367,7 @@ const AppPermissions = () => {
                 })),
             ]
         }
+        return null
     }
 
     const populateDataFromAPI = async (roleFilters: APIRoleFilter[]) => {
@@ -453,7 +459,7 @@ const AppPermissions = () => {
                         team: { label: directRoleFilter.team, value: directRoleFilter.team },
                         entity: directRoleFilter.entity,
                         entityName: updatedEntityName,
-                        environment: setAllEnv(directRoleFilter),
+                        environment: _getEnvironmentForRoleFiler(directRoleFilter),
                         ...(directRoleFilter.entity === EntityTypes.JOB && {
                             workflow: directRoleFilter.workflow
                                 ? directRoleFilter.workflow
@@ -529,7 +535,7 @@ const AppPermissions = () => {
     }
 
     // TODO (v3): Refactoring
-    function setEnvValues(index, selectedValue, actionMeta, tempPermissions) {
+    function _handleEnvironmentChange(index, selectedValue, actionMeta, tempPermissions) {
         const { action, option, name } = actionMeta
         const { value, clusterName } = option || { value: '', clusterName: '' }
         const startsWithHash = value?.startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE)
@@ -543,7 +549,7 @@ const AppPermissions = () => {
                         env.value !== `${ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE}${_clusterName}` &&
                         env.value !== `${SELECT_ALL_VALUE}${_clusterName}`,
                 )
-                if (action === 'select-option') {
+                if (action === ReactSelectInputAction.selectOption) {
                     // check all environments
                     tempPermissions[index][name] = [
                         ...tempPermissions[index][name],
@@ -551,7 +557,7 @@ const AppPermissions = () => {
                     ]
                     tempPermissions[index]['environmentError'] = null
                 }
-            } else if (action === 'select-option') {
+            } else if (action === ReactSelectInputAction.selectOption) {
                 // check all environments
                 const environmentListWithClusterCdActive = environmentsList.filter((env) => env.isClusterCdActive)
                 tempPermissions[index][name] = [
@@ -616,7 +622,7 @@ const AppPermissions = () => {
 
         const { value } = option || { value: '' }
         if (value === SELECT_ALL_VALUE) {
-            if (action === 'select-option') {
+            if (action === ReactSelectInputAction.selectOption) {
                 if (tempPermissions[index]['team'].value !== HELM_APP_UNASSIGNED_PROJECT) {
                     const projectId = projectsList.find(
                         (project) => project.name === tempPermissions[index]['team'].value,
@@ -652,7 +658,7 @@ const AppPermissions = () => {
         const { action, option, name } = actionMeta
         const { value } = option || { value: '' }
         if (value === SELECT_ALL_VALUE) {
-            if (action === 'select-option') {
+            if (action === ReactSelectInputAction.selectOption) {
                 const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
                     return [...acc, ..._option.options]
                 }, [])
@@ -692,26 +698,36 @@ const AppPermissions = () => {
     const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
         const { name } = actionMeta
         const tempPermissions = [...directPermission]
-        if (name.includes('entityName')) {
-            _handleEntityNameChange(index, selectedValue, actionMeta, tempPermissions)
-        } else if (name === 'environment') {
-            setEnvValues(index, selectedValue, actionMeta, tempPermissions)
-        } else if (name === 'workflow') {
-            _handleWorkflowChange(index, selectedValue, actionMeta, workflowList, tempPermissions)
-        } else if (name === 'team') {
-            _handleTeamChange(index, selectedValue, actionMeta, tempPermissions)
-        } else if (name === APPROVER_ACTION.label) {
-            tempPermissions[index][name] = !tempPermissions[index][name]
-        } else if (name === CONFIG_APPROVER_ACTION.label) {
-            tempPermissions[index]['action'].configApprover = !tempPermissions[index]['action'].configApprover
-        } else {
-            if (
-                tempPermissions[index][name].configApprover ||
-                tempPermissions[index][name].value.includes(CONFIG_APPROVER_ACTION.value)
-            ) {
-                selectedValue.configApprover = true
-            }
-            tempPermissions[index][name] = selectedValue
+
+        switch (name) {
+            case DirectPermissionFieldName.apps:
+            case DirectPermissionFieldName.jobs:
+                _handleEntityNameChange(index, selectedValue, actionMeta, tempPermissions)
+                break
+            case DirectPermissionFieldName.environment:
+                _handleEnvironmentChange(index, selectedValue, actionMeta, tempPermissions)
+                break
+            case DirectPermissionFieldName.workflow:
+                _handleWorkflowChange(index, selectedValue, actionMeta, workflowList, tempPermissions)
+                break
+            case DirectPermissionFieldName.team:
+                _handleTeamChange(index, selectedValue, actionMeta, tempPermissions)
+                break
+            case APPROVER_ACTION.label:
+                tempPermissions[index][name] = !tempPermissions[index][name]
+                break
+            case CONFIG_APPROVER_ACTION.label:
+                tempPermissions[index]['action'].configApprover = !tempPermissions[index]['action'].configApprover
+                break
+            default:
+                if (
+                    tempPermissions[index][name].configApprover ||
+                    tempPermissions[index][name].value.includes(CONFIG_APPROVER_ACTION.value)
+                ) {
+                    selectedValue.configApprover = true
+                }
+                tempPermissions[index][name] = selectedValue
+                break
         }
         setDirectPermission(tempPermissions)
     }

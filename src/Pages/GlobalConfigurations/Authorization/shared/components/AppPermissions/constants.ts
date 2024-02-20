@@ -45,3 +45,11 @@ export const emptyDirectPermissionJobs: DirectPermissionsRoleFilter = {
     workflow: [],
     entity: EntityTypes.JOB,
 }
+
+export enum DirectPermissionFieldName {
+    apps = 'entityName/apps',
+    jobs = 'entityName/jobs',
+    environment = 'environment',
+    workflow = 'workflow',
+    team = 'team',
+}

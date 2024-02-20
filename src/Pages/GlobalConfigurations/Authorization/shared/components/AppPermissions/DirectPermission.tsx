@@ -1,7 +1,13 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { showError, Option, getIsRequestAborted, LoadingIndicator } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Option,
+    getIsRequestAborted,
+    LoadingIndicator,
+    ReactSelectInputAction,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { sortBySelected, importComponentFromFELibrary } from '../../../../../../components/common'
@@ -12,7 +18,12 @@ import { GroupHeading, Option as singleOption } from '../../../../../../componen
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups/UserGroup'
 import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
-import { allApplicationsOption, ALL_ENVIRONMENTS_OPTION, ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
+import {
+    allApplicationsOption,
+    ALL_ENVIRONMENTS_OPTION,
+    ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
+    DirectPermissionFieldName,
+} from './constants'
 import { getWorkflowOptions, parseData } from '../../../utils'
 import { EntityTypes } from '../../../constants'
 import { DirectPermissionRow } from './types'
@@ -49,9 +60,7 @@ const DirectPermission = ({
             : permission.action.configApprover,
     }
 
-    const [openMenu, setOpenMenu] = useState<'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow' | ''>(
-        '',
-    )
+    const [openMenu, setOpenMenu] = useState<DirectPermissionFieldName | ''>('')
     const [applications, setApplications] = useState([])
     const [projectInput, setProjectInput] = useState('')
     const [clusterInput, setClusterInput] = useState('')
@@ -213,7 +222,7 @@ const DirectPermission = ({
             return
         }
         setApplications((_applications) =>
-            openMenu === 'entityName/apps' || openMenu === 'entityName/jobs'
+            openMenu === DirectPermissionFieldName.apps || openMenu === DirectPermissionFieldName.jobs
                 ? _applications
                 : sortBySelected(permission.entityName, _applications, 'value'),
         )
@@ -282,7 +291,7 @@ const DirectPermission = ({
         option.data.clusterName?.toLowerCase().includes(searchText?.toLowerCase()) ||
         option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
 
-    const onFocus = (name: 'entityName/apps' | 'entityName/jobs' | 'environment' | 'workflow') => {
+    const onFocus = (name: DirectPermissionFieldName) => {
         setOpenMenu(name)
     }
 
@@ -293,7 +302,7 @@ const DirectPermission = ({
         <>
             <Select
                 value={permission.team}
-                name="team"
+                name={DirectPermissionFieldName.team}
                 isMulti={false}
                 placeholder="Select project"
                 options={(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
@@ -321,7 +330,7 @@ const DirectPermission = ({
                     setProjectInput('')
                 }}
                 onInputChange={(value, action) => {
-                    if (action.action === 'input-change') {
+                    if (action.action === ReactSelectInputAction.inputChange) {
                         setProjectInput(value)
                     }
                 }}
@@ -332,8 +341,8 @@ const DirectPermission = ({
                         value={permission.environment}
                         isMulti
                         closeMenuOnSelect={false}
-                        name="environment"
-                        onFocus={() => onFocus('environment')}
+                        name={DirectPermissionFieldName.environment}
+                        onFocus={() => onFocus(DirectPermissionFieldName.environment)}
                         onMenuClose={onMenuClose}
                         placeholder="Select environments"
                         options={envClusters}
@@ -357,7 +366,7 @@ const DirectPermission = ({
                             setClusterInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') {
+                            if (action.action === ReactSelectInputAction.inputChange) {
                                 setClusterInput(value)
                             }
                         }}
@@ -370,8 +379,8 @@ const DirectPermission = ({
                         value={permission.environment}
                         isMulti
                         closeMenuOnSelect={false}
-                        name="environment"
-                        onFocus={() => onFocus('environment')}
+                        name={DirectPermissionFieldName.environment}
+                        onFocus={() => onFocus(DirectPermissionFieldName.environment)}
                         onMenuClose={onMenuClose}
                         placeholder="Select environments"
                         options={[{ label: '', options: [ALL_ENVIRONMENTS_OPTION] }, ...environments]}
@@ -392,7 +401,7 @@ const DirectPermission = ({
                             setEnvInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') {
+                            if (action.action === ReactSelectInputAction.inputChange) {
                                 setEnvInput(value)
                             }
                         }}
@@ -417,8 +426,10 @@ const DirectPermission = ({
                     isDisabled={!permission.team || (projectId && listForAccessType.get(projectId)?.loading)}
                     styles={authorizationSelectStyles}
                     closeMenuOnSelect={false}
-                    name={`entityName/${permission.entity}`}
-                    onFocus={() => onFocus(`entityName/${permission.entity}`)}
+                    name={isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps}
+                    onFocus={() =>
+                        onFocus(isAccessTypeJob ? DirectPermissionFieldName.jobs : DirectPermissionFieldName.apps)
+                    }
                     onMenuClose={onMenuClose}
                     placeholder={isAccessTypeJob ? 'Select Job' : 'Select applications'}
                     options={[allApplicationsOption(permission.entity), ...applications]}
@@ -434,7 +445,7 @@ const DirectPermission = ({
                         }
                     }}
                     onInputChange={(value, action) => {
-                        if (action.action === 'input-change') {
+                        if (action.action === ReactSelectInputAction.inputChange) {
                             setAppInput(value)
                         }
                     }}
@@ -447,8 +458,8 @@ const DirectPermission = ({
                         value={permission.workflow}
                         isMulti
                         closeMenuOnSelect={false}
-                        name="workflow"
-                        onFocus={() => onFocus('workflow')}
+                        name={DirectPermissionFieldName.workflow}
+                        onFocus={() => onFocus(DirectPermissionFieldName.workflow)}
                         onMenuClose={onMenuClose}
                         placeholder="Select workflow"
                         options={[
@@ -477,7 +488,7 @@ const DirectPermission = ({
                             setWorkflowInput('')
                         }}
                         onInputChange={(value, action) => {
-                            if (action.action === 'input-change') {
+                            if (action.action === ReactSelectInputAction.inputChange) {
                                 setWorkflowInput(value)
                             }
                         }}

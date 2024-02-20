@@ -1,3 +1,4 @@
+import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, ACTION_LABEL, EntityTypes } from '../../../constants'
 import { K8sPermissionFilter } from '../../../types'
@@ -16,14 +17,17 @@ export const apiGroupAll = (permission, isLabel = false) => {
 export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'RESOURCE', 'ROLE']
 
 export const multiSelectAllState = (selected, actionMeta, setState, options) => {
-    if (actionMeta.action === 'select-option' && actionMeta.option.value === SELECT_ALL_VALUE) {
+    if (actionMeta.action === ReactSelectInputAction.selectOption && actionMeta.option.value === SELECT_ALL_VALUE) {
         setState(options)
     } else if (
-        (actionMeta.action === 'deselect-option' && actionMeta.option.value === SELECT_ALL_VALUE) ||
-        (actionMeta.action === 'remove-value' && actionMeta.removedValue.value === SELECT_ALL_VALUE)
+        (actionMeta.action === ReactSelectInputAction.deselectOption && actionMeta.option.value === SELECT_ALL_VALUE) ||
+        (actionMeta.action === ReactSelectInputAction.removeValue && actionMeta.removedValue.value === SELECT_ALL_VALUE)
     ) {
         setState([])
-    } else if (actionMeta.action === 'deselect-option' || actionMeta.action === 'remove-value') {
+    } else if (
+        actionMeta.action === ReactSelectInputAction.deselectOption ||
+        actionMeta.action === ReactSelectInputAction.removeValue
+    ) {
         setState(selected.filter((o) => o.value !== SELECT_ALL_VALUE))
     } else if (selected.length === options.length - 1) {
         setState(options)
