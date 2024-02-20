@@ -140,7 +140,7 @@
         border-radius: 2px;
         border: solid 1px #b5d3f2;
         background-blend-mode: multiply;
-        background-image: linear-gradient(to bottom, #f0f7ff, #f0f7ff);
+        background-image: linear-gradient(to bottom, var(--B50), var(--B50));
         color: var(--B500);
         font-size: 11px;
         font-weight: 600;

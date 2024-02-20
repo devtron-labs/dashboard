@@ -334,6 +334,12 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             return `<span style="padding-right:6px">${lineNumber}</span>`
         },
     }
+
+    const diffViewOptions: monaco.editor.IDiffEditorConstructionOptions = {
+        ...options,
+        useInlineViewWhenSpaceIsLimited: false,
+    }
+
     return (
         <CodeEditorContext.Provider value={{ dispatch, state, handleLanguageChange, error, defaultValue, height }}>
             {children}
@@ -348,7 +354,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             value={state.code}
                             language={state.mode}
                             onChange={handleOnChange}
-                            options={options}
+                            options={diffViewOptions}
                             theme={state.theme.toLowerCase().split(' ').join('-')}
                             editorDidMount={editorDidMount}
                             height={height}
