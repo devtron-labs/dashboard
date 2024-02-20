@@ -49,18 +49,10 @@ export default defineConfig(({ mode }) => {
               manualChunks(id: string) {
                 // separating the common lib chunk
                 if (id.includes('devtron-fe-common-lib')) {
-                  return 'devtron-fe-common-lib';
+                  return '@devtron-common';
                 }
                 if (id.includes('@devtron')) {
                   return '@devtron';
-                }
-                // creating a chunk to react routes deps. Reducing the vendor chunk size
-                if (
-                  id.includes('react-router-dom') ||
-                  id.includes('@react') ||
-                  id.includes('react-router')
-                ) {
-                  return '@react-router';
                 }
               },
             },
