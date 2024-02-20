@@ -166,13 +166,12 @@ const AppPermissions = () => {
             )
         } catch (_error) {
             showError(_error)
-            setAppsList((appList) => {
-                // eslint-disable-next-line @typescript-eslint/no-shadow
-                return missingProjects.reduce((appList, projectId) => {
-                    appList.set(projectId, { loading: false, result: [], error: _error })
-                    return appList
-                }, appList)
-            })
+            setAppsList((appList) =>
+                missingProjects.reduce((_appList, projectId) => {
+                    _appList.set(projectId, { loading: false, result: [], error: _error })
+                    return _appList
+                }, appList),
+            )
         }
     }
 
@@ -182,10 +181,9 @@ const AppPermissions = () => {
             return
         }
         setAppsListHelmApps((appListHelmApps) => {
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            return missingProjects.reduce((appListHelmApps, projectId) => {
-                appListHelmApps.set(projectId, { loading: true, result: [], error: null })
-                return appListHelmApps
+            return missingProjects.reduce((_appListHelmApps, projectId) => {
+                _appListHelmApps.set(projectId, { loading: true, result: [], error: null })
+                return _appListHelmApps
             }, appListHelmApps)
         })
         try {
@@ -196,25 +194,24 @@ const AppPermissions = () => {
                 // TODO (v3): Common out
                 (appListHelmApps) =>
                     new Map(
-                        // eslint-disable-next-line @typescript-eslint/no-shadow
-                        missingProjects.reduce((appListHelmApps, projectId) => {
-                            appListHelmApps.set(projectId, {
+                        missingProjects.reduce((_appListHelmApps, projectId) => {
+                            _appListHelmApps.set(projectId, {
                                 loading: false,
                                 result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
                                 error: null,
                             })
-                            return appListHelmApps
+                            return _appListHelmApps
                         }, appListHelmApps),
                     ),
             )
         } catch (_error) {
             showError(_error)
-            setAppsListHelmApps((appListHelmApps) => {
-                return missingProjects.reduce((appList, projectId) => {
+            setAppsListHelmApps((appListHelmApps) =>
+                missingProjects.reduce((appList, projectId) => {
                     appListHelmApps.set(projectId, { loading: false, result: [], error: _error })
                     return appListHelmApps
-                }, appListHelmApps)
-            })
+                }, appListHelmApps),
+            )
         }
     }
 
@@ -277,11 +274,10 @@ const AppPermissions = () => {
             namespace: '',
             clusterName: '',
         })
-        const selectedCluster = envClustersList?.filter((cluster) => cluster.clusterName === clusterName)[0]
+        const selectedCluster = envClustersList?.find((cluster) => cluster.clusterName === clusterName)
 
         return [
             ...defaultValueArr,
-            // eslint-disable-next-line no-unsafe-optional-chaining
             ...(selectedCluster['environments']?.map((env) => ({
                 label: env.environmentName,
                 value: env.environmentIdentifier,
