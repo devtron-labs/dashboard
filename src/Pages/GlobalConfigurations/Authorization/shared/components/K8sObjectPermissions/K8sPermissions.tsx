@@ -7,7 +7,7 @@ import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-d
 import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
 import { HEADER_OPTIONS } from './K8sPermissions.utils'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { K8sPermissionModalType } from '../userGroups/userGroups.types'
+import { K8sPermissionModalType } from './types'
 
 const K8sPermissions = () => {
     const { k8sPermission, setK8sPermission } = usePermissionConfiguration()

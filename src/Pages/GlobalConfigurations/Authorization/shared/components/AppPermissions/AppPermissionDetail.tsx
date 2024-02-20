@@ -2,11 +2,11 @@
 import React from 'react'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
-import { AppPermissionsDetailType } from '../userGroups/userGroups.types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import DirectPermission from './DirectPermission'
 import { PERMISSION_LABEL_CLASS } from './constants'
 import { getPermissionDetailRowClass } from './utils'
+import { AppPermissionsDetailType } from './types'
 
 const AppPermissionDetail = ({
     accessType,

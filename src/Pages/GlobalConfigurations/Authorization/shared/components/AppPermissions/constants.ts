@@ -1,5 +1,6 @@
 import { ACCESS_TYPE_MAP, SELECT_ALL_VALUE } from '../../../../../../config'
-import { ActionTypes, DirectPermissionsRoleFilter, EntityTypes } from '../userGroups/userGroups.types'
+import { ActionTypes, EntityTypes } from '../../../constants'
+import { DirectPermissionsRoleFilter } from '../../../types'
 
 export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
 

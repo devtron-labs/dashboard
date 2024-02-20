@@ -32,12 +32,6 @@ import {
     menuComponent,
     Option as SingleSelectOption,
 } from '../../../../../../components/v2/common/ReactSelect.utils'
-import {
-    ALL_NAMESPACE,
-    K8sListItemCardType,
-    K8S_PERMISSION_INFO_MESSAGE,
-    EntityTypes,
-} from '../userGroups/userGroups.types'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/info-filled.svg'
@@ -46,8 +40,10 @@ import { resourceKindOptionLabel } from './K8sPermission.component'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { parseData } from '../../../utils'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
-import { K8sPermissionActionType } from './constants'
+import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE } from './constants'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
+import { K8sListItemCardType } from './types'
+import { ALL_NAMESPACE, EntityTypes } from '../../../constants'
 
 // TODO (v3): Minor refactoring
 const K8sListItemCard = ({

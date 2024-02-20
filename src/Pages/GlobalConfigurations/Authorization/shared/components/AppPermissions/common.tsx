@@ -2,9 +2,9 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 import { components } from 'react-select'
-import { EntityTypes } from '../userGroups/userGroups.types'
 import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
+import { EntityTypes } from '../../../constants'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
 
 export const WorkflowGroupHeading = (props) => {

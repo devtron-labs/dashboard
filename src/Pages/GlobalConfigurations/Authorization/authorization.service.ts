@@ -10,9 +10,9 @@ import {
     trash,
     UserListFilterParams,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CustomRoles } from './shared/components/userGroups/userGroups.types'
 import { Routes } from '../../../config'
 import {
+    CustomRoles,
     PermissionGroup,
     PermissionGroupBulkDeletePayload,
     PermissionGroupCreateOrUpdatePayload,

@@ -1,7 +1,7 @@
-import React, { createContext, ReactNode, useContext } from 'react'
-import { UserGroup } from './shared/components/userGroups/userGroups.types'
+import React, { createContext, useContext } from 'react'
+import { AuthorizationContextProps, AuthorizationProviderProps } from './types'
 
-const AuthorizationContext = createContext<UserGroup>({
+const AuthorizationContext = createContext<AuthorizationContextProps>({
     customRoles: {
         customRoles: [],
         possibleRolesMeta: {},
@@ -12,7 +12,7 @@ const AuthorizationContext = createContext<UserGroup>({
     isAutoAssignFlowEnabled: false,
 })
 
-export const AuthorizationProvider = ({ children, value }: { children: ReactNode; value: UserGroup }) => (
+export const AuthorizationProvider = ({ children, value }: AuthorizationProviderProps) => (
     <AuthorizationContext.Provider value={value}>{children}</AuthorizationContext.Provider>
 )
 

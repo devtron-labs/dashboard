@@ -4,15 +4,6 @@ import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 're
 import { GenericSectionErrorState, OptionType, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { APPROVER_ACTION, CONFIG_APPROVER_ACTION } from '../userGroups/UserGroup'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import {
-    ActionTypes,
-    APIRoleFilter,
-    AppPermissionsDetailType,
-    ChartGroupPermissionsFilter,
-    DirectPermissionRow,
-    DirectPermissionsRoleFilter,
-    EntityTypes,
-} from '../userGroups/userGroups.types'
 import { mapByKey, removeItemsFromArray } from '../../../../../../components/common'
 import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions'
@@ -44,6 +35,9 @@ import {
     getNavLinksConfig,
 } from './utils'
 import { getWorkflowOptions } from '../../../utils'
+import { AppPermissionsDetailType, DirectPermissionRow } from './types'
+import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
+import { ActionTypes, EntityTypes } from '../../../constants'
 
 const AppPermissions = () => {
     const { serverMode } = useContext(mainContext)

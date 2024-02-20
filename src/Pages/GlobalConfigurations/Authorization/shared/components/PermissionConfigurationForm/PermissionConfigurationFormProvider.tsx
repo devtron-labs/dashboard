@@ -1,14 +1,13 @@
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useMemo, useRef, useState } from 'react'
-import { PermissionType } from '../../../constants'
-import { PermissionGroup, User } from '../../../types'
+import { ActionTypes, EntityTypes, PermissionType } from '../../../constants'
 import {
-    ActionTypes,
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
-    EntityTypes,
     K8sPermissionFilter,
-} from '../userGroups/userGroups.types'
+    PermissionGroup,
+    User,
+} from '../../../types'
 
 const context = createContext<
     {

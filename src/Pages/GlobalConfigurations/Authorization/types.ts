@@ -1,6 +1,12 @@
 import { ReactNode } from 'react'
-import { UserStatusDto, UserListFilterParams, BaseFilterQueryParams } from '@devtron-labs/devtron-fe-common-lib'
-import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
+import {
+    UserStatusDto,
+    UserListFilterParams,
+    BaseFilterQueryParams,
+    OptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ACCESS_TYPE_MAP } from '../../../config'
+import { ActionTypes, EntityTypes } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -8,6 +14,26 @@ export interface UserAndGroupPermissionsWrapProps {
      * Handler for updating the flag in the parent's state
      */
     setIsAutoAssignFlowEnabled: (isAutoAssignFlowEnabled: boolean) => void
+}
+
+export interface APIRoleFilter {
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
+    team?: string
+    entityName?: string
+    environment?: string
+    action: string
+    accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    cluster?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    namespace?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    group?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    kind?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resource?: any
+    workflow?: string
 }
 
 // Permission Groups
@@ -130,3 +156,92 @@ export type PermissionGroupBulkDeletePayload =
     | {
           filterConfig: Pick<BaseFilterQueryParams<unknown>, 'searchKey'>
       }
+
+export interface CustomRoles {
+    id: number
+    roleName: string
+    roleDisplayName: string
+    roleDescription: string
+    entity: EntityTypes
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+}
+
+export type MetaPossibleRoles = Record<
+    CustomRoles['roleName'],
+    {
+        value: CustomRoles['roleDisplayName']
+        description: CustomRoles['roleDescription']
+    }
+>
+
+export interface CustomRoleAndMeta {
+    customRoles: CustomRoles[]
+    possibleRolesMeta: MetaPossibleRoles
+    possibleRolesMetaForHelm: MetaPossibleRoles
+    possibleRolesMetaForCluster: MetaPossibleRoles
+    possibleRolesMetaForJob: MetaPossibleRoles
+}
+
+export interface AuthorizationContextProps {
+    customRoles: CustomRoleAndMeta
+    isAutoAssignFlowEnabled: boolean
+}
+
+export interface AuthorizationProviderProps {
+    children: ReactNode
+    value: AuthorizationContextProps
+}
+
+export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN
+
+export interface RoleFilter {
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
+    team?: OptionType
+    entityName?: OptionType[]
+    environment?: OptionType[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    action?: any
+    cluster?: OptionType
+    namespace?: OptionType
+    group?: OptionType
+    kind?: OptionType
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resource?: any
+}
+
+export interface DirectPermissionsRoleFilter extends RoleFilter {
+    entity: EntityTypes.DIRECT | EntityTypes.JOB
+    team: OptionType
+    entityName: OptionType[]
+    entityNameError?: string
+    environment: OptionType[]
+    environmentError?: string
+    workflowError?: string
+    action: {
+        label: string
+        value: string
+        configApprover?: boolean
+    }
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    workflow?: OptionType[]
+    approver?: boolean
+}
+
+export interface ChartGroupPermissionsFilter extends RoleFilter {
+    entity: EntityTypes.CHART_GROUP
+    team?: never
+    environment?: never
+    action: string
+}
+
+export interface K8sPermissionFilter {
+    entity: EntityTypes
+    cluster: OptionType
+    namespace: OptionType
+    group: OptionType
+    action: OptionType
+    kind: OptionType
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resource: any
+    key?: number
+}

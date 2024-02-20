@@ -2,18 +2,6 @@ import moment from 'moment'
 import { BulkSelectionEvents, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import {
-    ActionTypes,
-    APIRoleFilter,
-    ChartGroupPermissionsFilter,
-    CustomRoleAndMeta,
-    CustomRoles,
-    DirectPermissionsRoleFilter,
-    EntityTypes,
-    K8sPermissionFilter,
-    MetaPossibleRoles,
-    ViewChartGroupPermission,
-} from './shared/components/userGroups/userGroups.types'
-import {
     ACCESS_TYPE_MAP,
     Moment12HourFormat,
     REQUIRED_FIELDS_MISSING,
@@ -21,12 +9,25 @@ import {
     SERVER_MODE,
     ZERO_TIME_STRING,
 } from '../../../config'
-import { PermissionGroup, User, UserCreateOrUpdatePayload, UserDto } from './types'
+import {
+    APIRoleFilter,
+    ChartGroupPermissionsFilter,
+    CustomRoleAndMeta,
+    CustomRoles,
+    DirectPermissionsRoleFilter,
+    K8sPermissionFilter,
+    MetaPossibleRoles,
+    PermissionGroup,
+    User,
+    UserCreateOrUpdatePayload,
+    UserDto,
+} from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 import { useAuthorizationBulkSelection } from './shared/components/BulkSelection'
 import { CONFIG_APPROVER_ACTION } from './shared/components/userGroups/UserGroup'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './shared/components/AppPermissions/constants'
+import { ActionTypes, EntityTypes, ViewChartGroupPermission } from './constants'
 
 export const transformUserResponse = (_user: UserDto): User => {
     const { lastLoginTime, timeoutWindowExpression, email_id: emailId, ...user } = _user

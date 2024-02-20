@@ -6,7 +6,6 @@ import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { sortBySelected, importComponentFromFELibrary } from '../../../../../../components/common'
 import { getAllWorkflowsForAppNames } from '../../../../../../services/service'
-import { EntityTypes, DirectPermissionRow } from '../userGroups/userGroups.types'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '../../../../../../config'
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
@@ -15,6 +14,8 @@ import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups
 import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import { allApplicationsOption, allEnvironmentsOption, ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
 import { getWorkflowOptions, parseData } from '../../../utils'
+import { EntityTypes } from '../../../constants'
+import { DirectPermissionRow } from './types'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 

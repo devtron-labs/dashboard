@@ -30,11 +30,6 @@ import {
 import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
-    ActionTypes,
-    EntityTypes,
-    ChartGroupPermissionsFilter,
-} from '../../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
-import {
     CURL_PREFIX,
     PLAYGROUND_TAB_LIST,
     REQUEST_BODY_TAB_LIST,
@@ -47,6 +42,8 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
+import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
+import { ActionTypes, EntityTypes } from '../../../Pages/GlobalConfigurations/Authorization/constants'
 
 export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{

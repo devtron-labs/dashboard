@@ -1,6 +1,7 @@
 import { SELECT_ALL_VALUE } from '../../../../../../config'
+import { ActionTypes, ACTION_LABEL, EntityTypes } from '../../../constants'
+import { K8sPermissionFilter } from '../../../types'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
-import { ActionTypes, ACTION_LABEL, EntityTypes, K8sPermissionFilter } from '../userGroups/userGroups.types'
 
 export const apiGroupAll = (permission, isLabel = false) => {
     if (permission === '') {
