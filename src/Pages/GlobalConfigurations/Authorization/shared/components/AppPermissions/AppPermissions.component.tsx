@@ -846,7 +846,7 @@ const AppPermissions = () => {
                                         accessType={accessType}
                                         removeDirectPermissionRow={removeDirectPermissionRow}
                                         handleDirectPermissionChange={handleDirectPermissionChange}
-                                        AddNewPermissionRow={addNewPermissionRowLocal}
+                                        addNewPermissionRow={addNewPermissionRowLocal}
                                         appsListHelmApps={appsListHelmApps}
                                         jobsList={jobsList}
                                         appsList={appsList}

@@ -12,7 +12,7 @@ const AppPermissionDetail = ({
     accessType,
     handleDirectPermissionChange,
     removeDirectPermissionRow,
-    AddNewPermissionRow,
+    addNewPermissionRow,
     ...props
 }: AppPermissionsDetailType) => {
     const { directPermission } = usePermissionConfiguration()
@@ -65,7 +65,7 @@ const AppPermissionDetail = ({
                     <button
                         type="button"
                         className="anchor flex left dc__gap-4 fs-13 lh-20 fw-6 p-0"
-                        onClick={() => AddNewPermissionRow(accessType)}
+                        onClick={() => addNewPermissionRow(accessType)}
                     >
                         <AddIcon className="icon-dim-20 fcb-5" />
                         Add Permission

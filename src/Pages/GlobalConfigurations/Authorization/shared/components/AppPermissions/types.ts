@@ -9,7 +9,7 @@ export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     handleDirectPermissionChange: (...rest) => void
     removeDirectPermissionRow: (index: number) => void
-    AddNewPermissionRow: (
+    addNewPermissionRow: (
         accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS,
     ) => void
     appsListHelmApps: AppsList
