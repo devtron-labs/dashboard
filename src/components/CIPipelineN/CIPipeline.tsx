@@ -602,7 +602,7 @@ export default function CIPipeline({
         if (!isJobView) {
             let ciPipelineType: CIPipelineBuildType = CIPipelineBuildType.CI_BUILD
             if (ciPipeline.isExternal) {
-                ciPipelineType = CIPipelineBuildType.CI_EXTERNAL
+                ciPipelineType = CIPipelineBuildType.CI_LINKED
             } else if (isJobCI) {
                 ciPipelineType = CIPipelineBuildType.CI_JOB
             }
