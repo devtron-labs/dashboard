@@ -1,5 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
+import { Checkbox, CHECKBOX_VALUE, noop } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { components } from 'react-select'
 import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect.utils'
@@ -16,18 +17,20 @@ export const AppOption = ({ props, permission }) => {
     return (
         <div
             onClick={() => selectOption(data)}
-            className="flex left pl-12"
+            className="flex left pt-6 pb-6 pl-8 pr-8 dc__gap-8"
             style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
         >
-            <input
-                checked={props.isSelected}
-                type="checkbox"
-                style={{ height: '16px', width: '16px', flex: '0 0 16px' }}
+            <Checkbox
+                isChecked={props.isSelected}
+                rootClassName="mb-0"
+                value={CHECKBOX_VALUE.CHECKED}
+                // No on change as the state is being controlled on the button itself
+                onChange={noop}
             />
             <div className="flex left column w-100">
-                <components.Option className="w-100 option-label-padding" {...props} />
+                <components.Option className="w-100 p-0-imp" {...props} />
                 {data.value === SELECT_ALL_VALUE && (
-                    <span className="fs-12 cn-6 ml-8 mb-4 mr-4">
+                    <span className="fs-12 cn-6">
                         {`Allow access to existing and new ${
                             permission.entity === EntityTypes.JOB ? 'jobs' : 'apps'
                         } for this project`}
