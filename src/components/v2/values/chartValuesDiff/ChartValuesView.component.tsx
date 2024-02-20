@@ -345,7 +345,7 @@ export const GitOpsDrawer = ({
         if (selectedRepoType === repoType.CONFIGURE && repoURL.length === 0) {
             return
         }
-        if (selectedRepoType === repoType.DEFAULT) {
+        if (selectedRepoType === repoType.DEFAULT || staleData) {
             dispatch({
                 type: ChartValuesViewActionTypes.setGitRepoURL,
                 payload: AUTO_GENERATE_GITOPS_REPO,
@@ -437,7 +437,7 @@ export const GitOpsDrawer = ({
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4" onClick={toggleDrawer}>
+                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left" onClick={toggleDrawer}>
                             {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
                         </a>
                     </div>
