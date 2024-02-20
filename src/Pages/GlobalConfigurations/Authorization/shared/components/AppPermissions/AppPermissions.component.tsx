@@ -4,7 +4,7 @@ import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 're
 import { GenericSectionErrorState, OptionType, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { APPROVER_ACTION, CONFIG_APPROVER_ACTION } from '../userGroups/UserGroup'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import { mapByKey, removeItemsFromArray } from '../../../../../../components/common'
+import { mapByKey } from '../../../../../../components/common'
 import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions'
 import { apiGroupAll } from '../K8sObjectPermissions/K8sPermissions.utils'
@@ -701,7 +701,8 @@ const AppPermissions = () => {
             let foundHelmApps = false
             let foundJobs = false
 
-            const permissionArr = removeItemsFromArray(permission, index, 1)
+            const permissionArr = permission.filter((perm, idx) => idx !== index)
+
             for (let i = 0; i < permissionArr.length; i++) {
                 if (permissionArr[i].accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                     foundDevtronApps = true

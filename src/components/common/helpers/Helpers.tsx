@@ -39,12 +39,6 @@ export function validateEmail(email) {
     return result
 }
 
-export function removeItemsFromArray(array: any[], index: number, items: number, ...itemsToAdd) {
-    const newArray = [...array]
-    newArray.splice(index, items, ...itemsToAdd)
-    return newArray
-}
-
 export function useForm(stateSchema, validationSchema = {}, callback) {
     const [state, setState] = useState(stateSchema)
     const [disable, setDisable] = useState(true)
