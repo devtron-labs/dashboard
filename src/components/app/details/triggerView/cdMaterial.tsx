@@ -1207,7 +1207,10 @@ const CDMaterial = ({
             return (
                 <Check
                     className={`${
-                        materialType !== MATERIAL_TYPE.none && isApprovalRequester && !isImageApprover && !disableSelection
+                        materialType !== MATERIAL_TYPE.none &&
+                        isApprovalRequester &&
+                        !isImageApprover &&
+                        !disableSelection
                             ? ''
                             : 'dc__align-right'
                     } icon-dim-24 cursor`}
@@ -1321,18 +1324,18 @@ const CDMaterial = ({
                     }}
                     artifactInfoProps={getArtifactInfoProps(mat, showApprovalInfoTippy)}
                     imageTagContainerProps={{
-                        ciPipelineId: ciPipelineId,
+                        ciPipelineId,
                         artifactId: +mat.id,
                         imageComment: mat.imageComment,
                         imageReleaseTags: mat.imageReleaseTags,
-                        appReleaseTagNames: appReleaseTagNames,
-                        setAppReleaseTagNames: setAppReleaseTagNames,
-                        tagsEditable: tagsEditable,
-                        toggleCardMode: toggleCardMode,
-                        setTagsEditable: setTagsEditable,
+                        appReleaseTagNames,
+                        setAppReleaseTagNames,
+                        tagsEditable,
+                        toggleCardMode,
+                        setTagsEditable,
                         forceReInit: true,
                         hideHardDelete: hideImageTaggingHardDelete,
-                        updateCurrentAppMaterial: updateCurrentAppMaterial,
+                        updateCurrentAppMaterial,
                         isSuperAdmin,
                     }}
                     rootClassName={imageCardRootClassName}
@@ -1376,6 +1379,7 @@ const CDMaterial = ({
                     className="dc__outline-none-imp dc__no-border p-0 bc-n50 flex"
                     type="button"
                     onClick={clearSearch}
+                    aria-label="Clear search input"
                 >
                     <Clear className="icon-dim-16 icon-n4 dc__vertical-align-middle" />
                 </button>
