@@ -69,15 +69,6 @@ const K8sListItemCard = ({
     const [allInApiGroupMapping, setAllInApiGroupMapping] = useState<OptionType[]>([])
     const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
 
-    useEffect(() => {
-        // eslint-disable-next-line no-use-before-define
-        getClusterListData()
-        setApiGroupMapping((prevMapping) => ({
-            ...prevMapping,
-            [k8sPermission.key]: [{ label: 'All API groups', value: '*' }],
-        }))
-    }, [])
-
     const getClusterListData = async () => {
         try {
             const { result } = await getClusterList()
@@ -102,6 +93,14 @@ const K8sListItemCard = ({
             showError(err)
         }
     }
+
+    useEffect(() => {
+        getClusterListData()
+        setApiGroupMapping((prevMapping) => ({
+            ...prevMapping,
+            [k8sPermission.key]: [{ label: 'All API groups', value: '*' }],
+        }))
+    }, [])
 
     const getNamespaceList = async (clusterId: string) => {
         try {
