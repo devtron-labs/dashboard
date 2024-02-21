@@ -11,9 +11,12 @@ import {
     ModuleActionRequest,
     ModuleActions,
     ModuleDetails,
+    ModuleResourceStatus,
     ModuleStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
+import { AppDetails, AppType } from '../appDetails/appDetails.type'
+import IndexStore from '../appDetails/index.store'
 
 export const MORE_MODULE_DETAILS: ModuleDetails = {
     id: 'moreIntegrations',
@@ -149,6 +152,38 @@ export const MODULE_CONFIGURATION_DETAIL_MAP = {
         linkText: 'Configure GitOps',
         link: URLS.GLOBAL_CONFIG_GITOPS,
     },
+}
+
+export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResourceStatus[]): any => {
+    const _nodes = []
+    const _resources = []
+    const resourceStatusDetails = {}
+    moduleResourcesStatus?.forEach((moduleResourceStatus) => {
+        const _resource = {
+            group: moduleResourceStatus.group,
+            version: moduleResourceStatus.version,
+            kind: moduleResourceStatus.kind,
+            name: moduleResourceStatus.name,
+            health: {
+                status: moduleResourceStatus.healthStatus,
+                message: moduleResourceStatus.healthMessage,
+            },
+        }
+        _nodes.push(_resource)
+        _resources.push(_resource)
+        resourceStatusDetails[`${moduleResourceStatus.kind}/${moduleResourceStatus.name}`] =
+            moduleResourceStatus.healthMessage
+    })
+    const _appDetail: AppDetails = JSON.parse(
+        JSON.stringify({
+            resourceTree: {
+                nodes: _nodes,
+                status: 'INTEGRATION_INSTALLING',
+            },
+        }),
+    )
+    IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
+    return resourceStatusDetails
 }
 
 export const AppStatusClass = {

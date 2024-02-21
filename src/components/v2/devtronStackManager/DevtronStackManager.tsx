@@ -27,7 +27,7 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
 import { isGitopsConfigured } from '../../../services/service'
 import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
-import { AppStatusClass } from './DevtronStackManager.utils'
+import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -72,6 +72,10 @@ export default function DevtronStackManager({
         getModuleDetails()
         getCurrentServerInfo()
     }, [])
+
+    useEffect(() => {
+        buildResourceStatusModalData(selectedModule.moduleResourcesStatus)
+    }, [selectedModule])
 
     /**
      * Activate polling for latest server info, module details & logPodName
