@@ -14,14 +14,14 @@ import { URLS } from '../../../../../config'
 import { ReactComponent as Warning } from '../../../../../assets/icons/ic-warning.svg'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import { PermissionType } from '../../constants'
-import { PermissionGroup } from '../../types'
+import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
 import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
+import { getRoleFilters, isDirectPermissionFormComplete } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
@@ -85,26 +85,22 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         }
         setSubmitting(true)
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { emailId, groups, ...payload } = createUserPermissionPayload({
-            id: _permissionGroup?.id,
-            userIdentifier: '',
-            userGroups: [],
-            serverMode,
-            directPermission,
-            chartPermission,
-            k8sPermission,
-            isSuperAdminPermission,
-        })
-
-        const _payload = {
-            ...payload,
-            name: name.value,
-            description,
+        const payload: PermissionGroupCreateOrUpdatePayload = {
+            // ID 0 denotes create operation
+            id: _permissionGroup?.id || 0,
+            name: name.value.trim(),
+            description: description?.trim(),
+            superAdmin: isSuperAdminPermission,
+            roleFilters: getRoleFilters({
+                k8sPermission,
+                directPermission,
+                serverMode,
+                chartPermission,
+            }),
         }
 
         try {
-            await createOrUpdatePermissionGroup(_payload)
+            await createOrUpdatePermissionGroup(payload)
             if (isAddMode) {
                 toast.success('Group created')
             } else {

@@ -6,7 +6,7 @@ import {
     OptionType,
     UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ACCESS_TYPE_MAP } from '../../../config'
+import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
 import { ActionTypes, EntityTypes } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
@@ -115,20 +115,20 @@ export interface UserDto {
 }
 
 export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus'> {
+    emailId: UserDto['email_id']
     /**
      * Time until which the user is active
      * Note: Only a user with status 'active' can have 'timeToLive'
      *
      * @default ''
      */
-    timeToLive?: string
-    emailId: UserDto['email_id']
-    userStatus?: UserStatus
+    timeToLive: string
+    userStatus: UserStatus
 }
 
 export type UserCreateOrUpdatePayload = Pick<
     User,
-    'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'groups'
+    'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'groups' | 'timeToLive'
 >
 
 // Others
@@ -246,4 +246,15 @@ export interface K8sPermissionFilter {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resource: any
     key?: number
+}
+
+export interface CreateUserPermissionPayloadParams extends Partial<Pick<User, 'userStatus' | 'timeToLive'>> {
+    id: number
+    userIdentifier: string
+    userGroups: OptionType[]
+    serverMode: SERVER_MODE
+    directPermission: DirectPermissionsRoleFilter[]
+    chartPermission: ChartGroupPermissionsFilter
+    k8sPermission: K8sPermissionFilter[]
+    isSuperAdminPermission: boolean
 }

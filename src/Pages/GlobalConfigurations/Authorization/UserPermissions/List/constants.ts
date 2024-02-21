@@ -1,3 +1,4 @@
+import { UserStatus } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../../../config'
 import { User } from '../../types'
 import { DefaultUserKey } from '../constants'
@@ -8,6 +9,8 @@ export const userListLoading: User[] = Array.from(Array(DEFAULT_SHIMMER_LOADING_
     roleFilters: [],
     groups: [],
     superAdmin: false,
+    userStatus: UserStatus.active,
+    timeToLive: '',
 }))
 
 export const DEFAULT_USER_TOOLTIP_CONTENT: Record<DefaultUserKey, string> = {

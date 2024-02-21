@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { BulkSelectionEvents, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkSelectionEvents, noop, OptionType, UserStatus } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import {
     ACCESS_TYPE_MAP,
@@ -11,11 +11,9 @@ import {
 } from '../../../config'
 import {
     APIRoleFilter,
-    ChartGroupPermissionsFilter,
+    CreateUserPermissionPayloadParams,
     CustomRoleAndMeta,
     CustomRoles,
-    DirectPermissionsRoleFilter,
-    K8sPermissionFilter,
     MetaPossibleRoles,
     PermissionGroup,
     User,
@@ -172,6 +170,64 @@ const getSelectedEnvironments = (permission) => {
     return envList
 }
 
+export const getRoleFilters = ({
+    directPermission,
+    k8sPermission,
+    chartPermission,
+    serverMode,
+}: Pick<
+    CreateUserPermissionPayloadParams,
+    'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
+>) => {
+    const roleFilters: UserCreateOrUpdatePayload['roleFilters'] = [
+        ...directPermission
+            .filter(
+                (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
+            )
+            .map((permission) => ({
+                ...permission,
+                action: permission.action.configApprover
+                    ? `${permission.action.value},configApprover`
+                    : permission.action.value,
+                team: permission.team.value,
+                environment: getSelectedEnvironments(permission),
+                entityName: getSelectedPermissionValues(permission.entityName),
+                entity: permission.entity,
+                ...(permission.entity === EntityTypes.JOB && {
+                    workflow: permission.workflow?.length ? getSelectedPermissionValues(permission.workflow) : '',
+                }),
+            })),
+        ...k8sPermission.map((permission) => ({
+            ...permission,
+            entity: EntityTypes.CLUSTER as APIRoleFilter['entity'],
+            action: permission.action.value,
+            cluster: permission.cluster.label,
+            group: permission.group.value === SELECT_ALL_VALUE ? '' : permission.group.value,
+            kind: permission.kind.value === SELECT_ALL_VALUE ? '' : permission.kind.label,
+            namespace: permission.namespace.value === SELECT_ALL_VALUE ? '' : permission.namespace.value,
+            resource: getSelectedPermissionValues(permission.resource),
+        })),
+    ]
+
+    if (serverMode !== SERVER_MODE.EA_ONLY) {
+        roleFilters.push({
+            ...chartPermission,
+            team: '',
+            environment: '',
+            entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
+        })
+        if (chartPermission.action !== ActionTypes.VIEW) {
+            roleFilters.push({
+                ...ViewChartGroupPermission,
+                team: '',
+                environment: '',
+            })
+        }
+    }
+
+    return roleFilters
+}
+
 export const createUserPermissionPayload = ({
     id,
     userIdentifier,
@@ -181,72 +237,23 @@ export const createUserPermissionPayload = ({
     chartPermission,
     k8sPermission,
     isSuperAdminPermission,
-}: {
-    id: number
-    userIdentifier: string
-    userGroups: OptionType[]
-    serverMode: SERVER_MODE
-    directPermission: DirectPermissionsRoleFilter[]
-    chartPermission: ChartGroupPermissionsFilter
-    k8sPermission: K8sPermissionFilter[]
-    isSuperAdminPermission: boolean
-}): UserCreateOrUpdatePayload => {
-    const userPermissionPayload: UserCreateOrUpdatePayload = {
-        // ID 0 denotes create operation
-        id: id || 0,
-        // TODO (v3): Move out the user logic
-        emailId: userIdentifier,
-        groups: userGroups.map((group) => group.value),
-        roleFilters: [
-            ...directPermission
-                .filter(
-                    (permission) =>
-                        permission.team?.value && permission.environment.length && permission.entityName.length,
-                )
-                .map((permission) => ({
-                    ...permission,
-                    action: permission.action.configApprover
-                        ? `${permission.action.value},configApprover`
-                        : permission.action.value,
-                    team: permission.team.value,
-                    environment: getSelectedEnvironments(permission),
-                    entityName: getSelectedPermissionValues(permission.entityName),
-                    entity: permission.entity,
-                    ...(permission.entity === EntityTypes.JOB && {
-                        workflow: permission.workflow?.length ? getSelectedPermissionValues(permission.workflow) : '',
-                    }),
-                })),
-            ...k8sPermission.map((permission) => ({
-                ...permission,
-                entity: EntityTypes.CLUSTER as APIRoleFilter['entity'],
-                action: permission.action.value,
-                cluster: permission.cluster.label,
-                group: permission.group.value === SELECT_ALL_VALUE ? '' : permission.group.value,
-                kind: permission.kind.value === SELECT_ALL_VALUE ? '' : permission.kind.label,
-                namespace: permission.namespace.value === SELECT_ALL_VALUE ? '' : permission.namespace.value,
-                resource: getSelectedPermissionValues(permission.resource),
-            })),
-        ],
-        superAdmin: isSuperAdminPermission,
-    }
-    if (serverMode !== SERVER_MODE.EA_ONLY) {
-        userPermissionPayload.roleFilters.push({
-            ...chartPermission,
-            team: '',
-            environment: '',
-            entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
-        })
-        if (chartPermission.action !== ActionTypes.VIEW) {
-            userPermissionPayload.roleFilters.push({
-                ...ViewChartGroupPermission,
-                team: '',
-                environment: '',
-            })
-        }
-    }
-
-    return userPermissionPayload
-}
+    userStatus = UserStatus.active,
+    timeToLive = '',
+}: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
+    // ID 0 denotes create operation
+    id: id || 0,
+    emailId: userIdentifier,
+    groups: userGroups.map((group) => group.value),
+    superAdmin: isSuperAdminPermission,
+    userStatus,
+    timeToLive,
+    roleFilters: getRoleFilters({
+        k8sPermission,
+        directPermission,
+        serverMode,
+        chartPermission,
+    }),
+})
 
 export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {
     let isComplete = true

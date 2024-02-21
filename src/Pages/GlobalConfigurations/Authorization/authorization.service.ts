@@ -3,7 +3,6 @@ import {
     BaseFilterQueryParams,
     get,
     getUrlWithSearchParams,
-    noop,
     post,
     put,
     ResponseType,
@@ -28,7 +27,7 @@ import { transformUserResponse } from './utils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 
-const getStatusFromUserStatus = importComponentFromFELibrary('getStatusFromUserStatus', noop, 'function')
+const getUserStatusAndTimeoutPayload = importComponentFromFELibrary('getUserStatusAndTimeoutPayload', null, 'function')
 
 // User Permissions
 export const getUserById = async (userId: User['id']): Promise<User> => {
@@ -42,11 +41,11 @@ export const getUserById = async (userId: User['id']): Promise<User> => {
     }
 }
 
-export const createOrUpdateUser = ({ emailId, userStatus, ...data }: UserCreateOrUpdatePayload) => {
+export const createOrUpdateUser = ({ emailId, userStatus, timeToLive, ...data }: UserCreateOrUpdatePayload) => {
     const _data: UserDto = {
         ...data,
         email_id: emailId,
-        userStatus: getStatusFromUserStatus(userStatus),
+        ...(getUserStatusAndTimeoutPayload ? getUserStatusAndTimeoutPayload(userStatus, timeToLive) : {}),
     }
     const isUpdate = !!_data.id
     const options: APIOptions = {

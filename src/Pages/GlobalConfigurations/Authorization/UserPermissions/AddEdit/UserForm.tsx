@@ -131,8 +131,11 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         })
 
         try {
-            // TODO (v3): Pass the status as well
-            await createOrUpdateUser(payload)
+            await createOrUpdateUser({
+                ...payload,
+                userStatus,
+                timeToLive,
+            })
             if (isAddMode) {
                 toast.success('User(s) added')
             } else {
