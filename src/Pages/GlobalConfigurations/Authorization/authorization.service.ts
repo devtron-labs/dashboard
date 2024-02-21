@@ -1,5 +1,6 @@
 import {
     APIOptions,
+    BaseFilterQueryParams,
     get,
     getUrlWithSearchParams,
     post,
@@ -7,21 +8,22 @@ import {
     ResponseType,
     showError,
     trash,
+    UserListFilterParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CustomRoles } from './shared/components/userGroups/userGroups.types'
 import { Routes } from '../../../config'
 import {
-    BaseFilterQueryParams,
     PermissionGroup,
+    PermissionGroupBulkDeletePayload,
     PermissionGroupCreateOrUpdatePayload,
     PermissionGroupDto,
     User,
+    UserBulkDeletePayload,
     UserCreateOrUpdatePayload,
     UserDto,
     UserRole,
 } from './types'
 import { transformUserResponse } from './utils'
-import { SortableKeys as UserListSortableKeys } from './UserPermissions/List/constants'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 
 // User Permissions
@@ -51,7 +53,7 @@ export const createOrUpdateUser = ({ emailId, ...data }: UserCreateOrUpdatePaylo
 export const deleteUser = (userId: User['id']) => trash(`${Routes.USER}/${userId}`)
 
 export const getUserList = async (
-    queryParams: BaseFilterQueryParams<UserListSortableKeys>,
+    queryParams: UserListFilterParams,
     signal?: AbortSignal,
 ): Promise<{
     users: User[]
@@ -78,6 +80,16 @@ export const getUserList = async (
         throw error
     }
 }
+
+export const deleteUserInBulk = (payload: UserBulkDeletePayload) =>
+    trash(
+        `${Routes.USER}/bulk`,
+        'ids' in payload
+            ? { ids: payload.ids }
+            : {
+                  listingRequest: payload.filterConfig,
+              },
+    )
 
 // Permission Groups
 export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Promise<PermissionGroup> => {
@@ -130,6 +142,16 @@ export const getPermissionGroupList = async (
 }
 
 export const deletePermissionGroup = (id: PermissionGroup['id']) => trash(`${Routes.USER_ROLE_GROUP}/${id}`)
+
+export const deletePermissionGroupInBulk = (payload: PermissionGroupBulkDeletePayload) =>
+    trash(
+        `${Routes.USER_ROLE_GROUP}/bulk`,
+        'ids' in payload
+            ? { ids: payload.ids }
+            : {
+                  listingRequest: payload.filterConfig,
+              },
+    )
 
 // Others
 export const getCustomRoles = async (): Promise<ResponseType<CustomRoles[]>> => {
