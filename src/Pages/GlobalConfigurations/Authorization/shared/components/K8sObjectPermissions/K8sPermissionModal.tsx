@@ -29,7 +29,7 @@ const K8sPermissionModal = ({
                 _k8sPermissionList = [getPermissionObject(_k8sPermissionList.length), ..._k8sPermissionList]
                 break
             case K8sPermissionActionType.delete:
-                _k8sPermissionList.filter((permission) => permission.key !== key)
+                _k8sPermissionList = _k8sPermissionList.filter((permission, index) => index !== key)
                 break
             case K8sPermissionActionType.clone: {
                 const currentLen = _k8sPermissionList.length
@@ -146,7 +146,8 @@ const K8sPermissionModal = ({
                             objectMapping={objectMapping}
                             setObjectMapping={setObjectMapping}
                             selectedPermissionAction={selectedPermissionAction}
-                            key={_k8sPermission.key}
+                            // eslint-disable-next-line react/no-array-index-key
+                            key={`${_k8sPermission.key}-${index}`}
                         />
                     ))}
                 </div>

@@ -399,6 +399,8 @@ const K8sListItemCard = ({
                     styles={authorizationSelectStyles}
                     isLoading={isClusterListLoading}
                     isDisabled={isClusterListLoading}
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                 />
             </div>
             {k8sPermission?.cluster && (
@@ -420,6 +422,8 @@ const K8sListItemCard = ({
                             }}
                             styles={authorizationSelectStyles}
                             isLoading={isNamespaceListLoading}
+                            menuPlacement="auto"
+                            menuPosition="fixed"
                         />
                     </div>
                     <div className="flexbox w-100">
@@ -440,6 +444,8 @@ const K8sListItemCard = ({
                                     }}
                                     styles={authorizationSelectStyles}
                                     isLoading={isApiGroupListLoading}
+                                    menuPlacement="auto"
+                                    menuPosition="fixed"
                                 />
                             </div>
                         </div>
@@ -461,6 +467,8 @@ const K8sListItemCard = ({
                                         LoadingIndicator,
                                     }}
                                     styles={k8sRoleSelectionStyle}
+                                    menuPlacement="auto"
+                                    menuPosition="fixed"
                                 />
                             </div>
                         </div>
@@ -523,6 +531,8 @@ const K8sListItemCard = ({
                                 }),
                             }}
                             isLoading={isResourceListLoading}
+                            menuPlacement="auto"
+                            menuPosition="fixed"
                         />
                     </div>
                     {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (
@@ -542,7 +552,6 @@ const K8sListItemCard = ({
                             defaultValue={k8sOptions[0]}
                             onChange={setRoleSelection}
                             isSearchable={false}
-                            menuPlacement="auto"
                             formatOptionLabel={formatOptionLabel}
                             components={{
                                 ClearIndicator: null,
@@ -550,6 +559,8 @@ const K8sListItemCard = ({
                                 ValueContainer: CustomValueContainer,
                             }}
                             styles={k8sRoleSelectionStyle}
+                            menuPlacement="auto"
+                            menuPosition="fixed"
                         />
                     </div>
                 </>

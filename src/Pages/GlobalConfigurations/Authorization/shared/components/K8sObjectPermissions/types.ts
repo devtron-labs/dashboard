@@ -3,7 +3,6 @@ import { K8sPermissionFilter } from '../../../types'
 import { K8sPermissionActionType } from './constants'
 
 export interface K8sListItemCardType {
-    key?: number
     k8sPermission: K8sPermissionFilter
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleK8sPermission: (action: K8sPermissionActionType, key?: number, data?: any) => void
