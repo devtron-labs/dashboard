@@ -190,6 +190,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     }
 
     const renderSideInfoColumn = () => {
+        // if gitMaterials is null it will not take the default value
         const { appName, description, gitMaterials = [], createdOn, createdBy, projectName, chartUsed } = appMetaInfo
 
         const handleSaveDescription = async (value: string) => {
@@ -285,7 +286,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             {createdBy}
                         </div>
                     </div>
-                    {appType === 'app' && gitMaterials.length > 0 && (
+                    {appType === 'app' && gitMaterials?.length > 0 && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
                             <div className="flexbox-col dc__gap-4">
