@@ -106,13 +106,23 @@ export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Pr
     }
 }
 
-export const createOrUpdatePermissionGroup = (payload: PermissionGroupCreateOrUpdatePayload) => {
+export const createOrUpdatePermissionGroup = ({
+    name,
+    description,
+    ...payload
+}: PermissionGroupCreateOrUpdatePayload) => {
+    const _payload = {
+        ...payload,
+        name: name.trim(),
+        description: description?.trim(),
+    }
+
     const isUpdate = !!payload.id
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
 
-    return isUpdate ? put(Routes.USER_ROLE_GROUP, payload, options) : post(Routes.USER_ROLE_GROUP, payload, options)
+    return isUpdate ? put(Routes.USER_ROLE_GROUP, _payload, options) : post(Routes.USER_ROLE_GROUP, _payload, options)
 }
 
 export const getPermissionGroupList = async (

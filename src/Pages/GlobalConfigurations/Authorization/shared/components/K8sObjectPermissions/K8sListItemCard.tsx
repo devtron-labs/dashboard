@@ -46,7 +46,6 @@ import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { K8sItemCardLoadingState, K8sListItemCardType } from './types'
 import { ALL_NAMESPACE, EntityTypes } from '../../../constants'
 
-// TODO (v3): Minor refactoring
 const K8sListItemCard = ({
     k8sPermission,
     handleK8sPermission,

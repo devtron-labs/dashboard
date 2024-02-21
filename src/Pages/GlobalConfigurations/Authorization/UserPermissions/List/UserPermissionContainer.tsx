@@ -40,7 +40,6 @@ const UserPermissionContainer = ({
     const draggableRef = useRef<HTMLDivElement>()
     const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
-    // TODO (v3): Check and fix as applicable
     const selectedUsersCount = isBulkSelectionApplied ? totalCount : getSelectedIdentifiersCount()
 
     if (!showLoadingState) {

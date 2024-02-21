@@ -72,7 +72,6 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         setDeleteConfirmationModal(!deleteConfirmationModal)
     }
 
-    // TODO (v3): Check for trimming at service layer
     const handleGroupNameChange = (e) => setName({ value: e.target.value, error: '' })
 
     const handleSubmit = async () => {
@@ -88,8 +87,8 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         const payload: PermissionGroupCreateOrUpdatePayload = {
             // ID 0 denotes create operation
             id: _permissionGroup?.id || 0,
-            name: name.value.trim(),
-            description: description?.trim(),
+            name: name.value,
+            description,
             superAdmin: isSuperAdminPermission,
             roleFilters: getRoleFilters({
                 k8sPermission,

@@ -329,7 +329,6 @@ const EditAPITokenContainer = ({ tokenList, ...props }: EditTokenType) => {
     const [userData, setUserData] = useState<User>()
     const [editData, setEditData] = useState<EditDataType>()
 
-    // TODO (v3): Use useAsync and fix multiple error toast
     const getUserData = async (userId: number) => {
         try {
             const user = await getUserById(userId)

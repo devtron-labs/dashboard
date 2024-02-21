@@ -30,7 +30,6 @@ import { DirectPermissionRow } from './types'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
-// TODO (v3): Move the type to the immediate file + AppPermission + refactoring
 const DirectPermission = ({
     permission,
     handleDirectPermissionChange,
