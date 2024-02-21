@@ -71,6 +71,7 @@ import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -1338,32 +1339,39 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 </div>
             )
         }
+
         return (
-            <div className="svg-wrapper-trigger bcn-0">
-                <TriggerViewContext.Provider
-                    value={{
-                        invalidateCache: this.state.invalidateCache,
-                        refreshMaterial: this.refreshMaterial,
-                        onClickTriggerCINode: this.onClickTriggerCINode,
-                        onClickCIMaterial: this.onClickCIMaterial,
-                        onClickCDMaterial: this.onClickCDMaterial,
-                        onClickRollbackMaterial: this.onClickRollbackMaterial,
-                        closeCIModal: this.closeCIModal,
-                        selectCommit: this.selectCommit,
-                        selectMaterial: this.selectMaterial,
-                        toggleChanges: this.toggleChanges,
-                        toggleInvalidateCache: this.toggleInvalidateCache,
-                        getMaterialByCommit: this.getMaterialByCommit,
-                        getFilteredMaterial: this.getFilteredMaterial,
-                    }}
-                >
-                    {this.renderHostErrorMessage()}
-                    {this.renderWorkflow()}
-                    {this.renderCIMaterial()}
-                    {this.renderCDMaterial()}
-                    {this.renderApprovalMaterial()}
-                </TriggerViewContext.Provider>
-            </div>
+            <>
+                <div className="svg-wrapper-trigger bcn-0">
+                    <TriggerViewContext.Provider
+                        value={{
+                            invalidateCache: this.state.invalidateCache,
+                            refreshMaterial: this.refreshMaterial,
+                            onClickTriggerCINode: this.onClickTriggerCINode,
+                            onClickCIMaterial: this.onClickCIMaterial,
+                            onClickCDMaterial: this.onClickCDMaterial,
+                            onClickRollbackMaterial: this.onClickRollbackMaterial,
+                            closeCIModal: this.closeCIModal,
+                            selectCommit: this.selectCommit,
+                            selectMaterial: this.selectMaterial,
+                            toggleChanges: this.toggleChanges,
+                            toggleInvalidateCache: this.toggleInvalidateCache,
+                            getMaterialByCommit: this.getMaterialByCommit,
+                            getFilteredMaterial: this.getFilteredMaterial,
+                        }}
+                    >
+                        {this.renderHostErrorMessage()}
+                        {this.renderWorkflow()}
+                        {this.renderCIMaterial()}
+                        {this.renderCDMaterial()}
+                        {this.renderApprovalMaterial()}
+                    </TriggerViewContext.Provider>
+                </div>
+
+                {ImagePromotionRouter && (
+                    <ImagePromotionRouter basePath={this.props.match.path} baseURL={this.props.match.url} workflows={this.state.workflows} />
+                )}
+            </>
         )
     }
 }
