@@ -126,8 +126,8 @@ const K8sPermissionModal = ({
                 <div className="p-20 fs-13 dc__overflow-scroll flexbox-col flex-grow-1 dc__window-bg">
                     {!selectedPermissionAction && (
                         <div className="flex left fs-13 fw-6">
-                            <span className="flex cb-5 cursor" onClick={addNewPermissionCard}>
-                                <AddIcon className="add-svg fcb-5 mr-12" />
+                            <span className="flex cb-5 cursor dc__gap-12" onClick={addNewPermissionCard}>
+                                <AddIcon className="icon-dim-20 fcb-5" />
                                 Add another
                             </span>
                         </div>
