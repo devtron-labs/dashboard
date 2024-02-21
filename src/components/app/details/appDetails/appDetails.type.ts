@@ -1,5 +1,5 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
+import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {

@@ -49,7 +49,7 @@ import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.s
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 
 import { SourceInfo } from './SourceInfo'
-import { AppStreamData, Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
+import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
 import {
     aggregateNodes,
     getSelectedNodeItems,

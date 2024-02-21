@@ -1,18 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ReactComponent as InfoIcon } from '../../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Chat } from '../../../../../assets/icons/ic-chat-circle-dots.svg'
 import { APP_STATUS_HEADERS, DEPLOYMENT_STATUS } from '../../../../../config'
 import { StatusFilterButtonComponent } from '../../k8Resource/StatusFilterButton.component'
 import IndexStore from '../../index.store'
-import { AppStatusDetailsChartType, NodeStreamMap } from '../environment.type'
+import { AppStatusDetailsChartType } from '../environment.type'
 import { AggregatedNodes } from '../../../../app/types'
 import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import { STATUS_SORTING_ORDER } from './constants'
 
-export default function AppStatusDetailsChart({
-    filterRemoveHealth = false,
-    showFooter,
-}: AppStatusDetailsChartType) {
+export default function AppStatusDetailsChart({ filterRemoveHealth = false, showFooter }: AppStatusDetailsChartType) {
     const _appDetails = IndexStore.getAppDetails()
     const [currentFilter, setCurrentFilter] = useState('')
 
@@ -43,7 +40,10 @@ export default function AppStatusDetailsChart({
     }
 
     function getNodeMessage(kind: string, name: string) {
-        if (_appDetails.resourceTree?.resourcesSyncResult && _appDetails.resourceTree?.resourcesSyncResult.hasOwnProperty(`${kind}/${name}`)) {
+        if (
+            _appDetails.resourceTree?.resourcesSyncResult &&
+            _appDetails.resourceTree?.resourcesSyncResult.hasOwnProperty(`${kind}/${name}`)
+        ) {
             return _appDetails.resourceTree.resourcesSyncResult[`${kind}/${name}`]
         }
         return ''

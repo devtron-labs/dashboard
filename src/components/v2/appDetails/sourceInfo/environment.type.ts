@@ -1,6 +1,6 @@
 import { DeploymentStatusDetailsBreakdownDataType } from '../../../app/details/appDetails/appDetails.type'
 import { HelmReleaseStatus } from '../../../external-apps/ExternalAppService'
-import { AppDetails, AppStreamData } from '../appDetails.type'
+import { AppDetails } from '../appDetails.type'
 
 export interface EnvironmentStatusComponentType {
     loadingDetails: boolean

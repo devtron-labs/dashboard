@@ -4,16 +4,13 @@ import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
-import { CLAIR_TOOL_VERSION_V2, CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
-import IndexStore from '../appDetails/index.store'
-import { AppDetails, AppType } from '../appDetails/appDetails.type'
+import { CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeModuleEnableAction, executeServerAction } from './DevtronStackManager.service'
 import {
     ModuleActionRequest,
     ModuleActions,
     ModuleDetails,
-    ModuleResourceStatus,
     ModuleStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     DeploymentAppTypes,
@@ -33,7 +33,6 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
 
     const appDetails = IndexStore.getAppDetails()
     const conditions = appDetails?.resourceTree?.conditions || []
-
 
     const showIssuesListingModal = () => {
         toggleIssuesModal(true)
