@@ -223,7 +223,7 @@ export interface ResourceTree {
     nodes: Array<Node>
     podMetadata: Array<PodMetaData>
     status: string
-    resourcesSyncResult?: Object
+    resourcesSyncResult?: Record<string,string>
 
 }
 
