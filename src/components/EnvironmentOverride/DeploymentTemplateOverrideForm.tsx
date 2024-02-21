@@ -228,7 +228,7 @@ export default function DeploymentTemplateOverrideForm({
             const deploymentTemplateResp = isConfigProtectionEnabled
                 ? await checkForProtectedLockedChanges()
                 : await api(+appId, +envId, payload)
-            if (deploymentTemplateResp.result.isLockConfigError && !saveEligibleChanges) {
+            if (deploymentTemplateResp.result?.isLockConfigError && !saveEligibleChanges) {
                 // checking if any locked changes and opening drawer to show eligible and locked ones
                 setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
                 setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
@@ -245,7 +245,7 @@ export default function DeploymentTemplateOverrideForm({
             } else {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
-                    payload: YAML.stringify(deploymentTemplateResp.result.envOverrideValues),
+                    payload: YAML.stringify(deploymentTemplateResp.result?.envOverrideValues),
                 })
             }
             toast.success(
