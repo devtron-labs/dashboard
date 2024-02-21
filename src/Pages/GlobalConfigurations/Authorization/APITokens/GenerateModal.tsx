@@ -5,7 +5,7 @@ import { ReactComponent as Success } from '../../../../assets/icons/ic-success-o
 import { ReactComponent as Clipboard } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
-import { GenerateTokenModalType } from './authorization.type'
+import { GenerateTokenModalType } from './apiToken.type'
 
 const GenerateModal = ({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) => {
     const [copied, setCopied] = useState(false)

@@ -9,7 +9,7 @@ import emptyGeneratToken from '../../../../assets/img/ic-empty-generate-token.pn
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
-import { TokenListType, TokenResponseType } from './authorization.type'
+import { TokenListType, TokenResponseType } from './apiToken.type'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApiTokens = () => {

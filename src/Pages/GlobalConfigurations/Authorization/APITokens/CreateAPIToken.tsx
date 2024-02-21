@@ -13,10 +13,10 @@ import {
     CustomInput,
     ResizableTextarea,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { FormType, GenerateTokenType } from './authorization.type'
+import { FormType, GenerateTokenType } from './apiToken.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
-import { getDateInMilliseconds } from './authorization.utils'
+import { getDateInMilliseconds } from './apiToken.utils'
 import GenerateActionButton from './GenerateActionButton'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
