@@ -112,15 +112,18 @@ const K8sPermissionModal = ({
 
     return (
         <Drawer onEscape={close} position="right" width="800px">
-            <div onClick={stopPropagation} className="h-100 dc__overflow-hidden">
+            <div onClick={stopPropagation} className="h-100 h-100 flexbox-col flex-grow-1 dc__content-space">
                 <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bcn-0 dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes resource permission</span>
-                    <span className="icon-dim-20 cursor" data-testid="k8s-permission-drawer-close" onClick={close}>
+                    <span
+                        className="icon-dim-20 cursor icon-use-fill-n6 flex"
+                        data-testid="k8s-permission-drawer-close"
+                        onClick={close}
+                    >
                         <Close />
                     </span>
                 </div>
-                {/* TODO (v3): Fix height issue */}
-                <div className="p-20 fs-13 dc__overflow-scroll dc__cluster-modal">
+                <div className="p-20 fs-13 dc__overflow-scroll flexbox-col flex-grow-1 dc__window-bg">
                     {!selectedPermissionAction && (
                         <div className="flex left fs-13 fw-6">
                             <span className="flex cb-5 cursor" onClick={addNewPermissionCard}>

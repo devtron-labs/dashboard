@@ -535,6 +535,8 @@ const AppPermissions = () => {
     }
 
     // TODO (v3): Refactoring
+    // We don't need to handle the case to SELECT_ALL when all environments are manually selected
+    // since that would mean all future environments would be selected as well
     function _handleEnvironmentChange(index, selectedValue, actionMeta, tempPermissions) {
         const { action, option, name } = actionMeta
         const { value, clusterName } = option || { value: '', clusterName: '' }
@@ -620,6 +622,9 @@ const AppPermissions = () => {
         const { action, option } = actionMeta
 
         const { value } = option || { value: '' }
+
+        // We don't need to handle the case to SELECT_ALL when all entities are manually selected
+        // since that would mean all future entities would be selected as well
         if (value === SELECT_ALL_VALUE) {
             if (action === ReactSelectInputAction.selectOption) {
                 if (tempPermissions[index].team.value !== HELM_APP_UNASSIGNED_PROJECT) {

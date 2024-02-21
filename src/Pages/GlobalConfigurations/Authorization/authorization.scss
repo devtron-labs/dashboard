@@ -10,18 +10,21 @@
 .select__group {
     border-bottom: 1px solid var(--N200);
 
+    // For the group headings in select options
     .select__group-heading {
         font-size: 12px;
         font-weight: 600;
-        color: #596168;
+        color: var(--N600);
         text-transform: initial;
     }
 }
 
 .select__option {
+
+    // For highlighting the matching text in Direct Permission options
     mark {
         padding: 0;
-        background-color: #ffd597;
+        background-color: var(--Y300);
         font-weight: 600;
     }
 }
@@ -32,13 +35,8 @@
     grid-column-gap: 12px;
 }
 
-.dc__cluster-modal {
-    background-color: var(--window-bg);
-    height: calc(100vh - 116px);
-}
-
-// New Code
 .authorization-container {
+
     // To make the loader take the full width
     .loader {
         flex-grow: 1;
@@ -101,7 +99,7 @@
         .form__radio-item .form__radio-item-content {
             padding: 6px 0;
         }
-        
+
         .radio__button {
             margin-right: 0;
         }
