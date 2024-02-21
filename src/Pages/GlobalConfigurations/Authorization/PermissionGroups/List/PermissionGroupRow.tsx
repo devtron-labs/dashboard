@@ -1,5 +1,12 @@
 import React, { useState } from 'react'
-import { DeleteDialog, getRandomColor, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BulkSelectionEvents,
+    Checkbox,
+    CHECKBOX_VALUE,
+    DeleteDialog,
+    getRandomColor,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ReactComponent as Edit } from '../../../../../assets/icons/ic-pencil.svg'
@@ -7,11 +14,24 @@ import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-i
 
 import { PermissionGroupRowProps } from './types'
 import { deletePermissionGroup } from '../../authorization.service'
+import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
 
-const PermissionGroupRow = ({ id, name, description, index, refetchPermissionGroupList }: PermissionGroupRowProps) => {
+const PermissionGroupRow = ({
+    id,
+    name,
+    description,
+    index,
+    refetchPermissionGroupList,
+    isChecked = false,
+    toggleChecked,
+    showCheckbox,
+}: PermissionGroupRowProps) => {
     const { path } = useRouteMatch()
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [isModalLoading, setIsModalLoading] = useState(false)
+    const { isBulkSelectionApplied, handleBulkSelection } = useAuthorizationBulkSelection()
+
+    const _showCheckbox = showCheckbox || isChecked
 
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen)
@@ -24,6 +44,13 @@ const PermissionGroupRow = ({ id, name, description, index, refetchPermissionGro
             toast.success('Group deleted')
             refetchPermissionGroupList()
             setIsDeleteModalOpen(false)
+
+            // Clearing the selection on single delete since the selected one might be removed
+            if (!isBulkSelectionApplied) {
+                handleBulkSelection({
+                    action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+                })
+            }
         } catch (err) {
             showError(err)
         } finally {
@@ -31,17 +58,35 @@ const PermissionGroupRow = ({ id, name, description, index, refetchPermissionGro
         }
     }
 
+    const handleChecked = () => {
+        toggleChecked(id)
+    }
+
     return (
         <>
-            <div className="user-permission__row dc__visible-hover dc__visible-hover--parent pl-20 pr-20  dc__hover-n50">
-                <span
-                    className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
-                    style={{
-                        backgroundColor: getRandomColor(name),
-                    }}
-                >
-                    {name[0]}
-                </span>
+            <div
+                className={`user-permission__row dc__visible-hover dc__visible-hover--parent pl-20 pr-20  dc__hover-n50 ${
+                    isChecked ? 'bc-b50' : ''
+                }`}
+            >
+                <div className="flex dc__content-start">
+                    {!_showCheckbox && (
+                        <span
+                            className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4 dc__visible-hover--hide-child"
+                            style={{
+                                backgroundColor: getRandomColor(name),
+                            }}
+                        >
+                            {name[0]}
+                        </span>
+                    )}
+                    <Checkbox
+                        isChecked={isChecked}
+                        onChange={handleChecked}
+                        rootClassName={`mb-0 ${_showCheckbox ? '' : 'dc__visible-hover--child'}`}
+                        value={CHECKBOX_VALUE.CHECKED}
+                    />
+                </div>
                 <span className="dc__ellipsis-right">
                     <Link className="anchor dc__ellipsis-right" to={`${path}/${id}`}>
                         {name}
