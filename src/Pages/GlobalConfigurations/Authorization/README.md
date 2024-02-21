@@ -9,32 +9,79 @@ graph TD;
     UserPermissions-->UserPermissionsList;
     UserPermissions-->UserPermissionsAddEdit;
 
-    UserPermissionsList-->UserPermissionListHeader;
-    UserPermissionsList-->UserPermissionRow;
+    UserPermissionList-->UserPermissionContainer
+
+    subgraph "Bulk Selection Provider"
+      UserPermissionContainer-->UserPermissionListHeader;
+      UserPermissionContainer-->UserListFilterToolbar;
+      UserPermissionContainer-->UserPermissionTable;
+      UserPermissionContainer-->BulkSelectionActionWidget;
+      UserPermissionContainer-->BulkSelectionModal;
+
+      UserPermissionTable-->UserPermissionRow
+    end
 
     UserPermissionsAddEdit-->UserForm;
-    UserForm-->AppPermissions;
+
+    subgraph "Permission Configuration Form Provider"
+      UserForm-->UserStatusUpdate;
+      UserForm-->UserPermissionGroupTable;
+      UserForm-->PermissionConfigurationForm;
+    end
 
     PermissionGroups-->PermissionGroupsList;
     PermissionGroups-->PermissionGroupsAddEdit;
 
-    PermissionGroupsList-->PermissionGroupListHeader;
-    PermissionGroupsList-->PermissionGroupRow;
+    PermissionGroupsList-->PermissionGroupContainer
 
-    PermissionGroupsAddEdit-->PermissionGroupForm;
-    PermissionGroupForm-->AppPermissions;
+    subgraph "Bulk Selection Provider"
+      PermissionGroupContainer-->PermissionGroupListHeader;
+      PermissionGroupContainer-->PermissionGroupTable;
+      PermissionGroupContainer-->BulkSelectionActionWidget;
+      PermissionGroupContainer-->BulkSelectionModal;
+
+      PermissionGroupTable-->PermissionGroupRow
+    end
+
+    PermissionGroupAddEdit-->PermissionGroupForm;
+
+    subgraph "Permission Configuration Form Provider"
+      PermissionGroupForm-->PermissionConfigurationForm;
+    end
 
     APITokens-->APITokenList;
-    APITokens-->CreateAPIToken;
-    APITokens-->EditAPIToken;
+    APITokens-->CreateAPITokenContainer;
+    APITokens-->EditAPITokenContainer;
 
-    CreateAPIToken-->GroupsPermissions;
-    CreateAPIToken-->AppPermissions;
+    CreateAPITokenContainer-->CreateAPIToken
+    EditAPITokenContainer-->EditAPIToken
 
-    EditAPIToken-->GroupsPermissions;
-    EditAPIToken-->RegenerateModal;
-    EditAPIToken-->AppPermissions;
+    subgraph "Permission Configuration Form Provider"
+      CreateAPIToken-->ExpirationDate;
+      CreateAPIToken-->PermissionConfigurationForm;
 
-    AppPermissions-->K8sPermissions;
+      EditAPIToken-->PermissionConfigurationForm;
+      EditAPIToken-->RegenerateModal;
+      EditAPIToken-->DeleteAPITokenModal;
+    end
+
+    subgraph "Permission Configuration Form Provider"
+      PermissionConfigurationForm-->RadioGroup;
+      PermissionConfigurationForm-->UserPermissionGroupsSelector;
+      PermissionConfigurationForm-->AppPermissions;
+
+      UserPermissionGroupsSelector-->UserRoleGroupsTable;
+
+      AppPermissions-->RadioGroup;
+      AppPermissions-->AppPermissionDetail;
+      AppPermissions-->K8sPermissions;
+      AppPermissions-->ChartPermission;
+
+      AppPermissionDetail-->DirectPermission
+
+      K8sPermissions-->K8sPermissionModal
+
+      K8sPermissionModal-->K8sListItemCard
+    end
   end
 ```
