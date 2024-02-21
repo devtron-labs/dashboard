@@ -1167,7 +1167,7 @@ const CDMaterial = ({
         mat: CDMaterialType,
         isImageApprover: boolean = false,
         disableSelection: boolean = false,
-        shouldRenderExpireApproval: boolean,
+        shouldRenderExpireApproval: boolean = false,
     ) => {
         if (mat.filterState !== FilterStates.ALLOWED) {
             return (
