@@ -9,6 +9,7 @@ import {
     Reload,
     WorkflowNodeType,
     CommonNodeAttr,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -19,7 +20,6 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { Workflow } from '../workflowEditor/Workflow'
 import { URLS } from '../../config'
 import { CIConfigDiffViewProps, GetCIPipelineModalURLType, ProcessedWorkflowsType } from './types'
-import { WorkflowType } from '../app/details/triggerView/types'
 import { CIBuildConfigDiff } from './CIBuildConfigDiff'
 import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'

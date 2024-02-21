@@ -7,9 +7,9 @@ import {
     WorkflowNodeType,
     PipelineType,
     CommonNodeAttr,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
-    WorkflowType,
     CdPipelineResult,
     CiPipelineResult,
     WorkflowResult,

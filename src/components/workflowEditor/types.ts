@@ -7,6 +7,7 @@ import {
     TaskErrorObj,
     VariableType,
     SelectedNode,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -14,7 +15,6 @@ import {
     CIPipelineNodeType,
     CdPipelineResult,
     CiPipeline,
-    WorkflowType,
 } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'

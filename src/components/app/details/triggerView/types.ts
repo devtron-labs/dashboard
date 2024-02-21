@@ -14,6 +14,7 @@ import {
     FilterConditionsListType,
     CDMaterialResponseType,
     PipelineType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -272,28 +273,6 @@ export interface TriggerEdgeType {
 interface ArtifactPromotionMetaData {
     isConfigured: boolean
     pendingApprovalCount: number
-}
-
-export interface WorkflowType {
-    id: string
-    name: string
-    gitMaterials?: Material[]
-    ciConfiguredGitMaterialId?: number
-    startX: number
-    startY: number
-    width: number
-    height: number
-    nodes: CommonNodeAttr[]
-    dag: any
-    showTippy?: boolean
-    appId?: number
-    isSelected?: boolean
-    approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
-    imageReleaseTags: string[]
-    appReleaseTags?: string[]
-    tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
-    artifactPromotionMetaData?: ArtifactPromotionMetaData
 }
 
 export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetaData'> {

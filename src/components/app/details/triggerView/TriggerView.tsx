@@ -10,6 +10,7 @@ import {
     ToastBodyWithButton,
     ToastBody,
     CommonNodeAttr,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -31,7 +32,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { TriggerViewProps, TriggerViewState } from './types'
 import { CIMaterial } from './ciMaterial'
 import CDMaterial from './cdMaterial'
 import {

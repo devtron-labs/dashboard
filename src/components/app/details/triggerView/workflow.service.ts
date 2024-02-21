@@ -4,10 +4,10 @@ import {
     WorkflowNodeType,
     PipelineType,
     DownstreamNodesEnvironmentsType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
-    WorkflowType,
     CdPipeline,
     CdPipelineResult,
     CiPipeline,
