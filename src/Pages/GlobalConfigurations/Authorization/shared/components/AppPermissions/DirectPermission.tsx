@@ -279,7 +279,7 @@ const DirectPermission = ({
             <span>{option.label}</span>
             {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && option.value === HELM_APP_UNASSIGNED_PROJECT && (
                 <>
-                    <small className="light-color">Apps without an assigned project</small>
+                    <small>Apps without an assigned project</small>
                     <div className="unassigned-project-border" />
                 </>
             )}
