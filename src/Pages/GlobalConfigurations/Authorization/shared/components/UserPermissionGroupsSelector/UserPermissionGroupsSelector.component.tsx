@@ -67,10 +67,7 @@ const UserPermissionGroupsSelector = () => {
     return (
         <div className="flexbox-col dc__gap-8">
             <div className="flexbox-col dc__gap-8">
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label htmlFor="permission-groups-dropdown" className="cn-9 fs-13 fw-4 mb-0">
-                    Group permissions
-                </label>
+                <h3 className="cn-9 fs-13 lh-20 fw-6 m-0">Permission Groups</h3>
                 {/* TODO (v3): Add ref */}
                 <Select
                     placeholder="Select permission groups"
