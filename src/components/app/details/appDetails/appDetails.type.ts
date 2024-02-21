@@ -137,7 +137,6 @@ export interface DeploymentStatusDetailRowType {
     type: string
     hideVerticalConnector?: boolean
     deploymentDetailedData: DeploymentStatusDetailsBreakdownDataType
-    resourcesSyncResult?: Object
 }
 
 export interface ErrorInfoStatusBarType {
@@ -211,7 +210,6 @@ export interface DeploymentStatusCardType {
 }
 
 export interface IssuesCardType {
-    appConditions?: Array<any>,
     cardLoading?: boolean
     setErrorsList: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>

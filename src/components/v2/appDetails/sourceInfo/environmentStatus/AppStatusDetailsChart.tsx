@@ -10,7 +10,6 @@ import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import { STATUS_SORTING_ORDER } from './constants'
 
 export default function AppStatusDetailsChart({
-    resourcesSyncResult,
     filterRemoveHealth = false,
     showFooter,
 }: AppStatusDetailsChartType) {
@@ -44,8 +43,8 @@ export default function AppStatusDetailsChart({
     }
 
     function getNodeMessage(kind: string, name: string) {
-        if (resourcesSyncResult && resourcesSyncResult.hasOwnProperty(`${kind}/${name}`)) {
-            return resourcesSyncResult[`${kind}/${name}`]
+        if (_appDetails.resourceTree?.resourcesSyncResult && _appDetails.resourceTree?.resourcesSyncResult.hasOwnProperty(`${kind}/${name}`)) {
+            return _appDetails.resourceTree.resourcesSyncResult[`${kind}/${name}`]
         }
         return ''
     }

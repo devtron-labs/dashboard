@@ -70,7 +70,6 @@ export default function DeploymentStatusDetailBreakdown({
                             type={TIMELINE_STATUS.APP_HEALTH}
                             hideVerticalConnector
                             deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                            resourcesSyncResult={_appDetails.resourceTree.resourcesSyncResult}
                         />
                     </>
                 ) : (

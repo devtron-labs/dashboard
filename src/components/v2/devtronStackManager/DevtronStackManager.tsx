@@ -27,7 +27,7 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
 import { isGitopsConfigured } from '../../../services/service'
 import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
-import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackManager.utils'
+import { AppStatusClass } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
@@ -555,9 +555,6 @@ export default function DevtronStackManager({
                                 {showResourceStatusModal && selectedModule && (
                                     <AppStatusDetailModal
                                         close={closeCheckResourceStatusModal}
-                                        resourcesSyncResult={buildResourceStatusModalData(
-                                            selectedModule.moduleResourcesStatus,
-                                        )}
                                         showAppStatusMessage
                                         title="Integration installation status"
                                         appStatusText={selectedModule.installationStatus}

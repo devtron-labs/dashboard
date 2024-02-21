@@ -469,7 +469,6 @@ export interface LogState {
 
 export interface AppStatusDetailType {
     close: () => void
-    resourcesSyncResult: Object
     showAppStatusMessage?: boolean
     title?: string
     appStatus?: string
@@ -483,7 +482,6 @@ export interface StatusFilterButtonType {
 }
 
 export interface SyncErrorType {
-    appConditions: Array<any>
     showApplicationDetailedModal?: () => void
 }
 

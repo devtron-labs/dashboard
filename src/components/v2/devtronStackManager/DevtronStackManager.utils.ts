@@ -154,38 +154,6 @@ export const MODULE_CONFIGURATION_DETAIL_MAP = {
     },
 }
 
-export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResourceStatus[]): any => {
-    const _nodes = []
-    const _resources = []
-    const resourceStatusDetails = {}
-    moduleResourcesStatus?.forEach((moduleResourceStatus) => {
-        const _resource = {
-            group: moduleResourceStatus.group,
-            version: moduleResourceStatus.version,
-            kind: moduleResourceStatus.kind,
-            name: moduleResourceStatus.name,
-            health: {
-                status: moduleResourceStatus.healthStatus,
-                message: moduleResourceStatus.healthMessage,
-            },
-        }
-        _nodes.push(_resource)
-        _resources.push(_resource)
-        resourceStatusDetails[`${moduleResourceStatus.kind}/${moduleResourceStatus.name}`] =
-            moduleResourceStatus.healthMessage
-    })
-    const _appDetail: AppDetails = JSON.parse(
-        JSON.stringify({
-            resourceTree: {
-                nodes: _nodes,
-                status: 'INTEGRATION_INSTALLING',
-            },
-        }),
-    )
-    IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
-    return resourceStatusDetails
-}
-
 export const AppStatusClass = {
     [ModuleStatus.INSTALLING]: 'progressing',
     [ModuleStatus.TIMEOUT]: 'degraded',

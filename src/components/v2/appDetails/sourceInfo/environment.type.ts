@@ -31,7 +31,6 @@ export interface NodeStreamMap {
 }
 
 export interface AppStatusDetailsChartType {
-    resourcesSyncResult: Object
     filterRemoveHealth?: boolean
     showFooter: boolean
 }

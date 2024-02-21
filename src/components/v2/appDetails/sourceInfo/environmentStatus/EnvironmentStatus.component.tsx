@@ -80,7 +80,6 @@ const EnvironmentStatusComponent = ({
     const renderIssuesCard = () => {
         return (
             <IssuesCard
-                appConditions={appDetails.resourceTree?.conditions}
                 cardLoading={cardLoading}
                 setErrorsList={setErrorsList}
                 toggleIssuesModal={toggleIssuesModal}
@@ -192,7 +191,6 @@ const EnvironmentStatusComponent = ({
                     close={() => {
                         setShowAppStatusDetail(false)
                     }}
-                    resourcesSyncResult={appDetails.resourceTree?.resourcesSyncResult}
                     showAppStatusMessage={showHibernationStatusMessage}
                 />
             )}

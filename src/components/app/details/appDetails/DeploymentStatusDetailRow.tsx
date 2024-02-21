@@ -27,8 +27,7 @@ import { statusIcon } from '../../config'
 export const DeploymentStatusDetailRow = ({
     type,
     hideVerticalConnector,
-    deploymentDetailedData,
-    resourcesSyncResult,
+    deploymentDetailedData
 }: DeploymentStatusDetailRowType) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
@@ -145,7 +144,6 @@ export const DeploymentStatusDetailRow = ({
                     )}
                     <div>
                         <AppStatusDetailsChart
-                            resourcesSyncResult={resourcesSyncResult}
                             filterRemoveHealth
                             showFooter={false}
                         />

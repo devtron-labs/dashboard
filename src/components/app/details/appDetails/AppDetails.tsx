@@ -578,7 +578,6 @@ export const Details: React.FC<DetailsType> = ({
                     <DeletedAppComponent
                         resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
                         showApplicationDetailedModal={showApplicationDetailedModal}
-                        appConditions={appDetails.resourceTree?.conditions}
                     />
                 ) : (
                     <AppNotConfigured
@@ -674,7 +673,6 @@ export const Details: React.FC<DetailsType> = ({
             {detailedStatus && (
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
-                    resourcesSyncResult={appDetails.resourceTree?.resourcesSyncResult}
                     showAppStatusMessage={false}
                 />
             )}
@@ -773,7 +771,6 @@ export const Details: React.FC<DetailsType> = ({
 const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
     resourceTreeFetchTimeOut,
     showApplicationDetailedModal,
-    appConditions,
 }) => {
     if (resourceTreeFetchTimeOut) {
         return (
@@ -781,7 +778,6 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
                 <div className="mt-16 mb-9">
                     <SyncErrorComponent
                         showApplicationDetailedModal={showApplicationDetailedModal}
-                        appConditions={appConditions}
                     />
                 </div>
                 <EmptyK8sResourceComponent emptyStateMessage={RESOURCES_NOT_FOUND} />

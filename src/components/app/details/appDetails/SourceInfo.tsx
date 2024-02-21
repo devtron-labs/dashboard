@@ -230,7 +230,6 @@ export const SourceInfo = ({
                     {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                     {!loadingResourceTree && (
                         <IssuesCard
-                            appConditions={appDetails.resourceTree?.conditions}
                             cardLoading={cardLoading}
                             toggleIssuesModal={toggleIssuesModal}
                             setErrorsList={setErrorsList}

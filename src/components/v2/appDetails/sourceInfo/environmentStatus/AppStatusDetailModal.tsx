@@ -13,7 +13,6 @@ import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 
 const AppStatusDetailModal = ({
     close,
-    resourcesSyncResult,
     showAppStatusMessage,
     title,
     appStatus,
@@ -146,7 +145,7 @@ const AppStatusDetailModal = ({
                             {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree?.status.toUpperCase()]}
                         </div>
                     )}
-                    <AppStatusDetailsChart resourcesSyncResult={resourcesSyncResult} showFooter={showFooter} />
+                    <AppStatusDetailsChart showFooter={showFooter} />
                 </div>
             </div>
         </Drawer>
