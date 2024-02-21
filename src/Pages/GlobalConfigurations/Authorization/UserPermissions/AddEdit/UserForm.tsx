@@ -270,7 +270,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         {/* TODO (v3): Use showStatus instead */}
                         {UserStatusUpdate && (
                             <UserStatusUpdate
-                                status={userStatus}
+                                userStatus={userStatus}
                                 timeToLive={timeToLive}
                                 userEmail={_userData?.emailId ?? ''}
                                 handleChange={handleUserStatusUpdate}

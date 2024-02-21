@@ -153,7 +153,7 @@ const UserPermissionRow = ({
                 </ConditionalWrap>
                 {showStatus && (
                     <StatusCell
-                        status={userStatus}
+                        userStatus={userStatus}
                         timeToLive={timeToLive}
                         userEmail={emailId}
                         userId={id}
