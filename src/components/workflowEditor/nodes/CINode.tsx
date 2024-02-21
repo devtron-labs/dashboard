@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import { WorkflowNodeType, SelectedNode } from '@devtron-labs/devtron-fe-common-lib'
+import { WorkflowNodeType, SelectedNode, CommonNodeAttr } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
-import { NodeAttr } from '../../app/details/triggerView/types'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
 import link from '../../../assets/icons/ic-link.svg'
@@ -25,7 +24,7 @@ export interface CINodeProps {
     isJobCI: boolean
     isTrigger: boolean
     linkedCount: number
-    downstreams: NodeAttr[]
+    downstreams: CommonNodeAttr[]
     to: string
     toggleCDMenu: () => void
     configDiffView?: boolean

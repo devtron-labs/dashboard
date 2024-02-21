@@ -8,6 +8,7 @@ import {
     DockerConfigOverrideType,
     Reload,
     WorkflowNodeType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -18,7 +19,7 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { Workflow } from '../workflowEditor/Workflow'
 import { URLS } from '../../config'
 import { CIConfigDiffViewProps, GetCIPipelineModalURLType, ProcessedWorkflowsType } from './types'
-import { NodeAttr, WorkflowType } from '../app/details/triggerView/types'
+import { WorkflowType } from '../app/details/triggerView/types'
 import { CIBuildConfigDiff } from './CIBuildConfigDiff'
 import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
@@ -135,7 +136,7 @@ export default function CIConfigDiffView({
         }/${wfCIMap.get(workflowId)}/build`
     }
 
-    const renderViewBuildPipelineRow = (_wfId: number, nodes: NodeAttr[]): JSX.Element => {
+    const renderViewBuildPipelineRow = (_wfId: number, nodes: CommonNodeAttr[]): JSX.Element => {
         const ciNode = nodes?.find((node) => node.type == WorkflowNodeType.CI)
 
         return (

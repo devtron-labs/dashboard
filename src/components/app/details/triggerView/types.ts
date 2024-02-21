@@ -204,10 +204,6 @@ export interface CIMaterialState {
     isBlobStorageConfigured?: boolean
 }
 
-export interface NodeAttr extends CommonNodeAttr {
-    cipipelineId?: number
-}
-
 export interface DownStreams {
     id: string
     text: string
@@ -287,7 +283,7 @@ export interface WorkflowType {
     startY: number
     width: number
     height: number
-    nodes: NodeAttr[]
+    nodes: CommonNodeAttr[]
     dag: any
     showTippy?: boolean
     appId?: number
@@ -307,7 +303,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, P
     startY: number
     width: number
     height: number
-    nodes: NodeAttr[]
+    nodes: CommonNodeAttr[]
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
@@ -624,7 +620,7 @@ export interface CdPipelineResult {
 
 // End CD response
 
-type PartialNodeAttr = Partial<NodeAttr>
+type PartialNodeAttr = Partial<CommonNodeAttr>
 
 export interface FullNode {
     node: PartialNodeAttr
@@ -635,7 +631,7 @@ export interface FullNode {
 export interface WorkflowDisplay {
     id: number
     name: string
-    nodes: Array<NodeAttr>
+    nodes: Array<CommonNodeAttr>
     type: string
 }
 
@@ -717,7 +713,7 @@ export interface MaterialSourceProps {
 }
 
 export interface AddDimensionsToDownstreamDeploymentsParams {
-    downstreams: NodeAttr[]
+    downstreams: CommonNodeAttr[]
     dimensions: WorkflowDimensions
     startX: number
     startY: number

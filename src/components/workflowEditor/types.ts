@@ -14,7 +14,6 @@ import {
     CIPipelineNodeType,
     CdPipelineResult,
     CiPipeline,
-    NodeAttr,
     WorkflowType,
 } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
@@ -46,8 +45,8 @@ export interface WorkflowEditState {
     view: string
     code: number
     workflows: any[]
-    allCINodeMap: Map<string, NodeAttr>
-    allDeploymentNodeMap: Map<string, NodeAttr>
+    allCINodeMap: Map<string, CommonNodeAttr>
+    allDeploymentNodeMap: Map<string, CommonNodeAttr>
     workflowId: number
     appName: string
     showDeleteDialog: boolean

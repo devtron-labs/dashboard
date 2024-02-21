@@ -9,6 +9,7 @@ import {
     DeploymentNodeType,
     ToastBodyWithButton,
     ToastBody,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -30,7 +31,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import CDMaterial from './cdMaterial'
 import {
@@ -1065,8 +1066,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ selectedEnv: _selectedEnv })
     }
 
-    getCINode = (): NodeAttr => {
-        let nd: NodeAttr
+    getCINode = (): CommonNodeAttr => {
+        let nd: CommonNodeAttr
         if (this.state.ciNodeId) {
             const configuredMaterialList = new Map<number, Set<number>>()
             for (let i = 0; i < this.state.workflows.length; i++) {
@@ -1095,7 +1096,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     renderCIMaterial = () => {
         if (this.state.showCIModal || this.state.showMaterialRegexModal) {
-            const nd: NodeAttr = this.getCINode()
+            const nd: CommonNodeAttr = this.getCINode()
             const material = nd?.[this.state.materialType] || []
             return (
                 <VisibleModal className="" close={this.closeCIModal}>
@@ -1159,8 +1160,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
-    getCDNode = (): NodeAttr => {
-        let node: NodeAttr
+    getCDNode = (): CommonNodeAttr => {
+        let node: CommonNodeAttr
         if (this.state.cdNodeId) {
             for (const _workflow of this.state.workflows) {
                 node = _workflow.nodes.find((el) => {
@@ -1173,12 +1174,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
         }
 
-        return node ?? ({} as NodeAttr)
+        return node ?? ({} as CommonNodeAttr)
     }
 
     renderCDMaterial() {
         if (this.state.showCDModal) {
-            const node: NodeAttr = this.getCDNode()
+            const node: CommonNodeAttr = this.getCDNode()
             const material = node[this.state.materialType] || []
 
             return (
@@ -1231,7 +1232,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     renderApprovalMaterial() {
         if (ApprovalMaterialModal && this.state.showApprovalModal) {
-            const node: NodeAttr = this.getCDNode()
+            const node: CommonNodeAttr = this.getCDNode()
             return (
                 <ApprovalMaterialModal
                     isLoading={this.state.isLoading}
