@@ -179,6 +179,7 @@ export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResour
             resourceTree: {
                 nodes: _nodes,
                 status: 'INTEGRATION_INSTALLING',
+                resourcesSyncResult: resourceStatusDetails,
             },
         }),
     )

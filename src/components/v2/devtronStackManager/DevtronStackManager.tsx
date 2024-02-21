@@ -74,7 +74,7 @@ export default function DevtronStackManager({
     }, [])
 
     useEffect(() => {
-        buildResourceStatusModalData(selectedModule.moduleResourcesStatus)
+        buildResourceStatusModalData(selectedModule?.moduleResourcesStatus)
     }, [selectedModule])
 
     /**
