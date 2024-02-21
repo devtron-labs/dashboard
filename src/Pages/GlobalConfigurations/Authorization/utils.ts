@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { BulkSelectionEvents, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkSelectionEvents, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import {
     ACCESS_TYPE_MAP,
@@ -28,9 +28,16 @@ import { CONFIG_APPROVER_ACTION } from './shared/components/userGroups/UserGroup
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './shared/components/AppPermissions/constants'
 import { ActionTypes, EntityTypes, ViewChartGroupPermission } from './constants'
+import { importComponentFromFELibrary } from '../../../components/common'
+
+const getUserStatus = importComponentFromFELibrary('getUserStatus', noop, 'function')
+
+export const getFormattedTimeToLive = (timeToLive) =>
+    timeToLive === ZERO_TIME_STRING || !timeToLive ? '' : moment(timeToLive).format(Moment12HourFormat)
 
 export const transformUserResponse = (_user: UserDto): User => {
-    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, ...user } = _user
+    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, userStatus, ...user } = _user
+    const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
 
     return {
         ...user,
@@ -39,10 +46,8 @@ export const transformUserResponse = (_user: UserDto): User => {
             lastLoginTime === ZERO_TIME_STRING || !lastLoginTime
                 ? LAST_LOGIN_TIME_NULL_STATE
                 : moment(lastLoginTime).format(Moment12HourFormat),
-        timeToLive:
-            timeoutWindowExpression === ZERO_TIME_STRING || !timeoutWindowExpression
-                ? ''
-                : moment(timeoutWindowExpression).format(Moment12HourFormat),
+        userStatus: getUserStatus(userStatus, timeToLive),
+        timeToLive,
     }
 }
 

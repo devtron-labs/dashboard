@@ -4,6 +4,7 @@ import {
     UserListFilterParams,
     BaseFilterQueryParams,
     OptionType,
+    UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP } from '../../../config'
 import { ActionTypes, EntityTypes } from './constants'
@@ -113,7 +114,7 @@ export interface UserDto {
     roleGroups?: Pick<PermissionGroup, 'id' | 'name' | 'description'>
 }
 
-export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id'> {
+export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus'> {
     /**
      * Time until which the user is active
      * Note: Only a user with status 'active' can have 'timeToLive'
@@ -122,6 +123,7 @@ export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_i
      */
     timeToLive?: string
     emailId: UserDto['email_id']
+    userStatus?: UserStatus
 }
 
 export type UserCreateOrUpdatePayload = Pick<

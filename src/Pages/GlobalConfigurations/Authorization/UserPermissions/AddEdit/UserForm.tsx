@@ -8,6 +8,7 @@ import {
     MultiValueChipContainer,
     ServerErrors,
     OptionType,
+    UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Creatable from 'react-select/creatable'
 import { toast } from 'react-toastify'
@@ -25,12 +26,13 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
+import { createUserPermissionPayload, getFormattedTimeToLive, isDirectPermissionFormComplete } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 import { getCreatableChipStyle } from '../utils'
 
 const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
+const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
 const creatableChipStyle = getCreatableChipStyle()
 
@@ -61,6 +63,8 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
     )
+    const [userStatus, setUserStatus] = useState(_userData?.userStatus)
+    const [timeToLive, setTimeToLive] = useState(_userData?.timeToLive)
 
     // UI States
     const [submitting, setSubmitting] = useState(false)
@@ -127,6 +131,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         })
 
         try {
+            // TODO (v3): Pass the status as well
             await createOrUpdateUser(payload)
             if (isAddMode) {
                 toast.success('User(s) added')
@@ -148,17 +153,24 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         }
     }
 
-    async function populateDataFromAPI(data: User) {
-        const { emailId, groups = [], superAdmin } = data
+    const handleUserStatusUpdate = (updatedStatus: UserStatus, updatedTimeToLive?: string) => {
+        setUserStatus(updatedStatus)
+        setTimeToLive(getFormattedTimeToLive(updatedTimeToLive))
+    }
+
+    const populateDataFromAPI = (data: User) => {
+        const { emailId, groups = [], superAdmin, userStatus: _userStatus, timeToLive: _timeToLive } = data
         setUserGroups(groups?.map((group) => ({ label: group, value: group })) || [])
         setEmailState({ emails: [{ label: emailId, value: emailId }], inputEmailValue: '', emailError: '' })
         setPermissionType(superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
+        handleUserStatusUpdate(_userStatus, _timeToLive)
     }
 
     useEffect(() => {
         if (_userData) {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             populateDataFromAPI(_userData)
+        } else {
+            handleUserStatusUpdate(UserStatus.active, '')
         }
     }, [_userData])
 
@@ -250,17 +262,30 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     <span className="cn-5">/</span>
                     <span className="cn-9 fw-6 dc__ellipsis-right">{isAddMode ? 'Add User' : _userData.emailId}</span>
                 </div>
-                {!isAddMode && (
+                {(!isAddMode || UserStatusUpdate) && (
                     <div className="flex dc__content-start dc__gap-12">
-                        <button
-                            disabled={submitting}
-                            type="button"
-                            className="cta delete override-button flex dc__gap-6 h-32"
-                            onClick={toggleDeleteConfirmationModal}
-                        >
-                            <PlusIcon className="icon-dim-14 mw-14" />
-                            Delete
-                        </button>
+                        {/* TODO (v3): Use showStatus instead */}
+                        {UserStatusUpdate && (
+                            <UserStatusUpdate
+                                status={userStatus}
+                                timeToLive={timeToLive}
+                                userEmail={_userData?.emailId ?? ''}
+                                handleChange={handleUserStatusUpdate}
+                                key={userStatus}
+                                disabled={submitting}
+                            />
+                        )}
+                        {!isAddMode && (
+                            <button
+                                disabled={submitting}
+                                type="button"
+                                className="cta delete override-button flex dc__gap-6 h-32"
+                                onClick={toggleDeleteConfirmationModal}
+                            >
+                                <PlusIcon className="icon-dim-14 mw-14" />
+                                Delete
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
