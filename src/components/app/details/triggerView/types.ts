@@ -15,6 +15,7 @@ import {
     CDMaterialResponseType,
     PipelineType,
     WorkflowType,
+    Material,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -508,11 +509,6 @@ export interface CiPipeline {
     }
     isOffendingMandatoryPlugin?: boolean
     pipelineType?: string
-}
-
-export interface Material {
-    gitMaterialId: number
-    materialName: string
 }
 
 export interface CiPipelineResult {
