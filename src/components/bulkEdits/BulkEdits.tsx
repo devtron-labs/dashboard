@@ -33,7 +33,7 @@ export enum OutputObjectTabs {
 }
 
 const STATUS = {
-    ERROR: "Please check the apiVersion and kind, apiVersion and kind provided by you don't exist",
+    ERROR: "The apiVersion or Kind provided by you is incorrect or doesn't exist",
     EMPTY_IMPACTED: 'We could not find any matching devtron applications.',
 }
 
