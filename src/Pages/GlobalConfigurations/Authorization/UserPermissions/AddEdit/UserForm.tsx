@@ -26,7 +26,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
-import { createUserPermissionPayload, getFormattedTimeToLive, isDirectPermissionFormComplete } from '../../utils'
+import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 import { getCreatableChipStyle } from '../utils'
 
@@ -57,15 +57,14 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         userGroups,
         data: userData,
         userStatus,
-        setUserStatus,
+        timeToLive,
+        handleUserStatusUpdate,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
     )
-    // Keeping the state local as this is not being drilled anywhere else atm
-    const [timeToLive, setTimeToLive] = useState(_userData?.timeToLive)
 
     // UI States
     const [submitting, setSubmitting] = useState(false)
@@ -155,11 +154,6 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         } finally {
             setSubmitting(false)
         }
-    }
-
-    const handleUserStatusUpdate = (updatedStatus: UserStatus, updatedTimeToLive?: string) => {
-        setUserStatus(updatedStatus)
-        setTimeToLive(getFormattedTimeToLive(updatedTimeToLive))
     }
 
     const populateDataFromAPI = (data: User) => {

@@ -1,4 +1,6 @@
+import { UserStatus } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useMemo, useRef, useState } from 'react'
+import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { ActionTypes, EntityTypes, PermissionType } from '../../../constants'
 import {
     ChartGroupPermissionsFilter,
@@ -7,7 +9,14 @@ import {
     PermissionGroup,
     User,
 } from '../../../types'
+import { getFormattedTimeToLive } from '../../../utils'
 import { PermissionConfigurationFormContext } from './types'
+
+const changeTemporaryStatusToInactive = importComponentFromFELibrary(
+    'changeTemporaryStatusToInactive',
+    () => ({}),
+    'function',
+)
 
 const context = createContext<PermissionConfigurationFormContext>(null)
 
@@ -28,10 +37,32 @@ export const PermissionConfigurationFormProvider = ({
     })
     const [k8sPermission, setK8sPermission] = useState<K8sPermissionFilter[]>([])
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const currentK8sPermissionRef = useRef<any[]>([])
+    const currentK8sPermissionRef = useRef<K8sPermissionFilter[]>([])
     const [userGroups, setUserGroups] = useState<User['userRoleGroups']>([])
     const [userStatus, setUserStatus] = useState<User['userStatus']>()
+    const [timeToLive, setTimeToLive] = useState<User['timeToLive']>()
+
+    const handleUserStatusUpdate = (updatedStatus: User['userStatus'], updatedTimeToLive?: User['timeToLive']) => {
+        setUserStatus(updatedStatus)
+        setTimeToLive(getFormattedTimeToLive(updatedTimeToLive))
+
+        // Mark the permission group mapping and direct permission level status to inactive for temporary accesses
+        // Not required if the user level timeToLive is less than the permission level timeToLive
+        if (updatedStatus === UserStatus.inactive) {
+            setUserGroups(
+                userGroups.map((userGroup) => ({
+                    ...userGroup,
+                    ...changeTemporaryStatusToInactive(userGroup.status, userGroup.timeToLive),
+                })),
+            )
+            setK8sPermission(
+                k8sPermission.map((permission) => ({
+                    ...permission,
+                    // TODO (v3): Update the status and ttl as well
+                })),
+            )
+        }
+    }
 
     const value = useMemo(
         () => ({
@@ -47,7 +78,8 @@ export const PermissionConfigurationFormProvider = ({
             userGroups,
             setUserGroups,
             userStatus,
-            setUserStatus,
+            timeToLive,
+            handleUserStatusUpdate,
             data,
         }),
         [
@@ -63,7 +95,8 @@ export const PermissionConfigurationFormProvider = ({
             userGroups,
             setUserGroups,
             userStatus,
-            setUserStatus,
+            timeToLive,
+            handleUserStatusUpdate,
             data,
         ],
     )

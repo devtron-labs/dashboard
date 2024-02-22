@@ -27,7 +27,11 @@ import { transformUserResponse } from './utils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 
-const getUserStatusAndTimeoutPayload = importComponentFromFELibrary('getUserStatusAndTimeoutPayload', null, 'function')
+const getUserStatusAndTimeoutPayload = importComponentFromFELibrary(
+    'getUserStatusAndTimeoutPayload',
+    () => ({}),
+    'function',
+)
 
 // User Permissions
 export const getUserById = async (userId: User['id']): Promise<User> => {
@@ -56,9 +60,9 @@ export const createOrUpdateUser = ({
                 id,
                 name,
             },
-            ...(getUserStatusAndTimeoutPayload ? getUserStatusAndTimeoutPayload(status, _timeToLive) : {}),
+            ...getUserStatusAndTimeoutPayload(status, _timeToLive),
         })),
-        ...(getUserStatusAndTimeoutPayload ? getUserStatusAndTimeoutPayload(userStatus, timeToLive) : {}),
+        ...getUserStatusAndTimeoutPayload(userStatus, timeToLive),
     }
     const isUpdate = !!_data.id
     const options: APIOptions = {

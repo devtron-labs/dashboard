@@ -17,9 +17,10 @@ export interface PermissionConfigurationFormContext {
     setPermissionType: (permissionType: PermissionType) => void
     data: User | PermissionGroup
     userGroups: User['userRoleGroups']
-    userStatus: User['userStatus']
-    setUserStatus: React.Dispatch<React.SetStateAction<User['userStatus']>>
     setUserGroups: React.Dispatch<React.SetStateAction<User['userRoleGroups']>>
+    userStatus: User['userStatus']
+    timeToLive: User['timeToLive']
+    handleUserStatusUpdate: (updatedStatus: User['userStatus'], updatedTimeToLive?: string) => void
     directPermission: DirectPermissionsRoleFilter[]
     setDirectPermission: (...rest) => void
     chartPermission: ChartGroupPermissionsFilter
