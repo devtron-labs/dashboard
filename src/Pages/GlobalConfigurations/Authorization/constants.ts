@@ -1,5 +1,6 @@
 import { SELECT_ALL_VALUE } from '../../../config'
 import { APIRoleFilter } from './types'
+import { getDefaultStatusAndTimeout } from './libUtils'
 
 /**
  * Permission types for users and permission groups
@@ -53,4 +54,5 @@ export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: 
 export const ViewChartGroupPermission: APIRoleFilter = {
     entity: EntityTypes.CHART_GROUP,
     action: ActionTypes.VIEW,
+    ...getDefaultStatusAndTimeout(),
 }

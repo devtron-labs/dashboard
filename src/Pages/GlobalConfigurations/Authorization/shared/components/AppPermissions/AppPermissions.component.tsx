@@ -46,6 +46,7 @@ import { getWorkflowOptions } from '../../../utils'
 import { AppPermissionsDetailType, DirectPermissionRow } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { ActionTypes, EntityTypes } from '../../../constants'
+import { getDefaultStatusAndTimeout } from '../../../libUtils'
 
 const AppPermissions = () => {
     const { serverMode } = useContext(mainContext)
@@ -497,6 +498,7 @@ const AppPermissions = () => {
                     [],
                 action:
                     tempChartPermission.action === SELECT_ALL_VALUE ? ActionTypes.ADMIN : tempChartPermission.action,
+                ...getDefaultStatusAndTimeout(),
             }
 
             setChartPermission(chartPermission)
@@ -523,6 +525,8 @@ const AppPermissions = () => {
                 resource: k8s.resource
                     .split(',')
                     ?.map((entity) => ({ value: entity || SELECT_ALL_VALUE, label: entity || 'All resources' })),
+                status: k8s.status,
+                timeToLive: k8s.timeToLive,
             }))
 
             if (currentK8sPermissionRef?.current) {

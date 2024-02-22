@@ -34,6 +34,7 @@ import {
     usePermissionConfiguration,
 } from '../shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
+import { getDefaultUserStatusAndTimeout } from '../libUtils'
 
 export const renderQuestionwithTippy = () => {
     return (
@@ -198,6 +199,7 @@ const CreateAPIToken = ({
                     chartPermission,
                     k8sPermission,
                     isSuperAdminPermission: permissionType === PermissionType.SUPER_ADMIN,
+                    ...getDefaultUserStatusAndTimeout(),
                 })
 
                 const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)

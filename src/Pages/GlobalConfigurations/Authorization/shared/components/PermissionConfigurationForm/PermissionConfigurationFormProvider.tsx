@@ -2,6 +2,7 @@ import { UserStatus } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useMemo, useRef, useState } from 'react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { ActionTypes, EntityTypes, PermissionType } from '../../../constants'
+import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import {
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
@@ -34,6 +35,7 @@ export const PermissionConfigurationFormProvider = ({
         entity: EntityTypes.CHART_GROUP,
         action: ActionTypes.VIEW,
         entityName: [],
+        ...getDefaultStatusAndTimeout(),
     })
     const [k8sPermission, setK8sPermission] = useState<K8sPermissionFilter[]>([])
 
@@ -48,6 +50,7 @@ export const PermissionConfigurationFormProvider = ({
 
         // Mark the permission group mapping and direct permission level status to inactive for temporary accesses
         // Not required if the user level timeToLive is less than the permission level timeToLive
+        // Note: Not updating for chart permissions since the status is read only
         if (updatedStatus === UserStatus.inactive) {
             setUserGroups(
                 userGroups.map((userGroup) => ({
@@ -55,10 +58,16 @@ export const PermissionConfigurationFormProvider = ({
                     ...changeTemporaryStatusToInactive(userGroup.status, userGroup.timeToLive),
                 })),
             )
+            setDirectPermission(
+                directPermission.map((permission) => ({
+                    ...permission,
+                    ...changeTemporaryStatusToInactive(permission.status, permission.timeToLive),
+                })),
+            )
             setK8sPermission(
                 k8sPermission.map((permission) => ({
                     ...permission,
-                    // TODO (v3): Update the status and ttl as well
+                    ...changeTemporaryStatusToInactive(permission.status, permission.timeToLive),
                 })),
             )
         }

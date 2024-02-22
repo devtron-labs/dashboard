@@ -51,6 +51,7 @@ export const createOrUpdateUser = ({
     userStatus,
     timeToLive,
     userRoleGroups,
+    roleFilters,
     ...data
 }: UserCreateOrUpdatePayload) => {
     const _data: UserDto = {
@@ -63,8 +64,15 @@ export const createOrUpdateUser = ({
             },
             ...getStatusAndTimeoutPayload(groupStatus, groupTimeToLive),
         })),
+        roleFilters: roleFilters.map(
+            ({ status: roleFilterStatus, timeToLive: roleFilterTimeToLive, ...roleFilter }) => ({
+                ...roleFilter,
+                ...getStatusAndTimeoutPayload(roleFilterStatus, roleFilterTimeToLive),
+            }),
+        ),
         ...getUserStatusAndTimeoutPayload(userStatus, timeToLive),
     }
+
     const isUpdate = !!_data.id
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,

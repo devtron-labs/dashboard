@@ -18,7 +18,9 @@ export interface UserAndGroupPermissionsWrapProps {
     setIsAutoAssignFlowEnabled: (isAutoAssignFlowEnabled: boolean) => void
 }
 
-export interface APIRoleFilter {
+type PermissionStatusAndTimeout = Pick<UserRoleGroup, 'status' | 'timeToLive'>
+
+export interface APIRoleFilter extends PermissionStatusAndTimeout {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
     team?: string
     entityName?: string
@@ -98,7 +100,7 @@ export interface UserDto {
      * List of permission groups assigned to the user
      */
     userRoleGroups?: {
-        roleGroup: Pick<PermissionGroup, 'id' | 'name' | 'description'>
+        roleGroup: Pick<UserRoleGroup, 'id' | 'name' | 'description'>
         status?: UserStatusDto
         timeoutWindowExpression?: string
     }[]
@@ -202,7 +204,7 @@ export interface RoleFilter {
     resource?: any
 }
 
-export interface DirectPermissionsRoleFilter extends RoleFilter {
+export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatusAndTimeout {
     entity: EntityTypes.DIRECT | EntityTypes.JOB
     team: OptionType
     entityName: OptionType[]
@@ -220,14 +222,14 @@ export interface DirectPermissionsRoleFilter extends RoleFilter {
     approver?: boolean
 }
 
-export interface ChartGroupPermissionsFilter extends RoleFilter {
+export interface ChartGroupPermissionsFilter extends RoleFilter, PermissionStatusAndTimeout {
     entity: EntityTypes.CHART_GROUP
     team?: never
     environment?: never
     action: string
 }
 
-export interface K8sPermissionFilter {
+export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     entity: EntityTypes
     cluster: OptionType
     namespace: OptionType
@@ -239,7 +241,7 @@ export interface K8sPermissionFilter {
     key?: number
 }
 
-export interface CreateUserPermissionPayloadParams extends Partial<Pick<User, 'userStatus' | 'timeToLive'>> {
+export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive'> {
     id: number
     userIdentifier: string
     userGroups: User['userRoleGroups']

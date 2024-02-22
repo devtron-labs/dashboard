@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { BulkSelectionEvents, noop, OptionType, UserStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkSelectionEvents, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import {
     ACCESS_TYPE_MAP,
@@ -30,6 +30,7 @@ import { importComponentFromFELibrary } from '../../../components/common'
 
 const getUserStatus = importComponentFromFELibrary('getUserStatus', noop, 'function')
 
+// TODO (v3): Move to common
 export const getFormattedTimeToLive = (timeToLive) =>
     timeToLive === ZERO_TIME_STRING || !timeToLive ? '' : moment(timeToLive).format(Moment12HourFormat)
 
@@ -256,8 +257,8 @@ export const createUserPermissionPayload = ({
     chartPermission,
     k8sPermission,
     isSuperAdminPermission,
-    userStatus = UserStatus.active,
-    timeToLive = '',
+    userStatus,
+    timeToLive,
 }: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
     // ID 0 denotes create operation
     id: id || 0,

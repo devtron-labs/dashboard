@@ -1,5 +1,6 @@
 import { ACCESS_TYPE_MAP, SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, EntityTypes } from '../../../constants'
+import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
 export const ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE = '#'
@@ -32,6 +33,7 @@ export const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
         value: ActionTypes.VIEW,
     },
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
+    ...getDefaultStatusAndTimeout(),
 }
 
 export const emptyDirectPermissionHelmApps = {

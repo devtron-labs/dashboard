@@ -2,6 +2,7 @@ import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, ACTION_LABEL, EntityTypes } from '../../../constants'
 import { K8sPermissionFilter } from '../../../types'
+import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
 
 export const apiGroupAll = (permission, isLabel = false) => {
@@ -37,7 +38,7 @@ export const multiSelectAllState = (selected, actionMeta, setState, options) => 
 }
 
 // eslint-disable-next-line default-param-last
-export const getPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter) => {
+export const getPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter): K8sPermissionFilter => {
     if (k8sPermission) {
         return {
             key: idx,
@@ -48,6 +49,8 @@ export const getPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter
             resource: k8sPermission.resource,
             action: k8sPermission.action,
             entity: k8sPermission.entity,
+            status: k8sPermission.status,
+            timeToLive: k8sPermission.timeToLive,
         }
     }
     return {
@@ -59,6 +62,7 @@ export const getPermissionObject = (idx = 0, k8sPermission?: K8sPermissionFilter
         resource: null,
         action: { value: ActionTypes.VIEW, label: ACTION_LABEL[ActionTypes.VIEW] },
         entity: EntityTypes.CLUSTER,
+        ...getDefaultStatusAndTimeout(),
     }
 }
 

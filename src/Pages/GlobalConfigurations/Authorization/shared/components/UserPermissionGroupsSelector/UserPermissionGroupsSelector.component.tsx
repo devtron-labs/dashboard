@@ -17,6 +17,7 @@ import { getPermissionGroupList } from '../../../authorization.service'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
 import { getFormattedTimeToLive } from '../../../utils'
+import { getDefaultStatusAndTimeout } from '../../../libUtils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
@@ -72,9 +73,7 @@ const UserPermissionGroupsSelector = () => {
                     id,
                     name,
                     description,
-                    // Default status is active for new role group
-                    status: UserStatus.active,
-                    timeToLive: '',
+                    ...getDefaultStatusAndTimeout(),
                 }
             })
 
