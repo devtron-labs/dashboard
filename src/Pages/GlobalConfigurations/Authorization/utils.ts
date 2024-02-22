@@ -51,8 +51,8 @@ export const transformUserResponse = (_user: UserDto): User => {
                 id: index,
                 name: group,
                 description: `${group} - Description - ${index}`,
-                // TODO (v3): Update while integrating
-                status: getUserStatus(group, timeToLive),
+                // TODO (v3): Update while integrating (Add TTL and Status)
+                status: getUserStatus(UserStatus.inactive, ''),
                 timeToLive,
             })) ?? [],
     }
@@ -109,6 +109,7 @@ export const getRoleFiltersToExport = (
     roleFilters
         .filter((roleFilter) => roleFilter.team && roleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
         .map((roleFilter) => ({
+            // TODO (v3): Add status but not for Permission Group
             project: roleFilter.team,
             environment: roleFilter.environment?.split(',').join(', ') || 'All existing + future environments',
             application: roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications',

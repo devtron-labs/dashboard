@@ -42,6 +42,7 @@ const ExportUserPermissionsToCsv = ({
                 ...(showStatus
                     ? {
                           status: getStatusExportText(_user.userStatus, _user.timeToLive),
+                          permissionStatus: '-',
                       }
                     : {}),
                 lastLoginTime:
@@ -60,9 +61,21 @@ const ExportUserPermissionsToCsv = ({
                 _pushToUserList(_userData)
             } else {
                 if (_user.userRoleGroups?.length) {
-                    // TODO (v3): Fix
-                    _userData.groups = ''
-                    _pushToUserList(_userData)
+                    _user.userRoleGroups.forEach((userRoleGroup) => {
+                        const _userPermissions = {
+                            ..._userData,
+                            groups: userRoleGroup.name,
+                            ...(showStatus
+                                ? {
+                                      permissionStatus: getStatusExportText(
+                                          userRoleGroup.status,
+                                          userRoleGroup.timeToLive,
+                                      ),
+                                  }
+                                : {}),
+                        }
+                        _pushToUserList(_userPermissions)
+                    })
                 }
 
                 if (_user.roleFilters?.length) {

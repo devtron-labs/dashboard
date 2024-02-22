@@ -35,7 +35,11 @@ export const APPLIST_EXPORT_HEADERS = [
 export const USER_EXPORT_HEADERS = [
     { label: 'Email address', key: 'emailId' },
     { label: 'User ID', key: 'userId' },
-    ...(showStatus ? [{ label: 'User status', key: 'status' }] : []),
+    ...(showStatus
+        ? [
+              { label: 'User status', key: 'status' },
+          ]
+        : []),
     { label: 'Last login time', key: 'lastLoginTime' },
     { label: 'Super admin', key: 'superAdmin' },
     { label: 'Group permissions', key: 'groups' },
@@ -43,6 +47,11 @@ export const USER_EXPORT_HEADERS = [
     { label: 'Environment', key: 'environment' },
     { label: 'Application', key: 'application' },
     { label: 'Role', key: 'role' },
+    ...(showStatus
+        ? [
+              { label: 'Permission Status', key: 'permissionStatus' },
+          ]
+        : []),
 ]
 
 export const USER_EXPORT_HEADER_ROW = {
@@ -60,6 +69,11 @@ export const USER_EXPORT_HEADER_ROW = {
     environment: 'Environment',
     application: 'Application',
     role: 'Role',
+    ...(showStatus
+        ? {
+              permissionStatus: 'Permission Status',
+          }
+        : {}),
 }
 
 export const GROUP_EXPORT_HEADERS = [
