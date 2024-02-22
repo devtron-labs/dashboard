@@ -50,7 +50,7 @@ const ExportUserPermissionsToCsv = ({
                         ? _user.lastLoginTime
                         : `${moment.utc(_user.lastLoginTime).format(Moment12HourExportFormat)} (UTC)`,
                 superAdmin: _user.superAdmin,
-                groups: '-',
+                group: '-',
                 project: '-',
                 environment: '-',
                 application: '-',
@@ -64,7 +64,7 @@ const ExportUserPermissionsToCsv = ({
                     _user.userRoleGroups.forEach((userRoleGroup) => {
                         const _userPermissions = {
                             ..._userData,
-                            groups: userRoleGroup.name,
+                            group: userRoleGroup.name,
                             ...(showStatus
                                 ? {
                                       permissionStatus: getStatusExportText(
@@ -82,7 +82,7 @@ const ExportUserPermissionsToCsv = ({
                     getRoleFiltersToExport(_user.roleFilters, customRoles).forEach((roleFilterToExport) => {
                         const _userPermissions = {
                             ..._userData,
-                            groups: '-',
+                            group: '-',
                             ...roleFilterToExport,
                         }
 
