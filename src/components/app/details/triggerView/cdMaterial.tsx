@@ -2114,7 +2114,7 @@ const getInitialSelectedConfigToDeploy = () => {
         )
     }
 
-    const renderTriggerViewConfifDiff = () => {
+    const renderTriggerViewConfigDiff = () => {
         if (state.checkingDiff) {
             return <Progressing pageLoader />
         }
@@ -2142,7 +2142,7 @@ const getInitialSelectedConfigToDeploy = () => {
             }}
         >
             {showConfigDiffView && canReviewConfig()
-                ? renderTriggerViewConfifDiff()
+                ? renderTriggerViewConfigDiff()
                 : renderMaterialList(isApprovalConfigured)}
         </div>
     )
