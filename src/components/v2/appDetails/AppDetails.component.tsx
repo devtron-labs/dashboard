@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
-import { DeploymentAppTypes, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, Progressing, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetailsComponentType, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
@@ -105,6 +105,7 @@ const AppDetailsComponent = ({
                 }
             },
         )
+        .catch(noop)
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
