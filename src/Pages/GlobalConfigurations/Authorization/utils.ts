@@ -34,7 +34,7 @@ export const getFormattedTimeToLive = (timeToLive) =>
     timeToLive === ZERO_TIME_STRING || !timeToLive ? '' : moment(timeToLive).format(Moment12HourFormat)
 
 export const transformUserResponse = (_user: UserDto): User => {
-    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, userStatus, groups, ...user } = _user
+    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, userStatus, userRoleGroups, ...user } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
 
     return {
@@ -47,14 +47,23 @@ export const transformUserResponse = (_user: UserDto): User => {
         userStatus: getUserStatus(userStatus, timeToLive),
         timeToLive,
         userRoleGroups:
-            groups?.map((group, index) => ({
-                id: index,
-                name: group,
-                description: `${group} - Description - ${index}`,
-                // TODO (v3): Update while integrating (Add TTL and Status)
-                status: getUserStatus(UserStatus.inactive, ''),
-                timeToLive,
-            })) ?? [],
+            userRoleGroups?.map(
+                ({
+                    roleGroup: { id, name, description },
+                    status,
+                    timeoutWindowExpression: groupTimeoutWindowExpression,
+                }) => {
+                    const groupTimeToLive = getFormattedTimeToLive(groupTimeoutWindowExpression)
+
+                    return {
+                        id,
+                        name,
+                        description,
+                        status: getUserStatus(status, groupTimeToLive),
+                        timeToLive: groupTimeToLive,
+                    }
+                },
+            ) ?? [],
     }
 }
 
@@ -253,8 +262,6 @@ export const createUserPermissionPayload = ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,
-    // TODO (v3): Remove
-    groups: userGroups.map((group) => group.name),
     userRoleGroups: userGroups,
     superAdmin: isSuperAdminPermission,
     userStatus,

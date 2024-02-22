@@ -32,6 +32,7 @@ const getUserStatusAndTimeoutPayload = importComponentFromFELibrary(
     () => ({}),
     'function',
 )
+const getStatusAndTimeoutPayload = importComponentFromFELibrary('getStatusAndTimeoutPayload', () => ({}), 'function')
 
 // User Permissions
 export const getUserById = async (userId: User['id']): Promise<User> => {
@@ -55,12 +56,12 @@ export const createOrUpdateUser = ({
     const _data: UserDto = {
         ...data,
         email_id: emailId,
-        userRoleGroups: userRoleGroups.map(({ id, name, status, timeToLive: _timeToLive }) => ({
+        userRoleGroups: userRoleGroups.map(({ id, name, status: groupStatus, timeToLive: groupTimeToLive }) => ({
             roleGroup: {
                 id,
                 name,
             },
-            ...getUserStatusAndTimeoutPayload(status, _timeToLive),
+            ...getStatusAndTimeoutPayload(groupStatus, groupTimeToLive),
         })),
         ...getUserStatusAndTimeoutPayload(userStatus, timeToLive),
     }

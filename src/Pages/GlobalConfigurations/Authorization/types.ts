@@ -94,20 +94,17 @@ export interface UserDto {
      * If true, the user is a super admin
      */
     superAdmin: boolean
-    // TODO (v3): Remove in next iteration
-    groups?: string[] | null
     /**
      * List of permission groups assigned to the user
      */
-    // userRoleGroups?: {
-    //     roleGroup: Pick<PermissionGroup, 'id' | 'name' | 'description'>
-    //     status?: UserStatusDto
-    //     timeoutWindowExpression?: string
-    // }[]
+    userRoleGroups?: {
+        roleGroup: Pick<PermissionGroup, 'id' | 'name' | 'description'>
+        status?: UserStatusDto
+        timeoutWindowExpression?: string
+    }[]
 }
 
-export interface User
-    extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'groups' | 'userRoleGroups'> {
+export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups'> {
     emailId: UserDto['email_id']
     /**
      * Time until which the user is active
@@ -123,9 +120,7 @@ export interface User
 export type UserCreateOrUpdatePayload = Pick<
     User,
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive' | 'userRoleGroups'
-> &
-    // TODO (v3): Remove
-    Pick<UserDto, 'groups'>
+>
 
 // Others
 export interface UserRole {
