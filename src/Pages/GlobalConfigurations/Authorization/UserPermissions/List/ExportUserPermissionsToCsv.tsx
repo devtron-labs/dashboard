@@ -59,8 +59,9 @@ const ExportUserPermissionsToCsv = ({
             if (_user.superAdmin) {
                 _pushToUserList(_userData)
             } else {
-                if (_user.groups?.length) {
-                    _userData.groups = _user.groups.join(', ')
+                if (_user.userRoleGroups?.length) {
+                    // TODO (v3): Fix
+                    _userData.groups = ''
                     _pushToUserList(_userData)
                 }
 

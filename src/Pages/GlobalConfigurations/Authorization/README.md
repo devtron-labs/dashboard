@@ -25,7 +25,7 @@ graph TD;
 
     subgraph "Permission Configuration Form Provider"
       UserForm-->UserStatusUpdate;
-      UserForm-->UserPermissionGroupTable;
+      UserForm-->UserAutoAssignedRoleGroupsTable;
       UserForm-->PermissionConfigurationForm;
     end
 

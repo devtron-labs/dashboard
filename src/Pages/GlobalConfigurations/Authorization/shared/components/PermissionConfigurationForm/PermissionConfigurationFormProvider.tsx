@@ -1,4 +1,3 @@
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useMemo, useRef, useState } from 'react'
 import { ActionTypes, EntityTypes, PermissionType } from '../../../constants'
 import {
@@ -8,27 +7,9 @@ import {
     PermissionGroup,
     User,
 } from '../../../types'
+import { PermissionConfigurationFormContext } from './types'
 
-const context = createContext<
-    {
-        permissionType: PermissionType
-        setPermissionType: (permissionType: PermissionType) => void
-        data: User | PermissionGroup
-        userGroups: OptionType[]
-        setUserGroups: React.Dispatch<React.SetStateAction<OptionType[]>>
-    } & Omit<
-        {
-            directPermission: DirectPermissionsRoleFilter[]
-            setDirectPermission: (...rest) => void
-            chartPermission: ChartGroupPermissionsFilter
-            setChartPermission: React.Dispatch<React.SetStateAction<ChartGroupPermissionsFilter>>
-            k8sPermission?: K8sPermissionFilter[]
-            setK8sPermission?: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
-            currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
-        },
-        'data'
-    >
->(null)
+const context = createContext<PermissionConfigurationFormContext>(null)
 
 export const PermissionConfigurationFormProvider = ({
     children,
@@ -45,12 +26,12 @@ export const PermissionConfigurationFormProvider = ({
         action: ActionTypes.VIEW,
         entityName: [],
     })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [k8sPermission, setK8sPermission] = useState<any[]>([])
+    const [k8sPermission, setK8sPermission] = useState<K8sPermissionFilter[]>([])
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const currentK8sPermissionRef = useRef<any[]>([])
-    const [userGroups, setUserGroups] = useState<OptionType[]>([])
+    const [userGroups, setUserGroups] = useState<User['userRoleGroups']>([])
+    const [userStatus, setUserStatus] = useState<User['userStatus']>()
 
     const value = useMemo(
         () => ({
@@ -65,6 +46,8 @@ export const PermissionConfigurationFormProvider = ({
             currentK8sPermissionRef,
             userGroups,
             setUserGroups,
+            userStatus,
+            setUserStatus,
             data,
         }),
         [
@@ -79,6 +62,8 @@ export const PermissionConfigurationFormProvider = ({
             currentK8sPermissionRef,
             userGroups,
             setUserGroups,
+            userStatus,
+            setUserStatus,
             data,
         ],
     )

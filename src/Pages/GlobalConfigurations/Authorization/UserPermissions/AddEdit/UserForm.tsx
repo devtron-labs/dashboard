@@ -30,7 +30,7 @@ import { createUserPermissionPayload, getFormattedTimeToLive, isDirectPermission
 import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 import { getCreatableChipStyle } from '../utils'
 
-const UserPermissionGroupTable = importComponentFromFELibrary('UserPermissionGroupTable')
+const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
@@ -55,15 +55,16 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         k8sPermission,
         currentK8sPermissionRef,
         userGroups,
-        setUserGroups,
         data: userData,
+        userStatus,
+        setUserStatus,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
     )
-    const [userStatus, setUserStatus] = useState(_userData?.userStatus)
+    // Keeping the state local as this is not being drilled anywhere else atm
     const [timeToLive, setTimeToLive] = useState(_userData?.timeToLive)
 
     // UI States
@@ -162,8 +163,8 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const populateDataFromAPI = (data: User) => {
-        const { emailId, groups = [], superAdmin, userStatus: _userStatus, timeToLive: _timeToLive } = data
-        setUserGroups(groups?.map((group) => ({ label: group, value: group })) || [])
+        const { emailId, superAdmin, userStatus: _userStatus, timeToLive: _timeToLive } = data
+
         setEmailState({ emails: [{ label: emailId, value: emailId }], inputEmailValue: '', emailError: '' })
         setPermissionType(superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
         handleUserStatusUpdate(_userStatus, _timeToLive)
@@ -333,7 +334,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         </>
                     )}
                     {!isAddMode && isAutoAssignFlowEnabled && (
-                        <UserPermissionGroupTable permissionGroups={_userData?.roleGroups} />
+                        <UserAutoAssignedRoleGroupsTable permissionGroups={_userData.userRoleGroups} />
                     )}
                     {!isAutoAssignFlowEnabled && <PermissionConfigurationForm showUserPermissionGroupSelector />}
                 </div>

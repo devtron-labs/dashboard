@@ -7,7 +7,7 @@ export const userListLoading: User[] = Array.from(Array(DEFAULT_SHIMMER_LOADING_
     id: index,
     emailId: '',
     roleFilters: [],
-    groups: [],
+    userRoleGroups: [],
     superAdmin: false,
     userStatus: UserStatus.active,
     timeToLive: '',

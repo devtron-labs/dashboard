@@ -34,7 +34,7 @@ export const getFormattedTimeToLive = (timeToLive) =>
     timeToLive === ZERO_TIME_STRING || !timeToLive ? '' : moment(timeToLive).format(Moment12HourFormat)
 
 export const transformUserResponse = (_user: UserDto): User => {
-    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, userStatus, ...user } = _user
+    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, userStatus, groups, ...user } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
 
     return {
@@ -46,6 +46,15 @@ export const transformUserResponse = (_user: UserDto): User => {
                 : moment(lastLoginTime).format(Moment12HourFormat),
         userStatus: getUserStatus(userStatus, timeToLive),
         timeToLive,
+        userRoleGroups:
+            groups.map((group, index) => ({
+                id: index,
+                name: group,
+                description: `${group} - Description - ${index}`,
+                // TODO (v3): Update while integrating
+                status: getUserStatus(group, timeToLive),
+                timeToLive,
+            })) ?? [],
     }
 }
 
@@ -243,7 +252,8 @@ export const createUserPermissionPayload = ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,
-    groups: userGroups.map((group) => group.value),
+    // TODO (v3): Update
+    groups: userGroups.map((group) => group.name),
     superAdmin: isSuperAdminPermission,
     userStatus,
     timeToLive,

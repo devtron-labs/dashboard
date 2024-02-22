@@ -5,6 +5,7 @@ import {
     BaseFilterQueryParams,
     OptionType,
     UserStatus,
+    UserRoleGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
 import { ActionTypes, EntityTypes } from './constants'
@@ -38,19 +39,7 @@ export interface APIRoleFilter {
 }
 
 // Permission Groups
-export interface PermissionGroupDto {
-    /**
-     * ID of the permission group
-     */
-    id: number
-    /**
-     * Name of the permission group
-     */
-    name: string
-    /**
-     * Description of the permission group
-     */
-    description?: string
+export interface PermissionGroupDto extends Pick<UserRoleGroup, 'id' | 'name' | 'description'> {
     /**
      * Role filters (direct permissions) for the permission group
      */
@@ -107,14 +96,18 @@ export interface UserDto {
     superAdmin: boolean
     // TODO (v3): Remove in next iteration
     groups: string[]
-    // TODO (v3): This can be marked mandatory in next iteration once groups are deprecated
     /**
      * List of permission groups assigned to the user
      */
-    roleGroups?: Pick<PermissionGroup, 'id' | 'name' | 'description'>
+    // userRoleGroups: {
+    //     roleGroup: Pick<PermissionGroup, 'id' | 'name' | 'description'>
+    //     status?: UserStatusDto
+    //     timeoutWindowExpression?: string
+    // }[]
 }
 
-export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus'> {
+export interface User
+    extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'groups' | 'roleGroups'> {
     emailId: UserDto['email_id']
     /**
      * Time until which the user is active
@@ -124,12 +117,15 @@ export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_i
      */
     timeToLive: string
     userStatus: UserStatus
+    userRoleGroups: UserRoleGroup[]
 }
 
 export type UserCreateOrUpdatePayload = Pick<
     User,
-    'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'groups' | 'timeToLive'
->
+    'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive'
+> &
+    // TODO (v3): Remove
+    Pick<UserDto, 'groups'>
 
 // Others
 export interface UserRole {
@@ -251,7 +247,7 @@ export interface K8sPermissionFilter {
 export interface CreateUserPermissionPayloadParams extends Partial<Pick<User, 'userStatus' | 'timeToLive'>> {
     id: number
     userIdentifier: string
-    userGroups: OptionType[]
+    userGroups: User['userRoleGroups']
     serverMode: SERVER_MODE
     directPermission: DirectPermissionsRoleFilter[]
     chartPermission: ChartGroupPermissionsFilter
