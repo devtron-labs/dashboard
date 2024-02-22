@@ -122,9 +122,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let configJson: any = {}
         try {
             configJson = yamlJsParser.parse(this.state.codeEditorPayload)
+            if (configJson.kind === undefined) {
+                throw new Error('provide kind')
+            }
         } catch (error) {
-            // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+            if (error.message === 'provide kind') {
+                toast.error('Invalid Yaml: Provide kind') // Invalid YAML, kind not defined. Show error toast
+            } else toast.error('Invalid Yaml') // Invalid YAML, couldn't be parsed to JSON. Show error toast
             this.setState({ view: ViewType.FORM })
             return
         }
@@ -164,9 +168,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         let configJson: any = {}
         try {
             configJson = yamlJsParser.parse(this.state.codeEditorPayload)
+            if (configJson.kind === undefined) {
+                throw new Error('provide kind')
+            }
         } catch (error) {
-            // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
+            if (error.message === 'provide kind') {
+                toast.error('Invalid Yaml: Provide kind') // Invalid YAML, kind not defined. Show error toast
+            } else toast.error('Invalid Yaml') // Invalid YAML, couldn't be parsed to JSON. Show error toast
             this.setState({ view: ViewType.FORM })
             return
         }

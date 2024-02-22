@@ -3,7 +3,7 @@ import { Routes } from '../../config'
 
 export function updateBulkList(request): Promise<any> {
     const { apiVersion } = request
-    let kind = String(`${request.kind}`)
+    let kind = `${request.kind}`
     kind = kind?.toLocaleLowerCase()
     const URL = `${apiVersion}/${kind} `
     return post(URL, request)
@@ -11,7 +11,7 @@ export function updateBulkList(request): Promise<any> {
 
 export function updateImpactedObjectsList(request): Promise<any> {
     const { apiVersion } = request
-    let kind = String(`${request.kind}`)
+    let kind = `${request.kind}`
     kind = kind?.toLocaleLowerCase()
     const URL = `${apiVersion}/${kind}/dryrun `
     return post(URL, request)
