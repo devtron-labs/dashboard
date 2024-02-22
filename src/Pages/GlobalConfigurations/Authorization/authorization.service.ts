@@ -23,7 +23,7 @@ import {
     UserDto,
     UserRole,
 } from './types'
-import { transformUserResponse } from './utils'
+import { transformPermissionGroupResponse, transformUserResponse } from './utils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 
@@ -125,7 +125,7 @@ export const deleteUserInBulk = (payload: UserBulkDeletePayload) =>
 export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Promise<PermissionGroup> => {
     try {
         const { result } = (await get(`${Routes.USER_ROLE_GROUP}/${groupId}`)) as ResponseType<PermissionGroupDto>
-        return result
+        return transformPermissionGroupResponse(result)
     } catch (error) {
         showError(error)
         throw error
@@ -135,12 +135,20 @@ export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Pr
 export const createOrUpdatePermissionGroup = ({
     name,
     description,
+    roleFilters,
     ...payload
 }: PermissionGroupCreateOrUpdatePayload) => {
     const _payload = {
         ...payload,
         name: name.trim(),
         description: description?.trim(),
+        roleFilters: roleFilters.map(
+            // Remove the status and timestamp from the payload for permission group
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            ({ status: _roleFilterStatus, timeToLive: _roleFilterTimeToLive, ...roleFilter }) => ({
+                ...roleFilter,
+            }),
+        ),
     }
 
     const isUpdate = !!payload.id
@@ -170,7 +178,7 @@ export const getPermissionGroupList = async (
         }>
 
         return {
-            permissionGroups,
+            permissionGroups: permissionGroups.map(transformPermissionGroupResponse),
             totalCount,
         }
     } catch (error) {

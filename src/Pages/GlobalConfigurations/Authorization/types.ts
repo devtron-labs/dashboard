@@ -20,7 +20,7 @@ export interface UserAndGroupPermissionsWrapProps {
 
 type PermissionStatusAndTimeout = Pick<UserRoleGroup, 'status' | 'timeToLive'>
 
-export interface APIRoleFilter extends PermissionStatusAndTimeout {
+export interface APIRoleFilterDto {
     entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
     team?: string
     entityName?: string
@@ -38,21 +38,27 @@ export interface APIRoleFilter extends PermissionStatusAndTimeout {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resource?: any
     workflow?: string
+    status: UserStatusDto
+    timeoutWindowExpression: string
 }
+
+export type APIRoleFilter = Omit<APIRoleFilterDto, 'status' | 'timeoutWindowExpression'> & PermissionStatusAndTimeout
 
 // Permission Groups
 export interface PermissionGroupDto extends Pick<UserRoleGroup, 'id' | 'name' | 'description'> {
     /**
      * Role filters (direct permissions) for the permission group
      */
-    roleFilters: APIRoleFilter[]
+    roleFilters: APIRoleFilterDto[]
     /**
      * If true, the group has super admin access
      */
     superAdmin: boolean
 }
 
-export type PermissionGroup = PermissionGroupDto
+export type PermissionGroup = Omit<PermissionGroupDto, 'roleFilters'> & {
+    roleFilters: APIRoleFilter[]
+}
 
 export type PermissionGroupCreateOrUpdatePayload = Pick<
     PermissionGroup,
@@ -91,7 +97,7 @@ export interface UserDto {
     /**
      * Role filters (direct permissions) for the user
      */
-    roleFilters: APIRoleFilter[]
+    roleFilters: APIRoleFilterDto[]
     /**
      * If true, the user is a super admin
      */
@@ -106,7 +112,8 @@ export interface UserDto {
     }[]
 }
 
-export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups'> {
+export interface User
+    extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters'> {
     emailId: UserDto['email_id']
     /**
      * Time until which the user is active
@@ -117,6 +124,7 @@ export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_i
     timeToLive: string
     userStatus: UserStatus
     userRoleGroups: UserRoleGroup[]
+    roleFilters: APIRoleFilter[]
 }
 
 export type UserCreateOrUpdatePayload = Pick<

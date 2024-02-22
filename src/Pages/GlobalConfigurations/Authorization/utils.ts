@@ -11,11 +11,13 @@ import {
 } from '../../../config'
 import {
     APIRoleFilter,
+    APIRoleFilterDto,
     CreateUserPermissionPayloadParams,
     CustomRoleAndMeta,
     CustomRoles,
     MetaPossibleRoles,
     PermissionGroup,
+    PermissionGroupDto,
     User,
     UserCreateOrUpdatePayload,
     UserDto,
@@ -34,8 +36,29 @@ const getUserStatus = importComponentFromFELibrary('getUserStatus', noop, 'funct
 export const getFormattedTimeToLive = (timeToLive) =>
     timeToLive === ZERO_TIME_STRING || !timeToLive ? '' : moment(timeToLive).format(Moment12HourFormat)
 
+const transformRoleFilters = (roleFilters: APIRoleFilterDto[]): APIRoleFilter[] =>
+    roleFilters?.map(
+        ({ status: roleFilterStatus, timeoutWindowExpression: roleFilterTimeoutWindowExpression, ...roleFilter }) => {
+            const roleFilterTimeToLive = getFormattedTimeToLive(roleFilterTimeoutWindowExpression)
+
+            return {
+                ...roleFilter,
+                status: getUserStatus(roleFilterStatus, roleFilterTimeToLive),
+                timeToLive: roleFilterTimeToLive,
+            }
+        },
+    ) ?? []
+
 export const transformUserResponse = (_user: UserDto): User => {
-    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, userStatus, userRoleGroups, ...user } = _user
+    const {
+        lastLoginTime,
+        timeoutWindowExpression,
+        email_id: emailId,
+        userStatus,
+        userRoleGroups,
+        roleFilters,
+        ...user
+    } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
 
     return {
@@ -51,7 +74,7 @@ export const transformUserResponse = (_user: UserDto): User => {
             userRoleGroups?.map(
                 ({
                     roleGroup: { id, name, description },
-                    status,
+                    status: groupStatus,
                     timeoutWindowExpression: groupTimeoutWindowExpression,
                 }) => {
                     const groupTimeToLive = getFormattedTimeToLive(groupTimeoutWindowExpression)
@@ -60,11 +83,21 @@ export const transformUserResponse = (_user: UserDto): User => {
                         id,
                         name,
                         description,
-                        status: getUserStatus(status, groupTimeToLive),
+                        status: getUserStatus(groupStatus, groupTimeToLive),
                         timeToLive: groupTimeToLive,
                     }
                 },
             ) ?? [],
+        roleFilters: transformRoleFilters(roleFilters),
+    }
+}
+
+export const transformPermissionGroupResponse = (_permissionGroup: PermissionGroupDto): PermissionGroup => {
+    const { roleFilters, ...permissionGroup } = _permissionGroup
+
+    return {
+        ...permissionGroup,
+        roleFilters: transformRoleFilters(roleFilters),
     }
 }
 
