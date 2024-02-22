@@ -8,7 +8,6 @@ import {
     ToastBody,
     DeleteDialog,
     ErrorScreenManager,
-    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
@@ -111,9 +110,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             setGroupFilterOptions(_groupFilterOption)
           }
         } catch (error) {
-          noop;
+          showError(error)
         }
-      setAppListLoading(true)
+        setAppListLoading(false)
     }
 
     const getAppListData = async (): Promise<void> => {
@@ -133,7 +132,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
               .sort(sortOptionsByLabel),
             )
           }
-        } catch (error) {noop}
+        } catch (error) {
+          showError(error)
+        }
         setAppListLoading(false)
     }
 
