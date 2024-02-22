@@ -41,10 +41,23 @@ export const getUserById = async (userId: User['id']): Promise<User> => {
     }
 }
 
-export const createOrUpdateUser = ({ emailId, userStatus, timeToLive, ...data }: UserCreateOrUpdatePayload) => {
+export const createOrUpdateUser = ({
+    emailId,
+    userStatus,
+    timeToLive,
+    userRoleGroups,
+    ...data
+}: UserCreateOrUpdatePayload) => {
     const _data: UserDto = {
         ...data,
         email_id: emailId,
+        userRoleGroups: userRoleGroups.map(({ id, name, status, timeToLive: _timeToLive }) => ({
+            roleGroup: {
+                id,
+                name,
+            },
+            ...(getUserStatusAndTimeoutPayload ? getUserStatusAndTimeoutPayload(status, _timeToLive) : {}),
+        })),
         ...(getUserStatusAndTimeoutPayload ? getUserStatusAndTimeoutPayload(userStatus, timeToLive) : {}),
     }
     const isUpdate = !!_data.id

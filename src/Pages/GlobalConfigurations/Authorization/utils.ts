@@ -47,7 +47,7 @@ export const transformUserResponse = (_user: UserDto): User => {
         userStatus: getUserStatus(userStatus, timeToLive),
         timeToLive,
         userRoleGroups:
-            groups.map((group, index) => ({
+            groups?.map((group, index) => ({
                 id: index,
                 name: group,
                 description: `${group} - Description - ${index}`,
@@ -252,8 +252,9 @@ export const createUserPermissionPayload = ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,
-    // TODO (v3): Update
+    // TODO (v3): Remove
     groups: userGroups.map((group) => group.name),
+    userRoleGroups: userGroups,
     superAdmin: isSuperAdminPermission,
     userStatus,
     timeToLive,
