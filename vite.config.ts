@@ -1,4 +1,4 @@
-import { defineConfig, PluginOption, loadEnv } from 'vite'
+import { defineConfig, PluginOption, loadEnv, splitVendorChunkPlugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 import fs from 'node:fs/promises'
@@ -8,7 +8,6 @@ import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
-import replace from '@rollup/plugin-replace'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 
@@ -34,6 +33,42 @@ function reactVirtualized(): PluginOption {
         },
     }
 }
+// this method is used to move all the script and styles to bottom after body
+const jsToBottomNoModule = () => {
+    return {
+        name: 'no-attribute',
+        transformIndexHtml(html) {
+            let customInjection = ''
+            const scriptTag = html.match(/<script type="module"[^>]*>(.*?)<\/script[^>]*>/)[0]
+            console.log('\n SCRIPT TAG', scriptTag, '\n')
+            html = html.replace(scriptTag, '')
+            customInjection += scriptTag
+
+            const linkTagModulePreloadList = [...html.matchAll(/<link rel="modulepreload"[^>]*>/g)]
+            console.log('------------------------------------------------------------')
+            linkTagModulePreloadList.forEach((linkData) => {
+                console.log('\n modulepreload', linkData[0], '\n')
+                html = html.replace(linkData[0], '')
+                customInjection += linkData[0]
+            })
+
+            /*
+             * uncomment bellow after CSS fix on pull image digest cluster env and others wherever order is giving issues
+             */
+            // let linkTagStyleSheetList = [...html.matchAll(/<link rel="stylesheet"[^>]*>/g)]
+            // console.log('------------------------------------------------------------')
+            // linkTagStyleSheetList.forEach((linkData) => {
+            //     console.log('\n stylesheet', linkData[0], '\n')
+            //     html = html.replace(linkData[0], '')
+            //     customInjection += linkData[0]
+            // })
+
+            html = html.replace('<!-- # INSERT SCRIPT HERE -->', customInjection)
+            console.log('------------------------------------------------------------')
+            return html
+        },
+    }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -43,12 +78,29 @@ export default defineConfig(({ mode }) => {
         preview: {
             port: 3000,
         },
+        build: {
+            sourcemap: true,
+            rollupOptions: {
+                output: {
+                    manualChunks(id: string) {
+                        // separating the common lib chunk
+                        if (id.includes('devtron-fe-common-lib')) {
+                            return '@devtron-common'
+                        }
+                        if (id.includes('@devtron')) {
+                            return '@devtron'
+                        }
+                    },
+                },
+            },
+        },
         plugins: [
             // @TODO: Check if we can remove the config object inside the react plugin
             react({
                 // Use React plugin in all *.jsx and *.tsx files
                 include: '**/*.{jsx,tsx}',
             }),
+            splitVendorChunkPlugin(),
             svgr({
                 svgrOptions: {},
             }),
@@ -59,9 +111,10 @@ export default defineConfig(({ mode }) => {
             }),
             VitePWA({
                 srcDir: 'src',
-                filename: 'prompt-sw.ts',
+                filename: 'service-worker.ts',
                 strategies: 'injectManifest',
             }),
+            jsToBottomNoModule(),
         ],
         // test: {
         //     globals: true,
