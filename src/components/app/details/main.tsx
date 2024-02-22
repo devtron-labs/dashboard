@@ -8,6 +8,7 @@ import {
     ToastBody,
     DeleteDialog,
     ErrorScreenManager,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
@@ -73,10 +74,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const getSavedFilterData = async (groupId?: number): Promise<void> => {
         setSelectedAppList([])
+        setSelectedGroupFilter([])
         setAppListLoading(true)
         setGroupFilterOptions([])
-        const { result } = await getEnvGroupList(+appId, FilterParentType.app)
-        if (result) {
+        try {
+          const { result } = await getEnvGroupList(+appId, FilterParentType.app)
+          if (result) {
             const _groupFilterOption = []
             let _selectedGroup
             for (const group of result) {
@@ -106,26 +109,31 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             }
             _groupFilterOption.sort(sortOptionsByLabel)
             setGroupFilterOptions(_groupFilterOption)
+          }
+        } catch (error) {
+          noop;
         }
-        setAppListLoading(false)
+      setAppListLoading(true)
     }
 
     const getAppListData = async (): Promise<void> => {
         setSelectedAppList([])
         setAppListLoading(true)
-        const { result } = await getAppOtherEnvironmentMin(appId)
-        if (result?.length) {
+        try {
+          const { result } = await getAppOtherEnvironmentMin(appId)
+          if (result?.length) {
             setAppListOptions(
-                result
-                    .map((app): OptionType => {
-                        return {
-                            value: `${app.environmentId}`,
-                            label: app.environmentName,
-                        }
-                    })
-                    .sort(sortOptionsByLabel),
+              result
+              .map((app): OptionType => {
+                return {
+                  value: `${app.environmentId}`,
+                  label: app.environmentName,
+                }
+              })
+              .sort(sortOptionsByLabel),
             )
-        }
+          }
+        } catch (error) {noop}
         setAppListLoading(false)
     }
 
