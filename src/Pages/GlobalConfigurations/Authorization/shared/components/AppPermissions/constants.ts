@@ -20,9 +20,6 @@ export const ALL_ENVIRONMENTS_OPTION = {
     value: SELECT_ALL_VALUE,
 } as const
 
-// TODO (v4): Remove these once the code is refactored
-export const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase mb-0'
-
 export const emptyDirectPermissionDevtronApps: DirectPermissionsRoleFilter = {
     entity: EntityTypes.DIRECT,
     entityName: [],
@@ -54,4 +51,5 @@ export enum DirectPermissionFieldName {
     environment = 'environment',
     workflow = 'workflow',
     team = 'team',
+    status = 'status',
 }

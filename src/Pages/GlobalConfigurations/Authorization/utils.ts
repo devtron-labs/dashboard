@@ -370,7 +370,7 @@ export function parseData(dataList: any[], entity: string, accessType?: string) 
 }
 
 export const getWorkflowOptions = (appIdWorkflowNamesMapping: AppIdWorkflowNamesMapping['appIdWorkflowNamesMapping']) =>
-    Object.entries(appIdWorkflowNamesMapping).map(([jobName, jobWorkflows]) => ({
+    Object.entries(appIdWorkflowNamesMapping ?? {}).map(([jobName, jobWorkflows]) => ({
         label: jobName,
         options: jobWorkflows.map((workflow) => ({
             label: workflow,

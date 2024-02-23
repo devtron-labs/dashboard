@@ -7,6 +7,7 @@ import {
     getIsRequestAborted,
     LoadingIndicator,
     ReactSelectInputAction,
+    UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
@@ -25,10 +26,14 @@ import {
     DirectPermissionFieldName,
 } from './constants'
 import { getWorkflowOptions, parseData } from '../../../utils'
+import { getFormattedTimeToLive } from '../../../libUtils'
 import { EntityTypes } from '../../../constants'
 import { DirectPermissionRow } from './types'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { DirectPermissionsRoleFilter } from '../../../types'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
+const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
 const DirectPermission = ({
     permission,
@@ -44,6 +49,7 @@ const DirectPermission = ({
     getListForAccessType,
 }: DirectPermissionRow) => {
     const { customRoles } = useAuthorizationContext()
+    const { showStatus, userStatus } = usePermissionConfiguration()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
@@ -183,9 +189,9 @@ const DirectPermission = ({
         setWorkflowList({ loading: true, options: [] })
         try {
             setWorkflowList({ loading: true, options: [] })
-            const jobNames = _permission.entityName
-                .filter((option) => option.value !== SELECT_ALL_VALUE)
-                .map((app) => app.label)
+            const jobNames =
+                _permission.entityName.filter((option) => option.value !== SELECT_ALL_VALUE).map((app) => app.label) ??
+                []
             const {
                 result: { appIdWorkflowNamesMapping },
             } = await getAllWorkflowsForAppNames(jobNames, abortControllerRef.current.signal)
@@ -297,6 +303,22 @@ const DirectPermission = ({
     const onMenuClose = () => {
         setOpenMenu('')
     }
+
+    const handleStatusChange = (
+        status: DirectPermissionsRoleFilter['status'],
+        timeToLive?: DirectPermissionsRoleFilter['timeToLive'],
+    ) => {
+        handleDirectPermissionChange(
+            {
+                status,
+                timeToLive: getFormattedTimeToLive(timeToLive),
+            },
+            {
+                name: DirectPermissionFieldName.status,
+            },
+        )
+    }
+
     return (
         <>
             <Select
@@ -530,13 +552,27 @@ const DirectPermission = ({
                     }}
                 />
             </div>
+            {showStatus && (
+                <div style={{ order: 5 }}>
+                    <UserStatusUpdate
+                        userStatus={permission.status}
+                        timeToLive={permission.timeToLive}
+                        userEmail=""
+                        handleChange={handleStatusChange}
+                        // TODO (v3): Common out
+                        disabled={userStatus === UserStatus.inactive}
+                        showDropdownBorder={false}
+                        breakLinesForTemporaryAccess
+                    />
+                </div>
+            )}
             <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
                 <button
                     type="button"
                     className="dc__transparent flex icon-delete"
                     onClick={() => removeRow(index)}
                     aria-label="Delete row"
-                    style={{ order: 5 }}
+                    style={{ order: showStatus ? 6 : 5 }}
                 >
                     <TrashIcon className="scn-6 icon-dim-16" />
                 </button>

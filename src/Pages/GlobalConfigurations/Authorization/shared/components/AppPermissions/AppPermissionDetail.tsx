@@ -4,9 +4,11 @@ import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import DirectPermission from './DirectPermission'
-import { PERMISSION_LABEL_CLASS } from './constants'
 import { getPermissionDetailRowClass } from './utils'
 import { AppPermissionsDetailType } from './types'
+import { importComponentFromFELibrary } from '../../../../../../components/common'
+
+const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const AppPermissionDetail = ({
     accessType,
@@ -15,29 +17,34 @@ const AppPermissionDetail = ({
     addNewPermissionRow,
     ...props
 }: AppPermissionsDetailType) => {
-    const { directPermission } = usePermissionConfiguration()
+    const { directPermission, showStatus } = usePermissionConfiguration()
     const isAccessTypeJob = accessType === ACCESS_TYPE_MAP.JOBS
-    const rowClass = getPermissionDetailRowClass(accessType)
+    const rowClass = getPermissionDetailRowClass(accessType, showStatus)
 
     return (
         <>
-            <div className={`w-100 pt-6 pb-6 display-grid ${rowClass}`}>
-                <label className={PERMISSION_LABEL_CLASS}>Project</label>
-                <label className={PERMISSION_LABEL_CLASS} style={{ order: isAccessTypeJob ? 3 : 0 }}>
+            <div className={`w-100 pt-6 pb-6 dc__gap-8 display-grid ${rowClass} fw-6 fs-12 cn-7 dc__uppercase`}>
+                <label className="mb-0">Project</label>
+                <label className="mb-0" style={{ order: isAccessTypeJob ? 3 : 0 }}>
                     Environment{accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'or cluster/namespace' : ''}
                 </label>
-                <label className={PERMISSION_LABEL_CLASS} style={{ order: isAccessTypeJob ? 1 : 0 }}>
+                <label className="mb-0" style={{ order: isAccessTypeJob ? 1 : 0 }}>
                     {isAccessTypeJob ? 'Job Name' : 'Application'}
                 </label>
                 {isAccessTypeJob && (
-                    <label className={PERMISSION_LABEL_CLASS} style={{ order: isAccessTypeJob ? 2 : 0 }}>
+                    <label className="mb-0" style={{ order: isAccessTypeJob ? 2 : 0 }}>
                         Workflow
                     </label>
                 )}
-                <label className={PERMISSION_LABEL_CLASS} style={{ order: isAccessTypeJob ? 4 : 0 }}>
+                <label className="mb-0" style={{ order: isAccessTypeJob ? 4 : 0 }}>
                     {accessType === ACCESS_TYPE_MAP.HELM_APPS ? 'Permission' : 'Role'}
                 </label>
-                <span style={{ order: 5 }} />
+                {showStatus && (
+                    <div style={{ order: 5 }}>
+                        <StatusHeaderCell />
+                    </div>
+                )}
+                <span style={{ order: showStatus ? 6 : 5 }} />
             </div>
 
             <div className="flexbox-col dc__gap-12">
@@ -45,7 +52,7 @@ const AppPermissionDetail = ({
                     (permission, idx) =>
                         permission.accessType === accessType && (
                             <div
-                                className={`w-100 dc__gap-14 display-grid ${rowClass}`}
+                                className={`w-100 dc__gap-8 display-grid flex-align-center ${rowClass}`}
                                 // eslint-disable-next-line react/no-array-index-key
                                 key={idx}
                             >

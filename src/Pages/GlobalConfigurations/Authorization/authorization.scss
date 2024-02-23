@@ -67,17 +67,27 @@
 }
 
 .app-permission-detail {
-    &__row {
-        &--devtron-apps {
-            grid-template-columns: 1fr 1fr 1fr 1fr 24px;
-        }
+    &__row-devtron-apps {
+        grid-template-columns: 1fr 1fr 1fr 1fr 24px;
 
-        &--helm-apps {
-            grid-template-columns: 1fr 2fr 1fr 1fr 24px;
+        &--with-status {
+            grid-template-columns: 1fr 1fr 1fr 1fr 185px 24px;
         }
+    }
 
-        &--jobs {
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 24px;
+    &__row-helm-apps {
+        grid-template-columns: 1fr 2fr 1fr 1fr 24px;
+
+        &--with-status {
+            grid-template-columns: 1fr 1.5fr 1fr 1fr 185px 24px;
+        }
+    }
+
+    &__row-jobs {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 24px;
+
+        &--with-status {
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 185px 24px;
         }
     }
 }

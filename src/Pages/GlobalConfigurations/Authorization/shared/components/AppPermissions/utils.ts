@@ -57,14 +57,16 @@ export const getAppPermissionDetailConfig = (path: string, serverMode: SERVER_MO
         },
     ] as const
 
-export const getPermissionDetailRowClass = (accessType: ACCESS_TYPE_MAP) => {
+export const getPermissionDetailRowClass = (accessType: ACCESS_TYPE_MAP, showStatus: boolean) => {
+    const modifierClass = showStatus ? '--with-status' : ''
+
     switch (accessType) {
         case ACCESS_TYPE_MAP.DEVTRON_APPS:
-            return 'app-permission-detail__row--devtron-apps'
+            return `app-permission-detail__row-devtron-apps${modifierClass}`
         case ACCESS_TYPE_MAP.HELM_APPS:
-            return 'app-permission-detail__row--helm-apps'
+            return `app-permission-detail__row-helm-apps${modifierClass}`
         case ACCESS_TYPE_MAP.JOBS:
-            return 'app-permission-detail__row--jobs'
+            return `app-permission-detail__row-jobs${modifierClass}`
         default:
             throw new Error(`Invalid access type ${accessType}`)
     }

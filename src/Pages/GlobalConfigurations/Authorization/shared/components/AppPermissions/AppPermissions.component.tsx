@@ -708,6 +708,16 @@ const AppPermissions = () => {
         const tempPermissions = [...directPermission]
 
         switch (name) {
+            case DirectPermissionFieldName.status: {
+                const { status, timeToLive } = selectedValue
+
+                tempPermissions[index] = {
+                    ...tempPermissions[index],
+                    status,
+                    timeToLive,
+                }
+                break
+            }
             case DirectPermissionFieldName.apps:
             case DirectPermissionFieldName.jobs:
                 _handleEntityNameChange(index, selectedValue, actionMeta, tempPermissions)
