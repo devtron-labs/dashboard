@@ -79,15 +79,17 @@ const ExportUserPermissionsToCsv = ({
                 }
 
                 if (_user.roleFilters?.length) {
-                    getRoleFiltersToExport(_user.roleFilters, customRoles).forEach((roleFilterToExport) => {
-                        const _userPermissions = {
-                            ..._userData,
-                            group: '-',
-                            ...roleFilterToExport,
-                        }
+                    getRoleFiltersToExport(_user.roleFilters, customRoles, { showStatus }).forEach(
+                        (roleFilterToExport) => {
+                            const _userPermissions = {
+                                ..._userData,
+                                group: '-',
+                                ...roleFilterToExport,
+                            }
 
-                        _pushToUserList(_userPermissions)
-                    })
+                            _pushToUserList(_userPermissions)
+                        },
+                    )
                 }
             }
 

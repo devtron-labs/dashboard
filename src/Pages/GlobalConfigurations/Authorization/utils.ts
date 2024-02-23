@@ -1,5 +1,11 @@
 import moment from 'moment'
-import { BulkSelectionEvents, noop, OptionType, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BulkSelectionEvents,
+    noop,
+    OptionType,
+    UserStatus,
+    ZERO_TIME_STRING,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import {
     ACCESS_TYPE_MAP,
@@ -31,6 +37,11 @@ import { importComponentFromFELibrary } from '../../../components/common'
 import { getFormattedTimeToLive } from './libUtils'
 
 const getUserStatus = importComponentFromFELibrary('getUserStatus', noop, 'function')
+const getStatusExportText: (status: UserStatus, timeToLive: string) => string = importComponentFromFELibrary(
+    'getStatusExportText',
+    noop,
+    'function',
+)
 
 const transformRoleFilters = (roleFilters: APIRoleFilterDto[]): APIRoleFilter[] =>
     roleFilters?.map(
@@ -144,15 +155,18 @@ export const getMetaPossibleRoles = (customRoles: CustomRoles[]): CustomRoleAndM
 export const getRoleFiltersToExport = (
     roleFilters: User['roleFilters'] | PermissionGroup['roleFilters'],
     customRoles: CustomRoleAndMeta,
+    { showStatus = false }: { showStatus?: boolean } = {},
 ) =>
     roleFilters
         .filter((roleFilter) => roleFilter.team && roleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
         .map((roleFilter) => ({
-            // TODO (v3): Add status but not for Permission Group
             project: roleFilter.team,
             environment: roleFilter.environment?.split(',').join(', ') || 'All existing + future environments',
             application: roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications',
             role: customRoles.possibleRolesMeta[roleFilter.action]?.value || '-',
+            ...(showStatus && {
+                permissionStatus: getStatusExportText(roleFilter.status, roleFilter.timeToLive),
+            }),
         }))
 
 export const handleToggleCheckForBulkSelection =
