@@ -32,6 +32,7 @@ import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
+import { sequentialApiBatchingWithQueue } from '../../AppGroup.service'
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -122,6 +123,91 @@ export default function BulkCDTrigger({
         }
     }, [outsideClickHandler])
 
+    const resolveMaterialData = (_cdMaterialResponse, _unauthorizedAppList) => (response) => {
+        if (response.status === 'fulfilled') {
+            _cdMaterialResponse[response.value['appId']] = response.value
+            // if first image does not have filerState.ALLOWED then unselect all images and set SELECT_NONE for selectedImage and for first app send the trigger of SELECT_NONE from selectedImageFromBulk
+            if (
+                response.value.materials?.length > 0 &&
+                (response.value.materials[0].filterState !== FilterStates.ALLOWED ||
+                    response.value.materials[0].vulnerable)
+            ) {
+                const updatedMaterials = response.value.materials.map((mat) => ({
+                    ...mat,
+                    isSelected: false,
+                }))
+                _cdMaterialResponse[response.value['appId']] = {
+                    ...response.value,
+                    materials: updatedMaterials,
+                }
+                setSelectedImages((prevSelectedImages) => ({
+                    ...prevSelectedImages,
+                    [response.value['appId']]: BulkSelectionEvents.SELECT_NONE,
+                }))
+
+                const _warningMessage = response.value.materials[0].vulnerable
+                    ? 'has security vulnerabilities'
+                    : 'is not eligible'
+
+                setTagNotFoundWarningsMap((prevTagNotFoundWarningsMap) => {
+                    const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
+                    _tagNotFoundWarningsMap.set(
+                        response.value['appId'],
+                        `Tag '${
+                            selectedTagName.value?.length > 15
+                                ? `${selectedTagName.value.substring(0, 10)}...`
+                                : selectedTagName.value
+                        }' ${_warningMessage}`,
+                    )
+                    return _tagNotFoundWarningsMap
+                })
+                if (response.value['appId'] === selectedApp.appId) {
+                    setSelectedImageFromBulk(BulkSelectionEvents.SELECT_NONE)
+                }
+            } else if (response.value.materials?.length === 0) {
+                setTagNotFoundWarningsMap((prevTagNotFoundWarningsMap) => {
+                    const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
+                    _tagNotFoundWarningsMap.set(
+                        response.value['appId'],
+                        `Tag '${
+                            selectedTagName.value?.length > 15
+                                ? `${selectedTagName.value.substring(0, 10)}...`
+                                : selectedTagName.value
+                        }' not found`,
+                    )
+                    return _tagNotFoundWarningsMap
+                })
+            }
+
+            delete _unauthorizedAppList[response.value['appId']]
+        } else {
+            const errorReason = response?.reason
+            if (errorReason?.code === 403) {
+                _unauthorizedAppList[errorReason['appId']] = true
+            }
+        }
+    }
+
+    const getCDMaterialResolvedPromise = (appDetails) => () => {
+        // Not sending any query params since its not necessary on mount and filters and handled by other service)
+        return genericCDMaterialsService(
+            CDMaterialServiceEnum.CD_MATERIALS,
+            Number(appDetails.cdPipelineId),
+            appDetails.stageType,
+            abortControllerRef.current.signal,
+            {
+                offset: 0,
+                size: 20,
+            },
+        )
+            .then((data) => ({ appId: appDetails.appId, ...data }))
+            .catch((e) => {
+                if (!abortControllerRef.current.signal.aborted) {
+                    throw { response: e?.response, appId: appDetails.appId }
+                }
+            })
+    }
+
     /**
      * Gets triggered during the mount state of the component through useEffect
      * Fetches the material data pushes them into promise list
@@ -129,102 +215,20 @@ export default function BulkCDTrigger({
      * If the promise is fulfilled, the data is pushed into cdMaterialResponse
      */
     const getMaterialData = (): void => {
-        const _unauthorizedAppList: Record<number, boolean> = {}
-        const _CDMaterialPromiseList = []
         abortControllerRef.current = new AbortController()
-
+        const _unauthorizedAppList: Record<number, boolean> = {}
+        const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
+        abortControllerRef.current = new AbortController()
+        const _cdMaterialFunctionsList = []
         for (const appDetails of appList) {
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
-                _CDMaterialPromiseList.push(
-                    // Not sending any query params since its not necessary on mount and filters and handled by other service
-                    genericCDMaterialsService(
-                        CDMaterialServiceEnum.CD_MATERIALS,
-                        Number(appDetails.cdPipelineId),
-                        appDetails.stageType,
-                        abortControllerRef.current.signal,
-                        {
-                            offset: 0,
-                            size: 20,
-                        },
-                    )
-                        .then((data) => ({ appId: appDetails.appId, ...data }))
-                        .catch((e) => {
-                            if (!abortControllerRef.current.signal.aborted) {
-                                throw { response: e?.response, appId: appDetails.appId }
-                            }
-                        }),
-                )
+                _cdMaterialFunctionsList.push(getCDMaterialResolvedPromise(appDetails))
             }
         }
-
-        const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
-        Promise.allSettled(_CDMaterialPromiseList)
-            .then((responses) => {
-                responses.forEach((response) => {
-                    if (response.status === 'fulfilled') {
-                        _cdMaterialResponse[response.value['appId']] = response.value
-                        // if first image does not have filerState.ALLOWED then unselect all images and set SELECT_NONE for selectedImage and for first app send the trigger of SELECT_NONE from selectedImageFromBulk
-                        if (
-                            response.value.materials?.length > 0 &&
-                            (response.value.materials[0].filterState !== FilterStates.ALLOWED ||
-                                response.value.materials[0].vulnerable)
-                        ) {
-                            const updatedMaterials = response.value.materials.map((mat) => ({
-                                ...mat,
-                                isSelected: false,
-                            }))
-                            _cdMaterialResponse[response.value['appId']] = {
-                                ...response.value,
-                                materials: updatedMaterials,
-                            }
-                            setSelectedImages((prevSelectedImages) => ({
-                                ...prevSelectedImages,
-                                [response.value['appId']]: BulkSelectionEvents.SELECT_NONE,
-                            }))
-
-                            const _warningMessage = response.value.materials[0].vulnerable
-                                ? 'has security vulnerabilities'
-                                : 'is not eligible'
-
-                            setTagNotFoundWarningsMap((prevTagNotFoundWarningsMap) => {
-                                const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
-                                _tagNotFoundWarningsMap.set(
-                                    response.value['appId'],
-                                    `Tag '${
-                                        selectedTagName.value?.length > 15
-                                            ? `${selectedTagName.value.substring(0, 10)}...`
-                                            : selectedTagName.value
-                                    }' ${_warningMessage}`,
-                                )
-                                return _tagNotFoundWarningsMap
-                            })
-                            if (response.value['appId'] === selectedApp.appId) {
-                                setSelectedImageFromBulk(BulkSelectionEvents.SELECT_NONE)
-                            }
-                        } else if (response.value.materials?.length === 0) {
-                            setTagNotFoundWarningsMap((prevTagNotFoundWarningsMap) => {
-                                const _tagNotFoundWarningsMap = new Map(prevTagNotFoundWarningsMap)
-                                _tagNotFoundWarningsMap.set(
-                                    response.value['appId'],
-                                    `Tag '${
-                                        selectedTagName.value?.length > 15
-                                            ? `${selectedTagName.value.substring(0, 10)}...`
-                                            : selectedTagName.value
-                                    }' not found`,
-                                )
-                                return _tagNotFoundWarningsMap
-                            })
-                        }
-
-                        delete _unauthorizedAppList[response.value['appId']]
-                    } else {
-                        const errorReason = response.reason
-                        if (errorReason.code === 403) {
-                            _unauthorizedAppList[errorReason['appId']] = true
-                        }
-                    }
-                })
+        sequentialApiBatchingWithQueue(5, _cdMaterialFunctionsList)
+            .then((responses: BulkCDDetailType[]) => {
+                responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)

@@ -242,3 +242,30 @@ export const deleteEnvGroup = (
 export const editDescription = (payload): Promise<EditDescRequestResponse> => {
     return put(Routes.ENVIRONMENT, payload)
 }
+
+const eachCall = (batchConfig, functionCalls, resolve, reject) => {
+    functionCalls[batchConfig.lastIndex]()
+        .then((result) => {
+            batchConfig.results.push({ status: 'fulfilled', value: result })
+        })
+        .catch((error) => {
+            batchConfig.results.push({ status: 'rejected', reason: error })
+        })
+        .finally(() => {
+            if (batchConfig.lastIndex < functionCalls.length) {
+                eachCall(batchConfig, functionCalls, resolve, reject)
+            } else if (batchConfig.results.length === functionCalls.length) {
+                resolve(batchConfig.results)
+            }
+            batchConfig.lastIndex++
+        })
+}
+
+export const sequentialApiBatchingWithQueue = (batchSize, functionCalls) => {
+    return new Promise((resolve, reject) => {
+        const batchConfig = { lastIndex: 0, concurrentCount: batchSize, results: [] }
+        for (let index = 0; index < batchConfig.concurrentCount; index++, batchConfig.lastIndex++) {
+            eachCall(batchConfig, functionCalls, resolve, reject)
+        }
+    })
+}
