@@ -14,6 +14,9 @@ import { getUserById } from '../../authorization.service'
 import UserForm from './UserForm'
 import { getIsAdminOrSystemUser } from '../utils'
 import { PermissionConfigurationFormProvider } from '../../shared/components/PermissionConfigurationForm'
+import { importComponentFromFELibrary } from '../../../../../components/common'
+
+const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const UserPermissionAddEdit = () => {
     const { userId: _userId } = useParams<{ userId: string }>()
@@ -54,7 +57,7 @@ const UserPermissionAddEdit = () => {
     }
 
     return (
-        <PermissionConfigurationFormProvider data={user}>
+        <PermissionConfigurationFormProvider data={user} showStatus={showStatus}>
             <UserForm isAddMode={isAddMode} />
         </PermissionConfigurationFormProvider>
     )

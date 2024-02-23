@@ -24,9 +24,11 @@ const context = createContext<PermissionConfigurationFormContext>(null)
 export const PermissionConfigurationFormProvider = ({
     children,
     data = {} as User | PermissionGroup,
+    showStatus = false,
 }: {
     children: ReactNode
     data: User | PermissionGroup
+    showStatus: boolean
 }) => {
     const [permissionType, setPermissionType] = useState<PermissionType>(PermissionType.SPECIFIC)
 
@@ -90,6 +92,7 @@ export const PermissionConfigurationFormProvider = ({
             timeToLive,
             handleUserStatusUpdate,
             data,
+            showStatus,
         }),
         [
             permissionType,
@@ -107,6 +110,7 @@ export const PermissionConfigurationFormProvider = ({
             timeToLive,
             handleUserStatusUpdate,
             data,
+            showStatus,
         ],
     )
 

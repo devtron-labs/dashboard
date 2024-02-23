@@ -35,6 +35,9 @@ import {
 } from '../shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
+import { importComponentFromFELibrary } from '../../../../components/common'
+
+const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 export const renderQuestionwithTippy = () => {
     return (
@@ -312,7 +315,7 @@ const CreateAPIToken = ({
 }
 
 const CreateAPITokenContainer = (props: GenerateTokenType) => (
-    <PermissionConfigurationFormProvider data={null}>
+    <PermissionConfigurationFormProvider data={null} showStatus={showStatus}>
         <CreateAPIToken {...props} />
     </PermissionConfigurationFormProvider>
 )

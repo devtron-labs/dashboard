@@ -60,6 +60,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         userStatus,
         timeToLive,
         handleUserStatusUpdate,
+        showStatus,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
@@ -264,8 +265,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                 </div>
                 {(!isAddMode || UserStatusUpdate) && (
                     <div className="flex dc__content-start dc__gap-12">
-                        {/* TODO (v3): Use showStatus instead */}
-                        {UserStatusUpdate && (
+                        {showStatus && (
                             <UserStatusUpdate
                                 userStatus={userStatus}
                                 timeToLive={timeToLive}

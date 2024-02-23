@@ -22,7 +22,7 @@ import { ReactComponent as Clipboard } from '../../../../assets/icons/ic-copy.sv
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { MomentDateFormat } from '../../../../config'
-import { ButtonWithLoader } from '../../../../components/common'
+import { ButtonWithLoader, importComponentFromFELibrary } from '../../../../components/common'
 import { updateGeneratedAPIToken } from './service'
 import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
@@ -39,6 +39,8 @@ import {
 } from '../shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
+
+const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const EditAPIToken = ({
     setShowRegeneratedModal,
@@ -354,7 +356,7 @@ const EditAPITokenContainer = ({ tokenList, ...props }: EditTokenType) => {
     }, [])
 
     return (
-        <PermissionConfigurationFormProvider data={userData}>
+        <PermissionConfigurationFormProvider data={userData} showStatus={showStatus}>
             <EditAPIToken {...props} editData={editData} setEditData={setEditData} isLoading={isLoading} />
         </PermissionConfigurationFormProvider>
     )

@@ -58,7 +58,7 @@ const PermissionGroupAddEdit = () => {
     }
 
     return (
-        <PermissionConfigurationFormProvider data={permissionGroup}>
+        <PermissionConfigurationFormProvider data={permissionGroup} showStatus={false}>
             <PermissionGroupForm isAddMode={isAddMode} />
         </PermissionConfigurationFormProvider>
     )

@@ -28,4 +28,10 @@ export interface PermissionConfigurationFormContext {
     k8sPermission?: K8sPermissionFilter[]
     setK8sPermission?: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
     currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
+    /**
+     * Flag to control if status should be shown in the form
+     *
+     * @default false
+     */
+    showStatus: boolean
 }

@@ -21,12 +21,11 @@ import { getDefaultStatusAndTimeout } from '../../../libUtils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
-const showStatus = !!UserStatusUpdate
 
 const MultiValueContainer = (props) => <MultiValueChipContainer {...props} validator={null} />
 
 const UserPermissionGroupsSelector = () => {
-    const { userGroups, setUserGroups, data: userData, userStatus } = usePermissionConfiguration()
+    const { userGroups, setUserGroups, data: userData, userStatus, showStatus } = usePermissionConfiguration()
     // Casting as if showUserPermissionGroupSelector is true than type for data is User
     const _userData = userData as User
     const [isLoading, result, error, reloadGroupList] = useAsync(() =>
