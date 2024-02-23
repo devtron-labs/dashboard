@@ -330,7 +330,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                         </>
                     )}
                     {!isAddMode && isAutoAssignFlowEnabled && (
-                        <UserAutoAssignedRoleGroupsTable permissionGroups={_userData.userRoleGroups} />
+                        <UserAutoAssignedRoleGroupsTable roleGroups={_userData.userRoleGroups} />
                     )}
                     {!isAutoAssignFlowEnabled && <PermissionConfigurationForm showUserPermissionGroupSelector />}
                 </div>
