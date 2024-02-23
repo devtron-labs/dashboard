@@ -16,8 +16,7 @@ import { importComponentFromFELibrary, mapByKey } from '../../../../../../compon
 import { getPermissionGroupList } from '../../../authorization.service'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
-import { getFormattedTimeToLive } from '../../../utils'
-import { getDefaultStatusAndTimeout } from '../../../libUtils'
+import { getDefaultStatusAndTimeout, getFormattedTimeToLive } from '../../../libUtils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')

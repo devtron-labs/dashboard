@@ -28,12 +28,9 @@ import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './shared/components/AppPermissions/constants'
 import { ActionTypes, EntityTypes, ViewChartGroupPermission } from './constants'
 import { importComponentFromFELibrary } from '../../../components/common'
+import { getFormattedTimeToLive } from './libUtils'
 
 const getUserStatus = importComponentFromFELibrary('getUserStatus', noop, 'function')
-
-// TODO (v3): Move to common
-export const getFormattedTimeToLive = (timeToLive) =>
-    timeToLive === ZERO_TIME_STRING || !timeToLive ? '' : moment(timeToLive).format(Moment12HourFormat)
 
 const transformRoleFilters = (roleFilters: APIRoleFilterDto[]): APIRoleFilter[] =>
     roleFilters?.map(

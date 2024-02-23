@@ -2,7 +2,7 @@ import { UserStatus } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useMemo, useRef, useState } from 'react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { ActionTypes, EntityTypes, PermissionType } from '../../../constants'
-import { getDefaultStatusAndTimeout } from '../../../libUtils'
+import { getDefaultStatusAndTimeout, getFormattedTimeToLive } from '../../../libUtils'
 import {
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
@@ -10,7 +10,6 @@ import {
     PermissionGroup,
     User,
 } from '../../../types'
-import { getFormattedTimeToLive } from '../../../utils'
 import { PermissionConfigurationFormContext } from './types'
 
 const changeTemporaryStatusToInactive = importComponentFromFELibrary(
