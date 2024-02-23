@@ -165,10 +165,10 @@ const UserPermissionRow = ({
                 {isAdminOrSystemUser ? (
                     <span />
                 ) : (
-                    <div className="flex dc__gap-12">
+                    <div className="flex dc__gap-4">
                         <Link
                             type="button"
-                            className="dc__visible-hover--child dc__transparent"
+                            className="dc__visible-hover--child dc__transparent p-4 flex"
                             data-testid={`user-permission__edit-button-${index}`}
                             aria-label="Edit user"
                             to={`${path}/${id}`}
@@ -177,7 +177,7 @@ const UserPermissionRow = ({
                         </Link>
                         <button
                             type="button"
-                            className="dc__visible-hover--child dc__transparent icon-delete"
+                            className="dc__visible-hover--child dc__transparent icon-delete p-4 flex"
                             data-testid={`user-permission__delete-button-${index}`}
                             onClick={toggleDeleteModal}
                             aria-label="Delete user"

@@ -93,10 +93,10 @@ const PermissionGroupRow = ({
                     </Link>
                 </span>
                 <span className="dc__ellipsis-right">{description || '-'}</span>
-                <div className="flex dc__gap-12">
+                <div className="flex dc__gap-4">
                     <Link
                         type="button"
-                        className="dc__visible-hover--child dc__transparent"
+                        className="dc__visible-hover--child dc__transparent p-4 flex"
                         data-testid={`user-permission__edit-button-${index}`}
                         aria-label="Edit permission group"
                         to={`${path}/${id}`}
@@ -105,7 +105,7 @@ const PermissionGroupRow = ({
                     </Link>
                     <button
                         type="button"
-                        className="dc__visible-hover--child dc__transparent icon-delete"
+                        className="dc__visible-hover--child dc__transparent icon-delete p-4 flex"
                         data-testid={`permission-group__delete-button-${index}`}
                         onClick={toggleDeleteModal}
                         aria-label="Delete permission group"

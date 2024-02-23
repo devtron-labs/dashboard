@@ -146,10 +146,10 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                           </>
                                       )}
                                   </div>
-                                  <div className="api__row-actions flex right dc__gap-12">
+                                  <div className="api__row-actions flex right dc__gap-8">
                                       <button
                                           type="button"
-                                          className="dc__transparent"
+                                          className="dc__transparent flex p-4"
                                           data-index={index}
                                           data-testid="api-token-edit-button"
                                           onClick={handleEditRowAction}
@@ -159,7 +159,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                       </button>
                                       <button
                                           type="button"
-                                          className="dc__transparent icon-delete"
+                                          className="dc__transparent flex p-4 icon-delete"
                                           data-index={index}
                                           data-testid="api-token-delete-button"
                                           onClick={handleDelete}
