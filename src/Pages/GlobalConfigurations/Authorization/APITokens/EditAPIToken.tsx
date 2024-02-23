@@ -242,7 +242,7 @@ const EditAPIToken = ({
                     <label className="form__row">
                         <span className="form__label">Description</span>
                         <ResizableTextarea
-                            name="api-token-description"
+                            name="description"
                             maxHeight={300}
                             className="w-100"
                             value={editData.description}
