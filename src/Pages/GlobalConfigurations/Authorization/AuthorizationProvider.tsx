@@ -10,7 +10,6 @@ const AuthorizationContext = createContext<AuthorizationContextProps>({
         possibleRolesMetaForJob: {},
     },
     isAutoAssignFlowEnabled: false,
-    // TODO (v3): Check if showStatus should be added here or not (OR PermissionConfigurationFormProvider)
 })
 
 export const AuthorizationProvider = ({ children, value }: AuthorizationProviderProps) => (

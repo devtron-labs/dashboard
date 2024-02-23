@@ -1,6 +1,6 @@
 import moment from 'moment'
-import { get, post, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
-import { Moment12HourFormat, Routes, ZERO_TIME_STRING } from '../../config'
+import { get, post, APIOptions, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { Moment12HourFormat, Routes } from '../../config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
 import { JOB_STATUS } from './Constants'

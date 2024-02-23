@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { BulkSelectionEvents, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkSelectionEvents, noop, OptionType, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import {
     ACCESS_TYPE_MAP,
@@ -7,7 +7,6 @@ import {
     REQUIRED_FIELDS_MISSING,
     SELECT_ALL_VALUE,
     SERVER_MODE,
-    ZERO_TIME_STRING,
 } from '../../../config'
 import {
     APIRoleFilter,
