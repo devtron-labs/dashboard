@@ -1,4 +1,4 @@
-import { UserRoleGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatus, UserRoleGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { User } from './types'
 
@@ -14,5 +14,11 @@ export const getDefaultStatusAndTimeout: () => Pick<UserRoleGroup, 'status' | 't
 export const getFormattedTimeToLive: (timeToLive: string) => string = importComponentFromFELibrary(
     'getFormattedTimeToLive',
     () => ({}),
+    'function',
+)
+
+export const getIsStatusDropdownDisabled: (status: UserStatus) => boolean = importComponentFromFELibrary(
+    'getIsStatusDropdownDisabled',
+    () => false,
     'function',
 )

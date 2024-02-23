@@ -29,10 +29,19 @@
     }
 }
 
-.kubernetes-header {
-    display: grid;
-    grid-template-columns: 2fr 2fr 2fr 2fr 2fr 1fr 1fr;
-    grid-column-gap: 12px;
+.kubernetes-table {
+    &__row {
+        grid-template-columns: 2fr 2fr 1.5fr 2fr 1.5fr 1fr 72px;
+        grid-template-rows: 52px;
+
+        &--with-status {
+            grid-template-columns: 2fr 2fr 1.5fr 2fr 1.5fr 1fr 185px 72px;
+        }
+    }
+
+    &__header {
+        grid-template-rows: 36px;
+    }
 }
 
 .authorization-container {

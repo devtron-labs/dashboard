@@ -7,7 +7,6 @@ import {
     getIsRequestAborted,
     LoadingIndicator,
     ReactSelectInputAction,
-    UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
@@ -26,11 +25,11 @@ import {
     DirectPermissionFieldName,
 } from './constants'
 import { getWorkflowOptions, parseData } from '../../../utils'
-import { getFormattedTimeToLive } from '../../../libUtils'
 import { EntityTypes } from '../../../constants'
 import { DirectPermissionRow } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
+import { getIsStatusDropdownDisabled } from '../../../libUtils'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
@@ -311,7 +310,7 @@ const DirectPermission = ({
         handleDirectPermissionChange(
             {
                 status,
-                timeToLive: getFormattedTimeToLive(timeToLive),
+                timeToLive,
             },
             {
                 name: DirectPermissionFieldName.status,
@@ -559,8 +558,7 @@ const DirectPermission = ({
                         timeToLive={permission.timeToLive}
                         userEmail=""
                         handleChange={handleStatusChange}
-                        // TODO (v3): Common out
-                        disabled={userStatus === UserStatus.inactive}
+                        disabled={getIsStatusDropdownDisabled(userStatus)}
                         showDropdownBorder={false}
                         breakLinesForTemporaryAccess
                     />
@@ -569,7 +567,7 @@ const DirectPermission = ({
             <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
                 <button
                     type="button"
-                    className="dc__transparent flex icon-delete"
+                    className="dc__transparent flex p-4 icon-delete"
                     onClick={() => removeRow(index)}
                     aria-label="Delete row"
                     style={{ order: showStatus ? 6 : 5 }}

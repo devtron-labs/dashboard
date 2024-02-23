@@ -15,7 +15,8 @@ export const apiGroupAll = (permission, isLabel = false) => {
     return permission
 }
 
-export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'RESOURCE', 'ROLE']
+// '' is for the action buttons
+export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'RESOURCE', 'ROLE', 'STATUS', ''] as const
 
 export const multiSelectAllState = (selected, actionMeta, setState, options) => {
     if (actionMeta.action === ReactSelectInputAction.selectOption && actionMeta.option.value === SELECT_ALL_VALUE) {

@@ -2,7 +2,7 @@ import { UserStatus } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, ReactNode, useContext, useMemo, useRef, useState } from 'react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { ActionTypes, EntityTypes, PermissionType } from '../../../constants'
-import { getDefaultStatusAndTimeout, getFormattedTimeToLive } from '../../../libUtils'
+import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import {
     ChartGroupPermissionsFilter,
     DirectPermissionsRoleFilter,
@@ -47,7 +47,7 @@ export const PermissionConfigurationFormProvider = ({
 
     const handleUserStatusUpdate = (updatedStatus: User['userStatus'], updatedTimeToLive?: User['timeToLive']) => {
         setUserStatus(updatedStatus)
-        setTimeToLive(getFormattedTimeToLive(updatedTimeToLive))
+        setTimeToLive(updatedTimeToLive)
 
         // Mark the permission group mapping and direct permission level status to inactive for temporary accesses
         // Not required if the user level timeToLive is less than the permission level timeToLive

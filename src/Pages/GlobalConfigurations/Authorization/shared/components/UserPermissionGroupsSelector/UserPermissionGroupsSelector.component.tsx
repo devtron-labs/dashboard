@@ -16,7 +16,7 @@ import { importComponentFromFELibrary, mapByKey } from '../../../../../../compon
 import { getPermissionGroupList } from '../../../authorization.service'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
-import { getDefaultStatusAndTimeout, getFormattedTimeToLive } from '../../../libUtils'
+import { getDefaultStatusAndTimeout } from '../../../libUtils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
@@ -85,16 +85,16 @@ const UserPermissionGroupsSelector = () => {
 
     const handleStatusUpdate = (
         id: UserRoleGroup['id'],
-        updatedStatus: UserRoleGroup['status'],
-        updatedTimeToLive: UserRoleGroup['timeToLive'],
+        status: UserRoleGroup['status'],
+        timeToLive: UserRoleGroup['timeToLive'],
     ) => {
         setUserGroups(
             userGroups.map((userGroup) => ({
                 ...userGroup,
                 ...(userGroup.id === id
                     ? {
-                          status: updatedStatus,
-                          timeToLive: getFormattedTimeToLive(updatedTimeToLive),
+                          status,
+                          timeToLive,
                       }
                     : {}),
             })),

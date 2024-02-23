@@ -76,6 +76,15 @@ const K8sPermissionModal = ({
             case K8sPermissionActionType.onRoleChange:
                 _k8sPermissionList[key].action = data
                 break
+            case K8sPermissionActionType.onStatusChange: {
+                const { status, timeToLive } = data
+                _k8sPermissionList[key] = {
+                    ..._k8sPermissionList[key],
+                    status,
+                    timeToLive,
+                }
+                break
+            }
             default:
                 break
         }

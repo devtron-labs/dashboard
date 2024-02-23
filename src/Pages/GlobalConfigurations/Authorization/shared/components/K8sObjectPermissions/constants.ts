@@ -11,6 +11,7 @@ export enum K8sPermissionActionType {
     onKindChange = 'onKindChange',
     onObjectChange = 'onObjectChange',
     onRoleChange = 'onRoleChange',
+    onStatusChange = 'onStatusChange',
 }
 
 export const K8S_PERMISSION_INFO_MESSAGE = {

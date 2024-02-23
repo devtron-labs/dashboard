@@ -271,7 +271,6 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                                 timeToLive={timeToLive}
                                 userEmail={_userData?.emailId ?? ''}
                                 handleChange={handleUserStatusUpdate}
-                                key={userStatus}
                                 disabled={submitting}
                             />
                         )}

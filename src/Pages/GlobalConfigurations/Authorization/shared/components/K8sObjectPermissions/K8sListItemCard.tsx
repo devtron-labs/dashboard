@@ -19,6 +19,7 @@ import {
     convertToOptionsList,
     sortObjectArrayAlphabetically,
     sortOptionsByLabel,
+    importComponentFromFELibrary,
 } from '../../../../../../components/common'
 import {
     getClusterList,
@@ -45,6 +46,11 @@ import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE } from './constant
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { K8sItemCardLoadingState, K8sListItemCardType } from './types'
 import { ALL_NAMESPACE, EntityTypes } from '../../../constants'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { K8sPermissionFilter } from '../../../types'
+import { getIsStatusDropdownDisabled } from '../../../libUtils'
+
+const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
 const K8sListItemCard = ({
     k8sPermission,
@@ -61,6 +67,7 @@ const K8sListItemCard = ({
     selectedPermissionAction,
 }: K8sListItemCardType) => {
     const { customRoles } = useAuthorizationContext()
+    const { showStatus, userStatus } = usePermissionConfiguration()
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
     const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()
@@ -361,6 +368,16 @@ const K8sListItemCard = ({
         infoText: role.roleDescription,
     }))
 
+    const handleUserStatusUpdate = (
+        status: K8sPermissionFilter['status'],
+        timeToLive: K8sPermissionFilter['timeToLive'],
+    ) => {
+        handleK8sPermission(K8sPermissionActionType.onStatusChange, index, {
+            status,
+            timeToLive,
+        })
+    }
+
     return (
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
             <div className="cn-7 fs-13 fw-4 lh-20 mb-6 flex dc__content-space">
@@ -371,13 +388,16 @@ const K8sListItemCard = ({
                             <div className="flex">
                                 <Clone
                                     className="icon-dim-16 mr-8 fcn-6 cursor"
-                                    onClick={() => editPermission('clone')}
+                                    onClick={() => editPermission(K8sPermissionActionType.clone)}
                                 />
                             </div>
                         </Tippy>
                         <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
                             <div className="flex">
-                                <Delete className="icon-dim-16 scn-6 cursor" onClick={() => editPermission('delete')} />
+                                <Delete
+                                    className="icon-dim-16 scn-6 cursor"
+                                    onClick={() => editPermission(K8sPermissionActionType.delete)}
+                                />
                             </div>
                         </Tippy>
                     </span>
@@ -562,6 +582,20 @@ const K8sListItemCard = ({
                             menuPosition="fixed"
                         />
                     </div>
+                    {showStatus && (
+                        <>
+                            <div className="cn-7 fs-13 fw-4 lh-20 mb-6">Status</div>
+                            <div className="mb-16 w-300">
+                                <UserStatusUpdate
+                                    userStatus={k8sPermission.status}
+                                    timeToLive={k8sPermission.timeToLive}
+                                    userEmail=""
+                                    handleChange={handleUserStatusUpdate}
+                                    disabled={getIsStatusDropdownDisabled(userStatus)}
+                                />
+                            </div>
+                        </>
+                    )}
                 </>
             )}
         </div>
