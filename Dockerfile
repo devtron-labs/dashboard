@@ -3,6 +3,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
+# Copy .npmrc if it exists, otherwise don't fail
+COPY .npmr[c] .
 RUN yarn install --network-timeout 600000
 
 COPY src/ src

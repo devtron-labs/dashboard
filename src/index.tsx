@@ -54,6 +54,7 @@ interface customEnv {
     NODE_ENV?: string
     LOGIN_DT_LOGO?: string
     SIDEBAR_DT_LOGO?: string
+    ENABLE_EXTERNAL_ARGO_CD: boolean
 }
 declare global {
     interface Window {
@@ -169,6 +170,7 @@ if (!window || !window._env_) {
         TRIGGER_API_TIMEOUT: 60000,
         LOGIN_DT_LOGO: '',
         SIDEBAR_DT_LOGO: '',
+        ENABLE_EXTERNAL_ARGO_CD: false,
     }
 }
 

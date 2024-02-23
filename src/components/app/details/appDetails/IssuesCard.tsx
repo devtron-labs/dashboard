@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     DeploymentAppTypes,
@@ -9,8 +9,6 @@ import {
     ForceDeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
 import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
 import { TOAST_INFO } from '../../../../config/constantMessaging'
@@ -21,6 +19,8 @@ import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 import LoadingCard from './LoadingCard'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
 
 const IssuesCard = ({cardLoading, setErrorsList, toggleIssuesModal, setDetailed, releaseStatus, errorList }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
@@ -30,9 +30,9 @@ const IssuesCard = ({cardLoading, setErrorsList, toggleIssuesModal, setDetailed,
     const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState('')
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
-    const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
 
-    const conditions = appDetails.resourceTree?.conditions || []
+    const appDetails = IndexStore.getAppDetails()
+    const conditions = appDetails?.resourceTree?.conditions || []
 
     const showIssuesListingModal = () => {
         toggleIssuesModal(true)

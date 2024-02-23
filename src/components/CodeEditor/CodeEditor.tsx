@@ -27,9 +27,6 @@ self.MonacoEnvironment = {
     },
 }
 
-// @ts-ignore
-const { yaml } = monaco.languages || {}
-
 interface InformationBarProps {
     text: string
     className?: string
@@ -237,19 +234,19 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         if (!validatorSchema) {
             return
         }
-        const config= configureMonacoYaml(monaco, {
-          enableSchemaRequest: true,
-          isKubernetes,
-          schemas: [
-            {
-                uri: `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/reference-chart_${chartVersion}/schema.json`, // id of the first schema
-                fileMatch: ['*'], // associate with our model
-                schema: validatorSchema,
-            },
-        ],
+        const config = configureMonacoYaml(monaco, {
+            enableSchemaRequest: true,
+            isKubernetes,
+            schemas: [
+                {
+                    uri: `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/reference-chart_${chartVersion}/schema.json`, // id of the first schema
+                    fileMatch: ['*'], // associate with our model
+                    schema: validatorSchema,
+                },
+            ],
         })
-        return ()=>{
-          config.dispose()
+        return () => {
+            config.dispose()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validatorSchema, chartVersion])
@@ -334,6 +331,12 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             return `<span style="padding-right:6px">${lineNumber}</span>`
         },
     }
+
+    const diffViewOptions: monaco.editor.IDiffEditorConstructionOptions = {
+        ...options,
+        useInlineViewWhenSpaceIsLimited: false,
+    }
+
     return (
         <CodeEditorContext.Provider value={{ dispatch, state, handleLanguageChange, error, defaultValue, height }}>
             {children}
@@ -348,7 +351,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             value={state.code}
                             language={state.mode}
                             onChange={handleOnChange}
-                            options={options}
+                            options={diffViewOptions}
                             theme={state.theme.toLowerCase().split(' ').join('-')}
                             editorDidMount={editorDidMount}
                             height={height}

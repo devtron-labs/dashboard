@@ -25,7 +25,6 @@ const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadC
 
 export const SourceInfo = ({
     appDetails,
-    appStreamData,
     setDetailed = null,
     environment,
     environments,
@@ -232,7 +231,6 @@ export const SourceInfo = ({
                     {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                     {!loadingResourceTree && (
                         <IssuesCard
-                            appStreamData={appStreamData}
                             cardLoading={cardLoading}
                             toggleIssuesModal={toggleIssuesModal}
                             setErrorsList={setErrorsList}
