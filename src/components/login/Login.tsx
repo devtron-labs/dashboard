@@ -61,6 +61,9 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 loginList: list,
             })
         })
+        .catch(error => {
+          showError(error)
+        })
         if (typeof Storage !== 'undefined') {
             if (localStorage.isDashboardAccessed) {
                 return
