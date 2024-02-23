@@ -261,7 +261,7 @@ const eachCall = (batchConfig, functionCalls, resolve, reject) => {
         })
 }
 
-export const sequentialApiBatchingWithQueue = (batchSize, functionCalls) => {
+export const ApiQeuingWithBatch = (batchSize, functionCalls) => {
     return new Promise((resolve, reject) => {
         const batchConfig = { lastIndex: 0, concurrentCount: batchSize, results: [] }
         for (let index = 0; index < batchConfig.concurrentCount; index++, batchConfig.lastIndex++) {

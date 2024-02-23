@@ -32,7 +32,7 @@ import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
-import { sequentialApiBatchingWithQueue } from '../../AppGroup.service'
+import { ApiQeuingWithBatch } from '../../AppGroup.service'
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -188,7 +188,7 @@ export default function BulkCDTrigger({
         }
     }
 
-    const getCDMaterialResolvedPromise = (appDetails) => () => {
+    const getCDMaterialFunction = (appDetails) => () => {
         // Not sending any query params since its not necessary on mount and filters and handled by other service)
         return genericCDMaterialsService(
             CDMaterialServiceEnum.CD_MATERIALS,
@@ -223,10 +223,10 @@ export default function BulkCDTrigger({
         for (const appDetails of appList) {
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
-                _cdMaterialFunctionsList.push(getCDMaterialResolvedPromise(appDetails))
+                _cdMaterialFunctionsList.push(getCDMaterialFunction(appDetails))
             }
         }
-        sequentialApiBatchingWithQueue(5, _cdMaterialFunctionsList)
+        ApiQeuingWithBatch(window._env_.API_BATCH_SIZE, _cdMaterialFunctionsList)
             .then((responses: BulkCDDetailType[]) => {
                 responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
                 updateBulkInputMaterial(_cdMaterialResponse)
