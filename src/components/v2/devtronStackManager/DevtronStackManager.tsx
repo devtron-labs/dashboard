@@ -73,6 +73,10 @@ export default function DevtronStackManager({
         getCurrentServerInfo()
     }, [])
 
+    useEffect(() => {
+        buildResourceStatusModalData(selectedModule?.moduleResourcesStatus)
+    }, [selectedModule])
+
     /**
      * Activate polling for latest server info, module details & logPodName
      * only on stack manager page & only when installationType is OSS_HELM.
@@ -555,9 +559,6 @@ export default function DevtronStackManager({
                                 {showResourceStatusModal && selectedModule && (
                                     <AppStatusDetailModal
                                         close={closeCheckResourceStatusModal}
-                                        appStreamData={buildResourceStatusModalData(
-                                            selectedModule.moduleResourcesStatus,
-                                        )}
                                         showAppStatusMessage
                                         title="Integration installation status"
                                         appStatusText={selectedModule.installationStatus}

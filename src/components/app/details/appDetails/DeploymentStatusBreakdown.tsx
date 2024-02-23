@@ -10,7 +10,6 @@ import { ErrorInfoStatusBar } from './ErrorInfoStatusBar'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
-    streamData,
     isVirtualEnvironment,
 }: DeploymentStatusDetailBreakdownType) {
     const _appDetails = IndexStore.getAppDetails()
@@ -71,7 +70,6 @@ export default function DeploymentStatusDetailBreakdown({
                             type={TIMELINE_STATUS.APP_HEALTH}
                             hideVerticalConnector
                             deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                            streamData={streamData}
                         />
                     </>
                 ) : (

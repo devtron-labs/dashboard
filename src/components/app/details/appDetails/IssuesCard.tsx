@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     DeploymentAppTypes,
@@ -9,8 +9,6 @@ import {
     ForceDeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
 import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
 import { TOAST_INFO } from '../../../../config/constantMessaging'
@@ -21,8 +19,10 @@ import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 import LoadingCard from './LoadingCard'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
 
-const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {
+const IssuesCard = ({cardLoading, setErrorsList, toggleIssuesModal, setDetailed, releaseStatus, errorList }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState(false)
@@ -31,8 +31,8 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
 
-    const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData])
-    const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
+    const appDetails = IndexStore.getAppDetails()
+    const conditions = appDetails?.resourceTree?.conditions || []
 
     const showIssuesListingModal = () => {
         toggleIssuesModal(true)
@@ -116,8 +116,6 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         await nonCascadeDeleteArgoCDApp(false)
     }
 
-    const errorCounter = conditions?.length + (isImagePullBackOff ? 1 : 0) + (clusterConnectionError ? 1 : 0)
-
     const handleForceDelete = () => {
         nonCascadeDeleteArgoCDApp(true)
     }
@@ -138,12 +136,23 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
             })
         }
 
-        conditions?.forEach((condition) => {
+        // Error message For helm apps only
+        if (releaseStatus) {
             errorsList.push({
-                error: condition.type,
-                message: condition.message,
+                error: releaseStatus.status,
+                message: releaseStatus.description,
             })
-        })
+        }
+
+        // Error message For Argo apps only
+        if (conditions?.length) {
+            conditions.forEach((condition) => {
+                errorsList.push({
+                    error: condition.type,
+                    message: condition.message,
+                })
+            })
+        }
 
         if (isImagePullBackOff && !appDetails.externalCi) {
             errorsList.push({
@@ -151,7 +160,6 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
                 message: renderErrorHeaderMessage(appDetails, 'sync-error', showApplicationDetailedModal),
             })
         }
-
         return errorsList
     }
 
@@ -169,9 +177,6 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
         appDetails.clusterName,
     ])
 
-    const getErrorCountText = () => {
-        return errorCounter > 1 ? `${errorCounter} Errors` : `${errorCounter} Error`
-    }
 
     if (!appDetails || (conditions?.length === 0 && !isImagePullBackOff && !clusterConnectionError)) {
         return null
@@ -203,7 +208,9 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">
-                        <div className="fs-13 fw-6  lh-20 f-degraded">{getErrorCountText()}</div>
+                        <div className="fs-13 fw-6  lh-20 f-degraded">
+                            {errorList.length} {errorList.length > 1 ? 'Errors' : 'Error'}
+                        </div>
                     </div>
                 </div>
                 <ErrorIcon className="form__icon--error icon-dim-24" />

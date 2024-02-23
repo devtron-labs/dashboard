@@ -25,7 +25,6 @@ const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadC
 
 export const SourceInfo = ({
     appDetails,
-    appStreamData,
     setDetailed = null,
     environment,
     environments,
@@ -44,6 +43,7 @@ export const SourceInfo = ({
     envId,
     ciArtifactId,
     setErrorsList,
+    errorList,
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -231,11 +231,12 @@ export const SourceInfo = ({
                     {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                     {!loadingResourceTree && (
                         <IssuesCard
-                            appStreamData={appStreamData}
                             cardLoading={cardLoading}
                             toggleIssuesModal={toggleIssuesModal}
                             setErrorsList={setErrorsList}
                             setDetailed={setDetailed}
+                            releaseStatus={appDetails.resourceTree?.releaseStatus}
+                            errorList={errorList}
                         />
                     )}
                     <DeploymentStatusCard

@@ -143,7 +143,6 @@ export default function DeploymentDetailSteps({
             )}
             <DeploymentStatusDetailBreakdown
                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                streamData={null}
                 isVirtualEnvironment={isVirtualEnv.current}
             />
         </div>

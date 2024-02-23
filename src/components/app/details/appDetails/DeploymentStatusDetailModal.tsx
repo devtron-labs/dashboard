@@ -9,7 +9,6 @@ import { Drawer, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 export default function DeploymentStatusDetailModal({
     appName,
     environmentName,
-    streamData,
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
     isLoading,
@@ -93,7 +92,6 @@ export default function DeploymentStatusDetailModal({
                     ) : (
                         <DeploymentStatusDetailBreakdown
                             deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            streamData={streamData}
                             isVirtualEnvironment={isVirtualEnvironment}
                         />
                     )}
