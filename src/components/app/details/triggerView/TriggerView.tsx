@@ -11,6 +11,7 @@ import {
     ToastBody,
     CommonNodeAttr,
     WorkflowType,
+    getDefaultConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -65,7 +66,6 @@ import {
 } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { getDefaultConfig } from '../../../notifications/notifications.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
@@ -167,7 +167,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    // FIXME: Seems like its missing a error state
+    // TODO: Move it into Approval Modal when we shift to Route
     getConfigs() {
         getDefaultConfig().then((response) => {
             const isConfigPresent = response.result.isConfigured
@@ -1368,8 +1368,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     </TriggerViewContext.Provider>
                 </div>
 
+                {/* Moving GitCommitInfoGeneric felt like big task would re-visit if time is available */}
                 {ImagePromotionRouter && (
-                    <ImagePromotionRouter basePath={this.props.match.path} baseURL={this.props.match.url} workflows={this.state.workflows} />
+                    <ImagePromotionRouter
+                        basePath={this.props.match.path}
+                        baseURL={this.props.match.url}
+                        workflows={this.state.workflows}
+                        gitCommitInfoGeneric={GitCommitInfoGeneric}
+                        getModuleInfo={getModuleInfo}
+                    />
                 )}
             </>
         )

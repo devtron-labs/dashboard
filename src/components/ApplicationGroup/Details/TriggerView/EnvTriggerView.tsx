@@ -17,6 +17,7 @@ import {
     WorkflowNodeType,
     CommonNodeAttr,
     WorkflowType,
+    getDefaultConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -83,7 +84,6 @@ import {
 } from '../../AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
-import { getDefaultConfig } from '../../../notifications/notifications.service'
 import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
@@ -211,6 +211,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }, [filteredWorkflows])
 
+    // TODO: This call should not be here rather inside ApprovalMaterialModal
     const getConfigs = () => {
         getDefaultConfig().then((response) => {
             const isConfigPresent = response.result.isConfigured

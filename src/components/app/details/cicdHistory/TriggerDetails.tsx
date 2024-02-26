@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { showError, Progressing, ConfirmationDialog, not, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, ConfirmationDialog, not, TippyTheme, GitTriggers } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
 import moment from 'moment'
 import { Link, NavLink } from 'react-router-dom'
-import { createGitCommitUrl, asyncWrap } from '../../../common'
+import { createGitCommitUrl } from '../../../common'
 import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
 import docker from '../../../../assets/icons/misc/docker.svg'
@@ -14,7 +14,6 @@ import '../cIDetails/ciDetails.scss'
 import {
     CurrentStatusType,
     FinishedType,
-    GitTriggers,
     HistoryComponentType,
     ProgressingStatusType,
     PROGRESSING_STATUS,

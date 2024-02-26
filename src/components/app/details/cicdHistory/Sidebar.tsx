@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 'react-router'
+import { GitTriggers } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import moment from 'moment'
 import TippyHeadless from '@tippyjs/react/headless'
@@ -11,7 +12,6 @@ import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import {
     CICDSidebarFilterOptionType,
-    GitTriggers,
     HistoryComponentType,
     HistorySummaryCardType,
     SidebarType,

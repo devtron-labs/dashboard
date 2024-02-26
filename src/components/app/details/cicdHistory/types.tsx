@@ -1,13 +1,7 @@
 import React, { CSSProperties } from 'react'
-import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType } from '@devtron-labs/devtron-fe-common-lib'
+import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType, GitTriggers } from '@devtron-labs/devtron-fe-common-lib'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-
-export interface WebHookData {
-    Id: number
-    EventActionType: string
-    Data: any
-}
 
 export interface History {
     id: number
@@ -56,19 +50,6 @@ export interface CiMaterial {
     isBranchError: boolean
     branchErrorMsg: string
     url: string
-}
-
-export interface GitTriggers {
-    Commit: string
-    Author: string
-    Date: Date | string
-    Message: string
-    Changes: string[]
-    WebhookData: WebHookData
-    GitRepoUrl: string
-    GitRepoName: string
-    CiConfigureSourceType: string
-    CiConfigureSourceValue: string
 }
 
 export interface ArtifactType {

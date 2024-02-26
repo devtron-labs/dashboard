@@ -798,6 +798,9 @@ export const setActionWithExpiry = (key: string, days: number): void => {
     localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
 }
 
+/**
+ * @deprecated
+ */
 export const preventBodyScroll = (lock: boolean): void => {
     if (lock) {
         document.body.style.overflowY = 'hidden'

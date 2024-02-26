@@ -594,6 +594,9 @@ export const TRIVY_TOOL_VERSION = 'V1'
 export const CLAIR_TOOL_VERSION_V4 = 'V4'
 export const CLAIR_TOOL_VERSION_V2 = 'V2'
 
+/**
+ * @deprecated Use from fe-common-lib
+ */
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
     CICD: 'cicd',

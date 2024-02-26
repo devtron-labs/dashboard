@@ -271,11 +271,6 @@ export interface TriggerEdgeType {
     endNode: any
 }
 
-interface ArtifactPromotionMetaData {
-    isConfigured: boolean
-    pendingApprovalCount: number
-}
-
 export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetaData'> {
     id: string
     name: string

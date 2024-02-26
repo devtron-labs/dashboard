@@ -33,6 +33,10 @@ import {
     ArtifactInfoProps,
     EXCLUDED_IMAGE_TOOLTIP,
     STAGE_TYPE,
+    getIsMaterialInfoAvailable,
+    ModuleNameMap,
+    ModuleStatus,
+    getGitCommitInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -45,7 +49,6 @@ import {
     BulkSelectionEvents,
     RenderCTAType,
 } from './types'
-import { GitTriggers } from '../cicdHistory/types'
 import close from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -67,7 +70,6 @@ import {
 } from '../../service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
     LAST_SAVED_CONFIG_OPTION,
@@ -78,7 +80,6 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import { TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import AnnouncementBanner from '../../../common/AnnouncementBanner'
@@ -517,24 +518,6 @@ const CDMaterial = ({
     const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType) =>
         userApprovalMetadata?.approvedUsersData &&
         userApprovalMetadata.approvedUsersData.some((_approver) => _approver.userId === requestedUserId)
-
-    // NOTE: Pure
-    const getIsMaterialInfoAvailable = (materialInfo: MaterialInfo[]) => {
-        let isMaterialInfoAvailable = true
-        if (materialInfo) {
-            for (const _info of materialInfo) {
-                isMaterialInfoAvailable =
-                    isMaterialInfoAvailable &&
-                    !!(_info.webhookData || _info.author || _info.message || _info.modifiedTime || _info.revision)
-
-                if (!isMaterialInfoAvailable) {
-                    break
-                }
-            }
-        }
-
-        return isMaterialInfoAvailable
-    }
 
     // NOTE: Pure
     const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {
@@ -1093,18 +1076,7 @@ const CDMaterial = ({
     const renderGitMaterialInfo = (materialData: CDMaterialType) => (
         <>
             {materialData.materialInfo.map((mat: MaterialInfo, index) => {
-                const _gitCommit: GitTriggers = {
-                    Commit: mat.revision,
-                    Author: mat.author,
-                    Date: mat.modifiedTime,
-                    Message: mat.message,
-                    WebhookData: JSON.parse(mat.webhookData),
-                    Changes: [],
-                    GitRepoUrl: '',
-                    GitRepoName: '',
-                    CiConfigureSourceType: '',
-                    CiConfigureSourceValue: '',
-                }
+                const _gitCommit = getGitCommitInfo(mat)
 
                 if (materialData.appliedFilters?.length > 0 && CDMaterialInfo) {
                     return (
