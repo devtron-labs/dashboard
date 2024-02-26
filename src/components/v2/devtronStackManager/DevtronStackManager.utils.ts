@@ -184,7 +184,6 @@ export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResour
         }),
     )
     IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
-    return resourceStatusDetails
 }
 
 export const AppStatusClass = {
