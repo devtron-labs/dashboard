@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     DeploymentAppTypes,
@@ -22,7 +22,7 @@ import IndexStore from '../../../v2/appDetails/index.store'
 import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 import LoadingCard from './LoadingCard'
 
-const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {
+const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState(false)
@@ -31,8 +31,8 @@ const IssuesCard = ({ appStreamData, cardLoading, setErrorsList, toggleIssuesMod
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState('')
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
 
-    const conditions = useMemo(() => appStreamData?.result?.application?.status?.conditions || [], [appStreamData])
-    const appDetails = useMemo(() => IndexStore.getAppDetails(), [])
+    const appDetails = IndexStore.getAppDetails()
+    const conditions = appDetails?.resourceTree?.conditions || []
 
     const showIssuesListingModal = () => {
         toggleIssuesModal(true)
