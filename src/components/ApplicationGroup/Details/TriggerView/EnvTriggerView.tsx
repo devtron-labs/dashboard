@@ -1361,7 +1361,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     ): void => {
         const _responseList = skippedResources
         if (promiseFunctionList.length) {
-            ApiQueuingWithBatch(promiseFunctionList,5).then((responses: any[]) => {
+            ApiQueuingWithBatch(promiseFunctionList).then((responses: any[]) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
                         const statusType = filterStatusType(
