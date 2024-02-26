@@ -36,7 +36,6 @@ export default function CIConfigForm({
     updateDockerConfigOverride,
     isCDPipeline,
     isCiPipeline,
-    navItems,
     parentState,
     setParentState,
     loadingStateFromParent,
@@ -216,12 +215,7 @@ export default function CIConfigForm({
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
             await saveOrUpdate(requestBody)
             toast.success('Successfully saved.')
-            reload()
-
-            if (!isCiPipeline) {
-                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.CI_CONFIG)
-                history.push(navItems[stageIndex + 1].href)
-            }
+            reload(false, !isCiPipeline)
         } catch (err) {
             showError(err)
         } finally {

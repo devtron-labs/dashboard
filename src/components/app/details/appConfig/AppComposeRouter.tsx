@@ -68,6 +68,7 @@ export default function AppComposeRouter({
     const { path } = useRouteMatch()
 
     const renderJobViewRoutes = (): JSX.Element => {
+       // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
         return (
             <Switch>
                 <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
@@ -154,7 +155,6 @@ export default function AppComposeRouter({
                             respondOnSuccess={respondOnSuccess}
                             isCDPipeline={isCDPipeline}
                             isCiPipeline={isCiPipeline}
-                            navItems={navItems}
                         />
                     </Route>
                 )}
@@ -163,7 +163,6 @@ export default function AppComposeRouter({
                         <DeploymentConfig
                             respondOnSuccess={respondOnSuccess}
                             isUnSet={!isUnlocked.workflowEditor}
-                            navItems={navItems}
                             isCiPipeline={isCiPipeline}
                             environments={environments}
                             isProtected={isBaseConfigProtected}
