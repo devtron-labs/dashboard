@@ -1,5 +1,5 @@
 import React, { Reducer, createContext, useContext, useEffect, useReducer, useRef, useState } from 'react'
-import { useHistory, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import {
     showError,
@@ -30,7 +30,6 @@ import {
     DeploymentConfigStateActionTypes,
     DeploymentConfigStateWithDraft,
 } from './types'
-import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
@@ -72,7 +71,6 @@ export default function DeploymentConfig({
     isProtected,
     reloadEnvironments,
 }: DeploymentConfigProps) {
-    const history = useHistory()
     const { appId } = useParams<{ appId: string }>()
     const { currentServerInfo, isSuperAdmin } = useContext(mainContext)
     const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)

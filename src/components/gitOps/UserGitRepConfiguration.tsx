@@ -1,19 +1,16 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
 import UserGitRepo from './UserGitRepo'
 import { UserGitRepoConfigurationProps } from './gitops.type'
 import { repoType } from '../../config'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import { ReloadNoGitOpsRepoConfiguredModal } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
 
 const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> = ({
     respondOnSuccess,
     appId,
-    navItems,
     reloadAppConfig,
 }: UserGitRepoConfigurationProps) => {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
@@ -21,7 +18,6 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
     const [isEditable, setIsEditable] = useState(false)
     const [showReloadModal, setShowReloadModal] = useState(false)
     const [loading, setLoading] = useState(false)
-    const history = useHistory()
 
     useEffect(() => {
         setLoading(true)
@@ -94,10 +90,8 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
         setLoading(true)
         gitOpsConfigDevtron(payload)
             .then(() => {
-                respondOnSuccess()
+                respondOnSuccess(true)
                 toast.success('Successfully saved.')
-                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.GITOPS_CONFIG)
-                history.push(navItems[stageIndex + 1].href)
             })
             .catch((err) => {
                 if (err['code'] === 409) {

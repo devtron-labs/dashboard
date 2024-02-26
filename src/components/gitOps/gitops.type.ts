@@ -85,9 +85,8 @@ export interface GitOpsProps extends RouteComponentProps<{}> {
 }
 
 export interface UserGitRepoConfigurationProps {
-    respondOnSuccess: () => void
+    respondOnSuccess: (redirection?:boolean) => void
     appId: number
-    navItems: CustomNavItemsType[]
     reloadAppConfig?: () => void
 }
 export interface UserGitRepoProps {

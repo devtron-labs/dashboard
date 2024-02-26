@@ -1,6 +1,5 @@
 import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch, Redirect } from 'react-router-dom'
-
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../../../common'
@@ -180,7 +179,6 @@ export default function AppComposeRouter({
                         <UserGitRepoConfiguration
                             respondOnSuccess={respondOnSuccess}
                             appId={+appId}
-                            navItems={navItems}
                             reloadAppConfig={reloadAppConfig}
                         />
                     </Route>
