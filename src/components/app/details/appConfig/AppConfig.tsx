@@ -242,7 +242,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
         }
     }
 
-    function respondOnSuccess() {
+    function respondOnSuccess(redirection: boolean = false) {
         getAppConfigStatus(+appId, isJobView)
             .then((configStatusRes) => {
                 const { navItems, isCDPipeline, isCiPipeline, configs, lastConfiguredStage, redirectUrl } =
@@ -256,6 +256,9 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                     navItems,
                     maximumAllowedUrl: redirectUrl,
                 }))
+                if (redirection) {
+                    history.push(redirectUrl)
+                }
             })
             .catch((errors) => {
                 showError(errors)

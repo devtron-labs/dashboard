@@ -67,7 +67,6 @@ export const DeploymentConfigContext = createContext<DeploymentConfigContextType
 export default function DeploymentConfig({
     respondOnSuccess,
     isUnSet,
-    navItems,
     isCiPipeline,
     environments,
     isProtected,
@@ -574,7 +573,7 @@ export default function DeploymentConfig({
             }
             reloadEnvironments()
             fetchDeploymentTemplate()
-            respondOnSuccess()
+            respondOnSuccess(!isCiPipeline)
 
             // Resetting the fetchedValues and fetchedValuesManifest caches to avoid showing the old data
             dispatch({
@@ -583,12 +582,6 @@ export default function DeploymentConfig({
             })
 
             toast.success(<SuccessToastBody chartConfig={state.chartConfig} />)
-
-            if (!isCiPipeline) {
-                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.DEPLOYMENT_TEMPLATE)
-                const nextStageIndex = navItems.findIndex((item, index) => index > stageIndex && item.required)
-                history.push(navItems[nextStageIndex].href)
-            }
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
             if (!baseDeploymentAbortController.signal.aborted) {
