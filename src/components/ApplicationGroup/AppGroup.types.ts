@@ -459,3 +459,10 @@ export interface ManageAppsResponse {
     error?: string
     authError?: boolean
 }
+
+export interface batchConfigType{
+    lastIndex: number
+    results: any[]
+    concurrentCount: number
+    completedCalls: number
+}

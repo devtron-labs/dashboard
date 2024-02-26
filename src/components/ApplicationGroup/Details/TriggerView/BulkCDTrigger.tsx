@@ -32,7 +32,7 @@ import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
-import { ApiQeuingWithBatch } from '../../AppGroup.service'
+import { ApiQueuingWithBatch } from '../../AppGroup.service'
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -226,8 +226,9 @@ export default function BulkCDTrigger({
                 _cdMaterialFunctionsList.push(getCDMaterialFunction(appDetails))
             }
         }
-        ApiQeuingWithBatch(window._env_.API_BATCH_SIZE, _cdMaterialFunctionsList)
-            .then((responses: BulkCDDetailType[]) => {
+
+        ApiQueuingWithBatch(_cdMaterialFunctionsList)
+            .then((responses:any[]) => {
                 responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)

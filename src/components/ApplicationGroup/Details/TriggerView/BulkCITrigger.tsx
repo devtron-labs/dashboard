@@ -39,6 +39,7 @@ import TriggerResponseModal from './TriggerResponseModal'
 import { BULK_CI_MESSAGING } from '../../Constants'
 import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
+import { ApiQueuingWithBatch } from '../../AppGroup.service'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -123,22 +124,25 @@ export default function BulkCITrigger({
 
     const getMaterialData = (): void => {
         abortControllerRef.current = new AbortController()
-        const _CIMaterialPromiseList = appList.map((appDetails) =>
-            getIsAppUnorthodox(appDetails)
-                ? null
-                : getCIMaterialList(
-                      {
-                          pipelineId: appDetails.ciPipelineId,
-                      },
-                      abortControllerRef.current.signal,
-                  ),
-        )
-        if (_CIMaterialPromiseList?.length) {
+        const _CIMaterialPromiseFunctionList = appList.reduce((promiseList, appDetails) => {
+            if (!getIsAppUnorthodox(appDetails)) {
+                const promiseFunction = () =>
+                    getCIMaterialList(
+                        {
+                            pipelineId: appDetails.ciPipelineId,
+                        },
+                        abortControllerRef.current.signal,
+                    );
+                promiseList.push(promiseFunction);
+            }
+            return promiseList;
+        }, []);
+        if (_CIMaterialPromiseFunctionList?.length) {
             const _materialListMap: Record<string, any[]> = {}
-            Promise.all(_CIMaterialPromiseList)
-                .then((responses) => {
+            ApiQueuingWithBatch(_CIMaterialPromiseFunctionList)
+                .then((responses: any[]) => {
                     responses.forEach((res, index) => {
-                        _materialListMap[appList[index]?.appId] = res?.['result']
+                        _materialListMap[appList[index]?.appId] = res.value?.['result']
                     })
                     if (getCIBlockState) {
                         getPolicyEnforcementData(_materialListMap)
@@ -167,9 +171,9 @@ export default function BulkCITrigger({
     }
 
     const getPolicyEnforcementData = (_materialListMap: Record<string, any[]>): void => {
-        const policyPromiseList = appList.map((appDetails) => {
+        const policyPromiseFunctionList = appList.reduce((promiseList, appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
-                return null
+                return promiseList
             }
             let branchNames = ''
             for (const material of _materialListMap[appDetails.appId]) {
@@ -180,14 +184,19 @@ export default function BulkCITrigger({
                     branchNames += `${branchNames ? ',' : ''}${material.value}`
                 }
             }
-            return !branchNames ? null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
-        })
-        if (policyPromiseList?.length) {
+            if (branchNames) {
+                const promiseFunction = () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames);
+                promiseList.push(promiseFunction);
+            }
+            return promiseList;
+        }, []);
+
+        if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
-            Promise.all(policyPromiseList)
-                .then((responses) => {
+            ApiQueuingWithBatch(policyPromiseFunctionList)
+                .then((responses:any[]) => {
                     responses.forEach((res, index) => {
-                        policyListMap[appList[index]?.appId] = res?.['result']
+                        policyListMap[appList[index]?.appId] = res.value?.['result']
                             ? processConsequenceData(res['result'])
                             : null
                     })

@@ -31,6 +31,7 @@ import {
     EnvGroupListResponse,
     EnvGroupResponse,
     WorkflowsResponseType,
+    batchConfigType,
 } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -243,28 +244,49 @@ export const editDescription = (payload): Promise<EditDescRequestResponse> => {
     return put(Routes.ENVIRONMENT, payload)
 }
 
+
 const eachCall = (batchConfig, functionCalls, resolve, reject) => {
     functionCalls[batchConfig.lastIndex]()
         .then((result) => {
             batchConfig.results.push({ status: 'fulfilled', value: result })
+            batchConfig.completedCalls++
         })
         .catch((error) => {
             batchConfig.results.push({ status: 'rejected', reason: error })
+            batchConfig.completedCalls++
         })
         .finally(() => {
             if (batchConfig.lastIndex < functionCalls.length) {
                 eachCall(batchConfig, functionCalls, resolve, reject)
-            } else if (batchConfig.results.length === functionCalls.length) {
+                batchConfig.lastIndex++
+            } else if (batchConfig.completedCalls === functionCalls.length) {
                 resolve(batchConfig.results)
             }
-            batchConfig.lastIndex++
         })
 }
 
-export const ApiQeuingWithBatch = (batchSize, functionCalls) => {
+/**
+ * Executes a batch of function calls concurrently with queuing.
+ * @param functionCalls The array of function calls returning promise to be executed.
+ * @param batchSize The maximum number of function calls to be executed concurrently. Defaults to the value of `window._env_.API_BATCH_SIZE`.
+ * @returns A promise that resolves to a array of objects containing the status and value of the batch execution.
+ */
+export const ApiQueuingWithBatch = (functionCalls, batchSize: number = window._env_.API_BATCH_SIZE) => {
     return new Promise((resolve, reject) => {
-        const batchConfig = { lastIndex: 0, concurrentCount: batchSize, results: [] }
-        for (let index = 0; index < batchConfig.concurrentCount; index++, batchConfig.lastIndex++) {
+        if (functionCalls.length === 0) {
+            resolve([])
+        }
+        const batchConfig: batchConfigType = {
+            lastIndex: 0,
+            concurrentCount: batchSize,
+            results: [],
+            completedCalls: 0,
+        }
+        for (
+            let index = 0;
+            index < batchConfig.concurrentCount && index < functionCalls.length;
+            index++, batchConfig.lastIndex++
+        ) {
             eachCall(batchConfig, functionCalls, resolve, reject)
         }
     })

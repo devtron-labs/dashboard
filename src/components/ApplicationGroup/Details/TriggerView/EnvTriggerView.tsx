@@ -41,7 +41,7 @@ import {
     sortObjectArrayAlphabetically,
 } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import { ApiQueuingWithBatch, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
@@ -1309,7 +1309,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         }
 
-        const _CDTriggerPromiseList = []
+        const _CDTriggerPromiseFunctionList = []
         nodeList.forEach((node, index) => {
             let ciArtifact = null
             node[materialType].forEach((artifact) => {
@@ -1318,14 +1318,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             })
             if (ciArtifact) {
-                _CDTriggerPromiseList.push(
+                _CDTriggerPromiseFunctionList.push(() =>
                     triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
                 )
             } else {
                 triggeredAppList.splice(index, 1)
             }
         })
-        handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList, WorkflowNodeType.CD)
+        handleBulkTrigger(_CDTriggerPromiseFunctionList, triggeredAppList, WorkflowNodeType.CD)
     }
 
     const updateResponseListData = (_responseList) => {
@@ -1354,14 +1354,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const handleBulkTrigger = (
-        promiseList: any[],
+        promiseFunctionList: any[],
         triggeredAppList: { appId: number; envId?: number; appName: string }[],
         type: WorkflowNodeType,
         skippedResources: ResponseRowType[] = [],
     ): void => {
         const _responseList = skippedResources
-        if (promiseList.length) {
-            Promise.allSettled(promiseList).then((responses: any) => {
+        if (promiseFunctionList.length) {
+            ApiQueuingWithBatch(promiseFunctionList,5).then((responses: any[]) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
                         const statusType = filterStatusType(
@@ -1488,7 +1488,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             }
         }
-        const _CITriggerPromiseList = []
+        const _CITriggerPromiseFunctionList = []
         nodeList.forEach((node) => {
             const gitMaterials = new Map<number, string[]>()
             const ciPipelineMaterials = []
@@ -1527,17 +1527,17 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 invalidateCache: appIgnoreCache[+node.id],
                 pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
             }
-            _CITriggerPromiseList.push(triggerCINode(payload))
+            _CITriggerPromiseFunctionList.push(()=>triggerCINode(payload))
         })
 
-        if (!_CITriggerPromiseList.length && !skippedResources.length) {
+        if (!_CITriggerPromiseFunctionList.length && !skippedResources.length) {
             toast.error('No valid CI pipeline found')
             setCDLoading(false)
             setCILoading(false)
             return
         }
 
-        handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI, skippedResources)
+        handleBulkTrigger(_CITriggerPromiseFunctionList, triggeredAppList, WorkflowNodeType.CI, skippedResources)
     }
 
     // Would only set data no need to get data related to materials from it, we will get that in bulk trigger

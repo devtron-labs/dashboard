@@ -172,7 +172,7 @@ if (!window || !window._env_) {
         LOGIN_DT_LOGO: '',
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: false,
-        API_BATCH_SIZE: 5,
+        API_BATCH_SIZE: 20,
     }
 }
 
