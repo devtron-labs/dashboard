@@ -25,7 +25,6 @@ import IssuesListingModal from '../../../../app/details/appDetails/IssuesListing
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
 const EnvironmentStatusComponent = ({
-    appStreamData,
     loadingDetails,
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
@@ -81,7 +80,6 @@ const EnvironmentStatusComponent = ({
     const renderIssuesCard = () => {
         return (
             <IssuesCard
-                appStreamData={appStreamData}
                 cardLoading={cardLoading}
                 setErrorsList={setErrorsList}
                 toggleIssuesModal={toggleIssuesModal}
@@ -193,7 +191,6 @@ const EnvironmentStatusComponent = ({
                     close={() => {
                         setShowAppStatusDetail(false)
                     }}
-                    appStreamData={appStreamData}
                     showAppStatusMessage={showHibernationStatusMessage}
                 />
             )}
