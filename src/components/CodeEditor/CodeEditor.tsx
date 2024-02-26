@@ -27,9 +27,6 @@ self.MonacoEnvironment = {
     },
 }
 
-// @ts-ignore
-const { yaml } = monaco.languages || {}
-
 interface InformationBarProps {
     text: string
     className?: string
