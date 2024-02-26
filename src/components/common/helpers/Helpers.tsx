@@ -1104,32 +1104,6 @@ export const reloadToastBody = () => {
     )
 }
 
-export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
-    const ref = useRef(null)
-    const callbackRef = useRef(callback)
-
-    useLayoutEffect(() => {
-        callbackRef.current = callback
-    }, [callback])
-
-    const handleHeightChange = useCallback(() => {
-        callbackRef.current?.(ref.current.clientHeight)
-    }, [callbackRef])
-
-    useLayoutEffect(() => {
-        if (!ref.current) {
-            return
-        }
-        const observer = new ResizeObserver(handleHeightChange)
-        observer.observe(ref.current)
-        return () => {
-            observer.disconnect()
-        }
-    }, [handleHeightChange, ref])
-
-    return [ref]
-}
-
 export const getDeploymentAppType = (
     allowedDeploymentTypes: DeploymentAppTypes[],
     selectedDeploymentAppType: string,
