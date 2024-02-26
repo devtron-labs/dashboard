@@ -49,7 +49,7 @@ import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.s
 import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 
 import { SourceInfo } from './SourceInfo'
-import { AppStreamData, Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
+import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
 import {
     aggregateNodes,
     getSelectedNodeItems,
@@ -228,7 +228,6 @@ export const Details: React.FC<DetailsType> = ({
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
     // fixme: the state is not being set anywhere and just being drilled down
-    const [streamData] = useState<AppStreamData>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
@@ -579,7 +578,6 @@ export const Details: React.FC<DetailsType> = ({
                     <DeletedAppComponent
                         resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
                         showApplicationDetailedModal={showApplicationDetailedModal}
-                        appStreamData={streamData}
                     />
                 ) : (
                     <AppNotConfigured
@@ -622,7 +620,6 @@ export const Details: React.FC<DetailsType> = ({
             <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg-gradient">
                 <SourceInfo
                     appDetails={appDetails}
-                    appStreamData={streamData}
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
                     environments={environments}
@@ -676,7 +673,6 @@ export const Details: React.FC<DetailsType> = ({
             {detailedStatus && (
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}
-                    appStreamData={streamData}
                     showAppStatusMessage={false}
                 />
             )}
@@ -684,7 +680,6 @@ export const Details: React.FC<DetailsType> = ({
                 <DeploymentStatusDetailModal
                     appName={appDetails?.appName}
                     environmentName={appDetails?.environmentName}
-                    streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     isLoading={isInitialTimelineDataLoading}
@@ -776,7 +771,6 @@ export const Details: React.FC<DetailsType> = ({
 const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
     resourceTreeFetchTimeOut,
     showApplicationDetailedModal,
-    appStreamData,
 }) => {
     if (resourceTreeFetchTimeOut) {
         return (
@@ -784,7 +778,6 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
                 <div className="mt-16 mb-9">
                     <SyncErrorComponent
                         showApplicationDetailedModal={showApplicationDetailedModal}
-                        appStreamData={appStreamData}
                     />
                 </div>
                 <EmptyK8sResourceComponent emptyStateMessage={RESOURCES_NOT_FOUND} />
