@@ -230,8 +230,8 @@ export default function DeploymentTemplateOverrideForm({
                 : await api(+appId, +envId, payload)
             if (deploymentTemplateResp.result?.isLockConfigError && !saveEligibleChanges) {
                 // checking if any locked changes and opening drawer to show eligible and locked ones
-                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
-                setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
+                setLockedOverride(deploymentTemplateResp.result.lockedOverride)
+                setDisableSaveEligibleChanges(deploymentTemplateResp.result.disableSaveEligibleChanges)
                 handleLockedDiffDrawer(true)
                 return
             }
@@ -242,10 +242,10 @@ export default function DeploymentTemplateOverrideForm({
 
             if (envOverrideValuesWithBasic) {
                 editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
-            } else {
+            } else if (deploymentTemplateResp.result?.envOverrideValues) {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
-                    payload: YAML.stringify(deploymentTemplateResp.result?.envOverrideValues),
+                    payload: YAML.stringify(deploymentTemplateResp.result.envOverrideValues),
                 })
             }
             toast.success(

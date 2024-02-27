@@ -109,9 +109,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             _groupFilterOption.sort(sortOptionsByLabel)
             setGroupFilterOptions(_groupFilterOption)
           }
-        } catch (error) {
-          showError(error)
-        }
+        } catch {}
         setAppListLoading(false)
     }
 
@@ -132,9 +130,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
               .sort(sortOptionsByLabel),
             )
           }
-        } catch (error) {
-          showError(error)
-        }
+        } catch {}
         setAppListLoading(false)
     }
 
