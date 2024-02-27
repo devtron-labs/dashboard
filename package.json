@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.64",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.65",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -121,7 +121,9 @@
         "workbox-window": "7.0.0",
         "workbox-core": "^7.0.0",
         "workbox-precaching": "^7.0.0",
-        "workbox-routing": "^7.0.0"
+        "workbox-routing": "^7.0.0",
+        "workbox-navigation-preload": "7.0.0",
+        "workbox-strategies": "7.0.0"
     },
     "jest": {
         "collectCoverageFrom": [
