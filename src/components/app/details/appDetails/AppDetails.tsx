@@ -616,10 +616,12 @@ export const Details: React.FC<DetailsType> = ({
             />
         )
     }
-
+    const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     return (
         <>
-            <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg dc__gap-16">
+            <div
+                className={`w-100 pt-16 pr-20 pb-16 pl-20 dc__gap-16 ${isdeploymentAppDeleting ? 'app-info-bg' : 'app-info-bg-gradient'}`}
+            >
                 <SourceInfo
                     appDetails={appDetails}
                     setDetailed={toggleDetailedStatus}
