@@ -225,6 +225,7 @@ export default function AppComposeRouter({
                         )}
                     />,
                 ]}
+                {/* Redirect route is there when current path url has something after /edit*/}
                 {location.pathname !== url && <Redirect to={lastUnlockedStage} />}
             </Switch>
         )
