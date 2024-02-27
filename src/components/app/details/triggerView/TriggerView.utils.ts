@@ -40,7 +40,7 @@ export const LAST_SAVED_CONFIG_OPTION = {
     infoText: 'Use last saved configuration to deploy',
 }
 
-const LATEST_TRIGGER_CONFIG_OPTION = {
+export const LATEST_TRIGGER_CONFIG_OPTION = {
     label: 'Last deployed config',
     value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
     infoText: 'Retain currently deployed configuration',
