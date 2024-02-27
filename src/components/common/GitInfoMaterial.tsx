@@ -116,7 +116,7 @@ export default function GitInfoMaterial({
             refresh: triggerViewContext.refreshMaterial,
             pipelineId,
         }
-        const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue)=>({
+        const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue) => ({
             value: tabValue,
             label: tabValue,
         }))
@@ -375,13 +375,13 @@ export default function GitInfoMaterial({
         }
 
         if (currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
-            if (!RuntimeParameters || isJobCI || isJobView) {
+            if (!RuntimeParameters || isJobView) {
                 return null
             }
 
             return (
                 <RuntimeParameters
-                    heading={`Pass parameters ${appName ? `for ${appName}` : ''}`}
+                    heading={`Pass parameters ${appName ? `for '${appName}'` : ''}`}
                     parameters={runtimeParams}
                     handleKeyValueChange={handleRuntimeParametersChange}
                     isJobCI={isJobCI}

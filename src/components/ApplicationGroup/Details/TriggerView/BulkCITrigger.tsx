@@ -20,7 +20,7 @@ import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as ICError } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
@@ -28,7 +28,7 @@ import externalCiImg from '../../../../assets/img/external-ci.png'
 import linkedCDBuildCIImg from '../../../../assets/img/linked-cd-bulk-ci.png'
 import linkedCiImg from '../../../../assets/img/linked-ci.png'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, URLS } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
@@ -49,7 +49,7 @@ const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'f
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
 
-export default function BulkCITrigger({
+const BulkCITrigger = ({
     appList,
     closePopup,
     updateBulkInputMaterial,
@@ -65,7 +65,8 @@ export default function BulkCITrigger({
     setLoading,
     runtimeParams,
     setRuntimeParams,
-}: BulkCITriggerType) {
+    setPageViewType,
+}: BulkCITriggerType) => {
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
@@ -129,6 +130,33 @@ export default function BulkCITrigger({
         }
         getMaterialData()
     }, [])
+
+
+    const getRunTimeParamsData = (_materialListMap: Record<string, any[]>): void => {
+        const runTimeParamsPromiseList = appList.map((appDetails) => {
+            if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
+                return {
+                    [appDetails.ciPipelineId]: [],
+                }
+            }
+            return getRuntimeParams(appDetails.ciPipelineId)
+        })
+
+        if (runTimeParamsPromiseList?.length) {
+            Promise.all(runTimeParamsPromiseList)
+                .then((responses) => {
+                    const _runtimeParams: Record<string, KeyValueListType[]> = {}
+                    responses.forEach((res, index) => {
+                        _runtimeParams[appList[index]?.ciPipelineId] = res || []
+                    })
+                    setRuntimeParams(_runtimeParams)
+                })
+                .catch((error) => {
+                    setPageViewType(ViewType.ERROR)
+                    showError(error)
+                })
+        }
+    }
 
     const getMaterialData = (): void => {
         abortControllerRef.current = new AbortController()
@@ -197,6 +225,8 @@ export default function BulkCITrigger({
             case KeyValueListActionType.DELETE:
                 _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
                 break
+            default:
+                throw new Error(`Invalid action ${action}`)
         }
 
         setRuntimeParams({
@@ -207,37 +237,6 @@ export default function BulkCITrigger({
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
-    }
-
-    const getRunTimeParamsData = (_materialListMap: Record<string, any[]>): void => {
-        const runTimeParamsPromiseList = appList.map((appDetails) => {
-            if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
-                return {
-                    [appDetails.ciPipelineId]: [],
-                }
-            }
-            return getRuntimeParams(appDetails.ciPipelineId)
-        })
-        
-        if (runTimeParamsPromiseList?.length) {
-            Promise.allSettled(runTimeParamsPromiseList)
-                .then((responses) => {
-                    const _runtimeParams: Record<string, KeyValueListType[]> = {}
-                    responses.forEach((res, index) => {
-                        if (res.status === 'fulfilled') {
-                            _runtimeParams[appList[index]?.ciPipelineId] = res?.['value'] || []
-                        }
-                        else {
-                            // TODO: Add null
-                            _runtimeParams[appList[index]?.ciPipelineId] = []
-                        }
-                    })
-                    setRuntimeParams(_runtimeParams)
-                })
-                .catch((error) => {
-                    showError(error)
-                })
-        }
     }
 
     const getPolicyEnforcementData = (_materialListMap: Record<string, any[]>): void => {
@@ -284,6 +283,7 @@ export default function BulkCITrigger({
                     className="dc__transparent flex icon-dim-24"
                     disabled={isLoading}
                     onClick={closeBulkCIModal}
+                    aria-label="Close modal"
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -411,10 +411,10 @@ export default function BulkCITrigger({
                         savingRegexValue={isLoading}
                     />
                     <div className="flex right pr-20 pb-20">
-                        <button className="cta cancel h-28 lh-28-imp mr-16" onClick={hideBranchEditModal}>
+                        <button className="cta cancel h-28 lh-28-imp mr-16" onClick={hideBranchEditModal} type="button">
                             Cancel
                         </button>
-                        <button className="cta h-28 lh-28-imp" onClick={saveBranchName}>
+                        <button className="cta h-28 lh-28-imp" onClick={saveBranchName} type="button">
                             Save
                         </button>
                     </div>
@@ -588,7 +588,7 @@ export default function BulkCITrigger({
                 )}
                 {app.appId !== selectedApp.appId && app.errorMessage && (
                     <span className="flex left cr-5 fw-4 fs-12">
-                        <Error className="icon-dim-12 mr-4 mw-14" />
+                        <ICError className="icon-dim-12 mr-4 mw-14" />
                         <span className="dc__block dc__ellipsis-right">{app.errorMessage}</span>
                     </span>
                 )}
@@ -604,7 +604,7 @@ export default function BulkCITrigger({
             return <Progressing pageLoader />
         }
         const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
-        const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue)=>({
+        const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue) => ({
             value: tabValue,
             label: tabValue,
         }))
@@ -702,6 +702,7 @@ export default function BulkCITrigger({
                     data-testid="start-build"
                     onClick={onClickStartBuild}
                     disabled={isStartBuildDisabled()}
+                    type="button"
                 >
                     {isLoading ? (
                         <Progressing />
@@ -737,3 +738,5 @@ export default function BulkCITrigger({
         </Drawer>
     )
 }
+
+export default BulkCITrigger

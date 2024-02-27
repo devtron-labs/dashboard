@@ -796,6 +796,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
 
                 if (resp[2]) {
+                    // Not handling error state since we are change viewType to error in catch block
                     setRuntimeParams({
                         [ciNodeId]: resp[2],
                     })
@@ -1727,6 +1728,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             case KeyValueListActionType.DELETE:
                 _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
                 break
+            default:
+                throw new Error(`Invalid action type: ${action}`)
         }
 
         if (selectedCINode?.id) {
@@ -1947,6 +1950,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setLoading={setCILoading}
                 runtimeParams={runtimeParams}
                 setRuntimeParams={setRuntimeParams}
+                setPageViewType={setPageViewType}
             />
         )
     }

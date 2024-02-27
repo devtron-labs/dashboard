@@ -46,7 +46,7 @@ import {
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { getEnvironmentListMinPublic, getHostURLConfiguration } from '../../../../services/service'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as ICError } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
@@ -686,6 +686,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 }
 
                 if (resp[2]) {
+                    // Not saving as null since page ViewType is set as Error in case of error
                     this.setState({
                         runtimeParams: resp[2],
                     })
@@ -1094,6 +1095,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             case KeyValueListActionType.DELETE:
                 _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
                 break
+            default:
+                throw new Error(`Invalid action: ${action}`)
         }
 
         this.setState({ runtimeParams: _runtimeParams })
@@ -1332,7 +1335,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
             return (
                 <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
-                    <Error className="icon-dim-20 mr-8" />
+                    <ICError className="icon-dim-20 mr-8" />
                     <div className="cn-9 fs-13">
                         {HOST_ERROR_MESSAGE.NotConfigured}
                         &nbsp;
