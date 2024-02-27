@@ -1794,9 +1794,11 @@ table.resource-tree {
 
 .source-info-container,
 .app-details-info-card {
-    .healthy {
-        background-size: contain, contain;
-        background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+    .dc__app-summary__icon {
+        &.healthy {
+            background-size: contain, contain;
+            background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+        }
     }
 
     .mw-340 {
