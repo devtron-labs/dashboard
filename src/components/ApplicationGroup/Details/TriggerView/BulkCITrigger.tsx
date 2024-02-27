@@ -10,6 +10,10 @@ import {
     ConsequenceAction,
     useAsync,
     GenericEmptyState,
+    KeyValueListType,
+    KeyValueListActionType,
+    HandleKeyValueChangeType,
+    CIMaterialSidebarType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
@@ -42,6 +46,8 @@ import { getIsAppUnorthodox } from './utils'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
+const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
 
 export default function BulkCITrigger({
     appList,
@@ -57,6 +63,8 @@ export default function BulkCITrigger({
     responseList,
     isLoading,
     setLoading,
+    runtimeParams,
+    setRuntimeParams,
 }: BulkCITriggerType) {
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
@@ -64,6 +72,7 @@ export default function BulkCITrigger({
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
     const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
+    const [currentSidebarTab, setCurrentSidebarTab] = useState<string>(CIMaterialSidebarType.CODE_SOURCE)
 
     const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(
         () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
@@ -143,6 +152,9 @@ export default function BulkCITrigger({
                     if (getCIBlockState) {
                         getPolicyEnforcementData(_materialListMap)
                     }
+                    if (getRuntimeParams) {
+                        getRunTimeParamsData(_materialListMap)
+                    }
                     updateBulkInputMaterial(_materialListMap)
                     if (!getIsAppUnorthodox(selectedApp)) {
                         setShowRegexModal(
@@ -163,6 +175,68 @@ export default function BulkCITrigger({
                 })
         } else {
             setLoading(false)
+        }
+    }
+
+    const handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
+        let _runtimeParams = runtimeParams[selectedApp.ciPipelineId] ?? []
+
+        switch (action) {
+            case KeyValueListActionType.ADD:
+                _runtimeParams.unshift({ key: '', value: '' })
+                break
+
+            case KeyValueListActionType.UPDATE_KEY:
+                _runtimeParams[data.index].key = data.value
+                break
+
+            case KeyValueListActionType.UPDATE_VALUE:
+                _runtimeParams[data.index].value = data.value
+                break
+
+            case KeyValueListActionType.DELETE:
+                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
+                break
+        }
+
+        setRuntimeParams({
+            ...runtimeParams,
+            [selectedApp.ciPipelineId]: _runtimeParams,
+        })
+    }
+
+    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
+    }
+
+    const getRunTimeParamsData = (_materialListMap: Record<string, any[]>): void => {
+        const runTimeParamsPromiseList = appList.map((appDetails) => {
+            if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
+                return {
+                    [appDetails.ciPipelineId]: [],
+                }
+            }
+            return getRuntimeParams(appDetails.ciPipelineId)
+        })
+        
+        if (runTimeParamsPromiseList?.length) {
+            Promise.allSettled(runTimeParamsPromiseList)
+                .then((responses) => {
+                    const _runtimeParams: Record<string, KeyValueListType[]> = {}
+                    responses.forEach((res, index) => {
+                        if (res.status === 'fulfilled') {
+                            _runtimeParams[appList[index]?.ciPipelineId] = res?.['value'] || []
+                        }
+                        else {
+                            // TODO: Add null
+                            _runtimeParams[appList[index]?.ciPipelineId] = []
+                        }
+                    })
+                    setRuntimeParams(_runtimeParams)
+                })
+                .catch((error) => {
+                    showError(error)
+                })
         }
     }
 
@@ -398,6 +472,11 @@ export default function BulkCITrigger({
                 isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
                 ciBlockState={appPolicy[selectedApp.appId]}
                 isJobCI={selectedApp.isJobCI}
+                currentSidebarTab={currentSidebarTab}
+                handleSidebarTabChange={handleSidebarTabChange}
+                runtimeParams={runtimeParams[selectedApp.ciPipelineId] || []}
+                handleRuntimeParametersChange={handleRuntimeParametersChange}
+                appName={selectedApp?.name}
             />
         )
     }
@@ -525,6 +604,11 @@ export default function BulkCITrigger({
             return <Progressing pageLoader />
         }
         const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+        const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue)=>({
+            value: tabValue,
+            label: tabValue,
+        }))
+
         return (
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
                 {!showWebhookModal && (
@@ -533,8 +617,17 @@ export default function BulkCITrigger({
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
                         >
-                            Applications
+                            {GitInfoMaterialTabs ? (
+                                <GitInfoMaterialTabs
+                                    tabs={sidebarTabs}
+                                    initialTab={currentSidebarTab}
+                                    onChange={handleSidebarTabChange}
+                                />
+                            ) : (
+                                'Applications'
+                            )}
                         </div>
+
                         {appList.map((app, index) => (
                             <div
                                 className={`material-list pr-12 pl-12 pb-12 ${

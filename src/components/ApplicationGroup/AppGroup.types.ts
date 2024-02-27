@@ -2,6 +2,7 @@ import {
     CDModalTabType,
     DeploymentNodeType,
     FilterConditionsListType,
+    KeyValueListType,
     ResponseType,
     UserApprovalConfigType,
     WorkflowNodeType,
@@ -85,6 +86,8 @@ export interface BulkCITriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    runtimeParams: Record<string, KeyValueListType[]>
+    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, KeyValueListType[]>>>
 }
 
 export interface BulkCDTriggerType {
