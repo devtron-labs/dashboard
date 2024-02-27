@@ -77,11 +77,9 @@ export default function DeploymentTemplateOverride({
 
     useEffect(() => {
         const fetchOptionsList = async () => {
-            try {
-                const { result } = await getOptions(+appId, +envId)
-                const _groupedData = groupDataByType(result)
-                setGroupedOptionsDataOverride(_groupedData)
-            } catch {}
+            const { result } = await getOptions(+appId, +envId)
+            const _groupedData = groupDataByType(result)
+            setGroupedOptionsDataOverride(_groupedData)
         }
         fetchOptionsList()
     }, [environments])
