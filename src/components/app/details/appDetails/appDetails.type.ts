@@ -1,5 +1,5 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
+import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
@@ -100,7 +100,6 @@ export interface DeploymentStatusDetailsBreakdownDataType {
 
 export interface DeploymentStatusDetailBreakdownType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    streamData?: AppStreamData
     isVirtualEnvironment?: boolean
 }
 
@@ -108,7 +107,6 @@ export interface DeploymentStatusDetailModalType {
     appName: string
     environmentName: string
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    streamData: AppStreamData
     isVirtualEnvironment: boolean
     /**
      * Loading state for the timeline data
@@ -139,7 +137,6 @@ export interface DeploymentStatusDetailRowType {
     type: string
     hideVerticalConnector?: boolean
     deploymentDetailedData: DeploymentStatusDetailsBreakdownDataType
-    streamData?: AppStreamData
 }
 
 export interface ErrorInfoStatusBarType {
@@ -213,7 +210,6 @@ export interface DeploymentStatusCardType {
 }
 
 export interface IssuesCardType {
-    appStreamData?: AppStreamData
     cardLoading?: boolean
     setErrorsList: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
