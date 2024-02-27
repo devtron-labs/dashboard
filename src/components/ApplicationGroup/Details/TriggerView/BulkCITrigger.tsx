@@ -131,9 +131,8 @@ const BulkCITrigger = ({
         getMaterialData()
     }, [])
 
-
-    const getRunTimeParamsData = (_materialListMap: Record<string, any[]>): void => {
-        const runTimeParamsPromiseList = appList.map((appDetails) => {
+    const getRuntimeParamsData = (_materialListMap: Record<string, any[]>): void => {
+        const runtimeParamsPromiseList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
                 return {
                     [appDetails.ciPipelineId]: [],
@@ -142,8 +141,8 @@ const BulkCITrigger = ({
             return getRuntimeParams(appDetails.ciPipelineId)
         })
 
-        if (runTimeParamsPromiseList?.length) {
-            Promise.all(runTimeParamsPromiseList)
+        if (runtimeParamsPromiseList.length) {
+            Promise.all(runtimeParamsPromiseList)
                 .then((responses) => {
                     const _runtimeParams: Record<string, KeyValueListType[]> = {}
                     responses.forEach((res, index) => {
@@ -177,11 +176,12 @@ const BulkCITrigger = ({
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res?.['result']
                     })
+                    // These two handlers should be imported from elsewhere
                     if (getCIBlockState) {
                         getPolicyEnforcementData(_materialListMap)
                     }
                     if (getRuntimeParams) {
-                        getRunTimeParamsData(_materialListMap)
+                        getRuntimeParamsData(_materialListMap)
                     }
                     updateBulkInputMaterial(_materialListMap)
                     if (!getIsAppUnorthodox(selectedApp)) {
