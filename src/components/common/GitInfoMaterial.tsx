@@ -331,6 +331,12 @@ export default function GitInfoMaterial({
         )
     }
 
+    const getRuntimeParametersHeading = () => {
+        const headingPrefix = 'Pass parameters'
+        const headingSuffix = appName ? `for '${appName}'` : ''
+        return `${headingPrefix} ${headingSuffix}`
+    }
+
     function renderMaterialHistory(selectedMaterial: CIMaterialType) {
         const anyCommit = selectedMaterial.history?.length > 0
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
@@ -381,7 +387,7 @@ export default function GitInfoMaterial({
 
             return (
                 <RuntimeParameters
-                    heading={`Pass parameters ${appName ? `for '${appName}'` : ''}`}
+                    heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleKeyValueChange={handleRuntimeParametersChange}
                     isJobCI={isJobCI}

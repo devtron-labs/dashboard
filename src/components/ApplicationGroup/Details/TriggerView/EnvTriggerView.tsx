@@ -978,7 +978,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             ciPipelineMaterials,
             invalidateCache,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(!node.isJobCI ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
+            ...(getRuntimeParams && !node.isJobCI
+                ? { runtimeParams: runtimeParamsValidationResponse.validParams }
+                : {}),
         }
 
         triggerCINode(payload)
@@ -1551,7 +1553,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
 
             const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(
-                runtimeParams?.[selectedCINode?.id] ?? [],
+                runtimeParams?.[node.id] ?? [],
             )
             if (!runtimeParamsValidationResponse.isValid) {
                 setCDLoading(false)
@@ -1565,7 +1567,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 ciPipelineMaterials,
                 invalidateCache: appIgnoreCache[+node.id],
                 pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-                ...(!node.isJobCI ? { runtimeParams: runtimeParamsValidationResponse?.validParams } : {}),
+                ...(getRuntimeParams && !node.isJobCI
+                    ? { runtimeParams: runtimeParamsValidationResponse?.validParams }
+                    : {}),
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })

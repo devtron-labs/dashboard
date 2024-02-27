@@ -858,7 +858,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(!node.isJobCI && !this.props.isJobView ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
+            ...(getRuntimeParams && !node.isJobCI && !this.props.isJobView
+                ? { runtimeParams: runtimeParamsValidationResponse.validParams }
+                : {}),
         }
 
         triggerCINode(payload)
