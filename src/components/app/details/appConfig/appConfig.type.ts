@@ -97,7 +97,6 @@ export interface AppComposeRouterProps {
     respondOnSuccess: () => void
     isCiPipeline: boolean
     getWorkflows: () => void
-    maxAllowedUrl: string
     isCDPipeline: boolean
     environments: AppEnvironment[]
     workflowsRes: WorkflowResult

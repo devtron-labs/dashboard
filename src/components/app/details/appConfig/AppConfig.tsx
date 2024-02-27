@@ -430,7 +430,6 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                         isUnlocked={state.isUnlocked}
                         isCiPipeline={state.isCiPipeline}
                         isCDPipeline={state.isCDPipeline}
-                        maxAllowedUrl={state.maximumAllowedUrl}
                         respondOnSuccess={respondOnSuccess}
                         getWorkflows={reloadWorkflows}
                         environments={state.environmentList}

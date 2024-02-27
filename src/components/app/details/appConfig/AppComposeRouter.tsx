@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react'
-import { useRouteMatch, useHistory, Route, Switch, Redirect } from 'react-router-dom'
+import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation } from 'react-router-dom'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../../../common'
@@ -64,7 +64,8 @@ export default function AppComposeRouter({
     reloadAppConfig,
     lastUnlockedStage,
 }: AppComposeRouterProps) {
-    const { path } = useRouteMatch()
+    const { path ,url,} = useRouteMatch()
+    const location = useLocation()
 
     const renderJobViewRoutes = (): JSX.Element => {
        // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
@@ -224,7 +225,7 @@ export default function AppComposeRouter({
                         )}
                     />,
                 ]}
-                <Redirect to={lastUnlockedStage} />
+                {location.pathname !== url && <Redirect to={lastUnlockedStage} />}
             </Switch>
         )
     }
