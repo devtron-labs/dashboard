@@ -96,6 +96,8 @@ import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/Rotate
 import IssuesListingModal from './IssuesListingModal'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
+const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
+
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -688,6 +690,11 @@ export const Details: React.FC<DetailsType> = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     isLoading={isInitialTimelineDataLoading}
+                />
+            )}
+             {location.search.includes("deployment-window-status") && DeploymentWindowStatusModal && (
+                <DeploymentWindowStatusModal
+                   envId={params.envId}
                 />
             )}
             {showScanDetailsModal && (

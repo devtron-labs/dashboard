@@ -22,6 +22,7 @@ import AppStatusCard from './AppStatusCard'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
+const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
 
 export const SourceInfo = ({
     appDetails,
@@ -252,6 +253,9 @@ export const SourceInfo = ({
                             envId={envId}
                             ciArtifactId={ciArtifactId}
                         />
+                    )}
+                    {DeploymentWindowStatusCard && (
+                        <DeploymentWindowStatusCard cardLoading={cardLoading} envId={envId} />
                     )}
                     {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
                         <SecurityVulnerabilityCard
