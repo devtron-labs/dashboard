@@ -141,10 +141,12 @@ export default function DeploymentConfig({
 
     useEffect(() => {
         const fetchOptionsList = async () => {
-            const res = await getOptions(+appId, -1) // -1 is for base deployment template
-            const { result } = res
-            const _groupedData = groupDataByType(result)
-            setGroupedOptionsData(_groupedData)
+            try {
+                const res = await getOptions(+appId, -1) // -1 is for base deployment template
+                const { result } = res
+                const _groupedData = groupDataByType(result)
+                setGroupedOptionsData(_groupedData)
+            } catch {}
         }
 
         fetchOptionsList()
