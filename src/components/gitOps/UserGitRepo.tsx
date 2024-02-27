@@ -60,7 +60,7 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
                 message="GitOps repository cannot be changed for this application once deployed."
                 classname="warn mb-16"
                 Icon={Warn}
-                iconClass="icon-dim-20"
+                iconClass="icon-dim-20 warning-icon"
             />
         )
     }
@@ -69,7 +69,7 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
         <div className="pt-16 pl-20">
             <div className="form__row flex left">
                 <div className="fw-4 fs-13 fcn-9">
-                    Application Deployemnt states are saved as manifest in a Git repository. ArgoCD uses these manifests
+                    Application deployment states are saved as manifest in a Git repository. ArgoCD uses these manifests
                     to sync with your live Kubernetes cluster.
                 </div>
                 <RadioGroup

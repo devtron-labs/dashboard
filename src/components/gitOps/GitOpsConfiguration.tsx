@@ -799,18 +799,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             >
                                 <div>
                                     <RadioGroupItem value={repoType.DEFAULT}>
-                                        Use default git repository git structure.
+                                        Use default git repository structure
                                     </RadioGroupItem>
-                                    <div className="ml-26">
+                                    <div className="ml-26 cn-7">
                                         Repository will be created automatically with application name. Users can't
                                         change default repository
                                     </div>
                                 </div>
                                 <div className="mt-10">
                                     <RadioGroupItem value={repoType.CONFIGURE}>
-                                        Allow changing git repository for application.
+                                        Allow changing git repository for application
                                     </RadioGroupItem>
-                                    <div className="ml-26">Application admins can provide desired git repository</div>
+                                    <div className="ml-26 cn-7">
+                                        Application admins can provide desired git repository
+                                    </div>
                                 </div>
                             </RadioGroup>
                         </div>
