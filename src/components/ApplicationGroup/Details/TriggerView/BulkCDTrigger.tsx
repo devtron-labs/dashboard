@@ -14,6 +14,7 @@ import {
     CDMaterialType,
     FilterStates,
     useSuperAdmin,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -28,11 +29,13 @@ import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { BulkSelectionEvents, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
-import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
+import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
+import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
+
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -48,6 +51,8 @@ export default function BulkCDTrigger({
     setLoading,
     isVirtualEnv,
     uniqueReleaseTags,
+    isBulkDeploymentTriggered,
+    httpProtocol
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
@@ -227,7 +232,7 @@ export default function BulkCDTrigger({
             }
         }
 
-        ApiQueuingWithBatch(_cdMaterialFunctionsList)
+        ApiQueuingWithBatch(_cdMaterialFunctionsList,httpProtocol)
             .then((responses:any[]) => {
                 responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
                 updateBulkInputMaterial(_cdMaterialResponse)
@@ -299,7 +304,22 @@ export default function BulkCDTrigger({
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
-            return <Progressing pageLoader />
+            return (
+                <GenericEmptyState
+                    SvgImage={MechanicalOperation}
+                    title={
+                        isBulkDeploymentTriggered
+                            ? BULK_CD_DEPLOYMENT_STATUS(appList.length, appList[0].envName).title
+                            : BULK_CD_MATERIAL_STATUS(appList.length).title
+                    }
+                    subTitle={
+                        isBulkDeploymentTriggered
+                            ? BULK_CD_DEPLOYMENT_STATUS(appList.length, appList[0].envName).subTitle
+                            : BULK_CD_MATERIAL_STATUS(appList.length).subTitle
+                    }
+                    contentClassName="text-center"
+                />
+            )
         }
 
         const updateCurrentAppMaterial = (matId: number, releaseTags?: ReleaseTag[], imageComment?: ImageComment) => {

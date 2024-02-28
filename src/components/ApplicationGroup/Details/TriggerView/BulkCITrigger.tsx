@@ -36,10 +36,11 @@ import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { BulkCIDetailType, BulkCITriggerType } from '../../AppGroup.types'
 import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
 import TriggerResponseModal from './TriggerResponseModal'
-import { BULK_CI_MESSAGING } from '../../Constants'
+import { BULK_CI_BUILD_STATUS, BULK_CI_MATERIAL_STATUS, BULK_CI_MESSAGING } from '../../Constants'
 import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
+import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -58,6 +59,8 @@ export default function BulkCITrigger({
     responseList,
     isLoading,
     setLoading,
+    isBulkBuildTriggered,
+    httpProtocol
 }: BulkCITriggerType) {
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
@@ -139,7 +142,7 @@ export default function BulkCITrigger({
         }, []);
         if (_CIMaterialPromiseFunctionList?.length) {
             const _materialListMap: Record<string, any[]> = {}
-            ApiQueuingWithBatch(_CIMaterialPromiseFunctionList)
+            ApiQueuingWithBatch(_CIMaterialPromiseFunctionList, httpProtocol)
                 .then((responses: any[]) => {
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res.value?.['result']
@@ -193,8 +196,8 @@ export default function BulkCITrigger({
 
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
-            ApiQueuingWithBatch(policyPromiseFunctionList)
-                .then((responses:any[]) => {
+            ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol)
+                .then((responses: any[]) => {
                     responses.forEach((res, index) => {
                         policyListMap[appList[index]?.appId] = res.value?.['result']
                             ? processConsequenceData(res['result'])
@@ -531,7 +534,22 @@ export default function BulkCITrigger({
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
-            return <Progressing pageLoader />
+            return (
+                <GenericEmptyState
+                    SvgImage={MechanicalOperation}
+                    title={
+                        isBulkBuildTriggered
+                            ? BULK_CI_BUILD_STATUS(appList.length).title
+                            : BULK_CI_MATERIAL_STATUS(appList.length).title
+                    }
+                    subTitle={
+                        isBulkBuildTriggered
+                            ? BULK_CI_BUILD_STATUS(appList.length).subTitle
+                            : BULK_CI_MATERIAL_STATUS(appList.length).subTitle
+                    }
+                    contentClassName="text-center"
+                />
+            )
         }
         const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
         return (

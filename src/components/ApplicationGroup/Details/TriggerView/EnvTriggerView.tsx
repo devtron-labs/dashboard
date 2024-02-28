@@ -130,6 +130,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
+    const isBulkDeploymentTriggered = useRef(false)
+    const isBulkBuildTriggered = useRef(false)
+    const httpProtocol = useRef('')
 
     // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
     const handledLocation = useRef(false)
@@ -139,8 +142,21 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (ApprovalMaterialModal) {
             getConfigs()
         }
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+                const protocol = entry.nextHopProtocol
+                if (entry.initiatorType === 'fetch') {
+                    httpProtocol.current = protocol
+                    console.log('here', entry)
+                    observer.disconnect()
+                }
+            })
+        })
+
+        observer.observe({ type: 'resource', buffered: true })
         return () => {
             handledLocation.current = false
+            observer.disconnect()
         }
     }, [])
 
@@ -1282,7 +1298,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
         setCDLoading(true)
-
+        isBulkDeploymentTriggered.current = true
         const _appIdMap = new Map<string, string>()
         const nodeList: NodeAttr[] = []
         const triggeredAppList: { appId: number; envId?: number; appName: string }[] = []
@@ -1361,7 +1377,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     ): void => {
         const _responseList = skippedResources
         if (promiseFunctionList.length) {
-            ApiQueuingWithBatch(promiseFunctionList).then((responses: any[]) => {
+            ApiQueuingWithBatch(promiseFunctionList,httpProtocol.current).then((responses: any[]) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
                         const statusType = filterStatusType(
@@ -1434,6 +1450,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         } else {
             setCDLoading(false)
             setCILoading(false)
+            isBulkDeploymentTriggered.current = false
+            isBulkBuildTriggered.current = false
             if (!skippedResources.length) {
                 setShowBulkCDModal(false)
                 setShowBulkCIModal(false)
@@ -1463,6 +1481,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setCILoading(true)
+        isBulkBuildTriggered.current = true
         let node
         const skippedResources = []
         const nodeList: NodeAttr[] = []
@@ -1851,6 +1870,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setLoading={setCDLoading}
                 isVirtualEnv={isVirtualEnv}
                 uniqueReleaseTags={uniqueReleaseTags}
+                isBulkDeploymentTriggered={isBulkDeploymentTriggered.current}
+                httpProtocol={httpProtocol.current}
             />
         )
     }
@@ -1875,6 +1896,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 responseList={responseList}
                 isLoading={isCILoading}
                 setLoading={setCILoading}
+                isBulkBuildTriggered={isBulkBuildTriggered.current}
+                httpProtocol={httpProtocol.current}
             />
         )
     }

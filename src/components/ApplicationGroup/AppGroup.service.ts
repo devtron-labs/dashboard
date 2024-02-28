@@ -271,7 +271,16 @@ const eachCall = (batchConfig, functionCalls, resolve, reject) => {
  * @param batchSize The maximum number of function calls to be executed concurrently. Defaults to the value of `window._env_.API_BATCH_SIZE`.
  * @returns A promise that resolves to a array of objects containing the status and value of the batch execution.
  */
-export const ApiQueuingWithBatch = (functionCalls, batchSize: number = window._env_.API_BATCH_SIZE) => {
+
+export const ApiQueuingWithBatch = (
+    functionCalls,
+    httpProtocol: string,
+    batchSize: number = window._env_.API_BATCH_SIZE,
+) => {
+    const minCalls = httpProtocol === 'http/1.1' ? 5 : 30
+    if (!batchSize || batchSize <= 0) {
+        batchSize = minCalls
+    }
     return new Promise((resolve, reject) => {
         if (functionCalls.length === 0) {
             resolve([])
