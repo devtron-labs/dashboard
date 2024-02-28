@@ -32,7 +32,6 @@ import {
     CustomValueContainer,
     formatOptionLabel,
     menuComponent,
-    Option as SingleSelectOption,
 } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'
@@ -414,7 +413,6 @@ const K8sListItemCard = ({
                     name="cluster"
                     components={{
                         IndicatorSeparator: null,
-                        Option: SingleSelectOption,
                         LoadingIndicator,
                     }}
                     styles={authorizationSelectStyles}
@@ -437,7 +435,6 @@ const K8sListItemCard = ({
                             onChange={onNameSpaceSelection}
                             components={{
                                 IndicatorSeparator: null,
-                                Option: SingleSelectOption,
                                 MenuList: (props) => menuComponent(props, 'namespaces'),
                                 LoadingIndicator,
                             }}
@@ -460,7 +457,6 @@ const K8sListItemCard = ({
                                     onChange={onApiGroupSelect}
                                     components={{
                                         IndicatorSeparator: null,
-                                        Option: SingleSelectOption,
                                         LoadingIndicator,
                                     }}
                                     styles={authorizationSelectStyles}
@@ -483,7 +479,6 @@ const K8sListItemCard = ({
                                     name="kind"
                                     components={{
                                         IndicatorSeparator: null,
-                                        Option: SingleSelectOption,
                                         ValueContainer: CustomValueContainer,
                                         LoadingIndicator,
                                     }}
