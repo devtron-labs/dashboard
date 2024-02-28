@@ -86,7 +86,7 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
     }
 
     return (
-        <>
+        <div className="flexbox-col dc__gap-12">
             <div className="w-100 display-grid dc__align-items-center chart-permission__row">
                 <div className={PERMISSION_LABEL_CLASS}>View</div>
                 <div className={PERMISSION_LABEL_CLASS}>Create</div>
@@ -122,7 +122,6 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
                     name="entityName"
                     options={chartGroupOptions}
                     onChange={handleChartGroupChange}
-                    className="mt-8 mb-8"
                     hideSelectedOptions={false}
                     menuPlacement="auto"
                     components={{
@@ -134,7 +133,7 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
                     }}
                 />
             )}
-        </>
+        </div>
     )
 })
 
