@@ -12,8 +12,8 @@ import {
 } from '../../../types'
 import { PermissionConfigurationFormContext } from './types'
 
-const changeTemporaryStatusToInactive = importComponentFromFELibrary(
-    'changeTemporaryStatusToInactive',
+const changeStatusToInactiveIfTemporary = importComponentFromFELibrary(
+    'changeStatusToInactiveIfTemporary',
     () => ({}),
     'function',
 )
@@ -56,19 +56,19 @@ export const PermissionConfigurationFormProvider = ({
             setUserGroups(
                 userGroups.map((userGroup) => ({
                     ...userGroup,
-                    ...changeTemporaryStatusToInactive(userGroup.status, userGroup.timeToLive),
+                    ...changeStatusToInactiveIfTemporary(userGroup.status, userGroup.timeToLive),
                 })),
             )
             setDirectPermission(
                 directPermission.map((permission) => ({
                     ...permission,
-                    ...changeTemporaryStatusToInactive(permission.status, permission.timeToLive),
+                    ...changeStatusToInactiveIfTemporary(permission.status, permission.timeToLive),
                 })),
             )
             setK8sPermission(
                 k8sPermission.map((permission) => ({
                     ...permission,
-                    ...changeTemporaryStatusToInactive(permission.status, permission.timeToLive),
+                    ...changeStatusToInactiveIfTemporary(permission.status, permission.timeToLive),
                 })),
             )
         }
