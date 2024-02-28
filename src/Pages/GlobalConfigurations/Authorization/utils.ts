@@ -32,7 +32,7 @@ import { useAuthorizationBulkSelection } from './shared/components/BulkSelection
 import { CONFIG_APPROVER_ACTION } from './shared/components/userGroups/UserGroup'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './shared/components/AppPermissions/constants'
-import { ActionTypes, EntityTypes, ViewChartGroupPermission } from './constants'
+import { ActionTypes, EntityTypes, PermissionType, ViewChartGroupPermission } from './constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getFormattedTimeToLive } from './libUtils'
 
@@ -291,6 +291,9 @@ export const getRoleFilters = ({
     return roleFilters
 }
 
+export const getIsSuperAdminPermission = (permissionType: PermissionType) =>
+    permissionType === PermissionType.SUPER_ADMIN
+
 export const createUserPermissionPayload = ({
     id,
     userIdentifier,
@@ -299,7 +302,7 @@ export const createUserPermissionPayload = ({
     directPermission,
     chartPermission,
     k8sPermission,
-    isSuperAdminPermission,
+    permissionType,
     userStatus,
     timeToLive,
 }: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
@@ -307,7 +310,7 @@ export const createUserPermissionPayload = ({
     id: id || 0,
     emailId: userIdentifier,
     userRoleGroups: userGroups,
-    superAdmin: isSuperAdminPermission,
+    superAdmin: getIsSuperAdminPermission(permissionType),
     userStatus,
     timeToLive,
     roleFilters: getRoleFilters({

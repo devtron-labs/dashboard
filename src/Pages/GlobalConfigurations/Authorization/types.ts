@@ -8,7 +8,7 @@ import {
     UserRoleGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
-import { ActionTypes, EntityTypes } from './constants'
+import { ActionTypes, EntityTypes, PermissionType } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -257,5 +257,5 @@ export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatu
     directPermission: DirectPermissionsRoleFilter[]
     chartPermission: ChartGroupPermissionsFilter
     k8sPermission: K8sPermissionFilter[]
-    isSuperAdminPermission: boolean
+    permissionType: PermissionType
 }

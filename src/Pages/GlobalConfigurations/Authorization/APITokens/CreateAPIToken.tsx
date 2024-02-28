@@ -27,7 +27,6 @@ import ExpirationDate from './ExpirationDate'
 import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { createOrUpdateUser } from '../authorization.service'
-import { PermissionType } from '../constants'
 import {
     PermissionConfigurationForm,
     PermissionConfigurationFormProvider,
@@ -201,7 +200,7 @@ const CreateAPIToken = ({
                     directPermission,
                     chartPermission,
                     k8sPermission,
-                    isSuperAdminPermission: permissionType === PermissionType.SUPER_ADMIN,
+                    permissionType,
                     ...getDefaultUserStatusAndTimeout(),
                 })
 

@@ -43,7 +43,7 @@ import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
-import { ActionTypes, EntityTypes } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import { ActionTypes, EntityTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
 import { getDefaultStatusAndTimeout, getDefaultUserStatusAndTimeout } from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
 
 export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
@@ -203,7 +203,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     directPermission: [],
                     chartPermission: {} as ChartGroupPermissionsFilter,
                     k8sPermission: [],
-                    isSuperAdminPermission: false,
+                    permissionType: PermissionType.SPECIFIC,
                     ...getDefaultUserStatusAndTimeout(),
                 })
                 const { result: userPermissionResponse } = await createOrUpdateUser({

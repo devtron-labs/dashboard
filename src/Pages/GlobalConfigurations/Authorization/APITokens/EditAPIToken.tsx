@@ -138,7 +138,7 @@ const EditAPIToken = ({
                     directPermission,
                     chartPermission,
                     k8sPermission,
-                    isSuperAdminPermission: permissionType === PermissionType.SUPER_ADMIN,
+                    permissionType,
                     ...getDefaultUserStatusAndTimeout(),
                 })
 

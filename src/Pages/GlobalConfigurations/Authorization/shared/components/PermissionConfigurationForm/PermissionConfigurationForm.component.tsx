@@ -1,6 +1,7 @@
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../../../constants'
+import { getIsSuperAdminPermission } from '../../../utils'
 import { AppPermissions } from '../AppPermissions'
 import SuperAdminInfoBar from '../SuperAdminInfoBar'
 import { UserPermissionGroupsSelector } from '../UserPermissionGroupsSelector'
@@ -9,7 +10,7 @@ import { PermissionConfigurationFormProps } from './types'
 
 const PermissionConfigurationForm = ({ showUserPermissionGroupSelector = false }: PermissionConfigurationFormProps) => {
     const { permissionType, setPermissionType } = usePermissionConfiguration()
-    const isSuperAdminPermission = permissionType === PermissionType.SUPER_ADMIN
+    const isSuperAdminPermission = getIsSuperAdminPermission(permissionType)
 
     const handlePermissionType = (e) => {
         setPermissionType(e.target.value)

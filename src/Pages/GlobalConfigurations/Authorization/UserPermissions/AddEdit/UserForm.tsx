@@ -76,8 +76,6 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const groupPermissionsRef = useRef(null)
     const { push } = useHistory()
 
-    const isSuperAdminPermission = permissionType === PermissionType.SUPER_ADMIN
-
     useEffect(() => {
         if (creatableRef.current) {
             creatableRef.current.focus()
@@ -129,7 +127,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             directPermission,
             chartPermission,
             k8sPermission,
-            isSuperAdminPermission,
+            permissionType,
             ...getDefaultUserStatusAndTimeout(),
         })
 

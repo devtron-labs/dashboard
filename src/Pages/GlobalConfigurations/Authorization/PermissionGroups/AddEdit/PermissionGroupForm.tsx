@@ -21,7 +21,7 @@ import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
-import { getRoleFilters, isDirectPermissionFormComplete } from '../../utils'
+import { getIsSuperAdminPermission, getRoleFilters, isDirectPermissionFormComplete } from '../../utils'
 import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
@@ -48,8 +48,6 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     const { push } = useHistory()
 
-    const isSuperAdminPermission = permissionType === PermissionType.SUPER_ADMIN
-
     async function populateDataFromAPI(data: PermissionGroup) {
         const { name: _name, description: _description, superAdmin } = data
         setName({ value: _name, error: '' })
@@ -75,6 +73,8 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const handleGroupNameChange = (e) => setName({ value: e.target.value, error: '' })
 
     const handleSubmit = async () => {
+        const isSuperAdminPermission = getIsSuperAdminPermission(permissionType)
+
         if (!name.value) {
             setName((_name) => ({ ..._name, error: 'Group name is mandatory' }))
             return
