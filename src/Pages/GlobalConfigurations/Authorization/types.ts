@@ -202,14 +202,12 @@ export interface RoleFilter {
     team?: OptionType
     entityName?: OptionType[]
     environment?: OptionType[]
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    action?: any
+    action?: OptionType
     cluster?: OptionType
     namespace?: OptionType
     group?: OptionType
     kind?: OptionType
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resource?: any
+    resource?: OptionType
 }
 
 export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatusAndTimeout {
@@ -230,7 +228,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatu
     approver?: boolean
 }
 
-export interface ChartGroupPermissionsFilter extends RoleFilter, PermissionStatusAndTimeout {
+export interface ChartGroupPermissionsFilter extends Omit<RoleFilter, 'action'>, PermissionStatusAndTimeout {
     entity: EntityTypes.CHART_GROUP
     team?: never
     environment?: never
@@ -244,8 +242,7 @@ export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     group: OptionType
     action: OptionType
     kind: OptionType
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resource: any
+    resource: OptionType[]
     key?: number
 }
 
