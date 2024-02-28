@@ -2227,6 +2227,10 @@ button.anchor {
     max-width: 160px;
 }
 
+.dc__mxw-178 {
+    max-width: 178px;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2624,6 +2628,12 @@ textarea,
 .info-icon-n6 {
     circle {
         fill: var(--N600);
+    }
+}
+
+.circle-fill-b5 {
+    circle {
+        fill: var(--B500);
     }
 }
 
