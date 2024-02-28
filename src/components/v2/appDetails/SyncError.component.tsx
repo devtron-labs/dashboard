@@ -22,7 +22,7 @@ import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetai
 import { TOAST_INFO } from '../../../config/constantMessaging'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
-const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplicationDetailedModal }) => {
+const SyncErrorComponent: React.FC<SyncErrorType> = ({showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState<boolean>(false)
@@ -32,7 +32,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const appDetails = IndexStore.getAppDetails()
-    const conditions = appStreamData?.result?.application?.status?.conditions || []
+    const conditions = appDetails?.resourceTree?.conditions || []
 
     const verifyDeployedClusterConnectionStatus = async (): Promise<void> => {
         await getClusterConnectionStatus(appDetails.environmentId).then((response: ClusterConnectionResponse) => {
