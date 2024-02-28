@@ -14,9 +14,14 @@ export const WorkflowGroupHeading = (props) => {
 
 export const AppOption = ({ props, permission }) => {
     const { selectOption, data } = props
+
+    const _selectOption = () => {
+        selectOption(data)
+    }
+
     return (
         <div
-            onClick={() => selectOption(data)}
+            onClick={_selectOption}
             className="flex left pt-6 pb-6 pl-8 pr-8 dc__gap-8"
             style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}
         >
@@ -54,6 +59,7 @@ export const ValueContainer = (props) => {
     }
 
     let count = ''
+    // TODO (v3): Refactor
     if (
         length === optionLength &&
         (props.selectProps.name.includes('entityName') ||

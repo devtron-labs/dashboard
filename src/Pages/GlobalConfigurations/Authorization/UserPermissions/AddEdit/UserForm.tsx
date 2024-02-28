@@ -261,7 +261,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     <span className="cn-5">/</span>
                     <span className="cn-9 fw-6 dc__ellipsis-right">{isAddMode ? 'Add User' : _userData.emailId}</span>
                 </div>
-                {(!isAddMode || UserStatusUpdate) && (
+                {(!isAddMode || showStatus) && (
                     <div className="flex dc__content-start dc__gap-12">
                         {showStatus && (
                             <UserStatusUpdate
