@@ -380,7 +380,7 @@ export default function GitInfoMaterial({
             )
         }
 
-        if (currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
+        if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
             return (
                 <RuntimeParameters
                     heading={getRuntimeParametersHeading()}
