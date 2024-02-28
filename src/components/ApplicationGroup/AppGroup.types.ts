@@ -85,7 +85,6 @@ export interface BulkCITriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
-    isBulkBuildTriggered: boolean
     httpProtocol: string
 }
 
@@ -112,7 +111,6 @@ export interface BulkCDTriggerType {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
     uniqueReleaseTags: string[]
-    isBulkDeploymentTriggered: boolean
     httpProtocol: string
 }
 

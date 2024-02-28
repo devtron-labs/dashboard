@@ -59,7 +59,6 @@ export default function BulkCITrigger({
     responseList,
     isLoading,
     setLoading,
-    isBulkBuildTriggered,
     httpProtocol
 }: BulkCITriggerType) {
     const [showRegexModal, setShowRegexModal] = useState(false)
@@ -81,7 +80,7 @@ export default function BulkCITrigger({
         refreshMaterial: (ciNodeId: number, materialId: number, abortController?: AbortController) => void
     } = useContext(TriggerViewContext)
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
+    const isBulkBuildTriggered = useRef(false)
 
     const closeBulkCIModal = (evt) => {
         abortControllerRef.current.abort()
@@ -94,15 +93,6 @@ export default function BulkCITrigger({
             closeBulkCIModal(evt)
         }
     }
-    const outsideClickHandler = (evt): void => {
-        if (
-            ciTriggerDetailRef.current &&
-            !ciTriggerDetailRef.current.contains(evt.target) &&
-            typeof closePopup === 'function'
-        ) {
-            closeBulkCIModal(evt)
-        }
-    }
 
     useEffect(() => {
         document.addEventListener('keydown', escKeyPressHandler)
@@ -110,13 +100,6 @@ export default function BulkCITrigger({
             document.removeEventListener('keydown', escKeyPressHandler)
         }
     }, [escKeyPressHandler])
-
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
 
     useEffect(() => {
         for (const _app of appList) {
@@ -534,19 +517,14 @@ export default function BulkCITrigger({
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
+            const message = isBulkBuildTriggered.current
+                ? BULK_CI_BUILD_STATUS(appList.length)
+                : BULK_CI_MATERIAL_STATUS(appList.length)
             return (
                 <GenericEmptyState
                     SvgImage={MechanicalOperation}
-                    title={
-                        isBulkBuildTriggered
-                            ? BULK_CI_BUILD_STATUS(appList.length).title
-                            : BULK_CI_MATERIAL_STATUS(appList.length).title
-                    }
-                    subTitle={
-                        isBulkBuildTriggered
-                            ? BULK_CI_BUILD_STATUS(appList.length).subTitle
-                            : BULK_CI_MATERIAL_STATUS(appList.length).subTitle
-                    }
+                    title={message.title}
+                    subTitle={message.subTitle}
                     contentClassName="text-center"
                 />
             )
@@ -583,6 +561,7 @@ export default function BulkCITrigger({
     }
 
     const onClickStartBuild = (e: React.MouseEvent): void => {
+        isBulkBuildTriggered.current = true
         e.stopPropagation()
         onClickTriggerBulkCI(appIgnoreCache)
     }
@@ -652,7 +631,7 @@ export default function BulkCITrigger({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 bulk-ci-trigger-container" ref={ciTriggerDetailRef}>
+            <div className="dc__window-bg h-100 bulk-ci-trigger-container">
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal

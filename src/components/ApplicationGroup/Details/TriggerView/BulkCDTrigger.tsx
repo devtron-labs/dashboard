@@ -51,10 +51,8 @@ export default function BulkCDTrigger({
     setLoading,
     isVirtualEnv,
     uniqueReleaseTags,
-    isBulkDeploymentTriggered,
     httpProtocol
 }: BulkCDTriggerType) {
-    const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
@@ -71,6 +69,7 @@ export default function BulkCDTrigger({
     const history = useHistory()
     const match = useRouteMatch()
     const { isSuperAdmin } = useSuperAdmin()
+    const isBulkDeploymentTriggered = useRef(false)
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search)
@@ -103,16 +102,6 @@ export default function BulkCDTrigger({
             closeBulkCDModal(evt)
         }
     }
-    const outsideClickHandler = (evt): void => {
-        if (
-            !isDownloadPopupOpen &&
-            ciTriggerDetailRef.current &&
-            !ciTriggerDetailRef.current.contains(evt.target) &&
-            typeof closePopup === 'function'
-        ) {
-            closeBulkCDModal(evt)
-        }
-    }
 
     useEffect(() => {
         document.addEventListener('keydown', escKeyPressHandler)
@@ -120,13 +109,6 @@ export default function BulkCDTrigger({
             document.removeEventListener('keydown', escKeyPressHandler)
         }
     }, [escKeyPressHandler])
-
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
 
     const resolveMaterialData = (_cdMaterialResponse, _unauthorizedAppList) => (response) => {
         if (response.status === 'fulfilled') {
@@ -304,19 +286,14 @@ export default function BulkCDTrigger({
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
+            const message = isBulkDeploymentTriggered.current
+                ? BULK_CD_DEPLOYMENT_STATUS(appList.length, appList[0].envName)
+                : BULK_CD_MATERIAL_STATUS(appList.length)
             return (
                 <GenericEmptyState
                     SvgImage={MechanicalOperation}
-                    title={
-                        isBulkDeploymentTriggered
-                            ? BULK_CD_DEPLOYMENT_STATUS(appList.length, appList[0].envName).title
-                            : BULK_CD_MATERIAL_STATUS(appList.length).title
-                    }
-                    subTitle={
-                        isBulkDeploymentTriggered
-                            ? BULK_CD_DEPLOYMENT_STATUS(appList.length, appList[0].envName).subTitle
-                            : BULK_CD_MATERIAL_STATUS(appList.length).subTitle
-                    }
+                    title={message.title}
+                    subTitle={message.subTitle}
                     contentClassName="text-center"
                 />
             )
@@ -639,6 +616,7 @@ export default function BulkCDTrigger({
     }
 
     const onClickStartDeploy = (e): void => {
+        isBulkDeploymentTriggered.current = true
         stopPropagation(e)
         onClickTriggerBulkCD()
     }
@@ -678,7 +656,7 @@ export default function BulkCDTrigger({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 bulk-ci-trigger-container" ref={ciTriggerDetailRef}>
+            <div className="dc__window-bg h-100 bulk-ci-trigger-container">
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal

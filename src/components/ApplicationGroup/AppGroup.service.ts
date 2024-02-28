@@ -277,7 +277,7 @@ export const ApiQueuingWithBatch = (
     httpProtocol: string,
     batchSize: number = window._env_.API_BATCH_SIZE,
 ) => {
-    const minCalls = httpProtocol === 'http/1.1' ? 5 : 30
+    const minCalls = ['http/0.9', 'http/1.0', 'http/1.1'].indexOf(httpProtocol) !== -1 ? 5 : 30
     if (!batchSize || batchSize <= 0) {
         batchSize = minCalls
     }
