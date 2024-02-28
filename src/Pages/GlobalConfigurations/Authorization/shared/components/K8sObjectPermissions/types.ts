@@ -37,3 +37,16 @@ export interface K8sPermissionModalType {
     updatedK8sPermission: K8sPermissionFilter
     close: () => void
 }
+
+export interface K8sPermissionRowProps {
+    permission: K8sPermissionFilter
+    index: number
+    rowClass: string
+    handleStatusUpdate: (
+        status: K8sPermissionFilter['status'],
+        timeToLive: K8sPermissionFilter['timeToLive'],
+        index: number,
+    ) => void
+    editPermission: (permission: K8sPermissionFilter, action: K8sPermissionActionType, index: number) => void
+    deletePermission: (index: number) => void
+}

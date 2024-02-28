@@ -1,23 +1,17 @@
 import React, { useState } from 'react'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import K8sPermissionModal from './K8sPermissionModal'
-import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Edit } from '../../../../../../assets/icons/ic-pencil.svg'
 import { HEADER_OPTIONS } from './K8sPermissions.utils'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { K8sPermissionModalType } from './types'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
-import { K8sPermissionActionType } from './constants'
 import { K8sPermissionFilter } from '../../../types'
-import { getIsStatusDropdownDisabled } from '../../../libUtils'
+import K8sPermissionRow from './K8sPermissionRow'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
-const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
 
 const K8sPermissions = () => {
-    const { k8sPermission, setK8sPermission, showStatus, userStatus } = usePermissionConfiguration()
+    const { k8sPermission, setK8sPermission, showStatus } = usePermissionConfiguration()
 
     const [togglePermissionModal, setTogglePermissionModal] = useState<boolean>()
     const [tempPermission, setTempPermission] = useState()
@@ -51,18 +45,21 @@ const K8sPermissions = () => {
         setSelectedPermissionAction(null)
     }
 
-    const handleStatusUpdate =
-        (index: number) => (status: K8sPermissionFilter['status'], timeToLive: K8sPermissionFilter['timeToLive']) => {
-            setK8sPermission(
-                k8sPermission.map((permission, permissionIndex) => ({
-                    ...permission,
-                    ...(permissionIndex === index && {
-                        status,
-                        timeToLive,
-                    }),
-                })),
-            )
-        }
+    const handleStatusUpdate = (
+        status: K8sPermissionFilter['status'],
+        timeToLive: K8sPermissionFilter['timeToLive'],
+        index: number,
+    ) => {
+        setK8sPermission(
+            k8sPermission.map((permission, permissionIndex) => ({
+                ...permission,
+                ...(permissionIndex === index && {
+                    status,
+                    timeToLive,
+                }),
+            })),
+        )
+    }
 
     return (
         <div className="flexbox-col dc__gap-12">
@@ -75,74 +72,15 @@ const K8sPermissions = () => {
                             </span>
                         ))}
                     </div>
-                    {k8sPermission.map((element, index) => (
-                        <div key={element.key} className={`${rowClass} cn-9 fs-13 fw-4 lh-20 dc__border-bottom-n1`}>
-                            <span data-testid={`k8s-permission-list-${index}-cluster`} className="dc__truncate-text">
-                                {element.cluster.label}
-                            </span>
-                            <span data-testid={`k8s-permission-list-${index}-group`} className="dc__truncate-text">
-                                {element.group.label}
-                            </span>
-                            <span data-testid={`k8s-permission-list-${index}-kind`} className="dc__truncate-text">
-                                {element.kind.label}
-                            </span>
-                            <span data-testid={`k8s-permission-list-${index}-namespace`} className="dc__truncate-text">
-                                {element.namespace.label}
-                            </span>
-                            <span data-testid={`k8s-permission-list-${index}-resource`} className="dc__truncate-text">
-                                {element.resource.length > 1
-                                    ? `${element.resource.length} objects`
-                                    : element.resource[0].label}
-                            </span>
-                            <span data-testid={`k8s-permission-list-${index}-action`} className="dc__truncate-text">
-                                {element.action?.label}
-                            </span>
-                            {showStatus && (
-                                <span data-testid={`k8s-permission-list-${index}-status`} className="dc__truncate-text">
-                                    <UserStatusUpdate
-                                        userStatus={element.status}
-                                        timeToLive={element.timeToLive}
-                                        userEmail=""
-                                        handleChange={handleStatusUpdate(index)}
-                                        disabled={getIsStatusDropdownDisabled(userStatus)}
-                                        showDropdownBorder={false}
-                                        breakLinesForTemporaryAccess
-                                    />
-                                </span>
-                            )}
-                            <span className="flex right">
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
-                                    <button
-                                        type="button"
-                                        className="dc__transparent flex p-4"
-                                        onClick={() => editPermission(element, K8sPermissionActionType.clone, index)}
-                                        aria-label="Clone permission"
-                                    >
-                                        <Clone className="icon-dim-16 fcn-6" />
-                                    </button>
-                                </Tippy>
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
-                                    <button
-                                        type="button"
-                                        className="dc__transparent flex p-4"
-                                        onClick={() => editPermission(element, K8sPermissionActionType.edit, index)}
-                                        aria-label="Edit permission"
-                                    >
-                                        <Edit className="icon-dim-16 scn-6" />
-                                    </button>
-                                </Tippy>
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
-                                    <button
-                                        type="button"
-                                        className="dc__transparent flex icon-delete p-4"
-                                        onClick={() => deletePermission(index)}
-                                        aria-label="Delete permission"
-                                    >
-                                        <TrashIcon className="scn-6 icon-dim-16" />
-                                    </button>
-                                </Tippy>
-                            </span>
-                        </div>
+                    {k8sPermission.map((permission, index) => (
+                        <K8sPermissionRow
+                            permission={permission}
+                            index={index}
+                            editPermission={editPermission}
+                            deletePermission={deletePermission}
+                            handleStatusUpdate={handleStatusUpdate}
+                            rowClass={rowClass}
+                        />
                     ))}
                 </div>
             )}
