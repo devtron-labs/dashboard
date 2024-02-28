@@ -13,6 +13,7 @@ import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { authorizationSelectStyles } from '../userGroups/UserGroup'
 import { ChartPermissionRow } from './types'
 import { ActionTypes } from '../../../constants'
+import { ChartPermissionValues, CHART_PERMISSION_OPTIONS } from './constants'
 
 const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase'
 
@@ -39,7 +40,7 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
 
     const handleChartEditChange = (selected) => {
         const { value } = selected
-        if (value === 'Deny') {
+        if (value === ChartPermissionValues.deny) {
             setChartPermission((_chartPermission) => ({
                 ..._chartPermission,
                 action: ActionTypes.VIEW,
@@ -56,11 +57,11 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
 
     const chartGroupEditOptions: OptionType[] = useMemo(() => {
         if (chartPermission.action === ActionTypes.ADMIN) {
-            return [{ label: 'All Chart Groups', value: 'All charts' }]
+            return [CHART_PERMISSION_OPTIONS[ChartPermissionValues.allCharts]]
         }
         return [
-            { label: 'Deny', value: 'Deny' },
-            { label: 'Specific Chart Groups', value: 'Specific Charts' },
+            CHART_PERMISSION_OPTIONS[ChartPermissionValues.deny],
+            CHART_PERMISSION_OPTIONS[ChartPermissionValues.specificCharts],
         ]
     }, [chartPermission.action])
 
@@ -80,9 +81,9 @@ const ChartPermission = React.memo(({ chartGroupsList }: ChartPermissionRow) => 
             return chartGroupEditOptions[0]
         }
         if (chartPermission.action === ActionTypes.VIEW) {
-            return { label: 'Deny', value: 'Deny' }
+            return CHART_PERMISSION_OPTIONS[ChartPermissionValues.deny]
         }
-        return { label: 'Specific Chart Groups', value: 'Specific Charts' }
+        return CHART_PERMISSION_OPTIONS[ChartPermissionValues.specificCharts]
     }
 
     return (
