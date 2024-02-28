@@ -381,10 +381,6 @@ export default function GitInfoMaterial({
         }
 
         if (currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
-            if (!RuntimeParameters || isJobView) {
-                return null
-            }
-
             return (
                 <RuntimeParameters
                     heading={getRuntimeParametersHeading()}
