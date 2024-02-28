@@ -27,6 +27,7 @@ import {
     DEPLOYMENT_STATUS,
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
+    MODAL_TYPE,
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC, ScanDetailsModal } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from '../../../v2/common/ReactSelect.utils'
@@ -97,6 +98,7 @@ import IssuesListingModal from './IssuesListingModal'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
+const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
@@ -115,7 +117,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const isVirtualEnvRef = useRef(false)
-
+    const isDeploymentBlocked = useRef(true)
     const envList = useMemo(() => {
         if (otherEnvsResult?.result?.length > 0) {
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
@@ -207,6 +209,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     showCommitInfo={showCommitInfo}
                     isAppDeleted={isAppDeleted}
                     isVirtualEnvRef={isVirtualEnvRef}
+                    isDeploymentBlocked={isDeploymentBlocked.current}
                 />
             </Route>
             {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}
@@ -226,6 +229,7 @@ export const Details: React.FC<DetailsType> = ({
     showCommitInfo,
     isAppDeleted,
     isVirtualEnvRef,
+    isDeploymentBlocked
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -261,6 +265,7 @@ export const Details: React.FC<DetailsType> = ({
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef(null)
     const shouldFetchTimelineRef = useRef(false)
+    const [value, setValue] = useState()
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -619,6 +624,71 @@ export const Details: React.FC<DetailsType> = ({
         )
     }
 
+    const getHibernateText = () => {
+        if (hibernateConfirmationModal === 'hibernate') {
+            return `Hibernate App`
+        }
+        return 'Restore App'
+        
+    }
+
+    const renderHibernateModal = (): JSX.Element =>
+        isDeploymentBlocked ? (
+            DeploymentWindowConfirmationDialog && (
+                <DeploymentWindowConfirmationDialog
+                    onClose={noop}
+                    value={value}
+                    setValue={setValue}
+                    isLoading={hibernating}
+                    type={MODAL_TYPE.HIBERNATE}
+                    onClickACtionButton={handleHibernate}
+                />
+            )
+        ) : (
+            <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon} />
+                <ConfirmationDialog.Body
+                    title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
+                        appDetails.appName
+                    }' on '${appDetails.environmentName}'`}
+                    subtitle={
+                        <p>
+                            Pods for this application will be
+                            <b className="mr-4 ml-4">
+                                scaled
+                                {hibernateConfirmationModal === 'hibernate'
+                                    ? ' down to 0 '
+                                    : ' up to its original count '}
+                                on {appDetails.environmentName}
+                            </b>
+                            environment.
+                        </p>
+                    }
+                >
+                    <p className="mt-16">Are you sure you want to continue?</p>
+                </ConfirmationDialog.Body>
+                <ConfirmationDialog.ButtonGroup>
+                    <button
+                        className="cta cancel"
+                        disabled={hibernating}
+                        onClick={(e) => setHibernateConfirmationModal('')}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="cta"
+                        disabled={hibernating}
+                        data-testid={`app-details-${hibernateConfirmationModal === 'hibernate' ? 'hibernate' : 'restore'}`}
+                        onClick={handleHibernate}
+                    >
+                        {hibernating ? (
+                            <Progressing />
+                        ) : getHibernateText()}
+                    </button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog>
+        )
+
     return (
         <>
             <div className="w-100 pt-16 pr-20 pb-16 pl-20 app-info-bg-gradient">
@@ -721,58 +791,7 @@ export const Details: React.FC<DetailsType> = ({
                     close={() => showCommitInfo(false)}
                 />
             )}
-            {hibernateConfirmationModal && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon
-                        src={hibernateConfirmationModal === 'hibernate' ? warningIcon : restoreIcon}
-                    />
-                    <ConfirmationDialog.Body
-                        title={`${hibernateConfirmationModal === 'hibernate' ? 'Hibernate' : 'Restore'} '${
-                            appDetails.appName
-                        }' on '${appDetails.environmentName}'`}
-                        subtitle={
-                            <p>
-                                Pods for this application will be
-                                <b className="mr-4 ml-4">
-                                    scaled
-                                    {hibernateConfirmationModal === 'hibernate'
-                                        ? ' down to 0 '
-                                        : ' up to its original count '}
-                                    on {appDetails.environmentName}
-                                </b>
-                                environment.
-                            </p>
-                        }
-                    >
-                        <p className="mt-16">Are you sure you want to continue?</p>
-                    </ConfirmationDialog.Body>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            className="cta cancel"
-                            disabled={hibernating}
-                            onClick={(e) => setHibernateConfirmationModal('')}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            className="cta"
-                            disabled={hibernating}
-                            data-testid={`app-details-${
-                                hibernateConfirmationModal === 'hibernate' ? 'hibernate' : 'restore'
-                            }`}
-                            onClick={handleHibernate}
-                        >
-                            {hibernating ? (
-                                <Progressing />
-                            ) : hibernateConfirmationModal === 'hibernate' ? (
-                                `Hibernate App`
-                            ) : (
-                                'Restore App'
-                            )}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
+            {hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && (
                 <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} />
             )}
