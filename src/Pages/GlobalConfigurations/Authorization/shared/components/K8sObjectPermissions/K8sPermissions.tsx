@@ -35,9 +35,7 @@ const K8sPermissions = () => {
     }
 
     const deletePermission = (index) => {
-        const _k8sPermission = [...k8sPermission]
-        _k8sPermission.splice(index, 1)
-        setK8sPermission(_k8sPermission)
+        setK8sPermission(k8sPermission.filter((permission, permissionIndex) => permissionIndex !== index))
     }
 
     const closeModal = () => {
