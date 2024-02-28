@@ -378,6 +378,14 @@ const K8sListItemCard = ({
         })
     }
 
+    const clonePermission = () => {
+        editPermission(K8sPermissionActionType.clone)
+    }
+
+    const deletePermission = () => {
+        editPermission(K8sPermissionActionType.delete)
+    }
+
     return (
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
             <div className="cn-7 fs-13 fw-4 lh-20 mb-6 flex dc__content-space">
@@ -386,18 +394,12 @@ const K8sListItemCard = ({
                     <span className="flex">
                         <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
                             <div className="flex">
-                                <Clone
-                                    className="icon-dim-16 mr-8 fcn-6 cursor"
-                                    onClick={() => editPermission(K8sPermissionActionType.clone)}
-                                />
+                                <Clone className="icon-dim-16 mr-8 fcn-6 cursor" onClick={clonePermission} />
                             </div>
                         </Tippy>
                         <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
                             <div className="flex">
-                                <Delete
-                                    className="icon-dim-16 scn-6 cursor"
-                                    onClick={() => editPermission(K8sPermissionActionType.delete)}
-                                />
+                                <Delete className="icon-dim-16 scn-6 cursor" onClick={deletePermission} />
                             </div>
                         </Tippy>
                     </span>
