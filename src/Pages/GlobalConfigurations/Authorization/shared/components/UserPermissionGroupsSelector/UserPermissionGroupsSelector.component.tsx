@@ -46,7 +46,7 @@ const UserPermissionGroupsSelector = () => {
 
     const { permissionGroups: userGroupsList = [] } = result ?? {}
 
-    const userGroupsMap: Map<PermissionGroup['name'], PermissionGroup> = mapByKey(userGroupsList, 'name')
+    const userGroupsMap = mapByKey<Map<PermissionGroup['name'], PermissionGroup>>(userGroupsList, 'name')
 
     const groupOptions = userGroupsList?.map((group) => ({ value: group.name, label: group.name }))
     const selectedValue = userGroups.map((userGroup) => ({ value: userGroup.name, label: userGroup.name }))

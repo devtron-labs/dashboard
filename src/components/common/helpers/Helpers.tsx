@@ -143,10 +143,10 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     return { state, disable, handleOnChange, handleOnSubmit }
 }
 
-export function mapByKey(arr: any[], id: string): Map<any, any> {
+export function mapByKey<T = Map<any, any>>(arr: any[], id: string): T {
     if (!Array.isArray(arr)) {
         console.error(arr, 'is not array')
-        return new Map()
+        return new Map() as T
     }
     return arr.reduce((agg, curr) => agg.set(curr[id], curr), new Map())
 }
