@@ -12,6 +12,10 @@ export const authorizationSelectStyles = {
         ..._selectStyles.control(base, state),
         height: '36px',
     }),
+    valueContainer: (base) => ({
+        ..._selectStyles.valueContainer(base),
+        maxHeight: '100%',
+    }),
     option: (base, state) => ({
         ..._selectStyles.option(base, state),
         ...(state.isSelected && {
