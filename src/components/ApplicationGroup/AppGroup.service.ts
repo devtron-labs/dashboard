@@ -244,20 +244,20 @@ export const editDescription = (payload): Promise<EditDescRequestResponse> => {
     return put(Routes.ENVIRONMENT, payload)
 }
 
-
-const eachCall = (batchConfig, functionCalls, resolve, reject, index) => {
-    functionCalls[batchConfig.lastIndex]()
+const eachCall = (batchConfig, functionCalls, resolve, reject) => {
+    const callIndex = batchConfig.lastIndex
+    functionCalls[callIndex]()
         .then((result) => {
-            batchConfig.results[index]={ status: 'fulfilled', value: result }
+            batchConfig.results[callIndex] = { status: 'fulfilled', value: result }
             batchConfig.completedCalls++
         })
         .catch((error) => {
-            batchConfig.results[index]={ status: 'rejected', reason: error }
+            batchConfig.results[callIndex] = { status: 'rejected', reason: error }
             batchConfig.completedCalls++
         })
         .finally(() => {
             if (batchConfig.lastIndex < functionCalls.length) {
-                eachCall(batchConfig, functionCalls, resolve, reject, batchConfig.lastIndex)
+                eachCall(batchConfig, functionCalls, resolve, reject)
                 batchConfig.lastIndex++
             } else if (batchConfig.completedCalls === functionCalls.length) {
                 resolve(batchConfig.results)
@@ -287,7 +287,7 @@ export const ApiQueuingWithBatch = (
         const batchConfig: batchConfigType = {
             lastIndex: 0,
             concurrentCount: batchSize,
-            results: functionCalls.map(()=> null),
+            results: functionCalls.map(() => null),
             completedCalls: 0,
         }
         for (
@@ -295,7 +295,7 @@ export const ApiQueuingWithBatch = (
             index < batchConfig.concurrentCount && index < functionCalls.length;
             index++, batchConfig.lastIndex++
         ) {
-            eachCall(batchConfig, functionCalls, resolve, reject, index)
+            eachCall(batchConfig, functionCalls, resolve, reject)
         }
     })
 }
