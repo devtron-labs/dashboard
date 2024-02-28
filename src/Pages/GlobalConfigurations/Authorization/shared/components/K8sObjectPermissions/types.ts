@@ -2,6 +2,11 @@ import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { K8sPermissionFilter } from '../../../types'
 import { K8sPermissionActionType } from './constants'
 
+interface SelectedPermissionAction {
+    action: K8sPermissionActionType.clone | K8sPermissionActionType.edit
+    index: number
+}
+
 export interface K8sListItemCardType {
     k8sPermission: K8sPermissionFilter
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,10 +20,7 @@ export interface K8sListItemCardType {
     setKindMapping: React.Dispatch<React.SetStateAction<Record<number, OptionType[]>>>
     objectMapping: Record<number, OptionType[]>
     setObjectMapping: React.Dispatch<React.SetStateAction<Record<number, OptionType[]>>>
-    selectedPermissionAction: {
-        action: K8sPermissionActionType
-        index: number
-    }
+    selectedPermissionAction: SelectedPermissionAction
 }
 
 export interface K8sItemCardLoadingState {
@@ -29,11 +31,7 @@ export interface K8sItemCardLoadingState {
 }
 
 export interface K8sPermissionModalType {
-    selectedPermissionAction: {
-        // TODO: Review: should be clone, edit, delete and add probably
-        action: K8sPermissionActionType
-        index: number
-    }
+    selectedPermissionAction: SelectedPermissionAction
     updatedK8sPermission: K8sPermissionFilter
     close: () => void
 }
