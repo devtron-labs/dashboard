@@ -110,6 +110,43 @@ const K8sListItemCard = ({
         }
     }
 
+    const getResourceListData = async (selected): Promise<void> => {
+        handleLoadingStateChange({
+            isResourceListLoading: true,
+        })
+        try {
+            const resourceListPayload: ResourceListPayloadType = {
+                clusterId: Number(k8sPermission?.cluster?.value),
+                k8sRequest: {
+                    resourceIdentifier: {
+                        groupVersionKind: selected?.gvk,
+                        namespace:
+                            k8sPermission?.namespace?.value === SELECT_ALL_VALUE ? '' : k8sPermission?.namespace.value,
+                    },
+                },
+            }
+            const { result } = await getResourceList(resourceListPayload)
+            if (result) {
+                const _data =
+                    result.data?.map((ele) => ({ label: ele.name, value: ele.name })).sort(sortOptionsByLabel) ?? []
+                const _optionList = [{ label: 'All resources', value: SELECT_ALL_VALUE }, ..._data]
+                setObjectMapping((prevMapping) => ({
+                    ...prevMapping,
+                    [k8sPermission.key]: _optionList,
+                }))
+                if (k8sPermission.resource?.[0]?.value === SELECT_ALL_VALUE) {
+                    handleK8sPermission(K8sPermissionActionType.onObjectChange, index, _optionList)
+                }
+            }
+        } catch (err) {
+            showError(err)
+        } finally {
+            handleLoadingStateChange({
+                isResourceListLoading: false,
+            })
+        }
+    }
+
     const createKindData = (selected, _allKindMapping, _k8SObjectMap = null) => {
         const kind = []
         let selectedGvk: GVKType
@@ -146,7 +183,6 @@ const K8sListItemCard = ({
         }))
         if (k8sPermission?.resource) {
             if (k8sPermission.kind.value !== SELECT_ALL_VALUE && k8sPermission.kind.value !== 'Event') {
-                // eslint-disable-next-line no-use-before-define
                 getResourceListData({ ...k8sPermission.kind, gvk: selectedGvk })
             } else {
                 setObjectMapping((prevMapping) => ({
@@ -248,43 +284,6 @@ const K8sListItemCard = ({
             [k8sPermission.key]: [{ label: 'All API groups', value: SELECT_ALL_VALUE }],
         }))
     }, [])
-
-    const getResourceListData = async (selected): Promise<void> => {
-        handleLoadingStateChange({
-            isResourceListLoading: true,
-        })
-        try {
-            const resourceListPayload: ResourceListPayloadType = {
-                clusterId: Number(k8sPermission?.cluster?.value),
-                k8sRequest: {
-                    resourceIdentifier: {
-                        groupVersionKind: selected?.gvk,
-                        namespace:
-                            k8sPermission?.namespace?.value === SELECT_ALL_VALUE ? '' : k8sPermission?.namespace.value,
-                    },
-                },
-            }
-            const { result } = await getResourceList(resourceListPayload)
-            if (result) {
-                const _data =
-                    result.data?.map((ele) => ({ label: ele.name, value: ele.name })).sort(sortOptionsByLabel) ?? []
-                const _optionList = [{ label: 'All resources', value: SELECT_ALL_VALUE }, ..._data]
-                setObjectMapping((prevMapping) => ({
-                    ...prevMapping,
-                    [k8sPermission.key]: _optionList,
-                }))
-                if (k8sPermission.resource?.[0]?.value === SELECT_ALL_VALUE) {
-                    handleK8sPermission(K8sPermissionActionType.onObjectChange, index, _optionList)
-                }
-            }
-        } catch (err) {
-            showError(err)
-        } finally {
-            handleLoadingStateChange({
-                isResourceListLoading: false,
-            })
-        }
-    }
 
     const onClusterChange = (selected) => {
         if (selected.value !== k8sPermission?.cluster?.value) {
