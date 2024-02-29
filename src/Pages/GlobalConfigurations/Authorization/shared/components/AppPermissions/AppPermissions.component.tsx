@@ -102,34 +102,49 @@ const AppPermissions = () => {
             }, _jobsList),
         )
         try {
-            const {
-                result: { jobContainers },
-            } = await getJobs({ teams: missingProjects })
+            // TODO (v3): Temporary workaround since projectId are not available in job list
+            missingProjects.forEach(async (projectId) => {
+                const {
+                    result: { jobContainers },
+                } = await getJobs({ teams: [projectId] })
 
-            // TODO (v3): Why are we setting only projectIds[0] here
-            const jobs = [{ projectId: projectIds[0], jobsList: jobContainers }]
-            const projectsMap = mapByKey(jobs || [], 'projectId')
-            setJobsList(
-                (_jobsList) =>
-                    new Map(
-                        missingProjects.reduce((__jobsList, projectId) => {
-                            __jobsList.set(projectId, {
-                                loading: false,
-                                result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
-                                error: null,
-                            })
-                            return __jobsList
-                        }, _jobsList),
-                    ),
-            )
+                setJobsList((_jobsList) => {
+                    _jobsList.set(+projectId, {
+                        loading: false,
+                        result: jobContainers || [],
+                        error: null,
+                    })
+                    return _jobsList
+                })
+            })
+            // const {
+            //     result: { jobContainers },
+            // } = await getJobs({ teams: missingProjects })
+
+            // // FIXME: We should not be adding projectIds[0] here
+            // const jobs = [{ projectId: projectIds[0], jobsList: jobContainers }]
+            // const projectsMap = mapByKey(jobs || [], 'projectId')
+            // setJobsList(
+            //     (_jobsList) =>
+            //         new Map(
+            //             missingProjects.reduce((__jobsList, projectId) => {
+            //                 __jobsList.set(projectId, {
+            //                     loading: false,
+            //                     result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
+            //                     error: null,
+            //                 })
+            //                 return __jobsList
+            //             }, _jobsList),
+            //         ),
+            // )
         } catch (_error) {
             showError(_error)
-            setJobsList((_jobsList) => {
-                return missingProjects.reduce((__jobsList, projectId) => {
+            setJobsList((_jobsList) =>
+                missingProjects.reduce((__jobsList, projectId) => {
                     __jobsList.set(projectId, { loading: false, result: [], error: null })
                     return __jobsList
-                }, _jobsList)
-            })
+                }, _jobsList),
+            )
         }
     }
 
@@ -190,7 +205,6 @@ const AppPermissions = () => {
 
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsListHelmApps(
-                // TODO (v3): Common out
                 (appListHelmApps) =>
                     new Map(
                         missingProjects.reduce((_appListHelmApps, projectId) => {
@@ -286,7 +300,7 @@ const AppPermissions = () => {
         ]
     }
 
-    const _getEnvironmentForRoleFiler = (directRoleFilter: APIRoleFilter) => {
+    const _getEnvironmentForRoleFilter = (directRoleFilter: APIRoleFilter) => {
         if (directRoleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
             if (directRoleFilter.environment) {
                 return directRoleFilter.environment
@@ -301,6 +315,7 @@ const AppPermissions = () => {
                 })),
             ]
         }
+
         if (directRoleFilter.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
             const returnArr = []
             const envArr = directRoleFilter.environment.split(',')
@@ -337,6 +352,7 @@ const AppPermissions = () => {
             }
             return returnArr
         }
+
         if (directRoleFilter.entity === EntityTypes.JOB) {
             if (directRoleFilter.environment) {
                 return directRoleFilter.environment
@@ -356,7 +372,8 @@ const AppPermissions = () => {
                 })),
             ]
         }
-        return null
+
+        return []
     }
 
     const populateDataFromAPI = async (roleFilters: APIRoleFilter[]) => {
@@ -424,7 +441,6 @@ const AppPermissions = () => {
                     let jobNameToAppNameMapping = new Map()
 
                     if (directRoleFilter.entity === EntityTypes.JOB) {
-                        // TODO (v3): Why do we need this API Call
                         const {
                             result: { jobContainers },
                         } = await getJobs({ teams: [projectId] })
@@ -449,7 +465,7 @@ const AppPermissions = () => {
                         team: { label: directRoleFilter.team, value: directRoleFilter.team },
                         entity: directRoleFilter.entity,
                         entityName: updatedEntityName,
-                        environment: _getEnvironmentForRoleFiler(directRoleFilter),
+                        environment: _getEnvironmentForRoleFilter(directRoleFilter),
                         ...(directRoleFilter.entity === EntityTypes.JOB && {
                             workflow: directRoleFilter.workflow
                                 ? directRoleFilter.workflow
@@ -527,7 +543,6 @@ const AppPermissions = () => {
         setIsLoading(false)
     }
 
-    // TODO (v3): Refactoring
     // We don't need to handle the case to SELECT_ALL when all environments are manually selected
     // since that would mean all future environments would be selected as well
     function _handleEnvironmentChange(index, selectedValue, actionMeta, tempPermissions) {
