@@ -97,20 +97,6 @@ const BulkCITrigger = ({
         closePopup(evt)
     }
 
-    const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
-            evt.preventDefault()
-            closeBulkCIModal(evt)
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', escKeyPressHandler)
-        return (): void => {
-            document.removeEventListener('keydown', escKeyPressHandler)
-        }
-    }, [escKeyPressHandler])
-
     useEffect(() => {
         for (const _app of appList) {
             appIgnoreCache[_app.ciPipelineId] = false
