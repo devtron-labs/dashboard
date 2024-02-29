@@ -4,6 +4,7 @@ import {
     FilterConditionsListType,
     KeyValueListType,
     ResponseType,
+    ServerErrors,
     UserApprovalConfigType,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -471,4 +472,16 @@ export interface batchConfigType{
     results: any[]
     concurrentCount: number
     completedCalls: number
+}
+
+export enum ApiQueuingBatchStatusType {
+    FULFILLED = 'fulfilled',
+    REJECTED = 'rejected',
+}
+
+// TODO: use T for value
+export interface ApiQueuingWithBatchResponseItem {
+    status: ApiQueuingBatchStatusType
+    value?: any
+    reason?: ServerErrors
 }

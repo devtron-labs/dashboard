@@ -104,29 +104,28 @@ const BulkCITrigger = ({
         getMaterialData()
     }, [])
 
-    const getRuntimeParamsData = (_materialListMap: Record<string, any[]>): void => {
-        const runtimeParamsPromiseList = appList.map((appDetails) => {
+    const getRuntimeParamsData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
+        const runtimeParamsServiceList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
-                return {
+                return () => ({
                     [appDetails.ciPipelineId]: [],
-                }
+                })
             }
-            return getRuntimeParams(appDetails.ciPipelineId)
+            return () => getRuntimeParams(appDetails.ciPipelineId)
         })
 
-        if (runtimeParamsPromiseList.length) {
-            Promise.all(runtimeParamsPromiseList)
-                .then((responses) => {
-                    const _runtimeParams: Record<string, KeyValueListType[]> = {}
-                    responses.forEach((res, index) => {
-                        _runtimeParams[appList[index]?.ciPipelineId] = res || []
-                    })
-                    setRuntimeParams(_runtimeParams)
+        if (runtimeParamsServiceList.length) {
+            try {
+                const responses = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
+                const _runtimeParams: Record<string, KeyValueListType[]> = {}
+                responses.forEach((res, index) => {
+                    _runtimeParams[appList[index]?.ciPipelineId] = res.value || []
                 })
-                .catch((error) => {
-                    setPageViewType(ViewType.ERROR)
-                    showError(error)
-                })
+                setRuntimeParams(_runtimeParams)
+            } catch (error) {
+                setPageViewType(ViewType.ERROR)
+                showError(error)
+            }
         }
     }
 
@@ -145,17 +144,18 @@ const BulkCITrigger = ({
         )
         if (_CIMaterialPromiseFunctionList?.length) {
             const _materialListMap: Record<string, any[]> = {}
+            // TODO: Remove then and use async await
             ApiQueuingWithBatch(_CIMaterialPromiseFunctionList, httpProtocol)
-                .then((responses: any[]) => {
+                .then(async (responses: any[]) => {
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res.value?.['result']
                     })
                     // These two handlers should be imported from elsewhere
                     if (getCIBlockState) {
-                        getPolicyEnforcementData(_materialListMap)
+                        await getPolicyEnforcementData(_materialListMap)
                     }
                     if (getRuntimeParams) {
-                        getRuntimeParamsData(_materialListMap)
+                        await getRuntimeParamsData(_materialListMap)
                     }
                     updateBulkInputMaterial(_materialListMap)
                     if (!getIsAppUnorthodox(selectedApp)) {
@@ -213,7 +213,7 @@ const BulkCITrigger = ({
         setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
     }
 
-    const getPolicyEnforcementData = (_materialListMap: Record<string, any[]>): void => {
+    const getPolicyEnforcementData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
         const policyPromiseFunctionList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
                 return () => null
@@ -227,21 +227,24 @@ const BulkCITrigger = ({
                     branchNames += `${branchNames ? ',' : ''}${material.value}`
                 }
             }
-            return !branchNames ? () => null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
+            return !branchNames
+                ? () => null
+                : () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
         })
 
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
-            ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol)
-                .then((responses: any[]) => {
-                    responses.forEach((res, index) => {
-                        policyListMap[appList[index]?.appId] = res.value?.['result']
-                            ? processConsequenceData(res['result'])
-                            : null
-                    })
-                    setAppPolicy(policyListMap)
+            try {
+                const responses = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
+                responses.forEach((res, index) => {
+                    policyListMap[appList[index]?.appId] = res.value?.['result']
+                        ? processConsequenceData(res.value['result'])
+                        : null
                 })
-                .catch((error) => {})
+                setAppPolicy(policyListMap)
+            } catch (error) {
+                showError(error)
+            }
         }
     }
 

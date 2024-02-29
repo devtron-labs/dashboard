@@ -96,20 +96,6 @@ export default function BulkCDTrigger({
         value: 'latest',
     })
 
-    const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
-            evt.preventDefault()
-            closeBulkCDModal(evt)
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', escKeyPressHandler)
-        return (): void => {
-            document.removeEventListener('keydown', escKeyPressHandler)
-        }
-    }, [escKeyPressHandler])
-
     const resolveMaterialData = (_cdMaterialResponse, _unauthorizedAppList) => (response) => {
         if (response.status === 'fulfilled') {
             _cdMaterialResponse[response.value['appId']] = response.value
