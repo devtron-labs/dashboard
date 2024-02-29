@@ -632,16 +632,22 @@ export const Details: React.FC<DetailsType> = ({
         
     }
 
+    const handleHibernateConfimattionModalClose = () => {
+        setHibernateConfirmationModal('')
+    }
+
     const renderHibernateModal = (): JSX.Element =>
         isDeploymentBlocked ? (
             DeploymentWindowConfirmationDialog && (
                 <DeploymentWindowConfirmationDialog
-                    onClose={noop}
+                    onClose={handleHibernateConfimattionModalClose}
                     value={value}
                     setValue={setValue}
                     isLoading={hibernating}
-                    type={MODAL_TYPE.HIBERNATE}
-                    onClickACtionButton={handleHibernate}
+                    type={hibernateConfirmationModal === 'hibernate' ? MODAL_TYPE.HIBERNATE : MODAL_TYPE.RESTORE}
+                    onClickActionButton={handleHibernate}
+                    appName= {appDetails.appName}
+                    envName= {appDetails.environmentName}
                 />
             )
         ) : (
@@ -671,7 +677,7 @@ export const Details: React.FC<DetailsType> = ({
                     <button
                         className="cta cancel"
                         disabled={hibernating}
-                        onClick={(e) => setHibernateConfirmationModal('')}
+                        onClick={handleHibernateConfimattionModalClose}
                     >
                         Cancel
                     </button>
@@ -793,7 +799,7 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && (
-                <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} />
+                <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} isDeploymentBlocked={isDeploymentBlocked}/>
             )}
         </>
     )

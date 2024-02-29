@@ -8,8 +8,6 @@ import {
     CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_clockwise.svg'
 import {
     RotatePodsModalProps,
     RotatePodsRequest,
@@ -20,13 +18,20 @@ import {
 import '../scaleWorkloads/scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
-import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
 import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 import RotateResponseModal from './RotateResponseModal'
-import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
+import { MODAL_TYPE, POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
+import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
+import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
 
-export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePodsModalProps) {
+import { importComponentFromFELibrary } from '../../../../common'
+
+const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+
+
+export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeploymentBlocked }: RotatePodsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
         rotate: {
             isChecked: false,
@@ -40,7 +45,8 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showHelp, setShowHelp] = useState(false)
     const [strategy, setStrategy] = useState('')
-
+    const [deploymentWindowConfimationValue, setDeploymentWindowConfimationValue] = useState('')
+    const [showDeploymentWindowConfirmationModal, setShowDeploymentWindowConfirmationModal] = useState(false)
     useEffect(() => {
         getStrategy()
         getPodsToRotate()
@@ -207,13 +213,33 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
         handleAllScaleObjectsName()
     }
 
-    const handleRestartWorkloads = (e: any) => {
-        e.preventDefault()
+    const handlePodsRotaionConditinally = () => {
         const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
         const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
         if (!rotatingInProgress && isWorkloadPresent && isAnySelected) {
             handlePodsRotation()
         }
+    }
+
+    const renderDeploymentWindowConfirmtionModal = () =>
+        DeploymentWindowConfirmationDialog && (
+            <DeploymentWindowConfirmationDialog
+                onClose={onClose}
+                value={deploymentWindowConfimationValue}
+                setValue={setDeploymentWindowConfimationValue}
+                isLoading={rotatingInProgress}
+                type={MODAL_TYPE.RESTART}
+                onClickActionButton={handlePodsRotaionConditinally}
+                name={strategy}
+            />
+        )
+
+    const handleRestartWorkloads = (e: any) => {
+        e.preventDefault()
+        if (isDeploymentBlocked) {
+            setShowDeploymentWindowConfirmationModal(true)
+        }
+        handlePodsRotaionConditinally()
     }
 
     const renderRestartWorkloadsList = (): JSX.Element => {
@@ -311,6 +337,9 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
             </>
         )
     }
+
+    if (showDeploymentWindowConfirmationModal) {
+        return renderDeploymentWindowConfirmtionModal()}
 
     return (
         <Drawer position="right" width="1024px">

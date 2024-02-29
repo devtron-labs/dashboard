@@ -189,6 +189,8 @@ export interface CDNodeState {
     forceDeleteData: ForceDeleteMessageType
     clusterName: string
     deleteInProgress: boolean
+    showDeploymentConfirmtionDeleteDialog: boolean
+    deploymentWindowConfimationValue: string
 }
 
 export interface PipelineBuildStageType {
