@@ -332,7 +332,9 @@ export const Details: React.FC<DetailsType> = ({
                         setIsInitialTimelineDataLoading(false)
                     }
                 },
-            )
+            ).catch((err) => {
+                showError(err);
+            })
         },
         [
             params.appId,
