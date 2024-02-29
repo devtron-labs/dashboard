@@ -4,6 +4,7 @@ import {
     noop,
     OptionType,
     UserStatus,
+    UserStatusDto,
     ZERO_TIME_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
@@ -35,7 +36,11 @@ import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './shared/components/
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getFormattedTimeToLive } from './libUtils'
 
-const getUserStatus = importComponentFromFELibrary('getUserStatus', noop, 'function')
+const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
+    'getUserStatus',
+    noop,
+    'function',
+)
 const getStatusExportText: (status: UserStatus, timeToLive: string) => string = importComponentFromFELibrary(
     'getStatusExportText',
     noop,
@@ -323,20 +328,22 @@ export const createUserPermissionPayload = ({
 export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {
     let isComplete = true
     const tempPermissions = directPermission.reduce((agg, curr) => {
-        if (curr.team && curr.entityName.length === 0) {
-            isComplete = false
-            // eslint-disable-next-line no-param-reassign
-            curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
-        }
-        if (curr.team && curr.environment.length === 0) {
-            isComplete = false
-            // eslint-disable-next-line no-param-reassign
-            curr.environmentError = 'Environments are mandatory'
-        }
-        if (curr.team && curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
-            isComplete = false
-            // eslint-disable-next-line no-param-reassign
-            curr.workflowError = 'Workflows are mandatory'
+        if (curr.team) {
+            if (curr.entityName.length === 0) {
+                isComplete = false
+                // eslint-disable-next-line no-param-reassign
+                curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
+            }
+            if (curr.environment.length === 0) {
+                isComplete = false
+                // eslint-disable-next-line no-param-reassign
+                curr.environmentError = 'Environments are mandatory'
+            }
+            if (curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
+                isComplete = false
+                // eslint-disable-next-line no-param-reassign
+                curr.workflowError = 'Workflows are mandatory'
+            }
         }
         agg.push(curr)
         return agg
