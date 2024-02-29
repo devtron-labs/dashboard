@@ -131,7 +131,7 @@ const BulkCITrigger = ({
         getMaterialData()
     }, [])
 
-    const getRuntimeParamsData = (_materialListMap: Record<string, any[]>): void => {
+    const getRuntimeParamsData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
         const runtimeParamsPromiseList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
                 return {
@@ -142,18 +142,17 @@ const BulkCITrigger = ({
         })
 
         if (runtimeParamsPromiseList.length) {
-            Promise.all(runtimeParamsPromiseList)
-                .then((responses) => {
-                    const _runtimeParams: Record<string, KeyValueListType[]> = {}
-                    responses.forEach((res, index) => {
-                        _runtimeParams[appList[index]?.ciPipelineId] = res || []
-                    })
-                    setRuntimeParams(_runtimeParams)
+            try {
+                const responses = await Promise.all(runtimeParamsPromiseList)
+                const _runtimeParams: Record<string, KeyValueListType[]> = {}
+                responses.forEach((res, index) => {
+                    _runtimeParams[appList[index]?.ciPipelineId] = res || []
                 })
-                .catch((error) => {
-                    setPageViewType(ViewType.ERROR)
-                    showError(error)
-                })
+                setRuntimeParams(_runtimeParams)
+            } catch (error) {
+                setPageViewType(ViewType.ERROR)
+                showError(error)
+            }
         }
     }
 
@@ -172,16 +171,17 @@ const BulkCITrigger = ({
         if (_CIMaterialPromiseList?.length) {
             const _materialListMap: Record<string, any[]> = {}
             Promise.all(_CIMaterialPromiseList)
-                .then((responses) => {
+                .then(async (responses) => {
+                    // TODO: Move the whole function into async and remove .then
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res?.['result']
                     })
                     // These two handlers should be imported from elsewhere
                     if (getCIBlockState) {
-                        getPolicyEnforcementData(_materialListMap)
+                        await getPolicyEnforcementData(_materialListMap)
                     }
                     if (getRuntimeParams) {
-                        getRuntimeParamsData(_materialListMap)
+                        await getRuntimeParamsData(_materialListMap)
                     }
                     updateBulkInputMaterial(_materialListMap)
                     if (!getIsAppUnorthodox(selectedApp)) {
@@ -239,7 +239,7 @@ const BulkCITrigger = ({
         setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
     }
 
-    const getPolicyEnforcementData = (_materialListMap: Record<string, any[]>): void => {
+    const getPolicyEnforcementData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
         const policyPromiseList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
                 return null
@@ -257,16 +257,18 @@ const BulkCITrigger = ({
         })
         if (policyPromiseList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
-            Promise.all(policyPromiseList)
-                .then((responses) => {
-                    responses.forEach((res, index) => {
-                        policyListMap[appList[index]?.appId] = res?.['result']
-                            ? processConsequenceData(res['result'])
-                            : null
-                    })
-                    setAppPolicy(policyListMap)
+            try {
+                const responses = await Promise.all(policyPromiseList)
+                responses.forEach((res, index) => {
+                    policyListMap[appList[index]?.appId] = res?.['result']
+                        ? processConsequenceData(res['result'])
+                        : null
                 })
-                .catch((error) => {})
+                setAppPolicy(policyListMap)
+            }
+            catch (error) {
+                showError(error)
+            }
         }
     }
 
