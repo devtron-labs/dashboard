@@ -246,7 +246,7 @@ export const editDescription = (payload): Promise<EditDescRequestResponse> => {
 
 const eachCall = (batchConfig, functionCalls, resolve, reject) => {
     const callIndex = batchConfig.lastIndex
-    functionCalls[callIndex]()
+    Promise.resolve(functionCalls[callIndex]())
         .then((result) => {
             batchConfig.results[callIndex] = { status: 'fulfilled', value: result }
             batchConfig.completedCalls++

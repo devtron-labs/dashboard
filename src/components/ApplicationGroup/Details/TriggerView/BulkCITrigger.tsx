@@ -110,19 +110,17 @@ export default function BulkCITrigger({
 
     const getMaterialData = (): void => {
         abortControllerRef.current = new AbortController()
-        const _CIMaterialPromiseFunctionList = appList.reduce((promiseList, appDetails) => {
-            if (!getIsAppUnorthodox(appDetails)) {
-                const promiseFunction = () =>
-                    getCIMaterialList(
-                        {
-                            pipelineId: appDetails.ciPipelineId,
-                        },
-                        abortControllerRef.current.signal,
-                    );
-                promiseList.push(promiseFunction);
-            }
-            return promiseList;
-        }, []);
+        const _CIMaterialPromiseFunctionList = appList.map((appDetails) =>
+            getIsAppUnorthodox(appDetails)
+                ? () => null
+                : () =>
+                      getCIMaterialList(
+                          {
+                              pipelineId: appDetails.ciPipelineId,
+                          },
+                          abortControllerRef.current.signal,
+                      ),
+        )
         if (_CIMaterialPromiseFunctionList?.length) {
             const _materialListMap: Record<string, any[]> = {}
             ApiQueuingWithBatch(_CIMaterialPromiseFunctionList, httpProtocol)
@@ -157,9 +155,9 @@ export default function BulkCITrigger({
     }
 
     const getPolicyEnforcementData = (_materialListMap: Record<string, any[]>): void => {
-        const policyPromiseFunctionList = appList.reduce((promiseList, appDetails) => {
+        const policyPromiseFunctionList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
-                return promiseList
+                return () => null
             }
             let branchNames = ''
             for (const material of _materialListMap[appDetails.appId]) {
@@ -170,12 +168,8 @@ export default function BulkCITrigger({
                     branchNames += `${branchNames ? ',' : ''}${material.value}`
                 }
             }
-            if (branchNames) {
-                const promiseFunction = () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames);
-                promiseList.push(promiseFunction);
-            }
-            return promiseList;
-        }, []);
+            return !branchNames ? () => null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
+        })
 
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
@@ -202,7 +196,7 @@ export default function BulkCITrigger({
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
                 <button
                     type="button"
-                    className="dc__transparent flex icon-dim-24"
+                    className={`dc__transparent flex icon-dim-24 ${isLoading ? 'dc__disabled' : ''}`}
                     disabled={isLoading}
                     onClick={closeBulkCIModal}
                 >
