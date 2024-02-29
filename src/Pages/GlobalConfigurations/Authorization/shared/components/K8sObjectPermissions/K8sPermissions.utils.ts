@@ -79,9 +79,7 @@ export const k8sRoleSelectionStyle = {
     }),
 }
 
-export const excludeKeyAndClusterValue = ({ cluster, ...rest }: K8sPermissionFilter): K8sPermissionFilter => {
-    return {
-        cluster: { label: cluster.label, value: cluster.label },
-        ...rest,
-    }
-}
+export const excludeKeyAndClusterValue = ({ cluster, ...rest }: K8sPermissionFilter): K8sPermissionFilter => ({
+    cluster: { label: cluster.label, value: cluster.label },
+    ...rest,
+})
