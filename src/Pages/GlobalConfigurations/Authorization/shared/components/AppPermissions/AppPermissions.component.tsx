@@ -46,6 +46,7 @@ import { getWorkflowOptions } from '../../../utils'
 import { AppPermissionsDetailType, DirectPermissionRow } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
+import { JobList } from '../../../../../../components/Jobs/Types'
 
 const AppPermissions = () => {
     const { serverMode } = useContext(mainContext)
@@ -102,41 +103,43 @@ const AppPermissions = () => {
             }, _jobsList),
         )
         try {
-            // TODO (v3): Temporary workaround since projectId are not available in job list
-            missingProjects.forEach(async (projectId) => {
-                const {
-                    result: { jobContainers },
-                } = await getJobs({ teams: [projectId] })
+            const {
+                result: { jobContainers },
+            } = await getJobs({ teams: missingProjects })
 
-                setJobsList((_jobsList) => {
-                    _jobsList.set(+projectId, {
-                        loading: false,
-                        result: jobContainers || [],
-                        error: null,
-                    })
-                    return _jobsList
-                })
-            })
-            // const {
-            //     result: { jobContainers },
-            // } = await getJobs({ teams: missingProjects })
+            // Group the job list by respective project IDs
+            const projectsMap = jobContainers.reduce(
+                (map, job) => {
+                    const { projectId } = job
+                    if (!map.has(projectId)) {
+                        map.set(projectId, {
+                            jobsList: [],
+                        })
+                    }
+                    map.get(projectId).jobsList.push(job)
+                    return map
+                },
+                new Map<
+                    number,
+                    {
+                        jobsList: JobList['result']['jobContainers']
+                    }
+                >(),
+            )
 
-            // // FIXME: We should not be adding projectIds[0] here
-            // const jobs = [{ projectId: projectIds[0], jobsList: jobContainers }]
-            // const projectsMap = mapByKey(jobs || [], 'projectId')
-            // setJobsList(
-            //     (_jobsList) =>
-            //         new Map(
-            //             missingProjects.reduce((__jobsList, projectId) => {
-            //                 __jobsList.set(projectId, {
-            //                     loading: false,
-            //                     result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
-            //                     error: null,
-            //                 })
-            //                 return __jobsList
-            //             }, _jobsList),
-            //         ),
-            // )
+            setJobsList(
+                (_jobsList) =>
+                    new Map(
+                        missingProjects.reduce((__jobsList, projectId) => {
+                            __jobsList.set(projectId, {
+                                loading: false,
+                                result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
+                                error: null,
+                            })
+                            return __jobsList
+                        }, _jobsList),
+                    ),
+            )
         } catch (_error) {
             showError(_error)
             setJobsList((_jobsList) =>
