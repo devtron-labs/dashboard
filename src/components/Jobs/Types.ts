@@ -1,5 +1,5 @@
 import { RouteComponentProps } from 'react-router-dom'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum JobListStateActionTypes {
     view = 'view',
@@ -101,3 +101,17 @@ export interface JobsEmptyProps {
     view: string
     clickHandler: (e) => void
 }
+
+export type JobList = ResponseType<{
+    jobContainers: {
+        id: number
+        jobName: string
+        appName: string
+        jobId: number
+        ciPipelines: JobCIPipeline[]
+        description: {
+            description: string
+        }
+    }[]
+    jobCount: number
+}>

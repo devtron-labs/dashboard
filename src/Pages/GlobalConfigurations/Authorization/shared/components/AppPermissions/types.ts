@@ -1,9 +1,10 @@
 import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { JobList } from '../../../../../../components/Jobs/Types'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
 type AppsList = Map<number, { loading: boolean; result: { id: number; name: string }[]; error: ServerError }>
-type JobsList = Map<number, { loading: boolean; result: { id: number; jobName: string }[]; error: ServerError }>
+type JobsList = Map<number, { loading: boolean; result: JobList['result']['jobContainers']; error: ServerError }>
 
 export interface AppPermissionsDetailType {
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS

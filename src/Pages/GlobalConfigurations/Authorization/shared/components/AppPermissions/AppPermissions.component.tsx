@@ -424,6 +424,7 @@ const AppPermissions = () => {
                     let jobNameToAppNameMapping = new Map()
 
                     if (directRoleFilter.entity === EntityTypes.JOB) {
+                        // TODO (v3): Why do we need this API Call
                         const {
                             result: { jobContainers },
                         } = await getJobs({ teams: [projectId] })
