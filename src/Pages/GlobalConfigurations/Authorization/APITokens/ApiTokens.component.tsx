@@ -36,7 +36,7 @@ const ApiTokens = () => {
         getGeneratedAPITokenList()
             .then((response) => {
                 if (response.result) {
-                    const sortedResult = response.result.sort((a, b) => a['name'].localeCompare(b['name']))
+                    const sortedResult = response.result.sort((a, b) => a.name.localeCompare(b.name))
                     setTokenlist(sortedResult)
                     setFilteredTokenList(sortedResult)
                 } else {

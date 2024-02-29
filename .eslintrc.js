@@ -90,9 +90,6 @@ module.exports = {
                 tsx: 'never',
             },
         ],
-        // Turning off as ESLint 6.x doesn't support optional chaining.
-        // FIXME: Remove once ESLint is upgraded to latest version
-        'dot-notation': 'off',
         'import/prefer-default-export': 'off',
     },
     overrides: [

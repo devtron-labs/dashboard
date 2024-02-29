@@ -156,7 +156,7 @@ const K8sListItemCard = ({
                 for (const value of (_k8SObjectMap ?? processedData).values()) {
                     // eslint-disable-next-line no-loop-func
                     value?.child.forEach((ele: { gvk: GVKType }) => {
-                        kind.push({ value: ele.gvk['Kind'], label: ele.gvk['Kind'], gvk: ele.gvk })
+                        kind.push({ value: ele.gvk.Kind, label: ele.gvk.Kind, gvk: ele.gvk })
                         if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
                             selectedGvk = ele.gvk
                         }
@@ -166,7 +166,7 @@ const K8sListItemCard = ({
                 const data = (_k8SObjectMap ?? processedData).get(selected.value === 'k8sempty' ? '' : selected.value)
                 data?.child?.forEach((ele) => {
                     if (ele.namespaced) {
-                        kind.push({ label: ele.gvk['Kind'], value: ele.gvk['Kind'], gvk: ele.gvk })
+                        kind.push({ label: ele.gvk.Kind, value: ele.gvk.Kind, gvk: ele.gvk })
                     }
                     if (!selectedGvk && ele.gvk.Kind === k8sPermission.kind?.value) {
                         selectedGvk = ele.gvk
