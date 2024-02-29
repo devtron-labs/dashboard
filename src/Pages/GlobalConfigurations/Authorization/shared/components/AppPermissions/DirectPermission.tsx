@@ -555,6 +555,7 @@ const DirectPermission = ({
                         disabled={getIsStatusDropdownDisabled(userStatus)}
                         showDropdownBorder={false}
                         breakLinesForTemporaryAccess
+                        dropdownClassName="flex-grow-1"
                     />
                 </div>
             )}
