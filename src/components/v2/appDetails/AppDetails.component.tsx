@@ -60,7 +60,11 @@ const AppDetailsComponent = ({
 
     useEffect(() => {
         if (appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId) {
-            getSaveTelemetry(params.appId)
+            try {
+                getSaveTelemetry(params.appId)
+            } catch (err) {
+                showError(err)
+            }
         }
     }, [])
     useEffect(() => {

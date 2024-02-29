@@ -210,12 +210,16 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }, [filteredWorkflows])
 
     const getConfigs = () => {
-        getDefaultConfig().then((response) => {
-            const isConfigPresent = response.result.isConfigured
-            const _isDefaultConfig = response.result.is_default_configured
-            setDefaultConfig(_isDefaultConfig)
-            setConfigPresent(isConfigPresent)
-        })
+        getDefaultConfig()
+            .then((response) => {
+                const isConfigPresent = response.result.isConfigured
+                const _isDefaultConfig = response.result.is_default_configured
+                setDefaultConfig(_isDefaultConfig)
+                setConfigPresent(isConfigPresent)
+            })
+            .catch((err) => {
+                showError(err)
+            })
     }
 
     const preserveSelection = (_workflows: WorkflowType[]) => {

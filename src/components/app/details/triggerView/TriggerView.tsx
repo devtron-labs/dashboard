@@ -166,11 +166,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     // FIXME: Seems like its missing a error state
     getConfigs() {
-        getDefaultConfig().then((response) => {
-            const isConfigPresent = response.result.isConfigured
-            const _isDefaultConfig = response.result.is_default_configured
-            this.setState({ configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig })
-        })
+        getDefaultConfig()
+            .then((response) => {
+                const isConfigPresent = response.result.isConfigured
+                const _isDefaultConfig = response.result.is_default_configured
+                this.setState({ configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig })
+            })
+            .catch((err) => {
+                showError(err)
+            })
     }
 
     getWorkflows = (isFromOnMount?: boolean) => {
