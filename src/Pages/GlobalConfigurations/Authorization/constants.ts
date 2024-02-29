@@ -49,7 +49,7 @@ export enum UserRoleType {
     Admin = 'Admin',
     Manager = 'Manager',
     Trigger = 'Trigger',
-    View = 'View,',
+    View = 'View',
 }
 
 export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: SELECT_ALL_VALUE }
