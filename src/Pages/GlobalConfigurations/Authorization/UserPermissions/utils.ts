@@ -1,5 +1,5 @@
 import { importComponentFromFELibrary, validateEmail } from '../../../../components/common'
-import { authorizationSelectStyles } from '../shared/components/userGroups/UserGroup'
+import { authorizationSelectStyles } from '../constants'
 import { User } from '../types'
 import { DefaultUserKey } from './constants'
 import { UserListFilter } from './List/types'

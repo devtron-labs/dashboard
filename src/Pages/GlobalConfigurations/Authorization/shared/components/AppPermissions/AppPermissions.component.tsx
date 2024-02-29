@@ -8,7 +8,7 @@ import {
     showError,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { APPROVER_ACTION, CONFIG_APPROVER_ACTION } from '../userGroups/UserGroup'
+import { IMAGE_APPROVER_ACTION, CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes } from '../../../constants'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { mapByKey } from '../../../../../../components/common'
 import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
@@ -45,7 +45,6 @@ import {
 import { getWorkflowOptions } from '../../../utils'
 import { AppPermissionsDetailType, DirectPermissionRow } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
-import { ActionTypes, EntityTypes } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 
 const AppPermissions = () => {
@@ -691,8 +690,6 @@ const AppPermissions = () => {
         }
     }
 
-    // TODO (v3): Refactoring
-    // TODO (v3): Use the Approver permission component from fe-lib and remove the redundant if(s)
     const handleDirectPermissionChange = (index, selectedValue, actionMeta, workflowList?) => {
         const { name } = actionMeta
         const tempPermissions = [...directPermission]
@@ -721,10 +718,10 @@ const AppPermissions = () => {
             case DirectPermissionFieldName.team:
                 _handleTeamChange(index, selectedValue, actionMeta, tempPermissions)
                 break
-            case APPROVER_ACTION.label:
+            case IMAGE_APPROVER_ACTION.value:
                 tempPermissions[index][name] = !tempPermissions[index][name]
                 break
-            case CONFIG_APPROVER_ACTION.label:
+            case CONFIG_APPROVER_ACTION.value:
                 tempPermissions[index].action.configApprover = !tempPermissions[index].action.configApprover
                 break
             default:

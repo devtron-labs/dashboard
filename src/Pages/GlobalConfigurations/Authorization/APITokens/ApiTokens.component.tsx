@@ -53,15 +53,6 @@ const ApiTokens = () => {
     }
 
     useEffect(() => {
-        // TODO: Revisit. Temp check
-        if (
-            pathname.includes('/devtron-apps') ||
-            pathname.includes('/helm-apps') ||
-            pathname.includes('/chart-groups')
-        ) {
-            history.replace(pathname.split('/').slice(0, -1).join('/'))
-        }
-
         getData()
     }, [])
 

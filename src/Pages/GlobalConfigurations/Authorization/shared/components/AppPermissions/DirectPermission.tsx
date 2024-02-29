@@ -16,7 +16,7 @@ import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups/UserGroup'
+import { CONFIG_APPROVER_ACTION, authorizationSelectStyles, EntityTypes } from '../../../constants'
 import { AppOption, ClusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import {
     allApplicationsOption,
@@ -25,7 +25,6 @@ import {
     DirectPermissionFieldName,
 } from './constants'
 import { getWorkflowOptions, parseData } from '../../../utils'
-import { EntityTypes } from '../../../constants'
 import { DirectPermissionRow } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
@@ -529,11 +528,6 @@ const DirectPermission = ({
                     blurInputOnSelect
                     styles={{
                         ...authorizationSelectStyles,
-                        option: (base, state) => ({
-                            ...authorizationSelectStyles.option(base, state),
-                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                            marginRight: '8px',
-                        }),
                         valueContainer: (base) => ({
                             ...authorizationSelectStyles.valueContainer(base),
                             display: 'flex',

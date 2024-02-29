@@ -29,10 +29,9 @@ import {
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 import { useAuthorizationBulkSelection } from './shared/components/BulkSelection'
-import { CONFIG_APPROVER_ACTION } from './shared/components/userGroups/UserGroup'
+import { CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes, PermissionType, ViewChartGroupPermission } from './constants'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './shared/components/AppPermissions/constants'
-import { ActionTypes, EntityTypes, PermissionType, ViewChartGroupPermission } from './constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getFormattedTimeToLive } from './libUtils'
 

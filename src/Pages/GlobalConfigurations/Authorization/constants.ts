@@ -1,6 +1,9 @@
+import { getCommonSelectStyle } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../config'
 import { APIRoleFilter } from './types'
 import { getDefaultStatusAndTimeout } from './libUtils'
+import { importComponentFromFELibrary } from '../../../components/common'
+import { groupHeaderStyle } from '../../../components/v2/common/ReactSelect.utils'
 
 /**
  * Permission types for users and permission groups
@@ -56,3 +59,27 @@ export const ViewChartGroupPermission: APIRoleFilter = {
     action: ActionTypes.VIEW,
     ...getDefaultStatusAndTimeout(),
 }
+
+const _selectStyles = getCommonSelectStyle()
+
+export const authorizationSelectStyles = {
+    ..._selectStyles,
+    ...groupHeaderStyle,
+    control: (base, state) => ({
+        ..._selectStyles.control(base, state),
+        height: '36px',
+    }),
+    valueContainer: (base) => ({
+        ..._selectStyles.valueContainer(base),
+        maxHeight: '100%',
+    }),
+    option: (base, state) => ({
+        ..._selectStyles.option(base, state),
+        ...(state.isSelected && {
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        }),
+    }),
+}
+
+export const IMAGE_APPROVER_ACTION = importComponentFromFELibrary('IMAGE_APPROVER_ACTION', {}, 'function')
+export const CONFIG_APPROVER_ACTION = importComponentFromFELibrary('CONFIG_APPROVER_ACTION', {}, 'function')

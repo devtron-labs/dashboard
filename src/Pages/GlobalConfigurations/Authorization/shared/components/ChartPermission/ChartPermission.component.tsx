@@ -10,9 +10,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { authorizationSelectStyles } from '../userGroups/UserGroup'
+import { authorizationSelectStyles, ActionTypes } from '../../../constants'
 import { ChartPermissionRow } from './types'
-import { ActionTypes } from '../../../constants'
 import { ChartPermissionValues, CHART_PERMISSION_OPTIONS } from './constants'
 
 const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase'
