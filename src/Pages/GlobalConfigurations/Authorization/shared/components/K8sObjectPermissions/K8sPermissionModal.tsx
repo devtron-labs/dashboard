@@ -4,7 +4,7 @@ import { Drawer, OptionType, stopPropagation } from '@devtron-labs/devtron-fe-co
 import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
-import { getPermissionObject } from './K8sPermissions.utils'
+import { getPermissionObject } from './utils'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { K8sPermissionActionType } from './constants'
 import { K8sPermissionModalType } from './types'

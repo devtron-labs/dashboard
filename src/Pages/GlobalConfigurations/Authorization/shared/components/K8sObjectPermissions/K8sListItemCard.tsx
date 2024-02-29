@@ -36,8 +36,7 @@ import {
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/info-filled.svg'
-import { k8sRoleSelectionStyle, multiSelectAllState } from './K8sPermissions.utils'
-import { resourceKindOptionLabel } from './K8sPermission.component'
+import { formatResourceKindOptionLabel, k8sRoleSelectionStyle, multiSelectAllState } from './utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { parseData } from '../../../utils'
 import { authorizationSelectStyles, ALL_NAMESPACE, EntityTypes } from '../../../constants'
@@ -474,7 +473,7 @@ const K8sListItemCard = ({
                                     isDisabled={!k8sPermission.group}
                                     value={k8sPermission.kind}
                                     onChange={onKindSelect}
-                                    formatOptionLabel={resourceKindOptionLabel}
+                                    formatOptionLabel={formatResourceKindOptionLabel}
                                     name="kind"
                                     components={{
                                         IndicatorSeparator: null,

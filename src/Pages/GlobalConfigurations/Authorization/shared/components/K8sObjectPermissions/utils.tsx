@@ -1,8 +1,10 @@
+import React from 'react'
 import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, ACTION_LABEL, EntityTypes, authorizationSelectStyles } from '../../../constants'
 import { K8sPermissionFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
+import { K8S_EMPTY_GROUP } from '../../../../../../components/ResourceBrowser/Constants'
 
 export const apiGroupAll = (permission, isLabel = false) => {
     if (permission === '') {
@@ -83,3 +85,10 @@ export const excludeKeyAndClusterValue = ({ cluster, ...rest }: K8sPermissionFil
     cluster: { label: cluster.label, value: cluster.label },
     ...rest,
 })
+
+export const formatResourceKindOptionLabel = (option): JSX.Element => (
+    <div className="flex left column">
+        <span className="w-100 dc__ellipsis-right">{option.label}</span>
+        {option.value !== SELECT_ALL_VALUE && <small className="cn-6">{option.gvk?.Group || K8S_EMPTY_GROUP}</small>}
+    </div>
+)

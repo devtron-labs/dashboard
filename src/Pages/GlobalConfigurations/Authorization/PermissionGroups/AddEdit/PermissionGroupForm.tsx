@@ -22,7 +22,7 @@ import {
     usePermissionConfiguration,
 } from '../../shared/components/PermissionConfigurationForm'
 import { getIsSuperAdminPermission, getRoleFilters, isDirectPermissionFormComplete } from '../../utils'
-import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/K8sPermissions.utils'
+import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()

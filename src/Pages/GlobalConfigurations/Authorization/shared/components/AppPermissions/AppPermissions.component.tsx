@@ -12,8 +12,8 @@ import { IMAGE_APPROVER_ACTION, CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { mapByKey } from '../../../../../../components/common'
 import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
-import K8sPermissions from '../K8sObjectPermissions/K8sPermissions'
-import { apiGroupAll } from '../K8sObjectPermissions/K8sPermissions.utils'
+import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
+import { apiGroupAll } from '../K8sObjectPermissions/utils'
 import {
     getAllWorkflowsForAppNames,
     getEnvironmentListHelmApps,

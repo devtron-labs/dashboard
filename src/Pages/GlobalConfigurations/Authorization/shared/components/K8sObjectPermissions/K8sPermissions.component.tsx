@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import K8sPermissionModal from './K8sPermissionModal'
-import { HEADER_OPTIONS } from './K8sPermissions.utils'
+import { HEADER_OPTIONS } from './utils'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { K8sPermissionModalType } from './types'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
