@@ -235,12 +235,11 @@ const BulkCITrigger = ({
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
-                const responses = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol)
+                const responses = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
                 responses.forEach((res, index) => {
-                    policyListMap[appList[index]?.appId] =
-                        res.status === ApiQueuingBatchStatusType.FULFILLED && res.value?.['result']
-                            ? processConsequenceData(res.value?.['result'])
-                            : null
+                    policyListMap[appList[index]?.appId] = res.value?.['result']
+                        ? processConsequenceData(res.value['result'])
+                        : null
                 })
                 setAppPolicy(policyListMap)
             } catch (error) {
