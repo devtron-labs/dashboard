@@ -4,6 +4,7 @@ import {
     FilterConditionsListType,
     KeyValueListType,
     ResponseType,
+    ServerErrors,
     UserApprovalConfigType,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -481,5 +482,6 @@ export enum ApiQueuingBatchStatusType {
 // TODO: use T for value
 export interface ApiQueuingWithBatchResponseItem {
     status: ApiQueuingBatchStatusType
-    value: any
+    value?: any
+    reason?: ServerErrors
 }

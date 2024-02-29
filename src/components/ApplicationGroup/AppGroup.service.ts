@@ -251,21 +251,17 @@ const eachCall = (batchConfig, functionCalls, resolve, reject, shouldRejectOnErr
     Promise.resolve(functionCalls[callIndex]())
         .then((result) => {
             batchConfig.results[callIndex] = { status: ApiQueuingBatchStatusType.FULFILLED, value: result }
-            batchConfig.completedCalls++
-            if (batchConfig.lastIndex < functionCalls.length) {
-                eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
-                batchConfig.lastIndex++
-            } else if (batchConfig.completedCalls === functionCalls.length) {
-                resolve(batchConfig.results)
-            }
         })
         .catch((error) => {
             batchConfig.results[callIndex] = { status: ApiQueuingBatchStatusType.REJECTED, reason: error }
-            batchConfig.completedCalls++
-            if (shouldRejectOnError) {
-                reject(error)
+        })
+        .finally(() => {
+            if (shouldRejectOnError && batchConfig.results[callIndex].status === ApiQueuingBatchStatusType.REJECTED) {
+                reject(batchConfig.results[callIndex].reason)
                 return
             }
+
+            batchConfig.completedCalls++
             if (batchConfig.lastIndex < functionCalls.length) {
                 eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
                 batchConfig.lastIndex++
