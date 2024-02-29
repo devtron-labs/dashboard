@@ -108,8 +108,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                         ? noMatchingResults()
                         : tokenList.map((list, index) => (
                               <div
-                                  // eslint-disable-next-line react/no-array-index-key
-                                  key={`api_${index}`}
+                                  key={`api_${list.id}`}
                                   data-testid="api-list-row"
                                   className="api-list__row api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                   style={{ height: '45px' }}

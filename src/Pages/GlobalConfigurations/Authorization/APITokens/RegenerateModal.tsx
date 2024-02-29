@@ -20,8 +20,7 @@ const RegeneratedModal = ({
 }: RegenerateModalType) => {
     const [loader, setLoader] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: any }>({
+    const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
         label: '30 days',
         value: 30,
     })
@@ -31,8 +30,7 @@ const RegeneratedModal = ({
     )
     const [invalidCustomDate, setInvalidCustomDate] = useState(false)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onChangeSelectFormData = (selectedOption: { label: string; value: any }) => {
+    const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
         setRegeneratedExpireAtInMs(selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value))
         setSelectedExpirationDate(selectedOption)
 

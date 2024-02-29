@@ -97,12 +97,11 @@ const AppPermissions = () => {
         if (missingProjects.length === 0) {
             return
         }
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        setJobsList((jobsList) =>
-            missingProjects.reduce((_jobsList, projectId) => {
-                _jobsList.set(projectId, { loading: true, result: [], error: null })
-                return _jobsList
-            }, jobsList),
+        setJobsList((_jobsList) =>
+            missingProjects.reduce((__jobsList, projectId) => {
+                __jobsList.set(projectId, { loading: true, result: [], error: null })
+                return __jobsList
+            }, _jobsList),
         )
         try {
             const {
@@ -113,30 +112,25 @@ const AppPermissions = () => {
             const jobs = [{ projectId: projectIds[0], jobsList: jobContainers }]
             const projectsMap = mapByKey(jobs || [], 'projectId')
             setJobsList(
-                // eslint-disable-next-line @typescript-eslint/no-shadow
-                (jobsList) =>
+                (_jobsList) =>
                     new Map(
-                        // eslint-disable-next-line @typescript-eslint/no-shadow
-                        missingProjects.reduce((jobsList, projectId) => {
-                            jobsList.set(projectId, {
+                        missingProjects.reduce((__jobsList, projectId) => {
+                            __jobsList.set(projectId, {
                                 loading: false,
                                 result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
                                 error: null,
                             })
-                            return jobsList
-                        }, jobsList),
+                            return __jobsList
+                        }, _jobsList),
                     ),
             )
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-        } catch (error) {
-            showError(error)
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            setJobsList((jobsList) => {
-                // eslint-disable-next-line @typescript-eslint/no-shadow
-                return missingProjects.reduce((jobsList, projectId) => {
-                    jobsList.set(projectId, { loading: false, result: [], error: null })
-                    return jobsList
-                }, jobsList)
+        } catch (_error) {
+            showError(_error)
+            setJobsList((_jobsList) => {
+                return missingProjects.reduce((__jobsList, projectId) => {
+                    __jobsList.set(projectId, { loading: false, result: [], error: null })
+                    return __jobsList
+                }, _jobsList)
             })
         }
     }
@@ -150,10 +144,9 @@ const AppPermissions = () => {
             return
         }
         setAppsList((appList) => {
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            return missingProjects.reduce((appList, projectId) => {
-                appList.set(projectId, { loading: true, result: [], error: null })
-                return appList
+            return missingProjects.reduce((_appList, projectId) => {
+                _appList.set(projectId, { loading: true, result: [], error: null })
+                return _appList
             }, appList)
         })
         try {
@@ -162,14 +155,13 @@ const AppPermissions = () => {
             setAppsList(
                 (appList) =>
                     new Map(
-                        // eslint-disable-next-line @typescript-eslint/no-shadow
-                        missingProjects.reduce((appList, projectId) => {
-                            appList.set(projectId, {
+                        missingProjects.reduce((_appList, projectId) => {
+                            _appList.set(projectId, {
                                 loading: false,
                                 result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.appList || [] : [],
                                 error: null,
                             })
-                            return appList
+                            return _appList
                         }, appList),
                     ),
             )
@@ -421,7 +413,6 @@ const AppPermissions = () => {
 
                     // Fallback for access type
                     if (!directRoleFilter.accessType && directRoleFilter.entity !== EntityTypes.JOB) {
-                        // eslint-disable-next-line no-param-reassign
                         directRoleFilter.accessType = ACCESS_TYPE_MAP.DEVTRON_APPS
                     }
 
@@ -590,10 +581,9 @@ const AppPermissions = () => {
         } else {
             if (tempPermissions[index].accessType === ACCESS_TYPE_MAP.HELM_APPS) {
                 tempPermissions[index][name] = selectedValue.filter(
-                    // eslint-disable-next-line @typescript-eslint/no-shadow
-                    ({ value }) =>
-                        value !== `${SELECT_ALL_VALUE}${clusterName}` &&
-                        value !== `${ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE}${clusterName}`,
+                    ({ value: _value }) =>
+                        _value !== `${SELECT_ALL_VALUE}${clusterName}` &&
+                        _value !== `${ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE}${clusterName}`,
                 )
             } else {
                 tempPermissions[index][name] = selectedValue.filter(({ value: _value }) => _value !== SELECT_ALL_VALUE)

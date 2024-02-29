@@ -8,9 +8,7 @@ import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { EntityTypes } from '../../../constants'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
 
-export const WorkflowGroupHeading = (props) => {
-    return <GroupHeading {...props} hideClusterName />
-}
+export const WorkflowGroupHeading = (props) => <GroupHeading {...props} hideClusterName />
 
 export const AppOption = ({ props, permission }) => {
     const { selectOption, data } = props
@@ -91,7 +89,7 @@ export const ValueContainer = (props) => {
     )
 }
 
-export const clusterValueContainer = (props) => {
+export const ClusterValueContainer = (props) => {
     const { length } = props
         .getValue()
         .filter(

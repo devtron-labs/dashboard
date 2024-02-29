@@ -4,6 +4,8 @@ import EmptyImage from '../../../../assets/img/empty-applist@2x.png'
 import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../../../config/constantMessaging'
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-error-exclamation.svg'
 
+const Error = () => <ErrorIcon className="h-20" />
+
 const SSONotConfiguredState = () => (
     <GenericEmptyState
         image={EmptyImage}
@@ -23,8 +25,7 @@ const SSONotConfiguredState = () => (
                     linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
                     redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
                     internalLink
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    Icon={() => <ErrorIcon className="h-20" />}
+                    Icon={Error}
                 />
             </>
         }

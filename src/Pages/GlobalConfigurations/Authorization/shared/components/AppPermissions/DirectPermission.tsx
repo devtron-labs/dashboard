@@ -17,7 +17,7 @@ import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-d
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { CONFIG_APPROVER_ACTION, authorizationSelectStyles } from '../userGroups/UserGroup'
-import { AppOption, clusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
+import { AppOption, ClusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import {
     allApplicationsOption,
     ALL_ENVIRONMENTS_OPTION,
@@ -373,7 +373,7 @@ const DirectPermission = ({
                         styles={authorizationSelectStyles}
                         components={{
                             ClearIndicator: null,
-                            ValueContainer: clusterValueContainer,
+                            ValueContainer: ClusterValueContainer,
                             IndicatorSeparator: null,
                             Option,
                             GroupHeading,

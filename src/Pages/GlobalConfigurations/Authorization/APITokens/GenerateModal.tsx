@@ -31,12 +31,12 @@ const GenerateModal = ({ close, token, reload, redirectToTokenList, isRegenerati
     return (
         <VisibleModal className="generate-token-modal">
             <div className="modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column">
-                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                 <button
                     type="button"
                     data-testid={`${modelType}-token-modal-close`}
                     className="w-100 flex right dc__transparent"
                     onClick={handleCloseButton}
+                    aria-label="Close modal"
                 >
                     <Close className="icon-dim-24" />
                 </button>

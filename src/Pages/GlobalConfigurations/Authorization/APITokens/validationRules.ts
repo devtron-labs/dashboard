@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { PATTERNS } from '../../../../config'
 
-// eslint-disable-next-line import/prefer-default-export
 export class ValidationRules {
     name = (value: string): { isValid: boolean; message: string } => {
         const re = PATTERNS.API_TOKEN

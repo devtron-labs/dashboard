@@ -244,7 +244,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             ClearIndicator,
             MultiValueRemove,
             // eslint-disable-next-line react/no-unstable-nested-components
-            MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={validateEmail} />,
+            MultiValueContainer: (props) => <MultiValueChipContainer {...props} validator={validateEmail} />,
             IndicatorSeparator: null,
             Menu: () => null,
         }),
