@@ -546,7 +546,7 @@ const DirectPermission = ({
                 />
             </div>
             {showStatus && (
-                <div style={{ order: 5 }}>
+                <div className="h-36 flexbox flex-align-center" style={{ order: 5 }}>
                     <UserStatusUpdate
                         userStatus={permission.status}
                         timeToLive={permission.timeToLive}

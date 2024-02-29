@@ -52,7 +52,7 @@ const AppPermissionDetail = ({
                     (permission, idx) =>
                         permission.accessType === accessType && (
                             <div
-                                className={`w-100 dc__gap-8 display-grid flex-align-center ${rowClass}`}
+                                className={`w-100 dc__gap-8 display-grid ${rowClass}`}
                                 // eslint-disable-next-line react/no-array-index-key
                                 key={idx}
                             >

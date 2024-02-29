@@ -6,7 +6,7 @@ import { components } from 'react-select'
 import { GroupHeading } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { EntityTypes } from '../../../constants'
-import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './constants'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE, DirectPermissionFieldName } from './constants'
 
 export const WorkflowGroupHeading = (props) => <GroupHeading {...props} hideClusterName />
 
@@ -47,32 +47,29 @@ export const AppOption = ({ props, permission }) => {
 export const ValueContainer = (props) => {
     const { length } = props.getValue()
     let optionLength = props.options.length
-    if (props.selectProps.name === 'environment' || props.selectProps.name === 'workflow') {
+    if (
+        props.selectProps.name === DirectPermissionFieldName.environment ||
+        props.selectProps.name === DirectPermissionFieldName.workflow
+    ) {
         optionLength = props.options.reduce((acc, option) => acc + (option.options?.length ?? 0), 0)
     }
 
-    let count = ''
-    // TODO (v3): Refactor
-    if (
-        length === optionLength &&
-        (props.selectProps.name.includes('entityName') ||
-            props.selectProps.name === 'environment' ||
-            props.selectProps.name.includes('workflow'))
-    ) {
-        count = 'All'
-    } else {
-        count = length
-    }
+    const count = length === optionLength ? 'All' : length
+
     let Item
-    if (props.selectProps.name.includes('entityName')) {
-        Item = props.selectProps.name.split('/')[1] === 'jobs' ? 'job' : 'application'
+    if (props.selectProps.name === DirectPermissionFieldName.apps) {
+        Item = 'application'
+    } else if (props.selectProps.name === DirectPermissionFieldName.jobs) {
+        Item = 'job'
     } else {
-        Item = props.selectProps.name === 'environment' ? 'environment' : 'workflow'
+        Item = props.selectProps.name
     }
+
     return (
         <components.ValueContainer {...props}>
             {length > 0 ? (
                 <>
+                    {/* Count of selected options */}
                     {!props.selectProps.menuIsOpen && `${count} ${Item}${length !== 1 ? 's' : ''}`}
                     {React.cloneElement(props.children[1])}
                 </>
@@ -94,11 +91,8 @@ export const ClusterValueContainer = (props) => {
                 !opt.value.startsWith(SELECT_ALL_VALUE),
         )
     let count = ''
-    const totalEnv = props.options.reduce((len, cluster) => {
-        // eslint-disable-next-line no-param-reassign
-        len += cluster.options.length - 2
-        return len
-    }, 0)
+    // 2 represents all existing cluster option and all existing + future cluster option
+    const totalEnv = props.options.reduce((len, cluster) => len + (cluster.options.length - 2), 0)
     if (length === totalEnv) {
         count = 'All environments'
     } else {

@@ -90,7 +90,6 @@ const AppPermissions = () => {
     const appPermissionDetailConfig = getAppPermissionDetailConfig(path, serverMode)
     const navLinksConfig = getNavLinksConfig(serverMode, superAdmin)
 
-    // TODO (v3): Checkout the scope for common out
     async function fetchJobsList(projectIds: number[]) {
         const missingProjects = projectIds.filter((projectId) => !jobsList.has(projectId))
         if (missingProjects.length === 0) {
@@ -315,7 +314,6 @@ const AppPermissions = () => {
                     envMap.set(element, true)
                 }
             })
-            // TODO (v3): Potential bug as nothing is returned from some
             if (envMap.size !== 0) {
                 envClustersList.forEach((element) => {
                     if (envMap.size !== 0) {
