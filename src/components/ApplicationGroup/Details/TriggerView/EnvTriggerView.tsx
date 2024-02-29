@@ -1520,6 +1520,26 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         }
         const _CITriggerPromiseList = []
+        // Traversing each nodeListItem to verify if runtimeParams are valid, if not returning error message
+        const runtimeParamsNodesValidation = nodeList.reduce((acc, node) => {
+            const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(
+                runtimeParams?.[node.id] ?? [],
+            )
+
+            if (!runtimeParamsValidationResponse.isValid) {
+                acc.isValid = false
+                acc.message = runtimeParamsValidationResponse.message
+            }
+            return acc
+        }, { isValid: true, message: '' })
+
+        if (!runtimeParamsNodesValidation.isValid) {
+            setCDLoading(false)
+            setCILoading(false)
+            toast.error(runtimeParamsNodesValidation.message)
+            return
+        }
+
         nodeList.forEach((node) => {
             const gitMaterials = new Map<number, string[]>()
             const ciPipelineMaterials = []
@@ -1555,12 +1575,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(
                 runtimeParams?.[node.id] ?? [],
             )
-            if (!runtimeParamsValidationResponse.isValid) {
-                setCDLoading(false)
-                setCILoading(false)
-                toast.error(runtimeParamsValidationResponse.message)
-                return
-            }
 
             const payload = {
                 pipelineId: +node.id,
