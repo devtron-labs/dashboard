@@ -48,12 +48,7 @@ export const ValueContainer = (props) => {
     const { length } = props.getValue()
     let optionLength = props.options.length
     if (props.selectProps.name === 'environment' || props.selectProps.name === 'workflow') {
-        let _optionLength = 0
-        props.options.forEach((option) => {
-            // eslint-disable-next-line no-unsafe-optional-chaining
-            _optionLength += option.options?.length
-        })
-        optionLength = _optionLength
+        optionLength = props.options.reduce((acc, option) => acc + (option.options?.length ?? 0), 0)
     }
 
     let count = ''
