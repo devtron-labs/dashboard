@@ -28,7 +28,7 @@ const PermissionConfigurationForm = ({ showUserPermissionGroupSelector = false }
                     {Object.entries(PERMISSION_TYPE_LABEL_MAP).map(([value, label]) => (
                         <RadioGroupItem
                             dataTestId={`${
-                                value === PermissionType.SPECIFIC ? 'specific-user' : 'super-admin'
+                                getIsSuperAdminPermission(value as PermissionType) ? 'super-admin' : 'specific-user'
                             }-permission-radio-button`}
                             value={value}
                             key={value}

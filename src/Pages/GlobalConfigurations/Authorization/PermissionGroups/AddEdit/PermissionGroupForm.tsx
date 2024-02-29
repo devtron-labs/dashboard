@@ -13,7 +13,6 @@ import { deepEqual } from '../../../../../components/common'
 import { URLS } from '../../../../../config'
 import { ReactComponent as Warning } from '../../../../../assets/icons/ic-warning.svg'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
-import { PermissionType } from '../../constants'
 import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
@@ -30,7 +29,6 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     // Form States
     const {
         permissionType,
-        setPermissionType,
         directPermission,
         setDirectPermission,
         chartPermission,
@@ -49,10 +47,9 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { push } = useHistory()
 
     async function populateDataFromAPI(data: PermissionGroup) {
-        const { name: _name, description: _description, superAdmin } = data
+        const { name: _name, description: _description } = data
         setName({ value: _name, error: '' })
         setDescription(_description)
-        setPermissionType(superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
     }
 
     useEffect(() => {

@@ -18,7 +18,6 @@ import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING, URLS } from '../../../../../
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
-import { PermissionType } from '../../constants'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'
 import { User } from '../../types'
@@ -49,7 +48,6 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     const {
         permissionType,
-        setPermissionType,
         directPermission,
         setDirectPermission,
         chartPermission,
@@ -158,10 +156,9 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const populateDataFromAPI = (data: User) => {
-        const { emailId, superAdmin, userStatus: _userStatus, timeToLive: _timeToLive } = data
+        const { emailId, userStatus: _userStatus, timeToLive: _timeToLive } = data
 
         setEmailState({ emails: [{ label: emailId, value: emailId }], inputEmailValue: '', emailError: '' })
-        setPermissionType(superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
         handleUserStatusUpdate(_userStatus, _timeToLive)
     }
 

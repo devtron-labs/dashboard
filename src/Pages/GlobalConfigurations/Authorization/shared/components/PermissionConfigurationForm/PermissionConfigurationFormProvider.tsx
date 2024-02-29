@@ -1,5 +1,5 @@
 import { UserStatus } from '@devtron-labs/devtron-fe-common-lib'
-import React, { createContext, ReactNode, useContext, useMemo, useRef, useState } from 'react'
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { ActionTypes, EntityTypes, PermissionType } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
@@ -44,6 +44,12 @@ export const PermissionConfigurationFormProvider = ({
     const [userGroups, setUserGroups] = useState<User['userRoleGroups']>([])
     const [userStatus, setUserStatus] = useState<User['userStatus']>()
     const [timeToLive, setTimeToLive] = useState<User['timeToLive']>()
+
+    useEffect(() => {
+        if (data) {
+            setPermissionType(data.superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
+        }
+    }, [data])
 
     const handleUserStatusUpdate = (updatedStatus: User['userStatus'], updatedTimeToLive?: User['timeToLive']) => {
         setUserStatus(updatedStatus)

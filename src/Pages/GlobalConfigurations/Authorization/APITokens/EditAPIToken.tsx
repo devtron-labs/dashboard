@@ -31,7 +31,6 @@ import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { renderQuestionwithTippy } from './CreateAPIToken'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
 import { User } from '../types'
-import { PermissionType } from '../constants'
 import {
     PermissionConfigurationForm,
     PermissionConfigurationFormProvider,
@@ -57,18 +56,8 @@ const EditAPIToken = ({
     isLoading: boolean
     setEditData: (editData: EditDataType) => void
 }) => {
-    const {
-        permissionType,
-        setPermissionType,
-        directPermission,
-        setDirectPermission,
-        chartPermission,
-        k8sPermission,
-        userGroups,
-        data: userData,
-    } = usePermissionConfiguration()
-
-    const _userData = userData as User
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+        usePermissionConfiguration()
 
     const history = useHistory()
     const match = useRouteMatch()
@@ -78,10 +67,6 @@ const EditAPIToken = ({
     const [customDate, setCustomDate] = useState<number>(undefined)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
-
-    useEffect(() => {
-        setPermissionType(_userData.superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
-    }, [_userData])
 
     const renderActionButton = () => {
         return (
