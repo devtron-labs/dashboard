@@ -20,6 +20,8 @@ import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
 import {
+    ApiQueuingWithBatchResponseItem,
+    ApiQueuingBatchStatusType,
     AppGroupList,
     CIConfigListType,
     CheckPermissionResponse,
@@ -244,20 +246,28 @@ export const editDescription = (payload): Promise<EditDescRequestResponse> => {
     return put(Routes.ENVIRONMENT, payload)
 }
 
-const eachCall = (batchConfig, functionCalls, resolve, reject) => {
+const eachCall = (batchConfig, functionCalls, resolve, reject, shouldRejectOnError) => {
     const callIndex = batchConfig.lastIndex
     Promise.resolve(functionCalls[callIndex]())
         .then((result) => {
-            batchConfig.results[callIndex] = { status: 'fulfilled', value: result }
+            batchConfig.results[callIndex] = { status: ApiQueuingBatchStatusType.FULFILLED, value: result }
             batchConfig.completedCalls++
+            if (batchConfig.lastIndex < functionCalls.length) {
+                eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
+                batchConfig.lastIndex++
+            } else if (batchConfig.completedCalls === functionCalls.length) {
+                resolve(batchConfig.results)
+            }
         })
         .catch((error) => {
-            batchConfig.results[callIndex] = { status: 'rejected', reason: error }
+            batchConfig.results[callIndex] = { status: ApiQueuingBatchStatusType.REJECTED, reason: error }
             batchConfig.completedCalls++
-        })
-        .finally(() => {
+            if (shouldRejectOnError) {
+                reject(error)
+                return
+            }
             if (batchConfig.lastIndex < functionCalls.length) {
-                eachCall(batchConfig, functionCalls, resolve, reject)
+                eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
                 batchConfig.lastIndex++
             } else if (batchConfig.completedCalls === functionCalls.length) {
                 resolve(batchConfig.results)
@@ -269,17 +279,19 @@ const eachCall = (batchConfig, functionCalls, resolve, reject) => {
  * Executes a batch of function calls concurrently with queuing.
  * @param functionCalls The array of function calls returning promise to be executed.
  * @param batchSize The maximum number of function calls to be executed concurrently. Defaults to the value of `window._env_.API_BATCH_SIZE`.
+ * @param shouldRejectOnError If set to true, the promise will reject if any of the function calls rejects, i.e, acts like Promise.all else Promise.allSettled . Defaults to false.
  * @returns A promise that resolves to a array of objects containing the status and value of the batch execution.
  */
-
 export const ApiQueuingWithBatch = (
     functionCalls,
     httpProtocol: string,
+    shouldRejectOnError: boolean = false,
     batchSize: number = window._env_.API_BATCH_SIZE,
-) => {
+): Promise<ApiQueuingWithBatchResponseItem[]> => {
     if (!batchSize || batchSize <= 0) {
         batchSize = ['http/0.9', 'http/1.0', 'http/1.1'].indexOf(httpProtocol) !== -1 ? 5 : 30
     }
+
     return new Promise((resolve, reject) => {
         if (functionCalls.length === 0) {
             resolve([])
@@ -295,7 +307,7 @@ export const ApiQueuingWithBatch = (
             index < batchConfig.concurrentCount && index < functionCalls.length;
             index++, batchConfig.lastIndex++
         ) {
-            eachCall(batchConfig, functionCalls, resolve, reject)
+            eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
         }
     })
 }

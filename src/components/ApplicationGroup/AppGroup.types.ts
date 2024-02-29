@@ -472,3 +472,14 @@ export interface batchConfigType{
     concurrentCount: number
     completedCalls: number
 }
+
+export enum ApiQueuingBatchStatusType {
+    FULFILLED = 'fulfilled',
+    REJECTED = 'rejected',
+}
+
+// TODO: use T for value
+export interface ApiQueuingWithBatchResponseItem {
+    status: ApiQueuingBatchStatusType
+    value: any
+}
