@@ -8,7 +8,7 @@ import {
     showError,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { IMAGE_APPROVER_ACTION, CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes } from '../../../constants'
+import { IMAGE_APPROVER_ACTION, CONFIG_APPROVER_ACTION, EntityTypes, ActionTypes } from '../../../constants'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { mapByKey } from '../../../../../../components/common'
 import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
@@ -495,22 +495,37 @@ const AppPermissions = () => {
         setDirectPermission(directPermissions)
 
         // Chart Permissions
-        const tempChartPermission: APIRoleFilter = roleFilters?.find(
-            (roleFilter) => roleFilter.entity === EntityTypes.CHART_GROUP,
+        const adminOrUpdateChartPermission = roleFilters?.find(
+            (roleFilter) => roleFilter.entity === EntityTypes.CHART_GROUP && roleFilter.action !== ActionTypes.VIEW,
         )
-        if (tempChartPermission) {
-            const chartPermission: ChartGroupPermissionsFilter = {
-                entity: EntityTypes.CHART_GROUP,
-                entityName:
-                    tempChartPermission?.entityName.split(',')?.map((entity) => ({ value: entity, label: entity })) ||
-                    [],
-                action:
-                    tempChartPermission.action === SELECT_ALL_VALUE ? ActionTypes.ADMIN : tempChartPermission.action,
-                ...getDefaultStatusAndTimeout(),
-            }
 
-            setChartPermission(chartPermission)
+        let _chartPermission: ChartGroupPermissionsFilter = {
+            entity: EntityTypes.CHART_GROUP,
+            entityName: [],
+            action: ActionTypes.VIEW,
+            ...getDefaultStatusAndTimeout(),
         }
+
+        if (adminOrUpdateChartPermission) {
+            // Admin chart permission
+            if (adminOrUpdateChartPermission.action === ActionTypes.ADMIN) {
+                _chartPermission = {
+                    ..._chartPermission,
+                    action: ActionTypes.ADMIN,
+                }
+            } else if (adminOrUpdateChartPermission.action === ActionTypes.UPDATE) {
+                // Edit permission for chart group
+                _chartPermission = {
+                    ..._chartPermission,
+                    action: ActionTypes.UPDATE,
+                    entityName:
+                        adminOrUpdateChartPermission.entityName
+                            ?.split(',')
+                            ?.map((entity) => ({ value: entity, label: entity })) || [],
+                }
+            }
+        }
+        setChartPermission(_chartPermission)
 
         // K8s Permissions
         const _assignedRoleFilters: APIRoleFilter[] = roleFilters?.filter(
