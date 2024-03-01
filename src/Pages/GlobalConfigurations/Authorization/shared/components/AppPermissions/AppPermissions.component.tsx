@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
@@ -68,6 +68,16 @@ const AppPermissions = () => {
     const [appsListHelmApps, setAppsListHelmApps] = useState<AppPermissionsDetailType['appsListHelmApps']>(new Map())
     const [jobsList, setJobsList] = useState<AppPermissionsDetailType['jobsList']>(new Map())
 
+    // To store the mapping and minimize the number of API calls
+    const projectToJobListRef = useRef<
+        Map<
+            number,
+            {
+                jobsList: JobList['result']['jobContainers']
+            }
+        >
+    >()
+
     const [isDataLoading, configData, error, reload] = useAsync(() =>
         Promise.all([
             getProjectList(),
@@ -126,6 +136,8 @@ const AppPermissions = () => {
                     }
                 >(),
             )
+
+            projectToJobListRef.current = projectsMap
 
             setJobsList(
                 (_jobsList) =>
@@ -444,9 +456,7 @@ const AppPermissions = () => {
                     let jobNameToAppNameMapping = new Map()
 
                     if (directRoleFilter.entity === EntityTypes.JOB) {
-                        const {
-                            result: { jobContainers },
-                        } = await getJobs({ teams: [projectId] })
+                        const jobContainers = projectToJobListRef.current?.get(projectId)?.jobsList ?? []
 
                         jobNameToAppNameMapping = new Map(jobContainers.map((job) => [job.appName, job.jobName]))
                     }
