@@ -841,7 +841,7 @@ const AppPermissions = () => {
 
     return (
         <div className="flexbox-col dc__gap-12">
-            <ul className="tab-list dc__border-bottom">
+            <ul className="tab-list dc__border-bottom-n1">
                 {navLinksConfig.map(
                     ({ isHidden, label, tabName }) =>
                         !isHidden && (

@@ -279,7 +279,7 @@ const EditAPIToken = ({
                             </span>
                         </div>
                     </label>
-                    <div className="dc__border-top-n1" />
+                    <div className="dc__border-top" />
                     <PermissionConfigurationForm showUserPermissionGroupSelector />
                 </div>
             </div>

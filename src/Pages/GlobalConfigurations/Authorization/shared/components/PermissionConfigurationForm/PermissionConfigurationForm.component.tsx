@@ -47,7 +47,7 @@ const PermissionConfigurationForm = ({ showUserPermissionGroupSelector = false }
                     {showUserPermissionGroupSelector && (
                         <>
                             <UserPermissionGroupsSelector />
-                            <div className="dc__border-top-n1" />
+                            <div className="dc__border-top" />
                         </>
                     )}
                     <div className="flexbox-col dc__gap-8">

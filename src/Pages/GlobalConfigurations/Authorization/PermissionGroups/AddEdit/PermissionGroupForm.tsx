@@ -179,7 +179,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             placeholder="Enter a description for this group"
                         />
                     </div>
-                    <div className="dc__border-top-n1" />
+                    <div className="dc__border-top" />
                     <PermissionConfigurationForm showUserPermissionGroupSelector={false} />
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
