@@ -18,7 +18,7 @@ import ContentCard from '../../common/ContentCard/ContentCard'
 import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
-import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
+import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel, appListLoading } from '../list-new/Constants'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 
 export class AppListView extends Component<AppListViewProps> {
@@ -90,8 +90,7 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     renderAppList() {
-        if (this.props.apps.length) {
-            const icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
+            let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
                 <div className="app-list" data-testid="app-list-container">
                     <div className="app-list__header dc__position-sticky dc__top-47">
@@ -167,104 +166,118 @@ export class AppListView extends Component<AppListViewProps> {
                         </div>
                         <div className="app-list__cell app-list__cell--action" />
                     </div>
-                    {this.props.apps.map((app) => {
-                        const len = app.environments.length > 1
-                        return (
-                            <React.Fragment key={app.id}>
-                                {!this.props.expandedRow[app.id] ? (
-                                    <Link
-                                        to={this.props.redirectToAppDetails(app, app.defaultEnv.id)}
-                                        className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
-                                        data-testid="app-list-row"
-                                    >
-                                        <div className="app-list__cell--icon">
-                                            <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
-                                            {len && (
-                                                <Arrow
-                                                    className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
-                                                    onClick={this.expandEnv}
-                                                    data-key={app.id}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--name">
-                                            <p className="dc__truncate-text  m-0 value" data-testid="app-list-for-sort">
-                                                {app.name}
-                                            </p>
-                                        </div>
-                                        {this.props.isArgoInstalled && (
-                                            <div
-                                                className="app-list__cell app-list__cell--app_status"
-                                                data-testid="devtron-app-status"
-                                            >
-                                                <AppStatus
-                                                    appStatus={app.defaultEnv.appStatus}
-                                                    isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
-                                                />
+                    {this.props.view === AppListViewType.LOADING ? (
+                        <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
+                            {appListLoading.map((eachRow) => (
+                                <div className="pl-20 resource-list__table-row" key={eachRow.id}>
+                                    {Object.keys(eachRow).map((eachKey) => (
+                                        <div className="child child-shimmer-loading" key={eachKey} />
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        this.props.apps.map((app) => {
+                            const len = app.environments.length > 1
+                            return (
+                                <React.Fragment key={app.id}>
+                                    {!this.props.expandedRow[app.id] ? (
+                                        <Link
+                                            to={this.props.redirectToAppDetails(app, app.defaultEnv.id)}
+                                            className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
+                                            data-testid="app-list-row"
+                                        >
+                                            <div className="app-list__cell--icon">
+                                                <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
+                                                {len && (
+                                                    <Arrow
+                                                        className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
+                                                        onClick={this.expandEnv}
+                                                        data-key={app.id}
+                                                    />
+                                                )}
                                             </div>
-                                        )}
-                                        {this.renderEnvironmentList(app)}
-                                        <div className="app-list__cell app-list__cell--cluster">
-                                            <p
-                                                data-testid={`${app.defaultEnv.clusterName}-cluster`}
-                                                className="dc__truncate-text  m-0"
-                                            >
-                                                {app.defaultEnv ? app.defaultEnv.clusterName : ''}
-                                            </p>
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--namespace">
-                                            <p
-                                                data-testid={`${app.defaultEnv.namespace}-namespace`}
-                                                className="dc__truncate-text  m-0"
-                                            >
-                                                {app.defaultEnv ? app.defaultEnv.namespace : ''}
-                                            </p>
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--time">
-                                            {app.defaultEnv && app.defaultEnv.lastDeployedTime && (
-                                                <Tippy
-                                                    className="default-tt"
-                                                    arrow
-                                                    placement="top"
-                                                    content={app.defaultEnv.lastDeployedTime}
+                                            <div className="app-list__cell app-list__cell--name">
+                                                <p
+                                                    className="dc__truncate-text  m-0 value"
+                                                    data-testid="app-list-for-sort"
                                                 >
-                                                    <div
-                                                        className="dc__truncate-text  m-0"
-                                                        data-testid="last-deployed-time"
-                                                    >
-                                                        {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
-                                                    </div>
-                                                </Tippy>
+                                                    {app.name}
+                                                </p>
+                                            </div>
+                                            {this.props.isArgoInstalled && (
+                                                <div
+                                                    className="app-list__cell app-list__cell--app_status"
+                                                    data-testid="devtron-app-status"
+                                                >
+                                                    <AppStatus
+                                                        appStatus={app.defaultEnv.appStatus}
+                                                        isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
+                                                    />
+                                                </div>
                                             )}
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--action">
-                                            <button
-                                                data-testid="edit-app-button"
-                                                type="button"
-                                                data-key={app.id}
-                                                className="button-edit"
-                                                onClick={this.handleEditApp}
-                                            >
-                                                <Edit className="button-edit__icon" />
-                                            </button>
-                                        </div>
-                                    </Link>
-                                ) : null}
-                                {this.props.expandedRow[app.id] && (
-                                    <ExpandedRow
-                                        app={app}
-                                        close={this.closeExpandedRow}
-                                        redirect={this.props.redirectToAppDetails}
-                                        handleEdit={this.props.handleEditApp}
-                                        isArgoInstalled={this.props.isArgoInstalled}
-                                    />
-                                )}
-                            </React.Fragment>
-                        )
-                    })}
+                                            {this.renderEnvironmentList(app)}
+                                            <div className="app-list__cell app-list__cell--cluster">
+                                                <p
+                                                    data-testid={`${app.defaultEnv.clusterName}-cluster`}
+                                                    className="dc__truncate-text  m-0"
+                                                >
+                                                    {app.defaultEnv ? app.defaultEnv.clusterName : ''}
+                                                </p>
+                                            </div>
+                                            <div className="app-list__cell app-list__cell--namespace">
+                                                <p
+                                                    data-testid={`${app.defaultEnv.namespace}-namespace`}
+                                                    className="dc__truncate-text  m-0"
+                                                >
+                                                    {app.defaultEnv ? app.defaultEnv.namespace : ''}
+                                                </p>
+                                            </div>
+                                            <div className="app-list__cell app-list__cell--time">
+                                                {app.defaultEnv && app.defaultEnv.lastDeployedTime && (
+                                                    <Tippy
+                                                        className="default-tt"
+                                                        arrow={true}
+                                                        placement="top"
+                                                        content={app.defaultEnv.lastDeployedTime}
+                                                    >
+                                                        <p
+                                                            className="dc__truncate-text  m-0"
+                                                            data-testid="last-deployed-time"
+                                                        >
+                                                            {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
+                                                        </p>
+                                                    </Tippy>
+                                                )}
+                                            </div>
+                                            <div className="app-list__cell app-list__cell--action">
+                                                <button
+                                                    data-testid="edit-app-button"
+                                                    type="button"
+                                                    data-key={app.id}
+                                                    className="button-edit"
+                                                    onClick={this.handleEditApp}
+                                                >
+                                                    <Edit className="button-edit__icon" />
+                                                </button>
+                                            </div>
+                                        </Link>
+                                    ) : null}
+                                    {this.props.expandedRow[app.id] && (
+                                        <ExpandedRow
+                                            app={app}
+                                            close={this.closeExpandedRow}
+                                            redirect={this.props.redirectToAppDetails}
+                                            handleEdit={this.props.handleEditApp}
+                                            isArgoInstalled={this.props.isArgoInstalled}
+                                        />
+                                    )}
+                                </React.Fragment>
+                            )
+                        })
+                    )}
                 </div>
             )
-        }
     }
 
     renderPagination() {
@@ -314,13 +327,6 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     render() {
-        if (this.props.view === AppListViewType.LOADING) {
-            return (
-                <div className="dc__loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
         if (this.props.view === AppListViewType.EMPTY) {
             return this.renderGuidedCards()
         }

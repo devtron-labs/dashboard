@@ -1,6 +1,6 @@
 import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
-
-export const DEFAULT_STATUS = 'Checking Status...'
+export const DEFAULT_STATUS = 'checking'
+export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
@@ -750,6 +750,7 @@ export const DEPLOYMENT_STATUS = {
     SUPERSEDED: 'superseded',
     QUEUED: 'queued',
     UNKNOWN: 'unknown',
+    CHECKING: 'checking',
 }
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {

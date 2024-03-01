@@ -1,12 +1,18 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor'
-import { MODES, Progressing, copyToClipboard, useWindowSize } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    MODES,
+    Progressing,
+    copyToClipboard,
+    useWindowSize,
+    StyledRadioGroup as RadioGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import ReactGA from 'react-ga4'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { configureMonacoYaml } from 'monaco-yaml'
 
-import { useJsonYaml, Select, RadioGroup } from '../common'
+import { useJsonYaml, Select } from '../common'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'

@@ -33,6 +33,8 @@ interface TriggerInfoModalProps {
 }
 
 export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerInfoModalState> {
+    commitInfoRef = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -51,8 +53,19 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             tagsEditable: false,
             hideImageTaggingHardDelete: false,
         }
+        this.commitInfoRef = React.createRef<HTMLDivElement>()
         this.selectMaterial = this.selectMaterial.bind(this)
         this.toggleChanges = this.toggleChanges.bind(this)
+    }
+
+    outsideClickHandler = (evt): void => {
+        if (this.commitInfoRef.current && !this.commitInfoRef.current.contains(evt.target)) {
+            this.props.close()
+        }
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('click', this.outsideClickHandler)
     }
 
     componentDidMount() {
@@ -71,6 +84,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             .catch((error) => {
                 showError(error)
             })
+        document.addEventListener('click', this.outsideClickHandler)
     }
 
     selectMaterial(materialId: string): void {
@@ -103,7 +117,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     renderWithBackDrop(headerDescription: string, body) {
         return (
             <Drawer position="right" width="800px" onEscape={this.props.close}>
-                <div data-testid="visible-modal-commit-info" className="h-100vh">
+                <div data-testid="visible-modal-commit-info" className="h-100vh" ref={this.commitInfoRef}>
                     <div className="trigger-modal__header bcn-0">
                         <div className="">
                             <h1 className="modal__title">{this.state.appName}</h1>

@@ -26,8 +26,10 @@ const DeploymentStatusCard = ({
     }
     const ProgressingStateList: string[] = [
         DEPLOYMENT_STATUS.INPROGRESS,
+        DEPLOYMENT_STATUS.PROGRESSING,
         DEPLOYMENT_STATUS.STARTING,
         DEPLOYMENT_STATUS.INITIATING,
+        DEPLOYMENT_STATUS.CHECKING
     ]
     const renderDeploymentStatus = () => {
         const { triggeredBy, deploymentStatus, deploymentTriggerTime, deploymentStatusText } =
@@ -52,7 +54,7 @@ const DeploymentStatusCard = ({
                         <div className="flex fs-12 fw-4">
                             <span
                                 data-testid="deployment-status-name"
-                                className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus?.toLowerCase()} ${
+                                className={`app-summary__status-name fs-13 mr-8 fw-6 f-${deploymentStatus?.toLowerCase()} ${
                                     ProgressingStateList.includes(deploymentStatus) ? 'dc__loading-dots' : ''
                                 }`}
                             >
