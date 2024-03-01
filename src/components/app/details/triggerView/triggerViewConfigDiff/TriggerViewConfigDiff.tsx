@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
-import { Toggle, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { MODES } from '../../../../../config'
@@ -10,12 +9,13 @@ import { DEPLOYMENT_CONFIGURATION_NAV_MAP, getDeployConfigOptions } from '../Tri
 import ReactSelect, { components } from 'react-select'
 import { DropdownIndicator, Option } from '../../../../v2/common/ReactSelect.utils'
 import { getCommonConfigSelectStyles } from '../config'
-import { ConditionalWrap } from '../../../../common'
 import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
+import { Toggle, ConditionalWrap,useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
+
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,

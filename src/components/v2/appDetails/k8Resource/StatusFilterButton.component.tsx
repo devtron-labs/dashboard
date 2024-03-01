@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import IndexStore from '../index.store'
 import { NodeStatus, StatusFilterButtonType } from '../appDetails.type'
-import { RadioGroup } from '../../../common'
+import { StyledRadioGroup as RadioGroup } from '@devtron-labs/devtron-fe-common-lib'
 import './k8resources.scss'
 
 interface TabState {

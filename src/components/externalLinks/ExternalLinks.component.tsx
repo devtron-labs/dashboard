@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { TippyCustomized, TippyTheme, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
@@ -22,8 +21,14 @@ import {
     NodeLevelSelectStyles,
     onImageLoadError,
 } from './ExternalLinks.utils'
+import {
+    TippyCustomized,
+    TippyTheme,
+    InfoColourBar,
+    GenericEmptyState,
+    ConditionalWrap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
-import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 

@@ -1,9 +1,8 @@
 import React from 'react'
-import { WorkflowNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { WorkflowNodeType, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
-import { ConditionalWrap } from '../../common'
 import { WebhookNodeProps } from '../types'
 
 export const WebhookNode = ({

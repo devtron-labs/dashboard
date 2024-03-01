@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import { Link, useLocation } from 'react-router-dom'
-import { CustomInput, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import { SourceTypeMap, URLS } from '../../config'
 import git from '../../assets/icons/git/git.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
@@ -12,7 +10,8 @@ import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import { ConditionalWrap } from '../common'
+import { CustomInput, InfoColourBar, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
     const [isProviderChanged, setProviderChanged] = useState(false)
