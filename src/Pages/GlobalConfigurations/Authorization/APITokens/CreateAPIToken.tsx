@@ -241,7 +241,7 @@ const CreateAPIToken = ({
                         {renderQuestionwithTippy()}
                     </div>
                 </div>
-                <div className="flexbox-col dc__gap-12">
+                <div className="flexbox-col dc__gap-16">
                     <CustomInput
                         tabIndex={1}
                         placeholder="Name"

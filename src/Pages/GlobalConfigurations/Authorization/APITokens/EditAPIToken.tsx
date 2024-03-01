@@ -212,7 +212,7 @@ const EditAPIToken = ({
                         </ButtonWithLoader>
                     </div>
                 </div>
-                <div className="flexbox-col dc__gap-12">
+                <div className="flexbox-col dc__gap-16">
                     {renderRegenerateInfoBar()}
                     <label className="form__row">
                         <CustomInput

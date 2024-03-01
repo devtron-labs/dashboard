@@ -41,9 +41,16 @@ export const PermissionConfigurationFormProvider = ({
     const [k8sPermission, setK8sPermission] = useState<K8sPermissionFilter[]>([])
 
     const currentK8sPermissionRef = useRef<K8sPermissionFilter[]>([])
-    const [userGroups, setUserGroups] = useState<User['userRoleGroups']>([])
+    const [userGroups, _setUserGroups] = useState<User['userRoleGroups']>([])
     const [userStatus, setUserStatus] = useState<User['userStatus']>()
     const [timeToLive, setTimeToLive] = useState<User['timeToLive']>()
+
+    /**
+     * Sorts the groups alphabetically by name
+     */
+    const setUserGroups = (groups: User['userRoleGroups']) => {
+        _setUserGroups(groups.sort((a, b) => a.name.localeCompare(b.name)))
+    }
 
     useEffect(() => {
         if (data) {
