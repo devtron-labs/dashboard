@@ -20,6 +20,7 @@ import {
     DeploymentAppTypes,
     PipelineType,
     CustomInput,
+    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import ReactSelect from 'react-select'
@@ -67,12 +68,7 @@ import {
 } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import {
-    ConditionalWrap,
-    createClusterEnvGroup,
-    getDeploymentAppType,
-    importComponentFromFELibrary,
-} from '../common/helpers/Helpers'
+import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
 import {
     DEPLOY_IMAGE_EXTERNALSOURCE,
     EDIT_DEPLOYMENT_PIPELINE,

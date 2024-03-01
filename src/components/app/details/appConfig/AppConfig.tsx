@@ -1,15 +1,5 @@
 import React, { useState, useEffect, lazy } from 'react'
 import { useParams, useLocation, useRouteMatch, useHistory, NavLink, Link } from 'react-router-dom'
-
-import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    DeleteDialog,
-    ConfirmationDialog,
-    TippyCustomized,
-    TippyTheme,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import {
     URLS,
@@ -19,7 +9,17 @@ import {
     ViewType,
     isCDPipelineCreated,
 } from '../../../../config'
-import { ConditionalWrap, importComponentFromFELibrary } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    DeleteDialog,
+    ConfirmationDialog,
+    TippyCustomized,
+    TippyTheme,
+    ConditionalWrap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
