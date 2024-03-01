@@ -11,6 +11,8 @@ import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
+import { logExceptionToSentry } from '@devtron-labs/devtron-fe-common-lib'
+
 
 let clusterTimeOut
 
@@ -183,6 +185,7 @@ export default function TerminalView({
         }
 
         _socket.onclose = function (evt) {
+            if (window._env_.LOG_TERMINAL_EVENTS_TO_SENTRY && evt.reason !== 'Normal closure') logExceptionToSentry(evt)
             disableInput()
             _terminal.writeln('')
             _terminal.writeln('---------------------------------------------')

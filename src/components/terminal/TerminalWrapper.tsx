@@ -12,6 +12,8 @@ import { AppDetails } from '../app/types'
 import './terminal.scss'
 import { Scroller } from '../app/details/cicdHistory/History.components'
 import { SocketConnectionType } from '../app/details/appDetails/appDetails.type'
+import { logExceptionToSentry } from '@devtron-labs/devtron-fe-common-lib'
+
 
 interface TerminalViewProps {
     appDetails: AppDetails
@@ -270,6 +272,7 @@ export class TerminalView extends Component<TerminalViewProps, TerminalViewState
         }
 
         socket.onclose = function (evt) {
+            if (window._env_.LOG_TERMINAL_EVENTS_TO_SENTRY && evt.reason !== 'Normal closure') logExceptionToSentry(evt)
             setSocketConnection('DISCONNECTED')
         }
 

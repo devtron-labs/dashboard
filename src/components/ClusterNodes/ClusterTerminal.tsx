@@ -344,7 +344,7 @@ export default function ClusterTerminal({
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
                 selectedTerminalType.value
             }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
-                resourceData.containers?.[0].containerName || ''
+                resourceData?.containers?.[0].containerName || ''
             }`,
             terminalAccessIdRef.current,
             window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,

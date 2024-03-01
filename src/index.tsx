@@ -12,6 +12,7 @@ interface customEnv {
     SENTRY_PERFORMANCE_ENABLED?: boolean
     SENTRY_DSN?: string
     SENTRY_TRACES_SAMPLE_RATE?: number
+    LOG_TERMINAL_EVENTS_TO_SENTRY?: boolean
     HOTJAR_ENABLED?: boolean
     CLUSTER_NAME?: boolean
     APPLICATION_METRICS_ENABLED?: boolean
@@ -135,6 +136,7 @@ if (!window || !window._env_) {
         SENTRY_PERFORMANCE_ENABLED: false,
         SENTRY_DSN: '',
         SENTRY_TRACES_SAMPLE_RATE: 0.2,
+        LOG_TERMINAL_EVENTS_TO_SENTRY: false,
         HOTJAR_ENABLED: false,
         GA_ENABLED: false,
         GTM_ENABLED: false,
