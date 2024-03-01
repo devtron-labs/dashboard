@@ -1,9 +1,11 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor'
-import { Progressing, copyToClipboard, useWindowSize } from '@devtron-labs/devtron-fe-common-lib'
+import { MODES, Progressing, copyToClipboard, useWindowSize } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import ReactGA from 'react-ga4'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import { configureMonacoYaml } from 'monaco-yaml'
+
 import { useJsonYaml, Select, RadioGroup } from '../common'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
@@ -11,10 +13,19 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import './codeEditor.scss'
 import 'monaco-editor'
+
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+import YamlWorker from '../../yaml.worker.js?worker'
 import { cleanKubeManifest } from '../../util/Util'
 
-// @ts-ignore
-const { yaml } = monaco.languages || {}
+self.MonacoEnvironment = {
+    getWorker(_, label) {
+        if (label === MODES.YAML) {
+            return new YamlWorker()
+        }
+        return new editorWorker()
+    },
+}
 
 interface InformationBarProps {
     text: string
@@ -223,22 +234,20 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         if (!validatorSchema) {
             return
         }
-        yaml &&
-            yaml.yamlDefaults.setDiagnosticsOptions({
-                validate: true,
-                enableSchemaRequest: true,
-                hover: true,
-                completion: true,
-                isKubernetes,
-                format: true,
-                schemas: [
-                    {
-                        uri: `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/reference-chart_${chartVersion}/schema.json`, // id of the first schema
-                        fileMatch: ['*'], // associate with our model
-                        schema: validatorSchema,
-                    },
-                ],
-            })
+        const config = configureMonacoYaml(monaco, {
+            enableSchemaRequest: true,
+            isKubernetes,
+            schemas: [
+                {
+                    uri: `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/reference-chart_${chartVersion}/schema.json`, // id of the first schema
+                    fileMatch: ['*'], // associate with our model
+                    schema: validatorSchema,
+                },
+            ],
+        })
+        return () => {
+            config.dispose()
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validatorSchema, chartVersion])
     useEffect(() => {
@@ -322,6 +331,12 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             return `<span style="padding-right:6px">${lineNumber}</span>`
         },
     }
+
+    const diffViewOptions: monaco.editor.IDiffEditorConstructionOptions = {
+        ...options,
+        useInlineViewWhenSpaceIsLimited: false,
+    }
+
     return (
         <CodeEditorContext.Provider value={{ dispatch, state, handleLanguageChange, error, defaultValue, height }}>
             {children}
@@ -336,7 +351,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             value={state.code}
                             language={state.mode}
                             onChange={handleOnChange}
-                            options={options}
+                            options={diffViewOptions}
                             theme={state.theme.toLowerCase().split(' ').join('-')}
                             editorDidMount={editorDidMount}
                             height={height}

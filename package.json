@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.64",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.67",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -25,9 +25,8 @@
         "http-proxy-middleware": "^2.0.6",
         "marked": "4.3.0",
         "moment": "^2.29.4",
-        "monaco-editor": "0.38.0",
-        "monaco-editor-webpack-plugin": "^7.1.0",
-        "monaco-yaml": "4.0.4",
+        "monaco-editor": "0.45.0",
+        "monaco-yaml": "5.1.1",
         "query-string": "^7.1.1",
         "react": "^17.0.2",
         "react-csv": "^2.2.2",
@@ -38,7 +37,7 @@
         "react-gtm-module": "^2.0.11",
         "react-keybind": "^0.9.4",
         "react-mde": "^11.5.0",
-        "react-monaco-editor": "^0.54.0",
+        "react-monaco-editor": "^0.55.0",
         "react-router-dom": "^5.3.4",
         "react-select": "^5.2.2",
         "react-toastify": "^8.2.0",
@@ -122,7 +121,9 @@
         "workbox-window": "7.0.0",
         "workbox-core": "^7.0.0",
         "workbox-precaching": "^7.0.0",
-        "workbox-routing": "^7.0.0"
+        "workbox-routing": "^7.0.0",
+        "workbox-navigation-preload": "7.0.0",
+        "workbox-strategies": "7.0.0"
     },
     "jest": {
         "collectCoverageFrom": [
