@@ -519,8 +519,8 @@ export default function DeploymentConfig({
                 ? await checkForProtectedLockedChanges()
                 : await getIfLockedConfigNonProtected(requestBody)
             if (deploymentTemplateResp.result?.isLockConfigError) {
-                setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
-                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
+                setDisableSaveEligibleChanges(deploymentTemplateResp.result.disableSaveEligibleChanges)
+                setLockedOverride(deploymentTemplateResp.result.lockedOverride)
                 handleLockedDiffDrawer(true)
                 return
             }
@@ -567,8 +567,8 @@ export default function DeploymentConfig({
             const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             const deploymentTemplateResp = await api(requestBody, baseDeploymentAbortController.signal)
             if (deploymentTemplateResp.result?.isLockConfigError) {
-                setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
-                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
+                setDisableSaveEligibleChanges(deploymentTemplateResp.result.disableSaveEligibleChanges)
+                setLockedOverride(deploymentTemplateResp.result.lockedOverride)
                 handleLockedDiffDrawer(true)
                 return
             }
