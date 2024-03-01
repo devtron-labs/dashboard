@@ -520,7 +520,6 @@ export interface TagChipsContainerType {
 }
 export interface SourceInfoType {
     appDetails: AppDetails
-    appStreamData?: AppStreamData
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     environment: AppEnvironment
     environments: AppEnvironment[]

@@ -16,6 +16,10 @@ import {
     PipelineType,
     WorkflowType,
     Material,
+    KeyValueListType,
+    CIMaterialSidebarType,
+    HandleKeyValueChangeType,
+    RuntimeParamsTriggerPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -192,6 +196,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
+    handleRuntimeParametersChange: ({ action, data }: HandleKeyValueChangeType) => void
+    runtimeParams: KeyValueListType[]
 }
 
 export interface RegexValueType {
@@ -204,6 +210,7 @@ export interface CIMaterialState {
     savingRegexValue: boolean
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
+    currentSidebarTab: CIMaterialSidebarType
 }
 
 export interface DownStreams {
@@ -371,6 +378,7 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
+    runtimeParams?: KeyValueListType[]
 }
 
 // -- begining of response type objects for trigger view
@@ -639,6 +647,7 @@ export interface TriggerViewConfigDiffProps {
     diffOptions: Record<string, boolean>
     isRollbackTriggerSelected: boolean
     isRecentConfigAvailable: boolean
+    canReviewConfig: boolean
 }
 
 export const MATERIAL_TYPE = {
@@ -692,4 +701,10 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
 export interface RenderCTAType {
     mat: CDMaterialType
     disableSelection: boolean
+}
+
+export interface RuntimeParamsValidatorReturnType {
+    isValid: boolean
+    message?: string
+    validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
 }
