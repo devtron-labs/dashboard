@@ -44,6 +44,7 @@ import {
     HELM_PERMISSION_MESSAGE,
     SELECT_CLUSTER_FROM_FILTER_NOTE,
     ClearFiltersLabel,
+    appListLoading,
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
@@ -186,11 +187,11 @@ export default function HelmAppList({
     }
 
     function _getClusterIdsFromRequestUrl() {
-        return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(',')).keys()].join(',')
+        return [...buildClusterVsNamespace(payloadParsedFromUrl?.namespaces?.join(',') || '').keys()].join(',')
     }
 
     function _getAppStatusFromRequestUrl() {
-        return payloadParsedFromUrl.appStatuses.join(',')
+        return payloadParsedFromUrl?.appStatuses?.join(',') || ''
     }
 
     function _onExternalAppDataFromSse(
@@ -708,9 +709,18 @@ export default function HelmAppList({
     return (
         <>
             {dataStateType == AppListViewType.LOADING && (
-                <div className="dc__loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
+                <>
+                    {renderHeaders()}
+                    <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
+                        {appListLoading.map((eachRow) => (
+                            <div className="pl-20 resource-list__table-row" key={eachRow.id}>
+                                {Object.keys(eachRow).map((eachKey) => (
+                                    <div className="child child-shimmer-loading" key={eachKey} />
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                </>
             )}
             {dataStateType == AppListViewType.ERROR && (
                 <div className="dc__loading-wrapper">

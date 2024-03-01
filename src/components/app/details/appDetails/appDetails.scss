@@ -1912,6 +1912,11 @@ table.resource-tree {
     margin-left: 8px !important;
 }
 
+.app-details-manifest-download-card {
+    overflow: hidden;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.20);
+}
+
 .app-details-info-card {
     align-items: flex-start;
     flex-direction: column;
@@ -1971,6 +1976,11 @@ table.resource-tree {
     margin-right: 0;
     height: 100%;
     overflow: scroll;
+
+    .issues-listing-modal__header {
+        position: sticky;
+        top: 0
+    }
 
     &__body {
         &__head-row {
