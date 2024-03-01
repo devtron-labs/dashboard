@@ -252,6 +252,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     description: string
     index?: number
     isVirtualEnvironment?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -273,6 +274,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     fromAppGrouping: boolean
     description: string
     index?: number
+    isDeploymentBlocked?: boolean
 }
 
 export interface TriggerEdgeType {

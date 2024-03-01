@@ -242,6 +242,7 @@ export class Workflow extends Component<WorkflowProps> {
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
                 isVirtualEnvironment={node.isVirtualEnvironment}
+                isDeploymentBlocked={node.isDeploymentBlocked}
             />
         )
     }
@@ -270,6 +271,7 @@ export class Workflow extends Component<WorkflowProps> {
                 match={this.props.match}
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
+                isDeploymentBlocked={node.isDeploymentBlocked}
             />
         )
     }

@@ -3592,7 +3592,7 @@ textarea,
 }
 
 .ml-36-imp {
-    margin-left: 36px !important 
+    margin-left: 36px !important
 }
 
 .ml-54 {
@@ -3788,6 +3788,10 @@ textarea::placeholder {
 
 .dc__opacity-0_5 {
     opacity: 0.5;
+}
+
+.dc__opacity-1 {
+  opacity: 1;
 }
 
 // blur
@@ -4167,7 +4171,7 @@ textarea::placeholder {
             top: 0;
             text-align: center;
         }
-    
+
         &.cd-trigger-announcement {
             .info-bar-container {
                 .announcement-bar {
@@ -4178,7 +4182,7 @@ textarea::placeholder {
             }
         }
     }
-    
+
     .announcement-bar {
         background-color: var(--Y500);
         border: 1px solid var(--Y700);

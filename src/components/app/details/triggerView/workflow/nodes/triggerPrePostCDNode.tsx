@@ -5,6 +5,7 @@ import { TriggerPrePostCDNodeProps } from '../../types'
 import { TriggerStatus } from '../../../../config'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
+import { DO_NOT_DEPLOY } from '../../Constants'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps> {
     constructor(props) {
@@ -69,8 +70,10 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps> {
                                 }
                             }}
                         >
-                            <div className="workflow-node__trigger-type workflow-node__trigger-type--cd">
-                                {this.props.triggerType}
+                            <div
+                                className={`workflow-node__trigger-type workflow-node__trigger-type--cd ${this.props.isDeploymentBlocked ? 'bcy-5 cn-9 dc__opacity-1' : ''}`}
+                            >
+                                {this.props.isDeploymentBlocked ? DO_NOT_DEPLOY : this.props.triggerType}
                             </div>
                             <div className="workflow-node__title flex">
                                 <div className="workflow-node__full-width-minus-Icon">
