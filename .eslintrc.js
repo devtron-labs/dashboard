@@ -52,6 +52,7 @@ module.exports = {
         'jsx-a11y/no-static-element-interactions': 'off',
         'jsx-a11y/no-noninteractive-element-interactions': 'off',
         'no-underscore-dangle': 'off',
+        'no-restricted-exports': 'off',
         'import/no-extraneous-dependencies': [
             'warn',
             {

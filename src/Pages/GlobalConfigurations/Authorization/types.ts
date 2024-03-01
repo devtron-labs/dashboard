@@ -1,6 +1,14 @@
 import { ReactNode } from 'react'
-import { UserStatusDto, UserListFilterParams, BaseFilterQueryParams } from '@devtron-labs/devtron-fe-common-lib'
-import { APIRoleFilter } from './shared/components/userGroups/userGroups.types'
+import {
+    UserStatusDto,
+    UserListFilterParams,
+    BaseFilterQueryParams,
+    OptionType,
+    UserStatus,
+    UserRoleGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
+import { ActionTypes, EntityTypes, PermissionType } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -10,31 +18,47 @@ export interface UserAndGroupPermissionsWrapProps {
     setIsAutoAssignFlowEnabled: (isAutoAssignFlowEnabled: boolean) => void
 }
 
+type PermissionStatusAndTimeout = Pick<UserRoleGroup, 'status' | 'timeToLive'>
+
+export interface APIRoleFilterDto {
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
+    team?: string
+    entityName?: string
+    environment?: string
+    action: string
+    accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    cluster?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    namespace?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    group?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    kind?: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resource?: any
+    workflow?: string
+    status: UserStatusDto
+    timeoutWindowExpression: string
+}
+
+export type APIRoleFilter = Omit<APIRoleFilterDto, 'status' | 'timeoutWindowExpression'> & PermissionStatusAndTimeout
+
 // Permission Groups
-export interface PermissionGroupDto {
-    /**
-     * ID of the permission group
-     */
-    id: number
-    /**
-     * Name of the permission group
-     */
-    name: string
-    /**
-     * Description of the permission group
-     */
-    description?: string
+export interface PermissionGroupDto extends Pick<UserRoleGroup, 'id' | 'name' | 'description'> {
     /**
      * Role filters (direct permissions) for the permission group
      */
-    roleFilters: APIRoleFilter[]
+    roleFilters: APIRoleFilterDto[]
     /**
      * If true, the group has super admin access
      */
     superAdmin: boolean
 }
 
-export type PermissionGroup = PermissionGroupDto
+export type PermissionGroup = Omit<PermissionGroupDto, 'roleFilters'> & {
+    roleFilters: APIRoleFilter[]
+}
 
 export type PermissionGroupCreateOrUpdatePayload = Pick<
     PermissionGroup,
@@ -73,34 +97,39 @@ export interface UserDto {
     /**
      * Role filters (direct permissions) for the user
      */
-    roleFilters: APIRoleFilter[]
+    roleFilters: APIRoleFilterDto[]
     /**
      * If true, the user is a super admin
      */
     superAdmin: boolean
-    // TODO (v3): Remove in next iteration
-    groups: string[]
-    // TODO (v3): This can be marked mandatory in next iteration once groups are deprecated
     /**
      * List of permission groups assigned to the user
      */
-    roleGroups?: Pick<PermissionGroup, 'id' | 'name' | 'description'>
+    userRoleGroups?: {
+        roleGroup: Pick<UserRoleGroup, 'id' | 'name' | 'description'>
+        status?: UserStatusDto
+        timeoutWindowExpression?: string
+    }[]
 }
 
-export interface User extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id'> {
+export interface User
+    extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters'> {
+    emailId: UserDto['email_id']
     /**
      * Time until which the user is active
      * Note: Only a user with status 'active' can have 'timeToLive'
      *
      * @default ''
      */
-    timeToLive?: string
-    emailId: UserDto['email_id']
+    timeToLive: string
+    userStatus: UserStatus
+    userRoleGroups: UserRoleGroup[]
+    roleFilters: APIRoleFilter[]
 }
 
 export type UserCreateOrUpdatePayload = Pick<
     User,
-    'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'groups'
+    'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive' | 'userRoleGroups'
 >
 
 // Others
@@ -130,3 +159,100 @@ export type PermissionGroupBulkDeletePayload =
     | {
           filterConfig: Pick<BaseFilterQueryParams<unknown>, 'searchKey'>
       }
+
+export interface CustomRoles {
+    id: number
+    roleName: string
+    roleDisplayName: string
+    roleDescription: string
+    entity: EntityTypes
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+}
+
+export type MetaPossibleRoles = Record<
+    CustomRoles['roleName'],
+    {
+        value: CustomRoles['roleDisplayName']
+        description: CustomRoles['roleDescription']
+    }
+>
+
+export interface CustomRoleAndMeta {
+    customRoles: CustomRoles[]
+    possibleRolesMeta: MetaPossibleRoles
+    possibleRolesMetaForHelm: MetaPossibleRoles
+    possibleRolesMetaForCluster: MetaPossibleRoles
+    possibleRolesMetaForJob: MetaPossibleRoles
+}
+
+export interface AuthorizationContextProps {
+    customRoles: CustomRoleAndMeta
+    isAutoAssignFlowEnabled: boolean
+}
+
+export interface AuthorizationProviderProps {
+    children: ReactNode
+    value: AuthorizationContextProps
+}
+
+export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN
+
+export interface RoleFilter {
+    entity: EntityTypes.DIRECT | EntityTypes.CHART_GROUP | EntityTypes.CLUSTER | EntityTypes.JOB
+    team?: OptionType
+    entityName?: OptionType[]
+    environment?: OptionType[]
+    action?: OptionType
+    cluster?: OptionType
+    namespace?: OptionType
+    group?: OptionType
+    kind?: OptionType
+    resource?: OptionType
+}
+
+export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatusAndTimeout {
+    entity: EntityTypes.DIRECT | EntityTypes.JOB
+    team: OptionType
+    entityName: OptionType[]
+    entityNameError?: string
+    environment: OptionType[]
+    environmentError?: string
+    workflowError?: string
+    action: {
+        label: string
+        value: string
+        configApprover?: boolean
+    }
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    workflow?: OptionType[]
+    approver?: boolean
+}
+
+export interface ChartGroupPermissionsFilter extends Omit<RoleFilter, 'action'>, PermissionStatusAndTimeout {
+    entity: EntityTypes.CHART_GROUP
+    team?: never
+    environment?: never
+    action: string
+}
+
+export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
+    entity: EntityTypes
+    cluster: OptionType
+    namespace: OptionType
+    group: OptionType
+    action: OptionType
+    kind: OptionType
+    resource: OptionType[]
+    key?: number
+}
+
+export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive'> {
+    id: number
+    userIdentifier: string
+    userGroups: User['userRoleGroups']
+    serverMode: SERVER_MODE
+    directPermission: DirectPermissionsRoleFilter[]
+    chartPermission: ChartGroupPermissionsFilter
+    k8sPermission: K8sPermissionFilter[]
+    permissionType: PermissionType
+}

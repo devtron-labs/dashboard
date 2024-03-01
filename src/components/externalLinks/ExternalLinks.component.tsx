@@ -22,10 +22,10 @@ import {
     NodeLevelSelectStyles,
     onImageLoadError,
 } from './ExternalLinks.utils'
-import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (

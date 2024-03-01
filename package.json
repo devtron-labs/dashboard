@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.67",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.67-beta-1",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -60,7 +60,7 @@
         "prepare": "husky install",
         "lint": "tsc --noEmit && NODE_OPTIONS=--max_old_space_size=8192 eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
-        "start": "vite",
+        "start": "vite --open",
         "build": "NODE_OPTIONS=--max_old_space_size=8192 vite build",
         "serve": "vite preview",
         "build-light": "GENERATE_SOURCEMAP=false NODE_OPTIONS=--max_old_space_size=8192 vite build",

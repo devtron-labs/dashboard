@@ -1,5 +1,5 @@
+import { UserRoleType } from '../../../../Pages/GlobalConfigurations/Authorization/constants'
 import { AppEnvironment, AppOtherEnvironment } from '../../../../services/service.types'
-import { UserRoleType } from '../../../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import { WorkflowResult } from '../triggerView/types'
 
 export enum STAGE_NAME {

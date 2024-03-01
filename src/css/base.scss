@@ -1600,7 +1600,7 @@ button.anchor {
     resize: none;
     border-radius: 4px;
     outline: none;
-    border: solid 1px #d6dbdf;
+    border: solid 1px var(--N200);
     padding: 12px 10px;
 
     &:disabled {
@@ -1608,7 +1608,7 @@ button.anchor {
     }
 
     &:not(.form__input--error):hover {
-        border-color: var(--N500);
+        border-color: var(--N400);
     }
 
     &:not(.form__input--error):focus {

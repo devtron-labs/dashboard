@@ -9,7 +9,7 @@ import emptyGeneratToken from '../../../../assets/img/ic-empty-generate-token.pn
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
-import { TokenListType, TokenResponseType } from './authorization.type'
+import { TokenListType, TokenResponseType } from './apiToken.type'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApiTokens = () => {
@@ -36,7 +36,7 @@ const ApiTokens = () => {
         getGeneratedAPITokenList()
             .then((response) => {
                 if (response.result) {
-                    const sortedResult = response.result.sort((a, b) => a['name'].localeCompare(b['name']))
+                    const sortedResult = response.result.sort((a, b) => a.name.localeCompare(b.name))
                     setTokenlist(sortedResult)
                     setFilteredTokenList(sortedResult)
                 } else {
@@ -53,15 +53,6 @@ const ApiTokens = () => {
     }
 
     useEffect(() => {
-        // TODO: Revisit. Temp check
-        if (
-            pathname.includes('/devtron-apps') ||
-            pathname.includes('/helm-apps') ||
-            pathname.includes('/chart-groups')
-        ) {
-            history.replace(pathname.split('/').slice(0, -1).join('/'))
-        }
-
         getData()
     }, [])
 
