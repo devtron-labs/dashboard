@@ -990,108 +990,67 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         )
     }
 
-    const renderAppListBody = () => {
-        if (dataStateType === AppListViewType.LOADING) {
-            return (
-                <div className="dc__height-reduce-172">
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
-        if (params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.FULL) {
-            return (
-                <DevtronAppListContainer
-                    payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                    environmentClusterList={environmentClusterListRes}
-                    clearAllFilters={removeAllFilters}
-                    sortApplicationList={sortApplicationList}
-                    appListCount={appListCount}
-                    isSuperAdmin={isSuperAdmin}
-                    openDevtronAppCreateModel={openDevtronAppCreateModel}
-                    setAppCount={setAppCount}
-                    updateDataSyncing={updateDataSyncing}
-                    isArgoInstalled={isArgoInstalled}
-                />
-            )
-        }
-        if (params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.EA_ONLY) {
-            return (
-                <div style={{ height: 'calc(100vh - 250px)' }}>
-                    <EAEmptyState
-                        title="Create, build, deploy and debug custom apps"
-                        msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
-                        stateType={EAEmptyStateType.DEVTRONAPPS}
-                        knowMoreLink={DOCUMENTATION.HOME_PAGE}
-                    />
-                </div>
-            )
-        }
-        if (params.appType === AppListConstants.AppType.HELM_APPS) {
-            return (
-                <>
-                    <HelmAppList
-                        serverMode={serverMode}
-                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                        sortApplicationList={sortApplicationList}
-                        clearAllFilters={removeAllFilters}
-                        fetchingExternalApps={fetchingExternalApps}
-                        setFetchingExternalAppsState={setFetchingExternalAppsState}
-                        updateDataSyncing={updateDataSyncing}
-                        setShowPulsatingDotState={setShowPulsatingDotState}
-                        masterFilters={masterFilters}
-                        syncListData={syncListData}
-                        isArgoInstalled={isArgoInstalled}
-                    />
-                    {fetchingExternalApps && (
-                        <div className="mt-16">
-                            <Progressing size={32} />
-                        </div>
-                    )}
-                </>
-            )
-        }
-        if (params.appType === AppListConstants.AppType.ARGO_APPS && window?._env_?.ENABLE_EXTERNAL_ARGO_CD) {
-            return (
-                <>
-                    <ExternalArgoList
-                        serverMode={serverMode}
-                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                        sortApplicationList={sortApplicationList}
-                        clearAllFilters={removeAllFilters}
-                        fetchingExternalApps={fetchingExternalApps}
-                        setFetchingExternalAppsState={setFetchingExternalAppsState}
-                        updateDataSyncing={updateDataSyncing}
-                        setShowPulsatingDotState={setShowPulsatingDotState}
-                        masterFilters={masterFilters}
-                        syncListData={syncListData}
-                        isArgoInstalled={isArgoInstalled}
-                    />
-                    {fetchingExternalApps && (
-                        <div className="mt-16">
-                            <Progressing size={32} />
-                        </div>
-                    )}
-                </>
-            )
-        }
-    }
-
-    if (dataStateType === AppListViewType.ERROR) {
-        return (
-            <div className="h-100 flex">
-                <ErrorScreenManager code={errorResponseCode} />
-            </div>
-        )
-    }
-
     return (
         <div>
-            <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
-            {renderMasterFilters()}
-            {renderAppliedFilters()}
-            {renderAppTabs()}
-            {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
-            {renderAppListBody()}
+            {dataStateType === AppListViewType.ERROR ? (
+                <div className="h-100 flex">
+                    <ErrorScreenManager code={errorResponseCode} />
+                </div>
+            ) : (
+                <>
+                    <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
+                    {renderMasterFilters()}
+                    {renderAppliedFilters()}
+                    {renderAppTabs()}
+                    {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
+                    {params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.FULL && (
+                        <DevtronAppListContainer
+                            payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                            environmentClusterList={environmentClusterListRes}
+                            clearAllFilters={removeAllFilters}
+                            sortApplicationList={sortApplicationList}
+                            appListCount={appListCount}
+                            isSuperAdmin={isSuperAdmin}
+                            openDevtronAppCreateModel={openDevtronAppCreateModel}
+                            setAppCount={setAppCount}
+                            updateDataSyncing={updateDataSyncing}
+                            isArgoInstalled={isArgoInstalled}
+                        />
+                    )}
+                    {params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.EA_ONLY && (
+                        <div style={{ height: 'calc(100vh - 250px)' }}>
+                            <EAEmptyState
+                                title="Create, build, deploy and debug custom apps"
+                                msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
+                                stateType={EAEmptyStateType.DEVTRONAPPS}
+                                knowMoreLink={DOCUMENTATION.HOME_PAGE}
+                            />
+                        </div>
+                    )}
+                    {params.appType === AppListConstants.AppType.HELM_APPS && (
+                        <>
+                            <HelmAppList
+                                serverMode={serverMode}
+                                payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                sortApplicationList={sortApplicationList}
+                                clearAllFilters={removeAllFilters}
+                                fetchingExternalApps={fetchingExternalApps}
+                                setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                updateDataSyncing={updateDataSyncing}
+                                setShowPulsatingDotState={setShowPulsatingDotState}
+                                masterFilters={masterFilters}
+                                syncListData={syncListData}
+                                isArgoInstalled={isArgoInstalled}
+                            />
+                            {fetchingExternalApps && (
+                                <div className="mt-16">
+                                    <Progressing size={32} />
+                                </div>
+                            )}
+                        </>
+                    )}
+                </>
+            )}
         </div>
     )
 }
