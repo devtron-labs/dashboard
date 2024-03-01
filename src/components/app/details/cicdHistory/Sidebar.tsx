@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react'
+import { createGitCommitUrl } from '../../../common'
 import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 'react-router'
 import ReactSelect, { components } from 'react-select'
 import moment from 'moment'
 import TippyHeadless from '@tippyjs/react/headless'
 import { NavLink } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { ConditionalWrap, createGitCommitUrl } from '../../../common'
 import { DropdownIndicator, getCustomOptionSelectionStyle } from '../../../v2/common/ReactSelect.utils'
 import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
@@ -24,6 +24,7 @@ import { ReactComponent as ICArrowBackward } from '../../../../assets/icons/ic-a
 import DetectBottom from '../../../common/DetectBottom'
 import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
 import { triggerStatus } from './History.components'
+import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 
 const Sidebar = React.memo(
     ({

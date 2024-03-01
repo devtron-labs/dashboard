@@ -6,15 +6,15 @@ export const buildInitState = (appListPayload): Promise<any> => {
     return new Promise((resolve) => {
         const parsedResponse = {
             apps: [],
-            offset: appListPayload.offset,
+            offset: appListPayload?.offset,
             size: 0,
-            pageSize: appListPayload.size,
+            pageSize: appListPayload?.size,
             sortRule: {
-                key: appListPayload.sortBy,
-                order: appListPayload.sortOrder,
+                key: appListPayload?.sortBy,
+                order: appListPayload?.sortOrder,
             },
-            searchQuery: appListPayload.appNameSearch || '',
-            searchApplied: !!appListPayload.appNameSearch.length,
+            searchQuery: appListPayload?.appNameSearch || '',
+            searchApplied: !!appListPayload?.appNameSearch?.length,
         }
         return resolve(parsedResponse)
     })

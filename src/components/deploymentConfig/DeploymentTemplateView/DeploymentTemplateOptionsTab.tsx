@@ -1,8 +1,5 @@
 import React, { useContext } from 'react'
-import { ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { RadioGroup } from '../../common'
 import { BASIC_VIEW_TIPPY_CONTENT } from '../constants'
 import { DeploymentChartVersionType, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
 import { ChartTypeVersionOptions } from './DeploymentTemplateView.component'
@@ -10,6 +7,13 @@ import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as RestoreIcon } from '../../../assets/icons/ic-arrow-anticlockwise.svg'
 import { DeploymentConfigContext } from '../DeploymentConfig'
+import {
+    ConditionalWrap,
+    TippyCustomized,
+    TippyTheme,
+    StyledRadioGroup as RadioGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
