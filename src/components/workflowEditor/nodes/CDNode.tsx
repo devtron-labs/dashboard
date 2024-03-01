@@ -20,34 +20,48 @@ import {
     VIEW_DELETION_STATUS,
 } from '../../../config/constantMessaging'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
-import { URLS } from '../../../config'
+import { MODAL_TYPE, URLS } from '../../../config'
 import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
 import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
 import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types'
 import { CD_PATCH_ACTION } from '../../cdPipeline/cdPipeline.types'
 import { deleteCDPipeline } from '../../cdPipeline/cdPipeline.service'
+import { importComponentFromFELibrary } from '../../common'
 
+const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
         super(props)
         this.state = {
             showDeletePipelinePopup: false,
             showDeleteDialog: false,
+            showDeploymentConfirmtionDeleteDialog: false,
             deleteDialog: DeleteDialogType.showNormalDeleteDialog,
             forceDeleteData: { forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' },
             clusterName: '',
             deleteInProgress: false,
+            deploymentWindowConfimationValue: '',
         }
     }
 
+    isDeploymentBlocked = true
+
+    setDeploymentWindowConfimationValue = (value: string) => {
+        this.setState({ deploymentWindowConfimationValue: value })
+    }
+
     onClickShowDeletePipelinePopup = () => {
-        this.setState({
-            showDeletePipelinePopup: true,
-        })
+        if (this.isDeploymentBlocked) {
+            this.setState({ showDeploymentConfirmtionDeleteDialog: true })
+        } else {
+            this.setState({
+                showDeletePipelinePopup: true,
+            })
+        }
     }
 
     onClickHideDeletePipelinePopup = () => {
-        this.setState({ showDeletePipelinePopup: false })
+        this.setState({ showDeletePipelinePopup: false, showDeploymentConfirmtionDeleteDialog: false })
     }
 
     handleDeleteCDNode = (e: React.MouseEvent) => {
@@ -58,7 +72,11 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             this.onClickShowDeletePipelinePopup()
             return
         }
-        this.setState({ showDeleteDialog: true })
+        if(this.isDeploymentBlocked) {
+            this.setState({ showDeploymentConfirmtionDeleteDialog: true })
+        } else {
+            this.setState({ showDeleteDialog: true })
+        }
     }
 
     handleDeleteDialogUpdate = (deleteDialog: DeleteDialogType) => {
@@ -199,6 +217,28 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         )
     }
 
+    renderDeploymentWindowConfirmtionModal = () =>
+    DeploymentWindowConfirmationDialog && (
+        <DeploymentWindowConfirmationDialog
+            onClose={this.onClickHideDeletePipelinePopup}
+            value={this.state.deploymentWindowConfimationValue}
+            setValue={this.setDeploymentWindowConfimationValue}
+            isLoading={false}
+            type={MODAL_TYPE.PIPELINE}
+            onClickActionButton={this.deleteCD}
+            appName={this.props.appName}
+            envName={this.props.environmentName}
+        />
+    )
+
+    renderDeleteConformationDialog = () => {
+        if (this.state.showDeploymentConfirmtionDeleteDialog) {
+            return this.renderDeploymentWindowConfirmtionModal()
+        } else if (this.state.showDeletePipelinePopup) {
+            return this.renderConfirmationModal()
+        }
+    }
+
     onClickNodeCard = (event) => {
         if (this.props.deploymentAppDeleteRequest) {
             event.preventDefault()
@@ -288,7 +328,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         </div>
                     </div>
                 </Link>
-                {this.state.showDeletePipelinePopup && this.renderConfirmationModal()}
+                {this.renderDeleteConformationDialog()}
             </>
         )
     }

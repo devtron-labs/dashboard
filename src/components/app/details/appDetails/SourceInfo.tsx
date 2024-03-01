@@ -255,7 +255,7 @@ export const SourceInfo = ({
                         />
                     )}
                     {DeploymentWindowStatusCard && (
-                        <DeploymentWindowStatusCard cardLoading={cardLoading} envId={envId} />
+                        <DeploymentWindowStatusCard cardLoading={cardLoading} envId={envId} appId={appDetails.appId}/>
                     )}
                     {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
                         <SecurityVulnerabilityCard
