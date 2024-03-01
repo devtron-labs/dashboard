@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import {
     ConfirmationDialog,
     DeploymentAppTypes,
+    MODAL_TYPE,
     ServerErrors,
     showError,
     WorkflowNodeType,
@@ -20,7 +21,7 @@ import {
     VIEW_DELETION_STATUS,
 } from '../../../config/constantMessaging'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
-import { MODAL_TYPE, URLS } from '../../../config'
+import { URLS } from '../../../config'
 import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
 import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
 import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types'

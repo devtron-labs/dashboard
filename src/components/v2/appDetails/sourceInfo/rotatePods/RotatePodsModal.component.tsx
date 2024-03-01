@@ -6,6 +6,7 @@ import {
     Drawer,
     InfoColourBar,
     CHECKBOX_VALUE,
+    MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import {
@@ -20,7 +21,7 @@ import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 import RotateResponseModal from './RotateResponseModal'
-import { MODAL_TYPE, POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
+import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
