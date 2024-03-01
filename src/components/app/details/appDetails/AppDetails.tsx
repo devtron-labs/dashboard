@@ -324,17 +324,17 @@ export const Details: React.FC<DetailsType> = ({
             const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
 
             // Deployments status details for Devtron apps
-            getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline).then(
-                (deploymentStatusDetailRes) => {
+            getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
+                .then((deploymentStatusDetailRes) => {
                     processDeploymentStatusData(deploymentStatusDetailRes.result)
                     // Update the loading status if the modal is open
                     if (shouldFetchTimeline) {
                         setIsInitialTimelineDataLoading(false)
                     }
-                },
-            ).catch((err) => {
-                showError(err);
-            })
+                })
+                .catch((err) => {
+                    showError(err)
+                })
         },
         [
             params.appId,
@@ -672,12 +672,7 @@ export const Details: React.FC<DetailsType> = ({
                 renderAppDetails()
             )}
 
-            {detailedStatus && (
-                <AppStatusDetailModal
-                    close={hideAppDetailsStatus}
-                    showAppStatusMessage={false}
-                />
-            )}
+            {detailedStatus && <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} />}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
                     appName={appDetails?.appName}
@@ -778,9 +773,7 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
         return (
             <>
                 <div className="mt-16 mb-9">
-                    <SyncErrorComponent
-                        showApplicationDetailedModal={showApplicationDetailedModal}
-                    />
+                    <SyncErrorComponent showApplicationDetailedModal={showApplicationDetailedModal} />
                 </div>
                 <EmptyK8sResourceComponent emptyStateMessage={RESOURCES_NOT_FOUND} />
             </>

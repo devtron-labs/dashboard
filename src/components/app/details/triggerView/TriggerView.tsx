@@ -164,7 +164,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    // FIXME: Seems like its missing a error state
     getConfigs() {
         getDefaultConfig()
             .then((response) => {
