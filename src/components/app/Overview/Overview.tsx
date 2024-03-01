@@ -40,7 +40,7 @@ import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog')
 const DependencyList = importComponentFromFELibrary('DependencyList')
-const DeploymentWindosOverview = importComponentFromFELibrary('DeploymentWindowOverview')
+const DeploymentWindowOverview = importComponentFromFELibrary('DeploymentWindowOverview')
 
 type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
 
@@ -438,7 +438,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         return (
             <div>
                 {Catalog && <Catalog resourceId={appId} resourceType={appType} />}
-                {DeploymentWindosOverview && <DeploymentWindosOverview />}
+                {DeploymentWindowOverview && <DeploymentWindowOverview appId={Number(appId)}/>}
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin
