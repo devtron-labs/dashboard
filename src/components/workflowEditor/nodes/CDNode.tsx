@@ -229,6 +229,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             onClickActionButton={this.deleteCD}
             appName={this.props.appName}
             envName={this.props.environmentName}
+            appId={this.props.appId}
+            envId={this.props.environmentId}
         />
     )
 
