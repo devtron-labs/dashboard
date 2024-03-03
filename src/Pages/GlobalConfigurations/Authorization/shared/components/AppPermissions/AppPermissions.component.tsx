@@ -8,9 +8,9 @@ import {
     showError,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { IMAGE_APPROVER_ACTION, CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes } from '../../../constants'
+import { ActionTypes, EntityTypes } from '../../../constants'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
-import { mapByKey } from '../../../../../../components/common'
+import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
 import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
 import { apiGroupAll } from '../K8sObjectPermissions/utils'
@@ -46,6 +46,8 @@ import { getWorkflowOptions } from '../../../utils'
 import { AppPermissionsDetailType, DirectPermissionRow } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
+
+const handleApprovalPermissionChange = importComponentFromFELibrary('handleApprovalPermissionChange', null, 'function')
 
 const AppPermissions = () => {
     const { serverMode } = useContext(mainContext)
@@ -732,22 +734,23 @@ const AppPermissions = () => {
             case DirectPermissionFieldName.team:
                 _handleTeamChange(index, selectedValue, actionMeta, tempPermissions)
                 break
-            case IMAGE_APPROVER_ACTION.value:
-                tempPermissions[index][name] = !tempPermissions[index][name]
-                break
-            case CONFIG_APPROVER_ACTION.value:
-                tempPermissions[index].action.configApprover = !tempPermissions[index].action.configApprover
-                break
-            default:
-                if (
-                    tempPermissions[index][name].configApprover ||
-                    tempPermissions[index][name].value.includes(CONFIG_APPROVER_ACTION.value)
-                ) {
-                    selectedValue.configApprover = true
+            default: {
+                if (handleApprovalPermissionChange) {
+                    const hasHandledApprovalCases = handleApprovalPermissionChange(
+                        index,
+                        selectedValue,
+                        name,
+                        tempPermissions,
+                    )
+
+                    if (hasHandledApprovalCases) {
+                        break
+                    }
                 }
                 tempPermissions[index][name] = selectedValue
-                break
+            }
         }
+
         setDirectPermission(tempPermissions)
     }
 

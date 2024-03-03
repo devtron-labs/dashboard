@@ -16,7 +16,12 @@ import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE } from '
 import { ReactComponent as TrashIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { GroupHeading, Option as singleOption } from '../../../../../../components/v2/common/ReactSelect.utils'
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
-import { CONFIG_APPROVER_ACTION, authorizationSelectStyles, EntityTypes } from '../../../constants'
+import {
+    CONFIG_APPROVER_ACTION,
+    authorizationSelectStyles,
+    EntityTypes,
+    ARTIFACT_PROMOTER_ACTION,
+} from '../../../constants'
 import { AppOption, ClusterValueContainer, ProjectValueContainer, ValueContainer, WorkflowGroupHeading } from './common'
 import {
     allApplicationsOption,
@@ -24,7 +29,7 @@ import {
     ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
     DirectPermissionFieldName,
 } from './constants'
-import { getWorkflowOptions, parseData } from '../../../utils'
+import { getPrimaryRoleIndex, getWorkflowOptions, parseData } from '../../../utils'
 import { DirectPermissionRow } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { DirectPermissionsRoleFilter } from '../../../types'
@@ -52,15 +57,22 @@ const DirectPermission = ({
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
+
+    // creating a multiRole array since we receive , binded values from the backend and after one action, we reset that
     const multiRole = permission.action.value.split(',')
-    const configApproverRoleIndex = multiRole.indexOf(CONFIG_APPROVER_ACTION.value)
-    const primaryActionRoleIndex = configApproverRoleIndex === 0 ? 1 : 0
+    const doesConfigApproverRoleExist = multiRole.includes(CONFIG_APPROVER_ACTION.value)
+    const doesArtifactPromoterRoleExist = multiRole.includes(ARTIFACT_PROMOTER_ACTION.value)
+
+    const primaryActionRoleIndex = getPrimaryRoleIndex(multiRole, [
+        CONFIG_APPROVER_ACTION.value,
+        ARTIFACT_PROMOTER_ACTION.value,
+    ])
+
     const primaryActionRole = {
         label: multiRole[primaryActionRoleIndex],
         value: multiRole[primaryActionRoleIndex],
-        configApprover: multiRole[configApproverRoleIndex]
-            ? !!multiRole[configApproverRoleIndex]
-            : permission.action.configApprover,
+        configApprover: doesConfigApproverRoleExist || permission.action.configApprover,
+        artifactPromoter: doesArtifactPromoterRoleExist || permission.action.artifactPromoter,
     }
 
     const [openMenu, setOpenMenu] = useState<DirectPermissionFieldName | ''>('')
@@ -146,7 +158,9 @@ const DirectPermission = ({
                 }}
             >
                 {value === SELECT_ALL_VALUE ? 'Admin' : metaRolesForAccessType[value].value}
-                {ApproverPermission && (permission.approver || primaryActionRole.configApprover) && ', Approver'}
+                {ApproverPermission &&
+                    (permission.approver || primaryActionRole.configApprover || primaryActionRole.artifactPromoter) &&
+                    ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
         )
@@ -168,6 +182,7 @@ const DirectPermission = ({
                     optionProps={props}
                     approver={permission.approver}
                     configApprover={primaryActionRole.configApprover}
+                    artifactPromoter={primaryActionRole.artifactPromoter}
                     handleDirectPermissionChange={(...rest) => {
                         props.selectOption(props.selectProps.value)
                         handleDirectPermissionChange(...rest)

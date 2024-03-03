@@ -222,6 +222,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatu
         label: string
         value: string
         configApprover?: boolean
+        artifactPromoter?: boolean
     }
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
     workflow?: OptionType[]
