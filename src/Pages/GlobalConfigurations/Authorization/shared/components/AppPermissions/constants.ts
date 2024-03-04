@@ -1,5 +1,5 @@
 import { ACCESS_TYPE_MAP, SELECT_ALL_VALUE } from '../../../../../../config'
-import { ActionTypes, EntityTypes } from '../../../constants'
+import { ActionTypes, authorizationSelectStyles, EntityTypes } from '../../../constants'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
 import { DirectPermissionsRoleFilter } from '../../../types'
 
@@ -52,4 +52,24 @@ export enum DirectPermissionFieldName {
     workflow = 'workflow',
     team = 'team',
     status = 'status',
+}
+
+export const projectSelectStyles = {
+    ...authorizationSelectStyles,
+    valueContainer: (base) => ({
+        ...authorizationSelectStyles.valueContainer(base),
+        display: 'flex',
+    }),
+}
+
+export const roleSelectStyles = {
+    ...authorizationSelectStyles,
+    valueContainer: (base) => ({
+        ...authorizationSelectStyles.valueContainer(base),
+        display: 'flex',
+        flexWrap: 'nowrap',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+    }),
 }
