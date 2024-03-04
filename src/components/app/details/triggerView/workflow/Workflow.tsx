@@ -22,6 +22,7 @@ import { TriggerViewContext } from '../config'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
+const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', null, 'function')
 
 export class Workflow extends Component<WorkflowProps> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
@@ -333,7 +334,7 @@ export class Workflow extends Component<WorkflowProps> {
 
         return (
             <div className="workflow--trigger flexbox-col mb-16 dc__gap-6" style={{ minWidth: 'auto' }}>
-                <div className="bcn-0 cn-9 fs-13 fw-6 lh-20">
+                <div className="bcn-0 cn-9 fs-13 fw-6 lh-20 flexbox dc__align-items-center dc__content-space">
                     {this.props.fromAppGrouping ? (
                         <Checkbox
                             rootClassName="mb-0 app-group-checkbox"
@@ -345,9 +346,21 @@ export class Workflow extends Component<WorkflowProps> {
                             {this.props.name}
                         </Checkbox>
                     ) : (
-                        <span data-testid="workflow-heading" className="m-0">
-                            {this.props.name}
-                        </span>
+                        <>
+                            <span data-testid="workflow-heading" className="m-0">
+                                {this.props.name}
+                            </span>
+
+                            {ImagePromotionLink && (
+                                <ImagePromotionLink
+                                    isConfigured={this.props.artifactPromotionMetaData?.isConfigured}
+                                    pendingApprovalCount={
+                                        this.props.artifactPromotionMetaData?.pendingApprovalCount ?? 0
+                                    }
+                                    workflowId={this.props.id}
+                                />
+                            )}
+                        </>
                     )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
