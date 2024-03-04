@@ -20,7 +20,7 @@ import {
     CIMaterialSidebarType,
     HandleKeyValueChangeType,
     RuntimeParamsTriggerPayloadType,
-    ArtifactPromotionMetaData,
+    ArtifactPromotionMetadata,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -279,7 +279,7 @@ export interface TriggerEdgeType {
     endNode: any
 }
 
-export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetaData'> {
+export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
     startX: number
@@ -435,7 +435,7 @@ export interface Workflow {
     name: string
     appId: number
     tree?: Tree[]
-    artifactPromotionMetaData?: ArtifactPromotionMetaData
+    artifactPromotionMetadata?: ArtifactPromotionMetadata
 }
 
 export interface WorkflowResult {
