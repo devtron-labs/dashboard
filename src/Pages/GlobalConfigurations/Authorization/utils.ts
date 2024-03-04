@@ -281,7 +281,7 @@ export const getRoleFilters = ({
             ...chartPermission,
             team: '',
             environment: '',
-            entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
+            entityName: chartPermission.entityName?.map((entity) => entity.value).join(',') ?? '',
         })
         if (chartPermission.action !== ActionTypes.VIEW) {
             roleFilters.push({
