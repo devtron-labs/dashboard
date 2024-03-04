@@ -20,6 +20,7 @@ import {
     CIMaterialSidebarType,
     HandleKeyValueChangeType,
     RuntimeParamsTriggerPayloadType,
+    ArtifactPromotionMetaData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -434,6 +435,7 @@ export interface Workflow {
     name: string
     appId: number
     tree?: Tree[]
+    artifactPromotionMetaData?: ArtifactPromotionMetaData
 }
 
 export interface WorkflowResult {

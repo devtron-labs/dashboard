@@ -471,6 +471,7 @@ function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): Workf
         width: 0,
         dag: [],
         approvalConfiguredIdsMap: {},
+        artifactPromotionMetaData: workflow.artifactPromotionMetaData,
     } as WorkflowType
 }
 
