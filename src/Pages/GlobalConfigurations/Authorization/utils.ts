@@ -248,10 +248,10 @@ const getSelectedEnvironments = (permission) => {
 const handleApproverAction = (permission: DirectPermissionsRoleFilter) => {
     const labels = [permission.action.value]
 
-    if (permission.action[CONFIG_APPROVER_ACTION.value]) {
+    if (permission.action.configApprover) {
         labels.push(CONFIG_APPROVER_ACTION.value)
     }
-    if (permission.action[ARTIFACT_PROMOTER_ACTION.value]) {
+    if (permission.action.artifactPromoter) {
         labels.push(ARTIFACT_PROMOTER_ACTION.value)
     }
 
