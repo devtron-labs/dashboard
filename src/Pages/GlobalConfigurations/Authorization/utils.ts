@@ -29,10 +29,10 @@ import {
     UserDto,
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
-import { useAuthorizationBulkSelection } from './shared/components/BulkSelection'
+import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
 import { CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes, PermissionType, ViewChartGroupPermission } from './constants'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
-import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './shared/components/AppPermissions/constants'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { getFormattedTimeToLive } from './libUtils'
 

@@ -31,7 +31,7 @@ import {
     PermissionConfigurationForm,
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
-} from '../shared/components/PermissionConfigurationForm'
+} from '../Shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
 import { importComponentFromFELibrary } from '../../../../components/common'

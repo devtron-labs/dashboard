@@ -24,9 +24,9 @@ import { User } from '../../types'
 import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
-} from '../../shared/components/PermissionConfigurationForm'
+} from '../../Shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../../utils'
-import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/utils'
+import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import { getCreatableChipStyle } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
 
