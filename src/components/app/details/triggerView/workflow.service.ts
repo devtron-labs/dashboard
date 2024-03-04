@@ -19,12 +19,13 @@ import {
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
 import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
-import { isEmpty } from '../../../common'
+import { importComponentFromFELibrary, isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { BlackListedCI } from '../../../workflowEditor/types'
 
+const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
 export const getTriggerWorkflows = (
     appId,
     isJobView: boolean,
@@ -62,7 +63,7 @@ const getInitialWorkflows = (
     blackListedCI: BlackListedCI
 }> => {
     if (useAppWfViewAPI) {
-        return Promise.all([getWorkflowViewList(id, filteredEnvIds), getWorkflowViewList(id, filteredEnvIds)]).then(
+        return Promise.all([getWorkflowViewList(id, filteredEnvIds), getDeploymentWindowState(id, filteredEnvIds)]).then(
             (response) => {
                 const workflows = {
                     appId: id,
@@ -73,6 +74,7 @@ const getInitialWorkflows = (
                     appId: id,
                     ...response[0].result?.ciConfig,
                 }
+               // cdPipeline => blackout
                 return processWorkflow(
                     workflows,
                     ciConfig,
