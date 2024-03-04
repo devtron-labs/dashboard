@@ -6,6 +6,7 @@ import {
     noop,
     WorkflowNodeType,
     PipelineType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { StaticNode } from './nodes/staticNode'
 import { TriggerCINode } from './nodes/triggerCINode'
@@ -14,7 +15,7 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr, TriggerViewContextType } from '../types'
+import { WorkflowProps, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
@@ -27,7 +28,7 @@ const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', nu
 export class Workflow extends Component<WorkflowProps> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
 
-    goToWorkFlowEditor = (node: NodeAttr) => {
+    goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
                 this.props.appId?.toString() ?? this.props.match.params.appId,
@@ -69,7 +70,7 @@ export class Workflow extends Component<WorkflowProps> {
         })
     }
 
-    renderSourceNode(node: NodeAttr) {
+    renderSourceNode(node: CommonNodeAttr) {
         return (
             <StaticNode
                 key={`${node.type}-${node.id}`}
@@ -108,7 +109,7 @@ export class Workflow extends Component<WorkflowProps> {
         )
     }
 
-    renderCINodes(node: NodeAttr) {
+    renderCINodes(node: CommonNodeAttr) {
         if (node.isLinkedCD && LinkedCDNode) {
             return (
                 <LinkedCDNode

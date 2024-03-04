@@ -14,6 +14,8 @@ import {
     FilterConditionsListType,
     CDMaterialResponseType,
     PipelineType,
+    WorkflowType,
+    Material,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -204,10 +206,6 @@ export interface CIMaterialState {
     isBlobStorageConfigured?: boolean
 }
 
-export interface NodeAttr extends CommonNodeAttr {
-    cipipelineId?: number
-}
-
 export interface DownStreams {
     id: string
     text: string
@@ -278,28 +276,6 @@ interface ArtifactPromotionMetaData {
     pendingApprovalCount: number
 }
 
-export interface WorkflowType {
-    id: string
-    name: string
-    gitMaterials?: Material[]
-    ciConfiguredGitMaterialId?: number
-    startX: number
-    startY: number
-    width: number
-    height: number
-    nodes: NodeAttr[]
-    dag: any
-    showTippy?: boolean
-    appId?: number
-    isSelected?: boolean
-    approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
-    imageReleaseTags: string[]
-    appReleaseTags?: string[]
-    tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
-    artifactPromotionMetaData?: ArtifactPromotionMetaData
-}
-
 export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetaData'> {
     id: string
     name: string
@@ -307,7 +283,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, P
     startY: number
     width: number
     height: number
-    nodes: NodeAttr[]
+    nodes: CommonNodeAttr[]
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
@@ -535,11 +511,6 @@ export interface CiPipeline {
     pipelineType?: string
 }
 
-export interface Material {
-    gitMaterialId: number
-    materialName: string
-}
-
 export interface CiPipelineResult {
     id?: number
     appId?: number
@@ -624,7 +595,7 @@ export interface CdPipelineResult {
 
 // End CD response
 
-type PartialNodeAttr = Partial<NodeAttr>
+type PartialNodeAttr = Partial<CommonNodeAttr>
 
 export interface FullNode {
     node: PartialNodeAttr
@@ -635,7 +606,7 @@ export interface FullNode {
 export interface WorkflowDisplay {
     id: number
     name: string
-    nodes: Array<NodeAttr>
+    nodes: Array<CommonNodeAttr>
     type: string
 }
 
@@ -717,7 +688,7 @@ export interface MaterialSourceProps {
 }
 
 export interface AddDimensionsToDownstreamDeploymentsParams {
-    downstreams: NodeAttr[]
+    downstreams: CommonNodeAttr[]
     dimensions: WorkflowDimensions
     startX: number
     startY: number
