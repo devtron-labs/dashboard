@@ -25,8 +25,6 @@ const MultiValueContainer = (props) => <MultiValueChipContainer {...props} valid
 
 const UserPermissionGroupsSelector = () => {
     const { userGroups, setUserGroups, data: userData, userStatus, showStatus } = usePermissionConfiguration()
-    // Casting as if showUserPermissionGroupSelector is true than type for data is User
-    const _userData = userData as User
     const [isLoading, result, error, reloadGroupList] = useAsync(() =>
         getPermissionGroupList({
             showAll: true,
@@ -40,7 +38,8 @@ const UserPermissionGroupsSelector = () => {
 
     useEffect(() => {
         if (userData) {
-            populateDataFromAPI(_userData)
+            // Casting as if showUserPermissionGroupSelector is true than type for data is User
+            populateDataFromAPI(userData as User)
         }
     }, [userData])
 

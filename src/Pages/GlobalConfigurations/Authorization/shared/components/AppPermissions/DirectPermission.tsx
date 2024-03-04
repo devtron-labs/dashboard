@@ -23,6 +23,8 @@ import {
     ALL_ENVIRONMENTS_OPTION,
     ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
     DirectPermissionFieldName,
+    projectSelectStyles,
+    roleSelectStyles,
 } from './constants'
 import { getWorkflowOptions, parseData } from '../../../utils'
 import { DirectPermissionRow } from './types'
@@ -178,7 +180,7 @@ const DirectPermission = ({
         </components.MenuList>
     )
 
-    const setWorkflowsForJobs = async (_permission) => {
+    const setWorkflowsForJobs = async (_permission: DirectPermissionsRoleFilter) => {
         if (abortControllerRef.current) {
             abortControllerRef.current.abort()
             abortControllerRef.current = null
@@ -218,12 +220,10 @@ const DirectPermission = ({
     }, [appsList, appsListHelmApps, projectId, jobsList])
 
     useEffect(() => {
-        if (openMenu || !projectId) {
+        if (openMenu || !projectId || (environments && environments.length === 0) || applications.length === 0) {
             return
         }
-        if ((environments && environments.length === 0) || applications.length === 0) {
-            return
-        }
+
         setApplications((_applications) =>
             openMenu === DirectPermissionFieldName.apps || openMenu === DirectPermissionFieldName.jobs
                 ? _applications
@@ -289,7 +289,7 @@ const DirectPermission = ({
         </div>
     )
 
-    const customFilter = (option, searchText) =>
+    const customFilter = (option, searchText: string) =>
         option.data.label?.toLowerCase().includes(searchText?.toLowerCase()) ||
         option.data.clusterName?.toLowerCase().includes(searchText?.toLowerCase()) ||
         option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
@@ -336,13 +336,7 @@ const DirectPermission = ({
                     ValueContainer: ProjectValueContainer,
                 }}
                 menuPlacement="auto"
-                styles={{
-                    ...authorizationSelectStyles,
-                    valueContainer: (base) => ({
-                        ...authorizationSelectStyles.valueContainer(base),
-                        display: 'flex',
-                    }),
-                }}
+                styles={projectSelectStyles}
                 formatOptionLabel={formatOptionLabelProject}
                 inputValue={projectInput}
                 onBlur={() => {
@@ -526,17 +520,7 @@ const DirectPermission = ({
                     isDisabled={!permission.team}
                     menuPlacement="auto"
                     blurInputOnSelect
-                    styles={{
-                        ...authorizationSelectStyles,
-                        valueContainer: (base) => ({
-                            ...authorizationSelectStyles.valueContainer(base),
-                            display: 'flex',
-                            flexWrap: 'nowrap',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                        }),
-                    }}
+                    styles={roleSelectStyles}
                     components={{
                         ClearIndicator: null,
                         IndicatorSeparator: null,
