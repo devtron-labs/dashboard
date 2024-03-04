@@ -158,7 +158,6 @@ export const DELETE_MODAL_MESSAGING = {
 }
 
 export const SIDEBAR_KEYS = {
-    overview: 'Cluster Overview',
     nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
@@ -237,3 +236,31 @@ export const SELECTE_CLUSTER_STATE_MESSAGING = {
     infoText: 'All Kubernetes resources in the selected cluster will be shown here',
     altText: 'No Cluster Selected',
 }
+
+export const K8_ABBREVIATES = {
+    csr: 'certificatesigningrequest',
+    cs: 'componentstatus',
+    cm: 'configmap',
+    ds: 'daemonset',
+    ns: 'namespaces',
+    deploy: 'deployment',
+    ep: 'endpoints',
+    ev: 'events',
+    hpa: 'horizontalpodautoscaler',
+    ing: 'ingress',
+    limits: 'limitrange',
+    no: 'nodes',
+    pvc: 'persistentvolumeclaim',
+    pv: 'persistentvolume',
+    po: 'pod',
+    pdb: 'poddisruptionbudget',
+    rs: 'replicaset',
+    rc: 'replicationcontroller',
+    quota: 'resourcequota',
+    sa: 'serviceaccount',
+    sc: 'storageclass',
+    svc: 'service',
+    wf: 'workflow',
+    sts: 'statefulset',
+    crd: 'customresourcedefinition'
+};

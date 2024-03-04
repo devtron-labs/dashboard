@@ -13,7 +13,7 @@ import {
     SidebarType,
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
-import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
+import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS, K8_ABBREVIATES } from '../Constants'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 
 const Sidebar = ({
@@ -132,19 +132,6 @@ const Sidebar = ({
                 groupName: '',
             })
         }
-
-        _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.overview as Nodes,
-            value: K8S_EMPTY_GROUP,
-            dataset: {
-                group: SIDEBAR_KEYS.overviewGVK.Group,
-                version: SIDEBAR_KEYS.overviewGVK.Version,
-                kind: SIDEBAR_KEYS.overviewGVK.Kind as Nodes,
-                namespaced: 'false',
-                grouped: 'false',
-            },
-            groupName: '',
-        })
         _k8sObjectOptionsList.push({
             label: SIDEBAR_KEYS.nodes as Nodes,
             value: K8S_EMPTY_GROUP,
@@ -272,10 +259,29 @@ const Sidebar = ({
     }
 
     const handleInputChange = (newValue: string, actionMeta: InputActionMeta): void => {
-        if (actionMeta.action === 'input-change') {
-            setSearchText(newValue)
-            setMenuOpen(!!newValue)
+        if (actionMeta.action !== 'input-change') {
+            return
         }
+
+        setSearchText(newValue)
+        setMenuOpen(!!newValue)
+
+        const abbreviate_expanded = K8_ABBREVIATES[newValue.toLowerCase()]
+        if (!abbreviate_expanded) {
+            return
+        }
+
+        const loc = k8sObjectOptionsList.findIndex((value) => value.label.toLowerCase() === abbreviate_expanded)
+        if (loc === -1) {
+            return
+        }
+
+        /* bring element at loc to the start */
+        const temp = k8sObjectOptionsList[0]
+        k8sObjectOptionsList[0] = k8sObjectOptionsList[loc]
+        k8sObjectOptionsList[loc] = temp
+
+        setK8sObjectOptionsList([...k8sObjectOptionsList])
     }
 
     const hideMenu = () => {
@@ -296,8 +302,7 @@ const Sidebar = ({
             option.groupName,
             option.label !== (SIDEBAR_KEYS.namespaces as Nodes) &&
                 option.label !== (SIDEBAR_KEYS.events as Nodes) &&
-                option.label !== (SIDEBAR_KEYS.nodes as Nodes) &&
-                option.label !== (SIDEBAR_KEYS.overview as Nodes),
+                option.label !== (SIDEBAR_KEYS.nodes as Nodes)
         )
     }
 
@@ -322,7 +327,8 @@ const Sidebar = ({
     }
 
     function customFilter(option, searchText) {
-        return option.data.label.toLowerCase().includes(searchText.toLowerCase())
+        return option.data.label.toLowerCase() === K8_ABBREVIATES[searchText]
+            || option.data.label.toLowerCase().includes(searchText.toLowerCase())
     }
 
     const noOptionsMessage = () => 'No matching kind'
