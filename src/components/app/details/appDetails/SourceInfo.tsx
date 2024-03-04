@@ -252,8 +252,8 @@ export const SourceInfo = ({
                             ciArtifactId={ciArtifactId}
                         />
                     )}
-                    {DeploymentWindowStatusCard && (
-                        <DeploymentWindowStatusCard cardLoading={cardLoading} envId={envId} appId={appDetails.appId}/>
+                    {DeploymentWindowStatusCard &&  (
+                        <DeploymentWindowStatusCard cardLoading={cardLoading} appId={params.appId} envId={params.envId} />
                     )}
                     {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
                         <SecurityVulnerabilityCard
