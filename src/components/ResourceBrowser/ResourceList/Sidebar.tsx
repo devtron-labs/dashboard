@@ -15,6 +15,7 @@ import {
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
+import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 
 const Sidebar = ({
     k8SObjectMap,
@@ -272,7 +273,7 @@ const Sidebar = ({
     }
 
     const handleInputChange = (newValue: string, actionMeta: InputActionMeta): void => {
-        if (actionMeta.action === 'input-change') {
+        if (actionMeta.action === ReactSelectInputAction.inputChange) {
             setSearchText(newValue)
             setMenuOpen(!!newValue)
         }

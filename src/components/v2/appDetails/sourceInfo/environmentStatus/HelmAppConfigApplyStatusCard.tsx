@@ -28,17 +28,17 @@ const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppCon
                             </div>
                         </Tippy>
                     </div>
-                    <div className={`f-${releaseStatus['status'].toLowerCase()} dc__capitalize fw-6 fs-14 lh-20`}>
-                        {releaseStatus['status']}
+                    <div className={`f-${releaseStatus.status.toLowerCase()} dc__capitalize fw-6 fs-14 lh-20`}>
+                        {releaseStatus.status}
                     </div>
                 </div>
                 <div className="flex br-4">
-                    <figure className={`${releaseStatus['status'].toLowerCase()}  ml-8 icon-dim-24`} />
+                    <figure className={`${releaseStatus.status.toLowerCase()} ml-8 icon-dim-24`} />
                 </div>
             </div>
             <div className="app-details-info-card__bottom-container">
                 <div className="app-details-info-card__bottom-container__message fs-12 fw-4">
-                    {releaseStatus['message']}
+                    {releaseStatus.message}
                 </div>
             </div>
         </div>

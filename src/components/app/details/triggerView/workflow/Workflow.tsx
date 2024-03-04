@@ -355,8 +355,8 @@ export class Workflow extends Component<WorkflowProps> {
                             {ImagePromotionLink && (
                                 <ImagePromotionLink
                                     isConfigured={this.props.artifactPromotionMetaData?.isConfigured}
-                                    pendingApprovalCount={
-                                        this.props.artifactPromotionMetaData?.pendingApprovalCount ?? 0
+                                    isApprovalPendingForPromotion={
+                                        this.props.artifactPromotionMetaData?.isApprovalPendingForPromotion ?? false
                                     }
                                     workflowId={this.props.id}
                                 />
